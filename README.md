@@ -9,12 +9,12 @@
 </p>
 
 <p align="center">
-  An MCP server with a built-in audio engine, a growing song library, and a piano roll visualizer.<br/>
-  Your LLM reads music sheets, composes new ones, sees what it wrote, and plays through your speakers.
+  An MCP server with a built-in audio engine, a 120-song MIDI library, and a piano roll visualizer.<br/>
+  Your LLM reads real sheet music, sees what it plays, and performs through your speakers.
 </p>
 
-[![Songs](https://img.shields.io/badge/songs-3_hand--composed-blue)](https://github.com/mcp-tool-shop-org/ai_jam_session)
-[![MCP Tools](https://img.shields.io/badge/MCP_tools-16-purple)](https://github.com/mcp-tool-shop-org/ai_jam_session)
+[![Songs](https://img.shields.io/badge/songs-120_across_12_genres-blue)](https://github.com/mcp-tool-shop-org/ai_jam_session)
+[![MCP Tools](https://img.shields.io/badge/MCP_tools-17-purple)](https://github.com/mcp-tool-shop-org/ai_jam_session)
 
 ---
 
@@ -24,23 +24,49 @@ A piano that AI learns to play. Not a synthesizer, not a MIDI library -- a teach
 
 AI Jam Session gives an LLM three things:
 
-1. **Music sheets** -- JSON files the LLM can read, compose, and reason about. Each measure has notes for both hands, teaching notes that explain the music, and style guidance.
-2. **A piano roll** -- SVG visualization that lets the LLM "see" what it composed. Blue rectangles for right hand, coral for left. The LLM reads the SVG back to verify pitch accuracy, rhythm, and hand balance before playing.
-3. **A piano engine** -- sample-based audio that plays through your speakers. No external software required.
+1. **Real sheet music** -- MIDI files (the digital equivalent of sheet music) paired with JSON configs that add teaching notes, musical analysis, and style guidance. No hand-written approximations.
+2. **A piano roll** -- SVG visualization that lets the LLM "see" what it's playing. Blue rectangles for right hand, coral for left. The LLM reads the SVG back to verify pitch accuracy, rhythm, and hand balance.
+3. **A piano engine** -- multi-harmonic piano synthesis that plays through your speakers. Six keyboard voices from Concert Grand to Music Box. No external software required.
 
 The LLM doesn't just *play* music. It learns to *read* music, *compose* music, *verify* what it wrote visually, and *hear* the result. That's the loop.
 
 ## The Song Library
 
-The library is hand-composed and growing. Every song is written note by note, verified with the piano roll, and played to confirm it sounds right. No bulk generation, no filler.
+The library contains 120 songs across 12 genres, built from real MIDI files. Each song progresses through three stages:
 
-| Song | Composer | Key | Time | Measures | Difficulty |
-|------|----------|-----|------|----------|------------|
-| Fur Elise | Beethoven | A minor | 3/8 | 40 | intermediate |
-| Gymnopedie No. 1 | Satie | D major | 3/4 | 20 | beginner |
-| Clair de Lune | Debussy | Db major | 9/8 | 16 | intermediate |
+- **raw** -- MIDI downloaded, basic metadata only. Not yet playable.
+- **annotated** -- Teaching notes and musical language partially written.
+- **ready** -- Fully annotated with musical language, teaching goals, and style tips. Playable.
 
-More coming. The goal is a multi-genre library -- classical, jazz, blues, pop, folk, film -- where every piece has the same depth: detailed teaching notes, musical language descriptions, and style tips baked into every measure.
+Songs start as raw MIDI downloads and become playable once properly annotated. The library grows as songs are annotated -- the MIDI is already there for all 120.
+
+### Genres
+
+| Genre | Songs | Status |
+|-------|-------|--------|
+| Classical | 10 | All ready |
+| R&B | 10 | 4 ready |
+| Jazz | 10 | Coming |
+| Pop | 10 | Coming |
+| Blues | 10 | Coming |
+| Rock | 10 | Coming |
+| Soul | 10 | Coming |
+| Latin | 10 | Coming |
+| Film | 10 | Coming |
+| Ragtime | 10 | Coming |
+| New-Age | 10 | Coming |
+| Folk | 10 | Coming |
+
+### Sample Songs
+
+| Song | Composer | Genre | Key | Difficulty |
+|------|----------|-------|-----|------------|
+| Fur Elise | Beethoven | Classical | A minor | Intermediate |
+| Clair de Lune | Debussy | Classical | Db major | Intermediate |
+| Nocturne Op. 9 No. 2 | Chopin | Classical | Eb major | Advanced |
+| Superstition | Stevie Wonder | R&B | Eb minor | Intermediate |
+| If I Ain't Got You | Alicia Keys | R&B | G major | Intermediate |
+| Isn't She Lovely | Stevie Wonder | R&B | E major | Intermediate |
 
 ## Install
 
@@ -54,57 +80,68 @@ Requires **Node.js 18+**. That's it -- no MIDI drivers, no virtual ports, no ext
 
 ```bash
 # Play a song
-ai-jam-session play fur-elise
+pianoai play fur-elise
 
 # Half-speed practice
-ai-jam-session play gymnopedie-no1 --speed 0.5
+pianoai play superstition --speed 0.5
 
 # View the piano roll
-ai-jam-session view clair-de-lune --out clair-de-lune.svg
+pianoai view clair-de-lune --out clair-de-lune.svg
 
-# List all songs
-ai-jam-session list
+# List all playable songs
+pianoai list
 
 # Song details + teaching notes
-ai-jam-session info fur-elise
+pianoai info fur-elise
+
+# Library progress (all 120 songs, annotation status)
+pianoai library
 ```
 
-## The Music Sheet Format
+## How It Works: MIDI-First Architecture
 
-Every song is a JSON file the LLM can read and write. Here's the anatomy:
+Songs are built from real MIDI files paired with a JSON config overlay:
+
+```
+songs/library/
+  classical/
+    fur-elise.mid          # The real sheet music (MIDI)
+    fur-elise.json         # Metadata + teaching annotations
+  rnb/
+    superstition.mid
+    superstition.json
+  jazz/
+    autumn-leaves.mid
+    autumn-leaves.json
+  ...
+```
+
+The MIDI file provides the notes, timing, and structure. The JSON config adds everything a teacher would:
 
 ```json
 {
-  "id": "gymnopedie-no1",
-  "title": "Gymnopedie No. 1",
-  "composer": "Erik Satie",
-  "genre": "classical",
-  "difficulty": "beginner",
-  "key": "D major",
-  "tempo": 72,
-  "timeSignature": "3/4",
+  "id": "superstition",
+  "title": "Superstition",
+  "genre": "rnb",
+  "composer": "Stevie Wonder",
+  "difficulty": "intermediate",
+  "key": "Eb minor",
+  "status": "ready",
   "musicalLanguage": {
-    "description": "The first of Satie's three Gymnopedies (1888)...",
-    "structure": "Simple binary: A section with variation and gentle return.",
-    "keyMoments": ["Measure 3: the melody enters on F#5, floating above the chords..."],
-    "teachingGoals": ["Evenness of the LH quarter-note pattern..."],
-    "styleTips": ["No rubato. Satie despised rubato. Keep tempo absolutely steady."]
-  },
-  "measures": [
-    {
-      "number": 1,
-      "rightHand": "R:q R:q R:q",
-      "leftHand": "G2:q B3:q D4:q",
-      "teachingNote": "The piece begins with the left hand alone. G major seventh chord...",
-      "dynamics": "pp"
-    }
-  ]
+    "description": "One of the greatest funk songs ever written...",
+    "structure": "Intro (riff) - Verse - Chorus - Bridge - Outro",
+    "keyMoments": ["The clavinet riff: one of the most recognizable keyboard riffs in music"],
+    "teachingGoals": ["Funk 16th-note rhythm patterns", "Clavinet-style percussive technique"],
+    "styleTips": ["Play it percussively -- short, stabby notes"]
+  }
 }
 ```
 
+On startup, the engine reads each MIDI file, splits notes into measures and hands, parses chords, and builds playable data. Only songs with `status: "ready"` appear in the playlist.
+
 ### Note Format
 
-Notes use scientific pitch notation with duration suffixes:
+Notes are encoded as scientific pitch with duration suffixes. Chords use `+` to join simultaneous notes:
 
 | Token | Meaning |
 |-------|---------|
@@ -112,12 +149,11 @@ Notes use scientific pitch notation with duration suffixes:
 | `F#5:e` | F-sharp 5, eighth note |
 | `Bb3:h` | B-flat 3, half note |
 | `R:e` | Eighth rest |
-| `E5:w` | E5, whole note |
-| `A4:s` | A4, sixteenth note |
+| `C4+E4+G4:q` | C major chord, quarter note |
+| `A3:q.` | A3, dotted quarter |
+| `D4:et` | D4, eighth triplet |
 
-Duration values: `w` = whole (4 beats), `h` = half (2), `q` = quarter (1), `e` = eighth (0.5), `s` = sixteenth (0.25).
-
-Each measure's notes must add up to the time signature. In 3/4, that's 3 quarter beats. In 9/8, that's 4.5 quarter beats (nine eighth notes).
+Durations: `w` whole, `h` half, `q` quarter, `e` eighth, `s` sixteenth. Dotted: `h.` `q.` `e.`. Triplets: `ht` `qt` `et`.
 
 ## The Piano Roll
 
@@ -130,14 +166,12 @@ The piano roll is the LLM's eyes. It renders any song as an SVG image:
 - **Grid lines**: Thin for beats, thick for measure boundaries
 - **Dynamics**: pp, p, f markings shown below the grid
 
-The LLM generates a song as JSON, renders the piano roll, reads the SVG back to check if the notes look right, then plays it. If something is wrong -- a note in the wrong octave, a rhythm that doesn't add up, hands overlapping awkwardly -- the piano roll reveals it before the first sound.
-
 ```bash
 # Generate a piano roll
-ai-jam-session view fur-elise --out fur-elise.svg
+pianoai view fur-elise --out fur-elise.svg
 
 # View specific measures
-ai-jam-session view clair-de-lune --measures 1-8 --out opening.svg
+pianoai view clair-de-lune --measures 1-8 --out opening.svg
 ```
 
 ## LLM Tutorial: How to Use These Tools
@@ -151,6 +185,7 @@ list_songs                          # See what's available
 song_info { id: "fur-elise" }       # Read the musical language, teaching notes, style tips
 list_measures { id: "fur-elise" }   # See every measure's notes and teaching notes
 teaching_note { id: "fur-elise", measure: 5 }  # Deep dive into one measure
+library_progress                    # See annotation status across all genres
 ```
 
 ### Compose a new song
@@ -158,6 +193,7 @@ teaching_note { id: "fur-elise", measure: 5 }  # Deep dive into one measure
 Write a JSON file following the SongEntry format. Key rules:
 - Every measure's notes must fill the time signature exactly
 - Use `R` for rests (they count toward the beat total)
+- Use `+` for chords: `C4+E4+G4:q`
 - Include `teachingNote` on important measures -- explain what's happening musically
 - Set `dynamics` where the volume changes (pp, p, mp, mf, f, ff)
 - Write `musicalLanguage` that explains the piece to a student
@@ -199,13 +235,14 @@ play_song { id: "my-new-song", mode: "hands" } # Hands separate
 
 ## MCP Server
 
-The MCP server exposes 16 tools:
+The MCP server exposes 17 tools:
 
 | Tool | What it does |
 |------|--------------|
 | `list_songs` | Browse/search by genre, difficulty, or keyword |
 | `song_info` | Full musical language, teaching goals, key moments |
 | `registry_stats` | Song counts by genre and difficulty |
+| `library_progress` | Annotation progress per genre (raw/annotated/ready) |
 | `teaching_note` | Per-measure teaching note, fingering, dynamics |
 | `suggest_song` | Recommendation based on criteria |
 | `list_measures` | All measures with notes and teaching notes |
@@ -236,42 +273,53 @@ The MCP server exposes 16 tools:
 ### CLI Commands
 
 ```
-ai-jam-session list [--genre <genre>] [--difficulty <level>]
-ai-jam-session play <song-id> [--speed <mult>] [--tempo <bpm>] [--mode <mode>]
-ai-jam-session view <song-id> [--measures <start-end>] [--out <file.svg>]
-ai-jam-session info <song-id>
-ai-jam-session stats
-ai-jam-session sing <song-id> [--mode <note-names|solfege|contour>]
+pianoai list [--genre <genre>] [--difficulty <level>]
+pianoai play <song-id> [--speed <mult>] [--tempo <bpm>] [--mode <mode>]
+pianoai view <song-id> [--measures <start-end>] [--out <file.svg>]
+pianoai info <song-id>
+pianoai stats
+pianoai sing <song-id> [--mode <note-names|solfege|contour>]
+pianoai library                    # Show annotation progress across all genres
+pianoai library status <genre>     # Per-song status for a genre
+pianoai ingest [--all | <song-id>] # Re-ingest ready songs from MIDI+config
 ```
 
 ## Architecture
 
 ```
-Songs (JSON)              MIDI files (.mid)
-    |                           |
-    v                           v
-Note Parser               MIDI Parser
-    |                           |
-    v                           v
-Piano Roll (SVG)    SessionController / MidiPlaybackEngine
-    |                           |
-    v                           v
-LLM reads SVG         PlaybackController
-to verify                      |
-                    ┌──────────┼──────────┐
-                    v          v          v
-               AudioEngine  Teaching   Progress
-               (speakers)   Hooks      (callbacks)
-                    |
-                    v
-              node-web-audio-api
+MIDI files (.mid)           JSON configs (.json)
+    |                              |
+    v                              v
+MIDI Parser (midi-file)     Config Schema (Zod)
+    |                              |
+    └──────────┬───────────────────┘
+               v
+        MIDI Ingestion
+   (notes -> measures -> hands -> chords)
+               |
+    ┌──────────┼──────────┐
+    v          v          v
+Piano Roll  Session     Registry
+ (SVG)     Controller   (ready songs)
+    |          |
+    v          v
+LLM reads  PlaybackController
+to verify        |
+          ┌──────┼──────┐
+          v      v      v
+     AudioEngine Teaching Progress
+     (speakers)  Hooks  (callbacks)
+          |
+          v
+    node-web-audio-api
+    (6 keyboard voices)
 ```
 
 ## Status
 
-This is v0.1.0. The library is small (3 songs) and growing. The tools work. The piano roll works. The audio engine works. What's missing is breadth -- more songs, more genres, more difficulty levels.
+v0.1.0. The library has 120 MIDI files across 12 genres with 14 fully annotated and playable. The tools work. The piano roll works. The audio engine works with six keyboard voices (grand, upright, electric, honkytonk, musicbox, bright). The library grows as songs are annotated -- the hard part (finding the MIDI) is done.
 
-Contributions welcome. Especially: hand-composed songs with teaching notes.
+Contributions welcome. Especially: song annotations with teaching notes.
 
 ## License
 
