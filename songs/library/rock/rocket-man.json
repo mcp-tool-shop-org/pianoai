@@ -1,0 +1,14 @@
+{
+  "id": "rocket-man",
+  "title": "Rocket Man",
+  "genre": "rock",
+  "difficulty": "intermediate",
+  "key": "Bb major",
+  "tags": [
+    "rock",
+    "elton-john",
+    "space"
+  ],
+  "composer": "Elton John",
+  "status": "raw"
+}

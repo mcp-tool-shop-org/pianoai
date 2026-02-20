@@ -1,0 +1,35 @@
+{
+  "id": "fur-elise",
+  "title": "Fur Elise (Bagatelle No. 25 in A minor)",
+  "genre": "classical",
+  "composer": "Ludwig van Beethoven",
+  "difficulty": "intermediate",
+  "key": "A minor",
+  "tags": [
+    "beethoven",
+    "bagatelle",
+    "iconic",
+    "romantic"
+  ],
+  "source": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "One of the most instantly recognizable piano pieces ever written. The gentle, lilting A theme with its signature E-D#-E motif contrasts with more turbulent middle sections.",
+    "structure": "Rondo: A-B-A-C-A",
+    "keyMoments": [
+      "Opening A theme: the iconic E-D#-E-D#-E motif",
+      "B section: shift to relative major with running passages",
+      "C section: dramatic left-hand arpeggios in F major"
+    ],
+    "teachingGoals": [
+      "Rondo form recognition",
+      "Gentle touch and dynamics control",
+      "Cross-hand coordination in middle sections"
+    ],
+    "styleTips": [
+      "Light touch on the A theme",
+      "Pedal sparingly in the opening",
+      "Bring out the melody over accompaniment"
+    ]
+  }
+}

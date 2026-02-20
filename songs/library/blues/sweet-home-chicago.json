@@ -1,0 +1,14 @@
+{
+  "id": "sweet-home-chicago",
+  "title": "Sweet Home Chicago",
+  "genre": "blues",
+  "difficulty": "beginner",
+  "key": "E major",
+  "tags": [
+    "blues",
+    "chicago",
+    "standard"
+  ],
+  "composer": "Robert Johnson",
+  "status": "raw"
+}

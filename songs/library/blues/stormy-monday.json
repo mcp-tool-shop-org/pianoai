@@ -1,0 +1,13 @@
+{
+  "id": "stormy-monday",
+  "title": "Stormy Monday",
+  "genre": "blues",
+  "difficulty": "intermediate",
+  "key": "G major",
+  "tags": [
+    "blues",
+    "slow-blues"
+  ],
+  "composer": "T-Bone Walker",
+  "status": "raw"
+}

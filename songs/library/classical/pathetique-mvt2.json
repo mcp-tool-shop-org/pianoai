@@ -1,0 +1,36 @@
+{
+  "id": "pathetique-mvt2",
+  "title": "Pathetique Sonata, 2nd Movement (Adagio cantabile)",
+  "genre": "classical",
+  "composer": "Ludwig van Beethoven",
+  "difficulty": "intermediate",
+  "key": "Ab major",
+  "tags": [
+    "beethoven",
+    "sonata",
+    "adagio",
+    "lyrical",
+    "romantic"
+  ],
+  "source": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "One of the most beautiful slow movements in the piano repertoire. A serene, singing melody over a gently rocking accompaniment.",
+    "structure": "Rondo: A-B-A-C-A",
+    "keyMoments": [
+      "Opening melody: one of music's great singing themes",
+      "B section: modulation to darker territory",
+      "Return of A theme with ornamental variations"
+    ],
+    "teachingGoals": [
+      "Cantabile (singing) touch",
+      "Voicing melody over accompaniment",
+      "Sustain pedal technique for legato"
+    ],
+    "styleTips": [
+      "Let the melody sing above everything",
+      "Gentle, even accompaniment in the left hand",
+      "Use rubato at phrase endings"
+    ]
+  }
+}

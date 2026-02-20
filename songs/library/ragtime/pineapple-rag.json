@@ -1,0 +1,13 @@
+{
+  "id": "pineapple-rag",
+  "title": "Pineapple Rag",
+  "genre": "ragtime",
+  "difficulty": "intermediate",
+  "key": "D major",
+  "tags": [
+    "ragtime",
+    "joplin"
+  ],
+  "composer": "Scott Joplin",
+  "status": "raw"
+}

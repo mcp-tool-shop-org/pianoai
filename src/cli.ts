@@ -19,7 +19,8 @@ import {
   getSongsByGenre,
   getStats,
   GENRES,
-  initializeRegistry,
+  initializeFromLibrary,
+  getLibraryProgress,
 } from "./songs/index.js";
 import type { SongEntry, Genre } from "./songs/types.js";
 import type { PlaybackProgress, PlaybackMode, SyncMode, VoiceDirective, AsideDirective, VmpkConnector } from "./types.js";
@@ -781,6 +782,57 @@ Examples:
 `);
 }
 
+// ─── Library Command ─────────────────────────────────────────────────────────
+
+function cmdLibrary(args: string[], libraryDir: string): void {
+  const progress = getLibraryProgress(libraryDir);
+
+  // Sub-command: status <genre>
+  if (args[0] === "status" && args[1]) {
+    const genre = args[1];
+    const gp = progress.byGenre[genre as Genre];
+    if (!gp) {
+      console.error(`Unknown genre: ${genre}`);
+      console.error(`Valid genres: ${GENRES.join(", ")}`);
+      process.exit(1);
+    }
+
+    console.log(`\n  ${genre} — ${gp.total} songs`);
+    console.log(`  ${"─".repeat(45)}`);
+    for (const song of gp.songs) {
+      const icon = song.status === "ready" ? "✓" : song.status === "annotated" ? "◐" : "○";
+      console.log(`    ${icon} ${song.id.padEnd(35)} ${song.status}`);
+    }
+    console.log(`\n    Ready: ${gp.ready}  Annotated: ${gp.annotated}  Raw: ${gp.raw}\n`);
+    return;
+  }
+
+  // Default: overview
+  const pct = progress.total > 0 ? Math.round((progress.ready / progress.total) * 100) : 0;
+  const barLen = 30;
+  const filled = Math.round((progress.ready / Math.max(progress.total, 1)) * barLen);
+  const bar = "█".repeat(filled) + "░".repeat(barLen - filled);
+
+  console.log(`\n  Piano AI Song Library — Progress`);
+  console.log(`  ${"═".repeat(50)}`);
+  console.log(`  Total: ${progress.total} songs across ${Object.keys(progress.byGenre).length} genres`);
+  console.log(`  Ready:     ${String(progress.ready).padStart(3)} ${bar} ${pct}%`);
+  console.log(`  Annotated: ${String(progress.annotated).padStart(3)}`);
+  console.log(`  Raw:       ${String(progress.raw).padStart(3)}`);
+  console.log();
+
+  // Per-genre breakdown
+  for (const genre of GENRES) {
+    const gp = progress.byGenre[genre as Genre];
+    if (!gp) continue;
+    const r = String(gp.ready).padStart(2);
+    const a = String(gp.annotated).padStart(2);
+    const w = String(gp.raw).padStart(2);
+    console.log(`    ${genre.padEnd(12)} ${String(gp.total).padStart(2)} songs   ${r} ready  ${a} annotated  ${w} raw`);
+  }
+  console.log();
+}
+
 // ─── CLI Router ─────────────────────────────────────────────────────────────
 
 function getFlag(args: string[], flag: string): string | null {
@@ -790,13 +842,13 @@ function getFlag(args: string[], flag: string): string | null {
 }
 
 async function main(): Promise<void> {
-  // Load songs from builtin + user directories
+  // Load songs from library + user directories
   const { dirname, join } = await import("node:path");
   const { fileURLToPath } = await import("node:url");
   const __dirname = dirname(fileURLToPath(import.meta.url));
-  const builtinDir = join(__dirname, "..", "songs", "builtin");
+  const libraryDir = join(__dirname, "..", "songs", "library");
   const userDir = join(process.env.HOME ?? process.env.USERPROFILE ?? ".", ".pianoai", "songs");
-  initializeRegistry(builtinDir, userDir);
+  initializeFromLibrary(libraryDir, userDir);
 
   const args = process.argv.slice(2);
   const command = args[0] ?? "help";
@@ -822,6 +874,10 @@ async function main(): Promise<void> {
       break;
     case "keyboards":
       cmdKeyboards();
+      break;
+    case "library":
+    case "lib":
+      cmdLibrary(args.slice(1), libraryDir);
       break;
     case "stats":
       cmdStats();

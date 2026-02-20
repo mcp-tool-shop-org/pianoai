@@ -1,0 +1,14 @@
+{
+  "id": "bethena",
+  "title": "Bethena",
+  "genre": "ragtime",
+  "difficulty": "advanced",
+  "key": "Bb major",
+  "tags": [
+    "ragtime",
+    "joplin",
+    "waltz"
+  ],
+  "composer": "Scott Joplin",
+  "status": "raw"
+}

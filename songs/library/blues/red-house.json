@@ -1,0 +1,14 @@
+{
+  "id": "red-house",
+  "title": "Red House",
+  "genre": "blues",
+  "difficulty": "intermediate",
+  "key": "B major",
+  "tags": [
+    "blues",
+    "hendrix",
+    "rock-blues"
+  ],
+  "composer": "Jimi Hendrix",
+  "status": "raw"
+}

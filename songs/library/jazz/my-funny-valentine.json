@@ -1,0 +1,14 @@
+{
+  "id": "my-funny-valentine",
+  "title": "My Funny Valentine",
+  "genre": "jazz",
+  "difficulty": "intermediate",
+  "key": "C minor",
+  "tags": [
+    "jazz",
+    "ballad",
+    "standard"
+  ],
+  "composer": "Richard Rodgers",
+  "status": "raw"
+}

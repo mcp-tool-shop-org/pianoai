@@ -1,0 +1,14 @@
+{
+  "id": "halo",
+  "title": "Halo",
+  "genre": "rnb",
+  "difficulty": "intermediate",
+  "key": "A major",
+  "tags": [
+    "rnb",
+    "beyonce",
+    "piano"
+  ],
+  "composer": "Beyonce",
+  "status": "raw"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "moon-river",
+  "title": "Moon River",
+  "genre": "film",
+  "difficulty": "beginner",
+  "key": "C major",
+  "tags": [
+    "film",
+    "mancini",
+    "classic"
+  ],
+  "composer": "Henry Mancini",
+  "status": "raw"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "stairway-to-heaven",
+  "title": "Stairway to Heaven",
+  "genre": "rock",
+  "difficulty": "advanced",
+  "key": "A minor",
+  "tags": [
+    "rock",
+    "led-zeppelin",
+    "epic"
+  ],
+  "composer": "Led Zeppelin",
+  "status": "raw"
+}

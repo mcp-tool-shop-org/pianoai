@@ -1,0 +1,35 @@
+{
+  "id": "debussy-arabesque-no1",
+  "title": "Arabesque No. 1 in E Major",
+  "genre": "classical",
+  "composer": "Claude Debussy",
+  "difficulty": "intermediate",
+  "key": "E major",
+  "tags": [
+    "debussy",
+    "arabesque",
+    "impressionist",
+    "flowing"
+  ],
+  "source": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "An early Debussy masterwork that bridges Romanticism and Impressionism. Flowing triplet arpeggios and a graceful melody create a sense of arabesque ornamentation.",
+    "structure": "ABA: flowing outer sections, contrasting lyrical middle",
+    "keyMoments": [
+      "Opening: triplet arpeggios establish the flowing texture",
+      "Main melody: graceful, almost dance-like",
+      "Middle section: more sustained, singing quality"
+    ],
+    "teachingGoals": [
+      "Triplet flow and evenness",
+      "Balancing melody against arpeggiated texture",
+      "Introduction to impressionistic style"
+    ],
+    "styleTips": [
+      "The triplets should shimmer, not pound",
+      "Melody floats on top of the arpeggiated texture",
+      "Pedal generously but change with the harmony"
+    ]
+  }
+}

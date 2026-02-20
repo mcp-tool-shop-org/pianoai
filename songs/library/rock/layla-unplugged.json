@@ -1,0 +1,14 @@
+{
+  "id": "layla-unplugged",
+  "title": "Layla (Unplugged)",
+  "genre": "rock",
+  "difficulty": "intermediate",
+  "key": "D minor",
+  "tags": [
+    "rock",
+    "clapton",
+    "unplugged"
+  ],
+  "composer": "Eric Clapton",
+  "status": "raw"
+}

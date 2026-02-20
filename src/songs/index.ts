@@ -69,9 +69,19 @@ export {
   SongConfigSchema,
   MusicalLanguageSchema,
   MeasureOverrideSchema,
+  SONG_STATUSES,
   validateConfig,
 } from "./config/schema.js";
-export type { SongConfig, MeasureOverride, ConfigError } from "./config/schema.js";
+export type { SongConfig, SongStatus, MeasureOverride, ConfigError } from "./config/schema.js";
+
+// Library manager (MIDI-first workflow)
+export {
+  scanLibrary,
+  getLibraryProgress,
+  ingestSong,
+  initializeFromLibrary,
+} from "./library.js";
+export type { LibraryEntry, GenreProgress, LibraryProgress } from "./library.js";
 
 // Config loader
 export { loadSongConfigs, loadSongConfig, listConfigIds } from "./config/loader.js";

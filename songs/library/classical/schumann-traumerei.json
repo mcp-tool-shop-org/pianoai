@@ -1,0 +1,36 @@
+{
+  "id": "schumann-traumerei",
+  "title": "Traumerei (Dreaming) from Kinderszenen",
+  "genre": "classical",
+  "composer": "Robert Schumann",
+  "difficulty": "intermediate",
+  "key": "F major",
+  "tags": [
+    "schumann",
+    "kinderszenen",
+    "dreaming",
+    "romantic",
+    "lyrical"
+  ],
+  "source": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "A tender, nostalgic reverie — perhaps the most famous character piece of the Romantic era. The melody rises and falls like gentle breathing.",
+    "structure": "ABA': two statements of the theme with a contrasting middle",
+    "keyMoments": [
+      "Opening: the rising melody reaches upward like a sigh",
+      "Peak: the melody reaches its highest point",
+      "Return: the dream resumes, fading to a peaceful close"
+    ],
+    "teachingGoals": [
+      "Voicing a melody within chordal texture",
+      "Inner voice awareness",
+      "Rubato and phrase shaping"
+    ],
+    "styleTips": [
+      "The melody must float above the inner voices",
+      "Imagine a child daydreaming — unhurried, gentle",
+      "Subtle rubato at phrase peaks and endings"
+    ]
+  }
+}

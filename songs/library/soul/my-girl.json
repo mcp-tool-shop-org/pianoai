@@ -1,0 +1,14 @@
+{
+  "id": "my-girl",
+  "title": "My Girl",
+  "genre": "soul",
+  "difficulty": "beginner",
+  "key": "C major",
+  "tags": [
+    "soul",
+    "temptations",
+    "motown"
+  ],
+  "composer": "Smokey Robinson",
+  "status": "raw"
+}

@@ -1,0 +1,37 @@
+{
+  "id": "clair-de-lune",
+  "title": "Clair de Lune (Suite bergamasque, III)",
+  "genre": "classical",
+  "composer": "Claude Debussy",
+  "difficulty": "advanced",
+  "key": "Db major",
+  "tags": [
+    "debussy",
+    "impressionist",
+    "moonlight",
+    "atmospheric",
+    "iconic"
+  ],
+  "source": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Debussy's most beloved work — a shimmering, impressionistic evocation of moonlight. Rich arpeggiated textures and floating harmonies create an otherworldly atmosphere.",
+    "structure": "A-B-A': contemplative opening, flowing middle, ethereal return",
+    "keyMoments": [
+      "Opening: gentle chords establish the moonlit mood",
+      "Middle section: flowing arpeggios cascade across the keyboard",
+      "Climax: the fullest, richest harmonies",
+      "Return: the moonlight fades to silence"
+    ],
+    "teachingGoals": [
+      "Impressionistic pedaling (blending harmonies)",
+      "Arpeggiated voicing across wide ranges",
+      "Dynamic control in layered textures"
+    ],
+    "styleTips": [
+      "Generous pedal, but change with harmonies",
+      "Let notes ring and blend — this is not about clarity",
+      "Think of painting with sound, not playing notes"
+    ]
+  }
+}

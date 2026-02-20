@@ -1,0 +1,13 @@
+{
+  "id": "peacherine-rag",
+  "title": "Peacherine Rag",
+  "genre": "ragtime",
+  "difficulty": "intermediate",
+  "key": "C major",
+  "tags": [
+    "ragtime",
+    "joplin"
+  ],
+  "composer": "Scott Joplin",
+  "status": "raw"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "your-song",
+  "title": "Your Song",
+  "genre": "rock",
+  "difficulty": "beginner",
+  "key": "Eb major",
+  "tags": [
+    "rock",
+    "elton-john",
+    "ballad",
+    "piano"
+  ],
+  "composer": "Elton John",
+  "status": "raw"
+}

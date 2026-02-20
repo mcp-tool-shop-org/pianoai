@@ -1,0 +1,14 @@
+{
+  "id": "tiny-dancer",
+  "title": "Tiny Dancer",
+  "genre": "rock",
+  "difficulty": "intermediate",
+  "key": "C major",
+  "tags": [
+    "rock",
+    "elton-john",
+    "piano"
+  ],
+  "composer": "Elton John",
+  "status": "raw"
+}

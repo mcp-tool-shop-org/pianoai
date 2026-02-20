@@ -1,0 +1,14 @@
+{
+  "id": "bohemian-rhapsody",
+  "title": "Bohemian Rhapsody",
+  "genre": "pop",
+  "difficulty": "advanced",
+  "key": "Bb major",
+  "tags": [
+    "pop",
+    "queen",
+    "epic"
+  ],
+  "composer": "Freddie Mercury",
+  "status": "raw"
+}

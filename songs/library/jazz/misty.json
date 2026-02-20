@@ -1,0 +1,14 @@
+{
+  "id": "misty",
+  "title": "Misty",
+  "genre": "jazz",
+  "difficulty": "beginner",
+  "key": "Eb major",
+  "tags": [
+    "jazz",
+    "ballad",
+    "standard"
+  ],
+  "composer": "Erroll Garner",
+  "status": "raw"
+}

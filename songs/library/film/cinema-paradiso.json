@@ -1,0 +1,14 @@
+{
+  "id": "cinema-paradiso",
+  "title": "Cinema Paradiso Theme",
+  "genre": "film",
+  "difficulty": "intermediate",
+  "key": "F major",
+  "tags": [
+    "film",
+    "morricone",
+    "nostalgic"
+  ],
+  "composer": "Ennio Morricone",
+  "status": "raw"
+}

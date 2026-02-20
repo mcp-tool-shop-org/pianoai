@@ -1,0 +1,14 @@
+{
+  "id": "greensleeves",
+  "title": "Greensleeves",
+  "genre": "folk",
+  "difficulty": "beginner",
+  "key": "E minor",
+  "tags": [
+    "folk",
+    "english",
+    "renaissance"
+  ],
+  "composer": "Traditional",
+  "status": "raw"
+}

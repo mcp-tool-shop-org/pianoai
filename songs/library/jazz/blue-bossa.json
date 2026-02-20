@@ -1,0 +1,14 @@
+{
+  "id": "blue-bossa",
+  "title": "Blue Bossa",
+  "genre": "jazz",
+  "difficulty": "intermediate",
+  "key": "C minor",
+  "tags": [
+    "jazz",
+    "bossa",
+    "latin-jazz"
+  ],
+  "composer": "Kenny Dorham",
+  "status": "raw"
+}

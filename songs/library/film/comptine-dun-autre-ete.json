@@ -1,0 +1,15 @@
+{
+  "id": "comptine-dun-autre-ete",
+  "title": "Comptine d'un autre ete (Amelie)",
+  "genre": "film",
+  "difficulty": "intermediate",
+  "key": "E minor",
+  "tags": [
+    "film",
+    "tiersen",
+    "amelie",
+    "french"
+  ],
+  "composer": "Yann Tiersen",
+  "status": "raw"
+}

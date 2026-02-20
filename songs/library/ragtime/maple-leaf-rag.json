@@ -1,0 +1,13 @@
+{
+  "id": "maple-leaf-rag",
+  "title": "Maple Leaf Rag",
+  "genre": "ragtime",
+  "difficulty": "intermediate",
+  "key": "Ab major",
+  "tags": [
+    "ragtime",
+    "joplin"
+  ],
+  "composer": "Scott Joplin",
+  "status": "raw"
+}

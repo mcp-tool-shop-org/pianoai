@@ -1,0 +1,14 @@
+{
+  "id": "my-heart-will-go-on",
+  "title": "My Heart Will Go On (Titanic)",
+  "genre": "film",
+  "difficulty": "beginner",
+  "key": "C# minor",
+  "tags": [
+    "film",
+    "horner",
+    "titanic"
+  ],
+  "composer": "James Horner",
+  "status": "raw"
+}

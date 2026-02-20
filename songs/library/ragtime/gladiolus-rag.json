@@ -1,0 +1,13 @@
+{
+  "id": "gladiolus-rag",
+  "title": "Gladiolus Rag",
+  "genre": "ragtime",
+  "difficulty": "advanced",
+  "key": "Bb major",
+  "tags": [
+    "ragtime",
+    "joplin"
+  ],
+  "composer": "Scott Joplin",
+  "status": "raw"
+}

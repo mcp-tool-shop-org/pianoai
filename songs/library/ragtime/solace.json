@@ -1,0 +1,14 @@
+{
+  "id": "solace",
+  "title": "Solace",
+  "genre": "ragtime",
+  "difficulty": "intermediate",
+  "key": "G major",
+  "tags": [
+    "ragtime",
+    "joplin",
+    "slow"
+  ],
+  "composer": "Scott Joplin",
+  "status": "raw"
+}

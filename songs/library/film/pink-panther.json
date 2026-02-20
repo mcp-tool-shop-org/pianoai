@@ -1,0 +1,14 @@
+{
+  "id": "pink-panther",
+  "title": "The Pink Panther Theme",
+  "genre": "film",
+  "difficulty": "intermediate",
+  "key": "E minor",
+  "tags": [
+    "film",
+    "mancini",
+    "spy"
+  ],
+  "composer": "Henry Mancini",
+  "status": "raw"
+}

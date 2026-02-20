@@ -1,0 +1,14 @@
+{
+  "id": "the-entertainer",
+  "title": "The Entertainer",
+  "genre": "ragtime",
+  "difficulty": "intermediate",
+  "key": "C major",
+  "tags": [
+    "ragtime",
+    "joplin",
+    "classic"
+  ],
+  "composer": "Scott Joplin",
+  "status": "raw"
+}

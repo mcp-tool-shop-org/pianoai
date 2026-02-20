@@ -1,0 +1,14 @@
+{
+  "id": "summertime",
+  "title": "Summertime",
+  "genre": "jazz",
+  "difficulty": "beginner",
+  "key": "A minor",
+  "tags": [
+    "jazz",
+    "gershwin",
+    "standard"
+  ],
+  "composer": "George Gershwin",
+  "status": "raw"
+}

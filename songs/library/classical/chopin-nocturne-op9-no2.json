@@ -1,0 +1,36 @@
+{
+  "id": "chopin-nocturne-op9-no2",
+  "title": "Nocturne in Eb Major, Op. 9 No. 2",
+  "genre": "classical",
+  "composer": "Frederic Chopin",
+  "difficulty": "intermediate",
+  "key": "Eb major",
+  "tags": [
+    "chopin",
+    "nocturne",
+    "romantic",
+    "lyrical",
+    "ornamental"
+  ],
+  "source": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Perhaps the most famous nocturne ever written. A dreamy, ornamental melody floats over a gentle left-hand waltz pattern.",
+    "structure": "A-A'-A''-Coda with progressive ornamentation",
+    "keyMoments": [
+      "Opening theme: simple, singing melody",
+      "Second statement: added grace notes and turns",
+      "Third statement: virtuosic ornamentation"
+    ],
+    "teachingGoals": [
+      "Bel canto singing style on piano",
+      "Left-hand waltz accompaniment pattern",
+      "Ornamental playing (turns, trills, grace notes)"
+    ],
+    "styleTips": [
+      "Rubato is essential — push and pull the tempo",
+      "Left hand must be absolutely steady",
+      "Melody should float above the accompaniment"
+    ]
+  }
+}

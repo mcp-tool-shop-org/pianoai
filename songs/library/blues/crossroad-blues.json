@@ -1,0 +1,14 @@
+{
+  "id": "crossroad-blues",
+  "title": "Crossroad Blues",
+  "genre": "blues",
+  "difficulty": "intermediate",
+  "key": "A major",
+  "tags": [
+    "blues",
+    "robert-johnson",
+    "delta"
+  ],
+  "composer": "Robert Johnson",
+  "status": "raw"
+}

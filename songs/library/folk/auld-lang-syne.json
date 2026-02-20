@@ -1,0 +1,14 @@
+{
+  "id": "auld-lang-syne",
+  "title": "Auld Lang Syne",
+  "genre": "folk",
+  "difficulty": "beginner",
+  "key": "F major",
+  "tags": [
+    "folk",
+    "scottish",
+    "new-year"
+  ],
+  "composer": "Traditional Scottish",
+  "status": "raw"
+}

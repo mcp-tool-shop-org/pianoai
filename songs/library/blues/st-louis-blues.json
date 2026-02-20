@@ -1,0 +1,14 @@
+{
+  "id": "st-louis-blues",
+  "title": "St. Louis Blues",
+  "genre": "blues",
+  "difficulty": "intermediate",
+  "key": "G major",
+  "tags": [
+    "blues",
+    "classic",
+    "standard"
+  ],
+  "composer": "W.C. Handy",
+  "status": "raw"
+}

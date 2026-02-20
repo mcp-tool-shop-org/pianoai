@@ -8,6 +8,11 @@
 import { z } from "zod";
 import { GENRES, DIFFICULTIES } from "../types.js";
 
+// ─── Song Status ─────────────────────────────────────────────────────────────
+
+export const SONG_STATUSES = ["raw", "annotated", "ready"] as const;
+export type SongStatus = (typeof SONG_STATUSES)[number];
+
 // ─── Zod Schemas ─────────────────────────────────────────────────────────────
 
 export const MeasureOverrideSchema = z.object({
@@ -38,9 +43,10 @@ export const SongConfigSchema = z.object({
   timeSignature: z.string().optional(),
   tags: z.array(z.string()),
   source: z.string().optional(),
-  musicalLanguage: MusicalLanguageSchema,
+  musicalLanguage: MusicalLanguageSchema.optional(),
   measureOverrides: z.array(MeasureOverrideSchema).optional(),
   splitPoint: z.number().int().min(0).max(127).optional(),
+  status: z.enum(SONG_STATUSES).default("raw"),
 });
 
 // ─── Derived Types ───────────────────────────────────────────────────────────

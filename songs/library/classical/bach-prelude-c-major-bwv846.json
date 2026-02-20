@@ -1,0 +1,37 @@
+{
+  "id": "bach-prelude-c-major-bwv846",
+  "title": "Prelude in C Major, BWV 846 (Well-Tempered Clavier)",
+  "genre": "classical",
+  "composer": "Johann Sebastian Bach",
+  "difficulty": "beginner",
+  "key": "C major",
+  "tags": [
+    "bach",
+    "prelude",
+    "baroque",
+    "arpeggiated",
+    "wtc"
+  ],
+  "source": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "The piece that opens Bach's monumental Well-Tempered Clavier — a flowing sequence of arpeggiated chords that journey through a rich harmonic landscape.",
+    "structure": "Through-composed: continuous arpeggiated progression",
+    "keyMoments": [
+      "Opening: the iconic C major arpeggio pattern",
+      "Harmonic journey through related keys",
+      "Dominant pedal: tension builds",
+      "Final cadence: resolution back to C major"
+    ],
+    "teachingGoals": [
+      "Even finger technique across arpeggios",
+      "Harmonic awareness within patterns",
+      "Pedal technique for connecting arpeggios"
+    ],
+    "styleTips": [
+      "Perfectly even rhythm — each note equal weight",
+      "Let the harmonic changes speak for themselves",
+      "Minimal rubato — the flow is the beauty"
+    ]
+  }
+}

@@ -34,7 +34,8 @@ import {
   registerSong,
   validateSong,
   saveSong,
-  initializeRegistry,
+  initializeFromLibrary,
+  getLibraryProgress,
   midiToSongEntry,
   generateJamBrief,
   formatJamBrief,
@@ -1073,6 +1074,7 @@ server.tool(
         key,
         composer,
         tags: tags ?? [genre, difficulty],
+        status: "ready" as const,
         musicalLanguage: {
           description: description ?? `${title} — a ${difficulty} ${genre} piece in ${key}.`,
           structure: "To be determined",
@@ -1392,14 +1394,14 @@ function getUserSongsDir(): string {
 // ─── Start ──────────────────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
-  // Load songs from builtin + user directories
+  // Load songs from library + user directories
   const { dirname } = await import("node:path");
   const { fileURLToPath } = await import("node:url");
   const { join } = await import("node:path");
   const __dirname = dirname(fileURLToPath(import.meta.url));
-  const builtinDir = join(__dirname, "..", "songs", "builtin");
+  const libraryDir = join(__dirname, "..", "songs", "library");
   const userDir = join(process.env.HOME ?? process.env.USERPROFILE ?? ".", ".pianoai", "songs");
-  initializeRegistry(builtinDir, userDir);
+  initializeFromLibrary(libraryDir, userDir);
 
   const transport = new StdioServerTransport();
   await server.connect(transport);

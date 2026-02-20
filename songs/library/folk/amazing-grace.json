@@ -1,0 +1,14 @@
+{
+  "id": "amazing-grace",
+  "title": "Amazing Grace",
+  "genre": "folk",
+  "difficulty": "beginner",
+  "key": "G major",
+  "tags": [
+    "folk",
+    "hymn",
+    "traditional"
+  ],
+  "composer": "Traditional",
+  "status": "raw"
+}

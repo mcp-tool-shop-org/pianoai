@@ -1,0 +1,14 @@
+{
+  "id": "fly-me-to-the-moon",
+  "title": "Fly Me to the Moon",
+  "genre": "jazz",
+  "difficulty": "intermediate",
+  "key": "C major",
+  "tags": [
+    "jazz",
+    "standard",
+    "sinatra"
+  ],
+  "composer": "Bart Howard",
+  "status": "raw"
+}

@@ -1,0 +1,35 @@
+{
+  "id": "chopin-prelude-e-minor",
+  "title": "Prelude in E Minor, Op. 28 No. 4",
+  "genre": "classical",
+  "composer": "Frederic Chopin",
+  "difficulty": "beginner",
+  "key": "E minor",
+  "tags": [
+    "chopin",
+    "prelude",
+    "minimalist",
+    "melancholic"
+  ],
+  "source": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "A masterpiece of economy — a simple, descending melody over slowly shifting chords creates profound sadness. Reportedly played at Chopin's own funeral.",
+    "structure": "Through-composed: continuous descending motion with final cadence",
+    "keyMoments": [
+      "Opening: the melody barely moves while harmony shifts beneath",
+      "Chromatic descent creates deepening sadness",
+      "Final measures: cadence resolves the tension"
+    ],
+    "teachingGoals": [
+      "Expressive playing with minimal notes",
+      "Chromatic voice leading awareness",
+      "Dynamic shaping over a long phrase"
+    ],
+    "styleTips": [
+      "Extremely slow, with deep feeling",
+      "Let the harmonies breathe — no rushing",
+      "The melody is almost whispered"
+    ]
+  }
+}

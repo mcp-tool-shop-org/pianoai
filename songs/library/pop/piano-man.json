@@ -1,0 +1,14 @@
+{
+  "id": "piano-man",
+  "title": "Piano Man",
+  "genre": "pop",
+  "difficulty": "intermediate",
+  "key": "C major",
+  "tags": [
+    "pop",
+    "billy-joel",
+    "classic"
+  ],
+  "composer": "Billy Joel",
+  "status": "raw"
+}
