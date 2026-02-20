@@ -132,7 +132,7 @@ export function chordToString(chord: ResolvedNote[], ticksPerBeat: number): stri
   const noteNames = [...chord]
     .sort((a, b) => a.noteNumber - b.noteNumber)
     .map(n => midiNoteToScientific(n.noteNumber))
-    .join(" ");
+    .join("+");
   return `${noteNames}:${dur}`;
 }
 

@@ -4,12 +4,14 @@
   "genre": "rnb",
   "difficulty": "intermediate",
   "key": "G major",
-  "tags": [
-    "rnb",
-    "alicia-keys",
-    "piano",
-    "ballad"
-  ],
+  "tags": ["rnb", "alicia-keys", "piano", "ballad", "neo-soul"],
   "composer": "Alicia Keys",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "A stunning piano-driven ballad that showcases Alicia Keys' classical training. The cascading intro arpeggios and rich chord voicings make it a masterclass in modern R&B piano.",
+    "structure": "Intro (piano solo) - Verse - Pre-chorus - Chorus - Verse - Pre-chorus - Chorus - Bridge - Chorus - Outro",
+    "keyMoments": ["Piano intro: the cascading descending arpeggios that define the song", "Verse: gospel-influenced chord voicings with passing tones", "Chorus: powerful melodic arc on 'If I ain't got you'"],
+    "teachingGoals": ["Arpeggiated intro patterns across wide range", "Neo-soul chord voicings (9ths, 11ths, sus chords)", "Gospel-influenced left-hand patterns"],
+    "styleTips": ["The intro must flow like water — smooth and connected", "Use the sustain pedal generously in the intro, sparingly in the verse", "The verse groove should be understated to let the voice breathe"]
+  }
 }

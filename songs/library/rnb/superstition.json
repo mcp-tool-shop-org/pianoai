@@ -4,11 +4,14 @@
   "genre": "rnb",
   "difficulty": "intermediate",
   "key": "Eb minor",
-  "tags": [
-    "rnb",
-    "stevie-wonder",
-    "funk"
-  ],
+  "tags": ["rnb", "stevie-wonder", "funk", "clavinet"],
   "composer": "Stevie Wonder",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "One of the greatest funk songs ever written. Originally played on a Hohner Clavinet, the iconic riff and syncopated groove defined a generation of keyboard-driven funk.",
+    "structure": "Intro (riff) - Verse - Chorus - Verse - Chorus - Bridge - Verse - Chorus - Outro",
+    "keyMoments": ["The clavinet riff: one of the most recognizable keyboard riffs in music", "Verse groove: tight 16th-note patterns over a driving bass", "Chorus: the melody opens up with 'Superstition ain't the way'"],
+    "teachingGoals": ["Funk 16th-note rhythm patterns", "Clavinet-style percussive keyboard technique", "Minor pentatonic riff construction"],
+    "styleTips": ["Play it percussively — short, stabby notes", "The groove is everything — lock in with the rhythm", "Ghost notes and muted keys add authenticity"]
+  }
 }

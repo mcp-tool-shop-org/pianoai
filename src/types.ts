@@ -229,11 +229,17 @@ export interface ParseWarning {
 
 /** Duration suffix → multiplier (relative to quarter note). */
 export const DURATION_MAP: Record<string, number> = {
-  w: 4.0,   // whole
-  h: 2.0,   // half
-  q: 1.0,   // quarter
-  e: 0.5,   // eighth
-  s: 0.25,  // sixteenth
+  w: 4.0,       // whole
+  "h.": 3.0,    // dotted half
+  h: 2.0,       // half
+  "q.": 1.5,    // dotted quarter
+  ht: 4 / 3,    // half triplet (2/3 of a half = 4/3 quarter)
+  q: 1.0,       // quarter
+  "e.": 0.75,   // dotted eighth
+  qt: 2 / 3,    // quarter triplet (2/3 of a quarter)
+  e: 0.5,       // eighth
+  et: 1 / 3,    // eighth triplet (2/3 of an eighth = 1/3 quarter)
+  s: 0.25,      // sixteenth
 };
 
 /**

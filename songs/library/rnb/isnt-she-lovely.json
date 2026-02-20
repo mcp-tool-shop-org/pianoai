@@ -4,11 +4,14 @@
   "genre": "rnb",
   "difficulty": "intermediate",
   "key": "E major",
-  "tags": [
-    "rnb",
-    "stevie-wonder",
-    "groove"
-  ],
+  "tags": ["rnb", "stevie-wonder", "groove", "harmonica-intro"],
   "composer": "Stevie Wonder",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "A joyful celebration of the birth of Stevie Wonder's daughter Aisha. The infectious chromatic harmonica riff and syncopated groove make it one of the most uplifting songs ever recorded.",
+    "structure": "Intro (harmonica riff) - Verse - Chorus - Verse - Chorus - Solo - Verse - Outro",
+    "keyMoments": ["Harmonica intro: the iconic chromatic riff that defines the song", "Verse groove: syncopated rhythm with major 7th and 9th chords", "Chorus lift: the melody soars on 'Isn't she lovely'"],
+    "teachingGoals": ["Syncopated R&B rhythm patterns", "Major 7th and 9th chord voicings", "Groove feel and swing-16ths"],
+    "styleTips": ["Keep a bouncy, swinging feel throughout", "The left hand drives the groove — keep it tight and rhythmic", "Let the joy come through — this is a celebration"]
+  }
 }

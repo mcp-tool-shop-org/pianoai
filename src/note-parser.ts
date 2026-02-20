@@ -111,8 +111,8 @@ export function parseNoteToken(
  * Parse a hand string like "C4:q E4:q G4:q" into an array of Beats.
  *
  * Each space-separated token becomes a sequential beat.
- * For chords (simultaneous notes), we'd need a different notation,
- * but the current ai-music-sheets format treats each token as sequential.
+ * Chords use "+" to join simultaneous notes: "C4+E4+G4:q"
+ * The duration suffix on the last note applies to all chord tones.
  */
 export function parseHandString(
   handStr: string,
@@ -124,10 +124,43 @@ export function parseHandString(
   if (!handStr || handStr.trim() === "") return [];
 
   const tokens = handStr.trim().split(/\s+/);
-  return tokens.map((token) => ({
-    notes: [parseNoteToken(token, bpm, channel, velocity)],
-    hand,
-  }));
+  return tokens.map((token) => {
+    if (token.includes("+")) {
+      return parseChordToken(token, hand, bpm, channel, velocity);
+    }
+    return {
+      notes: [parseNoteToken(token, bpm, channel, velocity)],
+      hand,
+    };
+  });
+}
+
+/**
+ * Parse a chord token like "C4+E4+G4:q" into a Beat with multiple notes.
+ * The duration suffix from the last sub-token applies to all notes.
+ */
+function parseChordToken(
+  token: string,
+  hand: "right" | "left",
+  bpm: number,
+  channel: number,
+  velocity: number
+): Beat {
+  const parts = token.split("+");
+  // Find the duration from the part that has one (last part has ":dur")
+  let sharedDuration = "q";
+  for (const part of parts) {
+    if (part.includes(":")) {
+      sharedDuration = part.split(":")[1];
+    }
+  }
+  const notes = parts.map((part) => {
+    if (part.includes(":")) {
+      return parseNoteToken(part, bpm, channel, velocity);
+    }
+    return parseNoteToken(`${part}:${sharedDuration}`, bpm, channel, velocity);
+  });
+  return { notes, hand };
 }
 
 /**
@@ -187,16 +220,29 @@ export function safeParseHandString(
   const beats: Beat[] = [];
 
   for (const token of tokens) {
-    const note = safeParseNoteToken(
-      token,
-      bpm,
-      `measure ${measureNumber} ${hand} hand`,
-      warnings,
-      channel,
-      velocity
-    );
-    if (note) {
-      beats.push({ notes: [note], hand });
+    if (token.includes("+")) {
+      // Chord token — parse each sub-note
+      try {
+        beats.push(parseChordToken(token, hand, bpm, channel, velocity));
+      } catch (err) {
+        warnings.push({
+          location: `measure ${measureNumber} ${hand} hand`,
+          token,
+          message: err instanceof Error ? err.message : String(err),
+        });
+      }
+    } else {
+      const note = safeParseNoteToken(
+        token,
+        bpm,
+        `measure ${measureNumber} ${hand} hand`,
+        warnings,
+        channel,
+        velocity
+      );
+      if (note) {
+        beats.push({ notes: [note], hand });
+      }
     }
   }
 

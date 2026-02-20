@@ -124,7 +124,7 @@ function extractTimeSigEvents(midi: MidiData): TimeSigEvent[] {
         events.push({
           tick,
           numerator: event.numerator,
-          denominator: Math.pow(2, event.denominator),
+          denominator: event.denominator,
         });
       }
     }
