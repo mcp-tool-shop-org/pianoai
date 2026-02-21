@@ -26,25 +26,42 @@
 
 A piano that AI learns to play. Not a synthesizer, not a MIDI library -- a teaching instrument.
 
-Every genre has one annotated exemplar song -- a reference piece with musical analysis, teaching goals, and style guidance. The other 96 songs are raw MIDI, waiting for the AI to study the exemplar, play the raw songs, and annotate them itself. Each session builds on the last through a practice journal that persists across conversations.
+An LLM can read text and write text. But it can't experience music the way we do -- no ears, no eyes, no muscle memory. AI Jam Session closes that gap by giving the model senses it can actually use:
 
-The LLM doesn't just *play* music. It learns to *read* music, *see* what it plays on a piano roll, *hear* the result through speakers, and *write* what it learned. That's the loop.
+- **Reading** -- real MIDI sheet music with teaching annotations, not hand-written approximations
+- **Hearing** -- a piano engine that plays through your speakers, so the humans in the room become the AI's ears
+- **Seeing** -- a piano roll that renders what was played as an SVG the model can read back and verify
+- **Remembering** -- a practice journal that persists across sessions, so learning compounds over time
+
+Every genre has one annotated exemplar -- a reference piece the AI studies before tackling the rest. The other 96 songs are raw MIDI, waiting for the AI to learn the patterns, play the music, and write its own annotations. Each session builds on the last.
+
+## The Piano Roll
+
+This is how the AI sees music. The piano roll renders any song as an SVG -- blue for right hand, coral for left, with beat grids, dynamics, and measure boundaries:
+
+<p align="center">
+  <img src="docs/fur-elise-m1-8.svg" alt="Piano roll of Fur Elise measures 1-8, showing right hand (blue) and left hand (coral) notes" width="100%" />
+</p>
+
+<p align="center"><em>Fur Elise, measures 1-8 -- the E5-D#5 trill in blue, bass accompaniment in coral</em></p>
+
+Most piano rolls are playback animations designed for human producers. This one is built for AI. The SVG format means the model can both *see* it as an image and *read* the source markup to verify pitch accuracy, hand independence, and rhythm. It's not a visualization -- it's a feedback loop.
 
 ## The Learning Loop
 
 ```
- Study                Play               See                 Reflect
-┌─────────┐     ┌───────────┐     ┌────────────┐     ┌──────────────┐
-│ Read the │     │ Play the  │     │ View the   │     │ Write what   │
-│ exemplar │ ──▶ │ song at   │ ──▶ │ piano roll │ ──▶ │ you learned  │
-│ analysis │     │ any speed │     │ (SVG)      │     │ in journal   │
-└─────────┘     └───────────┘     └────────────┘     └──────┬───────┘
-                                                            │
-                                                            ▼
-                                                   ┌──────────────┐
-                                                   │ Next session  │
-                                                   │ picks up here │
-                                                   └──────────────┘
+ Read                 Play                See                 Reflect
+┌──────────┐     ┌───────────┐     ┌────────────┐     ┌──────────────┐
+│ Study the │     │ Play the  │     │ View the   │     │ Write what   │
+│ exemplar  │ ──▶ │ song at   │ ──▶ │ piano roll │ ──▶ │ you learned  │
+│ analysis  │     │ any speed │     │ to verify  │     │ in journal   │
+└──────────┘     └───────────┘     └────────────┘     └──────┬───────┘
+                                                             │
+                                                             ▼
+                                                    ┌──────────────┐
+                                                    │ Next session  │
+                                                    │ picks up here │
+                                                    └──────────────┘
 ```
 
 ## The Song Library
