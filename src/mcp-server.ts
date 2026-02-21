@@ -50,7 +50,7 @@ import { renderPianoRoll } from "./piano-roll.js";
 import type { ParseWarning, PlaybackMode, SyncMode, VmpkConnector } from "./types.js";
 import { createAudioEngine } from "./audio-engine.js";
 import { createVocalEngine } from "./vocal-engine.js";
-import { createTractEngine } from "./vocal-tract-engine.js";
+import { createTractEngine, TRACT_VOICE_IDS, type TractVoiceId } from "./vocal-tract-engine.js";
 import { createVmpkConnector } from "./vmpk.js";
 import {
   listVoices, suggestVoice, getVoice, getMergedVoice,
@@ -588,8 +588,9 @@ server.tool(
     singMode: z.enum(["note-names", "solfege", "contour", "syllables"]).optional().describe("Sing-along mode when withSinging is true. Default: note-names"),
     keyboard: z.enum(VOICE_IDS as unknown as [string, ...string[]]).optional().describe("Piano voice/keyboard: grand (default), upright, electric, honkytonk, musicbox, bright. Each has a different character suited to different genres."),
     engine: z.enum(["piano", "vocal", "tract"]).optional().describe("Sound engine: 'piano' (default) plays piano, 'vocal' plays sustained vowel tones, 'tract' uses Pink Trombone vocal tract synthesis."),
+    tractVoice: z.enum(TRACT_VOICE_IDS as unknown as [string, ...string[]]).optional().describe("Voice preset for tract engine: soprano (default), alto, tenor, bass. Only used when engine='tract'."),
   },
-  async ({ id, speed, tempo, mode, startMeasure, endMeasure, withSinging, withTeaching, singMode, keyboard, engine }) => {
+  async ({ id, speed, tempo, mode, startMeasure, endMeasure, withSinging, withTeaching, singMode, keyboard, engine, tractVoice }) => {
     // Stop whatever is currently playing
     stopActive();
 
@@ -609,7 +610,7 @@ server.tool(
     activeVoiceId = voiceId;
     activeNotes.clear();
     const connector = engine === "tract"
-      ? createTractEngine()
+      ? createTractEngine({ voice: (tractVoice ?? "soprano") as TractVoiceId })
       : engine === "vocal"
         ? createVocalEngine()
         : createAudioEngine(voiceId);

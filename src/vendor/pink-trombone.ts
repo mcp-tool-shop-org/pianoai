@@ -345,11 +345,11 @@ export class Glottis {
 // ═══════════════════════════════════════════════════════════════════════════
 
 export class Tract {
-  readonly n = 44;
-  readonly bladeStart = 10;
-  readonly tipStart = 32;
-  readonly lipStart = 39;
-  readonly noseLength = 28;
+  readonly n: number;
+  readonly bladeStart: number;
+  readonly tipStart: number;
+  readonly lipStart: number;
+  readonly noseLength: number;
   readonly noseStart: number;
 
   private readonly glottalReflection = 0.75;
@@ -387,7 +387,16 @@ export class Tract {
   private reflectionNose = 0;
   private newReflectionNose = 0;
 
-  constructor(glottis: Glottis, tractSampleRate: number) {
+  constructor(glottis: Glottis, tractSampleRate: number, tractLength = 44) {
+    // Scale all landmarks proportionally from n=44 reference.
+    // Longer tract = lower formants (male voice).
+    // Original proportions: blade=10/44, tip=32/44, lip=39/44, nose=28/44
+    this.n = tractLength;
+    const s = tractLength / 44;
+    this.bladeStart = Math.round(10 * s);
+    this.tipStart = Math.round(32 * s);
+    this.lipStart = Math.round(39 * s);
+    this.noseLength = Math.round(28 * s);
     this.noseStart = this.n - this.noseLength + 1;
     this.glottis = glottis;
     this.tractSampleRate = tractSampleRate;
@@ -658,11 +667,11 @@ export class Synthesizer {
   tractShaper: TractShaper;
   private sampleRate: number;
 
-  constructor(sampleRate: number) {
+  constructor(sampleRate: number, tractLength?: number) {
     this.sampleRate = sampleRate;
     this.glottis = new Glottis(sampleRate);
     const tractSampleRate = 2 * sampleRate;
-    this.tract = new Tract(this.glottis, tractSampleRate);
+    this.tract = new Tract(this.glottis, tractSampleRate, tractLength);
     this.tractShaper = new TractShaper(this.tract);
   }
 

@@ -27,7 +27,7 @@ import type { PlaybackProgress, PlaybackMode, SyncMode, VoiceDirective, AsideDir
 import type { SingAlongMode } from "./note-parser.js";
 import { createAudioEngine } from "./audio-engine.js";
 import { createVocalEngine } from "./vocal-engine.js";
-import { createTractEngine } from "./vocal-tract-engine.js";
+import { createTractEngine, TRACT_VOICE_IDS, type TractVoiceId } from "./vocal-tract-engine.js";
 import { createVmpkConnector } from "./vmpk.js";
 import {
   listVoices, getVoice, getMergedVoice, VOICE_IDS,
@@ -182,10 +182,17 @@ async function cmdPlay(args: string[]): Promise<void> {
   const voiceFilterStr = getFlag(args, "--voice-filter") ?? "all";
   const keyboardStr = getFlag(args, "--keyboard") ?? "grand";
   const engineStr = getFlag(args, "--engine") ?? "piano";
+  const tractVoiceStr = getFlag(args, "--tract-voice") ?? "soprano";
 
   // Validate engine
   if (engineStr !== "piano" && engineStr !== "vocal" && engineStr !== "tract") {
     console.error(`Unknown engine: "${engineStr}". Available: piano, vocal, tract`);
+    process.exit(1);
+  }
+
+  // Validate tract voice
+  if (!TRACT_VOICE_IDS.includes(tractVoiceStr as TractVoiceId)) {
+    console.error(`Unknown tract voice: "${tractVoiceStr}". Available: ${TRACT_VOICE_IDS.join(", ")}`);
     process.exit(1);
   }
 
@@ -213,12 +220,12 @@ async function cmdPlay(args: string[]): Promise<void> {
   const connector: VmpkConnector = useMidi
     ? createVmpkConnector(portName ? { portName } : undefined)
     : engineStr === "tract"
-      ? createTractEngine()
+      ? createTractEngine({ voice: tractVoiceStr as TractVoiceId })
       : engineStr === "vocal"
         ? createVocalEngine()
         : createAudioEngine(keyboardId);
 
-  const engineLabel = useMidi ? "MIDI" : engineStr === "tract" ? "tract engine (Pink Trombone)" : engineStr === "vocal" ? "vocal engine" : `${keyboardStr} piano`;
+  const engineLabel = useMidi ? "MIDI" : engineStr === "tract" ? `tract engine (${tractVoiceStr})` : engineStr === "vocal" ? "vocal engine" : `${keyboardStr} piano`;
   console.log(`\nStarting ${engineLabel}...`);
 
   try {

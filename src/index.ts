@@ -46,8 +46,8 @@ export { createVocalEngine } from "./vocal-engine.js";
 export type { VocalEngineOptions } from "./vocal-engine.js";
 
 // Export tract engine (Pink Trombone physical vocal tract model)
-export { createTractEngine } from "./vocal-tract-engine.js";
-export type { TractEngineOptions } from "./vocal-tract-engine.js";
+export { createTractEngine, TRACT_VOICE_IDS } from "./vocal-tract-engine.js";
+export type { TractEngineOptions, TractVoiceId } from "./vocal-tract-engine.js";
 
 // Export MIDI connector (optional — for routing to external MIDI software)
 export { createVmpkConnector, createMockVmpkConnector } from "./vmpk.js";
