@@ -3,10 +3,10 @@
 </p>
 
 <p align="center">
-  <img src="logo.png" alt="AI Jam Session logo" width="180" />
+  <img src="logo.png" alt="AI Jam Sessions logo" width="180" />
 </p>
 
-<h1 align="center">AI Jam Session</h1>
+<h1 align="center">AI Jam Sessions</h1>
 
 <p align="center">
   <em>Machine Learning the Old Fashioned Way</em>
@@ -26,7 +26,7 @@
 
 A piano that AI learns to play. Not a synthesizer, not a MIDI library -- a teaching instrument.
 
-An LLM can read text and write text. But it can't experience music the way we do -- no ears, no eyes, no muscle memory. AI Jam Session closes that gap by giving the model senses it can actually use:
+An LLM can read text and write text. But it can't experience music the way we do -- no ears, no eyes, no muscle memory. AI Jam Sessions closes that gap by giving the model senses it can actually use:
 
 - **Reading** -- real MIDI sheet music with teaching annotations, not hand-written approximations
 - **Hearing** -- a piano engine that plays through your speakers, so the humans in the room become the AI's ears
