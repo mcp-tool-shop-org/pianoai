@@ -41,6 +41,14 @@ export { createSession, SessionController } from "./session.js";
 // Export piano engine (built-in audio — plays through speakers)
 export { createAudioEngine } from "./audio-engine.js";
 
+// Export vocal engine (sustained vowel synthesis — pitched to MIDI notes)
+export { createVocalEngine } from "./vocal-engine.js";
+export type { VocalEngineOptions } from "./vocal-engine.js";
+
+// Export tract engine (Pink Trombone physical vocal tract model)
+export { createTractEngine } from "./vocal-tract-engine.js";
+export type { TractEngineOptions } from "./vocal-tract-engine.js";
+
 // Export MIDI connector (optional — for routing to external MIDI software)
 export { createVmpkConnector, createMockVmpkConnector } from "./vmpk.js";
 

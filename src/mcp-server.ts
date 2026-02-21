@@ -49,6 +49,8 @@ import { safeParseMeasure, measureToSingableText, type SingAlongMode } from "./n
 import { renderPianoRoll } from "./piano-roll.js";
 import type { ParseWarning, PlaybackMode, SyncMode, VmpkConnector } from "./types.js";
 import { createAudioEngine } from "./audio-engine.js";
+import { createVocalEngine } from "./vocal-engine.js";
+import { createTractEngine } from "./vocal-tract-engine.js";
 import { createVmpkConnector } from "./vmpk.js";
 import {
   listVoices, suggestVoice, getVoice, getMergedVoice,
@@ -573,7 +575,7 @@ function stopActive(): void {
 
 server.tool(
   "play_song",
-  "Play a song through the built-in piano engine. Accepts a library song ID or a path to a .mid file. Returns immediately with session info while playback runs in the background.",
+  "Play a song through the built-in audio engine. Supports piano (default) and vocal engines. Accepts a library song ID or a path to a .mid file. Returns immediately with session info while playback runs in the background.",
   {
     id: z.string().describe("Song ID (e.g. 'autumn-leaves', 'let-it-be') OR path to a .mid file"),
     speed: z.number().min(0.1).max(4).optional().describe("Speed multiplier (0.5 = half speed, 1.0 = normal, 2.0 = double). Default: 1.0"),
@@ -585,8 +587,9 @@ server.tool(
     withTeaching: z.boolean().optional().describe("Enable live teaching feedback (encouragement, dynamics tips, difficulty warnings). Default: false"),
     singMode: z.enum(["note-names", "solfege", "contour", "syllables"]).optional().describe("Sing-along mode when withSinging is true. Default: note-names"),
     keyboard: z.enum(VOICE_IDS as unknown as [string, ...string[]]).optional().describe("Piano voice/keyboard: grand (default), upright, electric, honkytonk, musicbox, bright. Each has a different character suited to different genres."),
+    engine: z.enum(["piano", "vocal", "tract"]).optional().describe("Sound engine: 'piano' (default) plays piano, 'vocal' plays sustained vowel tones, 'tract' uses Pink Trombone vocal tract synthesis."),
   },
-  async ({ id, speed, tempo, mode, startMeasure, endMeasure, withSinging, withTeaching, singMode, keyboard }) => {
+  async ({ id, speed, tempo, mode, startMeasure, endMeasure, withSinging, withTeaching, singMode, keyboard, engine }) => {
     // Stop whatever is currently playing
     stopActive();
 
@@ -601,17 +604,21 @@ server.tool(
       };
     }
 
-    // Connect piano engine
+    // Connect sound engine
     const voiceId = (keyboard ?? "grand") as PianoVoiceId;
     activeVoiceId = voiceId;
     activeNotes.clear();
-    const connector = createAudioEngine(voiceId);
+    const connector = engine === "tract"
+      ? createTractEngine()
+      : engine === "vocal"
+        ? createVocalEngine()
+        : createAudioEngine(voiceId);
     try {
       await connector.connect();
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       return {
-        content: [{ type: "text", text: `Piano engine failed to start: ${msg}` }],
+        content: [{ type: "text", text: `${engine === "tract" ? "Tract" : engine === "vocal" ? "Vocal" : "Piano"} engine failed to start: ${msg}` }],
         isError: true,
       };
     }

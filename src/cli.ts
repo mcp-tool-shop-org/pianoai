@@ -26,6 +26,8 @@ import type { SongEntry, Genre } from "./songs/types.js";
 import type { PlaybackProgress, PlaybackMode, SyncMode, VoiceDirective, AsideDirective, VmpkConnector } from "./types.js";
 import type { SingAlongMode } from "./note-parser.js";
 import { createAudioEngine } from "./audio-engine.js";
+import { createVocalEngine } from "./vocal-engine.js";
+import { createTractEngine } from "./vocal-tract-engine.js";
 import { createVmpkConnector } from "./vmpk.js";
 import {
   listVoices, getVoice, getMergedVoice, VOICE_IDS,
@@ -179,6 +181,13 @@ async function cmdPlay(args: string[]): Promise<void> {
   const seekStr = getFlag(args, "--seek");
   const voiceFilterStr = getFlag(args, "--voice-filter") ?? "all";
   const keyboardStr = getFlag(args, "--keyboard") ?? "grand";
+  const engineStr = getFlag(args, "--engine") ?? "piano";
+
+  // Validate engine
+  if (engineStr !== "piano" && engineStr !== "vocal" && engineStr !== "tract") {
+    console.error(`Unknown engine: "${engineStr}". Available: piano, vocal, tract`);
+    process.exit(1);
+  }
 
   // Validate keyboard
   if (!VOICE_IDS.includes(keyboardStr as PianoVoiceId)) {
@@ -203,9 +212,14 @@ async function cmdPlay(args: string[]): Promise<void> {
   // Create connector
   const connector: VmpkConnector = useMidi
     ? createVmpkConnector(portName ? { portName } : undefined)
-    : createAudioEngine(keyboardId);
+    : engineStr === "tract"
+      ? createTractEngine()
+      : engineStr === "vocal"
+        ? createVocalEngine()
+        : createAudioEngine(keyboardId);
 
-  console.log(useMidi ? `\nConnecting to MIDI...` : `\nStarting ${keyboardStr} piano...`);
+  const engineLabel = useMidi ? "MIDI" : engineStr === "tract" ? "tract engine (Pink Trombone)" : engineStr === "vocal" ? "vocal engine" : `${keyboardStr} piano`;
+  console.log(`\nStarting ${engineLabel}...`);
 
   try {
     await connector.connect();

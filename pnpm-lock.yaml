@@ -20,6 +20,9 @@ importers:
       node-web-audio-api:
         specifier: ^1.0.8
         version: 1.0.8
+      pink-trombone-mod:
+        specifier: ^0.1.0
+        version: 0.1.0
       zod:
         specifier: ^4.3.6
         version: 4.3.6
@@ -758,6 +761,9 @@ packages:
   picomatch@4.0.3:
     resolution: {integrity: sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==}
     engines: {node: '>=12'}
+
+  pink-trombone-mod@0.1.0:
+    resolution: {integrity: sha512-/xCweyv3OLKZqVLz6F8CmegnPaPsWEGEi4sYInvxD19MDS1QaRTp/3AkwUNV6gkIEEelUhflVjyKV3ek+nTw1g==}
 
   pkce-challenge@5.0.1:
     resolution: {integrity: sha512-wQ0b/W4Fr01qtpHlqSqspcj3EhBvimsdh0KlHhH8HRZnMsEa0ea2fTULOXOS9ccQr3om+GcGRk4e+isrZWV8qQ==}
@@ -1608,6 +1614,8 @@ snapshots:
   picocolors@1.1.1: {}
 
   picomatch@4.0.3: {}
+
+  pink-trombone-mod@0.1.0: {}
 
   pkce-challenge@5.0.1: {}
 
