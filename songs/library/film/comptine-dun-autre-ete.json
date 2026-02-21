@@ -4,12 +4,14 @@
   "genre": "film",
   "difficulty": "intermediate",
   "key": "E minor",
-  "tags": [
-    "film",
-    "tiersen",
-    "amelie",
-    "french"
-  ],
+  "tags": ["film", "tiersen", "amelie", "french", "arpeggiated"],
   "composer": "Yann Tiersen",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "The musical heart of Amelie (2001). Tiersen built this piece from repeating arpeggiated patterns that cycle through Em, C, G, and D — simple chords that, through repetition and gradual layering, create an overwhelming sense of bittersweet nostalgia. It sounds harder than it is, which makes it a perfect intermediate piece.",
+    "structure": "A (right hand melody over arpeggios) - B (fuller, both hands arpeggiated) - A return - Coda",
+    "keyMoments": ["The opening right-hand arpeggio figure: the Em pattern that defines the whole piece", "The left hand entry: when the piece fills out and the emotion deepens", "The climactic section: both hands moving in parallel arpeggios at full intensity"],
+    "teachingGoals": ["Arpeggiated accompaniment patterns across chord changes", "Building intensity through dynamics, not complexity", "Hand independence — different arpeggio patterns in each hand", "Pedal technique for sustaining arpeggios without muddiness"],
+    "styleTips": ["Keep the arpeggios absolutely even — mechanical precision creates the hypnotic effect", "Build dynamics gradually across sections, not within phrases", "The sustain pedal is critical — change it cleanly on each chord change", "Don't rush — the tempo should feel unhurried, like a memory unfolding"]
+  }
 }

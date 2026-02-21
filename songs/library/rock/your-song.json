@@ -4,12 +4,14 @@
   "genre": "rock",
   "difficulty": "beginner",
   "key": "Eb major",
-  "tags": [
-    "rock",
-    "elton-john",
-    "ballad",
-    "piano"
-  ],
+  "tags": ["rock", "elton-john", "ballad", "piano", "singer-songwriter"],
   "composer": "Elton John",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Elton John's breakthrough — a piano ballad that proved rock could be tender. Written when he was 22, it's a masterclass in how a simple chord progression and sincere melody can be more powerful than any virtuoso display. The piano IS the band.",
+    "structure": "Intro - Verse 1 - Verse 2 - Chorus - Verse 3 - Verse 4 - Chorus - Outro",
+    "keyMoments": ["The opening Eb major chord: warm, open, inviting", "The Cm shift at 'If I was a sculptor': the first emotional turn", "The chorus build on 'I hope you don't mind': where the song opens up and soars"],
+    "teachingGoals": ["Pop/rock piano ballad accompaniment patterns", "Chord inversions for smooth voice leading", "Building dynamics across verse-chorus structure", "Playing and singing simultaneously — keeping the piano independent"],
+    "styleTips": ["Keep the left hand steady — simple bass notes or octaves", "The right hand should flow, not plod — connect the chords", "Build through each verse, don't play verse 4 like verse 1", "This is a love letter, not a performance — play it honestly"]
+  }
 }

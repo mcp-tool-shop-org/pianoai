@@ -4,11 +4,14 @@
   "genre": "folk",
   "difficulty": "beginner",
   "key": "E minor",
-  "tags": [
-    "folk",
-    "english",
-    "renaissance"
-  ],
+  "tags": ["folk", "english", "renaissance", "traditional", "waltz"],
   "composer": "Traditional",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "One of the oldest melodies still in active performance, dating to the English Renaissance (c. 1580). Written in 3/4 time with a distinctive minor-key waltz feel, it moves between the natural minor and the raised 7th (D# leading tone), creating the characteristic 'ancient' sound. Also known as 'What Child Is This?' in its Christmas carol form.",
+    "structure": "A (verse) - A (repeat) - B (chorus/refrain, 'Alas, my love') - B (repeat). Simple binary form.",
+    "keyMoments": ["The opening E minor descent: sets the melancholy, ancient mood", "The raised D# in the melody: the modal inflection that gives Greensleeves its character", "The B section ('Alas, my love'): the melody rises to its highest point, the emotional peak"],
+    "teachingGoals": ["3/4 time (waltz) feel and phrasing", "Minor key melody with modal inflections (natural vs harmonic minor)", "Simple left-hand accompaniment patterns in triple meter", "Phrasing across bar lines — the melody doesn't always start on beat 1"],
+    "styleTips": ["Feel the waltz — gentle emphasis on beat 1, lighter on 2 and 3", "The melody should sing — connect the notes legato", "Keep the accompaniment simple and quiet, like a lute", "This is Renaissance music — restraint and elegance, not Romantic drama"]
+  }
 }

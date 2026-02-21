@@ -4,11 +4,14 @@
   "genre": "jazz",
   "difficulty": "intermediate",
   "key": "G minor",
-  "tags": [
-    "jazz",
-    "standard",
-    "autumn-leaves"
-  ],
+  "tags": ["jazz", "standard", "autumn-leaves", "ii-V-I"],
   "composer": "Joseph Kosma",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "The quintessential jazz standard. Originally a French chanson (Les Feuilles mortes, 1945), it became the vehicle every jazz musician learns to navigate ii-V-I progressions. The melody traces a descending sequence through the circle of fourths.",
+    "structure": "AABC — 32-bar standard form. A sections establish the ii-V-I-IV in Bb major, B section shifts to relative minor (G minor), C resolves.",
+    "keyMoments": ["Opening phrase: the melody descends stepwise over Cm7-F7-BbMaj7-EbMaj7, outlining the circle of fourths", "The pivot to G minor: where the major brightness shifts to minor melancholy", "Final cadence: Am7b5-D7-Gm resolves the harmonic journey"],
+    "teachingGoals": ["ii-V-I voice leading in major and minor keys", "Guide tones (3rds and 7ths) through chord changes", "Left-hand rootless voicings for jazz comping", "Melodic phrasing with swing eighth notes"],
+    "styleTips": ["Swing the eighth notes — long-short, not even", "Let the left hand comp lightly, don't overpower the melody", "Voice lead smoothly — minimize hand movement between chords", "Think horizontally (melodic lines) not vertically (chord stacks)"]
+  }
 }

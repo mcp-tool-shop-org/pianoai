@@ -4,11 +4,14 @@
   "genre": "new-age",
   "difficulty": "intermediate",
   "key": "A major",
-  "tags": [
-    "new-age",
-    "yiruma",
-    "arpeggiated"
-  ],
+  "tags": ["new-age", "yiruma", "arpeggiated", "romantic", "korean"],
   "composer": "Yiruma",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "The most-searched piano piece on the internet. Yiruma (Lee Ru-ma) wrote this in 2001 and it became the gateway drug for a generation of piano learners. Built on flowing arpeggios over a I-V-vi-IV progression (the 'pop canon'), its beauty lies in the seamless right-hand melody floating over left-hand waves.",
+    "structure": "Intro (sparse) - A (melody with arpeggios) - B (fuller, more intense) - A return (decorated) - Coda",
+    "keyMoments": ["The opening sparse notes: establishes the key and mood with minimal material", "The main melody entry: the singable right-hand theme that everyone knows", "The B section climax: fuller texture, both hands active, emotional peak", "The return: the melody comes back, now decorated and more confident"],
+    "teachingGoals": ["Flowing arpeggiated left-hand accompaniment", "Melody projection — making the right-hand melody sing above the accompaniment", "I-V-vi-IV progression recognition (the most common progression in pop music)", "Tempo rubato — subtle push and pull of timing for expression"],
+    "styleTips": ["The left hand is a river — constant, flowing, even", "The right hand floats above — slightly louder, singing", "Use pedal generously but change on every chord", "Small tempo fluctuations are welcome — this isn't a metronome piece", "Don't overdo dynamics — the range is pp to mf, never ff"]
+  }
 }

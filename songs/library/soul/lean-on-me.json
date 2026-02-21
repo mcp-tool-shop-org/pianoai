@@ -4,12 +4,14 @@
   "genre": "soul",
   "difficulty": "beginner",
   "key": "C major",
-  "tags": [
-    "soul",
-    "bill-withers",
-    "piano",
-    "gospel"
-  ],
+  "tags": ["soul", "bill-withers", "piano", "gospel", "community"],
   "composer": "Bill Withers",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Bill Withers wrote this on a beat-up piano in his apartment, and that plainness is its power. Built entirely on the white keys of C major, it proves that the most universal music is often the simplest. The ascending piano riff that opens the song is one of the most recognized in soul music.",
+    "structure": "Intro (piano riff) - Verse 1 - Chorus - Verse 2 - Chorus - Bridge (call and response) - Chorus - Outro",
+    "keyMoments": ["The opening ascending riff: C-D-E-F-E-D-C, the song's DNA", "The chorus: communal, singable, built on I-IV-V-I", "The bridge: gospel call-and-response section that lifts the whole song"],
+    "teachingGoals": ["Diatonic melody construction (C major, no sharps or flats)", "Gospel-influenced piano accompaniment", "Building from solo piano to full arrangement feel", "Rhythmic independence — steady left hand under melodic right hand"],
+    "styleTips": ["Play the riff cleanly and evenly — it should feel like walking", "The left hand provides a gentle, rocking bass pattern", "Gospel piano is about feel, not complexity — keep it warm", "Let the melody breathe — don't fill every gap with notes"]
+  }
 }

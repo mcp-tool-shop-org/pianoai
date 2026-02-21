@@ -4,11 +4,14 @@
   "genre": "blues",
   "difficulty": "intermediate",
   "key": "B minor",
-  "tags": [
-    "blues",
-    "bb-king",
-    "classic"
-  ],
+  "tags": ["blues", "bb-king", "minor-blues", "slow-blues"],
   "composer": "Roy Hawkins",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "B.B. King's signature song and the definitive minor blues. Unlike the standard 12-bar major blues, this uses a minor tonality that gives it an aching, sophisticated quality. The piano part provides the harmonic bed over which the vocal and guitar cry.",
+    "structure": "12-bar minor blues form: i-i-i-i / iv-iv-i-i / V-iv-i-V (turnaround). Repeats for verses.",
+    "keyMoments": ["The opening Bm vamp: sets the dark, resigned mood", "The iv chord (Em): the emotional deepening in bars 5-6", "The V-iv-i turnaround: the classic minor blues resolution"],
+    "teachingGoals": ["Minor blues form (contrast with major 12-bar blues)", "Blues piano comping patterns — rhythmic chords on beats 2 and 4", "Minor pentatonic fills between vocal phrases", "Understanding the emotional arc of a 12-bar form"],
+    "styleTips": ["Play behind the beat slightly — blues drags, it doesn't rush", "Leave space — the rests are as important as the notes", "Tremolo chords in the right hand add B.B. King-style tension", "The left hand keeps a steady, sparse bass line — don't overplay"]
+  }
 }

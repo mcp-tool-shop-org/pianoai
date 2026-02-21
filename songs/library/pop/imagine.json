@@ -4,12 +4,14 @@
   "genre": "pop",
   "difficulty": "beginner",
   "key": "C major",
-  "tags": [
-    "pop",
-    "lennon",
-    "piano",
-    "iconic"
-  ],
+  "tags": ["pop", "lennon", "piano", "iconic", "ballad"],
   "composer": "John Lennon",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "The most famous piano ballad in pop history. Lennon's simple C major arpeggiation over a slow pulse creates an intimate, hymn-like quality. The genius is in what's left out — no fills, no flourishes, just the song.",
+    "structure": "Intro - Verse 1 - Verse 2 - Chorus - Verse 3 - Chorus - Outro",
+    "keyMoments": ["The opening piano figure: C to Cmaj7 arpeggiation that defines the entire song", "The F major shift in the verse: 'Imagine there's no heaven'", "The chorus arrival on G: the emotional release point"],
+    "teachingGoals": ["Clean arpeggiated accompaniment patterns", "Smooth chord transitions with common tones", "Sustain pedal usage for legato feel", "Dynamics as storytelling — building through verses to chorus"],
+    "styleTips": ["Keep it simple — resist the urge to add ornaments", "The right hand arpeggio pattern should be even and unhurried", "Pedal changes on chord changes, never muddy", "This song teaches restraint more than technique"]
+  }
 }

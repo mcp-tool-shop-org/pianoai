@@ -4,11 +4,14 @@
   "genre": "ragtime",
   "difficulty": "intermediate",
   "key": "C major",
-  "tags": [
-    "ragtime",
-    "joplin",
-    "classic"
-  ],
+  "tags": ["ragtime", "joplin", "classic", "syncopation", "the-sting"],
   "composer": "Scott Joplin",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "The most famous ragtime piece ever written, and the piece that revived Joplin's legacy when it was featured in The Sting (1973). Ragtime is 'ragged time' — syncopated right-hand melodies over a steady left-hand oom-pah bass. Joplin insisted: 'It is never right to play ragtime fast.'",
+    "structure": "AABBACCDD — classic ragtime multi-strain form. Each strain is 16 bars. The C and D strains modulate to F major (the subdominant).",
+    "keyMoments": ["The iconic opening pickup notes: the most recognized piano intro in ragtime", "The B strain: contrasting, more lyrical character", "The modulation to F major at the C strain: a lift that changes the whole color", "The D strain: the final, most energetic section"],
+    "teachingGoals": ["Ragtime left-hand pattern: bass note on 1 and 3, chord on 2 and 4 (oom-pah)", "Right-hand syncopation against steady left-hand pulse", "Multi-strain form navigation (AABBACCDD)", "Playing at Joplin's intended tempo — moderate, not fast"],
+    "styleTips": ["DO NOT play this fast — Joplin was explicit about this", "The left hand must be rock steady — it's the timekeeper", "Right hand syncopation should feel playful, not frantic", "Each strain has its own character — bring out the contrasts", "No pedal in ragtime — clean, crisp articulation"]
+  }
 }

@@ -4,11 +4,14 @@
   "genre": "latin",
   "difficulty": "intermediate",
   "key": "F major",
-  "tags": [
-    "latin",
-    "bossa-nova",
-    "jobim"
-  ],
+  "tags": ["latin", "bossa-nova", "jobim", "brazilian", "standard"],
   "composer": "Antonio Carlos Jobim",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "The bossa nova standard that conquered the world. Jobim's harmonic genius disguises sophisticated jazz harmony behind a deceptively simple, swaying melody. The B section modulation — up a half step to Gb major — is one of the most elegant key changes in popular music.",
+    "structure": "AABA form. A sections in F major, B section modulates to Gb then returns. 32 bars.",
+    "keyMoments": ["The opening A melody: a languid, syncopated line over FMaj7 that defines bossa nova", "The B section modulation to Gb: the harmonic surprise that elevates the song", "The return to F major: the gentle resolution back home"],
+    "teachingGoals": ["Bossa nova rhythmic pattern — the syncopated comping feel", "Extended jazz harmonies (Maj7, m7, dominant 7th)", "Chromatic voice leading through key changes", "The difference between bossa nova feel and straight jazz swing"],
+    "styleTips": ["The rhythm is everything — bossa nova has a specific syncopated pattern, not swing", "Keep the touch light and even — bossa is intimate, not loud", "The left hand bass pattern should be steady and hypnotic", "Think of ocean waves — gentle, repetitive, mesmerizing"]
+  }
 }
