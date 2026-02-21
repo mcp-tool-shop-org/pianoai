@@ -13,8 +13,8 @@
 </p>
 
 <p align="center">
-  An MCP server that teaches AI to play piano.<br/>
-  120 songs. 12 genres. Real MIDI. A practice journal that remembers everything.
+  An MCP server that teaches AI to play piano — and sing.<br/>
+  120 songs. 12 genres. Real MIDI. Piano + vocal tract synthesis. A practice journal that remembers everything.
 </p>
 
 [![Songs](https://img.shields.io/badge/songs-120_across_12_genres-blue)](https://github.com/mcp-tool-shop-org/ai-jam-sessions)
@@ -29,7 +29,7 @@ A piano that AI learns to play. Not a synthesizer, not a MIDI library -- a teach
 An LLM can read text and write text. But it can't experience music the way we do -- no ears, no eyes, no muscle memory. AI Jam Sessions closes that gap by giving the model senses it can actually use:
 
 - **Reading** -- real MIDI sheet music with teaching annotations, not hand-written approximations
-- **Hearing** -- a piano engine that plays through your speakers, so the humans in the room become the AI's ears
+- **Hearing** -- piano and vocal engines that play through your speakers, so the humans in the room become the AI's ears
 - **Seeing** -- a piano roll that renders what was played as an SVG the model can read back and verify
 - **Remembering** -- a practice journal that persists across sessions, so learning compounds over time
 
@@ -141,7 +141,7 @@ Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external softwar
 
 | Tool | What it does |
 |------|--------------|
-| `play_song` | Play through speakers (speed, mode, measure range) |
+| `play_song` | Play through speakers (speed, mode, measure range, engine, voice) |
 | `stop_playback` | Stop the current song |
 | `pause_playback` | Pause or resume |
 | `set_speed` | Change speed mid-playback |
@@ -155,11 +155,29 @@ Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external softwar
 | `read_practice_journal` | Load recent entries for context |
 | `annotate_song` | Promote a raw song to ready (the AI's homework) |
 
+## Engines
+
+Two playback engines, switchable per song:
+
+| Engine | What it is |
+|--------|------------|
+| `piano` | Sample-based piano (6 keyboard voices: grand, upright, electric, honkytonk, musicbox, bright) |
+| `tract` | Physical vocal tract model (Pink Trombone). Monophonic — sings the melody line. |
+
+The tract engine has four voice presets:
+
+| Voice | Tract | Transpose | Character |
+|-------|-------|-----------|-----------|
+| `soprano` | 36 cells (female) | +0 | Bright, clear head voice |
+| `alto` | 38 cells (female) | +0 | Warm, relaxed |
+| `tenor` | 44 cells (male) | -12 | Solid chest voice |
+| `bass` | 44 cells (male) | -24 | Deep, resonant (Onyx-like) |
+
 ## CLI
 
 ```
 pianoai list [--genre <genre>] [--difficulty <level>]
-pianoai play <song-id> [--speed <mult>] [--mode <mode>]
+pianoai play <song-id> [--speed <mult>] [--mode <mode>] [--engine <piano|tract>] [--tract-voice <voice>]
 pianoai view <song-id> [--measures <start-end>] [--out <file.svg>]
 pianoai info <song-id>
 pianoai library
@@ -167,7 +185,7 @@ pianoai library
 
 ## Status
 
-v0.1.0. 120 MIDI files across 12 genres. 24 songs fully annotated and playable (one exemplar per genre + 10 classical + 4 R&B). Practice journal for persistent learning across sessions. Six keyboard voices (grand, upright, electric, honkytonk, musicbox, bright). The MIDI is all there -- the library grows as the AI learns.
+v0.1.1. 120 MIDI files across 12 genres. 24 songs fully annotated and playable (one exemplar per genre + 10 classical + 4 R&B). Practice journal for persistent learning across sessions. Six keyboard voices + vocal tract synthesis (Pink Trombone) with four voice presets (soprano, alto, tenor, bass). The MIDI is all there -- the library grows as the AI learns.
 
 ## License
 
