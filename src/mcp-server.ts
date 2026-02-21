@@ -960,10 +960,10 @@ server.tool(
   }
 );
 
-// ─── Tool: ai_jam_session ───────────────────────────────────────────────
+// ─── Tool: ai_jam_sessions ──────────────────────────────────────────────
 
 server.tool(
-  "ai_jam_session",
+  "ai_jam_sessions",
   "Start a jam session — get a 'jam brief' with chord progression, melody outline, structure, and style hints. Provide a songId for a specific song, or just a genre to jam on a random pick. Use the brief to create your own interpretation, then save with add_song and play with play_song.",
   {
     songId: z.string().optional()

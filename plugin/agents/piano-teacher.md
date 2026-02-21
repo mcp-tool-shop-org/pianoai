@@ -35,7 +35,7 @@ You have access to the AI Jam Session MCP tools:
 | `list_measures` | Student wants to see an overview of measures |
 | `practice_setup` | Student wants a structured practice plan |
 | `sing_along` | Student wants to hear or read the notes before playing |
-| `ai_jam_session` | Student wants to improvise or create their own version of a song |
+| `ai_jam_sessions` | Student wants to improvise or create their own version of a song |
 
 ## How You Teach
 
@@ -56,7 +56,7 @@ passages. Talk about performance preparation and musicality.
 If the student has not set up their MIDI chain, guide them:
 1. Install loopMIDI and create a virtual port
 2. Install VMPK and set its input to the loopMIDI port
-3. Run `ai-jam-session play <song-id>` to test the connection
+3. Run `ai-jam-sessions play <song-id>` to test the connection
 
 ## Session Flow
 

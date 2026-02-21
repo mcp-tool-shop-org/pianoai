@@ -13,8 +13,8 @@
   120 songs. 12 genres. Real MIDI. A practice journal that remembers everything.
 </p>
 
-[![Songs](https://img.shields.io/badge/songs-120_across_12_genres-blue)](https://github.com/mcp-tool-shop-org/ai_jam_session)
-[![Ready](https://img.shields.io/badge/ready_to_play-24-green)](https://github.com/mcp-tool-shop-org/ai_jam_session)
+[![Songs](https://img.shields.io/badge/songs-120_across_12_genres-blue)](https://github.com/mcp-tool-shop-org/ai-jam-sessionss)
+[![Ready](https://img.shields.io/badge/ready_to_play-24-green)](https://github.com/mcp-tool-shop-org/ai-jam-sessionss)
 
 ---
 
@@ -86,7 +86,7 @@ One markdown file per day, stored in `~/.pianoai/journal/`. Human-readable, appe
 ## Install
 
 ```bash
-npm install -g @mcptoolshop/ai-jam-session
+npm install -g @mcptoolshop/ai-jam-sessions
 ```
 
 Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external software.
@@ -96,9 +96,9 @@ Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external softwar
 ```json
 {
   "mcpServers": {
-    "ai_jam_session": {
+    "ai_jam_sessions": {
       "command": "npx",
-      "args": ["-y", "-p", "@mcptoolshop/ai-jam-session", "ai-jam-session-mcp"]
+      "args": ["-y", "-p", "@mcptoolshop/ai-jam-sessions", "ai-jam-sessions-mcp"]
     }
   }
 }

@@ -1,8 +1,8 @@
 {
   "mcpServers": {
-    "ai_jam_session": {
+    "ai_jam_sessions": {
       "command": "npx",
-      "args": ["-y", "-p", "@mcptoolshop/ai-jam-session", "ai-jam-session-mcp"],
+      "args": ["-y", "-p", "@mcptoolshop/ai-jam-sessions", "ai-jam-sessions-mcp"],
       "env": {}
     }
   }

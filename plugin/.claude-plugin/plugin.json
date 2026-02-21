@@ -1,13 +1,13 @@
 {
-  "name": "ai-jam-session",
+  "name": "ai-jam-sessions",
   "version": "0.1.0",
   "description": "Piano player with built-in audio engine — plays through speakers, no external software required.",
   "author": {
     "name": "mcp-tool-shop",
     "email": "64996768+mcp-tool-shop@users.noreply.github.com"
   },
-  "homepage": "https://github.com/mcp-tool-shop-org/ai_jam_session",
-  "repository": "https://github.com/mcp-tool-shop-org/ai_jam_session",
+  "homepage": "https://github.com/mcp-tool-shop-org/ai-jam-sessions",
+  "repository": "https://github.com/mcp-tool-shop-org/ai-jam-sessions",
   "license": "MIT",
   "keywords": ["piano", "audio", "music", "mcp", "web-audio"]
 }

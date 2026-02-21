@@ -1,6 +1,6 @@
 # AI Jam Session — Claude Code Plugin
 
-Claude Code plugin that wraps the [AI Jam Session](https://github.com/mcp-tool-shop-org/ai_jam_session)
+Claude Code plugin that wraps the [AI Jam Session](https://github.com/mcp-tool-shop-org/ai_jam_sessions)
 MCP server, adding slash commands, agent personalities, and structured
 teaching and jam session workflows.
 
@@ -8,13 +8,13 @@ teaching and jam session workflows.
 
 | Component | Name | Description |
 |-----------|------|-------------|
-| Skill | `/ai-jam-session:teach` | Start a teaching session for a song |
-| Skill | `/ai-jam-session:practice` | Get a personalized practice plan |
-| Skill | `/ai-jam-session:explore` | Browse and discover songs |
-| Skill | `/ai-jam-session:jam` | Start a jam session — improvise on a song or genre |
+| Skill | `/ai-jam-sessions:teach` | Start a teaching session for a song |
+| Skill | `/ai-jam-sessions:practice` | Get a personalized practice plan |
+| Skill | `/ai-jam-sessions:explore` | Browse and discover songs |
+| Skill | `/ai-jam-sessions:jam` | Start a jam session — improvise on a song or genre |
 | Agent | `piano-teacher` | Patient AI piano teacher persona |
 | Agent | `jam-musician` | Laid-back jam band musician persona |
-| MCP Server | `ai_jam_session` | 15 tools for playback, teaching, jamming, and song management |
+| MCP Server | `ai_jam_sessions` | 15 tools for playback, teaching, jamming, and song management |
 
 ## Install
 
@@ -26,17 +26,17 @@ claude --plugin-dir ./plugin
 
 ### From npm
 
-The MCP server is available as `@mcptoolshop/ai-jam-session` on npm. The plugin
-uses `npx -y -p @mcptoolshop/ai-jam-session ai-jam-session-mcp` to auto-fetch and run it.
+The MCP server is available as `@mcptoolshop/ai-jam-sessions` on npm. The plugin
+uses `npx -y -p @mcptoolshop/ai-jam-sessions ai-jam-sessions-mcp` to auto-fetch and run it.
 
 ## Usage Examples
 
 ```
-/ai-jam-session:explore jazz
-/ai-jam-session:teach moonlight-sonata-mvt1
-/ai-jam-session:practice let-it-be beginner
-/ai-jam-session:jam autumn-leaves as blues
-/ai-jam-session:jam jazz
+/ai-jam-sessions:explore jazz
+/ai-jam-sessions:teach moonlight-sonata-mvt1
+/ai-jam-sessions:practice let-it-be beginner
+/ai-jam-sessions:jam autumn-leaves as blues
+/ai-jam-sessions:jam jazz
 ```
 
 Or just talk naturally:

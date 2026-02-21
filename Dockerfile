@@ -1,10 +1,10 @@
 # AI Jam Session — lightweight production image
 # Runs the MCP server (stdio) or CLI with built-in audio engine
 #
-# Build:  docker build -t ai-jam-session .
-# MCP:    docker run --rm -i ai-jam-session
-# CLI:    docker run --rm ai-jam-session ai-jam-session list
-# Play:   docker run --rm --device /dev/snd ai-jam-session ai-jam-session play song.mid
+# Build:  docker build -t ai-jam-sessions .
+# MCP:    docker run --rm -i ai-jam-sessions
+# CLI:    docker run --rm ai-jam-sessions ai-jam-sessions list
+# Play:   docker run --rm --device /dev/snd ai-jam-sessions ai-jam-sessions play song.mid
 
 FROM node:22-slim AS builder
 
@@ -28,7 +28,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 LABEL org.opencontainers.image.title="AI Jam Session"
 LABEL org.opencontainers.image.description="AI piano player with built-in audio engine — MCP server + CLI"
-LABEL org.opencontainers.image.source="https://github.com/mcp-tool-shop-org/ai_jam_session"
+LABEL org.opencontainers.image.source="https://github.com/mcp-tool-shop-org/ai-jam-sessions"
 LABEL org.opencontainers.image.license="MIT"
 
 WORKDIR /app

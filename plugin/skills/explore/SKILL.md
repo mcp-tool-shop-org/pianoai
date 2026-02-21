@@ -30,8 +30,8 @@ Help the student discover songs in the AI Jam Session library.
    teaching goals.
 
 6. **Offer next steps.** Once they pick a song, suggest:
-   - `/ai-jam-session:teach <song-id>` for a full teaching session
-   - `/ai-jam-session:practice <song-id>` for a practice plan
+   - `/ai-jam-sessions:teach <song-id>` for a full teaching session
+   - `/ai-jam-sessions:practice <song-id>` for a practice plan
    - The `song_info` tool for detailed musical analysis
 
 ## Tone

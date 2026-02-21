@@ -15,7 +15,7 @@ Kick off a jam session based on "$ARGUMENTS".
    - Just a genre name for a random pick (e.g., "jazz", "some rock")
    - A song name that needs resolving via `list_songs`
 
-2. **Get the jam brief.** Call `ai_jam_session` with:
+2. **Get the jam brief.** Call `ai_jam_sessions` with:
    - `songId` if the user specified a song
    - `genre` if the user wants a random pick from a genre
    - `style` if the user said "as blues", "in a jazz style", etc.

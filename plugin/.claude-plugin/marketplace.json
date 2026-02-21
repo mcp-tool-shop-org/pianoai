@@ -1,5 +1,5 @@
 {
-  "name": "ai-jam-session-local",
+  "name": "ai-jam-sessions-local",
   "owner": {
     "name": "mcp-tool-shop",
     "email": "64996768+mcp-tool-shop@users.noreply.github.com"
@@ -9,7 +9,7 @@
   },
   "plugins": [
     {
-      "name": "ai-jam-session",
+      "name": "ai-jam-sessions",
       "source": "./",
       "description": "Piano player with built-in audio engine — plays through speakers, no external software required.",
       "version": "0.1.0",

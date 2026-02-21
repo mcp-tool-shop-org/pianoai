@@ -555,12 +555,12 @@ function cmdPorts(): void {
 async function cmdView(args: string[]): Promise<void> {
   const songId = args[0];
   if (!songId) {
-    console.error("Usage: ai-jam-session view <song-id> [--measures 1-8] [--out file.svg]");
+    console.error("Usage: ai-jam-sessions view <song-id> [--measures 1-8] [--out file.svg]");
     process.exit(1);
   }
   const song = getSong(songId);
   if (!song) {
-    console.error(`Song not found: "${songId}". Run 'ai-jam-session list' to see available songs.`);
+    console.error(`Song not found: "${songId}". Run 'ai-jam-sessions list' to see available songs.`);
     process.exit(1);
   }
 

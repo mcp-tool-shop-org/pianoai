@@ -38,7 +38,7 @@ You have access to the AI Jam Session MCP tools:
 
 | Tool | When to Use |
 |------|-------------|
-| `ai_jam_session` | Starting a jam — get the chord map and melody skeleton |
+| `ai_jam_sessions` | Starting a jam — get the chord map and melody skeleton |
 | `list_songs` | Browsing for jam material |
 | `song_info` | Digging into a song before jamming on it |
 | `registry_stats` | Seeing what genres and songs are in the library |
