@@ -26,27 +26,44 @@
 
 Un piano que la IA aprende a tocar. No es un sintetizador, no es una biblioteca MIDI -- es un instrumento de enseñanza.
 
-Cada género tiene una canción modelo anotada -- una pieza de referencia con análisis musical, objetivos pedagógicos y guía de estilo. Las otras 96 canciones son MIDI sin procesar, esperando a que la IA estudie el modelo, toque las canciones y escriba sus propias anotaciones. Cada sesión continúa donde terminó la anterior gracias a un diario de práctica que persiste entre conversaciones.
+Un LLM puede leer y escribir texto. Pero no puede experimentar la música como nosotros -- sin oídos, sin ojos, sin memoria muscular. AI Jam Session cierra esa brecha dándole al modelo sentidos que realmente puede usar:
 
-El LLM no solo *toca* música. Aprende a *leer* música, *ver* lo que toca en un piano roll, *escuchar* el resultado por los altavoces, y *escribir* lo que aprendió. Ese es el ciclo.
+- **Lectura** -- partituras MIDI reales con anotaciones pedagógicas, no aproximaciones escritas a mano
+- **Audición** -- un motor de piano que suena por los altavoces, para que los humanos en la sala sean los oídos de la IA
+- **Visión** -- un piano roll que renderiza lo tocado como SVG que el modelo puede releer y verificar
+- **Memoria** -- un diario de práctica que persiste entre sesiones, para que el aprendizaje se acumule
+
+Cada género tiene un modelo anotado -- una pieza de referencia que la IA estudia antes de abordar el resto. Las otras 96 canciones son MIDI sin procesar, esperando a que la IA aprenda los patrones, toque la música y escriba sus propias anotaciones. Cada sesión continúa donde terminó la anterior.
+
+## El Piano Roll
+
+Así es como la IA ve la música. El piano roll renderiza cualquier canción como SVG -- azul para la mano derecha, coral para la izquierda, con rejillas de pulso, dinámicas y límites de compás:
+
+<p align="center">
+  <img src="docs/fur-elise-m1-8.svg" alt="Piano roll de Für Elise compases 1-8, mostrando mano derecha (azul) y mano izquierda (coral)" width="100%" />
+</p>
+
+<p align="center"><em>Für Elise, compases 1-8 -- el trino E5-D#5 en azul, acompañamiento de bajo en coral</em></p>
+
+La mayoría de los piano rolls son animaciones de reproducción diseñadas para productores humanos. Este está construido para IA. El formato SVG permite al modelo tanto *ver* la imagen como *leer* el código fuente para verificar la precisión de tono, independencia de manos y ritmo. No es una visualización -- es un bucle de retroalimentación.
 
 ## El Ciclo de Aprendizaje
 
 ```
- Estudiar           Tocar              Ver                 Reflexionar
-┌─────────┐     ┌───────────┐     ┌────────────┐     ┌──────────────┐
-│ Leer el  │     │ Tocar la  │     │ Ver el     │     │ Escribir lo  │
-│ análisis │ ──▶ │ canción a │ ──▶ │ piano roll │ ──▶ │ aprendido en │
-│ modelo   │     │ cualquier │     │ (SVG)      │     │ el diario    │
-│          │     │ velocidad │     │            │     │              │
-└─────────┘     └───────────┘     └────────────┘     └──────┬───────┘
-                                                            │
-                                                            ▼
-                                                   ┌──────────────┐
-                                                   │ La siguiente  │
-                                                   │ sesión        │
-                                                   │ continúa aquí │
-                                                   └──────────────┘
+ Leer                Tocar              Ver                 Reflexionar
+┌──────────┐     ┌───────────┐     ┌────────────┐     ┌──────────────┐
+│ Estudiar  │     │ Tocar la  │     │ Ver el     │     │ Escribir lo  │
+│ el modelo │ ──▶ │ canción a │ ──▶ │ piano roll │ ──▶ │ aprendido en │
+│ anotado   │     │ cualquier │     │ para       │     │ el diario    │
+│           │     │ velocidad │     │ verificar  │     │              │
+└──────────┘     └───────────┘     └────────────┘     └──────┬───────┘
+                                                             │
+                                                             ▼
+                                                    ┌──────────────┐
+                                                    │ La siguiente  │
+                                                    │ sesión        │
+                                                    │ continúa aquí │
+                                                    └──────────────┘
 ```
 
 ## La Biblioteca de Canciones

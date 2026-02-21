@@ -26,28 +26,45 @@
 
 Un piano que l'IA apprend à jouer. Pas un synthétiseur, pas une bibliothèque MIDI -- un instrument pédagogique.
 
-Chaque genre a un morceau modèle annoté -- une pièce de référence avec analyse musicale, objectifs pédagogiques et conseils de style. Les 96 autres morceaux sont du MIDI brut, attendant que l'IA étudie le modèle, joue les morceaux bruts et rédige ses propres annotations. Chaque session reprend là où la précédente s'est arrêtée grâce à un journal de pratique qui persiste entre les conversations.
+Un LLM peut lire et écrire du texte. Mais il ne peut pas vivre la musique comme nous -- pas d'oreilles, pas d'yeux, pas de mémoire musculaire. AI Jam Session comble ce fossé en donnant au modèle des sens qu'il peut réellement utiliser :
 
-Le LLM ne fait pas que *jouer* de la musique. Il apprend à *lire* la musique, *voir* ce qu'il joue sur un piano roll, *entendre* le résultat par les haut-parleurs, et *écrire* ce qu'il a appris. C'est la boucle.
+- **Lecture** -- de vraies partitions MIDI avec annotations pédagogiques, pas des approximations manuscrites
+- **Écoute** -- un moteur de piano qui joue par les haut-parleurs, pour que les humains dans la pièce deviennent les oreilles de l'IA
+- **Vision** -- un piano roll qui rend ce qui a été joué en SVG, que le modèle peut relire et vérifier
+- **Mémoire** -- un journal de pratique qui persiste entre les sessions, pour que l'apprentissage s'accumule
+
+Chaque genre a un modèle annoté -- une pièce de référence que l'IA étudie avant d'aborder le reste. Les 96 autres morceaux sont du MIDI brut, attendant que l'IA apprenne les motifs, joue la musique et rédige ses propres annotations. Chaque session reprend là où la précédente s'est arrêtée.
+
+## Le Piano Roll
+
+Voici comment l'IA voit la musique. Le piano roll rend n'importe quel morceau en SVG -- bleu pour la main droite, corail pour la gauche, avec grilles de temps, nuances et limites de mesures :
+
+<p align="center">
+  <img src="docs/fur-elise-m1-8.svg" alt="Piano roll de Für Elise mesures 1-8, montrant la main droite (bleu) et la main gauche (corail)" width="100%" />
+</p>
+
+<p align="center"><em>Für Elise, mesures 1-8 -- le trille E5-D#5 en bleu, accompagnement de basse en corail</em></p>
+
+La plupart des piano rolls sont des animations de lecture conçues pour les producteurs humains. Celui-ci est conçu pour l'IA. Le format SVG permet au modèle de *voir* l'image et de *lire* le code source pour vérifier la justesse des notes, l'indépendance des mains et le rythme. Ce n'est pas une visualisation -- c'est une boucle de rétroaction.
 
 ## La Boucle d'Apprentissage
 
 ```
- Étudier            Jouer              Voir                Réfléchir
-┌─────────┐     ┌───────────┐     ┌────────────┐     ┌──────────────┐
-│ Lire     │     │ Jouer le  │     │ Voir le    │     │ Écrire ce    │
-│ l'analyse│ ──▶ │ morceau à │ ──▶ │ piano roll │ ──▶ │ qu'on a      │
-│ modèle   │     │ n'importe │     │ (SVG)      │     │ appris       │
-│          │     │ quelle    │     │            │     │              │
-│          │     │ vitesse   │     │            │     │              │
-└─────────┘     └───────────┘     └────────────┘     └──────┬───────┘
-                                                            │
-                                                            ▼
-                                                   ┌──────────────┐
-                                                   │ La session   │
-                                                   │ suivante     │
-                                                   │ reprend ici  │
-                                                   └──────────────┘
+ Lire                Jouer              Voir                Réfléchir
+┌──────────┐     ┌───────────┐     ┌────────────┐     ┌──────────────┐
+│ Étudier   │     │ Jouer le  │     │ Voir le    │     │ Écrire ce    │
+│ l'analyse │ ──▶ │ morceau à │ ──▶ │ piano roll │ ──▶ │ qu'on a      │
+│ modèle    │     │ n'importe │     │ pour       │     │ appris       │
+│           │     │ quelle    │     │ vérifier   │     │              │
+│           │     │ vitesse   │     │            │     │              │
+└──────────┘     └───────────┘     └────────────┘     └──────┬───────┘
+                                                             │
+                                                             ▼
+                                                    ┌──────────────┐
+                                                    │ La session   │
+                                                    │ suivante     │
+                                                    │ reprend ici  │
+                                                    └──────────────┘
 ```
 
 ## La Bibliothèque

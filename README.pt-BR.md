@@ -26,27 +26,44 @@
 
 Um piano que a IA aprende a tocar. Não é um sintetizador, não é uma biblioteca MIDI -- é um instrumento de ensino.
 
-Cada gênero tem uma música modelo anotada -- uma peça de referência com análise musical, objetivos pedagógicos e orientação de estilo. As outras 96 músicas são MIDI bruto, esperando a IA estudar o modelo, tocar as músicas brutas e escrever suas próprias anotações. Cada sessão continua de onde a anterior parou através de um diário de prática que persiste entre conversas.
+Um LLM pode ler e escrever texto. Mas não pode experimentar a música como nós -- sem ouvidos, sem olhos, sem memória muscular. O AI Jam Session preenche essa lacuna dando ao modelo sentidos que ele pode realmente usar:
 
-O LLM não apenas *toca* música. Ele aprende a *ler* música, *ver* o que toca em um piano roll, *ouvir* o resultado pelos alto-falantes, e *escrever* o que aprendeu. Esse é o ciclo.
+- **Leitura** -- partituras MIDI reais com anotações pedagógicas, não aproximações escritas à mão
+- **Audição** -- um motor de piano que toca pelos alto-falantes, para que os humanos na sala sejam os ouvidos da IA
+- **Visão** -- um piano roll que renderiza o que foi tocado como SVG que o modelo pode reler e verificar
+- **Memória** -- um diário de prática que persiste entre sessões, para que o aprendizado se acumule
+
+Cada gênero tem um modelo anotado -- uma peça de referência que a IA estuda antes de enfrentar o resto. As outras 96 músicas são MIDI bruto, esperando a IA aprender os padrões, tocar a música e escrever suas próprias anotações. Cada sessão continua de onde a anterior parou.
+
+## O Piano Roll
+
+É assim que a IA vê a música. O piano roll renderiza qualquer música como SVG -- azul para a mão direita, coral para a esquerda, com grades de pulso, dinâmicas e limites de compasso:
+
+<p align="center">
+  <img src="docs/fur-elise-m1-8.svg" alt="Piano roll de Für Elise compassos 1-8, mostrando mão direita (azul) e mão esquerda (coral)" width="100%" />
+</p>
+
+<p align="center"><em>Für Elise, compassos 1-8 -- o trinado E5-D#5 em azul, acompanhamento de baixo em coral</em></p>
+
+A maioria dos piano rolls são animações de reprodução projetadas para produtores humanos. Este foi construído para IA. O formato SVG permite ao modelo tanto *ver* a imagem quanto *ler* o código-fonte para verificar precisão de notas, independência das mãos e ritmo. Não é uma visualização -- é um ciclo de feedback.
 
 ## O Ciclo de Aprendizado
 
 ```
- Estudar            Tocar              Ver                 Refletir
-┌─────────┐     ┌───────────┐     ┌────────────┐     ┌──────────────┐
-│ Ler a    │     │ Tocar a   │     │ Ver o      │     │ Escrever o   │
-│ análise  │ ──▶ │ música em │ ──▶ │ piano roll │ ──▶ │ que aprendeu │
-│ modelo   │     │ qualquer  │     │ (SVG)      │     │ no diário    │
-│          │     │ velocidade│     │            │     │              │
-└─────────┘     └───────────┘     └────────────┘     └──────┬───────┘
-                                                            │
-                                                            ▼
-                                                   ┌──────────────┐
-                                                   │ A próxima    │
-                                                   │ sessão       │
-                                                   │ continua aqui│
-                                                   └──────────────┘
+ Ler                 Tocar              Ver                 Refletir
+┌──────────┐     ┌───────────┐     ┌────────────┐     ┌──────────────┐
+│ Estudar   │     │ Tocar a   │     │ Ver o      │     │ Escrever o   │
+│ a análise │ ──▶ │ música em │ ──▶ │ piano roll │ ──▶ │ que aprendeu │
+│ modelo    │     │ qualquer  │     │ para       │     │ no diário    │
+│           │     │ velocidade│     │ verificar  │     │              │
+└──────────┘     └───────────┘     └────────────┘     └──────┬───────┘
+                                                             │
+                                                             ▼
+                                                    ┌──────────────┐
+                                                    │ A próxima    │
+                                                    │ sessão       │
+                                                    │ continua aqui│
+                                                    └──────────────┘
 ```
 
 ## A Biblioteca de Músicas

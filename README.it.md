@@ -26,27 +26,44 @@
 
 Un pianoforte che l'IA impara a suonare. Non un sintetizzatore, non una libreria MIDI -- uno strumento didattico.
 
-Ogni genere ha un brano modello annotato -- un pezzo di riferimento con analisi musicale, obiettivi didattici e guida stilistica. Gli altri 96 brani sono MIDI grezzo, in attesa che l'IA studi il modello, suoni i brani grezzi e scriva le proprie annotazioni. Ogni sessione prosegue da dove si era interrotta la precedente grazie a un diario di pratica che persiste tra le conversazioni.
+Un LLM può leggere e scrivere testo. Ma non può vivere la musica come noi -- niente orecchie, niente occhi, niente memoria muscolare. AI Jam Session colma questo divario dando al modello sensi che può effettivamente usare:
 
-Il LLM non si limita a *suonare* musica. Impara a *leggere* la musica, *vedere* cosa suona su un piano roll, *ascoltare* il risultato dagli altoparlanti, e *scrivere* cosa ha imparato. Questo è il ciclo.
+- **Lettura** -- vere partiture MIDI con annotazioni didattiche, non approssimazioni scritte a mano
+- **Udito** -- un motore pianistico che suona dagli altoparlanti, così gli umani nella stanza diventano le orecchie dell'IA
+- **Vista** -- un piano roll che renderizza ciò che è stato suonato come SVG, che il modello può rileggere e verificare
+- **Memoria** -- un diario di pratica che persiste tra le sessioni, così l'apprendimento si accumula
+
+Ogni genere ha un modello annotato -- un pezzo di riferimento che l'IA studia prima di affrontare il resto. Gli altri 96 brani sono MIDI grezzo, in attesa che l'IA impari gli schemi, suoni la musica e scriva le proprie annotazioni. Ogni sessione prosegue da dove si era interrotta la precedente.
+
+## Il Piano Roll
+
+Ecco come l'IA vede la musica. Il piano roll renderizza qualsiasi brano come SVG -- blu per la mano destra, corallo per la sinistra, con griglie di battito, dinamiche e confini di battuta:
+
+<p align="center">
+  <img src="docs/fur-elise-m1-8.svg" alt="Piano roll di Für Elise battute 1-8, mostrando mano destra (blu) e mano sinistra (corallo)" width="100%" />
+</p>
+
+<p align="center"><em>Für Elise, battute 1-8 -- il trillo E5-D#5 in blu, accompagnamento di basso in corallo</em></p>
+
+La maggior parte dei piano roll sono animazioni di riproduzione progettate per produttori umani. Questo è costruito per l'IA. Il formato SVG permette al modello sia di *vedere* l'immagine sia di *leggere* il markup sorgente per verificare l'accuratezza delle note, l'indipendenza delle mani e il ritmo. Non è una visualizzazione -- è un ciclo di feedback.
 
 ## Il Ciclo di Apprendimento
 
 ```
- Studiare           Suonare            Vedere              Riflettere
-┌─────────┐     ┌───────────┐     ┌────────────┐     ┌──────────────┐
-│ Leggere  │     │ Suonare   │     │ Vedere il  │     │ Scrivere     │
-│ l'analisi│ ──▶ │ il brano  │ ──▶ │ piano roll │ ──▶ │ ciò che si   │
-│ modello  │     │ a qualsiasi│    │ (SVG)      │     │ è imparato   │
-│          │     │ velocità  │     │            │     │ nel diario   │
-└─────────┘     └───────────┘     └────────────┘     └──────┬───────┘
-                                                            │
-                                                            ▼
-                                                   ┌──────────────┐
-                                                   │ La sessione  │
-                                                   │ successiva   │
-                                                   │ riprende qui │
-                                                   └──────────────┘
+ Leggere             Suonare            Vedere              Riflettere
+┌──────────┐     ┌───────────┐     ┌────────────┐     ┌──────────────┐
+│ Studiare  │     │ Suonare   │     │ Vedere il  │     │ Scrivere     │
+│ l'analisi │ ──▶ │ il brano  │ ──▶ │ piano roll │ ──▶ │ ciò che si   │
+│ modello   │     │ a qualsiasi│    │ per        │     │ è imparato   │
+│           │     │ velocità  │     │ verificare │     │ nel diario   │
+└──────────┘     └───────────┘     └────────────┘     └──────┬───────┘
+                                                             │
+                                                             ▼
+                                                    ┌──────────────┐
+                                                    │ La sessione  │
+                                                    │ successiva   │
+                                                    │ riprende qui │
+                                                    └──────────────┘
 ```
 
 ## La Libreria Musicale
