@@ -37,7 +37,8 @@ COPY package.json pnpm-lock.yaml ./
 RUN corepack enable && pnpm install --frozen-lockfile --prod
 
 COPY --from=builder /app/dist/ dist/
-COPY logo.svg README.md LICENSE ./
+COPY songs/library/ songs/library/
+COPY logo.png README.md LICENSE ./
 
 # Default: run MCP server (stdio transport)
 ENTRYPOINT ["node", "dist/mcp-server.js"]

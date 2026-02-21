@@ -17,7 +17,8 @@
   },
   "files": [
     "dist",
-    "songs/builtin",
+    "songs/library",
+    "docs",
     "README.md",
     "LICENSE",
     "logo.png"
