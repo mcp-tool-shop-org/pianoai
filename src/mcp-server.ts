@@ -36,6 +36,8 @@ import {
   saveSong,
   initializeFromLibrary,
   getLibraryProgress,
+  scanLibrary,
+  ingestSong,
   midiToSongEntry,
   generateJamBrief,
   formatJamBrief,
@@ -43,7 +45,6 @@ import {
   DIFFICULTIES,
 } from "./songs/index.js";
 import type { SongEntry, Difficulty, Genre } from "./songs/types.js";
-import { readFileSync } from "node:fs";
 import { safeParseMeasure, measureToSingableText, type SingAlongMode } from "./note-parser.js";
 import { renderPianoRoll } from "./piano-roll.js";
 import type { ParseWarning, PlaybackMode, SyncMode, VmpkConnector } from "./types.js";
@@ -67,7 +68,14 @@ import { createMidiFeedbackHook } from "./teaching/midi-feedback.js";
 import { createLiveMidiFeedbackHook } from "./teaching/live-midi-feedback.js";
 import type { VoiceDirective, AsideDirective } from "./types.js";
 import { readFile } from "node:fs/promises";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  type SessionSnapshot,
+  buildJournalEntry,
+  appendJournalEntry,
+  readJournal,
+  journalStats,
+} from "./journal.js";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -101,6 +109,10 @@ const server = new McpServer({
   name: "pianoai",
   version: "0.1.0",
 });
+
+// ─── Practice Journal State ─────────────────────────────────────────────────
+
+let lastCompletedSession: SessionSnapshot | null = null;
 
 // ─── Tool: list_songs ───────────────────────────────────────────────────────
 
@@ -759,9 +771,26 @@ server.tool(
     activeSession = session;
 
     // Play in background
+    const playStartTime = Date.now();
     const playPromise = session.play();
     playPromise
       .then(() => {
+        const elapsed = Math.round((Date.now() - playStartTime) / 1000);
+        lastCompletedSession = {
+          songId: song.id,
+          title: song.title,
+          composer: song.composer,
+          genre: song.genre,
+          difficulty: song.difficulty,
+          key: song.key,
+          tempo: session.effectiveTempo(),
+          speed: session.session.speed,
+          mode: session.session.mode,
+          measuresPlayed: session.session.measuresPlayed,
+          totalMeasures: song.measures.length,
+          durationSeconds: elapsed,
+          timestamp: new Date().toISOString(),
+        };
         console.error(`Finished playing: ${song.title} (${session.session.measuresPlayed} measures)`);
       })
       .catch((err) => {
@@ -796,6 +825,7 @@ server.tool(
       lines.push(``, `⚠ ${warnings.length} note(s) had parse warnings and will be skipped.`);
     }
     lines.push(``, `Use \`stop_playback\` to stop. Playback runs in the background.`);
+    lines.push(``, `Tip: After listening, use \`save_practice_note\` to record what you learned.`);
 
     return { content: [{ type: "text", text: lines.join("\n") }] };
   }
@@ -1381,6 +1411,157 @@ server.tool(
     }
 
     return { content: [{ type: "text", text: `No active playback. Use \`play_song\` to start playing.` }] };
+  }
+);
+
+// ─── Tool: save_practice_note ──────────────────────────────────────────────
+
+server.tool(
+  "save_practice_note",
+  "Save a practice journal entry. Combines your reflections with auto-captured session data (what you just played, speed, measures, duration). The journal persists across sessions — next time, use read_practice_journal to pick up where you left off.",
+  {
+    note: z.string().describe("Your reflection — what you learned, what you noticed, what to try next. Write naturally, like a musician's notebook."),
+    song_id: z.string().optional().describe("Override which song this entry is about (defaults to the last song you played)"),
+  },
+  async ({ note, song_id }) => {
+    // Resolve session: use override song_id or fall back to last played
+    let session = lastCompletedSession;
+
+    if (song_id) {
+      const song = getSong(song_id);
+      if (song) {
+        session = {
+          songId: song.id,
+          title: song.title,
+          composer: song.composer,
+          genre: song.genre,
+          difficulty: song.difficulty,
+          key: song.key,
+          tempo: song.tempo,
+          speed: 1.0,
+          mode: "note",
+          measuresPlayed: 0,
+          totalMeasures: song.measures.length,
+          durationSeconds: 0,
+          timestamp: new Date().toISOString(),
+        };
+      }
+    }
+
+    const entry = buildJournalEntry(session, note);
+    const filepath = appendJournalEntry(entry);
+    const stats = journalStats();
+
+    return {
+      content: [{
+        type: "text",
+        text: `Journal entry saved to ${filepath}\n` +
+          `Total: ${stats.totalEntries} entries across ${stats.totalDays} day(s).\n\n` +
+          `---\n${entry}`,
+      }],
+    };
+  }
+);
+
+// ─── Tool: read_practice_journal ────────────────────────────────────────────
+
+server.tool(
+  "read_practice_journal",
+  "Read your practice journal — reflections, observations, and session history from previous sessions. Use this at the start of a session to remember what you learned before, or to review notes on a specific song.",
+  {
+    days: z.number().int().min(1).max(90).optional().describe("How many days back to read (default: 7)"),
+    song_id: z.string().optional().describe("Filter entries to a specific song"),
+  },
+  async ({ days, song_id }) => {
+    const journal = readJournal(days ?? 7, song_id);
+    const stats = journalStats();
+
+    if (stats.totalEntries === 0) {
+      return {
+        content: [{
+          type: "text",
+          text: "No practice journal entries yet. Play a song and use `save_practice_note` to start your journal.",
+        }],
+      };
+    }
+
+    return {
+      content: [{
+        type: "text",
+        text: `Practice journal (${stats.totalEntries} entries across ${stats.totalDays} days):\n\n${journal}`,
+      }],
+    };
+  }
+);
+
+// ─── Tool: annotate_song ──────────────────────────────────────────────────
+
+server.tool(
+  "annotate_song",
+  "Annotate a raw song with musical language and promote it to 'ready' status. This is how you do your homework — study the exemplar in the genre, then write your own annotation for a raw song. Once annotated, the song becomes playable immediately.",
+  {
+    song_id: z.string().describe("The song ID to annotate (must be a raw or annotated song in the library)"),
+    description: z.string().describe("1-3 sentence musical description of the piece"),
+    structure: z.string().describe("Form/structure description (e.g. 'AABA 32-bar form', '12-bar blues')"),
+    key_moments: z.array(z.string()).min(1).max(5).describe("Notable musical moments (1-5 items)"),
+    teaching_goals: z.array(z.string()).min(1).max(5).describe("What this song teaches (1-5 items)"),
+    style_tips: z.array(z.string()).min(1).max(5).describe("How to play it authentically (1-5 items)"),
+  },
+  async ({ song_id, description, structure, key_moments, teaching_goals, style_tips }) => {
+    // Find the config file in the library
+    const { join, dirname } = await import("node:path");
+    const { fileURLToPath } = await import("node:url");
+    const __dirname = dirname(fileURLToPath(import.meta.url));
+    const libraryDir = join(__dirname, "..", "songs", "library");
+
+    // Scan library for this song
+    const entries = scanLibrary(libraryDir);
+    const entry = entries.find(e => e.config.id === song_id);
+
+    if (!entry) {
+      return {
+        content: [{ type: "text", text: `Song "${song_id}" not found in the library.` }],
+        isError: true,
+      };
+    }
+
+    // Update the config JSON
+    const config = entry.config;
+    config.status = "ready";
+    config.musicalLanguage = {
+      description,
+      structure,
+      keyMoments: key_moments,
+      teachingGoals: teaching_goals,
+      styleTips: style_tips,
+    };
+
+    // Write back to disk
+    writeFileSync(entry.configPath, JSON.stringify(config, null, 2) + "\n", "utf8");
+
+    // Re-ingest so the song is immediately playable
+    try {
+      const song = ingestSong(entry);
+      registerSong(song);
+
+      return {
+        content: [{
+          type: "text",
+          text: `Song "${config.title}" annotated and promoted to ready!\n` +
+            `Genre: ${config.genre} | Key: ${config.key} | ${song.measures.length} measures\n` +
+            `The song is now playable — try \`play_song { id: "${song_id}" }\``,
+        }],
+      };
+    } catch (err) {
+      return {
+        content: [{
+          type: "text",
+          text: `Annotation saved but ingestion failed: ${err instanceof Error ? err.message : String(err)}\n` +
+            `The config was updated at ${entry.configPath}. Check the MIDI file.`,
+        }],
+        isError: true,
+      };
+    }
   }
 );
 
