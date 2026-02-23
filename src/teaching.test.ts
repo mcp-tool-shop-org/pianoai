@@ -423,7 +423,7 @@ describe("SingAlongHook", () => {
     const sink = async (d: VoiceDirective) => { directives.push(d); };
     const hook = createSingAlongHook(sink, song, { mode: "solfege" });
 
-    await hook.onMeasureStart(1, undefined, undefined);
+    await hook.onMeasureStart(3, undefined, undefined);
     expect(directives.length).toBe(1);
     // Should contain solfege syllables
     expect(directives[0].text).toMatch(/Do|Re|Mi|Fa|Sol|La|Ti/);
@@ -448,8 +448,8 @@ describe("SingAlongHook", () => {
     const rhHook = createSingAlongHook(async (d) => { rhDirectives.push(d); }, song, { hand: "right" });
     const lhHook = createSingAlongHook(async (d) => { lhDirectives.push(d); }, song, { hand: "left" });
 
-    await rhHook.onMeasureStart(1, undefined, undefined);
-    await lhHook.onMeasureStart(1, undefined, undefined);
+    await rhHook.onMeasureStart(3, undefined, undefined);
+    await lhHook.onMeasureStart(3, undefined, undefined);
 
     expect(rhDirectives.length).toBe(1);
     expect(lhDirectives.length).toBe(1);
