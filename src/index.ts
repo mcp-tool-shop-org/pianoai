@@ -53,6 +53,10 @@ export type { TractEngineOptions, TractVoiceId } from "./vocal-tract-engine.js";
 export { createVocalSynthEngine, listVocalSynthPresets } from "./vocal-synth-adapter.js";
 export type { VocalSynthOptions, VocalSynthTelemetry } from "./vocal-synth-adapter.js";
 
+// Export layered engine (fan-out connector — play multiple engines at once)
+export { createLayeredEngine } from "./layered-engine.js";
+export type { LayeredEngineOptions } from "./layered-engine.js";
+
 // Export MIDI connector (optional — for routing to external MIDI software)
 export { createVmpkConnector, createMockVmpkConnector } from "./vmpk.js";
 

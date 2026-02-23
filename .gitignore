@@ -8,3 +8,5 @@ coverage/
 samples/
 scripts/midi-cache/
 *.tgz
+ci-failed.log
+package-lock.json

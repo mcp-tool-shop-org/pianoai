@@ -37,6 +37,7 @@ import { PlaybackController } from "./playback/controls.js";
 import { createSingOnMidiHook, midiNoteToSingable, filterClusterForVoice } from "./teaching/sing-on-midi.js";
 import { createLiveMidiFeedbackHook } from "./teaching/live-midi-feedback.js";
 import { listVocalSynthPresets } from "./vocal-synth-adapter.js";
+import { createLayeredEngine } from "./layered-engine.js";
 import { writeMidi } from "midi-file";
 import type { VoiceDirective, AsideDirective, PlaybackProgress, ParseWarning, MidiStatus, MidiNote, VmpkConnector } from "./types.js";
 import type { MidiNoteEvent } from "./midi/types.js";
@@ -603,6 +604,85 @@ test("listVocalSynthPresets discovers bundled presets", () => {
   const presets = listVocalSynthPresets();
   assert(presets.length >= 2, `expected 2+ presets, got ${presets.length}`);
   assert(presets.includes("default-voice"), "should include default-voice");
+});
+
+// ─── Test 17: Layered Engine (fan-out connector) ────────────────────────────
+console.log("\nLayered engine:");
+test("createLayeredEngine fans out to multiple connectors", async () => {
+  const log1: string[] = [];
+  const log2: string[] = [];
+  const mock1: VmpkConnector = {
+    async connect() { log1.push("connect"); },
+    async disconnect() { log1.push("disconnect"); },
+    status(): MidiStatus { return "connected"; },
+    listPorts() { return ["Piano"]; },
+    noteOn(n: number, v: number) { log1.push(`on:${n}:${v}`); },
+    noteOff(n: number) { log1.push(`off:${n}`); },
+    allNotesOff() { log1.push("panic"); },
+    async playNote(note: MidiNote) { log1.push(`play:${note.note}`); },
+  };
+  const mock2: VmpkConnector = {
+    async connect() { log2.push("connect"); },
+    async disconnect() { log2.push("disconnect"); },
+    status(): MidiStatus { return "connected"; },
+    listPorts() { return ["Synth"]; },
+    noteOn(n: number, v: number) { log2.push(`on:${n}:${v}`); },
+    noteOff(n: number) { log2.push(`off:${n}`); },
+    allNotesOff() { log2.push("panic"); },
+    async playNote(note: MidiNote) { log2.push(`play:${note.note}`); },
+  };
+
+  const layered = createLayeredEngine([mock1, mock2]);
+  await layered.connect();
+  assert(log1[0] === "connect" && log2[0] === "connect", "both should connect");
+
+  layered.noteOn(60, 100);
+  assert(log1.includes("on:60:100"), "mock1 should receive noteOn");
+  assert(log2.includes("on:60:100"), "mock2 should receive noteOn");
+
+  layered.noteOff(60);
+  assert(log1.includes("off:60"), "mock1 should receive noteOff");
+  assert(log2.includes("off:60"), "mock2 should receive noteOff");
+
+  layered.allNotesOff();
+  assert(log1.includes("panic"), "mock1 should receive allNotesOff");
+  assert(log2.includes("panic"), "mock2 should receive allNotesOff");
+
+  await layered.playNote({ note: 64, velocity: 80, durationMs: 10, channel: 0 });
+  assert(log1.includes("play:64"), "mock1 should receive playNote");
+  assert(log2.includes("play:64"), "mock2 should receive playNote");
+
+  const ports = layered.listPorts();
+  assert(ports.length === 2, `expected 2 ports, got ${ports.length}`);
+  assert(ports[0] === "Layered:Piano", `expected Layered:Piano, got ${ports[0]}`);
+  assert(ports[1] === "Layered:Synth", `expected Layered:Synth, got ${ports[1]}`);
+
+  assert(layered.status() === "connected", "all connected → connected");
+
+  await layered.disconnect();
+  assert(log1.includes("disconnect") && log2.includes("disconnect"), "both should disconnect");
+});
+
+test("layered engine status reports worst status", () => {
+  const makeStub = (s: MidiStatus): VmpkConnector => ({
+    async connect() {},
+    async disconnect() {},
+    status() { return s; },
+    listPorts() { return []; },
+    noteOn() {},
+    noteOff() {},
+    allNotesOff() {},
+    async playNote() {},
+  });
+
+  const l1 = createLayeredEngine([makeStub("connected"), makeStub("disconnected")]);
+  assert(l1.status() === "disconnected", "should report disconnected");
+
+  const l2 = createLayeredEngine([makeStub("connected"), makeStub("error")]);
+  assert(l2.status() === "error", "should report error");
+
+  const l3 = createLayeredEngine([makeStub("connected"), makeStub("connecting")]);
+  assert(l3.status() === "connecting", "should report connecting");
 });
 
 // ─── Summary ────────────────────────────────────────────────────────────────

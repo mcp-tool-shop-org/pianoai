@@ -7,6 +7,9 @@ All notable changes to AI Jam Session will be documented here.
 - Add vocal-synth-engine integration (additive synthesis with 15 Kokoro voice presets)
 - New `createVocalSynthEngine()` — drop-in VmpkConnector alongside sample-based and Pink Trombone engines
 - New `listVocalSynthPresets()` — discover available voice presets
+- New `createLayeredEngine()` — fan-out connector that plays multiple engines simultaneously
+- CLI: `--engine synth`, `--engine piano+synth`, `--engine vocal+synth` modes
+- `cmdSing` now supports `--engine` flag (piano, synth, piano+synth)
 
 ## 0.1.3
 

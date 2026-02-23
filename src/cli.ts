@@ -28,6 +28,8 @@ import type { SingAlongMode } from "./note-parser.js";
 import { createAudioEngine } from "./audio-engine.js";
 import { createVocalEngine } from "./vocal-engine.js";
 import { createTractEngine, TRACT_VOICE_IDS, type TractVoiceId } from "./vocal-tract-engine.js";
+import { createVocalSynthEngine } from "./vocal-synth-adapter.js";
+import { createLayeredEngine } from "./layered-engine.js";
 import { createVmpkConnector } from "./vmpk.js";
 import {
   listVoices, getVoice, getMergedVoice, VOICE_IDS,
@@ -185,8 +187,9 @@ async function cmdPlay(args: string[]): Promise<void> {
   const tractVoiceStr = getFlag(args, "--tract-voice") ?? "soprano";
 
   // Validate engine
-  if (engineStr !== "piano" && engineStr !== "vocal" && engineStr !== "tract") {
-    console.error(`Unknown engine: "${engineStr}". Available: piano, vocal, tract`);
+  const VALID_ENGINES = ["piano", "vocal", "tract", "synth", "piano+synth", "vocal+synth"];
+  if (!VALID_ENGINES.includes(engineStr)) {
+    console.error(`Unknown engine: "${engineStr}". Available: ${VALID_ENGINES.join(", ")}`);
     process.exit(1);
   }
 
@@ -217,15 +220,31 @@ async function cmdPlay(args: string[]): Promise<void> {
   const isMidiFile = target.endsWith(".mid") || target.endsWith(".midi") || existsSync(target);
 
   // Create connector
+  function buildEngine(engine: string): VmpkConnector {
+    switch (engine) {
+      case "tract":  return createTractEngine({ voice: tractVoiceStr as TractVoiceId });
+      case "vocal":  return createVocalEngine();
+      case "synth":  return createVocalSynthEngine();
+      case "piano+synth":
+        return createLayeredEngine([createAudioEngine(keyboardId), createVocalSynthEngine()]);
+      case "vocal+synth":
+        return createLayeredEngine([createVocalEngine(), createVocalSynthEngine()]);
+      default:       return createAudioEngine(keyboardId);
+    }
+  }
+
   const connector: VmpkConnector = useMidi
     ? createVmpkConnector(portName ? { portName } : undefined)
-    : engineStr === "tract"
-      ? createTractEngine({ voice: tractVoiceStr as TractVoiceId })
-      : engineStr === "vocal"
-        ? createVocalEngine()
-        : createAudioEngine(keyboardId);
+    : buildEngine(engineStr);
 
-  const engineLabel = useMidi ? "MIDI" : engineStr === "tract" ? `tract engine (${tractVoiceStr})` : engineStr === "vocal" ? "vocal engine" : `${keyboardStr} piano`;
+  const ENGINE_LABELS: Record<string, string> = {
+    tract: `tract engine (${tractVoiceStr})`,
+    vocal: "vocal engine",
+    synth: "vocal-synth engine",
+    "piano+synth": `${keyboardStr} piano + vocal-synth`,
+    "vocal+synth": "vocal + vocal-synth",
+  };
+  const engineLabel = useMidi ? "MIDI" : ENGINE_LABELS[engineStr] ?? `${keyboardStr} piano`;
   console.log(`\nStarting ${engineLabel}...`);
 
   try {
@@ -466,11 +485,27 @@ async function cmdSing(args: string[]): Promise<void> {
   }
 
   // Create connector: built-in piano engine or MIDI output
+  const singEngineStr = getFlag(args, "--engine") ?? "piano";
+  const SING_ENGINES = ["piano", "synth", "piano+synth"];
+  if (!SING_ENGINES.includes(singEngineStr)) {
+    console.error(`Unknown engine for sing: "${singEngineStr}". Available: ${SING_ENGINES.join(", ")}`);
+    process.exit(1);
+  }
+
+  function buildSingEngine(engine: string): VmpkConnector {
+    switch (engine) {
+      case "synth":      return createVocalSynthEngine();
+      case "piano+synth": return createLayeredEngine([createAudioEngine(singKeyboardId), createVocalSynthEngine()]);
+      default:            return createAudioEngine(singKeyboardId);
+    }
+  }
+
   const connector: VmpkConnector = useMidi
     ? createVmpkConnector(portName ? { portName } : undefined)
-    : createAudioEngine(singKeyboardId);
+    : buildSingEngine(singEngineStr);
 
-  console.log(useMidi ? `\nConnecting to MIDI...` : `\nStarting ${singKeyboardStr} piano...`);
+  const singEngineLabel = useMidi ? "MIDI" : singEngineStr === "synth" ? "vocal-synth engine" : singEngineStr === "piano+synth" ? `${singKeyboardStr} piano + vocal-synth` : `${singKeyboardStr} piano`;
+  console.log(`\nStarting ${singEngineLabel}...`);
 
   try {
     await connector.connect();
