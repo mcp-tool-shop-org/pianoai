@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Jam Sessions — Instrument Cockpit</title>
+<style>
+:root {
+  --bg: #0d1117; --surface: #161b22; --surface2: #21262d;
+  --border: #30363d; --text: #c9d1d9; --text-muted: #8b949e;
+  --accent: #58a6ff; --accent-dim: #1f6feb33;
+  --note-c: #79c0ff; --note-d: #7ee787; --note-e: #ffa657;
+  --note-f: #ff7b72; --note-g: #d2a8ff; --note-a: #f778ba;
+  --note-b: #f0e68c;
+  --key-white: #e6e6e6; --key-black: #1a1a2e;
+  --font: 'Segoe UI', system-ui, sans-serif;
+  --mono: 'Cascadia Code', 'Fira Code', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--font); font-size: 13px; overflow: hidden; }
+
+/* ─── Layout ─── */
+#app { display: grid; grid-template-rows: 44px 1fr 160px; height: 100vh; }
+
+/* ─── Header ─── */
+header {
+  display: flex; align-items: center; gap: 12px; padding: 0 16px;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+}
+header h1 { font-size: 15px; font-weight: 600; white-space: nowrap; }
+header .sep { width: 1px; height: 24px; background: var(--border); }
+header select, header input[type=number] {
+  background: var(--surface2); color: var(--text); border: 1px solid var(--border);
+  border-radius: 4px; padding: 3px 8px; font-size: 12px; font-family: var(--font);
+}
+header select { cursor: pointer; }
+header input[type=number] { width: 72px; }
+header label { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+.status-badge {
+  font-family: var(--mono); font-size: 11px; padding: 2px 8px;
+  border-radius: 10px; background: var(--surface2); color: var(--text-muted);
+}
+.spacer { flex: 1; }
+
+/* ─── Piano Roll ─── */
+#piano-roll-container {
+  position: relative; overflow: auto; background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+#piano-roll {
+  position: relative; min-height: 100%;
+}
+.pr-grid-line { position: absolute; left: 0; right: 0; height: 1px; background: var(--border); pointer-events: none; }
+.pr-beat-line { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--border); pointer-events: none; opacity: 0.4; }
+.pr-beat-line.bar { opacity: 0.8; }
+.pr-note {
+  position: absolute; border-radius: 3px; cursor: pointer; min-width: 8px;
+  border: 1px solid rgba(255,255,255,0.15); transition: opacity 0.1s;
+  z-index: 2;
+}
+.pr-note:hover { opacity: 0.85; }
+.pr-note.selected { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); z-index: 3; }
+.pr-note .vel-bar {
+  position: absolute; bottom: 0; left: 0; right: 0; border-radius: 0 0 2px 2px;
+  background: rgba(0,0,0,0.3);
+}
+.pr-key-label {
+  position: absolute; left: 4px; font-size: 9px; color: var(--text-muted);
+  font-family: var(--mono); pointer-events: none; z-index: 1; opacity: 0.6;
+}
+.pr-playhead {
+  position: absolute; top: 0; bottom: 0; width: 2px; background: var(--accent);
+  z-index: 10; pointer-events: none; display: none;
+}
+
+/* ─── Note Inspector (inline in header area) ─── */
+#inspector {
+  display: none; gap: 8px; align-items: center; font-size: 11px;
+}
+#inspector.active { display: flex; }
+#inspector label { color: var(--text-muted); display: flex; align-items: center; gap: 3px; }
+#inspector input[type=range] { width: 60px; accent-color: var(--accent); }
+#inspector .note-name { font-family: var(--mono); font-weight: 600; color: var(--accent); min-width: 32px; }
+
+/* ─── Keyboard ─── */
+#keyboard-area {
+  display: grid; grid-template-columns: 1fr 240px; border-top: 1px solid var(--border);
+}
+#keyboard {
+  position: relative; height: 160px; background: var(--bg);
+  user-select: none; -webkit-user-select: none; overflow: hidden;
+}
+.kb-white {
+  position: absolute; bottom: 0; height: 100%; background: var(--key-white);
+  border: 1px solid #aaa; border-radius: 0 0 4px 4px; cursor: pointer; z-index: 1;
+  transition: background 0.08s;
+}
+.kb-white:active, .kb-white.active { background: var(--accent); }
+.kb-black {
+  position: absolute; bottom: 40px; height: 60%; background: var(--key-black);
+  border: 1px solid #000; border-radius: 0 0 3px 3px; cursor: pointer; z-index: 2;
+  transition: background 0.08s;
+}
+.kb-black:active, .kb-black.active { background: #3b82f6; }
+.kb-label {
+  position: absolute; bottom: 4px; text-align: center; font-size: 9px;
+  color: #666; pointer-events: none; z-index: 3; width: 100%;
+}
+.kb-shortcut {
+  position: absolute; bottom: 20px; text-align: center; font-size: 8px;
+  color: #999; pointer-events: none; z-index: 3; width: 100%;
+  font-family: var(--mono); opacity: 0.7;
+}
+
+/* ─── Controls Panel ─── */
+#controls {
+  padding: 12px 16px; background: var(--surface); display: flex; flex-direction: column;
+  gap: 10px; overflow-y: auto; border-left: 1px solid var(--border);
+}
+#controls h3 { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.ctrl-group { display: flex; flex-wrap: wrap; gap: 4px; }
+.ctrl-btn {
+  background: var(--surface2); color: var(--text); border: 1px solid var(--border);
+  border-radius: 4px; padding: 4px 10px; font-size: 11px; cursor: pointer;
+  font-family: var(--font); transition: all 0.1s;
+}
+.ctrl-btn:hover { border-color: var(--accent); }
+.ctrl-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+.ctrl-btn.danger { color: #ff7b72; }
+.ctrl-btn.danger:hover { border-color: #ff7b72; background: #ff7b7222; }
+.ctrl-row { display: flex; align-items: center; gap: 6px; }
+.ctrl-row label { font-size: 11px; color: var(--text-muted); min-width: 40px; }
+.ctrl-row input[type=range] { flex: 1; accent-color: var(--accent); }
+.ctrl-row .val { font-family: var(--mono); font-size: 11px; min-width: 32px; text-align: right; }
+
+/* ─── Telemetry Tiles ─── */
+.telem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.telem-tile {
+  background: var(--bg); border: 1px solid var(--border); border-radius: 4px;
+  padding: 4px 6px; text-align: center;
+}
+.telem-tile .label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; }
+.telem-tile .value { font-size: 14px; font-family: var(--mono); font-weight: 600; }
+
+/* ─── Transport ─── */
+#transport {
+  display: flex; align-items: center; gap: 4px;
+  position: absolute; bottom: 170px; left: 10px; z-index: 20;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+  padding: 4px 8px;
+}
+#transport .ctrl-btn { padding: 4px 8px; font-size: 13px; }
+#transport .time {
+  font-family: var(--mono); font-size: 12px; color: var(--text-muted); min-width: 50px; text-align: center;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border); }
+
+/* ─── Tooltips ─── */
+[data-tip] { position: relative; }
+[data-tip]:hover::after {
+  content: attr(data-tip); position: absolute; bottom: 100%; left: 50%;
+  transform: translateX(-50%); padding: 3px 8px; background: #000;
+  color: #fff; font-size: 10px; border-radius: 3px; white-space: nowrap; z-index: 100;
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ─── Header ─── -->
+  <header>
+    <h1>🎹 Cockpit</h1>
+    <div class="sep"></div>
+
+    <label>Voice
+      <select id="sel-voice"></select>
+    </label>
+
+    <label>Tuning
+      <select id="sel-tuning"></select>
+    </label>
+
+    <label>A4
+      <input type="number" id="ref-pitch" value="440" min="392" max="494" step="1">
+      <span style="font-size:10px;color:var(--text-muted)">Hz</span>
+    </label>
+
+    <div class="sep"></div>
+
+    <div id="inspector">
+      <span class="note-name" id="insp-name">—</span>
+      <label>Vel <input type="range" id="insp-vel" min="1" max="127" value="100"> <span class="val" id="insp-vel-val">100</span></label>
+      <button class="ctrl-btn danger" id="insp-del" data-tip="Delete note (Del)">✕</button>
+    </div>
+
+    <div class="spacer"></div>
+    <span class="status-badge" id="badge-voices">0 voices</span>
+    <span class="status-badge" id="badge-tuning">12-TET</span>
+  </header>
+
+  <!-- ─── Piano Roll ─── -->
+  <div id="piano-roll-container">
+    <div id="piano-roll"></div>
+    <div class="pr-playhead" id="playhead"></div>
+  </div>
+
+  <!-- ─── Transport (floating) ─── -->
+  <div id="transport">
+    <button class="ctrl-btn" id="btn-play" data-tip="Play (Space)">▶</button>
+    <button class="ctrl-btn" id="btn-stop" data-tip="Stop">⏹</button>
+    <button class="ctrl-btn" id="btn-loop" data-tip="Loop">🔁</button>
+    <span class="time" id="transport-time">0:00.0</span>
+    <div class="sep" style="height:18px"></div>
+    <label style="font-size:11px;color:var(--text-muted)">BPM
+      <input type="number" id="bpm" value="120" min="20" max="300" step="1"
+             style="width:48px;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:3px;padding:2px 4px;font-size:11px">
+    </label>
+  </div>
+
+  <!-- ─── Keyboard + Controls ─── -->
+  <div id="keyboard-area">
+    <div id="keyboard"></div>
+
+    <div id="controls">
+      <h3>Actions</h3>
+      <div class="ctrl-group">
+        <button class="ctrl-btn" id="btn-clear" data-tip="Clear all notes">Clear</button>
+        <button class="ctrl-btn danger" id="btn-panic" data-tip="All notes off (Esc)">Panic</button>
+      </div>
+
+      <h3>Live</h3>
+      <div class="telem-grid">
+        <div class="telem-tile"><div class="label">Voices</div><div class="value" id="tl-voices">0</div></div>
+        <div class="telem-tile"><div class="label">Voice</div><div class="value" id="tl-preset">Grand</div></div>
+        <div class="telem-tile"><div class="label">Tuning</div><div class="value" id="tl-tuning">12-TET</div></div>
+        <div class="telem-tile"><div class="label">A4</div><div class="value" id="tl-ref">440</div></div>
+      </div>
+
+      <h3>Master</h3>
+      <div class="ctrl-row">
+        <label>Vol</label>
+        <input type="range" id="master-vol" min="0" max="100" value="80">
+        <span class="val" id="master-vol-val">80</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script type="module" src="./src/main.ts"></script>
+</body>
+</html>
