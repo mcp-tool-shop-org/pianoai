@@ -23,6 +23,9 @@ importers:
       pink-trombone-mod:
         specifier: ^0.1.0
         version: 0.1.0
+      vocal-synth-engine:
+        specifier: github:mcp-tool-shop-org/vocal-synth-engine
+        version: https://codeload.github.com/mcp-tool-shop-org/vocal-synth-engine/tar.gz/9ad563f50ed54c96dc23c87f4e3de4b018635b77
       zod:
         specifier: ^4.3.6
         version: 4.3.6
@@ -445,6 +448,9 @@ packages:
   check-error@2.1.3:
     resolution: {integrity: sha512-PAJdDJusoxnwm1VwW07VWwUN1sl7smmC3OKggvndJFadxxDRyFJBX/ggnu/KE4kQAB7a3Dp8f/YXC1FlUprWmA==}
     engines: {node: '>= 16'}
+
+  cmu-pronouncing-dictionary@3.0.0:
+    resolution: {integrity: sha512-6y5X4OxsYFnHERo6WSVPnLrk53G07MOQ8aUb2z555JgwynpbZsHR0a//WdN6DUcmE1j2auTF2TtL4PpoKze8QQ==}
 
   content-disposition@1.0.1:
     resolution: {integrity: sha512-oIXISMynqSqm241k6kcQ5UwttDILMK4BiurCfGEREw6+X9jkkpEe5T9FZaApyLGGOnFuyMWZpdolTXMtvEJ08Q==}
@@ -987,6 +993,15 @@ packages:
       jsdom:
         optional: true
 
+  vocal-synth-engine@https://codeload.github.com/mcp-tool-shop-org/vocal-synth-engine/tar.gz/9ad563f50ed54c96dc23c87f4e3de4b018635b77:
+    resolution: {tarball: https://codeload.github.com/mcp-tool-shop-org/vocal-synth-engine/tar.gz/9ad563f50ed54c96dc23c87f4e3de4b018635b77}
+    version: 1.0.0
+
+  wavefile@11.0.0:
+    resolution: {integrity: sha512-/OBiAALgWU24IG7sC84cDO/KfFuvajWc5Uec0oV2zrpOOZZDgGdOwHwgEzOrwh8jkubBk7PtZfQBIcI1OaE5Ng==}
+    engines: {node: '>=8'}
+    hasBin: true
+
   web-streams-polyfill@3.3.3:
     resolution: {integrity: sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw==}
     engines: {node: '>= 8'}
@@ -1007,6 +1022,18 @@ packages:
 
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
+
+  ws@8.19.0:
+    resolution: {integrity: sha512-blAT2mjOEIi0ZzruJfIhb3nps74PRWTCz1IjglWEEpQl5XS/UNama6u2/rjFkDDouqr4L67ry+1aGIALViWjDg==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
 
   zod-to-json-schema@3.25.1:
     resolution: {integrity: sha512-pM/SU9d3YAggzi6MtR4h7ruuQlqKtad8e9S0fmxcMi+ueAK5Korys/aWcV9LIIHTVbj01NdzxcnXSN+O74ZIVA==}
@@ -1311,6 +1338,8 @@ snapshots:
       pathval: 2.0.1
 
   check-error@2.1.3: {}
+
+  cmu-pronouncing-dictionary@3.0.0: {}
 
   content-disposition@1.0.1: {}
 
@@ -1878,6 +1907,20 @@ snapshots:
       - tsx
       - yaml
 
+  vocal-synth-engine@https://codeload.github.com/mcp-tool-shop-org/vocal-synth-engine/tar.gz/9ad563f50ed54c96dc23c87f4e3de4b018635b77:
+    dependencies:
+      cmu-pronouncing-dictionary: 3.0.0
+      cors: 2.8.6
+      express: 5.2.1
+      wavefile: 11.0.0
+      ws: 8.19.0
+    transitivePeerDependencies:
+      - bufferutil
+      - supports-color
+      - utf-8-validate
+
+  wavefile@11.0.0: {}
+
   web-streams-polyfill@3.3.3: {}
 
   webidl-conversions@7.0.0: {}
@@ -1892,6 +1935,8 @@ snapshots:
       stackback: 0.0.2
 
   wrappy@1.0.2: {}
+
+  ws@8.19.0: {}
 
   zod-to-json-schema@3.25.1(zod@4.3.6):
     dependencies:

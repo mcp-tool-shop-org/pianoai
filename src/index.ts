@@ -49,6 +49,10 @@ export type { VocalEngineOptions } from "./vocal-engine.js";
 export { createTractEngine, TRACT_VOICE_IDS } from "./vocal-tract-engine.js";
 export type { TractEngineOptions, TractVoiceId } from "./vocal-tract-engine.js";
 
+// Export vocal synth engine (additive synthesis with Kokoro voice presets)
+export { createVocalSynthEngine, listVocalSynthPresets } from "./vocal-synth-adapter.js";
+export type { VocalSynthOptions, VocalSynthTelemetry } from "./vocal-synth-adapter.js";
+
 // Export MIDI connector (optional — for routing to external MIDI software)
 export { createVmpkConnector, createMockVmpkConnector } from "./vmpk.js";
 

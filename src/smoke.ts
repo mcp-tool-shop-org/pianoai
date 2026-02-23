@@ -36,6 +36,7 @@ import { PositionTracker } from "./playback/position.js";
 import { PlaybackController } from "./playback/controls.js";
 import { createSingOnMidiHook, midiNoteToSingable, filterClusterForVoice } from "./teaching/sing-on-midi.js";
 import { createLiveMidiFeedbackHook } from "./teaching/live-midi-feedback.js";
+import { listVocalSynthPresets } from "./vocal-synth-adapter.js";
 import { writeMidi } from "midi-file";
 import type { VoiceDirective, AsideDirective, PlaybackProgress, ParseWarning, MidiStatus, MidiNote, VmpkConnector } from "./types.js";
 import type { MidiNoteEvent } from "./midi/types.js";
@@ -594,6 +595,14 @@ test("composed sing + live feedback on PlaybackController", async () => {
   const composed = composeTeachingHooks(singHook, fbHook);
   await controller.play({ speed: 100, teachingHook: composed });
   assert(singD.length > 0, "sing hook should produce directives");
+});
+
+// ─── Test 16: Vocal Synth Engine (additive synthesis presets) ────────────────
+console.log("\nVocal synth engine:");
+test("listVocalSynthPresets discovers bundled presets", () => {
+  const presets = listVocalSynthPresets();
+  assert(presets.length >= 2, `expected 2+ presets, got ${presets.length}`);
+  assert(presets.includes("default-voice"), "should include default-voice");
 });
 
 // ─── Summary ────────────────────────────────────────────────────────────────
