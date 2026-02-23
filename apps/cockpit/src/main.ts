@@ -1,10 +1,12 @@
 // ─── Cockpit Main ────────────────────────────────────────────────────────────
 //
-// UI wiring for the Instrument Cockpit:
-//   - Interactive piano roll (click to add, drag to move/resize, select, delete)
+// UI wiring for the Cockpit (Instrument + Vocal modes):
+//   - Dual-mode piano roll — pitch-class colors (instrument) or vowel colors
+//     (vocal) with per-note vowel/breathiness metadata
 //   - Visual keyboard with QWERTY mapping + MIDI input
-//   - Note inspector (velocity editing)
-//   - Transport (play, stop, loop) with Web Audio scheduling
+//   - Note inspector (velocity + vocal params when in vocal mode)
+//   - Transport (play, stop, loop) with per-note vowel switching
+//   - LLM-facing score API: exportScore() / importScore() / window.__cockpit
 //   - Telemetry dashboard (voice count, preset, tuning, reference pitch)
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -27,6 +29,22 @@ interface Note {
   startSec: number;
   durationSec: number;
   velocity: number;
+  // ── Vocal metadata (present when created in vocal mode) ──
+  vowel?: VowelId;
+  breathiness?: number; // 0–1
+  lyric?: string;       // free-text syllable label (future)
+}
+
+/** Serialisable score snapshot for LLM import/export */
+interface ScoreSnapshot {
+  version: 1;
+  mode: "instrument" | "vocal";
+  bpm: number;
+  voice: string;
+  vocalVoice?: string;
+  tuning: string;
+  refPitch: number;
+  notes: Omit<Note, "id">[];
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -48,6 +66,16 @@ const PC_COLORS = [
 ];
 
 function noteName(midi: number) { return NOTE_NAMES[midi % 12] + (Math.floor(midi / 12) - 1); }
+
+// Vowel → color mapping (vocal mode notes)
+const VOWEL_COLORS: Record<VowelId, string> = {
+  a: "#ff7b72", // open-red
+  e: "#7ee787", // front-green
+  i: "#79c0ff", // close-blue
+  o: "#ffa657", // back-orange
+  u: "#d2a8ff", // round-purple
+};
+const VOWEL_LABELS: Record<VowelId, string> = { a: "/a/", e: "/e/", i: "/i/", o: "/o/", u: "/u/" };
 
 // QWERTY → MIDI (DAW keyboard layout — 2 octaves from C4)
 const QWERTY: Record<string, number> = {
@@ -188,7 +216,14 @@ function setMode(m: "instrument" | "vocal") {
   document.body.classList.toggle("vocal-mode", m === "vocal");
   $("mode-instrument").classList.toggle("active", m === "instrument");
   $("mode-vocal").classList.toggle("active", m === "vocal");
+  rerenderAllNotes();
+  updateInspector();
   updateTelemetry();
+}
+
+/** Read current breathiness slider value 0–1 */
+function getCurrentBreathiness(): number {
+  return parseInt(($('vox-breathiness') as HTMLInputElement).value) / 100;
 }
 
 /** Route noteOn to active engine */
@@ -253,6 +288,7 @@ function buildPianoRoll() {
     const note: Note = {
       id: "n" + nextId++, midi, startSec,
       durationSec: 60 / bpm, velocity: 100,
+      ...(mode === "vocal" ? { vowel: vocalSynth.getVowel(), breathiness: getCurrentBreathiness() } : {}),
     };
     score.push(note);
     renderNote(note);
@@ -286,8 +322,14 @@ function renderNote(note: Note) {
   const el = document.createElement("div");
   el.className = "pr-note";
   el.dataset.noteId = note.id;
-  el.style.background = PC_COLORS[((note.midi % 12) + 12) % 12];
+  applyNoteStyle(el, note);
   positionNote(el, note);
+
+  // ── Vowel label (visible in vocal mode) ──
+  const vlbl = document.createElement("span");
+  vlbl.className = "pr-vowel-label";
+  vlbl.textContent = note.vowel ? VOWEL_LABELS[note.vowel] : "";
+  el.appendChild(vlbl);
 
   // ── Resize handle on right edge ──
   const handle = document.createElement("div");
@@ -322,7 +364,7 @@ function renderNote(note: Note) {
     const onMove = (e2: MouseEvent) => {
       note.startSec = Math.max(0, quantize(origSec + (e2.clientX - startX) / PX_PER_SEC));
       note.midi = Math.max(MIDI_LO, Math.min(MIDI_HI, origMidi - Math.round((e2.clientY - startY) / ROW_H)));
-      el.style.background = PC_COLORS[((note.midi % 12) + 12) % 12];
+      applyNoteStyle(el, note);
       positionNote(el, note);
       updateInspector();
     };
@@ -342,6 +384,30 @@ function positionNote(el: HTMLElement, note: Note) {
   el.style.top = (MIDI_HI - note.midi) * ROW_H + "px";
   el.style.width = Math.max(8, note.durationSec * PX_PER_SEC) + "px";
   el.style.height = ROW_H - 1 + "px";
+}
+
+/** Set background + vowel label based on current mode */
+function applyNoteStyle(el: HTMLElement, note: Note) {
+  if (mode === "vocal" && note.vowel) {
+    el.style.background = VOWEL_COLORS[note.vowel];
+    el.classList.add("pr-note-vocal");
+    const lbl = el.querySelector<HTMLElement>(".pr-vowel-label");
+    if (lbl) lbl.textContent = VOWEL_LABELS[note.vowel];
+  } else {
+    el.style.background = PC_COLORS[((note.midi % 12) + 12) % 12];
+    el.classList.remove("pr-note-vocal");
+    const lbl = el.querySelector<HTMLElement>(".pr-vowel-label");
+    if (lbl) lbl.textContent = "";
+  }
+}
+
+/** Remove + re-render every note (called on mode switch) */
+function rerenderAllNotes() {
+  document.querySelectorAll(".pr-note").forEach(el => el.remove());
+  for (const n of score) renderNote(n);
+  if (selectedNote) {
+    document.querySelector(`[data-note-id="${selectedNote.id}"]`)?.classList.add("selected");
+  }
 }
 
 function selectNote(note: Note | null) {
@@ -371,7 +437,19 @@ function updateInspector() {
   $("insp-name").textContent = noteName(selectedNote.midi);
   ($("insp-vel") as HTMLInputElement).value = String(selectedNote.velocity);
   $("insp-vel-val").textContent = String(selectedNote.velocity);
-}
+  // Vocal-specific inspector fields
+  const vSection = $("insp-vocal");
+  if (mode === "vocal" && selectedNote.vowel) {
+    vSection.style.display = "flex";
+    // Highlight active vowel
+    vSection.querySelectorAll<HTMLButtonElement>(".insp-vowel-btn").forEach(b => {
+      b.classList.toggle("active", b.dataset.vowel === selectedNote!.vowel);
+    });
+    ($('insp-breath') as HTMLInputElement).value = String(Math.round((selectedNote.breathiness ?? 0.15) * 100));
+    $("insp-breath-val").textContent = String(Math.round((selectedNote.breathiness ?? 0.15) * 100));
+  } else {
+    vSection.style.display = "none";
+  }}
 
 // ─── Keyboard ────────────────────────────────────────────────────────────────
 
@@ -529,6 +607,9 @@ function bindMidi() {
 
 function togglePlay() { isPlaying ? stop() : play(); }
 
+/** Pending setTimeout ids for per-note vowel switches */
+const scheduledVowelTimers: ReturnType<typeof setTimeout>[] = [];
+
 function play() {
   stop();
   if (score.length === 0) return;
@@ -543,8 +624,19 @@ function play() {
 
   for (const note of sorted) {
     if (note.startSec + note.durationSec <= offset) continue;
+    const delayMs = Math.max(0, (note.startSec - offset)) * 1000;
     const onTime = audioNow + Math.max(0, note.startSec - offset);
     const offTime = audioNow + Math.max(0, note.startSec + note.durationSec - offset);
+
+    // In vocal mode, schedule vowel + breathiness switch just before noteOn
+    if (mode === "vocal" && note.vowel) {
+      const tid = setTimeout(() => {
+        vocalSynth.setVowel(note.vowel!);
+        if (note.breathiness !== undefined) vocalSynth.setBreathiness(note.breathiness);
+      }, Math.max(0, delayMs - 5)); // 5ms early
+      scheduledVowelTimers.push(tid);
+    }
+
     activeNoteOn(note.midi, note.velocity, onTime);
     activeNoteOff(note.midi, offTime);
   }
@@ -558,6 +650,9 @@ function stop() {
   isPlaying = false;
   synth.allNotesOff();
   vocalSynth.allNotesOff();
+  // Clear scheduled vowel timers
+  for (const t of scheduledVowelTimers) clearTimeout(t);
+  scheduledVowelTimers.length = 0;
   $("btn-play").textContent = "▶";
   if (animFrame) { cancelAnimationFrame(animFrame); animFrame = 0; }
   $("playhead").style.display = "none";
@@ -620,6 +715,25 @@ function bindControls() {
     $("insp-vel-val").textContent = String(selectedNote.velocity);
   });
   $("insp-del").addEventListener("click", deleteSelectedNote);
+
+  // Inspector vocal: per-note vowel + breathiness
+  document.querySelectorAll<HTMLButtonElement>(".insp-vowel-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (!selectedNote || !selectedNote.vowel) return;
+      const v = btn.dataset.vowel as VowelId;
+      selectedNote.vowel = v;
+      // Update the note's visual
+      const el = document.querySelector<HTMLElement>(`[data-note-id="${selectedNote.id}"]`);
+      if (el) applyNoteStyle(el, selectedNote);
+      updateInspector();
+    });
+  });
+  $("insp-breath").addEventListener("input", (e) => {
+    if (!selectedNote) return;
+    const v = parseInt((e.target as HTMLInputElement).value);
+    selectedNote.breathiness = v / 100;
+    $("insp-breath-val").textContent = String(v);
+  });
 
   // Master volume
   $("master-vol").addEventListener("input", (e) => {
@@ -856,6 +970,126 @@ function bindAuditControls() {
   });
 }
 
+// ─── Score Export / Import (LLM API) ─────────────────────────────────────────
+
+function exportScore(): ScoreSnapshot {
+  return {
+    version: 1,
+    mode,
+    bpm,
+    voice: ($(mode === "vocal" ? "sel-vocal-voice" : "sel-voice") as HTMLSelectElement).value,
+    ...(mode === "vocal" ? { vocalVoice: ($("sel-vocal-voice") as HTMLSelectElement).value } : {}),
+    tuning: ($("sel-tuning") as HTMLSelectElement).value,
+    refPitch: parseInt(($("ref-pitch") as HTMLInputElement).value),
+    notes: score.map(({ id: _id, ...rest }) => rest),
+  };
+}
+
+function importScore(snap: ScoreSnapshot) {
+  stop();
+  playPosition = 0;
+  updateTransportTime();
+
+  // Clear existing
+  score.length = 0;
+  selectedNote = null;
+  document.querySelectorAll(".pr-note").forEach(el => el.remove());
+
+  // Apply settings
+  bpm = snap.bpm ?? 120;
+  ($("bpm") as HTMLInputElement).value = String(bpm);
+  drawBeatLines();
+
+  // Mode
+  if (snap.mode === "vocal" || snap.mode === "instrument") setMode(snap.mode);
+
+  // Voice
+  if (snap.mode === "vocal" && snap.vocalVoice) {
+    ($("sel-vocal-voice") as HTMLSelectElement).value = snap.vocalVoice;
+    vocalSynth.setVoice(snap.vocalVoice as VocalVoiceId);
+  } else if (snap.voice) {
+    ($("sel-voice") as HTMLSelectElement).value = snap.voice;
+    synth.setVoice(snap.voice as VoiceId);
+  }
+
+  // Tuning
+  if (snap.tuning) {
+    ($("sel-tuning") as HTMLSelectElement).value = snap.tuning;
+    synth.setTuning(snap.tuning as TuningId);
+    vocalSynth.setTuning(snap.tuning as TuningId);
+  }
+  if (snap.refPitch) {
+    ($("ref-pitch") as HTMLInputElement).value = String(snap.refPitch);
+    synth.setRefPitch(snap.refPitch);
+    vocalSynth.setRefPitch(snap.refPitch);
+  }
+
+  // Notes
+  for (const n of snap.notes) {
+    const note: Note = { id: "n" + nextId++, ...n };
+    score.push(note);
+    renderNote(note);
+  }
+
+  updateTuningTable();
+  updateTelemetry();
+  updateInspector();
+}
+
+function bindScoreControls() {
+  $("btn-export-score").addEventListener("click", () => {
+    const json = JSON.stringify(exportScore(), null, 2);
+    ($("score-json") as HTMLTextAreaElement).value = json;
+  });
+
+  $("btn-import-score").addEventListener("click", () => {
+    try {
+      const data = JSON.parse(($("score-json") as HTMLTextAreaElement).value) as ScoreSnapshot;
+      if (!data.notes || !Array.isArray(data.notes)) throw new Error("missing notes");
+      importScore(data);
+    } catch {
+      alert("Invalid score JSON");
+    }
+  });
+}
+
+// Expose API on window so LLMs / automation can control the cockpit
+declare global {
+  interface Window {
+    __cockpit: {
+      exportScore: () => ScoreSnapshot;
+      importScore: (snap: ScoreSnapshot) => void;
+      play: () => void;
+      stop: () => void;
+      panic: () => void;
+      setMode: (m: "instrument" | "vocal") => void;
+      getScore: () => Note[];
+      addNote: (n: Omit<Note, "id">) => void;
+    };
+  }
+}
+
 // ─── Boot ────────────────────────────────────────────────────────────────────
 
-init().catch(console.error);
+async function boot() {
+  await init();
+  bindScoreControls();
+
+  // Expose LLM-facing API
+  window.__cockpit = {
+    exportScore,
+    importScore,
+    play,
+    stop,
+    panic,
+    setMode,
+    getScore: () => [...score],
+    addNote: (n) => {
+      const note: Note = { id: "n" + nextId++, ...n };
+      score.push(note);
+      renderNote(note);
+    },
+  };
+}
+
+boot().catch(console.error);

@@ -264,6 +264,32 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
 .vocal-only { display: none; }
 body.vocal-mode .vocal-only { display: flex; }
 body.vocal-mode .instr-only { display: none; }
+
+/* ─── Vocal Piano Roll Notes ─── */
+.pr-vowel-label {
+  position: absolute; top: 0; left: 2px; font-size: 8px; font-weight: 700;
+  font-family: var(--mono); pointer-events: none; color: rgba(0,0,0,0.65);
+  line-height: 13px; display: none;
+}
+body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
+.pr-note-vocal { border: 1px solid rgba(255,255,255,0.25); }
+
+/* ─── Inspector Vocal Section ─── */
+#insp-vocal { gap: 4px; align-items: center; font-size: 11px; display: none; }
+.insp-vowel-btn {
+  background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border);
+  border-radius: 3px; padding: 1px 5px; font-size: 10px; cursor: pointer;
+  font-family: var(--mono); font-weight: 600; transition: all 0.1s;
+}
+.insp-vowel-btn.active { background: #d946ef33; border-color: #d946ef; color: #d946ef; }
+.insp-vowel-btn:hover { border-color: #d946ef88; }
+
+/* ─── Score Panel ─── */
+.score-json-area {
+  width: 100%; height: 100px; background: var(--bg); color: var(--text);
+  border: 1px solid var(--border); border-radius: 4px; font-family: var(--mono);
+  font-size: 10px; padding: 6px; resize: vertical;
+}
 </style>
 </head>
 <body>
@@ -317,6 +343,15 @@ body.vocal-mode .instr-only { display: none; }
       <span class="note-name" id="insp-name">—</span>
       <label>Vel <input type="range" id="insp-vel" min="1" max="127" value="100"> <span class="val" id="insp-vel-val">100</span></label>
       <button class="ctrl-btn danger" id="insp-del" data-tip="Delete note (Del)">✕</button>
+      <!-- Vocal note inspector -->
+      <div id="insp-vocal">
+        <button class="insp-vowel-btn" data-vowel="a">/a/</button>
+        <button class="insp-vowel-btn" data-vowel="e">/e/</button>
+        <button class="insp-vowel-btn" data-vowel="i">/i/</button>
+        <button class="insp-vowel-btn" data-vowel="o">/o/</button>
+        <button class="insp-vowel-btn" data-vowel="u">/u/</button>
+        <label>Br <input type="range" id="insp-breath" min="0" max="100" value="15" style="width:50px"> <span class="val" id="insp-breath-val">15</span></label>
+      </div>
     </div>
 
     <div class="spacer"></div>
@@ -388,6 +423,13 @@ body.vocal-mode .instr-only { display: none; }
         <button class="ctrl-btn" id="btn-clear" data-tip="Clear all notes">Clear</button>
         <button class="ctrl-btn danger" id="btn-panic" data-tip="All notes off (Esc)">Panic</button>
       </div>
+
+      <h3>Score</h3>
+      <div class="ctrl-group">
+        <button class="ctrl-btn" id="btn-export-score" data-tip="Export score as JSON">Export</button>
+        <button class="ctrl-btn" id="btn-import-score" data-tip="Import score from JSON">Import</button>
+      </div>
+      <textarea class="score-json-area" id="score-json" placeholder="Score JSON — export to inspect, paste to import. LLM API: window.__cockpit"></textarea>
 
       <h3>Live</h3>
       <div class="telem-grid">
