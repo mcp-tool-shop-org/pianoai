@@ -1,6 +1,17 @@
 # Changelog
 
-All notable changes to AI Jam Session will be documented here.
+All notable changes to AI Jam Sessions will be documented here.
+
+## 0.2.0
+
+- Rewrite all 12 genre exemplar annotations with deep musicalLanguage — historical context, bar-by-bar structural analysis, 5 key moments, 5 teaching goals, 5 style tips (including vocal guidance) per song
+- Browser cockpit: dual-mode piano roll (instrument/vocal), 20 voice presets (15 Kokoro + 4 tract + choir/synth-vox), 10 instrument voices, note inspector with per-note vowel/breathiness editing
+- 7 tuning systems (equal, just major/minor, Pythagorean, meantone, Werckmeister III, custom) with adjustable A4 reference and interval tester
+- LLM-facing score API (`window.__cockpit`) — exportScore, importScore, addNote, play, stop, panic, setMode, getScore
+- Formant vocal synthesis engine with 20 browser-side presets and 5 vowel shapes per voice
+- Score import/export panel for full JSON round-tripping
+- Rewrite README and docs landing page to reflect all features
+- 24 MCP tools (up from ~15), 5 sound engines, layered engine combinator
 
 ## 0.1.4
 
