@@ -2,6 +2,13 @@
 
 All notable changes to AI Jam Sessions will be documented here.
 
+## 0.2.1
+
+- Dark-themed landing page (static HTML, GitHub Pages)
+- New logo banner across all READMEs
+- Rewrite all 7 translated READMEs (ja/zh/es/fr/hi/it/pt-BR) for v0.2.0 feature parity
+- Add .nojekyll for reliable Pages deployment
+
 ## 0.2.0
 
 - Rewrite all 12 genre exemplar annotations with deep musicalLanguage — historical context, bar-by-bar structural analysis, 5 key moments, 5 teaching goals, 5 style tips (including vocal guidance) per song

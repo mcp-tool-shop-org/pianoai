@@ -231,7 +231,7 @@ pianoai ports
 
 ## Status
 
-v0.2.0. Five sound engines, 24 MCP tools, 120 songs across 12 genres with deeply annotated exemplars. Browser cockpit with 20 vocal presets, 10 instrument voices, 7 tuning systems, and an LLM-facing score API. Piano roll visualization in two color modes. Practice journal for persistent learning. The MIDI is all there — the library grows as the AI learns.
+v0.2.1. Five sound engines, 24 MCP tools, 120 songs across 12 genres with deeply annotated exemplars. Browser cockpit with 20 vocal presets, 10 instrument voices, 7 tuning systems, and an LLM-facing score API. Piano roll visualization in two color modes. Practice journal for persistent learning. The MIDI is all there — the library grows as the AI learns.
 
 ## License
 
