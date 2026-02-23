@@ -22,7 +22,8 @@
     "docs",
     "README.md",
     "LICENSE",
-    "logo.png"
+    "logo.png",
+    "logo-banner.png"
   ],
   "engines": {
     "node": ">=18.0.0"

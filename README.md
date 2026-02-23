@@ -3,10 +3,8 @@
 </p>
 
 <p align="center">
-  <img src="logo.png" alt="AI Jam Sessions logo" width="180" />
+  <img src="logo-banner.png" alt="AI Jam Sessions" width="520" />
 </p>
-
-<h1 align="center">AI Jam Sessions</h1>
 
 <p align="center">
   <em>Machine Learning the Old Fashioned Way</em>

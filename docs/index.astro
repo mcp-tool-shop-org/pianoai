@@ -1,0 +1,744 @@
+---
+// AI Jam Sessions — Landing Page
+// Standalone Astro page with inline styles (no external deps beyond Astro)
+---
+
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Jam Sessions — Machine Learning the Old Fashioned Way</title>
+  <meta name="description" content="An MCP server that teaches AI to play piano and sing. 120 songs, 12 genres, five sound engines, browser cockpit, practice journal." />
+  <link rel="icon" type="image/png" href="assets/logo-banner.png" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0a0a0f;
+      --bg-card: #12121a;
+      --bg-card-hover: #1a1a26;
+      --border: #1e1e2e;
+      --text: #e4e4ef;
+      --text-dim: #8888a0;
+      --accent: #6d5dfc;
+      --accent-glow: #8b7dff;
+      --coral: #ff6b6b;
+      --blue: #5b9cf6;
+      --green: #4ecdc4;
+      --gold: #ffd93d;
+      --pink: #ff6b9d;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* Subtle radial glow behind hero */
+    .hero-glow {
+      position: absolute;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 600px;
+      background: radial-gradient(ellipse, rgba(109, 93, 252, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative;
+      text-align: center;
+      padding: 5rem 2rem 4rem;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .hero img.logo {
+      width: min(520px, 90vw);
+      height: auto;
+      margin-bottom: 1.5rem;
+      filter: drop-shadow(0 0 40px rgba(109, 93, 252, 0.25));
+    }
+
+    .tagline {
+      font-size: 1.15rem;
+      color: var(--text-dim);
+      max-width: 600px;
+      margin: 0 auto 2rem;
+    }
+
+    .badges {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 2.5rem;
+    }
+    .badges img { height: 22px; }
+
+    .cta-row {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.75rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: var(--accent-glow);
+      box-shadow: 0 0 24px rgba(109, 93, 252, 0.4);
+    }
+    .btn-outline {
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: transparent;
+    }
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent-glow);
+    }
+
+    /* ── Sections ── */
+    section {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #fff;
+    }
+    h2 .dim { color: var(--text-dim); font-weight: 400; }
+
+    .section-lead {
+      color: var(--text-dim);
+      font-size: 1.05rem;
+      max-width: 700px;
+      margin-bottom: 2.5rem;
+    }
+
+    /* ── Idea section ── */
+    .idea-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+
+    .sense-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.25s;
+    }
+    .sense-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+    .sense-card .icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .sense-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: #fff;
+    }
+    .sense-card p {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    /* ── Engine table ── */
+    .engine-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    .engine-table th {
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .engine-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.92rem;
+    }
+    .engine-table tr:last-child td { border-bottom: none; }
+    .engine-table td:first-child {
+      font-weight: 600;
+      color: #fff;
+      white-space: nowrap;
+    }
+    .engine-table td:nth-child(2) {
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+    .engine-table tr:hover td {
+      background: var(--bg-card-hover);
+    }
+
+    /* ── Genre grid ── */
+    .genre-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.75rem;
+    }
+    .genre-chip {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      transition: all 0.2s;
+    }
+    .genre-chip:hover {
+      border-color: var(--accent);
+      background: var(--bg-card-hover);
+    }
+    .genre-chip .name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #fff;
+    }
+    .genre-chip .exemplar {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      margin-top: 0.25rem;
+    }
+    .genre-chip .lesson {
+      font-size: 0.78rem;
+      color: var(--accent-glow);
+      margin-top: 0.35rem;
+      font-style: italic;
+    }
+
+    /* ── Cockpit section ── */
+    .feature-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 0.6rem;
+    }
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      padding: 0.6rem 0;
+      font-size: 0.92rem;
+      color: var(--text);
+    }
+    .feature-list li .dot {
+      flex-shrink: 0;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-top: 0.55rem;
+    }
+
+    /* ── Tools grid ── */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+    }
+    .tool-category {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    .tool-category h3 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.75rem;
+    }
+    .tool-category.learn h3 { color: var(--blue); }
+    .tool-category.play h3 { color: var(--green); }
+    .tool-category.sing h3 { color: var(--pink); }
+    .tool-category.build h3 { color: var(--gold); }
+
+    .tool-category ul {
+      list-style: none;
+    }
+    .tool-category li {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      padding: 0.25rem 0;
+    }
+
+    /* ── Install block ── */
+    .install-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+    }
+    .install-block code {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      background: #1a1a26;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      color: var(--green);
+      margin: 1rem 0;
+      user-select: all;
+    }
+    .install-block .note {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
+
+    .config-block {
+      background: #1a1a26;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      overflow-x: auto;
+      margin-top: 1.25rem;
+      text-align: left;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .config-block .key { color: var(--blue); }
+    .config-block .str { color: var(--green); }
+
+    /* ── Piano roll preview ── */
+    .roll-preview {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      margin-top: 2rem;
+    }
+    .roll-preview img {
+      width: 100%;
+      max-width: 800px;
+      border-radius: 8px;
+    }
+    .roll-preview .caption {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin-top: 0.75rem;
+      font-style: italic;
+    }
+
+    /* ── Journal preview ── */
+    .journal-preview {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      line-height: 1.8;
+      max-width: 640px;
+    }
+    .journal-preview .heading {
+      color: #fff;
+      font-weight: 600;
+    }
+    .journal-preview .tag {
+      color: var(--accent-glow);
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    footer a {
+      color: var(--accent-glow);
+      text-decoration: none;
+    }
+    footer a:hover { text-decoration: underline; }
+
+    /* ── Dividers ── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .hero { padding: 3rem 1.25rem 2.5rem; }
+      section { padding: 2.5rem 1.25rem; }
+      h2 { font-size: 1.4rem; }
+      .cta-row { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════ HERO ════════════════════════════ -->
+<div class="hero">
+  <div class="hero-glow"></div>
+  <img src="assets/logo-banner.png" alt="AI Jam Sessions" class="logo" />
+  <p class="tagline">
+    An MCP server that teaches AI to play piano — and sing.<br/>
+    120 songs. Five sound engines. A browser cockpit. A practice journal that remembers everything.
+  </p>
+  <div class="badges">
+    <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml"><img src="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+    <a href="https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions"><img src="https://img.shields.io/npm/v/@mcptoolshop/ai-jam-sessions" alt="npm" /></a>
+    <img src="https://img.shields.io/badge/songs-120_across_12_genres-blue" alt="Songs" />
+    <img src="https://img.shields.io/badge/annotated-24-green" alt="Annotated" />
+  </div>
+  <div class="cta-row">
+    <a href="https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions" class="btn btn-primary">Install from npm</a>
+    <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions" class="btn btn-outline">View on GitHub</a>
+  </div>
+</div>
+
+<hr class="divider" />
+
+<!-- ════════════════════════════ THE IDEA ════════════════════════════ -->
+<section>
+  <h2>The idea</h2>
+  <p class="section-lead">
+    You don't learn music from a textbook. You learn it by sitting at a piano, playing something badly, listening to what went wrong, and trying again. AI Jam Sessions gives an LLM the same experience — real audio, real feedback, real learning.
+  </p>
+  <div class="idea-grid">
+    <div class="sense-card">
+      <div class="icon">📖</div>
+      <h3>Reading</h3>
+      <p>Real MIDI sheet music with deep musical annotations — parsed, analyzed, and explained. Not hand-written approximations.</p>
+    </div>
+    <div class="sense-card">
+      <div class="icon">🔊</div>
+      <h3>Hearing</h3>
+      <p>Five audio engines play through your speakers. The humans in the room become the AI's ears.</p>
+    </div>
+    <div class="sense-card">
+      <div class="icon">👁️</div>
+      <h3>Seeing</h3>
+      <p>A piano roll renders what was played as SVG the model can read back. A browser cockpit with visual keyboard & tuning lab.</p>
+    </div>
+    <div class="sense-card">
+      <div class="icon">🧠</div>
+      <h3>Remembering</h3>
+      <p>A practice journal persists across sessions. Learning compounds over time — the AI never starts from scratch.</p>
+    </div>
+    <div class="sense-card">
+      <div class="icon">🎤</div>
+      <h3>Singing</h3>
+      <p>Vocal tract synthesis with 20 voice presets. Sing-along mode with solfege, contour, and syllable narration.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ════════════════════════════ SOUND ENGINES ════════════════════════════ -->
+<section>
+  <h2>Five sound engines <span class="dim">+ layered combinator</span></h2>
+  <p class="section-lead">
+    From zero-dependency additive synthesis to 480-sample Salamander Grand to physical vocal tract modeling. Layer any two together.
+  </p>
+  <table class="engine-table">
+    <thead>
+      <tr><th>Engine</th><th>Type</th><th>Sound</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Oscillator Piano</td>
+        <td>Additive synthesis</td>
+        <td>Hammer noise, inharmonicity, 48-voice polyphony, stereo imaging. Zero dependencies.</td>
+      </tr>
+      <tr>
+        <td>Sample Piano</td>
+        <td>WAV playback</td>
+        <td>Salamander Grand — 480 samples, 16 velocity layers, 88 keys.</td>
+      </tr>
+      <tr>
+        <td>Vocal (Sample)</td>
+        <td>Pitch-shifted samples</td>
+        <td>Sustained vowel tones with portamento and legato mode.</td>
+      </tr>
+      <tr>
+        <td>Vocal Tract</td>
+        <td>Physical model</td>
+        <td>Pink Trombone — LF glottal waveform, 44-cell waveguide. Soprano, alto, tenor, bass.</td>
+      </tr>
+      <tr>
+        <td>Vocal Synth</td>
+        <td>Additive synthesis</td>
+        <td>15 Kokoro voice presets. Formant shaping, breathiness, vibrato. Deterministic.</td>
+      </tr>
+      <tr>
+        <td>Layered</td>
+        <td>Combinator</td>
+        <td>Wraps two engines — piano+synth, vocal+synth, any combination.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<hr class="divider" />
+
+<!-- ════════════════════════════ SONG LIBRARY ════════════════════════════ -->
+<section>
+  <h2>120 songs, 12 genres</h2>
+  <p class="section-lead">
+    Each genre has a deeply annotated exemplar — historical context, bar-by-bar harmonic analysis, key moments, teaching goals, performance tips with vocal guidance. The AI studies one, then annotates the rest.
+  </p>
+  <div class="genre-grid">
+    <div class="genre-chip">
+      <div class="name">Blues</div>
+      <div class="exemplar">The Thrill Is Gone</div>
+      <div class="lesson">Minor blues form, call-and-response</div>
+    </div>
+    <div class="genre-chip">
+      <div class="name">Classical</div>
+      <div class="exemplar">Für Elise</div>
+      <div class="lesson">Rondo form, touch differentiation</div>
+    </div>
+    <div class="genre-chip">
+      <div class="name">Film</div>
+      <div class="exemplar">Comptine d'un autre été</div>
+      <div class="lesson">Arpeggiated textures, dynamic architecture</div>
+    </div>
+    <div class="genre-chip">
+      <div class="name">Folk</div>
+      <div class="exemplar">Greensleeves</div>
+      <div class="lesson">3/4 waltz, modal mixture</div>
+    </div>
+    <div class="genre-chip">
+      <div class="name">Jazz</div>
+      <div class="exemplar">Autumn Leaves</div>
+      <div class="lesson">ii-V-I progressions, swing eighths</div>
+    </div>
+    <div class="genre-chip">
+      <div class="name">Latin</div>
+      <div class="exemplar">The Girl from Ipanema</div>
+      <div class="lesson">Bossa nova rhythm, chromatic modulation</div>
+    </div>
+    <div class="genre-chip">
+      <div class="name">New-Age</div>
+      <div class="exemplar">River Flows in You</div>
+      <div class="lesson">I-V-vi-IV, flowing arpeggios, rubato</div>
+    </div>
+    <div class="genre-chip">
+      <div class="name">Pop</div>
+      <div class="exemplar">Imagine</div>
+      <div class="lesson">Arpeggiated accompaniment, restraint</div>
+    </div>
+    <div class="genre-chip">
+      <div class="name">Ragtime</div>
+      <div class="exemplar">The Entertainer</div>
+      <div class="lesson">Oom-pah bass, syncopation, multi-strain</div>
+    </div>
+    <div class="genre-chip">
+      <div class="name">R&amp;B</div>
+      <div class="exemplar">Superstition</div>
+      <div class="lesson">16th-note funk, ghost notes</div>
+    </div>
+    <div class="genre-chip">
+      <div class="name">Rock</div>
+      <div class="exemplar">Your Song</div>
+      <div class="lesson">Piano ballad voice-leading, inversions</div>
+    </div>
+    <div class="genre-chip">
+      <div class="name">Soul</div>
+      <div class="exemplar">Lean on Me</div>
+      <div class="lesson">Diatonic melody, gospel accompaniment</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ════════════════════════════ COCKPIT ════════════════════════════ -->
+<section>
+  <h2>The browser cockpit</h2>
+  <p class="section-lead">
+    A full instrument and vocal studio in your browser. No plugins, no DAW — just a web page with a piano.
+  </p>
+  <ul class="feature-list">
+    <li><span class="dot"></span>Dual-mode piano roll — instrument (chromatic) or vocal (vowel-colored)</li>
+    <li><span class="dot"></span>Visual keyboard — QWERTY-mapped, two octaves from C4</li>
+    <li><span class="dot"></span>20 voice presets — Kokoro, tract, choir, synth-vox</li>
+    <li><span class="dot"></span>10 instrument presets — 6 piano voices + synth-pad, organ, bell, strings</li>
+    <li><span class="dot"></span>Note inspector — edit velocity, vowel, breathiness per note</li>
+    <li><span class="dot"></span>7 tuning systems — equal, just, Pythagorean, meantone, Werckmeister III, custom</li>
+    <li><span class="dot"></span>Tuning audit — frequency table, beat-frequency analysis</li>
+    <li><span class="dot"></span>Score import/export — full JSON serialization</li>
+    <li><span class="dot"></span>LLM API — <code style="color: var(--accent-glow); background: none; padding: 0; border: none; font-size: inherit;">window.__cockpit</code> for programmatic composition</li>
+  </ul>
+</section>
+
+<hr class="divider" />
+
+<!-- ════════════════════════════ PIANO ROLL ════════════════════════════ -->
+<section>
+  <h2>Piano roll visualization</h2>
+  <p class="section-lead">
+    Two color modes: hand (blue/coral) or pitch-class (chromatic rainbow). Beat grids, dynamics, measure boundaries. The model sees the image and reads the SVG markup.
+  </p>
+  <div class="roll-preview">
+    <img src="fur-elise-m1-8.svg" alt="Für Elise measures 1-8 piano roll" />
+    <div class="caption">Für Elise, measures 1–8 — E5-D#5 trill in blue, bass accompaniment in coral</div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ════════════════════════════ TOOLS ════════════════════════════ -->
+<section>
+  <h2>24 MCP tools</h2>
+  <p class="section-lead">Four categories covering the full learning cycle.</p>
+  <div class="tools-grid">
+    <div class="tool-category learn">
+      <h3>Learn (8)</h3>
+      <ul>
+        <li>list_songs</li>
+        <li>song_info</li>
+        <li>registry_stats</li>
+        <li>library_progress</li>
+        <li>list_measures</li>
+        <li>teaching_note</li>
+        <li>suggest_song</li>
+        <li>practice_setup</li>
+      </ul>
+    </div>
+    <div class="tool-category play">
+      <h3>Play (6)</h3>
+      <ul>
+        <li>play_song</li>
+        <li>stop_playback</li>
+        <li>pause_playback</li>
+        <li>set_speed</li>
+        <li>playback_status</li>
+        <li>view_piano_roll</li>
+      </ul>
+    </div>
+    <div class="tool-category sing">
+      <h3>Sing (2)</h3>
+      <ul>
+        <li>sing_along</li>
+        <li>ai_jam_sessions</li>
+      </ul>
+    </div>
+    <div class="tool-category build">
+      <h3>Build (8)</h3>
+      <ul>
+        <li>add_song</li>
+        <li>import_midi</li>
+        <li>annotate_song</li>
+        <li>save_practice_note</li>
+        <li>read_practice_journal</li>
+        <li>list_keyboards</li>
+        <li>tune_keyboard</li>
+        <li>get_keyboard_config</li>
+        <li>reset_keyboard</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ════════════════════════════ JOURNAL ════════════════════════════ -->
+<section>
+  <h2>The practice journal</h2>
+  <p class="section-lead">
+    One markdown file per day. The server logs the session, the AI writes its own reflections. Next session, it picks up where it left off.
+  </p>
+  <div class="journal-preview">
+    <span class="heading">### 14:32 — Autumn Leaves</span><br/>
+    <span class="tag">**jazz**</span> | intermediate | G minor | 69 BPM × 0.7 | 32/32 measures | 45s<br/><br/>
+    The ii-V-I in bars 5-8 (Cm7-F7-BbMaj7) is the same gravity<br/>
+    as the V-i in The Thrill Is Gone, just in major. Blues and<br/>
+    jazz share more than the genre labels suggest.<br/><br/>
+    Next: try at full speed. Compare the Ipanema bridge modulation.
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ════════════════════════════ INSTALL ════════════════════════════ -->
+<section>
+  <div class="install-block">
+    <h2>Get started</h2>
+    <code>npm install -g @mcptoolshop/ai-jam-sessions</code>
+    <p class="note">Node.js 18+. No MIDI drivers, no virtual ports, no extra software.</p>
+    <div class="config-block">
+      <span class="key">"mcpServers"</span>: &#123;<br/>
+      &nbsp;&nbsp;<span class="key">"ai_jam_sessions"</span>: &#123;<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"command"</span>: <span class="str">"npx"</span>,<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"-p"</span>, <span class="str">"@mcptoolshop/ai-jam-sessions"</span>, <span class="str">"ai-jam-sessions-mcp"</span>]<br/>
+      &nbsp;&nbsp;&#125;<br/>
+      &#125;
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════ FOOTER ════════════════════════════ -->
+<footer>
+  <p>
+    MIT License · v0.2.0 ·
+    <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions">GitHub</a> ·
+    <a href="https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions">npm</a> ·
+    <a href="https://github.com/mcp-tool-shop-org">MCP Tool Shop</a>
+  </p>
+</footer>
+
+</body>
+</html>
