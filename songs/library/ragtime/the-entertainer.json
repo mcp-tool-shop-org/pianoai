@@ -4,14 +4,32 @@
   "genre": "ragtime",
   "difficulty": "intermediate",
   "key": "C major",
-  "tags": ["ragtime", "joplin", "classic", "syncopation", "the-sting"],
+  "tags": ["ragtime", "joplin", "classic", "syncopation", "the-sting", "multi-strain", "pedagogical"],
   "composer": "Scott Joplin",
   "status": "ready",
   "musicalLanguage": {
-    "description": "The most famous ragtime piece ever written, and the piece that revived Joplin's legacy when it was featured in The Sting (1973). Ragtime is 'ragged time' — syncopated right-hand melodies over a steady left-hand oom-pah bass. Joplin insisted: 'It is never right to play ragtime fast.'",
-    "structure": "AABBACCDD — classic ragtime multi-strain form. Each strain is 16 bars. The C and D strains modulate to F major (the subdominant).",
-    "keyMoments": ["The iconic opening pickup notes: the most recognized piano intro in ragtime", "The B strain: contrasting, more lyrical character", "The modulation to F major at the C strain: a lift that changes the whole color", "The D strain: the final, most energetic section"],
-    "teachingGoals": ["Ragtime left-hand pattern: bass note on 1 and 3, chord on 2 and 4 (oom-pah)", "Right-hand syncopation against steady left-hand pulse", "Multi-strain form navigation (AABBACCDD)", "Playing at Joplin's intended tempo — moderate, not fast"],
-    "styleTips": ["DO NOT play this fast — Joplin was explicit about this", "The left hand must be rock steady — it's the timekeeper", "Right hand syncopation should feel playful, not frantic", "Each strain has its own character — bring out the contrasts", "No pedal in ragtime — clean, crisp articulation"]
+    "description": "Published in 1902 by Scott Joplin — the 'King of Ragtime' — and resurrected to global fame through Marvin Hamlisch's arrangement for the 1973 film 'The Sting.' Ragtime (literally 'ragged time') is the first uniquely American piano genre, born from the fusion of African-American syncopated rhythmic patterns with European march and dance forms. The right hand plays syncopated melodies that deliberately land *between* the beats, while the left hand maintains a rock-steady 'oom-pah' pattern (bass note on beats 1 and 3, chord on beats 2 and 4). This rhythmic tension — strict regularity in the left hand versus playful displacement in the right — is the defining feature of ragtime and the ancestor of jazz, boogie-woogie, and stride piano. Joplin wrote at the top of his rags: 'Notice: Do not play this piece fast. It is never right to play Ragtime fast.' He was explicit because performers invariably speed up, mistaking frantic energy for the dignified, danceable groove Joplin intended. The multi-strain form (AABBACCDD) comes from military marches, giving the piece a journey-like structure with distinct 'rooms' of contrasting character.",
+    "structure": "Multi-strain march form: Introduction (4 bars) → AA (first strain, C major, 16 bars repeated) → BB (second strain, C major, 16 bars repeated) → A (first strain return, no repeat) → Transition (4 bars modulating to F major) → CC (third strain, F major, 16 bars repeated) → DD (fourth strain, F major, 16 bars repeated). Each strain is a self-contained 16-bar melodic unit with its own character. The modulation to F major (the subdominant) at the C strain follows march convention and provides the lift of a new key after the ear has settled into C. The D strain often serves as the emotional climax — the final, most energetic statement before the piece ends without returning to the opening.",
+    "keyMoments": [
+      "The iconic 4-bar introduction and pickup notes into the A strain: the most recognized piano intro in ragtime — a chromatic ascending figure that sets up the syncopated main theme. These few notes tell the listener immediately 'this is ragtime' and demonstrate how a short intro can establish an entire genre identity.",
+      "The A strain's syncopated melody: the right hand consistently anticipates the beat, landing on the 'and' (the eighth note between beats) while the left hand's oom-pah anchors beats 1-2-3-4 without deviation. This is the purest distillation of ragtime rhythm and the first skill to master.",
+      "The B strain contrast: a more lyrical, flowing melody with longer note values, providing relief from the A strain's perky syncopation. This teaches that contrast between strains is structural — each section should have a distinctly different character, like movements of a suite.",
+      "The modulation to F major at the C strain: the key shifts up a fourth, brightening the entire piece. In march form, this modulation traditionally signals the 'trio' — the lyrical heart of the piece. The fresh tonality after 48 bars of C major re-energizes the listener's ear.",
+      "The D strain climax: the final strain is typically the most rhythmically active and exciting, bringing the piece to a decisive, unambiguous ending. In ragtime, unlike pop music, there is no return to the opening theme — the piece is a one-way journey through contrasting territories."
+    ],
+    "teachingGoals": [
+      "Ragtime left-hand pattern (oom-pah): bass note (root or fifth) on beats 1 and 3, chord (triad in close position) on beats 2 and 4. The left hand must be absolutely metronomic — it is the drum kit, the metronome, and the bass player all at once. Any unevenness destroys the groove.",
+      "Right-hand syncopation against a steady pulse: placing melodic notes on the 'and' of beats while the left hand plays ON the beats. This deliberate conflict is what makes ragtime 'ragged' — the hands are in rhythmic tension, and that tension creates energy.",
+      "Multi-strain form navigation (AABBACCDD): understanding how a piece can progress through multiple distinct sections without a traditional verse-chorus structure. Each strain's repeat allows the listener to absorb it; the no-repeat A return provides a brief anchor before the modulation.",
+      "Tempo discipline: playing at Joplin's intended moderate tempo (around 100 BPM, NOT faster) teaches that groove and clarity are more musical than speed. Fast ragtime loses the syncopation — the notes blur into evenness and the magic vanishes.",
+      "Clean, crisp articulation without sustain pedal: ragtime should be played with almost no sustain pedal — each note has a clear beginning and end. This dry, percussive texture comes from ragtime's origins on upright pianos in saloons, where sustain would create mud."
+    ],
+    "styleTips": [
+      "DO NOT play this fast. This is not a suggestion — it is the composer's explicit written instruction. Joplin's rags should be played at a moderate, stately tempo (around 92-104 BPM). Fast ragtime loses the groove and becomes a technical exercise instead of music.",
+      "The left hand is the boss. If your left hand isn't perfectly steady and even, nothing else matters. Practice the oom-pah pattern alone until it's as automatic as walking — then add the right hand on top.",
+      "Right-hand syncopation should feel playful and cheeky, not anxious or frantic. The notes are placed between beats because they're *choosing* to be there, like a dancer who deliberately steps on the offbeat but is in complete control.",
+      "Each strain has its own personality: the A strain is perky and bright, the B strain is smoother and more lyrical, the C strain (in the new key) is expansive, and the D strain is assertive. Bring out these character differences through touch and dynamics.",
+      "No pedal. Or almost none. Ragtime's clarity depends on dry, separated notes. If a note should sustain, hold it with your finger, not the pedal. The sound should be crisp, like a tap dancer on a wooden floor. Save the sustain pedal for Debussy."
+    ]
   }
 }

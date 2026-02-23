@@ -4,14 +4,32 @@
   "genre": "film",
   "difficulty": "intermediate",
   "key": "E minor",
-  "tags": ["film", "tiersen", "amelie", "french", "arpeggiated"],
+  "tags": ["film", "tiersen", "amelie", "french", "arpeggiated", "minimalist", "nostalgia"],
   "composer": "Yann Tiersen",
   "status": "ready",
   "musicalLanguage": {
-    "description": "The musical heart of Amelie (2001). Tiersen built this piece from repeating arpeggiated patterns that cycle through Em, C, G, and D — simple chords that, through repetition and gradual layering, create an overwhelming sense of bittersweet nostalgia. It sounds harder than it is, which makes it a perfect intermediate piece.",
-    "structure": "A (right hand melody over arpeggios) - B (fuller, both hands arpeggiated) - A return - Coda",
-    "keyMoments": ["The opening right-hand arpeggio figure: the Em pattern that defines the whole piece", "The left hand entry: when the piece fills out and the emotion deepens", "The climactic section: both hands moving in parallel arpeggios at full intensity"],
-    "teachingGoals": ["Arpeggiated accompaniment patterns across chord changes", "Building intensity through dynamics, not complexity", "Hand independence — different arpeggio patterns in each hand", "Pedal technique for sustaining arpeggios without muddiness"],
-    "styleTips": ["Keep the arpeggios absolutely even — mechanical precision creates the hypnotic effect", "Build dynamics gradually across sections, not within phrases", "The sustain pedal is critical — change it cleanly on each chord change", "Don't rush — the tempo should feel unhurried, like a memory unfolding"]
+    "description": "Written for Jean-Pierre Jeunet's 2001 film 'Le Fabuleux Destin d'Amélie Poulain,' this piece became the defining sound of cinematic nostalgia in the 21st century. Yann Tiersen — a Breton multi-instrumentalist influenced by minimalism and musette — built the entire piece from a single arpeggiated gesture cycling through Em, C, G, and D. These are four of the simplest chords on the piano, yet through relentless repetition, gradual dynamic layering, and the hypnotic quality of the 3/4 waltz meter, they produce an almost overwhelming bittersweet ache. The piece shows that emotional power in music has nothing to do with harmonic complexity — it emerges from pattern, breath, and patience. For vocalists, this piece demonstrates how melody can emerge *from* accompaniment patterns: the top notes of the arpeggios trace a vocal line that rises and falls like a half-remembered conversation.",
+    "structure": "Introduction (bars 1–8): sparse right-hand arpeggios in Em, establishing the pattern in 3/4 time. A section (bars 9–32): the main arpeggio figure fully realized, both hands cycling through Em-C-G-D, with the right hand carrying a melodic thread in its top notes. B section (bars 33–56): fuller texture — the left hand joins with its own counter-arpeggio pattern, dynamics swell from mp to mf, and the emotional temperature rises. A' return (bars 57–72): the original pattern decorated with octave doublings and slightly wider voicings. Coda (bars 73–end): gradual diminuendo, the pattern dissolving back to the single-note sparseness of the opening.",
+    "keyMoments": [
+      "Bars 1–8, the opening right-hand arpeggio: just one hand, one pattern, one chord — yet this sparse gesture immediately establishes the entire emotional world of the piece. It teaches that a musical idea's first statement should be unadorned.",
+      "Bars 9–16, left-hand entry: when the bass joins, the harmonic cycle becomes complete (Em-C-G-D) and the piece suddenly has depth. This moment teaches how a single new element can transform a texture.",
+      "Bars 33–40, the B section swell: both hands now move in parallel arpeggiated motion, dynamics climbing toward the piece's emotional peak. The harmony hasn't changed at all — the intensity comes entirely from texture, register, and volume.",
+      "The top-note melody hidden in the arpeggios: if you extract just the highest note from each right-hand group, a stepwise vocal melody emerges. This teaches how accompaniment and melody can be the same gesture viewed from different angles.",
+      "The coda's dissolution: the piece doesn't end with a cadence — it evaporates, the way a memory fades. This teaches that not every piece needs a definitive ending."
+    ],
+    "teachingGoals": [
+      "Arpeggiated accompaniment across chord changes: learning to reshape the same physical hand pattern over Em, C, G, and D while maintaining absolute rhythmic evenness",
+      "Dynamic architecture without harmonic change: the entire emotional arc of this piece is built on dynamics and texture, not new chords — this is the core lesson of minimalist composition",
+      "Hand independence with similar motion: both hands play arpeggio patterns, but they interlock rather than mirror — training the brain to manage two independent but related streams",
+      "Pedal technique for arpeggiated textures: the sustain pedal must change cleanly on each chord change (every 2 bars) to sustain the arpeggio without bleeding one harmony into the next",
+      "Waltz feel in 3/4 time: the piece flows in three, with a gentle emphasis on beat 1 — this is not a stiff 1-2-3 but a circular, breathing pulse"
+    ],
+    "styleTips": [
+      "The arpeggios must be metronomically even — the hypnotic effect depends on mechanical precision in the fingers while the dynamics breathe freely. Think of a music box: the mechanism is exact, but the music it produces is wistful.",
+      "Build dynamics across entire sections, not within individual bars. The swell from pp to mf should take 16 bars, not 2. Think in paragraphs, not sentences.",
+      "Change the sustain pedal exactly on beat 1 of each new chord. Lift, re-depress, and let the new harmony bloom. Muddy pedaling destroys this piece.",
+      "The tempo should feel like unhurried walking — around 100 BPM for the dotted half note. If the arpeggios feel frantic, you're too fast. Tiersen's own recordings are remarkably patient.",
+      "When singing over this piece, the voice should enter like another instrument in the texture — float above the arpeggios with a light, slightly breathy tone. French chanson style: intimate, conversational, never belted."
+    ]
   }
 }

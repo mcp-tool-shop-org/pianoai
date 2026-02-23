@@ -4,14 +4,32 @@
   "genre": "folk",
   "difficulty": "beginner",
   "key": "E minor",
-  "tags": ["folk", "english", "renaissance", "traditional", "waltz"],
+  "tags": ["folk", "english", "renaissance", "traditional", "waltz", "modal", "vocal"],
   "composer": "Traditional",
   "status": "ready",
   "musicalLanguage": {
-    "description": "One of the oldest melodies still in active performance, dating to the English Renaissance (c. 1580). Written in 3/4 time with a distinctive minor-key waltz feel, it moves between the natural minor and the raised 7th (D# leading tone), creating the characteristic 'ancient' sound. Also known as 'What Child Is This?' in its Christmas carol form.",
-    "structure": "A (verse) - A (repeat) - B (chorus/refrain, 'Alas, my love') - B (repeat). Simple binary form.",
-    "keyMoments": ["The opening E minor descent: sets the melancholy, ancient mood", "The raised D# in the melody: the modal inflection that gives Greensleeves its character", "The B section ('Alas, my love'): the melody rises to its highest point, the emotional peak"],
-    "teachingGoals": ["3/4 time (waltz) feel and phrasing", "Minor key melody with modal inflections (natural vs harmonic minor)", "Simple left-hand accompaniment patterns in triple meter", "Phrasing across bar lines — the melody doesn't always start on beat 1"],
-    "styleTips": ["Feel the waltz — gentle emphasis on beat 1, lighter on 2 and 3", "The melody should sing — connect the notes legato", "Keep the accompaniment simple and quiet, like a lute", "This is Renaissance music — restraint and elegance, not Romantic drama"]
+    "description": "One of the oldest melodies still in active performance, first referenced in 1580 during the reign of Elizabeth I. The legend that Henry VIII composed it for Anne Boleyn is almost certainly false, but it speaks to the song's regal, melancholy character. Written in 3/4 waltz time in E minor, Greensleeves is remarkable for its use of the Dorian mode — the 6th degree wavers between C-natural (natural minor) and C# (Dorian), and the 7th wavers between D-natural and D# (harmonic minor leading tone). These modal inflections give the melody its unmistakable 'ancient' sound that no purely major or minor piece can replicate. As 'What Child Is This?' it became one of the most beloved Christmas carols, proving how melody transcends context. For vocalists, this is an ideal first piece: the range is modest (about an octave), the phrasing follows natural speech rhythm, and the 3/4 meter encourages smooth, legato singing with natural breath points at phrase endings.",
+    "structure": "Binary form with repeat: A (verse, 8 bars) - A (repeat) - B (refrain/'Alas, my love,' 8 bars) - B (repeat). The A section melody descends from the 5th (B) through the minor scale to the tonic (E), while the B section ascends to the highest note (high E or D) creating an emotional arch. The harmonic progression emphasizes Em, D, C, and B7, with the B7 dominant creating the characteristic Renaissance cadence. Each section is a self-contained 8-bar sentence with a clear antecedent-consequent phrase structure (4+4 bars).",
+    "keyMoments": [
+      "The opening E minor descent (bars 1–4): the melody steps down from B through A-G-F#-E, establishing the melancholy character with its first breath. This stepwise descent is one of the oldest melodic gestures in Western music.",
+      "The raised D# leading tone (bar 7 and similar): when the melody touches D# instead of D-natural, it creates the 'harmonic minor' pull toward the tonic — this modal ambiguity is what makes Renaissance music sound neither fully major nor minor.",
+      "The B section ascent on 'Alas, my love, you do me wrong' (bars 9–12): the melody now rises to its highest pitch, reversing the A section's descent. The word 'Alas' falls on the peak — text and melody are married perfectly, a lesson in word-painting.",
+      "The B7 cadence (bars 15–16): the dominant chord B7 with its D# leading tone resolving to Em is the quintessential Renaissance cadence — it sounds ancient because it IS ancient, predating common-practice tonality.",
+      "The waltz meter throughout: the consistent 3/4 feel, with its strong-weak-weak pattern, gives the piece a swaying, dance-like quality that connects it to the courtly dances of Tudor England."
+    ],
+    "teachingGoals": [
+      "3/4 waltz time: feeling the ONE-two-three pulse, with a gentle emphasis on beat 1 and lighter beats 2 and 3 — the foundation of all triple-meter music from minuets to waltzes",
+      "Modal mixture in minor keys: understanding why D-natural and D# both appear in the same melody, and how the choice between natural and harmonic minor creates different emotional colors",
+      "Simple left-hand accompaniment in triple meter: bass note on beat 1, chord on beats 2–3 (or arpeggiated chord across all three beats) — the most basic and useful piano accompaniment pattern",
+      "Phrasing across bar lines: the melody's pick-up notes (anacrusis) begin before beat 1, teaching that musical phrases don't always align with barlines — essential for natural-sounding performance",
+      "Vocal breath control in 3/4: learning to breathe at the end of 4-bar phrases and sustain through the waltz meter without gasping — the slow tempo makes this an ideal first vocal exercise"
+    ],
+    "styleTips": [
+      "Think of a lute, not a Steinway: the accompaniment should be delicate, plucked-sounding, with minimal sustain pedal. Renaissance music was intimate chamber music, not concert-hall drama.",
+      "The melody should sing with an unbroken legato line — connect every note to the next as if drawing a continuous thread. Lift the hand only at phrase endings.",
+      "Emphasize beat 1 gently but clearly — the waltz must rock, not march. The feeling is a boat on calm water, not soldiers on parade.",
+      "When the melody rises in the B section, let the dynamics rise with it. When it descends, let them fall. The dynamic shape should mirror the melodic contour — this is the simplest and most natural form of musical expression.",
+      "For singing: use a straight, clear tone without vibrato — Renaissance vocal style is pure and direct. The vowels should be open ('Ah-las' not 'Uh-lass'), and the consonants light. Imagine singing in a stone chapel where every sound echoes."
+    ]
   }
 }

@@ -4,14 +4,32 @@
   "genre": "jazz",
   "difficulty": "intermediate",
   "key": "G minor",
-  "tags": ["jazz", "standard", "autumn-leaves", "ii-V-I"],
+  "tags": ["jazz", "standard", "autumn-leaves", "ii-V-I", "circle-of-fourths", "vocal-standard"],
   "composer": "Joseph Kosma",
   "status": "ready",
   "musicalLanguage": {
-    "description": "The quintessential jazz standard. Originally a French chanson (Les Feuilles mortes, 1945), it became the vehicle every jazz musician learns to navigate ii-V-I progressions. The melody traces a descending sequence through the circle of fourths.",
-    "structure": "AABC — 32-bar standard form. A sections establish the ii-V-I-IV in Bb major, B section shifts to relative minor (G minor), C resolves.",
-    "keyMoments": ["Opening phrase: the melody descends stepwise over Cm7-F7-BbMaj7-EbMaj7, outlining the circle of fourths", "The pivot to G minor: where the major brightness shifts to minor melancholy", "Final cadence: Am7b5-D7-Gm resolves the harmonic journey"],
-    "teachingGoals": ["ii-V-I voice leading in major and minor keys", "Guide tones (3rds and 7ths) through chord changes", "Left-hand rootless voicings for jazz comping", "Melodic phrasing with swing eighth notes"],
-    "styleTips": ["Swing the eighth notes — long-short, not even", "Let the left hand comp lightly, don't overpower the melody", "Voice lead smoothly — minimize hand movement between chords", "Think horizontally (melodic lines) not vertically (chord stacks)"]
+    "description": "Originally 'Les Feuilles mortes,' a 1945 French chanson by Joseph Kosma with lyrics by Jacques Prévert for the film 'Les Portes de la nuit.' Johnny Mercer's 1947 English lyrics transformed it into the most-performed jazz standard in history — the piece every jazz musician learns first because it is a self-contained textbook in ii-V-I progressions. The genius of the harmony is that the melody descends stepwise through the circle of fourths: Cm7→F7→BbMaj7→EbMaj7 in the major section, then Am7b5→D7→Gm in the relative minor. This means a single melodic phrase passes through seven chords, each resolving to the next by the strongest harmonic motion in tonal music. For vocalists, Autumn Leaves is the ideal first jazz standard: the range is comfortable (roughly an octave and a third), the melody is largely stepwise (no difficult leaps), and the lyric's metaphor of falling leaves maps naturally onto the descending melodic contour — text and music are inseparable.",
+    "structure": "AABA form, 32 bars. A1 (bars 1–8): the main descending melody over the circle-of-fourths progression in Bb major — Cm7-F7-BbMaj7-EbMaj7-Am7b5-D7-Gm. A2 (bars 9–16): essentially the same melody and harmony repeated with slight melodic variation. B (bars 17–24): the bridge — a contrasting phrase that stays mostly in Bb major/G minor with different rhythmic character, often including a long sustained note. A3 (bars 25–32): final statement of the main theme, resolving firmly to Gm with the Am7b5-D7b9-Gm cadence. In performance, the form repeats with improvised solos over the chord changes.",
+    "keyMoments": [
+      "Bars 1–4, the descending circle-of-fourths sequence (Cm7→F7→BbMaj7→EbMaj7): the melody drops by step while the harmony cycles through the strongest possible chord-to-chord motion. This single phrase teaches more about jazz harmony than most entire textbooks.",
+      "Bars 5–8, the pivot to minor (Am7b5→D7→Gm): the sequence that was in Bb major suddenly darkens to G minor. The Am7b5 (half-diminished) is the pivotal chord — it doesn't exist in major keys and signals the shift to minor. Learning to hear this chord is a milestone.",
+      "The guide-tone line through the whole A section: if you play only the 3rds and 7ths of each chord (ignoring roots and 5ths), a smooth chromatic voice-leading line emerges. This hidden line is the skeleton of jazz voicing and the reason the progression sounds so inevitable.",
+      "The bridge (B section): the rhythmic character changes — longer note values, more space, sometimes a held note over several bars. This teaches that contrast in a jazz standard comes from rhythm and phrasing, not just harmony.",
+      "The final cadence (Am7b5→D7b9→Gm): the b9 on D7 (Eb) adds a dissonance that makes the resolution to Gm more poignant. This altered dominant is the signature sound of minor-key jazz cadences."
+    ],
+    "teachingGoals": [
+      "ii-V-I progressions in major AND minor keys: the foundational harmonic motion of all jazz. Major: Cm7→F7→BbMaj7. Minor: Am7b5→D7→Gm. Learn to hear, play, and voice-lead both.",
+      "Guide tones (3rds and 7ths): the notes that define chord quality. Learning to connect guide tones smoothly between chords is the single most important jazz piano skill — it produces professional-sounding voicings with minimal hand movement.",
+      "Left-hand rootless voicings: instead of playing root-position chords, use Type A (starting from the 3rd: 3-5-7-9) and Type B (starting from the 7th: 7-9-3-5) voicings that leave the root to the bass player. This is how working jazz pianists actually play.",
+      "Swing eighth-note feel: jazz eighths are not even (straight) or dotted (shuffle) — they sit somewhere in between, closer to a triplet feel. The long-short pattern should feel like rolling, not hopping.",
+      "Melodic embellishment for jazz singing: learning to approach target notes from a half-step below (chromatic approach), add grace notes, and slightly alter rhythm while keeping the essential melody audible — the fundamental jazz vocal technique"
+    ],
+    "styleTips": [
+      "Swing the eighth notes: the ratio should be approximately 2:1 (long-short), not even. But don't exaggerate — real swing is subtle, more of a lilt than a lurch. Listen to Chet Baker's version for the ideal relaxed swing.",
+      "Voice lead smoothly between chords: the top note of your left-hand voicing should move by step or half-step to the next chord. If your hand is jumping large distances, your voicings are wrong.",
+      "Think horizontally, not vertically: instead of grabbing chord after chord as isolated blocks, hear them as a continuous flowing line. Jazz piano is about *lines*, not stacks.",
+      "Leave space in comping: don't play on every beat. The classic jazz comp rhythm is syncopated — hit on the 'and' of 2 and on 4, or use the Charleston rhythm (beat 1, and-of-2). Space between chords is what makes jazz breathe.",
+      "For singing: think of how you'd tell someone a story at a quiet dinner. Jazz vocals are conversational — you're confiding, not projecting. Place consonants lightly, sustain vowels, and bend into notes from slightly below (a subtle scoop, not a country slide). Billie Holiday, not Barbra Streisand."
+    ]
   }
 }

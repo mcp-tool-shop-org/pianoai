@@ -4,14 +4,32 @@
   "genre": "pop",
   "difficulty": "beginner",
   "key": "C major",
-  "tags": ["pop", "lennon", "piano", "iconic", "ballad"],
+  "tags": ["pop", "lennon", "piano", "iconic", "ballad", "vocal-hymn", "protest-song"],
   "composer": "John Lennon",
   "status": "ready",
   "musicalLanguage": {
-    "description": "The most famous piano ballad in pop history. Lennon's simple C major arpeggiation over a slow pulse creates an intimate, hymn-like quality. The genius is in what's left out — no fills, no flourishes, just the song.",
-    "structure": "Intro - Verse 1 - Verse 2 - Chorus - Verse 3 - Chorus - Outro",
-    "keyMoments": ["The opening piano figure: C to Cmaj7 arpeggiation that defines the entire song", "The F major shift in the verse: 'Imagine there's no heaven'", "The chorus arrival on G: the emotional release point"],
-    "teachingGoals": ["Clean arpeggiated accompaniment patterns", "Smooth chord transitions with common tones", "Sustain pedal usage for legato feel", "Dynamics as storytelling — building through verses to chorus"],
-    "styleTips": ["Keep it simple — resist the urge to add ornaments", "The right hand arpeggio pattern should be even and unhurried", "Pedal changes on chord changes, never muddy", "This song teaches restraint more than technique"]
+    "description": "Released in 1971, 'Imagine' is arguably the most influential piano-driven pop song ever recorded. John Lennon wrote it on a white Steinway grand in his Tittenhurst Park estate, and the production — by Lennon, Yoko Ono, and Phil Spector — deliberately strips everything back to voice and piano for the verses, letting the band enter only at the chorus. The piano part is an arpeggiated C major pattern of almost childlike simplicity: the right hand breaks the chord while the left anchors the root. The entire song uses only 6 chords (C, Cmaj7, F, Am, Dm, G), all in root position or first inversion, all playable by a first-year student. Yet this simplicity IS the message — Lennon wanted the music to sound as universal and unadorned as the lyric's vision of a world without borders. For vocalists, this is a critical teaching piece: the melody sits in the low-to-mid speaking range, the phrasing follows natural English speech patterns, and the emotional content demands sincerity over technique. If you can sing 'Imagine' convincingly, you understand that vocal performance is about belief, not belting.",
+    "structure": "Intro (bars 1–4): the piano alone, establishing the C-Cmaj7 arpeggio pattern — two bars that tell the listener everything about what kind of song this will be. Verse 1 (bars 5–16): 'Imagine there's no heaven' — voice enters over the continuing arpeggio, melody moving between C, F, and their neighbors. Verse 2 (bars 17–28): 'Imagine there's no countries' — same musical structure, lyrics deepening. Chorus (bars 29–36): 'You may say I'm a dreamer' — the melody rises to its highest point on G, the harmony opens to include Dm and G for a sense of arrival. Verse 3 (bars 37–48): 'Imagine no possessions.' Final Chorus (bars 49–end): repeat and fade. The form is devastatingly simple — there is no bridge, no modulation, no surprise. The surprise is that you don't need one.",
+    "keyMoments": [
+      "Bars 1–2, the opening C-Cmaj7 arpeggio: two bars of piano alone that are among the most recognized in all of popular music. The Cmaj7 adds a single note (B-natural) to the C major chord, creating a gentle dissonance that gives warmth. This teaches that one altered note can transform a chord's character.",
+      "Bars 5–8, the vocal entrance on 'Imagine there's no heaven': the melody enters on a low C, barely above speaking pitch, and the delivery is conversational — not sung so much as confided. This teaches that vulnerability in the low register can be more powerful than drama in the high register.",
+      "Bars 13–16, the F-Am-Dm-G resolution at 'It's easy if you try': the first time the harmony moves beyond C and F, introducing Am, Dm, and G. These four chords create a complete cadential cycle that resolves satisfyingly — but Lennon delays this resolution to the end of each verse, building gentle tension.",
+      "Bars 29–30, the chorus arrival on 'You may say I'm a dreamer': the melody reaches its highest note, the harmony moves to G major (the dominant), and the feeling shifts from meditative to affirmative. This is the emotional payoff the verses have been building toward.",
+      "The arpeggio pattern itself: the right hand breaks each chord in a consistent eighth-note pattern while the left plays the root. This texture never changes — it is the musical equivalent of a steady heartbeat. The constancy teaches that accompaniment reliability creates the space for vocal expression."
+    ],
+    "teachingGoals": [
+      "Clean arpeggiated accompaniment: breaking chords in a steady eighth-note rhythm with even finger weight. This is the foundational pop-piano skill — the same pattern appears in hundreds of ballads from Adele to Coldplay.",
+      "Chord transitions with common tones: C to Cmaj7 changes one note. C to Am changes one note. C to F shares C as a common tone. Learning to identify and hold common tones makes chord changes seamless rather than lurchy.",
+      "Sustain pedal as musical glue: the pedal sustains the arpeggio into a full chord sonority. Change it on each new harmony, never let two different chords bleed. This clean pedal technique is the difference between beautiful piano and muddy piano.",
+      "Vocal phrasing as speech: the melody follows the natural rhythm of English — 'i-MA-gine there's NO hea-VEN' falls exactly where you'd stress those words in conversation. Learning to let speech rhythm guide musical rhythm is the core of pop vocal technique.",
+      "Dynamic storytelling across verses: each verse should be slightly different — a bit louder, a bit more intense, a bit more committed. The piano starts pp and builds to mp; the voice starts confessional and builds to conviction. This graduated arc teaches long-form dynamic shaping."
+    ],
+    "styleTips": [
+      "Resist the urge to embellish. The entire power of this piece lies in its restraint. Every note Lennon plays is essential; nothing is decorative. If you add fills, runs, or ornaments, you're working against the song.",
+      "The arpeggio pattern should be metronomically even — no rushing, no rubato. The steadiness creates a meditative, almost hypnotic quality. Think of a pendulum: precise, calm, reliable.",
+      "Each chord change should be as smooth as possible — aim for zero gap between chords. Pedal helps, but finger legato is primary. Practice transitioning between C and F until it's seamless.",
+      "The pace of the song is around 76 BPM quarter note — walking speed, thinking speed. It should feel like you have all the time in the world. If you feel rushed, slow down.",
+      "For singing: forget everything you know about 'good singing.' This song demands honesty, not technique. Sing in your speaking register, let vowels be natural (not operatically rounded), let breath sounds be audible, and mean the words. Lennon's vocal on the recording is imperfect — slightly nasal, slightly flat in places — and that imperfection is what makes it human and devastating."
+    ]
   }
 }

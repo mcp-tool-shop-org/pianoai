@@ -4,14 +4,32 @@
   "genre": "blues",
   "difficulty": "intermediate",
   "key": "B minor",
-  "tags": ["blues", "bb-king", "minor-blues", "slow-blues"],
+  "tags": ["blues", "bb-king", "minor-blues", "slow-blues", "vocal", "string-arrangement"],
   "composer": "Roy Hawkins",
   "status": "ready",
   "musicalLanguage": {
-    "description": "B.B. King's signature song and the definitive minor blues. Unlike the standard 12-bar major blues, this uses a minor tonality that gives it an aching, sophisticated quality. The piano part provides the harmonic bed over which the vocal and guitar cry.",
-    "structure": "12-bar minor blues form: i-i-i-i / iv-iv-i-i / V-iv-i-V (turnaround). Repeats for verses.",
-    "keyMoments": ["The opening Bm vamp: sets the dark, resigned mood", "The iv chord (Em): the emotional deepening in bars 5-6", "The V-iv-i turnaround: the classic minor blues resolution"],
-    "teachingGoals": ["Minor blues form (contrast with major 12-bar blues)", "Blues piano comping patterns — rhythmic chords on beats 2 and 4", "Minor pentatonic fills between vocal phrases", "Understanding the emotional arc of a 12-bar form"],
-    "styleTips": ["Play behind the beat slightly — blues drags, it doesn't rush", "Leave space — the rests are as important as the notes", "Tremolo chords in the right hand add B.B. King-style tension", "The left hand keeps a steady, sparse bass line — don't overplay"]
+    "description": "Roy Hawkins wrote 'The Thrill Is Gone' in 1951, but it was B.B. King's 1969 recording — with its revolutionary addition of orchestral strings over a minor blues — that turned it into the single most important modern blues performance. The move from standard major-key 12-bar blues to a minor tonality (Bm) was radical: it replaced the usual swaggering bravado with resignation and hurt. The vocal delivery is conversational, almost defeated, with King's guitar answering each sung phrase in a call-and-response that dates back to field hollers. As a piano vehicle, this song teaches the art of comping behind a vocalist — providing the harmonic bed while leaving vast space for the voice and lead instrument to breathe.",
+    "structure": "12-bar minor blues, repeating for each verse. Bars 1–4: Bm7 (i) — tonic pedal, establishing the ache. Bars 5–6: Em7 (iv) — the subdominant deepening. Bars 7–8: Bm7 (i) — return. Bars 9–10: F#7 (V) to Em7 (iv) — the turnaround tension. Bars 11–12: Bm7 (i) to F#7 (V) — cadential turnaround leading back to the top. The form is deceptively simple; the emotional arc comes from dynamics, vocal phrasing, and what happens *between* the chords.",
+    "keyMoments": [
+      "Bars 1–4, the Bm7 vamp opening: the single chord establishing mood before any melody arrives — this teaches that groove and feel can say more than harmony",
+      "Bars 5–6, the Em7 (iv chord): the first harmonic motion, felt as an emotional deepening — the vocal line typically rises here against the descending bass",
+      "Bars 9–10, the F#7-Em7 turnaround: the moment of maximum tension, where dominant wants to resolve but passes through iv first — unique to minor blues",
+      "The vocal call-and-guitar-response gaps: every sung phrase ends with 1–2 bars of silence filled by instrumental response — the piano must *not* fill these gaps",
+      "The string entrance (in the original recording): when the arrangement swells from sparse trio to orchestral fullness — a lesson in building intensity over multiple choruses"
+    ],
+    "teachingGoals": [
+      "Minor blues form vs. major 12-bar blues — understanding why i-iv-V in minor sounds fundamentally different from I-IV-V in major",
+      "Blues comping: rhythmic chord stabs on beats 2 and 4 (the backbeat), with the left hand walking a sparse bass line on 1 and 3",
+      "Call-and-response phrasing — learning when NOT to play is as important as what to play; the piano must breathe with the vocalist",
+      "Minor pentatonic scale (B-D-E-F#-A) for fills: the five notes that define the blues vocabulary in this key",
+      "Dynamic arc over a repeating form — each 12-bar chorus should build slightly, so the fifth chorus hits harder than the first without changing a single note"
+    ],
+    "styleTips": [
+      "Play behind the beat — not late, but *leaning back*. Blues time is relaxed, almost lazy. If you feel like you're rushing, you definitely are.",
+      "Less is more: B.B. King famously said 'one note can say more than a thousand.' Apply this to piano — a single well-placed chord with space around it beats a flurry of notes.",
+      "Use tremolo (rapidly alternating) chords in the right hand during climactic moments to create the shimmering tension King's band used.",
+      "The left hand should outline roots and fifths, not full chords — give the harmony room to breathe. Think upright bass, not pipe organ.",
+      "When singing, the vocal should be conversational and slightly behind the beat too — the words should feel like they're being *confessed*, not performed. Drop the jaw, darken the vowels, and let phrases trail off."
+    ]
   }
 }

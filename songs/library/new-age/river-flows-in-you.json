@@ -4,14 +4,32 @@
   "genre": "new-age",
   "difficulty": "intermediate",
   "key": "A major",
-  "tags": ["new-age", "yiruma", "arpeggiated", "romantic", "korean"],
+  "tags": ["new-age", "yiruma", "arpeggiated", "romantic", "korean", "pop-canon", "gateway-piece"],
   "composer": "Yiruma",
   "status": "ready",
   "musicalLanguage": {
-    "description": "The most-searched piano piece on the internet. Yiruma (Lee Ru-ma) wrote this in 2001 and it became the gateway drug for a generation of piano learners. Built on flowing arpeggios over a I-V-vi-IV progression (the 'pop canon'), its beauty lies in the seamless right-hand melody floating over left-hand waves.",
-    "structure": "Intro (sparse) - A (melody with arpeggios) - B (fuller, more intense) - A return (decorated) - Coda",
-    "keyMoments": ["The opening sparse notes: establishes the key and mood with minimal material", "The main melody entry: the singable right-hand theme that everyone knows", "The B section climax: fuller texture, both hands active, emotional peak", "The return: the melody comes back, now decorated and more confident"],
-    "teachingGoals": ["Flowing arpeggiated left-hand accompaniment", "Melody projection — making the right-hand melody sing above the accompaniment", "I-V-vi-IV progression recognition (the most common progression in pop music)", "Tempo rubato — subtle push and pull of timing for expression"],
-    "styleTips": ["The left hand is a river — constant, flowing, even", "The right hand floats above — slightly louder, singing", "Use pedal generously but change on every chord", "Small tempo fluctuations are welcome — this isn't a metronome piece", "Don't overdo dynamics — the range is pp to mf, never ff"]
+    "description": "Written in 2001 by Yiruma (Lee Ru-ma), a Korean-born, London-trained pianist, 'River Flows in You' became the most-searched piano piece on the internet and the gateway drug for an entire generation of self-taught pianists. Its massive online popularity stems from a perfect storm: the piece sounds impressive but is achievable by intermediate players, the melody is instantly singable, and the visual spectacle of flowing arpeggios looks dazzling on camera. Harmonically, it is built on the I-V-vi-IV progression in A major (A-E-F#m-D) — the same four chords that underpin thousands of pop hits from 'Let It Be' to 'Someone Like You.' The genius is in the texture: the left hand plays continuous flowing arpeggios (broken chords) that create a shimmering bed of sound, while the right hand floats a lyrical melody above. The piece teaches that keyboard music can be simultaneously simple (four chords, stepwise melody) and magical (through texture, pedaling, and touch). For vocalists, hum or sing the right-hand melody while playing the arpeggios — this develops the critical skill of maintaining an independent vocal line over a busy accompaniment.",
+    "structure": "Intro (bars 1–8): sparse, single notes in the right hand establishing the key of A major with minimal harmony — like a voice testing the silence before committing to a phrase. A section (bars 9–24): the main melody enters over the flowing arpeggio pattern, cycling through A-E-F#m-D. The melody is built from stepwise motion and small intervals, making it effortlessly singable. B section (bars 25–40): the texture thickens — both hands are now active with arpeggios, the dynamic rises to mf, and the melody occupies a higher register. This is the emotional peak. A' return (bars 41–56): the main melody returns, now slightly decorated with passing notes and octave doublings, showing how to vary a theme on repetition. Coda (bars 57–end): a gradual diminuendo and ritardando, the arpeggios thinning back to single notes, the piece dissolving rather than concluding.",
+    "keyMoments": [
+      "Bars 1–8, the sparse intro: single right-hand notes without accompaniment — this silence-into-sound moment teaches that a piece's opening gesture sets an emotional contract with the listener. Starting sparse means you have somewhere to go.",
+      "Bars 9–12, the first full arpeggio cycle (A-E-F#m-D): the left hand's flowing broken-chord pattern begins and suddenly the piece has depth, motion, and warmth. This is the I-V-vi-IV progression — recognizing this pattern unlocks the harmonic DNA of most modern pop music.",
+      "Bars 25–28, the B section climax: both hands are now arpeggiated, the dynamic is at its peak, and the melody reaches its highest notes. The intensity comes entirely from texture and register — the harmony hasn't changed. This teaches that emotional peaks can be built from articulation and dynamics alone.",
+      "The hidden melody in the arpeggio tops: the highest note of each left-hand arpeggio group traces a slow-moving counter-melody beneath the right hand's main theme. Two melodies coexist, an acoustic illusion created by the arpeggio texture.",
+      "The coda's dissolution: instead of a triumphant final chord, the piece retreats to silence — the arpeggios slow, thin, and disappear. This teaches that an ending can be a question mark rather than an exclamation point."
+    ],
+    "teachingGoals": [
+      "I-V-vi-IV progression recognition: the four chords that govern modern pop music. Once you can hear this progression, you can decode thousands of songs — from Adele to U2 to this piece. It's the Rosetta Stone of pop harmony.",
+      "Flowing left-hand arpeggio technique: maintaining absolute evenness across three or four notes per beat while shifting chord shapes every two bars. The fingers must be independent; the wrist must be relaxed; the arm must float.",
+      "Melody projection over accompaniment: making the right-hand melody sing at a slightly higher dynamic level than the busier left hand. This 'foreground/background' balance is the most important textural skill in piano playing.",
+      "Sustain pedal management: the pedal must change on each new chord (every 2 bars) to sustain the arpeggio without harmonies bleeding together. Learning to lift, redepless, and catch the new harmony cleanly is a pedal technique milestone.",
+      "Rubato — controlled tempo flexibility: this piece thrives on subtle push-and-pull with the beat. Slightly rushing toward emotional peaks and relaxing away from them gives the music a breathing, human quality that distinguishes musical playing from mechanical typing."
+    ],
+    "styleTips": [
+      "The left hand is a river — the name is literal. The arpeggios should flow with absolutely even rhythm, like water over stones. Any unevenness breaks the spell. Practice the left hand alone with a metronome until it's automatic.",
+      "The right hand floats above the river — it should always be slightly louder than the left, as if lit by a spotlight. Use arm weight on the melody fingers and lightness on the arpeggio fingers. This differential touch is the core technique.",
+      "Use pedal generously but change it precisely. Half-pedal (lifting only partway) can create a beautiful shimmering sustain without full-pedal muddiness. Experiment with pedal depth.",
+      "The tempo should be around 66-72 BPM for the quarter note — patient, unhurried, like an evening walk. If the arpeggios feel frantic, slow down. Yiruma's own recordings are more spacious than most covers.",
+      "This is music for midnight, not midday. The dynamic range should stay between pp and mf — never forte, never percussive. Think of the piano as emitting light rather than sound. If singing along, use a falsetto or head voice, barely more than a hum — the vocal should blend into the texture, not dominate it."
+    ]
   }
 }

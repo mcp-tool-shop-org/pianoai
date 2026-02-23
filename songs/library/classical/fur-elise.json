@@ -9,27 +9,35 @@
     "beethoven",
     "bagatelle",
     "iconic",
-    "romantic"
+    "romantic",
+    "rondo",
+    "pedagogical"
   ],
   "source": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
   "status": "ready",
   "musicalLanguage": {
-    "description": "One of the most instantly recognizable piano pieces ever written. The gentle, lilting A theme with its signature E-D#-E motif contrasts with more turbulent middle sections.",
-    "structure": "Rondo: A-B-A-C-A",
+    "description": "Composed around 1810 but not published until 1867 (40 years after Beethoven's death), Für Elise is likely the most-played piano piece in history. The identity of 'Elise' remains debated — possibly Therese Malfatti, a student Beethoven proposed to. Structurally it is a Bagatelle (literally 'a trifle'), yet it contains extraordinary contrasts: the gossamer A theme in A minor gives way to a lyrical F major episode, then erupts into a stormy C section with rapid arpeggios and a thundering bass. The piece is a complete miniature education in Classical-era form, dynamics, and touch. For a singing LLM, the A theme's stepwise motion (E-D#-E-D#-E-B-D-C-A) is a perfect model for how a vocal line can build tension through neighbor-note oscillation before resolving downward.",
+    "structure": "Rondo form A-B-A-C-A. A section (bars 1–22): the iconic theme in A minor, piano dynamic, built on the E-D#-E semitone oscillation resolving to Am. B section (bars 23–38): a contrasting lyrical episode moving to the relative major (C major) then to F major, with flowing sixteenth-note passages. A return (bars 39–60). C section (bars 61–82): the dramatic heart — rapid thirty-second-note arpeggios in the left hand under a pounding repeated-note figure, harmonically visiting F major and C major before darkening back. Final A return (bars 83–end): the theme once more, now heard through the emotional lens of everything that came before.",
     "keyMoments": [
-      "Opening A theme: the iconic E-D#-E-D#-E motif",
-      "B section: shift to relative major with running passages",
-      "C section: dramatic left-hand arpeggios in F major"
+      "Bars 1–8, the A theme entrance: the E-D#-E-D#-E neighbor-note motif is one of music's most recognizable gestures — it teaches how two alternating notes can create unbearable tension that only resolves on the downward step to A",
+      "Bars 23–30, the B section in C/F major: the shift from minor to major changes the entire emotional color — the melody becomes singing and lyrical, teaching key-relationship awareness",
+      "Bars 61–68, the C section storm: the left-hand thirty-second-note arpeggios demand a completely different technique — this is where 'easy piece' becomes genuinely challenging, and where dynamic contrast (suddenly forte after pages of piano) teaches dramatic pacing",
+      "The final A return after the C section storm: hearing the gentle theme after the turbulence teaches how context transforms meaning — the same notes now sound fragile, almost vulnerable",
+      "The D#/E oscillation throughout: this half-step tension appears in the theme, in transitional passages, and in cadential moments — recognizing a motif's transformation across a piece is a core analytical skill"
     ],
     "teachingGoals": [
-      "Rondo form recognition",
-      "Gentle touch and dynamics control",
-      "Cross-hand coordination in middle sections"
+      "Rondo form (A-B-A-C-A): understanding how a recurring theme provides structural unity while contrasting episodes provide variety — the foundational form of Classical-era keyboard music",
+      "Touch differentiation: the A theme demands legato cantabile touch (singing tone), the B section needs flowing evenness, the C section requires weighted forte — three different physical approaches in one piece",
+      "Dynamics as architecture: the piece moves from pp to ff and back, and these changes are structural, not decorative — they delineate form",
+      "Left-hand independence: the C section's rapid arpeggios must remain even and controlled while the right hand plays a completely different rhythm above",
+      "Pedaling discipline: the A theme needs minimal pedal (to keep the semitone oscillation clean), while the B section benefits from more sustain — learning when NOT to pedal is as important as when to pedal"
     ],
     "styleTips": [
-      "Light touch on the A theme",
-      "Pedal sparingly in the opening",
-      "Bring out the melody over accompaniment"
+      "The A theme should be played as if singing very quietly to yourself — imaginably breathe between phrases. The touch is light, the fingers close to the keys, almost whispering.",
+      "Do not rush the E-D#-E motif. Many players speed through it to get to the 'tune' — but the tension IS the tune. Let each oscillation register.",
+      "In the B section, bring out the top note of each sixteenth-note group as a melodic line — there is a hidden soprano melody that most players bury inside the figuration.",
+      "The C section is the only place in the piece where you should use arm weight and play from the shoulder. Everywhere else, play from the fingers and wrist.",
+      "Think of this piece as a miniature opera: the A theme is the aria, B is a lyrical interlude, C is the dramatic confrontation, and the final A is the denouement. Shape it as a story, not an exercise."
     ]
   }
 }

@@ -4,14 +4,32 @@
   "genre": "latin",
   "difficulty": "intermediate",
   "key": "F major",
-  "tags": ["latin", "bossa-nova", "jobim", "brazilian", "standard"],
+  "tags": ["latin", "bossa-nova", "jobim", "brazilian", "standard", "vocal-standard", "chromatic-modulation"],
   "composer": "Antonio Carlos Jobim",
   "status": "ready",
   "musicalLanguage": {
-    "description": "The bossa nova standard that conquered the world. Jobim's harmonic genius disguises sophisticated jazz harmony behind a deceptively simple, swaying melody. The B section modulation — up a half step to Gb major — is one of the most elegant key changes in popular music.",
-    "structure": "AABA form. A sections in F major, B section modulates to Gb then returns. 32 bars.",
-    "keyMoments": ["The opening A melody: a languid, syncopated line over FMaj7 that defines bossa nova", "The B section modulation to Gb: the harmonic surprise that elevates the song", "The return to F major: the gentle resolution back home"],
-    "teachingGoals": ["Bossa nova rhythmic pattern — the syncopated comping feel", "Extended jazz harmonies (Maj7, m7, dominant 7th)", "Chromatic voice leading through key changes", "The difference between bossa nova feel and straight jazz swing"],
-    "styleTips": ["The rhythm is everything — bossa nova has a specific syncopated pattern, not swing", "Keep the touch light and even — bossa is intimate, not loud", "The left hand bass pattern should be steady and hypnotic", "Think of ocean waves — gentle, repetitive, mesmerizing"]
+    "description": "Composed in 1962 by Antonio Carlos Jobim with Portuguese lyrics by Vinicius de Moraes (and later English lyrics by Norman Gimbel), 'Garota de Ipanema' is the second most-recorded song in history after 'Yesterday.' It was inspired by a real teenager, Helô Pinheiro, who walked past the Veloso bar on her way to the beach in Rio's Ipanema neighborhood. Musically, it is a masterpiece of disguised complexity: the A section's languid melody over FMaj7-G7 suggests carefree simplicity, but the B section executes one of the most elegant modulations in popular music — a half-step shift from F major to Gb major that sounds like the sun passing behind a cloud. The bossa nova rhythmic feel (derived from samba but relaxed, almost whispered) is the piece's heartbeat: a syncopated comping pattern in the piano's mid-register that never changes, never stops, never draws attention to itself. For vocalists, this is the ultimate lesson in understatement — Astrud Gilberto's famous recording proved that a quiet, almost flat delivery with imperfect English can be more seductive than any technical fireworks.",
+    "structure": "AABA form, 40 bars (extended from the standard 32). A1 (bars 1–8): melody floats over FMaj7 with passing motion through G7, G#dim7, Am7, and Ab7 — deceptively rich harmony under a simple-sounding melody. A2 (bars 9–16): near-identical repeat. B (bars 17–28, extended to 12 bars): the modulation section — the melody shifts up a half-step to GbMaj7, stays there for 4 bars creating a dreamy, suspended quality, then navigates through B major and F#m7 before a chromatic descent brings us back to F. This 12-bar bridge is where Jobim's genius as a harmonist is most visible. A3 (bars 29–40): final statement returning to the FMaj7 home key with a gentle cadential resolution.",
+    "keyMoments": [
+      "Bars 1–4, the opening FMaj7 vamp: the bossa nova comping pattern establishes the rhythmic DNA of the entire piece. The right hand plays syncopated mid-register chord stabs while the left plays a bass pattern mixing quarter notes and syncopations — this groove must be internalized before anything else.",
+      "Bars 17–20, the half-step modulation to GbMaj7: the key simply slides up one semitone. No pivot chord, no preparation — just a chromatic slip that creates an instant dreamlike shift. This is perhaps the most famous modulation in popular music and it teaches that key changes don't need to be dramatic to be devastating.",
+      "Bars 21–24, the chromatic wandering (B major area): away from both F and Gb, the harmony floats through distant keys. The melody hovers on sustained notes while the chords move beneath it — like standing still while the ground shifts. This teaches how a vocal line can anchor over moving harmony.",
+      "Bars 25–28, the chromatic descent back to F: a series of ii-V patterns stepping down by half-steps (F#m7-B7, Fm7-Bb7) that smoothly deposits the listener back in F major. The return home feels like waking from a daydream.",
+      "The bossa nova rhythmic cell throughout: the syncopated pattern (often notated as dotted-quarter, eighth, quarter, quarter in the right hand) that persists unchanged under melody, modulations, and emotional shifts — teaching that groove is the foundation everything else rests on."
+    ],
+    "teachingGoals": [
+      "Bossa nova comping rhythm: the specific syncopated pattern that defines the genre. It is NOT swing and it is NOT straight — it is a Brazilian-specific rhythmic cell derived from samba that must be physically learned, not intellectually understood.",
+      "Extended jazz harmony (Maj7, m7, dom7, dim7, m7b5): the A section alone uses at least 5 different chord qualities. Learning to voice these with smooth connections is essential for any keyboard work beyond pop music.",
+      "Chromatic modulation: the B section's half-step key change teaches the simplest and most dramatic type of modulation — no common chords, just parallel motion. Understanding this opens up the concept that any key can move to any other key at any time.",
+      "Bass-line construction: the left hand in bossa nova is not random — it typically alternates between root and fifth of each chord, with specific rhythmic placement. This independent bass line under syncopated chords is a fundamental coordination skill.",
+      "Vocal restraint and placement: bossa nova singing is quiet, intimate, and placed forward in the mouth. The consonants are light, the vibrato minimal, and the dynamic range narrow (pp to mp at most). This is the opposite of belting and teaches a completely different vocal aesthetic."
+    ],
+    "styleTips": [
+      "The rhythm is everything. Before learning melody or harmony, spend time just playing the bossa nova comping pattern on a single chord until it feels as natural as breathing. If the groove isn't automatic, nothing else will work.",
+      "Keep the touch light and even — bossa nova was born in small apartments and beach bars, not concert halls. Every note should sound like it could be played at 2 AM without waking the neighbors.",
+      "The left-hand bass should be steady and hypnotic, like gentle waves. Root on beat 1, fifth on beat 3 (or its syncopated variant) — this pattern never changes, and that constancy is what makes the harmonic adventures of the B section so effective.",
+      "Don't swing this. The eighth notes are straight (even), not swung. American jazz musicians often make this mistake. Bossa nova's feel comes from its syncopation, not from uneven eighth notes.",
+      "For singing: think Astrud Gilberto, not Ella Fitzgerald. The voice should be small, breathy, and almost whispered — as if you're singing to one person sitting very close. Pronounce words softly, let notes begin without attack, and resist any urge to add power or vibrato. The beauty is in the vulnerability."
+    ]
   }
 }
