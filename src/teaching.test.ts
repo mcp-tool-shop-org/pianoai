@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { getSong, initializeRegistry } from "./songs/index.js";
+import { getSong, initializeFromLibrary } from "./songs/index.js";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-initializeRegistry(join(__dirname, "..", "songs", "builtin"));
+initializeFromLibrary(join(__dirname, "..", "songs", "library"));
 import {
   createConsoleTeachingHook,
   createSilentTeachingHook,
@@ -22,39 +22,39 @@ import { createMockVmpkConnector } from "./vmpk.js";
 import type { VoiceDirective, AsideDirective } from "./types.js";
 
 describe("detectKeyMoments", () => {
-  const moonlight = getSong("moonlight-sonata-mvt1")!;
+  const gymnopedie = getSong("satie-gymnopedie-no1")!;
 
   it("detects key moment at bar 1", () => {
-    const moments = detectKeyMoments(moonlight, 1);
+    const moments = detectKeyMoments(gymnopedie, 1);
     expect(moments.length).toBeGreaterThan(0);
     expect(moments[0]).toContain("Bar 1");
   });
 
   it("detects key moment at bar 5", () => {
-    const moments = detectKeyMoments(moonlight, 5);
+    const moments = detectKeyMoments(gymnopedie, 5);
     expect(moments.length).toBeGreaterThan(0);
     expect(moments[0]).toContain("Bar 5");
   });
 
   it("detects range key moment (7-8)", () => {
-    const moments = detectKeyMoments(moonlight, 7);
+    const moments = detectKeyMoments(gymnopedie, 7);
     expect(moments.length).toBeGreaterThan(0);
     expect(moments[0]).toContain("7-8");
   });
 
   it("also matches bar 8 in the 7-8 range", () => {
-    const moments = detectKeyMoments(moonlight, 8);
+    const moments = detectKeyMoments(gymnopedie, 8);
     expect(moments.length).toBeGreaterThan(0);
   });
 
   it("returns empty for non-key-moment bar", () => {
-    const moments = detectKeyMoments(moonlight, 4);
+    const moments = detectKeyMoments(gymnopedie, 4);
     expect(moments.length).toBe(0);
   });
 
-  it("works with blues (12-bar blues has different patterns)", () => {
-    const blues = getSong("basic-12-bar-blues")!;
-    const bar1 = detectKeyMoments(blues, 1);
+  it("works with fallin (different genre)", () => {
+    const fallin = getSong("fallin")!;
+    const bar1 = detectKeyMoments(fallin, 1);
     expect(bar1.length).toBeGreaterThan(0);
   });
 });
@@ -132,32 +132,32 @@ describe("Session + Teaching Hook integration", () => {
   it("fires teaching hooks during full playback", async () => {
     const mock = createMockVmpkConnector();
     const hook = createRecordingTeachingHook();
-    const song = getSong("moonlight-sonata-mvt1")!;
+    const song = getSong("satie-gymnopedie-no1")!;
     const sc = createSession(song, mock, { teachingHook: hook });
 
     await mock.connect();
     await sc.play();
 
-    // Should have measure-start events for all 8 measures
+    // Should have measure-start events for all 79 measures
     const measureStarts = hook.events.filter((e) => e.type === "measure-start");
-    expect(measureStarts.length).toBe(8);
+    expect(measureStarts.length).toBe(79);
     expect(measureStarts[0].measureNumber).toBe(1);
-    expect(measureStarts[7].measureNumber).toBe(8);
+    expect(measureStarts[78].measureNumber).toBe(79);
 
-    // Should have key-moment events (moonlight has moments at bars 1, 5, 7-8)
+    // Should have key-moment events (gymnopedie has moments at bars 1, 5, 7-8)
     const keyMoments = hook.events.filter((e) => e.type === "key-moment");
     expect(keyMoments.length).toBeGreaterThan(0);
 
     // Should have song-complete event
     const complete = hook.events.filter((e) => e.type === "song-complete");
     expect(complete.length).toBe(1);
-    expect(complete[0].songTitle).toContain("Moonlight");
+    expect(complete[0].songTitle).toContain("Gymnopedie");
   });
 
   it("fires teaching hooks in measure mode", async () => {
     const mock = createMockVmpkConnector();
     const hook = createRecordingTeachingHook();
-    const song = getSong("let-it-be")!;
+    const song = getSong("imagine")!;
     const sc = createSession(song, mock, { mode: "measure", teachingHook: hook });
 
     await mock.connect();
@@ -170,19 +170,19 @@ describe("Session + Teaching Hook integration", () => {
     expect(hook.events.filter((e) => e.type === "song-complete").length).toBe(0);
   });
 
-  it("fires teaching hooks with correct teaching notes", async () => {
+  it("fires teaching hooks for each measure", async () => {
     const mock = createMockVmpkConnector();
     const hook = createRecordingTeachingHook();
-    const song = getSong("moonlight-sonata-mvt1")!;
+    const song = getSong("satie-gymnopedie-no1")!;
     const sc = createSession(song, mock, { mode: "measure", teachingHook: hook });
 
     await mock.connect();
     await sc.play();
 
-    // First measure of moonlight has a teaching note
+    // MIDI-ingested songs may not have teaching notes, but measure-start should fire
     const first = hook.events.find((e) => e.type === "measure-start");
-    expect(first?.teachingNote).toBeDefined();
-    expect(first?.teachingNote).toContain("triplets");
+    expect(first).toBeDefined();
+    expect(first?.measureNumber).toBe(1);
   });
 });
 
@@ -214,10 +214,10 @@ describe("VoiceTeachingHook", () => {
     const sink = async (d: VoiceDirective) => { directives.push(d); };
     const hook = createVoiceTeachingHook(sink);
 
-    await hook.onKeyMoment("Bar 1: the iconic triplet arpeggio pattern");
+    await hook.onKeyMoment("Bar 1: the iconic 7th chords set the dreamy mood");
     expect(directives.length).toBe(1);
     expect(directives[0].blocking).toBe(true);
-    expect(directives[0].text).toContain("triplet");
+    expect(directives[0].text).toContain("7th chords");
   });
 
   it("speaks completion message", async () => {
@@ -225,10 +225,10 @@ describe("VoiceTeachingHook", () => {
     const sink = async (d: VoiceDirective) => { directives.push(d); };
     const hook = createVoiceTeachingHook(sink);
 
-    await hook.onSongComplete(8, "Moonlight Sonata");
+    await hook.onSongComplete(79, "Gymnopedie No. 1");
     expect(directives.length).toBe(1);
-    expect(directives[0].text).toContain("Moonlight Sonata");
-    expect(directives[0].text).toContain("8 measures");
+    expect(directives[0].text).toContain("Gymnopedie No. 1");
+    expect(directives[0].text).toContain("79 measures");
   });
 
   it("respects speakTeachingNotes=false", async () => {
@@ -370,13 +370,13 @@ describe("Voice + Session integration", () => {
     const mock = createMockVmpkConnector();
     const voiceDirectives: VoiceDirective[] = [];
     const voiceHook = createVoiceTeachingHook(async (d) => { voiceDirectives.push(d); });
-    const song = getSong("moonlight-sonata-mvt1")!;
+    const song = getSong("satie-gymnopedie-no1")!;
     const sc = createSession(song, mock, { teachingHook: voiceHook });
 
     await mock.connect();
     await sc.play();
 
-    // Should have spoken teaching notes + key moments + completion
+    // Should have spoken key moments + completion
     expect(voiceDirectives.length).toBeGreaterThan(0);
     const completionMsg = voiceDirectives.find((d) => d.text.includes("Great work"));
     expect(completionMsg).toBeDefined();
@@ -390,7 +390,7 @@ describe("Voice + Session integration", () => {
     const asideHook = createAsideTeachingHook(async (d) => { asideDirectives.push(d); });
     const composed = composeTeachingHooks(voiceHook, asideHook);
 
-    const song = getSong("moonlight-sonata-mvt1")!;
+    const song = getSong("satie-gymnopedie-no1")!;
     const sc = createSession(song, mock, { teachingHook: composed });
 
     await mock.connect();
@@ -406,7 +406,7 @@ describe("Voice + Session integration", () => {
 
 describe("SingAlongHook", () => {
   it("produces note-name directives from measure data", async () => {
-    const song = getSong("let-it-be")!;
+    const song = getSong("imagine")!;
     const directives: VoiceDirective[] = [];
     const sink = async (d: VoiceDirective) => { directives.push(d); };
     const hook = createSingAlongHook(sink, song, { mode: "note-names" });
@@ -418,7 +418,7 @@ describe("SingAlongHook", () => {
   });
 
   it("produces solfege directives", async () => {
-    const song = getSong("let-it-be")!;
+    const song = getSong("imagine")!;
     const directives: VoiceDirective[] = [];
     const sink = async (d: VoiceDirective) => { directives.push(d); };
     const hook = createSingAlongHook(sink, song, { mode: "solfege" });
@@ -430,7 +430,7 @@ describe("SingAlongHook", () => {
   });
 
   it("produces contour directives", async () => {
-    const song = getSong("let-it-be")!;
+    const song = getSong("imagine")!;
     const directives: VoiceDirective[] = [];
     const sink = async (d: VoiceDirective) => { directives.push(d); };
     const hook = createSingAlongHook(sink, song, { mode: "contour" });
@@ -441,7 +441,7 @@ describe("SingAlongHook", () => {
   });
 
   it("respects hand='left'", async () => {
-    const song = getSong("let-it-be")!;
+    const song = getSong("imagine")!;
     const rhDirectives: VoiceDirective[] = [];
     const lhDirectives: VoiceDirective[] = [];
 
@@ -458,7 +458,7 @@ describe("SingAlongHook", () => {
   });
 
   it("respects hand='both'", async () => {
-    const song = getSong("let-it-be")!;
+    const song = getSong("imagine")!;
     const directives: VoiceDirective[] = [];
     const sink = async (d: VoiceDirective) => { directives.push(d); };
     const hook = createSingAlongHook(sink, song, { hand: "both" });
@@ -469,7 +469,7 @@ describe("SingAlongHook", () => {
   });
 
   it("skips key moments and push", async () => {
-    const song = getSong("let-it-be")!;
+    const song = getSong("imagine")!;
     const directives: VoiceDirective[] = [];
     const sink = async (d: VoiceDirective) => { directives.push(d); };
     const hook = createSingAlongHook(sink, song);
@@ -480,29 +480,29 @@ describe("SingAlongHook", () => {
   });
 
   it("speaks completion when speakCompletion=true", async () => {
-    const song = getSong("let-it-be")!;
+    const song = getSong("imagine")!;
     const directives: VoiceDirective[] = [];
     const sink = async (d: VoiceDirective) => { directives.push(d); };
     const hook = createSingAlongHook(sink, song);
 
-    await hook.onSongComplete(8, "Let It Be");
+    await hook.onSongComplete(57, "Imagine");
     expect(directives.length).toBe(1);
-    expect(directives[0].text).toContain("Let It Be");
+    expect(directives[0].text).toContain("Imagine");
     expect(directives[0].blocking).toBe(false);
   });
 
   it("skips completion when speakCompletion=false", async () => {
-    const song = getSong("let-it-be")!;
+    const song = getSong("imagine")!;
     const directives: VoiceDirective[] = [];
     const sink = async (d: VoiceDirective) => { directives.push(d); };
     const hook = createSingAlongHook(sink, song, { speakCompletion: false });
 
-    await hook.onSongComplete(8, "Let It Be");
+    await hook.onSongComplete(57, "Imagine");
     expect(directives.length).toBe(0);
   });
 
   it("uses custom voice and speed", async () => {
-    const song = getSong("let-it-be")!;
+    const song = getSong("imagine")!;
     const directives: VoiceDirective[] = [];
     const sink = async (d: VoiceDirective) => { directives.push(d); };
     const hook = createSingAlongHook(sink, song, { voice: "af_aoede", speechSpeed: 0.8 });
@@ -513,7 +513,7 @@ describe("SingAlongHook", () => {
   });
 
   it("records directives on the hook object", async () => {
-    const song = getSong("let-it-be")!;
+    const song = getSong("imagine")!;
     const sink = async () => {};
     const hook = createSingAlongHook(sink, song);
 
@@ -523,7 +523,7 @@ describe("SingAlongHook", () => {
   });
 
   it("suppresses measure number when announceMeasureNumber=false", async () => {
-    const song = getSong("let-it-be")!;
+    const song = getSong("imagine")!;
     const directives: VoiceDirective[] = [];
     const sink = async (d: VoiceDirective) => { directives.push(d); };
     const hook = createSingAlongHook(sink, song, { announceMeasureNumber: false });
@@ -533,7 +533,7 @@ describe("SingAlongHook", () => {
   });
 
   it("composes with voice hook via composeTeachingHooks", async () => {
-    const song = getSong("moonlight-sonata-mvt1")!;
+    const song = getSong("satie-gymnopedie-no1")!;
     const singDirectives: VoiceDirective[] = [];
     const voiceDirectives: VoiceDirective[] = [];
     const singHook = createSingAlongHook(async (d) => { singDirectives.push(d); }, song);
@@ -549,7 +549,7 @@ describe("SingAlongHook", () => {
 describe("Sing-Along + Session integration", () => {
   it("sing-along hook fires during full playback", async () => {
     const mock = createMockVmpkConnector();
-    const song = getSong("basic-12-bar-blues")!;
+    const song = getSong("fallin")!;
     const directives: VoiceDirective[] = [];
     const hook = createSingAlongHook(async (d) => { directives.push(d); }, song);
     const sc = createSession(song, mock, { teachingHook: hook });
@@ -568,7 +568,7 @@ describe("Sing-Along + Session integration", () => {
 // ─── Live Feedback Hook ──────────────────────────────────────────────────────
 
 describe("LiveFeedbackHook", () => {
-  const moonlight = getSong("moonlight-sonata-mvt1")!;
+  const gymnopedie = getSong("satie-gymnopedie-no1")!;
 
   it("emits voice directives at interval", async () => {
     const voiceD: VoiceDirective[] = [];
@@ -576,7 +576,7 @@ describe("LiveFeedbackHook", () => {
     const hook = createLiveFeedbackHook(
       async (d) => { voiceD.push(d); },
       async (d) => { asideD.push(d); },
-      moonlight,
+      gymnopedie,
       { voiceInterval: 2 }
     );
 
@@ -597,7 +597,7 @@ describe("LiveFeedbackHook", () => {
     const hook = createLiveFeedbackHook(
       async (d) => { voiceD.push(d); },
       async (d) => { asideD.push(d); },
-      moonlight,
+      gymnopedie,
     );
 
     await hook.onMeasureStart(1, undefined, "pp");
@@ -612,7 +612,7 @@ describe("LiveFeedbackHook", () => {
     const hook = createLiveFeedbackHook(
       async (d) => { voiceD.push(d); },
       async (d) => { asideD.push(d); },
-      moonlight,
+      gymnopedie,
     );
 
     await hook.onMeasureStart(1, undefined, "mf");
@@ -627,7 +627,7 @@ describe("LiveFeedbackHook", () => {
     const hook = createLiveFeedbackHook(
       async (d) => { voiceD.push(d); },
       async (d) => { asideD.push(d); },
-      moonlight,
+      gymnopedie,
     );
 
     await hook.onMeasureStart(5, "Watch your finger crossing here", undefined);
@@ -642,10 +642,10 @@ describe("LiveFeedbackHook", () => {
     const hook = createLiveFeedbackHook(
       async (d) => { voiceD.push(d); },
       async (d) => { asideD.push(d); },
-      moonlight,
+      gymnopedie,
     );
 
-    await hook.onKeyMoment("Bar 1: iconic triplet arpeggio");
+    await hook.onKeyMoment("Bar 1: gentle opening melody with 7th chords");
     expect(voiceD.length).toBe(1);
     expect(voiceD[0].text).toContain("Watch for this");
     expect(voiceD[0].blocking).toBe(false);
@@ -657,10 +657,10 @@ describe("LiveFeedbackHook", () => {
     const hook = createLiveFeedbackHook(
       async (d) => { voiceD.push(d); },
       async (d) => { asideD.push(d); },
-      moonlight,
+      gymnopedie,
     );
 
-    await hook.onSongComplete(8, "Moonlight Sonata");
+    await hook.onSongComplete(79, "Gymnopedie No. 1");
     expect(voiceD.length).toBe(1);
     expect(voiceD[0].text).toContain("Fantastic");
     expect(asideD.length).toBe(1);
@@ -672,7 +672,7 @@ describe("LiveFeedbackHook", () => {
     const hook = createLiveFeedbackHook(
       async () => {},
       async (d) => { asideD.push(d); },
-      moonlight,
+      gymnopedie,
       { encourageOnDynamics: false }
     );
 
@@ -686,7 +686,7 @@ describe("LiveFeedbackHook", () => {
     const hook = createLiveFeedbackHook(
       async () => {},
       async (d) => { asideD.push(d); },
-      moonlight,
+      gymnopedie,
       { warnOnDifficult: false }
     );
 
@@ -700,7 +700,7 @@ describe("LiveFeedbackHook", () => {
     const hook = createLiveFeedbackHook(
       async (d) => { voiceD.push(d); },
       async () => {},
-      moonlight,
+      gymnopedie,
       { voice: "narrator", speechSpeed: 0.9, voiceInterval: 1 }
     );
 
@@ -713,7 +713,7 @@ describe("LiveFeedbackHook", () => {
     const hook = createLiveFeedbackHook(
       async () => {},
       async () => {},
-      moonlight,
+      gymnopedie,
       { voiceInterval: 1 }
     );
 
@@ -724,7 +724,7 @@ describe("LiveFeedbackHook", () => {
   });
 
   it("composes with sing-along hook", async () => {
-    const song = getSong("let-it-be")!;
+    const song = getSong("imagine")!;
     const singD: VoiceDirective[] = [];
     const feedbackVoiceD: VoiceDirective[] = [];
     const feedbackAsideD: AsideDirective[] = [];
@@ -749,7 +749,7 @@ describe("LiveFeedbackHook", () => {
 describe("LiveFeedback + Session integration", () => {
   it("live feedback hook fires during full playback", async () => {
     const mock = createMockVmpkConnector();
-    const song = getSong("moonlight-sonata-mvt1")!;
+    const song = getSong("satie-gymnopedie-no1")!;
     const voiceD: VoiceDirective[] = [];
     const asideD: AsideDirective[] = [];
     const hook = createLiveFeedbackHook(

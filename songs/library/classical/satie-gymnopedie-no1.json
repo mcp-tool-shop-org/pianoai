@@ -18,8 +18,9 @@
     "description": "A strikingly modern piece from 1888 — spare, floating, and meditative. The simple waltz-like accompaniment and wandering melody anticipated ambient music by nearly a century.",
     "structure": "A-A'-B: two statements of the theme with a contrasting section",
     "keyMoments": [
-      "Opening: the iconic 7th chords set the dreamy mood",
-      "Melody enters: floating, unresolved, unhurried",
+      "Bar 1: the iconic 7th chords set the dreamy mood",
+      "Bar 5: melody enters — floating, unresolved, unhurried",
+      "Bars 7-8: the phrase resolves before repeating",
       "B section: subtle shift in harmony deepens the mood"
     ],
     "teachingGoals": [

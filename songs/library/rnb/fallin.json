@@ -10,7 +10,7 @@
   "musicalLanguage": {
     "description": "The debut single that launched Alicia Keys' career — a raw, emotional piano ballad built on a hypnotic two-chord ostinato. The simplicity of the harmonic foundation lets the vocal and piano interplay shine.",
     "structure": "Intro - Verse - Chorus - Verse - Chorus - Bridge - Chorus - Outro",
-    "keyMoments": ["Intro: the haunting Em-Bm piano figure that anchors the entire song", "Verse: the piano holds steady while the vocal builds intensity", "Chorus: 'I keep on fallin'' — the melody soars over the repeating figure"],
+    "keyMoments": ["Bar 1: the haunting Em-Bm piano figure that anchors the entire song", "Verse: the piano holds steady while the vocal builds intensity", "Chorus: 'I keep on fallin'' — the melody soars over the repeating figure"],
     "teachingGoals": ["Two-chord ostinato patterns with rhythmic variation", "Building intensity through dynamics, not complexity", "Gospel-influenced piano accompaniment"],
     "styleTips": ["The two-chord pattern must groove, not plod — vary the rhythm subtly each time", "Build dynamics gradually through the verse into the chorus", "The left hand is the heartbeat — keep it absolutely steady"]
   }
