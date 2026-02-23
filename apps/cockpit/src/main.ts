@@ -14,6 +14,10 @@ import {
   type VoiceId, type TuningId, type Synth,
   type TuningTableEntry, type IntervalAnalysis, type TuningExport,
 } from "./synth.js";
+import {
+  createVocalSynth, VOCAL_VOICES, VOCAL_VOICE_IDS, VOWEL_IDS,
+  type VocalVoiceId, type VowelId, type VocalSynth,
+} from "./vocal-synth.js";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -56,6 +60,8 @@ for (const [k, v] of Object.entries(QWERTY)) QWERTY_LABELS[v] = k.toUpperCase();
 // ─── State ───────────────────────────────────────────────────────────────────
 
 let synth: Synth;
+let vocalSynth: VocalSynth;
+let mode: "instrument" | "vocal" = "instrument";
 const score: Note[] = [];
 let selectedNote: Note | null = null;
 let isPlaying = false;
@@ -78,7 +84,9 @@ const $ = (id: string) => document.getElementById(id)!;
 
 async function init() {
   synth = createSynth();
+  vocalSynth = createVocalSynth();
   await synth.connect();
+  await vocalSynth.connect();
   populateSelectors();
   buildPianoRoll();
   buildKeyboard();
@@ -105,6 +113,47 @@ function populateSelectors() {
   vs.value = "grand";
   vs.addEventListener("change", () => { synth.setVoice(vs.value as VoiceId); updateTelemetry(); });
 
+  // ── Vocal voice selector ──
+  const vvs = $("sel-vocal-voice") as HTMLSelectElement;
+  for (const id of VOCAL_VOICE_IDS) {
+    const vc = VOCAL_VOICES[id];
+    const o = document.createElement("option");
+    o.value = id;
+    o.textContent = `${vc.name} (${vc.category})`;
+    o.title = vc.description;
+    vvs.appendChild(o);
+  }
+  vvs.value = "kokoro-af-heart";
+  vvs.addEventListener("change", () => {
+    vocalSynth.setVoice(vvs.value as VocalVoiceId);
+    // Update breathiness/vibrato sliders to match voice defaults
+    const vc = VOCAL_VOICES[vvs.value as VocalVoiceId];
+    ($("vox-breathiness") as HTMLInputElement).value = String(Math.round(vc.breathiness * 100));
+    $("vox-breathiness-val").textContent = String(Math.round(vc.breathiness * 100));
+    ($("vox-vib-depth") as HTMLInputElement).value = String(Math.round(vc.vibratoDepth));
+    $("vox-vib-depth-val").textContent = String(Math.round(vc.vibratoDepth));
+    ($("vox-vib-rate") as HTMLInputElement).value = String(Math.round(vc.vibratoRate * 10));
+    $("vox-vib-rate-val").textContent = vc.vibratoRate.toFixed(1);
+    // Set default vowel for this voice
+    vocalSynth.setVowel(vc.defaultVowel);
+    document.querySelectorAll(".vowel-btn").forEach(b => b.classList.toggle("active", b.getAttribute("data-vowel") === vc.defaultVowel));
+    updateTelemetry();
+  });
+
+  // ── Vowel buttons ──
+  document.querySelectorAll<HTMLButtonElement>(".vowel-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const vid = btn.dataset.vowel as VowelId;
+      vocalSynth.setVowel(vid);
+      document.querySelectorAll(".vowel-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+    });
+  });
+
+  // ── Mode toggle ──
+  $("mode-instrument").addEventListener("click", () => setMode("instrument"));
+  $("mode-vocal").addEventListener("click", () => setMode("vocal"));
+
   const ts = $("sel-tuning") as HTMLSelectElement;
   for (const id of TUNING_IDS) {
     const t = TUNINGS[id];
@@ -115,13 +164,49 @@ function populateSelectors() {
     ts.appendChild(o);
   }
   ts.value = "equal";
-  ts.addEventListener("change", () => { synth.setTuning(ts.value as TuningId); updateTuningTable(); updateTelemetry(); });
+  ts.addEventListener("change", () => {
+    synth.setTuning(ts.value as TuningId);
+    vocalSynth.setTuning(ts.value as TuningId);
+    updateTuningTable(); updateTelemetry();
+  });
 
   ($('ref-pitch') as HTMLInputElement).addEventListener("change", (e) => {
-    synth.setRefPitch(parseInt((e.target as HTMLInputElement).value));
+    const hz = parseInt((e.target as HTMLInputElement).value);
+    synth.setRefPitch(hz);
+    vocalSynth.setRefPitch(hz);
     updateTuningTable();
     updateTelemetry();
   });
+}
+
+// ─── Mode Switching ──────────────────────────────────────────────────────────
+
+function setMode(m: "instrument" | "vocal") {
+  if (m === mode) return;
+  panic();
+  mode = m;
+  document.body.classList.toggle("vocal-mode", m === "vocal");
+  $("mode-instrument").classList.toggle("active", m === "instrument");
+  $("mode-vocal").classList.toggle("active", m === "vocal");
+  updateTelemetry();
+}
+
+/** Route noteOn to active engine */
+function activeNoteOn(midi: number, velocity: number, time?: number) {
+  if (mode === "vocal") vocalSynth.noteOn(midi, velocity, time);
+  else synth.noteOn(midi, velocity, time);
+}
+
+/** Route noteOff to active engine */
+function activeNoteOff(midi: number, time?: number) {
+  if (mode === "vocal") vocalSynth.noteOff(midi, time);
+  else synth.noteOff(midi, time);
+}
+
+/** Route allNotesOff to active engine */
+function activeAllOff() {
+  if (mode === "vocal") vocalSynth.allNotesOff();
+  else synth.allNotesOff();
 }
 
 // ─── Piano Roll ──────────────────────────────────────────────────────────────
@@ -173,8 +258,8 @@ function buildPianoRoll() {
     renderNote(note);
     selectNote(note);
     // Preview sound
-    synth.noteOn(midi, 100);
-    setTimeout(() => synth.noteOff(midi), 180);
+    activeNoteOn(midi, 100);
+    setTimeout(() => activeNoteOff(midi), 180);
   });
 }
 
@@ -385,14 +470,14 @@ function buildKeyboard() {
 function midiKeyDown(midi: number) {
   if (heldMidi.has(midi)) return;
   heldMidi.add(midi);
-  synth.noteOn(midi, 100);
+  activeNoteOn(midi, 100);
   updateKeyVisuals();
 }
 
 function midiKeyUp(midi: number) {
   if (!heldMidi.has(midi)) return;
   heldMidi.delete(midi);
-  synth.noteOff(midi);
+  activeNoteOff(midi);
   updateKeyVisuals();
 }
 
@@ -405,6 +490,7 @@ function updateKeyVisuals() {
 
 function panic() {
   synth.allNotesOff();
+  vocalSynth.allNotesOff();
   heldMidi.clear();
   heldKeys.clear();
   updateKeyVisuals();
@@ -419,8 +505,8 @@ function bindMidi() {
       input.onmidimessage = (e: MIDIMessageEvent) => {
         if (!e.data || e.data.length < 3) return;
         const [status, note, vel] = e.data;
-        if ((status & 0xf0) === 0x90 && vel > 0) { synth.noteOn(note, vel); heldMidi.add(note); updateKeyVisuals(); }
-        else if ((status & 0xf0) === 0x80 || ((status & 0xf0) === 0x90 && vel === 0)) { synth.noteOff(note); heldMidi.delete(note); updateKeyVisuals(); }
+        if ((status & 0xf0) === 0x90 && vel > 0) { activeNoteOn(note, vel); heldMidi.add(note); updateKeyVisuals(); }
+        else if ((status & 0xf0) === 0x80 || ((status & 0xf0) === 0x90 && vel === 0)) { activeNoteOff(note); heldMidi.delete(note); updateKeyVisuals(); }
       };
     }
     // Handle hot-plug
@@ -430,8 +516,8 @@ function bindMidi() {
           input.onmidimessage = (e: MIDIMessageEvent) => {
             if (!e.data || e.data.length < 3) return;
             const [status, note, vel] = e.data;
-            if ((status & 0xf0) === 0x90 && vel > 0) { synth.noteOn(note, vel); heldMidi.add(note); updateKeyVisuals(); }
-            else if ((status & 0xf0) === 0x80 || ((status & 0xf0) === 0x90 && vel === 0)) { synth.noteOff(note); heldMidi.delete(note); updateKeyVisuals(); }
+            if ((status & 0xf0) === 0x90 && vel > 0) { activeNoteOn(note, vel); heldMidi.add(note); updateKeyVisuals(); }
+            else if ((status & 0xf0) === 0x80 || ((status & 0xf0) === 0x90 && vel === 0)) { activeNoteOff(note); heldMidi.delete(note); updateKeyVisuals(); }
           };
         }
       }
@@ -446,7 +532,7 @@ function togglePlay() { isPlaying ? stop() : play(); }
 function play() {
   stop();
   if (score.length === 0) return;
-  const ctx = synth.getContext();
+  const ctx = mode === "vocal" ? vocalSynth.getContext() : synth.getContext();
   if (!ctx) return;
   isPlaying = true;
   $("btn-play").textContent = "⏸";
@@ -459,8 +545,8 @@ function play() {
     if (note.startSec + note.durationSec <= offset) continue;
     const onTime = audioNow + Math.max(0, note.startSec - offset);
     const offTime = audioNow + Math.max(0, note.startSec + note.durationSec - offset);
-    synth.noteOn(note.midi, note.velocity, onTime);
-    synth.noteOff(note.midi, offTime);
+    activeNoteOn(note.midi, note.velocity, onTime);
+    activeNoteOff(note.midi, offTime);
   }
 
   playStartAudio = audioNow;
@@ -471,6 +557,7 @@ function play() {
 function stop() {
   isPlaying = false;
   synth.allNotesOff();
+  vocalSynth.allNotesOff();
   $("btn-play").textContent = "▶";
   if (animFrame) { cancelAnimationFrame(animFrame); animFrame = 0; }
   $("playhead").style.display = "none";
@@ -478,7 +565,7 @@ function stop() {
 
 function animatePlayhead() {
   if (!isPlaying) return;
-  const ctx = synth.getContext();
+  const ctx = mode === "vocal" ? vocalSynth.getContext() : synth.getContext();
   if (!ctx) return;
 
   const elapsed = ctx.currentTime - playStartAudio;
@@ -539,6 +626,25 @@ function bindControls() {
     const v = parseInt((e.target as HTMLInputElement).value);
     $("master-vol-val").textContent = String(v);
     synth.setMasterVolume(v / 100);
+    vocalSynth.setMasterVolume(v / 100);
+  });
+
+  // ── Vocal controls ──
+  $("vox-breathiness").addEventListener("input", (e) => {
+    const v = parseInt((e.target as HTMLInputElement).value);
+    $("vox-breathiness-val").textContent = String(v);
+    vocalSynth.setBreathiness(v / 100);
+  });
+  $("vox-vib-depth").addEventListener("input", (e) => {
+    const v = parseInt((e.target as HTMLInputElement).value);
+    $("vox-vib-depth-val").textContent = String(v);
+    vocalSynth.setVibratoDepth(v);
+  });
+  $("vox-vib-rate").addEventListener("input", (e) => {
+    const v = parseInt((e.target as HTMLInputElement).value);
+    const hz = v / 10;
+    $("vox-vib-rate-val").textContent = hz.toFixed(1);
+    vocalSynth.setVibratoRate(hz);
   });
 
   // BPM
@@ -551,12 +657,17 @@ function bindControls() {
 // ─── Telemetry ───────────────────────────────────────────────────────────────
 
 function updateTelemetry() {
-  const vc = synth.getActiveCount();
+  const vc = mode === "vocal" ? vocalSynth.getActiveCount() : synth.getActiveCount();
   $("tl-voices").textContent = String(vc);
   $("badge-voices").textContent = vc + " voices";
 
-  const v = synth.getVoice();
-  $("tl-preset").textContent = v.name.split(" ")[0];
+  if (mode === "vocal") {
+    const vv = vocalSynth.getVoice();
+    $("tl-preset").textContent = vv.name;
+  } else {
+    const v = synth.getVoice();
+    $("tl-preset").textContent = v.name.split(" ")[0];
+  }
 
   const t = synth.getTuning();
   const label = t.id === "equal" ? "12-TET" : t.id === "custom" ? "Custom" : t.name.split("(")[0].trim();

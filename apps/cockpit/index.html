@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Jam Sessions — Instrument Cockpit</title>
+<title>AI Jam Sessions — Cockpit</title>
 <style>
 :root {
   --bg: #0d1117; --surface: #161b22; --surface2: #21262d;
@@ -237,6 +237,33 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
   font-family: var(--mono);
 }
 .root-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
+/* ─── Mode Toggle ─── */
+.mode-toggle { display: flex; gap: 0; }
+.mode-btn {
+  background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border);
+  padding: 3px 10px; font-size: 11px; cursor: pointer; font-family: var(--font);
+  transition: all 0.15s;
+}
+.mode-btn:first-child { border-radius: 4px 0 0 4px; }
+.mode-btn:last-child { border-radius: 0 4px 4px 0; border-left: none; }
+.mode-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+
+/* ─── Vowel Buttons ─── */
+.vowel-group { display: flex; gap: 2px; }
+.vowel-btn {
+  background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border);
+  border-radius: 3px; padding: 3px 7px; font-size: 11px; cursor: pointer;
+  font-family: var(--mono); font-weight: 600; min-width: 26px; text-align: center;
+  transition: all 0.12s;
+}
+.vowel-btn.active { background: #d946ef33; border-color: #d946ef; color: #d946ef; }
+.vowel-btn:hover { border-color: #d946ef88; }
+
+/* ─── Vocal controls visibility ─── */
+.vocal-only { display: none; }
+body.vocal-mode .vocal-only { display: flex; }
+body.vocal-mode .instr-only { display: none; }
 </style>
 </head>
 <body>
@@ -248,9 +275,32 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
     <h1>🎹 Cockpit</h1>
     <div class="sep"></div>
 
-    <label>Voice
+    <!-- Mode Toggle -->
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="mode-instrument" data-tip="Instrument synthesis">🎹 Instr</button>
+      <button class="mode-btn" id="mode-vocal" data-tip="Vocal synthesis">🎤 Vocal</button>
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- Instrument voice selector -->
+    <label class="instr-only">Voice
       <select id="sel-voice"></select>
     </label>
+
+    <!-- Vocal voice selector -->
+    <label class="vocal-only" style="align-items:center;gap:4px">Voice
+      <select id="sel-vocal-voice"></select>
+    </label>
+
+    <!-- Vowel buttons (vocal mode) -->
+    <div class="vowel-group vocal-only" id="vowel-btns">
+      <button class="vowel-btn active" data-vowel="a">/a/</button>
+      <button class="vowel-btn" data-vowel="e">/e/</button>
+      <button class="vowel-btn" data-vowel="i">/i/</button>
+      <button class="vowel-btn" data-vowel="o">/o/</button>
+      <button class="vowel-btn" data-vowel="u">/u/</button>
+    </div>
 
     <label>Tuning
       <select id="sel-tuning"></select>
@@ -352,6 +402,26 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
         <label>Vol</label>
         <input type="range" id="master-vol" min="0" max="100" value="80">
         <span class="val" id="master-vol-val">80</span>
+      </div>
+
+      <!-- Vocal-mode controls -->
+      <div class="vocal-only" style="flex-direction:column;gap:10px">
+        <h3>Vocal</h3>
+        <div class="ctrl-row">
+          <label>Breath</label>
+          <input type="range" id="vox-breathiness" min="0" max="100" value="15">
+          <span class="val" id="vox-breathiness-val">15</span>
+        </div>
+        <div class="ctrl-row">
+          <label>Vib D</label>
+          <input type="range" id="vox-vib-depth" min="0" max="100" value="25" data-tip="Vibrato depth (cents)">
+          <span class="val" id="vox-vib-depth-val">25</span>
+        </div>
+        <div class="ctrl-row">
+          <label>Vib R</label>
+          <input type="range" id="vox-vib-rate" min="10" max="120" value="55" data-tip="Vibrato rate (×0.1 Hz)">
+          <span class="val" id="vox-vib-rate-val">5.5</span>
+        </div>
       </div>
     </div>
   </div>
