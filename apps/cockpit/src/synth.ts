@@ -14,7 +14,7 @@
 
 // ─── Tuning Systems ─────────────────────────────────────────────────────────
 
-export type TuningId = "equal" | "just-major" | "just-minor" | "pythagorean" | "meantone" | "werckmeister";
+export type TuningId = "equal" | "just-major" | "just-minor" | "pythagorean" | "meantone" | "werckmeister" | "custom";
 
 export interface TuningSystem {
   id: TuningId;
@@ -55,9 +55,134 @@ export const TUNINGS: Record<TuningId, TuningSystem> = {
     description: "Well temperament (1691). All keys playable, each with distinct color. Bach's likely tuning.",
     cents: [0, 90.22, 192.18, 294.13, 390.22, 498.04, 588.27, 696.09, 792.18, 888.27, 996.09, 1092.18],
   },
+  custom: {
+    id: "custom", name: "Custom",
+    description: "User-defined cent offsets. Edit per pitch class.",
+    cents: [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100],
+  },
 };
 
 export const TUNING_IDS = Object.keys(TUNINGS) as TuningId[];
+
+// ─── Tuning Analysis ────────────────────────────────────────────────────────
+
+const NOTE_NAMES_FULL = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+
+export interface TuningTableEntry {
+  pc: number;
+  name: string;
+  /** Frequency in Hz at octave 4 (MIDI 60-71). */
+  hz: number;
+  /** Cent offset from Equal Temperament (+ = sharp, - = flat). */
+  centsFromET: number;
+  /** Ratio from C in this tuning (e.g. 1.0, 1.5, 2.0). */
+  ratioFromC: number;
+  /** Raw cent value from the tuning table. */
+  rawCents: number;
+}
+
+/** Named pure intervals for professional verification. */
+export interface IntervalAnalysis {
+  note1: number;
+  note2: number;
+  name1: string;
+  name2: string;
+  freq1: number;
+  freq2: number;
+  /** The actual frequency ratio (freq2 / freq1). */
+  actualRatio: number;
+  /** Name of the nearest pure interval (e.g. "P5", "M3"). */
+  intervalName: string;
+  /** The just/pure ratio for that interval (e.g. 3/2 for P5). */
+  pureRatio: number;
+  /** Deviation from pure in cents. 0 = perfectly pure. */
+  deviationCents: number;
+  /** Beat frequency = |f2 - f1 × pureRatio| — audible beating for near-pure intervals. */
+  beatFrequency: number;
+  /** Interval size in cents. */
+  intervalCents: number;
+}
+
+const PURE_INTERVALS: { semitones: number; name: string; ratio: number }[] = [
+  { semitones: 0, name: "P1 (Unison)", ratio: 1 / 1 },
+  { semitones: 1, name: "m2", ratio: 16 / 15 },
+  { semitones: 2, name: "M2", ratio: 9 / 8 },
+  { semitones: 3, name: "m3", ratio: 6 / 5 },
+  { semitones: 4, name: "M3", ratio: 5 / 4 },
+  { semitones: 5, name: "P4", ratio: 4 / 3 },
+  { semitones: 6, name: "TT (Tritone)", ratio: 45 / 32 },
+  { semitones: 7, name: "P5", ratio: 3 / 2 },
+  { semitones: 8, name: "m6", ratio: 8 / 5 },
+  { semitones: 9, name: "M6", ratio: 5 / 3 },
+  { semitones: 10, name: "m7", ratio: 9 / 5 },
+  { semitones: 11, name: "M7", ratio: 15 / 8 },
+  { semitones: 12, name: "P8 (Octave)", ratio: 2 / 1 },
+];
+
+export function computeTuningTable(tuning: TuningSystem, refPitch: number): TuningTableEntry[] {
+  const etCents = TUNINGS.equal.cents;
+  const table: TuningTableEntry[] = [];
+  for (let pc = 0; pc < 12; pc++) {
+    const midi = 60 + pc; // octave 4
+    const hz = midiToFreq(midi, tuning, refPitch);
+    const etHz = midiToFreq(midi, TUNINGS.equal, refPitch);
+    const centsFromET = 1200 * Math.log2(hz / etHz);
+    const cHz = midiToFreq(60, tuning, refPitch);
+    table.push({
+      pc, name: NOTE_NAMES_FULL[pc], hz,
+      centsFromET: Math.round(centsFromET * 100) / 100,
+      ratioFromC: Math.round((hz / cHz) * 100000) / 100000,
+      rawCents: tuning.cents[pc],
+    });
+  }
+  return table;
+}
+
+export function analyzeInterval(
+  midi1: number, midi2: number, tuning: TuningSystem, refPitch: number,
+): IntervalAnalysis {
+  const freq1 = midiToFreq(midi1, tuning, refPitch);
+  const freq2 = midiToFreq(midi2, tuning, refPitch);
+  const actualRatio = freq2 / freq1;
+  const intervalCents = 1200 * Math.log2(actualRatio);
+  const semitones = ((midi2 - midi1) % 12 + 12) % 12;
+  const pure = PURE_INTERVALS[semitones] ?? PURE_INTERVALS[0];
+  const pureCents = 1200 * Math.log2(pure.ratio);
+  const deviationCents = intervalCents - pureCents;
+  const beatFrequency = Math.abs(freq2 - freq1 * pure.ratio);
+
+  return {
+    note1: midi1, note2: midi2,
+    name1: NOTE_NAMES_FULL[midi1 % 12] + (Math.floor(midi1 / 12) - 1),
+    name2: NOTE_NAMES_FULL[midi2 % 12] + (Math.floor(midi2 / 12) - 1),
+    freq1: Math.round(freq1 * 1000) / 1000,
+    freq2: Math.round(freq2 * 1000) / 1000,
+    actualRatio: Math.round(actualRatio * 100000) / 100000,
+    intervalName: pure.name,
+    pureRatio: pure.ratio,
+    deviationCents: Math.round(deviationCents * 100) / 100,
+    beatFrequency: Math.round(beatFrequency * 1000) / 1000,
+    intervalCents: Math.round(intervalCents * 100) / 100,
+  };
+}
+
+export interface TuningExport {
+  name: string;
+  refPitch: number;
+  cents: number[];
+  description?: string;
+  generatedAt: string;
+}
+
+/** All interval tests a professional tuner checks. */
+export const INTERVAL_TESTS = [
+  { label: "P5", semitones: 7, description: "Perfect Fifth (3:2)" },
+  { label: "M3", semitones: 4, description: "Major Third (5:4)" },
+  { label: "m3", semitones: 3, description: "Minor Third (6:5)" },
+  { label: "P4", semitones: 5, description: "Perfect Fourth (4:3)" },
+  { label: "P8", semitones: 12, description: "Octave (2:1)" },
+  { label: "M6", semitones: 9, description: "Major Sixth (5:3)" },
+] as const;
 
 /**
  * MIDI note → frequency using a given tuning system.
@@ -325,11 +450,28 @@ export interface Synth {
   setVoice(id: VoiceId): void;
   setTuning(id: TuningId): void;
   setRefPitch(hz: number): void;
+  setMasterVolume(vol01: number): void;
   getVoice(): VoiceConfig;
   getTuning(): TuningSystem;
   getRefPitch(): number;
   getActiveCount(): number;
   getContext(): AudioContext | null;
+
+  // ── Tuning Verification API ──
+  /** Set custom tuning by providing 12 cent values (C=0..B=11). C must be 0. */
+  setCustomTuning(cents: number[]): void;
+  /** Get the complete tuning table for octave 4 (all 12 notes with Hz, cent deviation, ratio). */
+  getTuningTable(): TuningTableEntry[];
+  /** Analyze the interval between two MIDI notes (ratio, purity, beat frequency). */
+  getIntervalAnalysis(midi1: number, midi2: number): IntervalAnalysis;
+  /** Play a pure sine reference tone at exact tuned frequency (no inharmonicity/detuning). */
+  playReferenceTone(midi: number, durationSec?: number): void;
+  /** Play two notes simultaneously for interval ear-testing. */
+  playInterval(midi1: number, midi2: number, durationSec?: number): void;
+  /** Export current tuning as portable JSON. */
+  exportTuning(): TuningExport;
+  /** Import a tuning from JSON (sets custom tuning + ref pitch). */
+  importTuning(data: TuningExport): void;
 }
 
 export function createSynth(options?: {
@@ -530,11 +672,72 @@ export function createSynth(options?: {
 
     setTuning(id: TuningId) { tuning = TUNINGS[id] ?? TUNINGS.equal; },
     setRefPitch(hz: number) { refPitch = Math.max(392, Math.min(494, hz)); },
+    setMasterVolume(vol01: number) { if (master) master.gain.value = Math.max(0, Math.min(1, vol01)); },
     getVoice() { return voice; },
     getTuning() { return tuning; },
     getRefPitch() { return refPitch; },
     getActiveCount() { return activeVoices.size; },
     getContext() { return ctx; },
+
+    // ── Tuning Verification ──
+
+    setCustomTuning(cents: number[]) {
+      if (cents.length !== 12) throw new Error("Custom tuning must have exactly 12 cent values");
+      TUNINGS.custom = {
+        ...TUNINGS.custom,
+        cents: [0, ...cents.slice(1)], // force C = 0
+      };
+      tuning = TUNINGS.custom;
+    },
+
+    getTuningTable() {
+      return computeTuningTable(tuning, refPitch);
+    },
+
+    getIntervalAnalysis(midi1: number, midi2: number) {
+      return analyzeInterval(midi1, midi2, tuning, refPitch);
+    },
+
+    playReferenceTone(midi: number, durationSec = 2) {
+      const c = ensureCtx();
+      const freq = midiToFreq(midi, tuning, refPitch);
+      const osc = c.createOscillator();
+      osc.type = "sine";
+      osc.frequency.value = freq;
+      const g = c.createGain();
+      g.gain.setValueAtTime(0, c.currentTime);
+      g.gain.linearRampToValueAtTime(0.15, c.currentTime + 0.02);
+      g.gain.setValueAtTime(0.15, c.currentTime + durationSec - 0.1);
+      g.gain.linearRampToValueAtTime(0, c.currentTime + durationSec);
+      osc.connect(g);
+      g.connect(master ?? c.destination);
+      osc.start(c.currentTime);
+      osc.stop(c.currentTime + durationSec);
+    },
+
+    playInterval(midi1: number, midi2: number, durationSec = 3) {
+      synth.playReferenceTone(midi1, durationSec);
+      synth.playReferenceTone(midi2, durationSec);
+    },
+
+    exportTuning(): TuningExport {
+      return {
+        name: tuning.name,
+        refPitch,
+        cents: [...tuning.cents],
+        description: tuning.description,
+        generatedAt: new Date().toISOString(),
+      };
+    },
+
+    importTuning(data: TuningExport) {
+      if (data.cents?.length === 12) {
+        synth.setCustomTuning(data.cents);
+      }
+      if (data.refPitch) {
+        synth.setRefPitch(data.refPitch);
+      }
+    },
   };
 
   return synth;

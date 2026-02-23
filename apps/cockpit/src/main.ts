@@ -10,7 +10,9 @@
 
 import {
   createSynth, VOICES, VOICE_IDS, TUNINGS, TUNING_IDS,
+  INTERVAL_TESTS, computeTuningTable, analyzeInterval,
   type VoiceId, type TuningId, type Synth,
+  type TuningTableEntry, type IntervalAnalysis, type TuningExport,
 } from "./synth.js";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -66,6 +68,7 @@ let nextId = 1;
 let animFrame = 0;
 const heldKeys = new Set<string>();
 const heldMidi = new Set<number>();
+let intervalRoot = 60; // C4
 
 // ─── DOM ─────────────────────────────────────────────────────────────────────
 
@@ -81,6 +84,8 @@ async function init() {
   buildKeyboard();
   bindControls();
   bindMidi();
+  buildTuningAudit();
+  updateTuningTable();
   updateTelemetry();
   setInterval(updateTelemetry, 200);
 }
@@ -110,10 +115,11 @@ function populateSelectors() {
     ts.appendChild(o);
   }
   ts.value = "equal";
-  ts.addEventListener("change", () => { synth.setTuning(ts.value as TuningId); updateTelemetry(); });
+  ts.addEventListener("change", () => { synth.setTuning(ts.value as TuningId); updateTuningTable(); updateTelemetry(); });
 
-  ($("ref-pitch") as HTMLInputElement).addEventListener("change", (e) => {
+  ($('ref-pitch') as HTMLInputElement).addEventListener("change", (e) => {
     synth.setRefPitch(parseInt((e.target as HTMLInputElement).value));
+    updateTuningTable();
     updateTelemetry();
   });
 }
@@ -532,10 +538,7 @@ function bindControls() {
   $("master-vol").addEventListener("input", (e) => {
     const v = parseInt((e.target as HTMLInputElement).value);
     $("master-vol-val").textContent = String(v);
-    // Apply to AudioContext destination via a gain trick:
-    // We re-set master gain on the synth's compressor output.
-    // For simplicity, just update the voice config masterGain.
-    // A better approach: expose a masterVolume setter on Synth.
+    synth.setMasterVolume(v / 100);
   });
 
   // BPM
@@ -556,10 +559,190 @@ function updateTelemetry() {
   $("tl-preset").textContent = v.name.split(" ")[0];
 
   const t = synth.getTuning();
-  const label = t.id === "equal" ? "12-TET" : t.name.split("(")[0].trim();
+  const label = t.id === "equal" ? "12-TET" : t.id === "custom" ? "Custom" : t.name.split("(")[0].trim();
   $("tl-tuning").textContent = label;
   $("badge-tuning").textContent = label;
   $("tl-ref").textContent = String(synth.getRefPitch());
+}
+
+// ─── Tuning Audit Panel ────────────────────────────────────────────────────────────
+
+const CUSTOM_CENTS = [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100];
+
+function buildTuningAudit() {
+  buildIntervalRoots();
+  buildIntervalButtons();
+  buildCustomEditor();
+  bindAuditControls();
+}
+
+function updateTuningTable() {
+  const table = synth.getTuningTable();
+  const tbody = $("tt-body");
+  tbody.innerHTML = "";
+  for (const entry of table) {
+    const tr = document.createElement("tr");
+    const centsClass = entry.centsFromET > 0.05 ? "tt-cents-pos"
+      : entry.centsFromET < -0.05 ? "tt-cents-neg" : "tt-cents-zero";
+    const centsStr = entry.centsFromET > 0 ? "+" + entry.centsFromET.toFixed(2)
+      : entry.centsFromET.toFixed(2);
+
+    tr.innerHTML = `
+      <td class="note-col">${entry.name}</td>
+      <td class="hz">${entry.hz.toFixed(3)}</td>
+      <td class="cents ${centsClass}">${centsStr}¢</td>
+      <td>${entry.ratioFromC.toFixed(5)}</td>
+      <td><button class="tt-ref-btn" data-midi="${60 + entry.pc}" title="Play reference tone">🔊</button></td>
+    `;
+    tbody.appendChild(tr);
+  }
+  // Bind reference tone buttons
+  tbody.querySelectorAll<HTMLButtonElement>(".tt-ref-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      synth.playReferenceTone(parseInt(btn.dataset.midi!), 2);
+    });
+  });
+}
+
+function buildIntervalRoots() {
+  const container = $("interval-roots");
+  for (let pc = 0; pc < 12; pc++) {
+    const btn = document.createElement("button");
+    btn.className = "root-btn" + (60 + pc === intervalRoot ? " active" : "");
+    btn.textContent = NOTE_NAMES[pc];
+    btn.dataset.midi = String(60 + pc);
+    btn.addEventListener("click", () => {
+      intervalRoot = 60 + pc;
+      container.querySelectorAll(".root-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+    });
+    container.appendChild(btn);
+  }
+}
+
+function buildIntervalButtons() {
+  const container = $("interval-btns");
+  for (const test of INTERVAL_TESTS) {
+    const btn = document.createElement("button");
+    btn.className = "interval-btn";
+    btn.innerHTML = `<span class="ilabel">${test.label}</span><span class="isub">${test.description}</span>`;
+    btn.addEventListener("click", () => {
+      const midi2 = intervalRoot + test.semitones;
+      synth.playInterval(intervalRoot, midi2, 3);
+      showIntervalResult(synth.getIntervalAnalysis(intervalRoot, midi2));
+    });
+    container.appendChild(btn);
+  }
+}
+
+function showIntervalResult(a: IntervalAnalysis) {
+  const el = $("interval-result");
+  el.classList.add("active");
+  const absDev = Math.abs(a.deviationCents);
+  const purityClass = absDev < 0.1 ? "ir-pure" : absDev < 5 ? "ir-impure" : "ir-wolf";
+  const purityLabel = absDev < 0.1 ? "PURE" : absDev < 2 ? "Near-pure" : absDev < 5 ? "Tempered" : absDev < 15 ? "Impure" : "WOLF";
+
+  el.innerHTML = `
+    <div class="ir-row"><span class="ir-label">Interval</span><span class="ir-value">${a.intervalName}</span></div>
+    <div class="ir-row"><span class="ir-label">Notes</span><span class="ir-value">${a.name1} → ${a.name2}</span></div>
+    <div class="ir-row"><span class="ir-label">Frequencies</span><span class="ir-value">${a.freq1} → ${a.freq2} Hz</span></div>
+    <div class="ir-row"><span class="ir-label">Actual Ratio</span><span class="ir-value">${a.actualRatio}</span></div>
+    <div class="ir-row"><span class="ir-label">Pure Ratio</span><span class="ir-value">${fracStr(a.pureRatio)} (${a.pureRatio.toFixed(5)})</span></div>
+    <div class="ir-row"><span class="ir-label">Size</span><span class="ir-value">${a.intervalCents}¢</span></div>
+    <div class="ir-row"><span class="ir-label">Deviation</span><span class="ir-value ${purityClass}">${a.deviationCents > 0 ? "+" : ""}${a.deviationCents}¢</span></div>
+    <div class="ir-row"><span class="ir-label">Beat Freq</span><span class="ir-value">${a.beatFrequency} Hz</span></div>
+    <div class="ir-row"><span class="ir-label">Purity</span><span class="ir-value ${purityClass}">${purityLabel}</span></div>
+  `;
+}
+
+function fracStr(ratio: number): string {
+  const fracs: [number, number, string][] = [
+    [1, 1, "1:1"], [16, 15, "16:15"], [9, 8, "9:8"], [6, 5, "6:5"],
+    [5, 4, "5:4"], [4, 3, "4:3"], [45, 32, "45:32"], [3, 2, "3:2"],
+    [8, 5, "8:5"], [5, 3, "5:3"], [9, 5, "9:5"], [15, 8, "15:8"], [2, 1, "2:1"],
+  ];
+  for (const [n, d, s] of fracs) {
+    if (Math.abs(ratio - n / d) < 0.0001) return s;
+  }
+  return ratio.toFixed(5);
+}
+
+function buildCustomEditor() {
+  const container = $("custom-editor");
+  for (let pc = 0; pc < 12; pc++) {
+    const label = document.createElement("label");
+    label.textContent = NOTE_NAMES[pc];
+
+    const slider = document.createElement("input");
+    slider.type = "range";
+    slider.min = pc === 0 ? "0" : "0";
+    slider.max = pc === 0 ? "0" : "1200";
+    slider.step = "0.5";
+    slider.value = String(CUSTOM_CENTS[pc]);
+    slider.disabled = pc === 0;
+    slider.dataset.pc = String(pc);
+
+    const val = document.createElement("span");
+    val.className = "cv";
+    val.id = "cv-" + pc;
+    val.textContent = CUSTOM_CENTS[pc] + "¢";
+
+    slider.addEventListener("input", () => {
+      CUSTOM_CENTS[pc] = parseFloat(slider.value);
+      val.textContent = CUSTOM_CENTS[pc] + "¢";
+    });
+
+    container.appendChild(label);
+    container.appendChild(slider);
+    container.appendChild(val);
+  }
+}
+
+function bindAuditControls() {
+  $("btn-apply-custom").addEventListener("click", () => {
+    synth.setCustomTuning([...CUSTOM_CENTS]);
+    ($("sel-tuning") as HTMLSelectElement).value = "custom";
+    updateTuningTable();
+    updateTelemetry();
+  });
+
+  $("btn-reset-custom").addEventListener("click", () => {
+    const et = [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100];
+    for (let pc = 0; pc < 12; pc++) {
+      CUSTOM_CENTS[pc] = et[pc];
+      const slider = document.querySelector<HTMLInputElement>(`input[data-pc="${pc}"]`);
+      if (slider) slider.value = String(et[pc]);
+      const val = $("cv-" + pc);
+      if (val) val.textContent = et[pc] + "¢";
+    }
+  });
+
+  $("btn-export").addEventListener("click", () => {
+    const data = synth.exportTuning();
+    ($("tuning-json") as HTMLTextAreaElement).value = JSON.stringify(data, null, 2);
+  });
+
+  $("btn-import").addEventListener("click", () => {
+    try {
+      const data = JSON.parse(($("tuning-json") as HTMLTextAreaElement).value) as TuningExport;
+      synth.importTuning(data);
+      // Update custom editor sliders
+      const t = synth.getTuning();
+      for (let pc = 0; pc < 12; pc++) {
+        CUSTOM_CENTS[pc] = t.cents[pc];
+        const slider = document.querySelector<HTMLInputElement>(`input[data-pc="${pc}"]`);
+        if (slider) slider.value = String(t.cents[pc]);
+        const val = $("cv-" + pc);
+        if (val) val.textContent = t.cents[pc] + "¢";
+      }
+      ($("sel-tuning") as HTMLSelectElement).value = t.id;
+      ($("ref-pitch") as HTMLInputElement).value = String(synth.getRefPitch());
+      updateTuningTable();
+      updateTelemetry();
+    } catch {
+      alert("Invalid tuning JSON");
+    }
+  });
 }
 
 // ─── Boot ────────────────────────────────────────────────────────────────────
