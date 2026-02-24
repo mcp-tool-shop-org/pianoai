@@ -24,8 +24,8 @@ importers:
         specifier: ^0.1.0
         version: 0.1.0
       vocal-synth-engine:
-        specifier: github:mcp-tool-shop-org/vocal-synth-engine
-        version: https://codeload.github.com/mcp-tool-shop-org/vocal-synth-engine/tar.gz/9ad563f50ed54c96dc23c87f4e3de4b018635b77
+        specifier: github:mcp-tool-shop-org/vocal-synth-engine#630fb4216a9bc32fe1a5b76507b701ea62267d77
+        version: https://codeload.github.com/mcp-tool-shop-org/vocal-synth-engine/tar.gz/630fb4216a9bc32fe1a5b76507b701ea62267d77
       zod:
         specifier: ^4.3.6
         version: 4.3.6
@@ -993,8 +993,8 @@ packages:
       jsdom:
         optional: true
 
-  vocal-synth-engine@https://codeload.github.com/mcp-tool-shop-org/vocal-synth-engine/tar.gz/9ad563f50ed54c96dc23c87f4e3de4b018635b77:
-    resolution: {tarball: https://codeload.github.com/mcp-tool-shop-org/vocal-synth-engine/tar.gz/9ad563f50ed54c96dc23c87f4e3de4b018635b77}
+  vocal-synth-engine@https://codeload.github.com/mcp-tool-shop-org/vocal-synth-engine/tar.gz/630fb4216a9bc32fe1a5b76507b701ea62267d77:
+    resolution: {tarball: https://codeload.github.com/mcp-tool-shop-org/vocal-synth-engine/tar.gz/630fb4216a9bc32fe1a5b76507b701ea62267d77}
     version: 1.0.0
 
   wavefile@11.0.0:
@@ -1907,7 +1907,7 @@ snapshots:
       - tsx
       - yaml
 
-  vocal-synth-engine@https://codeload.github.com/mcp-tool-shop-org/vocal-synth-engine/tar.gz/9ad563f50ed54c96dc23c87f4e3de4b018635b77:
+  vocal-synth-engine@https://codeload.github.com/mcp-tool-shop-org/vocal-synth-engine/tar.gz/630fb4216a9bc32fe1a5b76507b701ea62267d77:
     dependencies:
       cmu-pronouncing-dictionary: 3.0.0
       cors: 2.8.6

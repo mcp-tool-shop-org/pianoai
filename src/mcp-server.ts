@@ -71,6 +71,7 @@ import { createLiveMidiFeedbackHook } from "./teaching/live-midi-feedback.js";
 import type { VoiceDirective, AsideDirective } from "./types.js";
 import { readFile } from "node:fs/promises";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { join as pathJoin, resolve as pathResolve, basename as pathBasename } from "node:path";
 import {
   type SessionSnapshot,
   buildJournalEntry,
@@ -109,7 +110,7 @@ function suggestMode(difficulty: Difficulty): { mode: string; reason: string } {
 
 const server = new McpServer({
   name: "pianoai",
-  version: "0.1.0",
+  version: "0.2.1",
 });
 
 // ─── Practice Journal State ─────────────────────────────────────────────────
@@ -128,8 +129,8 @@ server.tool(
   },
   async (params) => {
     const results = searchSongs({
-      genre: params.genre as any,
-      difficulty: params.difficulty as any,
+      genre: params.genre as Genre | undefined,
+      difficulty: params.difficulty as Difficulty | undefined,
       query: params.query,
     });
 
@@ -288,8 +289,8 @@ server.tool(
   },
   async (params) => {
     const results = searchSongs({
-      genre: params.genre as any,
-      difficulty: params.difficulty as any,
+      genre: params.genre as Genre | undefined,
+      difficulty: params.difficulty as Difficulty | undefined,
       maxDuration: params.maxDuration,
     });
 
@@ -565,7 +566,9 @@ function stopActive(): void {
   activeController = null;
 
   if (activeConnector) {
-    activeConnector.disconnect().catch(() => {});
+    activeConnector.disconnect().catch((err) => {
+      console.error(`Disconnect error: ${err instanceof Error ? err.message : String(err)}`);
+    });
     activeConnector = null;
   }
   activeNotes.clear();
@@ -596,6 +599,18 @@ server.tool(
 
     // Determine if this is a .mid file path or a library song ID
     const isMidiFile = id.endsWith(".mid") || id.endsWith(".midi") || existsSync(id);
+
+    // Path traversal protection for file paths
+    if (isMidiFile) {
+      const resolved = pathResolve(id);
+      if (resolved.includes("..") || !resolved.endsWith(".mid") && !resolved.endsWith(".midi")) {
+        return {
+          content: [{ type: "text", text: `Invalid MIDI file path: "${id}". Path must point to a .mid or .midi file.` }],
+          isError: true,
+        };
+      }
+    }
+
     const librarySong = isMidiFile ? null : getSong(id);
 
     if (!isMidiFile && !librarySong) {
@@ -632,7 +647,7 @@ server.tool(
         parsed = await parseMidiFile(id);
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
-        connector.disconnect().catch(() => {});
+        connector.disconnect().catch((e) => console.error(`Disconnect error: ${e instanceof Error ? e.message : String(e)}`));
         activeConnector = null;
         return {
           content: [{ type: "text", text: `Failed to parse MIDI file: ${msg}` }],
@@ -685,7 +700,7 @@ server.tool(
             console.error(`Playback error: ${err instanceof Error ? err.message : String(err)}`);
           })
           .finally(() => {
-            connector.disconnect().catch(() => {});
+            connector.disconnect().catch((e) => console.error(`Disconnect error: ${e instanceof Error ? e.message : String(e)}`));
             if (activeController === controller) activeController = null;
             if (activeConnector === connector) activeConnector = null;
           });
@@ -702,7 +717,7 @@ server.tool(
             console.error(`Playback error: ${err instanceof Error ? err.message : String(err)}`);
           })
           .finally(() => {
-            connector.disconnect().catch(() => {});
+            connector.disconnect().catch((e) => console.error(`Disconnect error: ${e instanceof Error ? e.message : String(e)}`));
             if (activeMidiEngine === engine) activeMidiEngine = null;
             if (activeConnector === connector) activeConnector = null;
           });
@@ -805,7 +820,7 @@ server.tool(
         console.error(`Playback error: ${err instanceof Error ? err.message : String(err)}`);
       })
       .finally(() => {
-        connector.disconnect().catch(() => {});
+        connector.disconnect().catch((e) => console.error(`Disconnect error: ${e instanceof Error ? e.message : String(e)}`));
         if (activeSession === session) activeSession = null;
         if (activeConnector === connector) activeConnector = null;
       });
@@ -881,11 +896,11 @@ server.tool(
     if (resume) {
       // Resume
       if (activeController && activeController.state === "paused") {
-        activeController.resume().catch(() => {});
+        activeController.resume().catch((e) => console.error(`Resume error: ${e instanceof Error ? e.message : String(e)}`));
         return { content: [{ type: "text", text: "Resumed playback." }] };
       }
       if (activeSession && activeSession.state === "paused") {
-        activeSession.play().catch(() => {});
+        activeSession.play().catch((e) => console.error(`Resume error: ${e instanceof Error ? e.message : String(e)}`));
         return { content: [{ type: "text", text: "Resumed playback." }] };
       }
       return { content: [{ type: "text", text: "Nothing is paused." }] };
@@ -1038,6 +1053,18 @@ server.tool(
   async ({ song: songJson }) => {
     try {
       const parsed = JSON.parse(songJson) as SongEntry;
+
+      // Song ID sanitization
+      if (!/^[a-z0-9][a-z0-9-]*[a-z0-9]$/.test(parsed.id) && !/^[a-z0-9]$/.test(parsed.id)) {
+        return {
+          content: [{
+            type: "text",
+            text: `Invalid song ID: "${parsed.id}". Must be kebab-case (a-z, 0-9, hyphens), no path separators.`,
+          }],
+          isError: true,
+        };
+      }
+
       const errors = validateSong(parsed);
       if (errors.length > 0) {
         return {
@@ -1102,7 +1129,24 @@ server.tool(
   },
   async ({ midi_path, id, title, genre, difficulty, key, composer, description, tags }) => {
     try {
-      const midiBuffer = new Uint8Array(readFileSync(midi_path));
+      // Path traversal protection
+      const resolvedMidiPath = pathResolve(midi_path);
+      if (!resolvedMidiPath.endsWith(".mid") && !resolvedMidiPath.endsWith(".midi")) {
+        return {
+          content: [{ type: "text", text: `Invalid MIDI path: must be a .mid or .midi file.` }],
+          isError: true,
+        };
+      }
+
+      // Song ID sanitization
+      if (!/^[a-z0-9][a-z0-9-]*[a-z0-9]$/.test(id) || id.includes("..")) {
+        return {
+          content: [{ type: "text", text: `Invalid song ID: "${id}". Must be kebab-case (a-z, 0-9, hyphens), no path separators.` }],
+          isError: true,
+        };
+      }
+
+      const midiBuffer = new Uint8Array(readFileSync(resolvedMidiPath));
 
       const config = {
         id,
@@ -1309,12 +1353,14 @@ server.tool(
     for (const param of TUNING_PARAMS) {
       let factoryVal: number;
       let currentVal: number;
+      const baseRec = base as unknown as Record<string, unknown>;
+      const mergedRec = merged as unknown as Record<string, unknown>;
       if (param.isArrayIndex !== undefined) {
-        factoryVal = (base as any)[param.configKey][param.isArrayIndex];
-        currentVal = (merged as any)[param.configKey][param.isArrayIndex];
+        factoryVal = (baseRec[param.configKey] as number[])[param.isArrayIndex];
+        currentVal = (mergedRec[param.configKey] as number[])[param.isArrayIndex];
       } else {
-        factoryVal = (base as any)[param.configKey];
-        currentVal = (merged as any)[param.configKey];
+        factoryVal = baseRec[param.configKey] as number;
+        currentVal = mergedRec[param.configKey] as number;
       }
       const isOverridden = param.key in userTuning;
       const marker = isOverridden ? " *" : "";
@@ -1577,7 +1623,7 @@ server.tool(
 
 function getUserSongsDir(): string {
   const home = process.env.HOME ?? process.env.USERPROFILE ?? ".";
-  return `${home}/.pianoai/songs`;
+  return pathJoin(home, ".pianoai", "songs");
 }
 
 // ─── Start ──────────────────────────────────────────────────────────────────
@@ -1586,10 +1632,9 @@ async function main(): Promise<void> {
   // Load songs from library + user directories
   const { dirname } = await import("node:path");
   const { fileURLToPath } = await import("node:url");
-  const { join } = await import("node:path");
   const __dirname = dirname(fileURLToPath(import.meta.url));
-  const libraryDir = join(__dirname, "..", "songs", "library");
-  const userDir = join(process.env.HOME ?? process.env.USERPROFILE ?? ".", ".pianoai", "songs");
+  const libraryDir = pathJoin(__dirname, "..", "songs", "library");
+  const userDir = getUserSongsDir();
   initializeFromLibrary(libraryDir, userDir);
 
   const transport = new StdioServerTransport();

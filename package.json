@@ -18,7 +18,6 @@
   "files": [
     "dist",
     "songs/library",
-    "samples/vocal",
     "docs",
     "README.md",
     "LICENSE",
@@ -63,7 +62,7 @@
     "midi-file": "^1.2.4",
     "node-web-audio-api": "^1.0.8",
     "pink-trombone-mod": "^0.1.0",
-    "vocal-synth-engine": "github:mcp-tool-shop-org/vocal-synth-engine",
+    "vocal-synth-engine": "github:mcp-tool-shop-org/vocal-synth-engine#630fb4216a9bc32fe1a5b76507b701ea62267d77",
     "zod": "^4.3.6"
   },
   "devDependencies": {

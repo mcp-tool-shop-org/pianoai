@@ -6,9 +6,21 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { readdirSync, readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
-import { join, basename } from "node:path";
+import { join, basename, resolve } from "node:path";
 import type { SongEntry } from "./types.js";
 import { validateSong, registerSong, clearRegistry } from "./registry.js";
+
+/** Validate that a song ID is safe for use in file paths. */
+function sanitizeSongId(id: string): string {
+  // Only allow kebab-case identifiers — no path separators, dots, or traversal
+  if (!/^[a-z0-9][a-z0-9-]*[a-z0-9]$/.test(id) && !/^[a-z0-9]$/.test(id)) {
+    throw new Error(`Invalid song ID: "${id}". Must be kebab-case (a-z, 0-9, hyphens).`);
+  }
+  if (id.includes("..") || id.includes("/") || id.includes("\\")) {
+    throw new Error(`Invalid song ID: "${id}". Path separators not allowed.`);
+  }
+  return id;
+}
 
 /**
  * Load all .json song files from a directory.
@@ -52,10 +64,17 @@ export function loadSongFile(filePath: string): SongEntry {
  * Returns the full path to the saved file.
  */
 export function saveSong(song: SongEntry, dir: string): string {
+  const safeId = sanitizeSongId(song.id);
   if (!existsSync(dir)) {
     mkdirSync(dir, { recursive: true });
   }
-  const filePath = join(dir, `${song.id}.json`);
+  const filePath = join(dir, `${safeId}.json`);
+  // Verify the resolved path stays within the target directory
+  const resolvedDir = resolve(dir);
+  const resolvedFile = resolve(filePath);
+  if (!resolvedFile.startsWith(resolvedDir)) {
+    throw new Error(`Path traversal detected: song ID "${song.id}" resolves outside target directory.`);
+  }
   writeFileSync(filePath, JSON.stringify(song, null, 2) + "\n", "utf8");
   return filePath;
 }

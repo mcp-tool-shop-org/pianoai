@@ -1,3 +1,0 @@
-[submodule "packages/voice-engine"]
-	path = packages/voice-engine
-	url = https://github.com/mcp-tool-shop-org/mcp-voice-engine.git
