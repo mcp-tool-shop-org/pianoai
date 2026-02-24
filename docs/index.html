@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AI Jam Sessions — Machine Learning the Old Fashioned Way</title>
-  <meta name="description" content="An MCP server that teaches AI to play piano and sing. 120 songs, 12 genres, five sound engines, browser cockpit, practice journal." />
+  <meta name="description" content="An MCP server that teaches AI to play piano and guitar — and sing. 120 songs, 12 genres, six sound engines, interactive guitar tablature, browser cockpit, practice journal." />
   <link rel="icon" type="image/png" href="assets/logo-banner.png" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
@@ -429,8 +429,8 @@
   <div class="hero-glow"></div>
   <img src="assets/logo-banner.png" alt="AI Jam Sessions" class="logo" />
   <p class="tagline">
-    An MCP server that teaches AI to play piano — and sing.<br/>
-    120 songs. Five sound engines. A browser cockpit. A practice journal that remembers everything.
+    An MCP server that teaches AI to play piano and guitar — and sing.<br/>
+    120 songs. Six sound engines. Interactive guitar tablature. A practice journal that remembers everything.
   </p>
   <div class="badges">
     <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml"><img src="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
@@ -461,12 +461,12 @@
     <div class="sense-card">
       <div class="icon">🔊</div>
       <h3>Hearing</h3>
-      <p>Five audio engines play through your speakers. The humans in the room become the AI's ears.</p>
+      <p>Six audio engines — piano, samples, vocal tract, vocal synth, guitar — play through your speakers. The humans in the room become the AI's ears.</p>
     </div>
     <div class="sense-card">
       <div class="icon">👁️</div>
       <h3>Seeing</h3>
-      <p>A piano roll renders what was played as SVG the model can read back. A browser cockpit with visual keyboard & tuning lab.</p>
+      <p>A piano roll renders what was played as SVG the model can read back. An interactive guitar tablature editor. A browser cockpit with visual keyboard & tuning lab.</p>
     </div>
     <div class="sense-card">
       <div class="icon">🧠</div>
@@ -478,6 +478,11 @@
       <h3>Singing</h3>
       <p>Vocal tract synthesis with 20 voice presets. Sing-along mode with solfege, contour, and syllable narration.</p>
     </div>
+    <div class="sense-card">
+      <div class="icon">🎸</div>
+      <h3>Playing guitar</h3>
+      <p>Physically-modeled plucked strings — 4 guitar presets, 8 tunings, 17 tunable parameters. Interactive tab editor with playback cursor.</p>
+    </div>
   </div>
 </section>
 
@@ -485,9 +490,9 @@
 
 <!-- ════════════════════════════ SOUND ENGINES ════════════════════════════ -->
 <section>
-  <h2>Five sound engines <span class="dim">+ layered combinator</span></h2>
+  <h2>Six sound engines <span class="dim">+ layered combinator</span></h2>
   <p class="section-lead">
-    From zero-dependency additive synthesis to 480-sample Salamander Grand to physical vocal tract modeling. Layer any two together.
+    From zero-dependency additive synthesis to 480-sample Salamander Grand to physical vocal tract modeling to physically-modeled guitar strings. Layer any two together.
   </p>
   <table class="engine-table">
     <thead>
@@ -518,6 +523,11 @@
         <td>Vocal Synth</td>
         <td>Additive synthesis</td>
         <td>15 Kokoro voice presets. Formant shaping, breathiness, vibrato. Deterministic.</td>
+      </tr>
+      <tr>
+        <td>Guitar</td>
+        <td>Additive synthesis</td>
+        <td>Physically-modeled plucked string — 4 presets (steel, nylon, jazz archtop, twelve-string), 8 tunings, 17 parameters.</td>
       </tr>
       <tr>
         <td>Layered</td>
@@ -639,8 +649,8 @@
 
 <!-- ════════════════════════════ TOOLS ════════════════════════════ -->
 <section>
-  <h2>24 MCP tools</h2>
-  <p class="section-lead">Four categories covering the full learning cycle.</p>
+  <h2>31 MCP tools</h2>
+  <p class="section-lead">Five categories covering the full learning cycle.</p>
   <div class="tools-grid">
     <div class="tool-category learn">
       <h3>Learn (8)</h3>
@@ -673,8 +683,19 @@
         <li>ai_jam_sessions</li>
       </ul>
     </div>
+    <div class="tool-category" style="border-left: 2px solid var(--coral);">
+      <h3 style="color: var(--coral);">Guitar (6)</h3>
+      <ul>
+        <li>view_guitar_tab</li>
+        <li>list_guitar_voices</li>
+        <li>list_guitar_tunings</li>
+        <li>tune_guitar</li>
+        <li>get_guitar_config</li>
+        <li>reset_guitar</li>
+      </ul>
+    </div>
     <div class="tool-category build">
-      <h3>Build (8)</h3>
+      <h3>Build (9)</h3>
       <ul>
         <li>add_song</li>
         <li>import_midi</li>
@@ -730,7 +751,7 @@
 <!-- ════════════════════════════ FOOTER ════════════════════════════ -->
 <footer>
   <p>
-    MIT License · v0.2.1 ·
+    MIT License · v0.3.0 ·
     <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions">GitHub</a> ·
     <a href="https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions">npm</a> ·
     <a href="https://github.com/mcp-tool-shop-org">MCP Tool Shop</a>
