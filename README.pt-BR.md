@@ -11,9 +11,9 @@
 </p>
 
 <p align="center">
-  Um servidor MCP que ensina IA a tocar piano — e a cantar.<br/>
-  120 músicas em 12 gêneros. Cinco motores de som. Um cockpit no navegador com sintetizador vocal.<br/>
-  Um diário de prática que lembra de tudo.
+  Um servidor MCP que ensina IA a tocar piano e violão — e a cantar.<br/>
+  120 músicas em 12 gêneros. Seis motores de som. Tablatura de violão interativa.<br/>
+  Um cockpit no navegador com sintetizador vocal. Um diário de prática que lembra de tudo.
 </p>
 
 [![CI](https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml/badge.svg)](https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml)
@@ -25,13 +25,13 @@
 
 ## O que é isso?
 
-Um piano que a IA aprende a tocar. Não é um sintetizador, não é uma biblioteca MIDI — é um instrumento pedagógico.
+Um piano e um violão que a IA aprende a tocar. Não é um sintetizador, não é uma biblioteca MIDI — é um instrumento pedagógico.
 
 Um LLM pode ler e escrever texto, mas não pode vivenciar a música como nós. Sem ouvidos, sem dedos, sem memória muscular. AI Jam Sessions fecha essa lacuna dando ao modelo sentidos que ele pode realmente usar:
 
 - **Ler** — partituras MIDI reais com anotações musicais profundas. Não aproximações escritas à mão — analisadas, processadas e explicadas.
-- **Ouvir** — cinco motores de áudio (piano oscilador, piano amostrado, amostras vocais, trato vocal físico, síntese aditiva vocal) que tocam pelos alto-falantes. Os humanos na sala se tornam os ouvidos da IA.
-- **Ver** — um piano roll que renderiza o que foi tocado como SVG que o modelo pode reler e verificar. Um cockpit no navegador com teclado visual, editor de notas dual e laboratório de afinação.
+- **Ouvir** — seis motores de áudio (piano oscilador, piano amostrado, amostras vocais, trato vocal físico, síntese aditiva vocal, violão fisicamente modelado) que tocam pelos alto-falantes. Os humanos na sala se tornam os ouvidos da IA.
+- **Ver** — um piano roll que renderiza o que foi tocado como SVG que o modelo pode reler e verificar. Um editor de tablatura de violão interativo. Um cockpit no navegador com teclado visual, editor de notas dual e laboratório de afinação.
 - **Lembrar** — um diário de prática que persiste entre sessões. O aprendizado se acumula.
 - **Cantar** — síntese de trato vocal com 20 presets de voz, do soprano operístico ao coro eletrônico. Modo cante-junto com solfejo, contorno e narração silábica.
 
@@ -105,7 +105,7 @@ As músicas progridem de **raw** (apenas MIDI) → **annotated** → **ready** (
 
 ## Motores de Som
 
-Cinco motores mais um combinador em camadas que executa dois simultaneamente:
+Seis motores mais um combinador em camadas que executa dois simultaneamente:
 
 | Motor | Tipo | Som |
 |-------|------|-----|
@@ -114,6 +114,7 @@ Cinco motores mais um combinador em camadas que executa dois simultaneamente:
 | **Vocal (Amostras)** | Amostras com pitch-shift | Tons vocálicos sustentados com portamento e modo legato. |
 | **Trato Vocal** | Modelo físico | Pink Trombone — onda glotal LF através de um guia de onda digital de 44 células. Quatro presets: soprano, contralto, tenor, baixo. |
 | **Síntese Vocal** | Síntese aditiva | 15 presets vocais Kokoro. Modelagem de formantes, respiração, vibrato. Determinístico (RNG com semente). |
+| **Violão** | Síntese aditiva | Corda dedilhada fisicamente modelada — 4 presets (aço dreadnought, clássico nylon, jazz archtop, doze cordas), 8 afinações, 17 parâmetros ajustáveis. |
 | **Em Camadas** | Combinador | Envolve dois motores e despacha cada evento MIDI para ambos — piano+synth, vocal+synth, etc. |
 
 ### Vozes de Teclado
@@ -128,6 +129,17 @@ Seis vozes de piano ajustáveis, cada uma configurável por parâmetro (brilho, 
 | Honky-Tonk | Desafinado, ragtime, saloon |
 | Music Box | Cristalino, etéreo |
 | Bright Grand | Cortante, contemporâneo, pop |
+
+### Vozes de Violão
+
+Quatro presets de violão com síntese de cordas fisicamente modelada, cada um com 17 parâmetros ajustáveis (brilho, ressonância do corpo, posição do dedilhado, amortecimento das cordas e mais):
+
+| Voz | Caráter |
+|-----|--------|
+| Steel Dreadnought | Brilhante, equilibrado, acústico clássico |
+| Nylon Classical | Quente, suave, arredondado |
+| Jazz Archtop | Suave, amadeirado, limpo |
+| Twelve-String | Cintilante, dobrado, efeito coro |
 
 ## O Diário de Prática
 
@@ -172,7 +184,7 @@ Requer **Node.js 18+**. Sem drivers MIDI, sem portas virtuais, sem software exte
 
 ## Ferramentas MCP
 
-24 ferramentas em quatro categorias:
+31 ferramentas em cinco categorias:
 
 ### Aprender
 
@@ -205,6 +217,17 @@ Requer **Node.js 18+**. Sem drivers MIDI, sem portas virtuais, sem software exte
 | `sing_along` | Texto cantável — nomes de notas, solfejo, contorno ou sílabas. Com ou sem acompanhamento de piano |
 | `ai_jam_sessions` | Gerar um brief de jam — progressão de acordes, esboço melódico e dicas de estilo |
 
+### Violão
+
+| Ferramenta | Função |
+|------------|--------|
+| `view_guitar_tab` | Tablatura de violão interativa em HTML — edição por clique, cursor de reprodução, atalhos de teclado |
+| `list_guitar_voices` | Presets de voz de violão disponíveis |
+| `list_guitar_tunings` | Sistemas de afinação de violão disponíveis (padrão, drop-D, open G, DADGAD, etc.) |
+| `tune_guitar` | Ajustar qualquer parâmetro de qualquer voz de violão. Persiste entre sessões |
+| `get_guitar_config` | Configuração atual da voz de violão vs valores de fábrica |
+| `reset_guitar` | Restaurar uma voz de violão para fábrica |
+
 ### Construir
 
 | Ferramenta | Função |
@@ -235,7 +258,7 @@ ai-jam-sessions ports
 
 ## Status
 
-v0.2.1. Seis motores de som, 31 ferramentas MCP, 120 músicas em 12 gêneros com exemplares profundamente anotados. Cockpit no navegador com 20 presets vocais, 10 vozes de instrumento, 7 sistemas de afinação e uma API de partitura para LLM. Visualização de piano roll em dois modos de cor. Diário de prática persistente. O MIDI está todo pronto — a biblioteca cresce conforme a IA aprende.
+v0.3.0. Seis motores de som, 31 ferramentas MCP, 120 músicas em 12 gêneros com exemplares profundamente anotados. Editor de tablatura de violão interativo. Cockpit no navegador com 20 presets vocais, 10 vozes de instrumento, 7 sistemas de afinação e uma API de partitura para LLM. Visualização piano roll em dois modos de cor. Diário de prática persistente. O MIDI está completo — a biblioteca cresce conforme a IA aprende. Cockpit no navegador com 20 presets vocais, 10 vozes de instrumento, 7 sistemas de afinação e uma API de partitura para LLM. Visualização de piano roll em dois modos de cor. Diário de prática persistente. O MIDI está todo pronto — a biblioteca cresce conforme a IA aprende.
 
 ## Licença
 

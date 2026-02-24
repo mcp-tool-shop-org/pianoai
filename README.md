@@ -11,9 +11,9 @@
 </p>
 
 <p align="center">
-  An MCP server that teaches AI to play piano — and sing.<br/>
-  120 songs across 12 genres. Five sound engines. A browser cockpit with its own vocal synthesizer.<br/>
-  A practice journal that remembers everything.
+  An MCP server that teaches AI to play piano and guitar — and sing.<br/>
+  120 songs across 12 genres. Six sound engines. Interactive guitar tablature.<br/>
+  A browser cockpit with vocal synthesizer. A practice journal that remembers everything.
 </p>
 
 [![CI](https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml/badge.svg)](https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml)
@@ -25,13 +25,13 @@
 
 ## What is this?
 
-A piano that AI learns to play. Not a synthesizer, not a MIDI library — a teaching instrument.
+A piano and guitar that AI learns to play. Not a synthesizer, not a MIDI library — a teaching instrument.
 
 An LLM can read and write text, but it can't experience music the way we do. No ears, no fingers, no muscle memory. AI Jam Sessions closes that gap by giving the model senses it can actually use:
 
 - **Reading** — real MIDI sheet music with deep musical annotations. Not hand-written approximations — parsed, analyzed, and explained.
-- **Hearing** — five audio engines (oscillator piano, sample piano, vocal samples, physical vocal tract, additive vocal synth) that play through your speakers, so the humans in the room become the AI's ears.
-- **Seeing** — a piano roll that renders what was played as SVG the model can read back and verify. A browser cockpit with a visual keyboard, dual-mode note editor, and tuning lab.
+- **Hearing** — six audio engines (oscillator piano, sample piano, vocal samples, physical vocal tract, additive vocal synth, physically-modeled guitar) that play through your speakers, so the humans in the room become the AI's ears.
+- **Seeing** — a piano roll that renders what was played as SVG the model can read back and verify. An interactive guitar tablature editor. A browser cockpit with a visual keyboard, dual-mode note editor, and tuning lab.
 - **Remembering** — a practice journal that persists across sessions, so learning compounds over time.
 - **Singing** — vocal tract synthesis with 20 voice presets, from operatic soprano to electronic choir. Sing-along mode with solfege, contour, and syllable narration.
 
@@ -103,7 +103,7 @@ Songs progress from **raw** (MIDI only) → **annotated** → **ready** (fully p
 
 ## Sound Engines
 
-Five engines, plus a layered combinator that runs any two simultaneously:
+Six engines, plus a layered combinator that runs any two simultaneously:
 
 | Engine | Type | What it sounds like |
 |--------|------|---------------------|
@@ -112,6 +112,7 @@ Five engines, plus a layered combinator that runs any two simultaneously:
 | **Vocal (Sample)** | Pitch-shifted samples | Sustained vowel tones with portamento and legato mode. |
 | **Vocal Tract** | Physical model | Pink Trombone — LF glottal waveform through a 44-cell digital waveguide. Four presets: soprano, alto, tenor, bass. |
 | **Vocal Synth** | Additive synthesis | 15 Kokoro voice presets with formant shaping, breathiness, vibrato. Deterministic (seeded RNG). |
+| **Guitar** | Additive synthesis | Physically-modeled plucked string — 4 presets (steel dreadnought, nylon classical, jazz archtop, twelve-string), 8 tunings, 17 tunable parameters. |
 | **Layered** | Combinator | Wraps two engines and dispatches every MIDI event to both — piano+synth, vocal+synth, etc. |
 
 ### Keyboard Voices
@@ -126,6 +127,17 @@ Six tunable piano voices, each adjustable per-parameter (brightness, decay, hamm
 | Honky-Tonk | Detuned, ragtime, saloon |
 | Music Box | Crystalline, ethereal |
 | Bright Grand | Cutting, contemporary, pop |
+
+### Guitar Voices
+
+Four guitar voice presets with physically-modeled string synthesis, each with 17 tunable parameters (brightness, body resonance, pluck position, string damping, and more):
+
+| Voice | Character |
+|-------|-----------|
+| Steel Dreadnought | Bright, balanced, classic acoustic |
+| Nylon Classical | Warm, soft, rounded |
+| Jazz Archtop | Mellow, woody, clean |
+| Twelve-String | Shimmering, doubled, chorus-like |
 
 ## The Practice Journal
 
@@ -202,6 +214,17 @@ Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external softwar
 | `sing_along` | Singable text — note-names, solfege, contour, or syllables. With or without piano accompaniment. |
 | `ai_jam_sessions` | Generate a jam brief — chord progression, melody outline, and style hints for reinterpretation |
 
+### Guitar
+
+| Tool | What it does |
+|------|--------------|
+| `view_guitar_tab` | Render interactive guitar tablature as HTML — click-to-edit, playback cursor, keyboard shortcuts |
+| `list_guitar_voices` | Available guitar voice presets |
+| `list_guitar_tunings` | Available guitar tuning systems (standard, drop-D, open G, DADGAD, etc.) |
+| `tune_guitar` | Adjust any parameter of any guitar voice. Persists across sessions. |
+| `get_guitar_config` | Current guitar voice config vs factory defaults |
+| `reset_guitar` | Factory reset a guitar voice |
+
 ### Build
 
 | Tool | What it does |
@@ -232,7 +255,7 @@ ai-jam-sessions ports
 
 ## Status
 
-v0.2.1. Six sound engines, 31 MCP tools, 120 songs across 12 genres with deeply annotated exemplars. Browser cockpit with 20 vocal presets, 10 instrument voices, 7 tuning systems, and an LLM-facing score API. Piano roll visualization in two color modes. Interactive guitar tablature editor. Practice journal for persistent learning. The MIDI is all there — the library grows as the AI learns.
+v0.3.0. Six sound engines, 31 MCP tools, 120 songs across 12 genres with deeply annotated exemplars. Interactive guitar tablature editor. Browser cockpit with 20 vocal presets, 10 instrument voices, 7 tuning systems, and an LLM-facing score API. Piano roll visualization in two color modes. Practice journal for persistent learning. The MIDI is all there — the library grows as the AI learns.
 
 ## License
 

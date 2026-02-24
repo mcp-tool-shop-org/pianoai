@@ -2,7 +2,7 @@
 
 *Machine Learning the Old Fashioned Way*
 
-An MCP server that teaches AI to play piano — and sing. 120 songs across 12 genres, five sound engines, a browser cockpit with 20 vocal presets, and a practice journal that remembers everything.
+An MCP server that teaches AI to play piano and guitar — and sing. 120 songs across 12 genres, six sound engines, interactive guitar tablature, a browser cockpit with 20 vocal presets, and a practice journal that remembers everything.
 
 ---
 
@@ -10,13 +10,13 @@ An MCP server that teaches AI to play piano — and sing. 120 songs across 12 ge
 
 You don't learn music from a textbook. You learn it by sitting at a piano, playing something badly, listening to what went wrong, and trying again. AI Jam Sessions gives an LLM the same experience — not simulated, not abstracted, but real audio through real speakers with real feedback.
 
-The model reads annotated sheet music. It plays through one of five sound engines. It sees what it played rendered as a piano roll. It writes down what it learned. Next session, it picks up where it left off.
+The model reads annotated sheet music. It plays through one of six sound engines. It sees what it played rendered as a piano roll. It writes down what it learned. Next session, it picks up where it left off.
 
 Every genre has one deeply annotated exemplar — a reference piece with historical context, bar-by-bar harmonic analysis, key moments, teaching goals, and performance tips. The AI studies the exemplar, then annotates the remaining songs on its own. The library grows as the model learns.
 
 ## What's inside
 
-### Five sound engines
+### Six sound engines
 
 | Engine | How it works |
 |--------|--------------|
@@ -25,6 +25,7 @@ Every genre has one deeply annotated exemplar — a reference piece with histori
 | **Vocal (Sample)** | Sustained vowel tones pitch-shifted via playback rate. Monophonic legato with portamento. |
 | **Vocal Tract** | Pink Trombone — physical model with LF glottal waveform and 44-cell digital waveguide. Four presets: soprano, alto, tenor, bass. |
 | **Vocal Synth** | Additive synthesis with 15 Kokoro voice presets. Formant shaping, breathiness, vibrato. Deterministic output. |
+| **Guitar** | Physically-modeled plucked string — 4 presets (steel dreadnought, nylon classical, jazz archtop, twelve-string), 8 tunings, 17 tunable parameters. |
 
 The **Layered Engine** wraps any two and dispatches every MIDI event to both — piano+synth, vocal+synth, whatever combination you want.
 
@@ -56,13 +57,15 @@ A full instrument studio that runs in your browser alongside the MCP server:
 - **Score import/export** — full JSON serialization, bidirectional
 - **LLM API** — `window.__cockpit` exposes `exportScore()`, `importScore()`, `addNote()`, `play()`, `stop()`, `panic()`, `setMode()`, `getScore()` for programmatic composition
 
-### 24 MCP tools
+### 31 MCP tools
 
 **Learn:** `list_songs`, `song_info`, `registry_stats`, `library_progress`, `list_measures`, `teaching_note`, `suggest_song`, `practice_setup`
 
 **Play:** `play_song`, `stop_playback`, `pause_playback`, `set_speed`, `playback_status`, `view_piano_roll`
 
 **Sing:** `sing_along` (note-names, solfege, contour, syllables — with or without piano), `ai_jam_sessions` (jam briefs)
+
+**Guitar:** `view_guitar_tab`, `list_guitar_voices`, `list_guitar_tunings`, `tune_guitar`, `get_guitar_config`, `reset_guitar`
 
 **Build:** `add_song`, `import_midi`, `annotate_song`, `save_practice_note`, `read_practice_journal`, `list_keyboards`, `tune_keyboard`, `get_keyboard_config`, `reset_keyboard`
 
@@ -104,6 +107,7 @@ ai-jam-sessions list [--genre jazz] [--difficulty beginner]
 ai-jam-sessions play autumn-leaves --speed 0.7 --engine piano
 ai-jam-sessions sing autumn-leaves --with-piano
 ai-jam-sessions view fur-elise --measures 1-8 --out roll.svg
+ai-jam-sessions view-guitar autumn-leaves --tuning standard
 ai-jam-sessions info imagine
 ai-jam-sessions stats
 ai-jam-sessions library

@@ -1,7 +1,7 @@
 {
   "name": "@mcptoolshop/ai-jam-sessions",
-  "version": "0.2.1",
-  "description": "Teach your AI to play piano. MCP server with built-in audio engine, music sheet format, and piano roll visualizer.",
+  "version": "0.3.0",
+  "description": "Teach your AI to play piano and guitar. MCP server with six sound engines, interactive guitar tablature, piano roll visualizer, and practice journal.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

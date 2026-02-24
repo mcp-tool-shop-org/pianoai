@@ -11,9 +11,9 @@
 </p>
 
 <p align="center">
-  Un serveur MCP qui apprend à l'IA à jouer du piano — et à chanter.<br/>
-  120 morceaux dans 12 genres. Cinq moteurs sonores. Un cockpit navigateur avec synthétiseur vocal.<br/>
-  Un journal de pratique qui se souvient de tout.
+  Un serveur MCP qui apprend à l'IA à jouer du piano et de la guitare — et à chanter.<br/>
+  120 morceaux dans 12 genres. Six moteurs sonores. Tablature de guitare interactive.<br/>
+  Un cockpit navigateur avec synthétiseur vocal. Un journal de pratique qui se souvient de tout.
 </p>
 
 [![CI](https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml/badge.svg)](https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml)
@@ -25,13 +25,13 @@
 
 ## Qu'est-ce que c'est ?
 
-Un piano que l'IA apprend à jouer. Pas un synthétiseur, pas une bibliothèque MIDI — un instrument pédagogique.
+Un piano et une guitare que l'IA apprend à jouer. Pas un synthétiseur, pas une bibliothèque MIDI — un instrument pédagogique.
 
 Un LLM sait lire et écrire du texte, mais il ne peut pas vivre la musique comme nous. Pas d'oreilles, pas de doigts, pas de mémoire musculaire. AI Jam Sessions comble ce fossé en donnant au modèle des sens qu'il peut réellement utiliser :
 
 - **Lire** — de vraies partitions MIDI avec des annotations musicales profondes. Pas des approximations manuscrites — analysées, décortiquées et expliquées.
-- **Entendre** — cinq moteurs audio (piano oscillateur, piano échantillonné, échantillons vocaux, conduit vocal physique, synthèse additive vocale) jouent via vos haut-parleurs. Les humains dans la pièce deviennent les oreilles de l'IA.
-- **Voir** — un piano roll qui rend ce qui a été joué en SVG que le modèle peut relire et vérifier. Un cockpit navigateur avec clavier visuel, éditeur de notes dual et laboratoire d'accordage.
+- **Entendre** — six moteurs audio (piano oscillateur, piano échantillonné, échantillons vocaux, conduit vocal physique, synthèse additive vocale, guitare modélisée physiquement) jouent via vos haut-parleurs. Les humains dans la pièce deviennent les oreilles de l'IA.
+- **Voir** — un piano roll qui rend ce qui a été joué en SVG que le modèle peut relire et vérifier. Un éditeur de tablature de guitare interactif. Un cockpit navigateur avec clavier visuel, éditeur de notes dual et laboratoire d'accordage.
 - **Se souvenir** — un journal de pratique persistant entre les sessions. L'apprentissage se cumule.
 - **Chanter** — synthèse de conduit vocal avec 20 presets de voix, du soprano lyrique au chœur électronique. Mode chant accompagné avec solfège, contour et narration syllabique.
 
@@ -105,7 +105,7 @@ Les morceaux progressent de **raw** (MIDI seul) → **annotated** → **ready** 
 
 ## Moteurs Sonores
 
-Cinq moteurs plus un combinateur par couches qui en exécute deux simultanément :
+Six moteurs plus un combinateur par couches qui en exécute deux simultanément :
 
 | Moteur | Type | Son |
 |--------|------|-----|
@@ -114,6 +114,7 @@ Cinq moteurs plus un combinateur par couches qui en exécute deux simultanément
 | **Vocal (Échantillons)** | Échantillons à pitch variable | Tons vocaliques soutenus avec portamento et mode legato. |
 | **Conduit Vocal** | Modèle physique | Pink Trombone — onde glottale LF à travers un guide d'onde numérique à 44 cellules. Quatre presets : soprano, alto, ténor, basse. |
 | **Synthèse Vocale** | Synthèse additive | 15 presets vocaux Kokoro. Mise en forme des formants, souffle, vibrato. Déterministe (RNG avec graine). |
+| **Guitare** | Synthèse additive | Corde pincée modélisée physiquement — 4 presets (acier dreadnought, classique nylon, jazz archtop, douze-cordes), 8 accordages, 17 paramètres réglables. |
 | **Par Couches** | Combinateur | Enveloppe deux moteurs et distribue chaque événement MIDI aux deux — piano+synth, vocal+synth, etc. |
 
 ### Voix de Clavier
@@ -128,6 +129,17 @@ Six voix de piano réglables, chacune ajustable par paramètre (brillance, décl
 | Honky-Tonk | Désaccordé, ragtime, saloon |
 | Music Box | Cristallin, éthéré |
 | Bright Grand | Incisif, contemporain, pop |
+
+### Voix de Guitare
+
+Quatre presets de guitare avec synthèse de cordes modélisée physiquement, chacun avec 17 paramètres réglables (brillance, résonance du corps, position de pincement, amortissement des cordes et plus) :
+
+| Voix | Caractère |
+|------|----------|
+| Steel Dreadnought | Brillant, équilibré, acoustique classique |
+| Nylon Classical | Chaud, doux, arrondi |
+| Jazz Archtop | Doux, boisé, propre |
+| Twelve-String | Chatoyant, doublé, effet chorus |
 
 ## Le Journal de Pratique
 
@@ -172,7 +184,7 @@ Nécessite **Node.js 18+**. Pas de pilotes MIDI, pas de ports virtuels, pas de l
 
 ## Outils MCP
 
-24 outils répartis en quatre catégories :
+31 outils répartis en cinq catégories :
 
 ### Apprendre
 
@@ -205,6 +217,17 @@ Nécessite **Node.js 18+**. Pas de pilotes MIDI, pas de ports virtuels, pas de l
 | `sing_along` | Texte chantable — noms de notes, solfège, contour ou syllabes. Avec ou sans piano |
 | `ai_jam_sessions` | Générer un brief de jam — progression d'accords, esquisse mélodique et conseils de style |
 
+### Guitare
+
+| Outil | Fonction |
+|-------|----------|
+| `view_guitar_tab` | Tablature de guitare interactive en HTML — édition par clic, curseur de lecture, raccourcis clavier |
+| `list_guitar_voices` | Presets de voix de guitare disponibles |
+| `list_guitar_tunings` | Systèmes d'accordage de guitare disponibles (standard, drop-D, open G, DADGAD, etc.) |
+| `tune_guitar` | Ajuster n'importe quel paramètre de n'importe quelle voix de guitare. Persiste entre sessions |
+| `get_guitar_config` | Configuration actuelle d'une voix de guitare vs valeurs d'usine |
+| `reset_guitar` | Réinitialiser une voix de guitare aux valeurs d'usine |
+
 ### Construire
 
 | Outil | Fonction |
@@ -235,7 +258,7 @@ ai-jam-sessions ports
 
 ## Statut
 
-v0.2.1. Six moteurs sonores, 31 outils MCP, 120 morceaux dans 12 genres avec des exemplaires profondément annotés. Cockpit navigateur avec 20 presets vocaux, 10 voix d'instruments, 7 systèmes d'accordage et une API de partition pour LLM. Visualisation piano roll en deux modes de couleur. Journal de pratique persistant. Le MIDI est complet — la bibliothèque grandit au fil de l'apprentissage de l'IA.
+v0.3.0. Six moteurs sonores, 31 outils MCP, 120 morceaux dans 12 genres avec des exemplaires profondément annotés. Éditeur de tablature de guitare interactif. Cockpit navigateur avec 20 presets vocaux, 10 voix d'instruments, 7 systèmes d'accordage et une API de partition pour LLM. Visualisation piano roll en deux modes de couleur. Journal de pratique persistant. Le MIDI est complet — la bibliothèque grandit au fil de l'apprentissage de l'IA.
 
 ## Licence
 
