@@ -47,6 +47,7 @@ import {
 import type { SongEntry, Difficulty, Genre } from "./songs/types.js";
 import { safeParseMeasure, measureToSingableText, type SingAlongMode } from "./note-parser.js";
 import { renderPianoRoll } from "./piano-roll.js";
+import { renderGuitarTab } from "./guitar-tab-roll.js";
 import type { ParseWarning, PlaybackMode, SyncMode, VmpkConnector } from "./types.js";
 import { createAudioEngine } from "./audio-engine.js";
 import { createVocalEngine } from "./vocal-engine.js";
@@ -1246,6 +1247,44 @@ server.tool(
         data: Buffer.from(svg).toString("base64"),
         mimeType: "image/svg+xml",
       }],
+    };
+  }
+);
+
+// ─── Tool: view_guitar_tab ─────────────────────────────────────────────────
+
+server.tool(
+  "view_guitar_tab",
+  "Render an interactive guitar tablature editor for a song as a self-contained HTML page. Open the output file in a browser for real-time playback cursor, click-to-add notes, drag editing, string/fret reassignment, and JSON export. Supports configurable guitar tunings.",
+  {
+    songId: z.string().describe("Song ID from the library (e.g. 'autumn-leaves')"),
+    startMeasure: z.number().int().min(1).optional().describe("First measure to render (1-based). Default: 1"),
+    endMeasure: z.number().int().min(1).optional().describe("Last measure to render (1-based). Default: last measure"),
+    tuning: z.string().optional().describe("Guitar tuning: standard (default), drop-d, open-g, open-d, dadgad, open-e, half-step-down, full-step-down"),
+    tempo: z.number().int().min(10).max(400).optional().describe("Override tempo in BPM. Default: song's tempo"),
+  },
+  async ({ songId, startMeasure, endMeasure, tuning, tempo }) => {
+    const song = getSong(songId);
+    if (!song) {
+      return {
+        content: [{ type: "text" as const, text: `Song not found: "${songId}". Use list_songs to see available songs.` }],
+        isError: true,
+      };
+    }
+
+    const html = renderGuitarTab(song, { startMeasure, endMeasure, tuning, tempo });
+
+    // Write to temp file and return path (HTML can't be rendered inline like SVG)
+    const { tmpdir } = await import("node:os");
+    const { writeFileSync } = await import("node:fs");
+    const { join } = await import("node:path");
+    const tempPath = join(tmpdir(), `guitar-tab-${songId}.html`);
+    writeFileSync(tempPath, html, "utf8");
+
+    return {
+      content: [
+        { type: "text" as const, text: `Guitar tab editor written to: ${tempPath}\n\nOpen in a browser for the interactive editor with:\n- Playback cursor (Space to play/pause, Escape to stop)\n- Click on strings to add notes\n- Select notes and use ↑↓ to change string, +/- for fret, [ ] for duration\n- Delete key to remove notes\n- Export button to save edited tab as JSON\n\nTuning: ${tuning ?? "standard"}` },
+      ],
     };
   }
 );

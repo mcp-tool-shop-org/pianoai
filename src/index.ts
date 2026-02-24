@@ -53,6 +53,10 @@ export type { TractEngineOptions, TractVoiceId } from "./vocal-tract-engine.js";
 export { createGuitarEngine } from "./guitar-engine.js";
 export type { GuitarEngineOptions } from "./guitar-engine.js";
 
+// Export guitar tab roll (interactive HTML editor)
+export { renderGuitarTab } from "./guitar-tab-roll.js";
+export type { GuitarTabOptions } from "./guitar-tab-roll.js";
+
 // Export guitar voice presets and tuning
 export {
   GUITAR_VOICE_IDS,

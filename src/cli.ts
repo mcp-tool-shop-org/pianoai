@@ -44,6 +44,8 @@ import {
   type PianoVoiceId, type UserTuning,
 } from "./piano-voices.js";
 import type { PianoRollColorMode } from "./piano-roll.js";
+import { renderGuitarTab } from "./guitar-tab-roll.js";
+import { GUITAR_TUNING_IDS } from "./guitar-voices.js";
 import { createSession } from "./session.js";
 import { parseMidiFile } from "./midi/parser.js";
 import { MidiPlaybackEngine } from "./playback/midi-engine.js";
@@ -683,6 +685,63 @@ async function cmdView(args: string[]): Promise<void> {
   }
 }
 
+async function cmdViewGuitar(args: string[]): Promise<void> {
+  const songId = args[0];
+  if (!songId) {
+    console.error("Usage: ai-jam-sessions view-guitar <song-id> [--measures 1-8] [--tuning standard] [--out file.html]");
+    process.exit(1);
+  }
+  const song = getSong(songId);
+  if (!song) {
+    console.error(`Song not found: "${songId}". Run 'ai-jam-sessions list' to see available songs.`);
+    process.exit(1);
+  }
+
+  // Parse --measures flag
+  const measuresStr = getFlag(args, "--measures");
+  let startMeasure: number | undefined;
+  let endMeasure: number | undefined;
+  if (measuresStr) {
+    const parts = measuresStr.split("-");
+    startMeasure = parseInt(parts[0], 10);
+    endMeasure = parts[1] ? parseInt(parts[1], 10) : startMeasure;
+    if (isNaN(startMeasure) || isNaN(endMeasure)) {
+      console.error(`Invalid --measures range: "${measuresStr}". Use format like "1-8" or "5-12".`);
+      process.exit(1);
+    }
+  }
+
+  // Parse --tuning flag
+  const tuning = getFlag(args, "--tuning");
+  if (tuning && !GUITAR_TUNING_IDS.includes(tuning as any)) {
+    console.error(`Invalid --tuning: "${tuning}". Options: ${GUITAR_TUNING_IDS.join(", ")}`);
+    process.exit(1);
+  }
+
+  // Parse --tempo flag
+  const tempoStr = getFlag(args, "--tempo");
+  const tempo = tempoStr ? parseInt(tempoStr, 10) : undefined;
+
+  const outPath = getFlag(args, "--out");
+
+  const html = renderGuitarTab(song, { startMeasure, endMeasure, tuning: tuning ?? undefined, tempo });
+
+  let finalPath: string;
+  if (outPath) {
+    finalPath = outPath;
+  } else {
+    const { tmpdir } = await import("node:os");
+    const { join } = await import("node:path");
+    finalPath = join(tmpdir(), `guitar-tab-${song.id}.html`);
+  }
+
+  const { writeFileSync } = await import("node:fs");
+  writeFileSync(finalPath, html, "utf8");
+  console.log(`Guitar tab editor written to: ${finalPath}`);
+  console.log(`Open in a browser for the interactive editor.`);
+  console.log(`  Keyboard shortcuts: Space=play/pause, ↑↓=change string, +/-=fret, Del=delete`);
+}
+
 function cmdKeyboards(): void {
   const voices = listVoices();
   console.log(`\nAvailable Piano Keyboards:`);
@@ -915,6 +974,7 @@ pianoai — Play piano through your speakers
 Commands:
   play <song | file.mid>     Play a song or MIDI file
   view <song-id> [options]   Render a piano roll SVG visualization
+  view-guitar <song-id>      Interactive guitar tab editor (opens in browser)
   tune <keyboard> [options]  Tune a keyboard voice (persists across sessions)
   list [--genre <genre>]     List built-in songs
   info <song-id>             Show song details
@@ -1064,6 +1124,10 @@ async function main(): Promise<void> {
       break;
     case "view":
       await cmdView(args.slice(1));
+      break;
+    case "view-guitar":
+    case "tab":
+      await cmdViewGuitar(args.slice(1));
       break;
     case "tune":
       cmdTune(args.slice(1));
