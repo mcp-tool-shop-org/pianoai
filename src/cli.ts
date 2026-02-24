@@ -28,6 +28,13 @@ import type { SingAlongMode } from "./note-parser.js";
 import { createAudioEngine } from "./audio-engine.js";
 import { createVocalEngine } from "./vocal-engine.js";
 import { createTractEngine, TRACT_VOICE_IDS, type TractVoiceId } from "./vocal-tract-engine.js";
+import { createGuitarEngine } from "./guitar-engine.js";
+import {
+  GUITAR_VOICE_IDS, GUITAR_TUNING_PARAMS,
+  listGuitarVoices, getGuitarVoice, getMergedGuitarVoice,
+  loadGuitarUserTuning, saveGuitarUserTuning, resetGuitarUserTuning,
+  type GuitarVoiceId, type GuitarUserTuning,
+} from "./guitar-voices.js";
 import { createVocalSynthEngine } from "./vocal-synth-adapter.js";
 import { createLayeredEngine } from "./layered-engine.js";
 import { createVmpkConnector } from "./vmpk.js";
@@ -185,9 +192,10 @@ async function cmdPlay(args: string[]): Promise<void> {
   const keyboardStr = getFlag(args, "--keyboard") ?? "grand";
   const engineStr = getFlag(args, "--engine") ?? "piano";
   const tractVoiceStr = getFlag(args, "--tract-voice") ?? "soprano";
+  const guitarVoiceStr = getFlag(args, "--guitar-voice") ?? "steel-dreadnought";
 
   // Validate engine
-  const VALID_ENGINES = ["piano", "vocal", "tract", "synth", "piano+synth", "vocal+synth"];
+  const VALID_ENGINES = ["piano", "vocal", "tract", "synth", "piano+synth", "vocal+synth", "guitar", "guitar+synth"];
   if (!VALID_ENGINES.includes(engineStr)) {
     console.error(`Unknown engine: "${engineStr}". Available: ${VALID_ENGINES.join(", ")}`);
     process.exit(1);
@@ -196,6 +204,12 @@ async function cmdPlay(args: string[]): Promise<void> {
   // Validate tract voice
   if (!TRACT_VOICE_IDS.includes(tractVoiceStr as TractVoiceId)) {
     console.error(`Unknown tract voice: "${tractVoiceStr}". Available: ${TRACT_VOICE_IDS.join(", ")}`);
+    process.exit(1);
+  }
+
+  // Validate guitar voice
+  if (!GUITAR_VOICE_IDS.includes(guitarVoiceStr as GuitarVoiceId)) {
+    console.error(`Unknown guitar voice: "${guitarVoiceStr}". Available: ${GUITAR_VOICE_IDS.join(", ")}`);
     process.exit(1);
   }
 
@@ -225,10 +239,13 @@ async function cmdPlay(args: string[]): Promise<void> {
       case "tract":  return createTractEngine({ voice: tractVoiceStr as TractVoiceId });
       case "vocal":  return createVocalEngine();
       case "synth":  return createVocalSynthEngine();
+      case "guitar": return createGuitarEngine({ voice: guitarVoiceStr as GuitarVoiceId });
       case "piano+synth":
         return createLayeredEngine([createAudioEngine(keyboardId), createVocalSynthEngine()]);
       case "vocal+synth":
         return createLayeredEngine([createVocalEngine(), createVocalSynthEngine()]);
+      case "guitar+synth":
+        return createLayeredEngine([createGuitarEngine({ voice: guitarVoiceStr as GuitarVoiceId }), createVocalSynthEngine()]);
       default:       return createAudioEngine(keyboardId);
     }
   }
@@ -241,8 +258,10 @@ async function cmdPlay(args: string[]): Promise<void> {
     tract: `tract engine (${tractVoiceStr})`,
     vocal: "vocal engine",
     synth: "vocal-synth engine",
+    guitar: `guitar engine (${guitarVoiceStr})`,
     "piano+synth": `${keyboardStr} piano + vocal-synth`,
     "vocal+synth": "vocal + vocal-synth",
+    "guitar+synth": `${guitarVoiceStr} guitar + vocal-synth`,
   };
   const engineLabel = useMidi ? "MIDI" : ENGINE_LABELS[engineStr] ?? `${keyboardStr} piano`;
   console.log(`\nStarting ${engineLabel}...`);
@@ -679,6 +698,119 @@ function cmdKeyboards(): void {
   console.log(`Example: pianoai play amazing-grace --keyboard upright\n`);
 }
 
+function cmdGuitars(): void {
+  const voices = listGuitarVoices();
+  console.log(`\nAvailable Guitar Voices:`);
+  console.log(`${"─".repeat(80)}`);
+  for (const v of voices) {
+    const isDefault = v.id === "steel-dreadnought" ? " (default)" : "";
+    console.log(`  ${padRight(v.id, 20)} ${v.name}${isDefault}`);
+    console.log(`  ${padRight("", 20)} ${v.description}`);
+    console.log(`  ${padRight("", 20)} Best for: ${v.suggestedFor.join(", ")}`);
+    console.log(`  ${padRight("", 20)} Pluck: ${v.pluckPosition} | Body: ${v.bodyResonanceFreq} Hz | Partials: ${v.maxPartials}`);
+    console.log();
+  }
+  console.log(`Use --engine guitar --guitar-voice <id> with play commands.`);
+  console.log(`Example: pianoai play autumn-leaves --engine guitar --guitar-voice electric-jazz\n`);
+}
+
+function cmdTuneGuitar(args: string[]): void {
+  const voiceId = args[0];
+  if (!voiceId) {
+    console.log(`\nUsage: pianoai tune-guitar <voice-id> [--param value ...] [--reset] [--show]`);
+    console.log(`\nVoice IDs: ${GUITAR_VOICE_IDS.join(", ")}`);
+    console.log(`\nTunable parameters:`);
+    for (const p of GUITAR_TUNING_PARAMS) {
+      console.log(`  --${padRight(p.key, 18)} ${p.description} (${p.min}–${p.max})`);
+    }
+    console.log(`\nSpecial flags:`);
+    console.log(`  --reset              Reset to factory defaults`);
+    console.log(`  --show               Show current config\n`);
+    return;
+  }
+
+  if (!GUITAR_VOICE_IDS.includes(voiceId as any)) {
+    console.error(`Unknown guitar voice: "${voiceId}". Valid: ${GUITAR_VOICE_IDS.join(", ")}`);
+    process.exit(1);
+  }
+
+  // --reset flag
+  if (args.includes("--reset")) {
+    const hadOverrides = Object.keys(loadGuitarUserTuning(voiceId)).length > 0;
+    resetGuitarUserTuning(voiceId);
+    const voice = getGuitarVoice(voiceId)!;
+    if (hadOverrides) {
+      console.log(`Reset ${voice.name} (${voiceId}) to factory defaults.`);
+    } else {
+      console.log(`${voice.name} (${voiceId}) was already at factory defaults.`);
+    }
+    return;
+  }
+
+  // --show flag
+  if (args.includes("--show")) {
+    const base = getGuitarVoice(voiceId)!;
+    const merged = getMergedGuitarVoice(voiceId)!;
+    const tuning = loadGuitarUserTuning(voiceId);
+    console.log(`\n${merged.name} (${voiceId})`);
+    console.log(`${"─".repeat(60)}`);
+    for (const p of GUITAR_TUNING_PARAMS) {
+      let factoryVal: number;
+      let currentVal: number;
+      if (p.isArrayIndex !== undefined) {
+        factoryVal = (base as any)[p.configKey][p.isArrayIndex];
+        currentVal = (merged as any)[p.configKey][p.isArrayIndex];
+      } else {
+        factoryVal = (base as any)[p.configKey];
+        currentVal = (merged as any)[p.configKey];
+      }
+      const marker = p.key in tuning ? " *" : "";
+      console.log(`  ${padRight(p.key, 18)} ${currentVal}${marker}  (factory: ${factoryVal}, range: ${p.min}–${p.max})`);
+    }
+    const overrideCount = Object.keys(tuning).length;
+    if (overrideCount > 0) {
+      console.log(`\n  * = user override (${overrideCount} total)`);
+    } else {
+      console.log(`\n  Using factory preset.`);
+    }
+    console.log();
+    return;
+  }
+
+  // Parse tuning params from args
+  const overrides: GuitarUserTuning = {};
+  for (const p of GUITAR_TUNING_PARAMS) {
+    const val = getFlag(args, `--${p.key}`);
+    if (val !== null) {
+      const num = parseFloat(val);
+      if (isNaN(num)) {
+        console.error(`Invalid value for --${p.key}: "${val}" (expected a number)`);
+        process.exit(1);
+      }
+      if (num < p.min || num > p.max) {
+        console.error(`--${p.key} ${num} is out of range (${p.min}–${p.max})`);
+        process.exit(1);
+      }
+      overrides[p.key] = num;
+    }
+  }
+
+  if (Object.keys(overrides).length === 0) {
+    console.error(`No tuning parameters specified. Run 'pianoai tune-guitar' to see available parameters.`);
+    process.exit(1);
+  }
+
+  saveGuitarUserTuning(voiceId, overrides);
+  const merged = getMergedGuitarVoice(voiceId)!;
+  const totalOverrides = Object.keys(loadGuitarUserTuning(voiceId)).length;
+
+  console.log(`\nTuned ${merged.name} (${voiceId}):`);
+  for (const [key, val] of Object.entries(overrides)) {
+    console.log(`  ${padRight(key, 18)} → ${val}`);
+  }
+  console.log(`\n${totalOverrides} total override(s) saved. Use --reset to restore factory.\n`);
+}
+
 function cmdTune(args: string[]): void {
   const voiceId = args[0];
   if (!voiceId) {
@@ -788,6 +920,8 @@ Commands:
   info <song-id>             Show song details
   sing <song-id> [options]   Sing along — narrate notes during playback
   keyboards                  List available piano keyboard voices
+  guitars                    List available guitar voice presets
+  tune-guitar <voice> [opts] Tune a guitar voice (persists across sessions)
   stats                      Registry statistics
   ports                      List MIDI output ports
   help                       Show this help
@@ -797,7 +931,9 @@ Play options:
   --tempo <bpm>              Override tempo (10-400 BPM, library songs only)
   --mode <mode>              Playback mode: full, measure, hands, loop (library songs only)
   --keyboard <voice>         Piano voice: grand, upright, electric, honkytonk, musicbox, bright
-  --midi                     Output via MIDI instead of built-in piano
+  --engine <engine>          Sound engine: piano, vocal, tract, guitar, synth, piano+synth, guitar+synth
+  --guitar-voice <voice>     Guitar voice: classical-nylon, steel-dreadnought, electric-clean, electric-jazz
+  --midi                     Output via MIDI instead of built-in engine
   --port <name>              MIDI port name (with --midi)
 
 View options:
@@ -834,6 +970,10 @@ Examples:
   pianoai tune grand --reset                              # reset grand to factory
   pianoai view autumn-leaves --color pitch-class           # chromatic color view
   pianoai keyboards                                       # list all piano voices
+  pianoai guitars                                         # list all guitar voices
+  pianoai play autumn-leaves --engine guitar               # play on steel dreadnought
+  pianoai play autumn-leaves --engine guitar --guitar-voice electric-jazz  # jazz guitar
+  pianoai tune-guitar electric-jazz --pluck-position 0.3   # move pluck toward neck
   pianoai list --genre jazz                               # browse jazz songs
 `);
 }
@@ -930,6 +1070,12 @@ async function main(): Promise<void> {
       break;
     case "keyboards":
       cmdKeyboards();
+      break;
+    case "guitars":
+      cmdGuitars();
+      break;
+    case "tune-guitar":
+      cmdTuneGuitar(args.slice(1));
       break;
     case "library":
     case "lib":

@@ -49,6 +49,33 @@ export type { VocalEngineOptions } from "./vocal-engine.js";
 export { createTractEngine, TRACT_VOICE_IDS } from "./vocal-tract-engine.js";
 export type { TractEngineOptions, TractVoiceId } from "./vocal-tract-engine.js";
 
+// Export guitar engine (physically-modeled plucked string synthesis)
+export { createGuitarEngine } from "./guitar-engine.js";
+export type { GuitarEngineOptions } from "./guitar-engine.js";
+
+// Export guitar voice presets and tuning
+export {
+  GUITAR_VOICE_IDS,
+  GUITAR_VOICES,
+  GUITAR_TUNINGS,
+  GUITAR_TUNING_IDS,
+  GUITAR_TUNING_PARAMS,
+  getGuitarVoice,
+  listGuitarVoices,
+  suggestGuitarVoice,
+  getMergedGuitarVoice,
+  loadGuitarUserTuning,
+  saveGuitarUserTuning,
+  resetGuitarUserTuning,
+} from "./guitar-voices.js";
+export type {
+  GuitarVoiceConfig,
+  GuitarVoiceId,
+  GuitarTuning,
+  GuitarTuningParam,
+  GuitarUserTuning,
+} from "./guitar-voices.js";
+
 // Export vocal synth engine (additive synthesis with Kokoro voice presets)
 export { createVocalSynthEngine, listVocalSynthPresets } from "./vocal-synth-adapter.js";
 export type { VocalSynthOptions, VocalSynthTelemetry } from "./vocal-synth-adapter.js";

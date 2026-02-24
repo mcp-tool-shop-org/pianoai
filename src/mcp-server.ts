@@ -51,6 +51,13 @@ import type { ParseWarning, PlaybackMode, SyncMode, VmpkConnector } from "./type
 import { createAudioEngine } from "./audio-engine.js";
 import { createVocalEngine } from "./vocal-engine.js";
 import { createTractEngine, TRACT_VOICE_IDS, type TractVoiceId } from "./vocal-tract-engine.js";
+import { createGuitarEngine } from "./guitar-engine.js";
+import {
+  GUITAR_VOICE_IDS, GUITAR_TUNING_PARAMS, GUITAR_TUNINGS, GUITAR_TUNING_IDS,
+  listGuitarVoices, getGuitarVoice, getMergedGuitarVoice,
+  loadGuitarUserTuning, saveGuitarUserTuning, resetGuitarUserTuning,
+  type GuitarVoiceId, type GuitarUserTuning,
+} from "./guitar-voices.js";
 import { createVmpkConnector } from "./vmpk.js";
 import {
   listVoices, suggestVoice, getVoice, getMergedVoice,
@@ -590,10 +597,11 @@ server.tool(
     withTeaching: z.boolean().optional().describe("Enable live teaching feedback (encouragement, dynamics tips, difficulty warnings). Default: false"),
     singMode: z.enum(["note-names", "solfege", "contour", "syllables"]).optional().describe("Sing-along mode when withSinging is true. Default: note-names"),
     keyboard: z.enum(VOICE_IDS as unknown as [string, ...string[]]).optional().describe("Piano voice/keyboard: grand (default), upright, electric, honkytonk, musicbox, bright. Each has a different character suited to different genres."),
-    engine: z.enum(["piano", "vocal", "tract"]).optional().describe("Sound engine: 'piano' (default) plays piano, 'vocal' plays sustained vowel tones, 'tract' uses Pink Trombone vocal tract synthesis."),
+    engine: z.enum(["piano", "vocal", "tract", "guitar"]).optional().describe("Sound engine: 'piano' (default) plays piano, 'vocal' plays sustained vowel tones, 'tract' uses Pink Trombone vocal tract synthesis, 'guitar' plays physically-modeled guitar."),
     tractVoice: z.enum(TRACT_VOICE_IDS as unknown as [string, ...string[]]).optional().describe("Voice preset for tract engine: soprano (default), alto, tenor, bass. Only used when engine='tract'."),
+    guitarVoice: z.enum(GUITAR_VOICE_IDS as unknown as [string, ...string[]]).optional().describe("Guitar voice preset: classical-nylon, steel-dreadnought (default), electric-clean, electric-jazz. Only used when engine='guitar'."),
   },
-  async ({ id, speed, tempo, mode, startMeasure, endMeasure, withSinging, withTeaching, singMode, keyboard, engine, tractVoice }) => {
+  async ({ id, speed, tempo, mode, startMeasure, endMeasure, withSinging, withTeaching, singMode, keyboard, engine, tractVoice, guitarVoice }) => {
     // Stop whatever is currently playing
     stopActive();
 
@@ -628,13 +636,15 @@ server.tool(
       ? createTractEngine({ voice: (tractVoice ?? "soprano") as TractVoiceId })
       : engine === "vocal"
         ? createVocalEngine()
-        : createAudioEngine(voiceId);
+        : engine === "guitar"
+          ? createGuitarEngine({ voice: (guitarVoice ?? "steel-dreadnought") as GuitarVoiceId })
+          : createAudioEngine(voiceId);
     try {
       await connector.connect();
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       return {
-        content: [{ type: "text", text: `${engine === "tract" ? "Tract" : engine === "vocal" ? "Vocal" : "Piano"} engine failed to start: ${msg}` }],
+        content: [{ type: "text", text: `${engine === "tract" ? "Tract" : engine === "vocal" ? "Vocal" : engine === "guitar" ? "Guitar" : "Piano"} engine failed to start: ${msg}` }],
         isError: true,
       };
     }
@@ -1393,6 +1403,201 @@ server.tool(
 
     if (hadOverrides) {
       return { content: [{ type: "text", text: `Reset **${voice.name}** (\`${id}\`) to factory defaults. All user tuning overrides cleared.` }] };
+    }
+    return { content: [{ type: "text", text: `**${voice.name}** (\`${id}\`) was already at factory defaults.` }] };
+  }
+);
+
+// ─── Tool: list_guitar_voices ─────────────────────────────────────────────
+
+server.tool(
+  "list_guitar_voices",
+  "List available guitar voice presets. Each voice models a different guitar type with physically accurate synthesis parameters. Use the guitarVoice parameter in play_song (with engine='guitar') to choose one.",
+  {},
+  async () => {
+    const voices = listGuitarVoices();
+    const lines = [
+      `# Guitar Voices`,
+      ``,
+      `${voices.length} voices available. Use \`play_song\` with \`engine: "guitar"\` and \`guitarVoice\` parameter.`,
+      ``,
+    ];
+
+    for (const v of voices) {
+      const isDefault = v.id === "steel-dreadnought" ? " **(default)**" : "";
+      lines.push(`## ${v.name}${isDefault}`);
+      lines.push(`**ID:** \`${v.id}\``);
+      lines.push(`${v.description}`);
+      lines.push(`**Best for:** ${v.suggestedFor.join(", ")}`);
+      lines.push(`**Pluck position:** ${v.pluckPosition} | **Body resonance:** ${v.bodyResonanceFreq} Hz | **Partials:** up to ${v.maxPartials}`);
+      lines.push(``);
+    }
+
+    lines.push(`---`);
+    lines.push(`*Available tunings: ${GUITAR_TUNING_IDS.join(", ")}*`);
+
+    return { content: [{ type: "text", text: lines.join("\n") }] };
+  }
+);
+
+// ─── Tool: list_guitar_tunings ────────────────────────────────────────────
+
+server.tool(
+  "list_guitar_tunings",
+  "List available guitar tuning systems (standard, drop-D, open G, DADGAD, etc.). Shows open string MIDI note numbers for each tuning.",
+  {},
+  async () => {
+    const lines = [
+      `# Guitar Tunings`,
+      ``,
+      `${GUITAR_TUNING_IDS.length} tunings available.`,
+      ``,
+    ];
+
+    for (const id of GUITAR_TUNING_IDS) {
+      const t = GUITAR_TUNINGS[id];
+      const noteNames = t.openStrings.map(n => {
+        const names = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+        return names[n % 12] + Math.floor(n / 12 - 1);
+      });
+      const isDefault = id === "standard" ? " **(default)**" : "";
+      lines.push(`## ${t.name}${isDefault}`);
+      lines.push(`**ID:** \`${id}\``);
+      lines.push(`${t.description}`);
+      lines.push(`**Open strings:** ${noteNames.join(" ")} (MIDI: ${t.openStrings.join(", ")})`);
+      lines.push(``);
+    }
+
+    return { content: [{ type: "text", text: lines.join("\n") }] };
+  }
+);
+
+// ─── Tool: tune_guitar ────────────────────────────────────────────────────
+
+server.tool(
+  "tune_guitar",
+  "Tune a guitar voice by adjusting synthesis parameters. Changes are saved and persist across sessions. Use get_guitar_config to see current settings, reset_guitar to restore factory defaults.",
+  {
+    id: z.enum(GUITAR_VOICE_IDS as readonly [string, ...string[]]).describe("Guitar voice ID to tune"),
+    "pluck-position": z.number().min(0.05).max(0.50).optional().describe("Pluck position along string (0=bridge, 0.5=middle). Defines harmonic content."),
+    "pluck-noise": z.number().min(0).max(0.5).optional().describe("Pluck attack noise intensity (0=none)"),
+    brightness: z.number().min(0.05).max(0.5).optional().describe("Brightness at moderate velocity (lower=brighter)"),
+    "brightness-slope": z.number().min(0.03).max(0.2).optional().describe("Velocity sensitivity for upper partials"),
+    decay: z.number().min(0.5).max(10).optional().describe("Sustain length in seconds (treble end)"),
+    "bass-decay": z.number().min(1).max(15).optional().describe("Additional sustain for bass strings in seconds"),
+    "body-freq": z.number().min(60).max(8000).optional().describe("Body resonance frequency (Hz)"),
+    "body-q": z.number().min(0.5).max(12).optional().describe("Body resonance Q factor"),
+    "body-gain": z.number().min(0).max(15).optional().describe("Body resonance boost (dB)"),
+    "odd-boost": z.number().min(1.0).max(2.0).optional().describe("Odd harmonic emphasis (1.0=neutral)"),
+    detune: z.number().min(0).max(15).optional().describe("Intonation spread in cents"),
+    stereo: z.number().min(0).max(1).optional().describe("Stereo width (0=mono, 1=full)"),
+    volume: z.number().min(0.05).max(0.5).optional().describe("Per-voice volume"),
+    release: z.number().min(0.01).max(0.3).optional().describe("Mute speed in seconds"),
+    rolloff: z.number().min(0.3).max(1.5).optional().describe("Harmonic darkness (higher=darker)"),
+    "attack-fast": z.number().min(0.0002).max(0.005).optional().describe("Fastest attack (ff) in seconds"),
+    "attack-slow": z.number().min(0.001).max(0.01).optional().describe("Slowest attack (pp) in seconds"),
+  },
+  async (params) => {
+    const { id, ...tuningParams } = params;
+
+    const overrides: GuitarUserTuning = {};
+    for (const [key, val] of Object.entries(tuningParams)) {
+      if (val !== undefined) overrides[key] = val as number;
+    }
+
+    if (Object.keys(overrides).length === 0) {
+      return {
+        content: [{ type: "text", text: `No tuning parameters provided. Available: ${GUITAR_TUNING_PARAMS.map(p => p.key).join(", ")}` }],
+        isError: true,
+      };
+    }
+
+    saveGuitarUserTuning(id, overrides);
+    const merged = getMergedGuitarVoice(id)!;
+    const userTuning = loadGuitarUserTuning(id);
+
+    const lines = [
+      `Tuned **${merged.name}** (\`${id}\`):`,
+      ``,
+    ];
+    for (const [key, val] of Object.entries(overrides)) {
+      const param = GUITAR_TUNING_PARAMS.find(p => p.key === key);
+      lines.push(`- **${key}**: ${val}${param ? ` — ${param.description}` : ""}`);
+    }
+    lines.push(``, `${Object.keys(userTuning).length} total override(s) saved. Use \`reset_guitar\` to restore factory defaults.`);
+
+    return { content: [{ type: "text", text: lines.join("\n") }] };
+  }
+);
+
+// ─── Tool: get_guitar_config ──────────────────────────────────────────────
+
+server.tool(
+  "get_guitar_config",
+  "Show the full configuration of a guitar voice, including any user tuning overrides. Shows factory preset values and custom adjustments.",
+  {
+    id: z.enum(GUITAR_VOICE_IDS as readonly [string, ...string[]]).describe("Guitar voice ID to inspect"),
+  },
+  async ({ id }) => {
+    const base = getGuitarVoice(id)!;
+    const userTuning = loadGuitarUserTuning(id);
+    const merged = getMergedGuitarVoice(id)!;
+    const hasOverrides = Object.keys(userTuning).length > 0;
+
+    const lines = [
+      `# ${merged.name} (\`${id}\`)`,
+      `${merged.description}`,
+      `**Best for:** ${merged.suggestedFor.join(", ")}`,
+      ``,
+      `## Tunable Parameters`,
+      ``,
+      `| Parameter | Factory | Current | Range |`,
+      `|-----------|---------|---------|-------|`,
+    ];
+
+    for (const param of GUITAR_TUNING_PARAMS) {
+      let factoryVal: number;
+      let currentVal: number;
+      const baseRec = base as unknown as Record<string, unknown>;
+      const mergedRec = merged as unknown as Record<string, unknown>;
+      if (param.isArrayIndex !== undefined) {
+        factoryVal = (baseRec[param.configKey] as number[])[param.isArrayIndex];
+        currentVal = (mergedRec[param.configKey] as number[])[param.isArrayIndex];
+      } else {
+        factoryVal = baseRec[param.configKey] as number;
+        currentVal = mergedRec[param.configKey] as number;
+      }
+      const isOverridden = param.key in userTuning;
+      const marker = isOverridden ? " *" : "";
+      lines.push(`| ${param.key} | ${factoryVal} | ${currentVal}${marker} | ${param.min}–${param.max} |`);
+    }
+
+    if (hasOverrides) {
+      lines.push(``, `*\\* = user override*`);
+      lines.push(``, `Use \`reset_guitar\` to clear all overrides.`);
+    } else {
+      lines.push(``, `*No user overrides. Using factory preset.*`);
+    }
+
+    return { content: [{ type: "text", text: lines.join("\n") }] };
+  }
+);
+
+// ─── Tool: reset_guitar ──────────────────────────────────────────────────
+
+server.tool(
+  "reset_guitar",
+  "Reset a guitar voice to factory default settings, clearing all user tuning overrides.",
+  {
+    id: z.enum(GUITAR_VOICE_IDS as readonly [string, ...string[]]).describe("Guitar voice ID to reset"),
+  },
+  async ({ id }) => {
+    const hadOverrides = Object.keys(loadGuitarUserTuning(id)).length > 0;
+    resetGuitarUserTuning(id);
+    const voice = getGuitarVoice(id)!;
+
+    if (hadOverrides) {
+      return { content: [{ type: "text", text: `Reset **${voice.name}** (\`${id}\`) to factory defaults. All guitar tuning overrides cleared.` }] };
     }
     return { content: [{ type: "text", text: `**${voice.name}** (\`${id}\`) was already at factory defaults.` }] };
   }
