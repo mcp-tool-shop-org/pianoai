@@ -5,7 +5,7 @@
 // session facts. Next session, the journal loads and the LLM picks up where
 // it left off.
 //
-// Directory: ~/.pianoai/journal/
+// Directory: ~/.ai-jam-sessions/journal/
 // Format:    YYYY-MM-DD.md (one file per day, append-only)
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -34,7 +34,7 @@ export interface SessionSnapshot {
 
 export function getJournalDir(): string {
   const home = process.env.HOME ?? process.env.USERPROFILE ?? ".";
-  return join(home, ".pianoai", "journal");
+  return join(home, ".ai-jam-sessions", "journal");
 }
 
 function ensureJournalDir(): string {

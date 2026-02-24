@@ -1,4 +1,4 @@
-// ─── pianoai: Piano Voice Presets ────────────────────────────────────────────
+// ─── ai-jam-sessions: Piano Voice Presets ────────────────────────────────────
 //
 // Different pianos for different songs.
 //
@@ -482,7 +482,7 @@ import { homedir } from "node:os";
 export type UserTuning = Record<string, number>;
 
 function tuningDir(): string {
-  const dir = join(homedir(), ".pianoai", "voices");
+  const dir = join(homedir(), ".ai-jam-sessions", "voices");
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
   return dir;
 }

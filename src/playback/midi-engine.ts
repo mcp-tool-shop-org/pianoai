@@ -5,7 +5,7 @@
 // fires noteOn/noteOff at the right times. Supports speed control, pause/resume,
 // and abort via AbortSignal.
 //
-// This is the engine that makes `pianoai play song.mid` actually work.
+// This is the engine that makes `ai-jam-sessions play song.mid` actually work.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { ParsedMidi, MidiNoteEvent } from "../midi/types.js";

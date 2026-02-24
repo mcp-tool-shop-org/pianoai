@@ -165,7 +165,7 @@ export function ingestSong(entry: LibraryEntry): SongEntry {
 /**
  * Initialize the song registry from the library directory.
  * Only "ready" songs with existing MIDI files are loaded.
- * User songs from ~/.pianoai/songs/ are also loaded.
+ * User songs from ~/.ai-jam-sessions/songs/ are also loaded.
  */
 export function initializeFromLibrary(libraryDir: string, userDir?: string): void {
   clearRegistry();

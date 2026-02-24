@@ -654,7 +654,7 @@ export const GUITAR_TUNING_PARAMS: GuitarTuningParam[] = [
 export type GuitarUserTuning = Record<string, number>;
 
 function guitarTuningDir(): string {
-  const dir = join(homedir(), ".pianoai", "guitars");
+  const dir = join(homedir(), ".ai-jam-sessions", "guitars");
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
   return dir;
 }

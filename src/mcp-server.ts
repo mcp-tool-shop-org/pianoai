@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// ─── pianoai: MCP Server ─────────────────────────────────────────────────────
+// ─── ai-jam-sessions: MCP Server ─────────────────────────────────────────────
 //
 // Exposes the ai-music-sheets registry and session engine as MCP tools.
 // An LLM can browse songs, get teaching info, suggest practice setups,
@@ -117,7 +117,7 @@ function suggestMode(difficulty: Difficulty): { mode: string; reason: string } {
 // ─── Server ─────────────────────────────────────────────────────────────────
 
 const server = new McpServer({
-  name: "pianoai",
+  name: "ai-jam-sessions",
   version: "0.2.1",
 });
 
@@ -432,7 +432,7 @@ server.tool(
       ``,
       `## CLI Command`,
       `\`\`\``,
-      `pianoai play ${song.id} --speed ${speed} --mode ${mode}`,
+      `ai-jam-sessions play ${song.id} --speed ${speed} --mode ${mode}`,
       `\`\`\``,
       ``,
       `## Practice Progression`,
@@ -446,7 +446,7 @@ server.tool(
     if (song.difficulty === "advanced") {
       lines.push(
         `5. Try **loop** mode on difficult passages`,
-        `   Example: \`pianoai play ${song.id} --mode loop\``
+        `   Example: \`ai-jam-sessions play ${song.id} --mode loop\``
       );
     }
 
@@ -531,7 +531,7 @@ server.tool(
         ``,
         `### CLI Command`,
         `\`\`\``,
-        `pianoai sing ${song.id} --with-piano --mode ${effectiveMode} --hand ${effectiveHand} --sync ${effectiveSyncMode}`,
+        `ai-jam-sessions sing ${song.id} --with-piano --mode ${effectiveMode} --hand ${effectiveHand} --sync ${effectiveSyncMode}`,
         `\`\`\``,
       );
     } else {
@@ -539,7 +539,7 @@ server.tool(
         ``,
         `---`,
         `*Tip: Add \`withPiano: true\` for synchronized singing + piano playback, or run:*`,
-        `*\`pianoai sing ${song.id} --with-piano\`*`,
+        `*\`ai-jam-sessions sing ${song.id} --with-piano\`*`,
       );
     }
 
@@ -1274,16 +1274,28 @@ server.tool(
 
     const html = renderGuitarTab(song, { startMeasure, endMeasure, tuning, tempo });
 
-    // Write to temp file and return path (HTML can't be rendered inline like SVG)
+    // Write to temp file for browser viewing
     const { tmpdir } = await import("node:os");
     const { writeFileSync } = await import("node:fs");
     const { join } = await import("node:path");
     const tempPath = join(tmpdir(), `guitar-tab-${songId}.html`);
     writeFileSync(tempPath, html, "utf8");
 
+    // Also return a text summary of the tab content so the LLM can "see" the arrangement
+    const measures = song.measures.slice(
+      (startMeasure ?? 1) - 1,
+      endMeasure ?? song.measures.length
+    );
+    const tabSummary = measures.map((m, i) => {
+      const num = (startMeasure ?? 1) + i;
+      const rh = m.rightHand ?? "—";
+      const lh = m.leftHand ?? "—";
+      return `M${num}: RH[${rh}] LH[${lh}]`;
+    }).join("\n");
+
     return {
       content: [
-        { type: "text" as const, text: `Guitar tab editor written to: ${tempPath}\n\nOpen in a browser for the interactive editor with:\n- Playback cursor (Space to play/pause, Escape to stop)\n- Click on strings to add notes\n- Select notes and use ↑↓ to change string, +/- for fret, [ ] for duration\n- Delete key to remove notes\n- Export button to save edited tab as JSON\n\nTuning: ${tuning ?? "standard"}` },
+        { type: "text" as const, text: `Guitar tab editor written to: ${tempPath}\n\nTuning: ${tuning ?? "standard"}\nMeasures: ${(startMeasure ?? 1)}–${endMeasure ?? song.measures.length}\n\n## Tab Overview\n${tabSummary}\n\n## Interactive Editor\nOpen the HTML file in a browser for:\n- Playback cursor (Space to play/pause, Escape to stop)\n- Click on strings to add notes\n- Select notes and use ↑↓ to change string, +/- for fret, [ ] for duration\n- Delete key to remove notes\n- Export button (Ctrl+E) to save edited tab as JSON` },
       ],
     };
   }
@@ -1867,7 +1879,7 @@ server.tool(
 
 function getUserSongsDir(): string {
   const home = process.env.HOME ?? process.env.USERPROFILE ?? ".";
-  return pathJoin(home, ".pianoai", "songs");
+  return pathJoin(home, ".ai-jam-sessions", "songs");
 }
 
 // ─── Start ──────────────────────────────────────────────────────────────────
@@ -1883,7 +1895,7 @@ async function main(): Promise<void> {
 
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error("pianoai MCP server running on stdio");
+  console.error("ai-jam-sessions MCP server running on stdio");
 }
 
 main().catch((err) => {

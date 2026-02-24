@@ -1,4 +1,4 @@
-// ─── pianoai: Layered Engine ─────────────────────────────────────────────────
+// ─── ai-jam-sessions: Layered Engine ─────────────────────────────────────────
 //
 // A fan-out VmpkConnector that wraps multiple child engines and dispatches
 // every MIDI event to all of them simultaneously.  This lets you layer

@@ -1,28 +1,30 @@
 #!/usr/bin/env node
-// ─── pianoai: CLI Entry Point ─────────────────────────────────────
+// ─── ai-jam-sessions: CLI Entry Point ──────────────────────────────────────
 //
 // Usage:
-//   pianoai                     # Show help
-//   pianoai list                # List all songs
-//   pianoai list --genre jazz   # List songs by genre
-//   pianoai play <song-id>      # Play a song (built-in piano engine)
-//   pianoai play <song-id> --midi  # Play via MIDI output
-//   pianoai sing <song-id>      # Sing along — narrate notes during playback
-//   pianoai info <song-id>      # Show song details
-//   pianoai stats               # Registry stats
-//   pianoai ports               # List available MIDI ports
+//   ai-jam-sessions                     # Show help
+//   ai-jam-sessions list                # List all songs
+//   ai-jam-sessions list --genre jazz   # List songs by genre
+//   ai-jam-sessions play <song-id>      # Play a song (built-in piano engine)
+//   ai-jam-sessions play <song-id> --midi  # Play via MIDI output
+//   ai-jam-sessions sing <song-id>      # Sing along — narrate notes during playback
+//   ai-jam-sessions info <song-id>      # Show song details
+//   ai-jam-sessions stats               # Registry stats
+//   ai-jam-sessions ports               # List available MIDI ports
 // ─────────────────────────────────────────────────────────────────────────────
 
 import {
   getAllSongs,
   getSong,
   getSongsByGenre,
+  getSongsByDifficulty,
   getStats,
   GENRES,
+  DIFFICULTIES,
   initializeFromLibrary,
   getLibraryProgress,
 } from "./songs/index.js";
-import type { SongEntry, Genre } from "./songs/types.js";
+import type { SongEntry, Genre, Difficulty } from "./songs/types.js";
 import type { PlaybackProgress, PlaybackMode, SyncMode, VoiceDirective, AsideDirective, VmpkConnector } from "./types.js";
 import type { SingAlongMode } from "./note-parser.js";
 import { createAudioEngine } from "./audio-engine.js";
@@ -62,8 +64,21 @@ import { createLiveMidiFeedbackHook } from "./teaching/live-midi-feedback.js";
 import { PositionTracker } from "./playback/position.js";
 import type { TeachingHook } from "./types.js";
 import { renderPianoRoll } from "./piano-roll.js";
+import { buildJournalEntry, appendJournalEntry } from "./journal.js";
+import type { SessionSnapshot } from "./journal.js";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
+
+/** Open a file in the system default browser / application. */
+async function openInBrowser(filePath: string): Promise<void> {
+  const { platform } = await import("node:os");
+  const { exec } = await import("node:child_process");
+  const os = platform();
+  const cmd = os === "win32" ? `start "" "${filePath}"`
+    : os === "darwin" ? `open "${filePath}"`
+    : `xdg-open "${filePath}"`;
+  exec(cmd);
+}
 
 function printSongTable(songs: SongEntry[]): void {
   console.log(
@@ -148,22 +163,35 @@ function hasFlag(args: string[], flag: string): boolean {
 
 function cmdList(args: string[]): void {
   const genreArg = getFlag(args, "--genre");
+  const diffArg = getFlag(args, "--difficulty");
+
+  let songs: SongEntry[];
 
   if (genreArg) {
     if (!GENRES.includes(genreArg as Genre)) {
       console.error(`Unknown genre: "${genreArg}". Available: ${GENRES.join(", ")}`);
       process.exit(1);
     }
-    printSongTable(getSongsByGenre(genreArg as Genre));
+    songs = getSongsByGenre(genreArg as Genre);
   } else {
-    printSongTable(getAllSongs());
+    songs = getAllSongs();
   }
+
+  if (diffArg) {
+    if (!DIFFICULTIES.includes(diffArg as Difficulty)) {
+      console.error(`Unknown difficulty: "${diffArg}". Available: ${DIFFICULTIES.join(", ")}`);
+      process.exit(1);
+    }
+    songs = songs.filter(s => s.difficulty === diffArg);
+  }
+
+  printSongTable(songs);
 }
 
 function cmdInfo(args: string[]): void {
   const songId = args[0];
   if (!songId) {
-    console.error("Usage: pianoai info <song-id>");
+    console.error("Usage: ai-jam-sessions info <song-id>");
     process.exit(1);
   }
   const song = getSong(songId);
@@ -177,7 +205,7 @@ function cmdInfo(args: string[]): void {
 async function cmdPlay(args: string[]): Promise<void> {
   const target = args[0];
   if (!target) {
-    console.error("Usage: pianoai play <song-id | file.mid> [--speed N] [--tempo N] [--mode MODE] [--midi] [--with-singing] [--with-teaching] [--sing-mode MODE] [--seek N]");
+    console.error("Usage: ai-jam-sessions play <song-id | file.mid> [--speed N] [--tempo N] [--mode MODE] [--midi] [--with-singing] [--with-teaching] [--sing-mode MODE] [--seek N]");
     process.exit(1);
   }
 
@@ -356,7 +384,7 @@ async function cmdPlay(args: string[]): Promise<void> {
       // ── Library song playback ──
       const song = getSong(target);
       if (!song) {
-        console.error(`Song not found: "${target}". Run 'pianoai list' to see available songs, or provide a .mid file path.`);
+        console.error(`Song not found: "${target}". Run 'ai-jam-sessions list' to see available songs, or provide a .mid file path.`);
         process.exit(1);
       }
 
@@ -424,12 +452,56 @@ async function cmdPlay(args: string[]): Promise<void> {
       printSongInfo(song);
       const speedLabel = speed && speed !== 1.0 ? ` × ${speed}x speed` : "";
       const tempoLabel = tempo ? ` (${tempo} BPM${speedLabel})` : speedLabel ? ` (${song.tempo} BPM${speedLabel})` : "";
-      console.log(`Playing: ${song.title}${tempoLabel} [${mode} mode]\n`);
 
+      // Duration estimate
+      const effectiveTempo = tempo ?? song.tempo;
+      const effectiveSpeed = speed ?? 1.0;
+      const beatsPerMeasure = song.timeSignature === "3/4" ? 3 : song.timeSignature === "6/8" ? 6 : 4;
+      const estSeconds = Math.round((song.measures.length * beatsPerMeasure * 60) / (effectiveTempo * effectiveSpeed));
+      const estMin = Math.floor(estSeconds / 60);
+      const estSec = estSeconds % 60;
+      const estStr = estMin > 0 ? `~${estMin}m ${estSec}s` : `~${estSec}s`;
+
+      console.log(`Playing: ${song.title}${tempoLabel} [${mode} mode] (${estStr})\n`);
+
+      // SIGINT handler for graceful stop
+      const sigintHandler = () => {
+        console.log("\n\nStopping playback...");
+        session.stop();
+      };
+      process.on("SIGINT", sigintHandler);
+
+      const playStart = Date.now();
       await session.play();
+      process.removeListener("SIGINT", sigintHandler);
 
+      const durationSec = Math.round((Date.now() - playStart) / 1000);
       console.log(`\nFinished! ${session.session.measuresPlayed} measures played.`);
       console.log(session.summary());
+
+      // Auto-save journal entry
+      try {
+        const snapshot: SessionSnapshot = {
+          songId: song.id,
+          title: song.title,
+          composer: song.composer,
+          genre: song.genre,
+          difficulty: song.difficulty,
+          key: song.key,
+          tempo: effectiveTempo,
+          speed: effectiveSpeed,
+          mode,
+          measuresPlayed: session.session.measuresPlayed,
+          totalMeasures: song.measures.length,
+          durationSeconds: durationSec,
+          timestamp: new Date().toISOString(),
+        };
+        const entry = buildJournalEntry(snapshot, "CLI practice session.");
+        appendJournalEntry(entry);
+        console.log("  📝 Session logged to practice journal.");
+      } catch {
+        // Journal write failures are non-fatal
+      }
     }
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
@@ -443,12 +515,12 @@ async function cmdPlay(args: string[]): Promise<void> {
 async function cmdSing(args: string[]): Promise<void> {
   const songId = args[0];
   if (!songId) {
-    console.error("Usage: pianoai sing <song-id> [--mode note-names|solfege|contour|syllables] [--hand right|left|both] [--speed N] [--tempo N] [--with-piano] [--sync concurrent|before] [--midi]");
+    console.error("Usage: ai-jam-sessions sing <song-id> [--mode note-names|solfege|contour|syllables] [--hand right|left|both] [--speed N] [--tempo N] [--with-piano] [--sync concurrent|before] [--midi]");
     process.exit(1);
   }
   const song = getSong(songId);
   if (!song) {
-    console.error(`Song not found: "${songId}". Run 'pianoai list' to see available songs.`);
+    console.error(`Song not found: "${songId}". Run 'ai-jam-sessions list' to see available songs.`);
     process.exit(1);
   }
 
@@ -624,9 +696,17 @@ function cmdStats(): void {
 function cmdPorts(): void {
   console.log("\nChecking available MIDI output ports...");
   const connector = createVmpkConnector();
-  // JZZ needs an engine to list ports — try connecting briefly
-  console.log("(Note: Full port listing requires JZZ engine initialization.)");
-  console.log("Tip: Run loopMIDI and create a port, then set VMPK input to that port.\n");
+  const ports = connector.listPorts();
+  if (ports.length > 0) {
+    console.log(`\n  Available ports:`);
+    for (const p of ports) {
+      console.log(`    • ${p}`);
+    }
+  } else {
+    console.log("  No MIDI output ports detected.");
+    console.log("\n  Tip: Install loopMIDI (Windows) or use IAC Driver (macOS) to create a virtual MIDI port.");
+  }
+  console.log();
 }
 
 async function cmdView(args: string[]): Promise<void> {
@@ -674,14 +754,14 @@ async function cmdView(args: string[]): Promise<void> {
     writeFileSync(outPath, svg, "utf8");
     console.log(`Piano roll written to: ${outPath}`);
   } else {
-    // Write to temp file
+    // Write to temp file and auto-open
     const { tmpdir } = await import("node:os");
     const { join } = await import("node:path");
     const { writeFileSync } = await import("node:fs");
     const tempPath = join(tmpdir(), `piano-roll-${song.id}.svg`);
     writeFileSync(tempPath, svg, "utf8");
     console.log(`Piano roll written to: ${tempPath}`);
-    console.log(`Open in browser to view.`);
+    await openInBrowser(tempPath);
   }
 }
 
@@ -738,7 +818,9 @@ async function cmdViewGuitar(args: string[]): Promise<void> {
   const { writeFileSync } = await import("node:fs");
   writeFileSync(finalPath, html, "utf8");
   console.log(`Guitar tab editor written to: ${finalPath}`);
-  console.log(`Open in a browser for the interactive editor.`);
+  if (!outPath) {
+    await openInBrowser(finalPath);
+  }
   console.log(`  Keyboard shortcuts: Space=play/pause, ↑↓=change string, +/-=fret, Del=delete`);
 }
 
@@ -754,7 +836,7 @@ function cmdKeyboards(): void {
     console.log();
   }
   console.log(`Use --keyboard <id> with play or sing commands.`);
-  console.log(`Example: pianoai play amazing-grace --keyboard upright\n`);
+  console.log(`Example: ai-jam-sessions play amazing-grace --keyboard upright\n`);
 }
 
 function cmdGuitars(): void {
@@ -770,13 +852,13 @@ function cmdGuitars(): void {
     console.log();
   }
   console.log(`Use --engine guitar --guitar-voice <id> with play commands.`);
-  console.log(`Example: pianoai play autumn-leaves --engine guitar --guitar-voice electric-jazz\n`);
+  console.log(`Example: ai-jam-sessions play autumn-leaves --engine guitar --guitar-voice electric-jazz\n`);
 }
 
 function cmdTuneGuitar(args: string[]): void {
   const voiceId = args[0];
   if (!voiceId) {
-    console.log(`\nUsage: pianoai tune-guitar <voice-id> [--param value ...] [--reset] [--show]`);
+    console.log(`\nUsage: ai-jam-sessions tune-guitar <voice-id> [--param value ...] [--reset] [--show]`);
     console.log(`\nVoice IDs: ${GUITAR_VOICE_IDS.join(", ")}`);
     console.log(`\nTunable parameters:`);
     for (const p of GUITAR_TUNING_PARAMS) {
@@ -855,7 +937,7 @@ function cmdTuneGuitar(args: string[]): void {
   }
 
   if (Object.keys(overrides).length === 0) {
-    console.error(`No tuning parameters specified. Run 'pianoai tune-guitar' to see available parameters.`);
+    console.error(`No tuning parameters specified. Run 'ai-jam-sessions tune-guitar' to see available parameters.`);
     process.exit(1);
   }
 
@@ -873,7 +955,7 @@ function cmdTuneGuitar(args: string[]): void {
 function cmdTune(args: string[]): void {
   const voiceId = args[0];
   if (!voiceId) {
-    console.log(`\nUsage: pianoai tune <keyboard-id> [--param value ...] [--reset] [--show]`);
+    console.log(`\nUsage: ai-jam-sessions tune <keyboard-id> [--param value ...] [--reset] [--show]`);
     console.log(`\nKeyboard IDs: ${VOICE_IDS.join(", ")}`);
     console.log(`\nTunable parameters:`);
     for (const p of TUNING_PARAMS) {
@@ -952,7 +1034,7 @@ function cmdTune(args: string[]): void {
   }
 
   if (Object.keys(overrides).length === 0) {
-    console.error(`No tuning parameters specified. Run 'pianoai tune' to see available parameters.`);
+    console.error(`No tuning parameters specified. Run 'ai-jam-sessions tune' to see available parameters.`);
     process.exit(1);
   }
 
@@ -969,14 +1051,14 @@ function cmdTune(args: string[]): void {
 
 function cmdHelp(): void {
   console.log(`
-pianoai — Play piano through your speakers
+ai-jam-sessions — Play music through your speakers
 
 Commands:
   play <song | file.mid>     Play a song or MIDI file
   view <song-id> [options]   Render a piano roll SVG visualization
   view-guitar <song-id>      Interactive guitar tab editor (opens in browser)
   tune <keyboard> [options]  Tune a keyboard voice (persists across sessions)
-  list [--genre <genre>]     List built-in songs
+  list [--genre <genre>] [--difficulty <level>]  List built-in songs
   info <song-id>             Show song details
   sing <song-id> [options]   Sing along — narrate notes during playback
   keyboards                  List available piano keyboard voices
@@ -1008,7 +1090,7 @@ Tune options:
   --decay <1-10>             Sustain length (treble, seconds)
   --hammer <0-0.5>           Hammer attack intensity
   --detune <0-20>            Random detuning (chorus effect, cents)
-  ... (run 'pianoai tune' for all parameters)
+  ... (run 'ai-jam-sessions tune' for all parameters)
 
 Sing options:
   --tempo <bpm>              Override tempo (10-400 BPM)
@@ -1021,20 +1103,20 @@ Sing options:
   --midi                     Output via MIDI instead of built-in piano
 
 Examples:
-  pianoai play song.mid                                  # play a MIDI file
-  pianoai play amazing-grace --keyboard upright           # folk on an upright
-  pianoai play the-entertainer --keyboard honkytonk       # ragtime on honky-tonk
-  pianoai play autumn-leaves --keyboard electric          # jazz on electric piano
-  pianoai tune grand --brightness 0.3 --decay 5           # tune the grand piano
-  pianoai tune grand --show                               # see current grand config
-  pianoai tune grand --reset                              # reset grand to factory
-  pianoai view autumn-leaves --color pitch-class           # chromatic color view
-  pianoai keyboards                                       # list all piano voices
-  pianoai guitars                                         # list all guitar voices
-  pianoai play autumn-leaves --engine guitar               # play on steel dreadnought
-  pianoai play autumn-leaves --engine guitar --guitar-voice electric-jazz  # jazz guitar
-  pianoai tune-guitar electric-jazz --pluck-position 0.3   # move pluck toward neck
-  pianoai list --genre jazz                               # browse jazz songs
+  ai-jam-sessions play song.mid                          # play a MIDI file
+  ai-jam-sessions play amazing-grace --keyboard upright   # folk on an upright
+  ai-jam-sessions play the-entertainer --keyboard honkytonk # ragtime on honky-tonk
+  ai-jam-sessions play autumn-leaves --keyboard electric  # jazz on electric piano
+  ai-jam-sessions tune grand --brightness 0.3 --decay 5   # tune the grand piano
+  ai-jam-sessions tune grand --show                       # see current grand config
+  ai-jam-sessions tune grand --reset                      # reset grand to factory
+  ai-jam-sessions view autumn-leaves --color pitch-class   # chromatic color view
+  ai-jam-sessions keyboards                               # list all piano voices
+  ai-jam-sessions guitars                                 # list all guitar voices
+  ai-jam-sessions play autumn-leaves --engine guitar       # play on steel dreadnought
+  ai-jam-sessions play autumn-leaves --engine guitar --guitar-voice electric-jazz  # jazz guitar
+  ai-jam-sessions tune-guitar electric-jazz --pluck-position 0.3 # move pluck toward neck
+  ai-jam-sessions list --genre jazz                       # browse jazz songs
 `);
 }
 
@@ -1069,7 +1151,7 @@ function cmdLibrary(args: string[], libraryDir: string): void {
   const filled = Math.round((progress.ready / Math.max(progress.total, 1)) * barLen);
   const bar = "█".repeat(filled) + "░".repeat(barLen - filled);
 
-  console.log(`\n  Piano AI Song Library — Progress`);
+  console.log(`\n  AI Jam Sessions Song Library — Progress`);
   console.log(`  ${"═".repeat(50)}`);
   console.log(`  Total: ${progress.total} songs across ${Object.keys(progress.byGenre).length} genres`);
   console.log(`  Ready:     ${String(progress.ready).padStart(3)} ${bar} ${pct}%`);
@@ -1103,7 +1185,7 @@ async function main(): Promise<void> {
   const { fileURLToPath } = await import("node:url");
   const __dirname = dirname(fileURLToPath(import.meta.url));
   const libraryDir = join(__dirname, "..", "songs", "library");
-  const userDir = join(process.env.HOME ?? process.env.USERPROFILE ?? ".", ".pianoai", "songs");
+  const userDir = join(process.env.HOME ?? process.env.USERPROFILE ?? ".", ".ai-jam-sessions", "songs");
   initializeFromLibrary(libraryDir, userDir);
 
   const args = process.argv.slice(2);
@@ -1162,7 +1244,7 @@ async function main(): Promise<void> {
       if (song) {
         printSongInfo(song);
       } else {
-        console.error(`Unknown command: "${command}". Run 'pianoai help' for usage.`);
+        console.error(`Unknown command: "${command}". Run 'ai-jam-sessions help' for usage.`);
         process.exit(1);
       }
   }

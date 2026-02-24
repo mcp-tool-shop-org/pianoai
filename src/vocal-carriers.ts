@@ -1,4 +1,4 @@
-// ─── pianoai: Vocal Carrier Sample Management ──────────────────────────────
+// ─── ai-jam-sessions: Vocal Carrier Sample Management ───────────────────────
 //
 // Loads and indexes the pre-rendered vocal carrier WAVs.
 // Each carrier is a sustained vowel tone at a known pitch.

@@ -1,4 +1,4 @@
-// ─── pianoai: Chord Detection ────────────────────────────────────────────────
+// ─── ai-jam-sessions: Chord Detection ────────────────────────────────────────
 //
 // Simple chord detection from a set of MIDI note numbers.
 // Maps pitch-class sets to chord names. Designed for the playback HUD.

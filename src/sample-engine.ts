@@ -1,4 +1,4 @@
-// ─── pianoai: Sample-Based Piano Engine ─────────────────────────────────────
+// ─── ai-jam-sessions: Sample-Based Piano Engine ─────────────────────────────
 //
 // Plays real piano samples from the Accurate-Salamander Grand Piano library.
 // 480 WAV samples (48kHz/24-bit), 16 velocity layers, 88 keys.

@@ -144,7 +144,7 @@ MCPサーバーと並行して開くブラウザベースの楽器・ボーカ�
 ---
 ```
 
-1日1つのマークダウンファイル、`~/.pianoai/journal/`に保存。人間が読める形で、追記のみ。次のセッションでAIが日記を読んで前回の続きから再開します。
+1日1つのマークダウンファイル、`~/.ai-jam-sessions/journal/`に保存。人間が読める形で、追記のみ。次のセッションでAIが日記を読んで前回の続きから再開します。
 
 ## インストール
 
@@ -219,19 +219,20 @@ npm install -g @mcptoolshop/ai-jam-sessions
 ## CLI
 
 ```
-pianoai list [--genre <genre>] [--difficulty <level>]
-pianoai play <song-id> [--speed <mult>] [--mode <mode>] [--engine <piano|vocal|tract|synth|piano+synth>]
-pianoai sing <song-id> [--with-piano] [--engine <engine>]
-pianoai view <song-id> [--measures <start-end>] [--out <file.svg>]
-pianoai info <song-id>
-pianoai stats
-pianoai library
-pianoai ports
+ai-jam-sessions list [--genre <genre>] [--difficulty <level>]
+ai-jam-sessions play <song-id> [--speed <mult>] [--mode <mode>] [--engine <piano|vocal|tract|synth|guitar|piano+synth|guitar+synth>]
+ai-jam-sessions sing <song-id> [--with-piano] [--engine <engine>]
+ai-jam-sessions view <song-id> [--measures <start-end>] [--out <file.svg>]
+ai-jam-sessions view-guitar <song-id> [--measures <start-end>] [--tuning <tuning>]
+ai-jam-sessions info <song-id>
+ai-jam-sessions stats
+ai-jam-sessions library
+ai-jam-sessions ports
 ```
 
 ## ステータス
 
-v0.2.0。5つのサウンドエンジン、24のMCPツール、12ジャンル120曲（詳細なアノテーション付き模範曲）。20種のボーカルプリセット、10種のインストゥルメントボイス、7つの調律システム、LLM向けスコアAPIを備えたブラウザコックピット。2つのカラーモードのピアノロール。永続的な練習日記。MIDIはすべて揃っています——ライブラリはAIの学習とともに成長します。
+v0.2.1。6つのサウンドエンジン、31のMCPツール、12ジャンル120曲（詳細なアノテーション付き模範曲）。20種のボーカルプリセット、10種のインストゥルメントボイス、7つの調律システム、LLM向けスコアAPIを備えたブラウザコックピット。2つのカラーモードのピアノロール。永続的な練習日記。MIDIはすべて揃っています——ライブラリはAIの学習とともに成長します。
 
 ## ライセンス
 

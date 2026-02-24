@@ -1,4 +1,4 @@
-// ─── pianoai: Built-in Guitar Engine ─────────────────────────────────────────
+// ─── ai-jam-sessions: Built-in Guitar Engine ─────────────────────────────────
 //
 // Physically-modeled guitar synthesis using additive partials with
 // pluck-position harmonic shaping, body resonance, and

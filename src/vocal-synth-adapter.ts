@@ -1,4 +1,4 @@
-// ─── pianoai: Vocal Synth Adapter ─────────────────────────────────────────────
+// ─── ai-jam-sessions: Vocal Synth Adapter ────────────────────────────────────
 //
 // Wraps vocal-synth-engine's LiveSynthEngine as a VmpkConnector.
 // Additive synthesis with 15 Kokoro voice presets — drop-in replacement for

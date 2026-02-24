@@ -147,7 +147,7 @@ The Thrill Is Gone में V-i है, बस मेजर में। ब्
 ---
 ```
 
-प्रतिदिन एक मार्कडाउन फ़ाइल, `~/.pianoai/journal/` में संग्रहीत। मानव-पठनीय, केवल जोड़ने वाली। अगले सत्र में, AI अपनी डायरी पढ़ता है और जहाँ छोड़ा था वहाँ से शुरू करता है।
+प्रतिदिन एक मार्कडाउन फ़ाइल, `~/.ai-jam-sessions/journal/` में संग्रहीत। मानव-पठनीय, केवल जोड़ने वाली। अगले सत्र में, AI अपनी डायरी पढ़ता है और जहाँ छोड़ा था वहाँ से शुरू करता है।
 
 ## इंस्टॉल करें
 
@@ -222,19 +222,20 @@ npm install -g @mcptoolshop/ai-jam-sessions
 ## CLI
 
 ```
-pianoai list [--genre <genre>] [--difficulty <level>]
-pianoai play <song-id> [--speed <mult>] [--mode <mode>] [--engine <piano|vocal|tract|synth|piano+synth>]
-pianoai sing <song-id> [--with-piano] [--engine <engine>]
-pianoai view <song-id> [--measures <start-end>] [--out <file.svg>]
-pianoai info <song-id>
-pianoai stats
-pianoai library
-pianoai ports
+ai-jam-sessions list [--genre <genre>] [--difficulty <level>]
+ai-jam-sessions play <song-id> [--speed <mult>] [--mode <mode>] [--engine <piano|vocal|tract|synth|guitar|piano+synth|guitar+synth>]
+ai-jam-sessions sing <song-id> [--with-piano] [--engine <engine>]
+ai-jam-sessions view <song-id> [--measures <start-end>] [--out <file.svg>]
+ai-jam-sessions view-guitar <song-id> [--measures <start-end>] [--tuning <tuning>]
+ai-jam-sessions info <song-id>
+ai-jam-sessions stats
+ai-jam-sessions library
+ai-jam-sessions ports
 ```
 
 ## स्थिति
 
-v0.2.0। पाँच साउंड इंजन, 24 MCP टूल, 12 विधाओं में 120 गाने (गहरी टिप्पणी वाले आदर्श गीतों के साथ)। 20 वोकल प्रीसेट, 10 इंस्ट्रूमेंट वॉइस, 7 ट्यूनिंग सिस्टम और LLM-फ़ेसिंग स्कोर API वाला ब्राउज़र कॉकपिट। दो रंग मोड में पियानो रोल विज़ुअलाइज़ेशन। सतत अभ्यास डायरी। MIDI पूरा है — लाइब्रेरी AI के सीखने के साथ बढ़ती है।
+v0.2.1। छह साउंड इंजन, 31 MCP टूल, 12 विधाओं में 120 गाने (गहरी टिप्पणी वाले आदर्श गीतों के साथ)। 20 वोकल प्रीसेट, 10 इंस्ट्रूमेंट वॉइस, 7 ट्यूनिंग सिस्टम और LLM-फ़ेसिंग स्कोर API वाला ब्राउज़र कॉकपिट। दो रंग मोड में पियानो रोल विज़ुअलाइज़ेशन। सतत अभ्यास डायरी। MIDI पूरा है — लाइब्रेरी AI के सीखने के साथ बढ़ती है।
 
 ## लाइसेंस
 

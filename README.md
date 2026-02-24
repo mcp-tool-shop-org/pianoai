@@ -144,7 +144,7 @@ Next: try at full speed. Compare the Ipanema bridge modulation with this.
 ---
 ```
 
-One markdown file per day, stored in `~/.pianoai/journal/`. Human-readable, append-only. Next session, the AI reads its journal and picks up where it left off.
+One markdown file per day, stored in `~/.ai-jam-sessions/journal/`. Human-readable, append-only. Next session, the AI reads its journal and picks up where it left off.
 
 ## Install
 
@@ -169,7 +169,7 @@ Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external softwar
 
 ## MCP Tools
 
-24 tools across four categories:
+31 tools across four categories:
 
 ### Learn
 
@@ -219,19 +219,20 @@ Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external softwar
 ## CLI
 
 ```
-pianoai list [--genre <genre>] [--difficulty <level>]
-pianoai play <song-id> [--speed <mult>] [--mode <mode>] [--engine <piano|vocal|tract|synth|piano+synth>]
-pianoai sing <song-id> [--with-piano] [--engine <engine>]
-pianoai view <song-id> [--measures <start-end>] [--out <file.svg>]
-pianoai info <song-id>
-pianoai stats
-pianoai library
-pianoai ports
+ai-jam-sessions list [--genre <genre>] [--difficulty <level>]
+ai-jam-sessions play <song-id> [--speed <mult>] [--mode <mode>] [--engine <piano|vocal|tract|synth|guitar|piano+synth|guitar+synth>]
+ai-jam-sessions sing <song-id> [--with-piano] [--engine <engine>]
+ai-jam-sessions view <song-id> [--measures <start-end>] [--out <file.svg>]
+ai-jam-sessions view-guitar <song-id> [--measures <start-end>] [--tuning <tuning>]
+ai-jam-sessions info <song-id>
+ai-jam-sessions stats
+ai-jam-sessions library
+ai-jam-sessions ports
 ```
 
 ## Status
 
-v0.2.1. Five sound engines, 24 MCP tools, 120 songs across 12 genres with deeply annotated exemplars. Browser cockpit with 20 vocal presets, 10 instrument voices, 7 tuning systems, and an LLM-facing score API. Piano roll visualization in two color modes. Practice journal for persistent learning. The MIDI is all there — the library grows as the AI learns.
+v0.2.1. Six sound engines, 31 MCP tools, 120 songs across 12 genres with deeply annotated exemplars. Browser cockpit with 20 vocal presets, 10 instrument voices, 7 tuning systems, and an LLM-facing score API. Piano roll visualization in two color modes. Interactive guitar tablature editor. Practice journal for persistent learning. The MIDI is all there — the library grows as the AI learns.
 
 ## License
 

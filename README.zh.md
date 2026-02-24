@@ -144,7 +144,7 @@ LLM可以读写文本，但无法像我们一样体验音乐。没有耳朵，�
 ---
 ```
 
-每天一个markdown文件，存储在`~/.pianoai/journal/`。人类可读，只追加。下次会话，AI读取日记并从上次中断处继续。
+每天一个markdown文件，存储在`~/.ai-jam-sessions/journal/`。人类可读，只追加。下次会话，AI读取日记并从上次中断处继续。
 
 ## 安装
 
@@ -219,19 +219,20 @@ npm install -g @mcptoolshop/ai-jam-sessions
 ## CLI
 
 ```
-pianoai list [--genre <genre>] [--difficulty <level>]
-pianoai play <song-id> [--speed <mult>] [--mode <mode>] [--engine <piano|vocal|tract|synth|piano+synth>]
-pianoai sing <song-id> [--with-piano] [--engine <engine>]
-pianoai view <song-id> [--measures <start-end>] [--out <file.svg>]
-pianoai info <song-id>
-pianoai stats
-pianoai library
-pianoai ports
+ai-jam-sessions list [--genre <genre>] [--difficulty <level>]
+ai-jam-sessions play <song-id> [--speed <mult>] [--mode <mode>] [--engine <piano|vocal|tract|synth|guitar|piano+synth|guitar+synth>]
+ai-jam-sessions sing <song-id> [--with-piano] [--engine <engine>]
+ai-jam-sessions view <song-id> [--measures <start-end>] [--out <file.svg>]
+ai-jam-sessions view-guitar <song-id> [--measures <start-end>] [--tuning <tuning>]
+ai-jam-sessions info <song-id>
+ai-jam-sessions stats
+ai-jam-sessions library
+ai-jam-sessions ports
 ```
 
 ## 状态
 
-v0.2.0。五个音频引擎，24个MCP工具，12种风格120首曲目（含深度注释范例曲）。浏览器控制台带20种声乐预设、10种乐器音色、7种调律系统和LLM接口乐谱API。两种颜色模式的钢琴卷帘。持久化练习日记。MIDI已全部就绪——曲库随AI学习而成长。
+v0.2.1。六个音频引擎，31个MCP工具，12种风格120首曲目（含深度注释范例曲）。浏览器控制台带20种声乐预设、10种乐器音色、7种调律系统和LLM接口乐谱API。两种颜色模式的钢琴卷帘。持久化练习日记。MIDI已全部就绪——曲库随AI学习而成长。
 
 ## 许可证
 

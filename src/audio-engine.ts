@@ -1,4 +1,4 @@
-// ─── pianoai: Built-in Piano Engine ──────────────────────────────────────────
+// ─── ai-jam-sessions: Built-in Piano Engine ─────────────────────────────────
 //
 // Quality multi-harmonic piano synthesis using node-web-audio-api.
 // No external software required — npm install gives you everything.

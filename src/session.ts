@@ -1,4 +1,4 @@
-// ─── pianoai: Session Engine ─────────────────────────────────────────────────
+// ─── ai-jam-sessions: Session Engine ─────────────────────────────────────────
 //
 // Manages the playback session: load a song, parse measures, play through
 // VMPK via the connector, track progress, handle pause/resume/stop.

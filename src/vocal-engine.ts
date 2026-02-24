@@ -1,4 +1,4 @@
-// ─── pianoai: Vocal Engine ───────────────────────────────────────────────────
+// ─── ai-jam-sessions: Vocal Engine ──────────────────────────────────────────
 //
 // Plays MIDI notes as sustained vocal tones ("aah" vowel).
 // Uses pre-rendered carrier samples, pitch-shifted via playbackRate.

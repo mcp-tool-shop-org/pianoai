@@ -68,7 +68,7 @@ A full instrument studio that runs in your browser alongside the MCP server:
 
 ### The practice journal
 
-One markdown file per day in `~/.pianoai/journal/`. After every session, the server logs what happened (song, speed, measures, duration). The AI writes its own reflections — what patterns it noticed, what to try next. Next session, it reads the journal and picks up where it left off. Learning compounds.
+One markdown file per day in `~/.ai-jam-sessions/journal/`. After every session, the server logs what happened (song, speed, measures, duration). The AI writes its own reflections — what patterns it noticed, what to try next. Next session, it reads the journal and picks up where it left off. Learning compounds.
 
 ### Piano roll visualization
 
@@ -100,13 +100,13 @@ Node.js 18+. No MIDI drivers, no virtual ports, no extra software.
 ### CLI
 
 ```
-pianoai list [--genre jazz] [--difficulty beginner]
-pianoai play autumn-leaves --speed 0.7 --engine piano
-pianoai sing autumn-leaves --with-piano
-pianoai view fur-elise --measures 1-8 --out roll.svg
-pianoai info imagine
-pianoai stats
-pianoai library
+ai-jam-sessions list [--genre jazz] [--difficulty beginner]
+ai-jam-sessions play autumn-leaves --speed 0.7 --engine piano
+ai-jam-sessions sing autumn-leaves --with-piano
+ai-jam-sessions view fur-elise --measures 1-8 --out roll.svg
+ai-jam-sessions info imagine
+ai-jam-sessions stats
+ai-jam-sessions library
 ```
 
 ---

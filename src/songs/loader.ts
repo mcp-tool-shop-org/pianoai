@@ -1,7 +1,7 @@
 // ─── Song Loader ────────────────────────────────────────────────────────────
 //
 // Loads SongEntry objects from JSON files at runtime.
-// Two directories: builtin (ships with package) + user (~/.pianoai/songs/).
+// Two directories: builtin (ships with package) + user (~/.ai-jam-sessions/songs/).
 // No compilation needed to add songs — just drop a .json file.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -84,7 +84,7 @@ export function saveSong(song: SongEntry, dir: string): string {
  * Clears any existing registry entries first.
  *
  * @param builtinDir - Path to the builtin songs directory (ships with package)
- * @param userDir - Optional path to user songs directory (default: ~/.pianoai/songs/)
+ * @param userDir - Optional path to user songs directory (default: ~/.ai-jam-sessions/songs/)
  */
 export function initializeRegistry(builtinDir: string, userDir?: string): void {
   clearRegistry();

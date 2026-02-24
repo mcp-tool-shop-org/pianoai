@@ -1,4 +1,4 @@
-// ─── pianoai: Vocal Tract Engine ──────────────────────────────────────────────
+// ─── ai-jam-sessions: Vocal Tract Engine ─────────────────────────────────────
 //
 // Real-time vocal tract synthesis using Pink Trombone (chdh/pink-trombone-mod).
 // Unlike vocal-engine.ts (sample playback), this is a physical model:

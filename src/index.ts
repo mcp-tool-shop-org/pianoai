@@ -1,10 +1,10 @@
-// ─── pianoai ────────────────────────────────────────────────────────────────
+// ─── ai-jam-sessions ────────────────────────────────────────────────────────
 //
 // Piano player — plays songs through speakers or MIDI.
 // Built-in piano engine included. No external software required.
 //
 // Usage:
-//   import { createSession, createAudioEngine, getSong } from "@mcptoolshop/pianoai";
+//   import { createSession, createAudioEngine, getSong } from "@mcptoolshop/ai-jam-sessions";
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Re-export song library

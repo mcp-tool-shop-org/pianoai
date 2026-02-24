@@ -147,7 +147,7 @@ puente de Ipanema con esto.
 ---
 ```
 
-Un archivo markdown por día, almacenado en `~/.pianoai/journal/`. Legible por humanos, solo escritura. En la siguiente sesión, la IA lee su diario y continúa donde lo dejó.
+Un archivo markdown por día, almacenado en `~/.ai-jam-sessions/journal/`. Legible por humanos, solo escritura. En la siguiente sesión, la IA lee su diario y continúa donde lo dejó.
 
 ## Instalación
 
@@ -222,19 +222,20 @@ Requiere **Node.js 18+**. Sin controladores MIDI, sin puertos virtuales, sin sof
 ## CLI
 
 ```
-pianoai list [--genre <genre>] [--difficulty <level>]
-pianoai play <song-id> [--speed <mult>] [--mode <mode>] [--engine <piano|vocal|tract|synth|piano+synth>]
-pianoai sing <song-id> [--with-piano] [--engine <engine>]
-pianoai view <song-id> [--measures <start-end>] [--out <file.svg>]
-pianoai info <song-id>
-pianoai stats
-pianoai library
-pianoai ports
+ai-jam-sessions list [--genre <genre>] [--difficulty <level>]
+ai-jam-sessions play <song-id> [--speed <mult>] [--mode <mode>] [--engine <piano|vocal|tract|synth|guitar|piano+synth|guitar+synth>]
+ai-jam-sessions sing <song-id> [--with-piano] [--engine <engine>]
+ai-jam-sessions view <song-id> [--measures <start-end>] [--out <file.svg>]
+ai-jam-sessions view-guitar <song-id> [--measures <start-end>] [--tuning <tuning>]
+ai-jam-sessions info <song-id>
+ai-jam-sessions stats
+ai-jam-sessions library
+ai-jam-sessions ports
 ```
 
 ## Estado
 
-v0.2.0. Cinco motores de sonido, 24 herramientas MCP, 120 canciones en 12 géneros con ejemplares profundamente anotados. Cabina de control en el navegador con 20 presets vocales, 10 voces de instrumento, 7 sistemas de afinación y una API de partitura para LLM. Visualización de piano roll en dos modos de color. Diario de práctica persistente. El MIDI está completo — la biblioteca crece a medida que la IA aprende.
+v0.2.1. Seis motores de sonido, 31 herramientas MCP, 120 canciones en 12 géneros con ejemplares profundamente anotados. Cabina de control en el navegador con 20 presets vocales, 10 voces de instrumento, 7 sistemas de afinación y una API de partitura para LLM. Visualización de piano roll en dos modos de color. Diario de práctica persistente. El MIDI está completo — la biblioteca crece a medida que la IA aprende.
 
 ## Licencia
 

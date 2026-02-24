@@ -1,4 +1,4 @@
-// ─── pianoai: Teaching Engine ────────────────────────────────────────────────
+// ─── ai-jam-sessions: Teaching Engine ────────────────────────────────────────
 //
 // Provides TeachingHook implementations that deliver teaching interjections
 // during playback. The session engine calls these hooks at key moments.

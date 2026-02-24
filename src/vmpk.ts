@@ -1,4 +1,4 @@
-// ─── pianoai: MIDI Connector ─────────────────────────────────────────────────
+// ─── ai-jam-sessions: MIDI Connector ─────────────────────────────────────────
 //
 // Connects to any available MIDI output using the JZZ library.
 // Auto-detects the best port: prefers loopMIDI/VMPK if present,

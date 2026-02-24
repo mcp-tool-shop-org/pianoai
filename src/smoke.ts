@@ -1,4 +1,4 @@
-// ─── pianoai: Smoke Test ─────────────────────────────────────────────────────
+// ─── ai-jam-sessions: Smoke Test ─────────────────────────────────────────────
 //
 // Quick integration smoke test — no MIDI hardware needed.
 // Verifies: ai-music-sheets loads, note parser works, sessions run with mock,
@@ -75,7 +75,7 @@ function assert(condition: boolean, msg: string): void {
   if (!condition) throw new Error(`Assertion failed: ${msg}`);
 }
 
-console.log("\n pianoai smoke test\n");
+console.log("\n ai-jam-sessions smoke test\n");
 
 // ─── Initialize song registry from builtin JSON files ───────────────────────
 import { dirname, join } from "node:path";
