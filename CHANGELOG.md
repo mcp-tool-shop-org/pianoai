@@ -2,7 +2,35 @@
 
 All notable changes to AI Jam Sessions will be documented here.
 
-## 0.2.1
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [1.0.0] - 2026-02-27
+
+### Added
+- Structured error class (`JamError`) with code, message, hint, cause, retryable
+- SECURITY.md with vulnerability reporting policy and data scope
+- Threat model section in README (data touched, data NOT touched, permissions)
+- `verify` script in package.json (typecheck + test + build + smoke)
+- Coverage reporting with `@vitest/coverage-v8` and Codecov badge
+- Dependency audit job in CI
+- SHIP_GATE.md and SCORECARD.md for product standards tracking
+
+### Changed
+- Top-level CLI error handler now uses structured error output
+- MCP server fatal error handler no longer exposes raw stack traces
+- Promoted to v1.0.0 — all Shipcheck hard gates pass
+
+## [0.3.1] - 2026-02-27
+
+### Added
+- Guitar engine, tab editor, physically-modeled guitar voice
+- Practice journal and session persistence
+- Browser cockpit improvements
+
+## [0.2.1]
 
 - Dark-themed landing page (static HTML, GitHub Pages)
 - New logo banner across all READMEs

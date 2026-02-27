@@ -1250,7 +1250,9 @@ async function main(): Promise<void> {
   }
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
+main().catch(async (err) => {
+  const { handleError } = await import("./errors.js");
+  const debug = process.argv.includes("--debug") || process.argv.includes("-D");
+  const code = handleError(err, debug);
+  process.exit(code);
 });

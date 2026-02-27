@@ -17,6 +17,7 @@
 </p>
 
 [![CI](https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml/badge.svg)](https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/mcp-tool-shop-org/ai-jam-sessions/branch/main/graph/badge.svg)](https://codecov.io/gh/mcp-tool-shop-org/ai-jam-sessions)
 [![npm](https://img.shields.io/npm/v/@mcptoolshop/ai-jam-sessions)](https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions)
 [![Songs](https://img.shields.io/badge/songs-120_across_12_genres-blue)](https://github.com/mcp-tool-shop-org/ai-jam-sessions)
 [![Ready](https://img.shields.io/badge/annotated-24-green)](https://github.com/mcp-tool-shop-org/ai-jam-sessions)
@@ -256,6 +257,14 @@ ai-jam-sessions ports
 ## Status
 
 v0.3.0. Six sound engines, 31 MCP tools, 120 songs across 12 genres with deeply annotated exemplars. Interactive guitar tablature editor. Browser cockpit with 20 vocal presets, 10 instrument voices, 7 tuning systems, and an LLM-facing score API. Piano roll visualization in two color modes. Practice journal for persistent learning. The MIDI is all there — the library grows as the AI learns.
+
+## Security & Privacy
+
+**Data touched:** song library (JSON + MIDI), user songs directory (`~/.ai-jam-sessions/songs/`), guitar tuning configs, practice journal entries, local audio output device.
+
+**Data NOT touched:** no cloud APIs, no user credentials, no browsing data, no system files outside the user song directory. No telemetry is collected or sent.
+
+**Permissions:** MCP server uses stdio transport only (no HTTP). CLI accesses local filesystem and audio devices. See [SECURITY.md](SECURITY.md) for the full policy.
 
 ## License
 
