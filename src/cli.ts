@@ -72,12 +72,15 @@ import type { SessionSnapshot } from "./journal.js";
 /** Open a file in the system default browser / application. */
 async function openInBrowser(filePath: string): Promise<void> {
   const { platform } = await import("node:os");
-  const { exec } = await import("node:child_process");
+  const { execFile } = await import("node:child_process");
   const os = platform();
-  const cmd = os === "win32" ? `start "" "${filePath}"`
-    : os === "darwin" ? `open "${filePath}"`
-    : `xdg-open "${filePath}"`;
-  exec(cmd);
+  if (os === "win32") {
+    execFile("cmd", ["/c", "start", "", filePath]);
+  } else if (os === "darwin") {
+    execFile("open", [filePath]);
+  } else {
+    execFile("xdg-open", [filePath]);
+  }
 }
 
 function printSongTable(songs: SongEntry[]): void {
