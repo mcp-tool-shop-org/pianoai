@@ -221,9 +221,14 @@ export function createVocalEngine(options?: VocalEngineOptions): VmpkConnector &
         console.error(`Vocal engine connected (${bank.carriers.length} carriers, chorus=${chorus})`);
       } catch (err) {
         currentStatus = "error";
-        throw new Error(
-          `Failed to start vocal engine: ${err instanceof Error ? err.message : String(err)}`,
-        );
+        const msg = err instanceof Error ? err.message : String(err);
+        if (msg.includes("ENOENT") && msg.includes("samples")) {
+          throw new Error(
+            `Vocal carrier samples not found at "${carrierDir}". ` +
+            `Run 'pnpm setup' to generate them, or use --engine piano instead.`,
+          );
+        }
+        throw new Error(`Failed to start vocal engine: ${msg}`);
       }
     },
 

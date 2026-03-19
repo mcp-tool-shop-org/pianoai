@@ -6,7 +6,8 @@ dist/
 .env
 .env.local
 coverage/
-samples/
+samples/*
+!samples/vocal/
 scripts/midi-cache/
 *.tgz
 ci-failed.log

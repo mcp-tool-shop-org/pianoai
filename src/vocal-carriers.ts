@@ -39,15 +39,15 @@ export interface CarrierBank {
 
 // Note name offsets from C within an octave
 const NOTE_OFFSETS: Record<string, number> = {
-  c: 0, cs: 1, ds: 3, d: 2, es: 3, e: 4, f: 5,
-  fs: 6, gs: 8, g: 7, as: 10, a: 9, bs: 11, b: 11,
+  c: 0, cs: 1, d: 2, ds: 3, e: 4, f: 5,
+  fs: 6, g: 7, gs: 8, a: 9, as: 10, b: 11,
 };
 
 /**
  * Extract MIDI note from a carrier filename like "carrier-c4.wav" → 60
  * or "carrier-ds3.wav" → 51. Supports naturals and sharps (s = sharp).
  */
-function filenameToMidi(filename: string): number | null {
+export function filenameToMidi(filename: string): number | null {
   const match = filename.match(/^carrier-([a-g]s?)(\d)\.wav$/i);
   if (!match) return null;
   const noteName = match[1].toLowerCase();

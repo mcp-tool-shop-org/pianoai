@@ -17,6 +17,7 @@
   },
   "files": [
     "dist",
+    "samples/vocal",
     "songs/library",
     "docs",
     "README.md",
@@ -38,7 +39,8 @@
     "mcp": "node dist/mcp-server.js",
     "test:coverage": "vitest run --coverage",
     "verify": "pnpm typecheck && pnpm test && pnpm build && pnpm smoke",
-    "smoke": "node --import tsx src/smoke.ts"
+    "smoke": "node --import tsx src/smoke.ts",
+    "setup": "tsx scripts/generate-carriers.ts"
   },
   "keywords": [
     "piano",
