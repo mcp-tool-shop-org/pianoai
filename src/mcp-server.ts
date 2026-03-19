@@ -78,6 +78,7 @@ import { createMidiFeedbackHook } from "./teaching/midi-feedback.js";
 import { createLiveMidiFeedbackHook } from "./teaching/live-midi-feedback.js";
 import { scorePerformance } from "./score-performance.js";
 import { scoreAnnotation, formatAnnotationScore } from "./annotation-scorer.js";
+import { compareSongs, formatComparison } from "./song-compare.js";
 import type { VoiceDirective, AsideDirective } from "./types.js";
 import { readFile } from "node:fs/promises";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -1971,6 +1972,38 @@ server.tool(
 
     const result = scoreAnnotation(song.musicalLanguage);
     const text = formatAnnotationScore(result, song.title);
+
+    return { content: [{ type: "text", text }] };
+  }
+);
+
+// ─── Tool: compare_songs ──────────────────────────────────────────────────
+
+server.tool(
+  "compare_songs",
+  "Compare two songs to find shared harmonic, structural, and rhythmic patterns. Surfaces cross-genre connections and teaching opportunities. Use this to understand how different pieces relate musically.",
+  {
+    song_a: z.string().describe("First song ID (e.g. 'fur-elise')"),
+    song_b: z.string().describe("Second song ID (e.g. 'autumn-leaves')"),
+  },
+  async ({ song_a, song_b }) => {
+    const a = getSong(song_a);
+    if (!a) {
+      return {
+        content: [{ type: "text", text: `Song not found: "${song_a}". Use list_songs to see available songs.` }],
+        isError: true,
+      };
+    }
+    const b = getSong(song_b);
+    if (!b) {
+      return {
+        content: [{ type: "text", text: `Song not found: "${song_b}". Use list_songs to see available songs.` }],
+        isError: true,
+      };
+    }
+
+    const result = compareSongs(a, b);
+    const text = formatComparison(result);
 
     return { content: [{ type: "text", text }] };
   }
