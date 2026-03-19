@@ -76,6 +76,7 @@ import { PlaybackController } from "./playback/controls.js";
 import { createSingOnMidiHook } from "./teaching/sing-on-midi.js";
 import { createMidiFeedbackHook } from "./teaching/midi-feedback.js";
 import { createLiveMidiFeedbackHook } from "./teaching/live-midi-feedback.js";
+import { scorePerformance } from "./score-performance.js";
 import type { VoiceDirective, AsideDirective } from "./types.js";
 import { readFile } from "node:fs/promises";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -1868,6 +1869,71 @@ server.tool(
           type: "text",
           text: `Annotation saved but ingestion failed: ${err instanceof Error ? err.message : String(err)}\n` +
             `The config was updated at ${entry.configPath}. Check the MIDI file.`,
+        }],
+        isError: true,
+      };
+    }
+  }
+);
+
+// ─── Tool: score_performance ──────────────────────────────────────────────
+
+server.tool(
+  "score_performance",
+  "Score a MIDI performance against a song from the library. Compares note-by-note: pitch accuracy, timing, missed notes, and extra notes. Returns a structured assessment with metrics and practice suggestions. Use this after recording yourself playing a song to see how you did.",
+  {
+    song_id: z.string().describe("Song ID to compare against (e.g. 'fur-elise')"),
+    midi_path: z.string().describe("Path to the recorded performance .mid file"),
+    tolerance_ms: z.number().min(10).max(500).optional()
+      .describe("Timing tolerance in ms (default 150). Lower = stricter grading."),
+    bpm: z.number().min(10).max(400).optional()
+      .describe("Override BPM for scoring (default: song's tempo). Use if you played at a different speed."),
+  },
+  async ({ song_id, midi_path, tolerance_ms, bpm }) => {
+    const song = getSong(song_id);
+    if (!song) {
+      return {
+        content: [{ type: "text", text: `Song not found: "${song_id}". Use list_songs to see available songs.` }],
+        isError: true,
+      };
+    }
+
+    // Path traversal protection
+    const resolvedPath = pathResolve(midi_path);
+    if (!resolvedPath.endsWith(".mid") && !resolvedPath.endsWith(".midi")) {
+      return {
+        content: [{ type: "text", text: "Invalid path: must be a .mid or .midi file." }],
+        isError: true,
+      };
+    }
+
+    try {
+      const parsed = await parseMidiFile(resolvedPath);
+
+      const result = scorePerformance(song, parsed.events, {
+        toleranceMs: tolerance_ms,
+        bpm,
+      });
+
+      const summary = [
+        `# Performance Assessment: ${result.songTitle}`,
+        "",
+        `**Overall Score: ${result.metrics.overallScore}/100**`,
+        `- Pitch accuracy: ${result.metrics.pitchAccuracy}%`,
+        `- Timing accuracy: ±${result.metrics.timingAccuracyMs}ms`,
+        `- Completeness: ${result.metrics.completeness}%`,
+        `- Notes played: ${result.details.totalPlayed} (expected: ${result.details.totalExpected})`,
+        `- Matched: ${result.details.matched} | Missed: ${result.details.missed.length} | Extra: ${result.metrics.extraNoteCount}`,
+        "",
+        result.feedback,
+      ].join("\n");
+
+      return { content: [{ type: "text", text: summary }] };
+    } catch (err) {
+      return {
+        content: [{
+          type: "text",
+          text: `Failed to score performance: ${err instanceof Error ? err.message : String(err)}`,
         }],
         isError: true,
       };
