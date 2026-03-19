@@ -1857,11 +1857,16 @@ server.tool(
       const song = ingestSong(entry);
       registerSong(song);
 
+      // Persist to user directory so annotations survive package updates
+      const userDir = getUserSongsDir();
+      const userPath = saveSong(song, userDir);
+
       return {
         content: [{
           type: "text",
           text: `Song "${config.title}" annotated and promoted to ready!\n` +
             `Genre: ${config.genre} | Key: ${config.key} | ${song.measures.length} measures\n` +
+            `Persisted to: ${userPath}\n` +
             `The song is now playable — try \`play_song { id: "${song_id}" }\``,
         }],
       };
@@ -1974,6 +1979,57 @@ server.tool(
     const text = formatAnnotationScore(result, song.title);
 
     return { content: [{ type: "text", text }] };
+  }
+);
+
+// ─── Tool: annotation_progress ──────────────────────────────────────────────
+
+server.tool(
+  "annotation_progress",
+  "Show annotation progress for the song library — how many songs are raw (unannotated), annotated, or ready, broken down by genre. Use this to see which genres still need work and pick your next annotation target.",
+  {},
+  async () => {
+    const { dirname } = await import("node:path");
+    const { fileURLToPath } = await import("node:url");
+    const __dirname = dirname(fileURLToPath(import.meta.url));
+    const libraryDir = pathJoin(__dirname, "..", "songs", "library");
+
+    const progress = getLibraryProgress(libraryDir);
+
+    const lines: string[] = [];
+    lines.push(`# Library Annotation Progress`);
+    lines.push("");
+    lines.push(`**Total: ${progress.total} songs** — ${progress.ready} ready, ${progress.annotated} annotated, ${progress.raw} raw`);
+    lines.push(`**Completion: ${Math.round((progress.ready / Math.max(1, progress.total)) * 100)}%**`);
+    lines.push("");
+    lines.push("| Genre | Ready | Annotated | Raw | Total |");
+    lines.push("|-------|-------|-----------|-----|-------|");
+
+    for (const [genre, gp] of Object.entries(progress.byGenre)) {
+      lines.push(`| ${genre} | ${gp.ready} | ${gp.annotated} | ${gp.raw} | ${gp.total} |`);
+    }
+
+    lines.push("");
+
+    // List raw songs as targets
+    const rawSongs: string[] = [];
+    for (const [genre, gp] of Object.entries(progress.byGenre)) {
+      for (const s of gp.songs) {
+        if (s.status === "raw") rawSongs.push(`${s.id} (${genre})`);
+      }
+    }
+
+    if (rawSongs.length > 0) {
+      lines.push(`### Next annotation targets (${rawSongs.length} raw songs)`);
+      for (const s of rawSongs.slice(0, 20)) {
+        lines.push(`- ${s}`);
+      }
+      if (rawSongs.length > 20) {
+        lines.push(`- ...and ${rawSongs.length - 20} more`);
+      }
+    }
+
+    return { content: [{ type: "text", text: lines.join("\n") }] };
   }
 );
 
