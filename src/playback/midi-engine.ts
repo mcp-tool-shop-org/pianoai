@@ -133,7 +133,7 @@ export class MidiPlaybackEngine {
 
         this._eventIndex++;
 
-        // Progress
+        // Progress — report time-based ratio (not event index)
         if (onProgress && totalDuration > 0) {
           const ratio = this._playbackTime / totalDuration;
           onProgress({
@@ -142,6 +142,8 @@ export class MidiPlaybackEngine {
             ratio: Math.min(1, ratio),
             percent: `${Math.round(ratio * 100)}%`,
             elapsedMs: Date.now() - this._wallStartTime,
+            positionSeconds: this._playbackTime,
+            durationSeconds: totalDuration,
           });
         }
       }

@@ -118,7 +118,7 @@ function suggestMode(difficulty: Difficulty): { mode: string; reason: string } {
 
 const server = new McpServer({
   name: "ai-jam-sessions",
-  version: "0.2.1",
+  version: "1.0.0",
 });
 
 // ─── Practice Journal State ─────────────────────────────────────────────────

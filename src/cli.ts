@@ -75,7 +75,7 @@ async function openInBrowser(filePath: string): Promise<void> {
   const { execFile } = await import("node:child_process");
   const os = platform();
   if (os === "win32") {
-    execFile("cmd", ["/c", "start", "", filePath]);
+    execFile("cmd", ["/c", "start", "", `"${filePath}"`]);
   } else if (os === "darwin") {
     execFile("open", [filePath]);
   } else {
@@ -136,8 +136,12 @@ function printProgress(progress: PlaybackProgress): void {
   const filled = Math.round(progress.ratio * barWidth);
   const bar = "█".repeat(filled) + "░".repeat(barWidth - filled);
   const elapsed = (progress.elapsedMs / 1000).toFixed(1);
+  // MIDI file playback: show time position instead of note index
+  const posInfo = progress.durationSeconds != null
+    ? `${Math.round(progress.positionSeconds!)}s / ${Math.round(progress.durationSeconds)}s`
+    : `measure ${progress.currentMeasure}/${progress.totalMeasures}`;
   process.stdout.write(
-    `\r  [${bar}] ${progress.percent} — measure ${progress.currentMeasure}/${progress.totalMeasures} (${elapsed}s)`
+    `\r  [${bar}] ${progress.percent} — ${posInfo} (${elapsed}s)`
   );
   if (progress.ratio >= 1) {
     process.stdout.write("\n");
@@ -265,6 +269,15 @@ async function cmdPlay(args: string[]): Promise<void> {
 
   // Determine source: .mid file or library song
   const isMidiFile = target.endsWith(".mid") || target.endsWith(".midi") || existsSync(target);
+
+  // Validate song ID early (before connecting engine) for library songs
+  if (!isMidiFile) {
+    const song = getSong(target);
+    if (!song) {
+      console.error(`Song not found: "${target}". Run 'ai-jam-sessions list' to see available songs, or provide a .mid file path.`);
+      process.exit(1);
+    }
+  }
 
   // Create connector
   function buildEngine(engine: string): VmpkConnector {
@@ -736,6 +749,18 @@ async function cmdView(args: string[]): Promise<void> {
       console.error(`Invalid --measures range: "${measuresStr}". Use format like "1-8" or "5-12".`);
       process.exit(1);
     }
+    if (startMeasure < 1) {
+      console.error(`Invalid --measures range: start must be >= 1 (got ${startMeasure}).`);
+      process.exit(1);
+    }
+    if (startMeasure > song.measures.length) {
+      console.error(`Invalid --measures range: start ${startMeasure} exceeds song length (${song.measures.length} measures).`);
+      process.exit(1);
+    }
+    if (endMeasure > song.measures.length) {
+      console.error(`Warning: end measure ${endMeasure} exceeds song length (${song.measures.length}), clamping.`);
+      endMeasure = song.measures.length;
+    }
   }
 
   // Parse --color flag
@@ -791,6 +816,18 @@ async function cmdViewGuitar(args: string[]): Promise<void> {
     if (isNaN(startMeasure) || isNaN(endMeasure)) {
       console.error(`Invalid --measures range: "${measuresStr}". Use format like "1-8" or "5-12".`);
       process.exit(1);
+    }
+    if (startMeasure < 1) {
+      console.error(`Invalid --measures range: start must be >= 1 (got ${startMeasure}).`);
+      process.exit(1);
+    }
+    if (startMeasure > song.measures.length) {
+      console.error(`Invalid --measures range: start ${startMeasure} exceeds song length (${song.measures.length} measures).`);
+      process.exit(1);
+    }
+    if (endMeasure > song.measures.length) {
+      console.error(`Warning: end measure ${endMeasure} exceeds song length (${song.measures.length}), clamping.`);
+      endMeasure = song.measures.length;
     }
   }
 
@@ -1203,9 +1240,11 @@ async function main(): Promise<void> {
       break;
     case "play":
       await cmdPlay(args.slice(1));
+      process.exit(0); // Audio engines may keep event loop alive
       break;
     case "sing":
       await cmdSing(args.slice(1));
+      process.exit(0); // Audio engines may keep event loop alive
       break;
     case "view":
       await cmdView(args.slice(1));

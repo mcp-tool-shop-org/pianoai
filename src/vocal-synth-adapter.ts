@@ -111,9 +111,18 @@ type LiveSynthEngineType = import("vocal-synth-engine/src/engine/LiveSynthEngine
 type LiveEngineConfigType = import("vocal-synth-engine/src/engine/LiveSynthEngine.js").LiveEngineConfig;
 
 async function loadSynthEngine() {
-  const { LiveSynthEngine } = await import("vocal-synth-engine/src/engine/LiveSynthEngine.js");
-  const { loadVoicePreset } = await import("vocal-synth-engine/src/preset/loader.js");
-  return { LiveSynthEngine, loadVoicePreset };
+  try {
+    const { LiveSynthEngine } = await import("vocal-synth-engine/src/engine/LiveSynthEngine.js");
+    const { loadVoicePreset } = await import("vocal-synth-engine/src/preset/loader.js");
+    return { LiveSynthEngine, loadVoicePreset };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    throw new Error(
+      `Failed to load vocal-synth-engine. The dependency may need to be built first. ` +
+      `Run 'cd node_modules/vocal-synth-engine && npm run build:server' or use --engine piano instead. ` +
+      `(${msg})`
+    );
+  }
 }
 
 // ─── Engine ─────────────────────────────────────────────────────────────────

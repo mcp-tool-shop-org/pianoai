@@ -121,6 +121,8 @@ export function validateSong(song: SongEntry): string[] {
   // Measures
   if (!Array.isArray(song.measures) || song.measures.length === 0) {
     errors.push("measures must be a non-empty array");
+  } else if (song.measures.length > 2000) {
+    errors.push(`measures array too large: ${song.measures.length} (max 2000)`);
   } else {
     for (let i = 0; i < song.measures.length; i++) {
       const m = song.measures[i];
@@ -129,6 +131,10 @@ export function validateSong(song: SongEntry): string[] {
       }
       if (!m.rightHand && !m.leftHand) {
         errors.push(`measure[${i}] must have at least rightHand or leftHand`);
+      }
+      // Bounds check on teaching note length
+      if (m.teachingNote && m.teachingNote.length > 5000) {
+        errors.push(`measure[${i}].teachingNote too long: ${m.teachingNote.length} chars (max 5000)`);
       }
     }
   }

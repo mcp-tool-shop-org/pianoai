@@ -414,8 +414,13 @@ export class SessionController {
       if (signal.aborted) return;
 
       // Play all notes in this beat simultaneously
-      const notePromises = beat.notes.map((n) => this.connector.playNote(n));
-      await Promise.all(notePromises);
+      try {
+        const notePromises = beat.notes.map((n) => this.connector.playNote(n));
+        await Promise.all(notePromises);
+      } catch (err) {
+        this.connector.allNotesOff();
+        throw err;
+      }
     }
   }
 

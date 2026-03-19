@@ -71,8 +71,6 @@ export function buildJournalEntry(
   const time = timeString(now);
   const lines: string[] = [];
 
-  lines.push("---");
-
   if (session) {
     const speedStr = session.speed !== 1.0 ? ` × ${session.speed}x` : "";
     const composerStr = session.composer ? ` (${session.composer})` : "";

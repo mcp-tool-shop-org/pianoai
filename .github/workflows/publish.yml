@@ -18,22 +18,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
+          cache: pnpm
 
-      - name: Install dependencies
-        run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
+      - run: pnpm install --frozen-lockfile
 
-      - run: npm run build --if-present
+      - run: pnpm build
 
-      - run: npm test --if-present
+      - run: pnpm test
+
+      - name: Verify tarball contents
+        run: pnpm pack --dry-run
 
       - name: Publish to npm
         continue-on-error: true
@@ -42,6 +44,6 @@ jobs:
             echo "::warning::NPM_TOKEN secret not set — skipping npm publish"
             exit 0
           fi
-          npm publish --provenance --access public
+          pnpm publish --no-git-checks --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

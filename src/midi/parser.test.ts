@@ -207,6 +207,11 @@ describe("parseMidiBuffer", () => {
     expect(parsed.durationSeconds).toBe(0);
     expect(parsed.bpm).toBe(120);
   });
+
+  it("rejects oversized MIDI buffers (>10 MB)", () => {
+    const huge = new Uint8Array(11 * 1024 * 1024);
+    expect(() => parseMidiBuffer(huge)).toThrow("too large");
+  });
 });
 
 // ─── Schema Tests ───────────────────────────────────────────────────────────

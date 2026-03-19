@@ -124,6 +124,12 @@ export interface PlaybackProgress {
 
   /** Elapsed time since playback started (ms). */
   elapsedMs: number;
+
+  /** Current playback position in seconds (MIDI file playback only). */
+  positionSeconds?: number;
+
+  /** Total duration in seconds (MIDI file playback only). */
+  durationSeconds?: number;
 }
 
 /** Progress callback — called at configurable intervals during playback. */

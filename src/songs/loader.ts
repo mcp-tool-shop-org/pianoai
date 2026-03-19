@@ -111,6 +111,5 @@ export function initializeRegistry(builtinDir: string, userDir?: string): void {
     }
   }
 
-  const total = builtinSongs.length + (userDir ? loadSongsFromDir(userDir).length : 0);
   console.error(`Song registry initialized: ${builtinSongs.length} builtin songs loaded`);
 }

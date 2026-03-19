@@ -54,8 +54,18 @@ export async function parseMidiFile(filePath: string): Promise<ParsedMidi> {
  * @returns Parsed MIDI data with absolute-timed note events.
  */
 export function parseMidiBuffer(buffer: Buffer | Uint8Array): ParsedMidi {
+  // Guard against oversized MIDI files (10 MB max)
+  if (buffer.length > 10 * 1024 * 1024) {
+    throw new Error(`MIDI file too large: ${(buffer.length / 1024 / 1024).toFixed(1)} MB (max 10 MB)`);
+  }
+
   const midi = parseMidi(buffer as any);
   const header = midi.header;
+
+  // Guard against excessive track count
+  if (header.numTracks > 100) {
+    throw new Error(`Too many MIDI tracks: ${header.numTracks} (max 100)`);
+  }
 
   const ticksPerBeat = header.ticksPerBeat;
   if (!ticksPerBeat) {
