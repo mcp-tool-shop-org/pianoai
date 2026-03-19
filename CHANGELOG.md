@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-03-19
+
+### Added
+- `score_performance` MCP tool — MIDI play-along assessment with pitch accuracy, timing, and completeness scoring
+- `score_annotation` MCP tool — annotation quality scoring across 5 dimensions (completeness, depth, specificity, teaching value, musical vocabulary)
+- `compare_songs` MCP tool — cross-genre pattern recognition via cosine similarity of pitch class distributions, interval profiles, key relationships, and structural forms
+- `annotation_progress` MCP tool — track annotation quality and progress across the entire song library
+- Vocal carrier WAV files (11 formant-synthesized tones, C2–C7) now ship with npm package
+- Annotation persistence — `annotate_song` now saves to user directory (`~/.ai-jam-sessions/songs/`) so annotations survive package updates
+
+### Fixed
+- Vocal engine NOTE_OFFSETS bug — removed bogus `es: 3` and `bs: 11` duplicates that mapped to wrong MIDI pitches
+- Vocal sample engine and vocal synth engine now load correctly at runtime
+- Annotation scorer bar-reference pattern now matches plural forms ("Bars 1–8")
+- Annotation scorer chord/note patterns now match prose references ("C major", "E-D#-E")
+
 ## [1.0.0] - 2026-02-27
 
 ### Added

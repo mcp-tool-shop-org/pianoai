@@ -182,7 +182,7 @@ Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external softwar
 
 ## MCP Tools
 
-31 tools across four categories:
+35 tools across five categories:
 
 ### Learn
 
@@ -196,6 +196,8 @@ Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external softwar
 | `teaching_note` | Deep dive into a single measure — fingering, dynamics, context |
 | `suggest_song` | Recommendation based on genre, difficulty, and what you've played |
 | `practice_setup` | Recommended speed, mode, voice settings, and CLI command for a song |
+| `compare_songs` | Cross-genre pattern recognition — key relationships, pitch/interval similarity, shared forms, teaching connections |
+| `annotation_progress` | Track annotation quality across the library — scores, grades, and improvement suggestions |
 
 ### Play
 
@@ -207,6 +209,7 @@ Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external softwar
 | `set_speed` | Change speed mid-playback (0.1×–4.0×) |
 | `playback_status` | Real-time snapshot: current measure, tempo, speed, keyboard voice, state |
 | `view_piano_roll` | Render as SVG (hand color or pitch-class chromatic rainbow) |
+| `score_performance` | Score a MIDI play-along — pitch accuracy, timing, completeness, with graded feedback |
 
 ### Sing
 
@@ -239,6 +242,7 @@ Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external softwar
 | `tune_keyboard` | Adjust any parameter of any keyboard voice. Persists across sessions. |
 | `get_keyboard_config` | Current config vs factory defaults |
 | `reset_keyboard` | Factory reset a keyboard voice |
+| `score_annotation` | Score annotation quality across 5 dimensions — completeness, depth, specificity, teaching value, vocabulary |
 
 ## CLI
 
@@ -256,7 +260,7 @@ ai-jam-sessions ports
 
 ## Status
 
-v0.3.0. Six sound engines, 31 MCP tools, 120 songs across 12 genres with deeply annotated exemplars. Interactive guitar tablature editor. Browser cockpit with 20 vocal presets, 10 instrument voices, 7 tuning systems, and an LLM-facing score API. Piano roll visualization in two color modes. Practice journal for persistent learning. The MIDI is all there — the library grows as the AI learns.
+v1.1.0. Six sound engines, 35 MCP tools, 120 songs across 12 genres with deeply annotated exemplars. Interactive guitar tablature editor. Browser cockpit with 20 vocal presets, 10 instrument voices, 7 tuning systems, and an LLM-facing score API. Piano roll visualization in two color modes. Practice journal for persistent learning. MIDI play-along scoring, annotation quality assessment, and cross-genre pattern recognition. The MIDI is all there — the library grows as the AI learns.
 
 ## Security & Privacy
 
