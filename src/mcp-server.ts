@@ -77,6 +77,7 @@ import { createSingOnMidiHook } from "./teaching/sing-on-midi.js";
 import { createMidiFeedbackHook } from "./teaching/midi-feedback.js";
 import { createLiveMidiFeedbackHook } from "./teaching/live-midi-feedback.js";
 import { scorePerformance } from "./score-performance.js";
+import { scoreAnnotation, formatAnnotationScore } from "./annotation-scorer.js";
 import type { VoiceDirective, AsideDirective } from "./types.js";
 import { readFile } from "node:fs/promises";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -1938,6 +1939,40 @@ server.tool(
         isError: true,
       };
     }
+  }
+);
+
+// ─── Tool: score_annotation ──────────────────────────────────────────────
+
+server.tool(
+  "score_annotation",
+  "Score the quality of a song's annotation (musicalLanguage) against exemplar standards. Evaluates completeness, depth, specificity, teaching value, and musical vocabulary. Use this after annotating a raw song to check your work before moving on.",
+  {
+    song_id: z.string().describe("Song ID to evaluate (must have musicalLanguage)"),
+  },
+  async ({ song_id }) => {
+    const song = getSong(song_id);
+    if (!song) {
+      return {
+        content: [{ type: "text", text: `Song not found: "${song_id}". Use list_songs to see available songs.` }],
+        isError: true,
+      };
+    }
+
+    if (!song.musicalLanguage) {
+      return {
+        content: [{
+          type: "text",
+          text: `Song "${song.title}" has no annotation (musicalLanguage). Use annotate_song to annotate it first.`,
+        }],
+        isError: true,
+      };
+    }
+
+    const result = scoreAnnotation(song.musicalLanguage);
+    const text = formatAnnotationScore(result, song.title);
+
+    return { content: [{ type: "text", text }] };
   }
 );
 
