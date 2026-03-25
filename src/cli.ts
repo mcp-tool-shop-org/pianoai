@@ -66,6 +66,7 @@ import type { TeachingHook } from "./types.js";
 import { renderPianoRoll } from "./piano-roll.js";
 import { buildJournalEntry, appendJournalEntry } from "./journal.js";
 import type { SessionSnapshot } from "./journal.js";
+import { VERSION } from "./version.js";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -1274,6 +1275,10 @@ async function main(): Promise<void> {
       break;
     case "ports":
       cmdPorts();
+      break;
+    case "--version":
+    case "-V":
+      console.log(`ai-jam-sessions v${VERSION}`);
       break;
     case "help":
     case "--help":

@@ -23,6 +23,7 @@
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { VERSION } from "./version.js";
 import { z } from "zod";
 import {
   getAllSongs,
@@ -121,7 +122,7 @@ function suggestMode(difficulty: Difficulty): { mode: string; reason: string } {
 
 const server = new McpServer({
   name: "ai-jam-sessions",
-  version: "1.0.0",
+  version: VERSION,
 });
 
 // ─── Practice Journal State ─────────────────────────────────────────────────
