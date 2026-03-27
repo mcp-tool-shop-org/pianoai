@@ -12,3 +12,4 @@ scripts/midi-cache/
 *.tgz
 ci-failed.log
 package-lock.json
+!site/package-lock.json
