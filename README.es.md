@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="README.ja.md">日本語</a> | <a href="README.zh.md">中文</a> | <a href="README.md">English</a> | <a href="README.fr.md">Français</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (BR)</a>
+  <a href="README.ja.md">日本語</a> | <a href="README.zh.md">中文</a> | <a href="README.md">English</a> | <a href="README.fr.md">Français</a> | <a href="README.hi.md">हिन्दी</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (BR)</a>
 </p>
 
 <p align="center">
@@ -28,11 +28,11 @@
 
 Un piano y una guitarra que una IA aprende a tocar. No es un sintetizador, ni una biblioteca MIDI, sino un instrumento de aprendizaje.
 
-Un modelo de lenguaje grande (LLM) puede leer y escribir texto, pero no puede experimentar la música de la misma manera que nosotros. No tiene oídos, ni dedos, ni memoria muscular. AI Jam Sessions cierra esa brecha al proporcionar al modelo sentidos que realmente puede usar:
+Un modelo de lenguaje grande (LLM) puede leer y escribir texto, pero no puede experimentar la música de la misma manera que nosotros. No tiene oídos, ni dedos, ni memoria muscular. AI Jam Sessions cierra esa brecha al proporcionar al modelo sentidos que realmente puede utilizar:
 
 - **Lectura** — partituras MIDI reales con anotaciones musicales detalladas. No son aproximaciones escritas a mano, sino que se analizan, se interpretan y se explican.
-- **Audición** — seis motores de audio (piano de oscilador, piano de muestras, muestras vocales, tracto vocal físico, sintetizador vocal aditivo, guitarra modelada físicamente) que se reproducen a través de tus altavoces, para que los humanos en la habitación se conviertan en los oídos de la IA.
-- **Visualización** — un piano roll que renderiza lo que se ha tocado como SVG, que el modelo puede leer y verificar. Un editor interactivo de tablaturas de guitarra. Un panel de control en el navegador con un teclado visual, un editor de notas de doble modo y un laboratorio de afinación.
+- **Audición** — seis motores de audio (piano de oscilador, piano de muestras, muestras vocales, tracto vocal físico, sintetizador vocal aditivo, guitarra modelada físicamente) que se reproducen a través de tus altavoces, para que los humanos en la habitación se conviertan en los "oídos" de la IA.
+- **Visualización** — un piano roll que renderiza lo que se ha tocado como SVG, que el modelo puede leer y verificar. Un editor de tablaturas de guitarra interactivo. Un panel de control en el navegador con un teclado visual, un editor de notas de doble modo y un laboratorio de afinación.
 - **Memoria** — un diario de práctica que persiste a través de las sesiones, para que el aprendizaje se acumule con el tiempo.
 - **Canto** — síntesis de tracto vocal con 20 preajustes de voz, desde soprano lírico hasta coro electrónico. Modo de canto con solfeo, contorno y narración de sílabas.
 
@@ -56,11 +56,11 @@ Un estudio de instrumentos y voz basado en el navegador que se abre junto con el
 
 - **Rollo de piano de doble modo** — cambie entre el modo de instrumento (colores cromáticos de las notas) y el modo de voz (las notas coloreadas según la forma de la vocal: /a/ /e/ /i/ /o/ /u/).
 - **Teclado visual** — dos octavas desde Do4, mapeadas a su teclado QWERTY. Haga clic o escriba.
-- **20 presets de voz** — 15 voces mapeadas a Kokoro (Aoede, Heart, Jessica, Sky, Eric, Fenrir, Liam, Onyx, Alice, Emma, Isabella, George, Lewis, además de coro y voz sintética), 4 voces mapeadas a pistas y una sección de coro sintético.
+- **20 presets de voz** — 15 voces mapeadas a Kokoro (Aoede, Heart, Jessica, Sky, Eric, Fenrir, Liam, Onyx, Alice, Emma, Isabella, George, Lewis, además de coro y voz sintética), 4 voces mapeadas a pistas, y una sección de coro sintético.
 - **10 presets de instrumento** — las 6 voces de piano del servidor, más un sintetizador, un órgano, un timbre de campana y cuerdas.
 - **Inspector de notas** — haga clic en cualquier nota para editar la velocidad, la vocal y el brillo.
-- **7 sistemas de afinación** — afinación temperada, afinación justa (mayor/menor), pitagórica, meantone de un cuarto de coma, Werckmeister III, o desplazamientos de centésimas personalizables. Referencia A4 ajustable (392–494 Hz).
-- **Auditoría de afinación** — tabla de frecuencias, probador de intervalos con análisis de frecuencia de latidos, y exportación/importación de afinación.
+- **7 sistemas de afinación** — afinación temperada, afinación justa (mayor/menor), afinación pitagórica, afinación de un cuarto de coma, afinación de Werckmeister III, o desplazamientos de centésimas personalizables. Referencia A4 ajustable (392–494 Hz).
+- **Auditoría de afinación** — tabla de frecuencias, probador de intervalos con análisis de frecuencia de latidos, e importación/exportación de afinación.
 - **Importación/exportación de partituras** — serialice toda la partitura como JSON y cárguela de nuevo.
 - **API para LLM** — `window.__cockpit` expone `exportScore()`, `importScore()`, `addNote()`, `play()`, `stop()`, `panic()`, `setMode()` y `getScore()` para que un LLM pueda componer, arreglar y reproducir música programáticamente.
 
@@ -83,13 +83,13 @@ Un estudio de instrumentos y voz basado en el navegador que se abre junto con el
 
 ## La biblioteca de canciones
 
-120 canciones en 12 géneros, creadas a partir de archivos MIDI reales. Cada género tiene un ejemplo exhaustivamente anotado, con contexto histórico, análisis armónico paso a paso, momentos clave, objetivos de enseñanza y consejos de interpretación (incluyendo guía vocal). Estos ejemplos sirven como plantillas: la IA estudia uno, y luego anota el resto.
+120 canciones en 12 géneros, creadas a partir de archivos MIDI reales. Cada género tiene un ejemplo exhaustivamente anotado: con contexto histórico, análisis armónico paso a paso, momentos clave, objetivos de enseñanza y consejos de interpretación (incluyendo guía vocal). Estos ejemplos sirven como plantillas: la IA estudia uno, y luego anota el resto.
 
 | Género | Ejemplo | Tonalidad | Lo que enseña |
 |-------|----------|-----|-----------------|
 | Blues | The Thrill Is Gone (B.B. King) | Si menor | Forma de blues menor, llamada y respuesta, tocar por detrás del ritmo. |
 | Clásico | Für Elise (Beethoven) | La menor | Forma de rondó, diferenciación del tacto, disciplina del pedal. |
-| Cine | Comptine d'un autre été (Tiersen) | Mi menor | Texturas arpegiadas, arquitectura dinámica sin cambio armónico. |
+| Película | Comptine d'un autre été (Tiersen) | Mi menor | Texturas arpegiadas, arquitectura dinámica sin cambio armónico. |
 | Folk | Greensleeves | Mi menor | Compás de 3/4, mezcla modal, estilo vocal renacentista. |
 | Jazz | Autumn Leaves (Kosma) | Sol menor | Progresiones ii-V-I, tonos guía, corcheas con swing, voicings sin raíz. |
 | Latino | The Girl from Ipanema (Jobim) | Do mayor | Ritmo de bossa nova, modulación cromática, contención vocal. |
@@ -97,35 +97,35 @@ Un estudio de instrumentos y voz basado en el navegador que se abre junto con el
 | Pop | Imagine (Lennon) | Do mayor | Acompañamiento arpegiado, contención, sinceridad vocal. |
 | Ragtime | The Entertainer (Joplin) | Do mayor | Bajo "oom-pah", síncopa, forma de múltiples secciones, disciplina del tempo. |
 | R&B | Superstition (Stevie Wonder) | Si menor | Funk de dieciseisavos, teclado percusivo, notas fantasma. |
-| Rock | Your Song (Elton John) | Mi mayor | Conducción de voz de balada de piano, inversiones, canto conversacional. |
+| Rock | Your Song (Elton John) | Mi mayor | Conducción de voz de piano balada, inversiones, canto conversacional. |
 | Soul | Lean on Me (Bill Withers) | Do mayor | Melodía diatónica, acompañamiento gospel, llamada y respuesta. |
 
-Las canciones progresan de **crudas** (solo MIDI) → **anotadas** → **listas** (totalmente reproducibles con lenguaje musical). La IA promociona canciones estudiándolas y escribiendo anotaciones con `annotate_song`.
+Las canciones progresan de **crudas** (solo MIDI) → **anotadas** → **listas** (completamente reproducibles con lenguaje musical). La IA promociona canciones estudiándolas y escribiendo anotaciones con `annotate_song`.
 
-## Motores de sonido
+## Motores de Sonido
 
-Seis motores, más un combinador en capas que ejecuta dos de ellos simultáneamente:
+Seis motores, más un combinador en capas que ejecuta dos simultáneamente:
 
-| Motor | Tipo | Sonido característico |
+| Motor | Tipo | Descripción del sonido |
 |--------|------|---------------------|
-| **Oscillator Piano** | Síntesis aditiva | Piano multi-armónico con ruido de martillo, inarmónico, polifonía de 48 voces, imagen estéreo. Sin dependencias. |
-| **Sample Piano** | Reproducción de archivos WAV | Piano de cola Salamander: 480 muestras, 16 capas de velocidad, 88 teclas. La versión real. |
+| **Oscillator Piano** | Síntesis aditiva | Piano multi-armónico con ruido de martillo, inarmonía, polifonía de 48 voces, imagen estéreo. Sin dependencias. |
+| **Sample Piano** | Reproducción de archivos WAV | Piano de cola "Salamander" — 480 muestras, 16 capas de velocidad, 88 teclas. La versión real. |
 | **Vocal (Sample)** | Muestras con desplazamiento de tono | Tonos vocales sostenidos con portamento y modo legato. |
-| **Vocal Tract** | Modelo físico | Trombón "Pink": forma de onda glótica de baja frecuencia a través de una guía de onda digital de 44 celdas. Cuatro presets: soprano, alto, tenor, bajo. |
+| **Vocal Tract** | Modelo físico | Trombón "Pink" — Forma de onda glótica de baja frecuencia a través de una guía de onda digital de 44 celdas. Cuatro presets: soprano, alto, tenor, bajo. |
 | **Vocal Synth** | Síntesis aditiva | 15 presets de voces "Kokoro" con modelado de formantes, aspereza, vibrato. Determinista (generador de números aleatorios con semilla). |
-| **Guitar** | Síntesis aditiva | Cuerda pulsada modelada físicamente: 4 presets (acústica "dreadnought" de acero, clásica de nylon, "archtop" de jazz, de doce cuerdas), 8 afinaciones, 17 parámetros ajustables. |
-| **Layered** | Combinador | Combina dos motores y envía cada evento MIDI a ambos: piano + sintetizador, voz + sintetizador, etc. |
+| **Guitar** | Síntesis aditiva | Cuerda pulsada modelada físicamente — 4 presets (acústica "dreadnought" de acero, clásica de nylon, "archtop" de jazz, de doce cuerdas), 8 afinaciones, 17 parámetros ajustables. |
+| **Layered** | Combinador | Combina dos motores y envía cada evento MIDI a ambos — piano + sintetizador, voz + sintetizador, etc. |
 
 ### Voces de teclado
 
-Seis voces de piano ajustables, cada una con parámetros individuales (brillo, decaimiento, dureza del martillo, desafinación, ancho estéreo, y más):
+Seis voces de piano ajustables, cada una con parámetros independientes (brillo, decaimiento, dureza del martillo, desafinación, ancho estéreo, y más):
 
-| Voz | Característica |
+| Voz | Descripción |
 |-------|-----------|
 | Piano de cola de concierto | Rico, completo, clásico |
-| Piano vertical | Cálido, íntimo, de estilo folclórico |
+| Piano vertical | Cálido, íntimo, folk |
 | Piano eléctrico | Suave, jazzy, con sensación de Fender Rhodes |
-| Piano "Honky-Tonk" | Desafinado, ragtime, de salón |
+| Piano "Honky-Tonk" | Desafinado, ragtime, estilo salón |
 | Caja de música | Cristalino, etéreo |
 | Piano de cola brillante | Agudo, contemporáneo, pop |
 
@@ -133,16 +133,16 @@ Seis voces de piano ajustables, cada una con parámetros individuales (brillo, d
 
 Cuatro presets de voces de guitarra con síntesis de cuerda modelada físicamente, cada uno con 17 parámetros ajustables (brillo, resonancia de la caja, posición de pulsación, amortiguación de la cuerda, y más):
 
-| Voz | Característica |
+| Voz | Descripción |
 |-------|-----------|
 | Acústica "Dreadnought" de acero | Brillante, equilibrado, acústica clásica |
 | Clásica de nylon | Cálido, suave, redondeado |
 | "Archtop" de jazz | Suave, de madera, limpio |
-| De doce cuerdas | Brillante, doble, con efecto de coro |
+| De doce cuerdas | Brillante, doble, similar a un chorus |
 
-## El diario de práctica
+## El Diario de Práctica
 
-Después de cada sesión, el servidor registra lo que sucedió: qué canción, a qué velocidad, cuántas compases, cuánto tiempo. La IA añade sus propias reflexiones: lo que notó, los patrones que reconoció, qué probar a continuación.
+Después de cada sesión, el servidor registra lo que sucedió: qué canción, a qué velocidad, cuántas compases, cuánto tiempo. La IA añade sus propias reflexiones: lo que observó, los patrones que reconoció, qué probar a continuación.
 
 ```markdown
 ---
@@ -182,63 +182,66 @@ Requiere **Node.js 18+**. No requiere controladores MIDI, ni puertos virtuales, 
 
 ## MCP Tools
 
-31 herramientas en cuatro categorías:
+34 herramientas en cinco categorías:
 
-### Aprender
+### Aprendizaje
 
-| Herramienta | Qué hace |
+| Herramienta | Función |
 |------|--------------|
-| `list_songs` | Navegar por género, dificultad o palabra clave |
-| `song_info` | Análisis musical completo: estructura, momentos clave, objetivos de enseñanza, consejos de estilo |
+| `list_songs` | Explorar por género, dificultad o palabra clave |
+| `song_info` | Análisis musical completo — estructura, momentos clave, objetivos de enseñanza, consejos de estilo |
 | `registry_stats` | Estadísticas de toda la biblioteca: número total de canciones, géneros, dificultades |
-| `library_progress` | Estado de anotación en todos los géneros |
 | `list_measures` | Notas, dinámicas y notas de enseñanza de cada compás |
-| `teaching_note` | Análisis detallado de un compás: digitación, dinámicas, contexto |
+| `teaching_note` | Análisis detallado de un compás individual — digitación, dinámicas, contexto |
 | `suggest_song` | Recomendación basada en género, dificultad y lo que has tocado |
 | `practice_setup` | Velocidad, modo, configuraciones de voz y comando de línea de comandos recomendados para una canción |
+| `compare_songs` | Reconocimiento de patrones entre géneros — relaciones de tonalidades, similitud de intervalos, formas compartidas, conexiones de enseñanza |
+| `annotation_progress` | Control de calidad de las anotaciones en toda la biblioteca: puntuaciones, calificaciones y sugerencias de mejora. |
 
 ### Reproducir
 
-| Herramienta | Qué hace |
+| Herramienta | Función |
 |------|--------------|
-| `play_song` | Reproducir a través de los altavoces: canciones de la biblioteca o archivos .mid sin procesar. Cualquier motor, velocidad, modo, rango de compases. |
+| `play_song` | Reproducción a través de altavoces: canciones de la biblioteca o archivos .mid sin procesar. Cualquier motor, velocidad, modo, rango de compases. |
 | `stop_playback` | Detener |
-| `pause_playback` | Pausar o reanudar. |
-| `set_speed` | Cambiar la velocidad durante la reproducción (0.1×–4.0×). |
-| `playback_status` | Captura instantánea en tiempo real: medida actual, tempo, velocidad, timbre de teclado, estado. |
-| `view_piano_roll` | Renderizar como SVG (coloración manual o arcoíris cromático por clase de tono). |
+| `pause_playback` | Pausar o reanudar |
+| `set_speed` | Cambiar la velocidad durante la reproducción (0.1x – 4.0x) |
+| `playback_status` | Captura en tiempo real: compás actual, tempo, velocidad, timbre del teclado, estado. |
+| `view_piano_roll` | Renderizar como SVG (coloración manual o arcoíris cromático por clase de tono) |
+| `score_performance` | Calificación de la interpretación MIDI: precisión de la afinación, sincronización, integridad, con retroalimentación graduada. |
 
 ### Cantar
 
-| Herramienta | Qué hace |
+| Herramienta | Función |
 |------|--------------|
-| `sing_along` | Texto cantable: nombres de notas, solfeo, contorno o sílabas. Con o sin acompañamiento de piano. |
+| `sing_along` | Texto para cantar: nombres de notas, solfeo, contorno o sílabas. Con o sin acompañamiento de piano. |
 | `ai_jam_sessions` | Generar un esquema de improvisación: progresión de acordes, esquema melódico y sugerencias de estilo para la reinterpretación. |
 
 ### Guitarra
 
-| Herramienta | Qué hace |
+| Herramienta | Función |
 |------|--------------|
 | `view_guitar_tab` | Renderizar tablaturas de guitarra interactivas como HTML: edición con un clic, cursor de reproducción, atajos de teclado. |
 | `list_guitar_voices` | Presets de timbre de guitarra disponibles. |
-| `list_guitar_tunings` | Sistemas de afinación de guitarra disponibles (estándar, drop-D, abierto en G, DADGAD, etc.). |
+| `list_guitar_tunings` | Sistemas de afinación de guitarra disponibles (estándar, drop-D, open G, DADGAD, etc.). |
 | `tune_guitar` | Ajustar cualquier parámetro de cualquier timbre de guitarra. Los cambios se guardan entre sesiones. |
 | `get_guitar_config` | Configuración actual del timbre de guitarra frente a los valores predeterminados de fábrica. |
 | `reset_guitar` | Restaurar la configuración de fábrica de un timbre de guitarra. |
 
 ### Construir
 
-| Herramienta | Qué hace |
+| Herramienta | Función |
 |------|--------------|
 | `add_song` | Añadir una nueva canción en formato JSON. |
 | `import_midi` | Importar un archivo .mid con metadatos. |
-| `annotate_song` | Escribir el lenguaje musical para una canción básica y convertirla a un formato listo para usar. |
+| `annotate_song` | Escribir el lenguaje musical para una canción sin procesar y convertirla a un formato listo para usar. |
 | `save_practice_note` | Entrada de diario con datos de sesión capturados automáticamente. |
-| `read_practice_journal` | Cargar entradas recientes para obtener contexto. |
+| `read_practice_journal` | Cargar entradas recientes para contexto. |
 | `list_keyboards` | Timbre de teclado disponibles. |
 | `tune_keyboard` | Ajustar cualquier parámetro de cualquier timbre de teclado. Los cambios se guardan entre sesiones. |
 | `get_keyboard_config` | Configuración actual frente a los valores predeterminados de fábrica. |
 | `reset_keyboard` | Restaurar la configuración de fábrica de un timbre de teclado. |
+| `score_annotation` | Control de calidad de las anotaciones en 5 dimensiones: integridad, profundidad, especificidad, valor educativo, vocabulario. |
 
 ## Interfaz de línea de comandos (CLI)
 
@@ -256,7 +259,7 @@ ai-jam-sessions ports
 
 ## Estado
 
-v0.3.0. Seis motores de sonido, 31 herramientas MCP, 120 canciones en 12 géneros con ejemplos detalladamente anotados. Editor interactivo de tablaturas de guitarra. Panel de control para navegador con 20 presets de voz, 10 timbres de instrumentos, 7 sistemas de afinación y una API de partitura orientada a modelos de lenguaje. Visualización de piano roll en dos modos de color. Diario de práctica para un aprendizaje continuo. Todos los archivos MIDI están disponibles; la biblioteca crece a medida que la IA aprende.
+v1.1.0. Seis motores de sonido, 34 herramientas MCP, 120 canciones en 12 géneros con ejemplos anotados en profundidad. Editor interactivo de tablaturas de guitarra. Panel de control para navegador con 20 presets de voz, 10 timbres de instrumentos, 7 sistemas de afinación y una API de puntuación orientada a modelos de lenguaje. Visualización de piano roll en dos modos de color. Diario de práctica para un aprendizaje continuo. Calificación de la interpretación MIDI, evaluación de la calidad de las anotaciones y reconocimiento de patrones entre géneros. Todos los archivos MIDI están disponibles; la biblioteca crece a medida que la IA aprende.
 
 ## Seguridad y privacidad
 
@@ -268,4 +271,4 @@ v0.3.0. Seis motores de sonido, 31 herramientas MCP, 120 canciones en 12 género
 
 ## Licencia
 
-MIT.
+MIT
