@@ -601,16 +601,28 @@ export function createLiveFeedbackHook(
 export function composeTeachingHooks(...hooks: TeachingHook[]): TeachingHook {
   return {
     async onMeasureStart(measureNumber, teachingNote, dynamics) {
-      for (const h of hooks) await h.onMeasureStart(measureNumber, teachingNote, dynamics);
+      for (const h of hooks) {
+        try { await h.onMeasureStart(measureNumber, teachingNote, dynamics); }
+        catch (err) { console.error("composeTeachingHooks: onMeasureStart hook threw:", err); }
+      }
     },
     async onKeyMoment(moment) {
-      for (const h of hooks) await h.onKeyMoment(moment);
+      for (const h of hooks) {
+        try { await h.onKeyMoment(moment); }
+        catch (err) { console.error("composeTeachingHooks: onKeyMoment hook threw:", err); }
+      }
     },
     async onSongComplete(measuresPlayed, songTitle) {
-      for (const h of hooks) await h.onSongComplete(measuresPlayed, songTitle);
+      for (const h of hooks) {
+        try { await h.onSongComplete(measuresPlayed, songTitle); }
+        catch (err) { console.error("composeTeachingHooks: onSongComplete hook threw:", err); }
+      }
     },
     async push(interjection) {
-      for (const h of hooks) await h.push(interjection);
+      for (const h of hooks) {
+        try { await h.push(interjection); }
+        catch (err) { console.error("composeTeachingHooks: push hook threw:", err); }
+      }
     },
   };
 }

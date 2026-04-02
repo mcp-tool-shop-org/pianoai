@@ -160,4 +160,8 @@ export interface SearchOptions {
   tags?: string[];
   maxDuration?: number;
   minDuration?: number;
+  /** Case-insensitive substring match on key signature (e.g. "minor", "C major"). */
+  key?: string;
+  /** Case-insensitive substring match on composer name. */
+  composer?: string;
 }

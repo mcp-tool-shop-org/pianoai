@@ -38,13 +38,13 @@
 - [x] `[all]` LICENSE file present and repo states support status (2026-02-27)
 - [x] `[cli]` `--help` output accurate for all commands and flags (2026-02-27)
 - [x] `[cli|mcp|desktop]` Logging levels defined: silent / normal / verbose / debug — secrets redacted at all levels (2026-02-27)
-- [x] `[mcp]` All tools documented with description + parameters (2026-02-27) — 31 MCP tools with descriptions
+- [x] `[mcp]` All tools documented with description + parameters (2026-02-27) — 34 MCP tools with descriptions
 - [ ] `[complex]` SKIP: not complex enough for ops handbook
 
 ## D. Shipping Hygiene
 
 - [x] `[all]` `verify` script exists (test + build + smoke in one command) (2026-02-27)
-- [x] `[all]` Version in manifest matches git tag (2026-02-27) — package.json version = "1.0.0"
+- [x] `[all]` Version in manifest matches git tag (2026-02-27) — package.json version = "1.1.0"
 - [x] `[all]` Dependency scanning runs in CI (ecosystem-appropriate) (2026-02-27) — pnpm audit in CI
 - [x] `[all]` Automated dependency update mechanism exists (2026-02-27) — GitHub Dependabot
 - [x] `[npm]` `npm pack --dry-run` includes: dist/, README.md, CHANGELOG.md, LICENSE (2026-02-27)

@@ -182,7 +182,7 @@ Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external softwar
 
 ## MCP Tools
 
-35 tools across five categories:
+34 tools across five categories:
 
 ### Learn
 
@@ -191,7 +191,6 @@ Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external softwar
 | `list_songs` | Browse by genre, difficulty, or keyword |
 | `song_info` | Full musical analysis — structure, key moments, teaching goals, style tips |
 | `registry_stats` | Library-wide stats: total songs, genres, difficulties |
-| `library_progress` | Annotation status across all genres |
 | `list_measures` | Every measure's notes, dynamics, and teaching notes |
 | `teaching_note` | Deep dive into a single measure — fingering, dynamics, context |
 | `suggest_song` | Recommendation based on genre, difficulty, and what you've played |
@@ -260,7 +259,7 @@ ai-jam-sessions ports
 
 ## Status
 
-v1.1.0. Six sound engines, 35 MCP tools, 120 songs across 12 genres with deeply annotated exemplars. Interactive guitar tablature editor. Browser cockpit with 20 vocal presets, 10 instrument voices, 7 tuning systems, and an LLM-facing score API. Piano roll visualization in two color modes. Practice journal for persistent learning. MIDI play-along scoring, annotation quality assessment, and cross-genre pattern recognition. The MIDI is all there — the library grows as the AI learns.
+v1.1.0. Six sound engines, 34 MCP tools, 120 songs across 12 genres with deeply annotated exemplars. Interactive guitar tablature editor. Browser cockpit with 20 vocal presets, 10 instrument voices, 7 tuning systems, and an LLM-facing score API. Piano roll visualization in two color modes. Practice journal for persistent learning. MIDI play-along scoring, annotation quality assessment, and cross-genre pattern recognition. The MIDI is all there — the library grows as the AI learns.
 
 ## Security & Privacy
 

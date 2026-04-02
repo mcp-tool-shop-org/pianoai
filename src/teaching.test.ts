@@ -1,10 +1,22 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeAll } from "vitest";
 import { getSong, initializeFromLibrary } from "./songs/index.js";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import type { SongEntry } from "./types.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-initializeFromLibrary(join(__dirname, "..", "songs", "library"));
+
+/** Retrieve a song or throw a descriptive error (never returns null). */
+function requireSong(id: string): SongEntry {
+  const song = getSong(id);
+  if (!song) throw new Error(`Song not found: ${id}`);
+  return song;
+}
+
+beforeAll(() => {
+  initializeFromLibrary(join(__dirname, "..", "songs", "library"));
+});
+
 import {
   createConsoleTeachingHook,
   createSilentTeachingHook,
@@ -22,7 +34,8 @@ import { createMockVmpkConnector } from "./vmpk.js";
 import type { VoiceDirective, AsideDirective } from "./types.js";
 
 describe("detectKeyMoments", () => {
-  const gymnopedie = getSong("satie-gymnopedie-no1")!;
+  let gymnopedie: SongEntry;
+  beforeAll(() => { gymnopedie = requireSong("satie-gymnopedie-no1"); });
 
   it("detects key moment at bar 1", () => {
     const moments = detectKeyMoments(gymnopedie, 1);
@@ -53,7 +66,7 @@ describe("detectKeyMoments", () => {
   });
 
   it("works with fallin (different genre)", () => {
-    const fallin = getSong("fallin")!;
+    const fallin = requireSong("fallin");
     const bar1 = detectKeyMoments(fallin, 1);
     expect(bar1.length).toBeGreaterThan(0);
   });
@@ -132,7 +145,7 @@ describe("Session + Teaching Hook integration", () => {
   it("fires teaching hooks during full playback", async () => {
     const mock = createMockVmpkConnector();
     const hook = createRecordingTeachingHook();
-    const song = getSong("satie-gymnopedie-no1")!;
+    const song = requireSong("satie-gymnopedie-no1");
     const sc = createSession(song, mock, { teachingHook: hook });
 
     await mock.connect();
@@ -157,7 +170,7 @@ describe("Session + Teaching Hook integration", () => {
   it("fires teaching hooks in measure mode", async () => {
     const mock = createMockVmpkConnector();
     const hook = createRecordingTeachingHook();
-    const song = getSong("imagine")!;
+    const song = requireSong("imagine");
     const sc = createSession(song, mock, { mode: "measure", teachingHook: hook });
 
     await mock.connect();
@@ -173,7 +186,7 @@ describe("Session + Teaching Hook integration", () => {
   it("fires teaching hooks for each measure", async () => {
     const mock = createMockVmpkConnector();
     const hook = createRecordingTeachingHook();
-    const song = getSong("satie-gymnopedie-no1")!;
+    const song = requireSong("satie-gymnopedie-no1");
     const sc = createSession(song, mock, { mode: "measure", teachingHook: hook });
 
     await mock.connect();
@@ -370,7 +383,7 @@ describe("Voice + Session integration", () => {
     const mock = createMockVmpkConnector();
     const voiceDirectives: VoiceDirective[] = [];
     const voiceHook = createVoiceTeachingHook(async (d) => { voiceDirectives.push(d); });
-    const song = getSong("satie-gymnopedie-no1")!;
+    const song = requireSong("satie-gymnopedie-no1");
     const sc = createSession(song, mock, { teachingHook: voiceHook });
 
     await mock.connect();
@@ -390,7 +403,7 @@ describe("Voice + Session integration", () => {
     const asideHook = createAsideTeachingHook(async (d) => { asideDirectives.push(d); });
     const composed = composeTeachingHooks(voiceHook, asideHook);
 
-    const song = getSong("satie-gymnopedie-no1")!;
+    const song = requireSong("satie-gymnopedie-no1");
     const sc = createSession(song, mock, { teachingHook: composed });
 
     await mock.connect();
@@ -406,7 +419,7 @@ describe("Voice + Session integration", () => {
 
 describe("SingAlongHook", () => {
   it("produces note-name directives from measure data", async () => {
-    const song = getSong("imagine")!;
+    const song = requireSong("imagine");
     const directives: VoiceDirective[] = [];
     const sink = async (d: VoiceDirective) => { directives.push(d); };
     const hook = createSingAlongHook(sink, song, { mode: "note-names" });
@@ -418,7 +431,7 @@ describe("SingAlongHook", () => {
   });
 
   it("produces solfege directives", async () => {
-    const song = getSong("imagine")!;
+    const song = requireSong("imagine");
     const directives: VoiceDirective[] = [];
     const sink = async (d: VoiceDirective) => { directives.push(d); };
     const hook = createSingAlongHook(sink, song, { mode: "solfege" });
@@ -430,7 +443,7 @@ describe("SingAlongHook", () => {
   });
 
   it("produces contour directives", async () => {
-    const song = getSong("imagine")!;
+    const song = requireSong("imagine");
     const directives: VoiceDirective[] = [];
     const sink = async (d: VoiceDirective) => { directives.push(d); };
     const hook = createSingAlongHook(sink, song, { mode: "contour" });
@@ -441,7 +454,7 @@ describe("SingAlongHook", () => {
   });
 
   it("respects hand='left'", async () => {
-    const song = getSong("imagine")!;
+    const song = requireSong("imagine");
     const rhDirectives: VoiceDirective[] = [];
     const lhDirectives: VoiceDirective[] = [];
 
@@ -458,7 +471,7 @@ describe("SingAlongHook", () => {
   });
 
   it("respects hand='both'", async () => {
-    const song = getSong("imagine")!;
+    const song = requireSong("imagine");
     const directives: VoiceDirective[] = [];
     const sink = async (d: VoiceDirective) => { directives.push(d); };
     const hook = createSingAlongHook(sink, song, { hand: "both" });
@@ -469,7 +482,7 @@ describe("SingAlongHook", () => {
   });
 
   it("skips key moments and push", async () => {
-    const song = getSong("imagine")!;
+    const song = requireSong("imagine");
     const directives: VoiceDirective[] = [];
     const sink = async (d: VoiceDirective) => { directives.push(d); };
     const hook = createSingAlongHook(sink, song);
@@ -480,7 +493,7 @@ describe("SingAlongHook", () => {
   });
 
   it("speaks completion when speakCompletion=true", async () => {
-    const song = getSong("imagine")!;
+    const song = requireSong("imagine");
     const directives: VoiceDirective[] = [];
     const sink = async (d: VoiceDirective) => { directives.push(d); };
     const hook = createSingAlongHook(sink, song);
@@ -492,7 +505,7 @@ describe("SingAlongHook", () => {
   });
 
   it("skips completion when speakCompletion=false", async () => {
-    const song = getSong("imagine")!;
+    const song = requireSong("imagine");
     const directives: VoiceDirective[] = [];
     const sink = async (d: VoiceDirective) => { directives.push(d); };
     const hook = createSingAlongHook(sink, song, { speakCompletion: false });
@@ -502,7 +515,7 @@ describe("SingAlongHook", () => {
   });
 
   it("uses custom voice and speed", async () => {
-    const song = getSong("imagine")!;
+    const song = requireSong("imagine");
     const directives: VoiceDirective[] = [];
     const sink = async (d: VoiceDirective) => { directives.push(d); };
     const hook = createSingAlongHook(sink, song, { voice: "af_aoede", speechSpeed: 0.8 });
@@ -513,7 +526,7 @@ describe("SingAlongHook", () => {
   });
 
   it("records directives on the hook object", async () => {
-    const song = getSong("imagine")!;
+    const song = requireSong("imagine");
     const sink = async () => {};
     const hook = createSingAlongHook(sink, song);
 
@@ -523,7 +536,7 @@ describe("SingAlongHook", () => {
   });
 
   it("suppresses measure number when announceMeasureNumber=false", async () => {
-    const song = getSong("imagine")!;
+    const song = requireSong("imagine");
     const directives: VoiceDirective[] = [];
     const sink = async (d: VoiceDirective) => { directives.push(d); };
     const hook = createSingAlongHook(sink, song, { announceMeasureNumber: false });
@@ -533,7 +546,7 @@ describe("SingAlongHook", () => {
   });
 
   it("composes with voice hook via composeTeachingHooks", async () => {
-    const song = getSong("satie-gymnopedie-no1")!;
+    const song = requireSong("satie-gymnopedie-no1");
     const singDirectives: VoiceDirective[] = [];
     const voiceDirectives: VoiceDirective[] = [];
     const singHook = createSingAlongHook(async (d) => { singDirectives.push(d); }, song);
@@ -549,7 +562,7 @@ describe("SingAlongHook", () => {
 describe("Sing-Along + Session integration", () => {
   it("sing-along hook fires during full playback", async () => {
     const mock = createMockVmpkConnector();
-    const song = getSong("fallin")!;
+    const song = requireSong("fallin");
     const directives: VoiceDirective[] = [];
     const hook = createSingAlongHook(async (d) => { directives.push(d); }, song);
     const sc = createSession(song, mock, { teachingHook: hook });
@@ -568,7 +581,8 @@ describe("Sing-Along + Session integration", () => {
 // ─── Live Feedback Hook ──────────────────────────────────────────────────────
 
 describe("LiveFeedbackHook", () => {
-  const gymnopedie = getSong("satie-gymnopedie-no1")!;
+  let gymnopedie: SongEntry;
+  beforeAll(() => { gymnopedie = requireSong("satie-gymnopedie-no1"); });
 
   it("emits voice directives at interval", async () => {
     const voiceD: VoiceDirective[] = [];
@@ -724,7 +738,7 @@ describe("LiveFeedbackHook", () => {
   });
 
   it("composes with sing-along hook", async () => {
-    const song = getSong("imagine")!;
+    const song = requireSong("imagine");
     const singD: VoiceDirective[] = [];
     const feedbackVoiceD: VoiceDirective[] = [];
     const feedbackAsideD: AsideDirective[] = [];
@@ -749,7 +763,7 @@ describe("LiveFeedbackHook", () => {
 describe("LiveFeedback + Session integration", () => {
   it("live feedback hook fires during full playback", async () => {
     const mock = createMockVmpkConnector();
-    const song = getSong("satie-gymnopedie-no1")!;
+    const song = requireSong("satie-gymnopedie-no1");
     const voiceD: VoiceDirective[] = [];
     const asideD: AsideDirective[] = [];
     const hook = createLiveFeedbackHook(

@@ -3,18 +3,31 @@ import { getSong, initializeFromLibrary } from "./songs/index.js";
 import { createSession } from "./session.js";
 import { createMockVmpkConnector } from "./vmpk.js";
 import { createRecordingTeachingHook } from "./teaching.js";
-import type { PlaybackProgress } from "./types.js";
+import type { PlaybackProgress, SongEntry } from "./types.js";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// Initialize registry at module level (before describe bodies run)
-initializeFromLibrary(join(__dirname, "..", "songs", "library"));
+/** Retrieve a song or throw a descriptive error (never returns null). */
+function requireSong(id: string): SongEntry {
+  const song = getSong(id);
+  if (!song) throw new Error(`Song not found: ${id}`);
+  return song;
+}
+
+beforeAll(() => {
+  initializeFromLibrary(join(__dirname, "..", "songs", "library"));
+});
 
 describe("SessionController", () => {
-  const moonlight = getSong("satie-gymnopedie-no1")!;
-  const blues = getSong("fallin")!;
+  let moonlight: SongEntry;
+  let blues: SongEntry;
+
+  beforeAll(() => {
+    moonlight = requireSong("satie-gymnopedie-no1");
+    blues = requireSong("fallin");
+  });
 
   it("creates a session in 'loaded' state", () => {
     const mock = createMockVmpkConnector();
@@ -195,7 +208,8 @@ describe("MockVmpkConnector", () => {
 });
 
 describe("Speed control", () => {
-  const blues = getSong("fallin")!;
+  let blues: SongEntry;
+  beforeAll(() => { blues = requireSong("fallin"); });
 
   it("defaults speed to 1.0", () => {
     const mock = createMockVmpkConnector();
@@ -241,7 +255,8 @@ describe("Speed control", () => {
 });
 
 describe("Progress tracking", () => {
-  const blues = getSong("fallin")!;
+  let blues: SongEntry;
+  beforeAll(() => { blues = requireSong("fallin"); });
 
   it("fires progress after every measure when interval=0", async () => {
     const mock = createMockVmpkConnector();
@@ -301,14 +316,15 @@ describe("Progress tracking", () => {
 describe("Parse warnings", () => {
   it("exposes parseWarnings array (empty for valid songs)", () => {
     const mock = createMockVmpkConnector();
-    const blues = getSong("fallin")!;
+    const blues = requireSong("fallin");
     const sc = createSession(blues, mock);
     expect(sc.parseWarnings).toEqual([]);
   });
 });
 
 describe("Edge cases: boundary navigation", () => {
-  const moonlight = getSong("satie-gymnopedie-no1")!;
+  let moonlight: SongEntry;
+  beforeAll(() => { moonlight = requireSong("satie-gymnopedie-no1"); });
 
   it("next() at last measure stays on last measure", () => {
     const mock = createMockVmpkConnector();
@@ -370,7 +386,8 @@ describe("Edge cases: boundary navigation", () => {
 });
 
 describe("Edge cases: loop mode", () => {
-  const blues = getSong("fallin")!;
+  let blues: SongEntry;
+  beforeAll(() => { blues = requireSong("fallin"); });
 
   it("loop mode creates session with loopRange", () => {
     const mock = createMockVmpkConnector();
@@ -415,7 +432,8 @@ describe("Edge cases: loop mode", () => {
 });
 
 describe("Edge cases: play/pause/stop state machine", () => {
-  const moonlight = getSong("satie-gymnopedie-no1")!;
+  let moonlight: SongEntry;
+  beforeAll(() => { moonlight = requireSong("satie-gymnopedie-no1"); });
 
   it("play() on already-playing session is no-op", async () => {
     const mock = createMockVmpkConnector();
@@ -469,7 +487,8 @@ describe("Edge cases: play/pause/stop state machine", () => {
 });
 
 describe("Edge cases: setSpeed validation", () => {
-  const blues = getSong("fallin")!;
+  let blues: SongEntry;
+  beforeAll(() => { blues = requireSong("fallin"); });
 
   it("setSpeed(0) throws", () => {
     const mock = createMockVmpkConnector();
@@ -505,8 +524,12 @@ describe("Edge cases: setSpeed validation", () => {
 });
 
 describe("SyncMode", () => {
-  const blues = getSong("fallin")!;
-  const moonlight = getSong("satie-gymnopedie-no1")!;
+  let blues: SongEntry;
+  let moonlight: SongEntry;
+  beforeAll(() => {
+    blues = requireSong("fallin");
+    moonlight = requireSong("satie-gymnopedie-no1");
+  });
 
   it("defaults syncMode to concurrent", () => {
     const mock = createMockVmpkConnector();

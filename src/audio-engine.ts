@@ -32,6 +32,7 @@
 
 import type { VmpkConnector, MidiStatus, MidiNote } from "./types.js";
 import { getMergedVoice, type PianoVoiceId, type PianoVoiceConfig } from "./piano-voices.js";
+import { JamError } from "./errors.js";
 
 // ─── Lazy Import ────────────────────────────────────────────────────────────
 // Don't load the native binary until the engine is actually used.
@@ -387,9 +388,12 @@ export function createAudioEngine(voiceId?: PianoVoiceId): VmpkConnector {
         console.error(`Piano engine connected (${voice.name})`);
       } catch (err) {
         currentStatus = "error";
-        throw new Error(
-          `Failed to start piano engine: ${err instanceof Error ? err.message : String(err)}`
-        );
+        throw new JamError({
+          code: 'RUNTIME_ENGINE',
+          message: `Failed to start piano engine: ${err instanceof Error ? err.message : String(err)}`,
+          hint: 'Check that node-web-audio-api is installed and your audio device is not in use by another application',
+          cause: err instanceof Error ? err : undefined,
+        });
       }
     },
 

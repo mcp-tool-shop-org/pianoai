@@ -229,8 +229,8 @@ export function renderPianoRoll(
     </svg>`;
   }
 
-  const minMidi = Math.max(0, Math.min(...pitched.map(n => n.midi)) - 3);
-  const maxMidi = Math.min(127, Math.max(...pitched.map(n => n.midi)) + 3);
+  const minMidi = Math.max(0, pitched.reduce((m, n) => Math.min(m, n.midi), Infinity) - 3);
+  const maxMidi = Math.min(127, pitched.reduce((m, n) => Math.max(m, n.midi), -Infinity) + 3);
   const pitchRange = maxMidi - minMidi + 1;
 
   // ── Layout dimensions ──

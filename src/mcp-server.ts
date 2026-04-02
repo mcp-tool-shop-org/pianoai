@@ -133,17 +133,19 @@ let lastCompletedSession: SessionSnapshot | null = null;
 
 server.tool(
   "list_songs",
-  "Browse and search the piano song library. Filter by genre, difficulty, or search query.",
+  "Browse and search the piano song library. Filter by genre, difficulty, composer, or search query.",
   {
     genre: z.enum(GENRES as unknown as [string, ...string[]]).optional().describe("Filter by genre"),
     difficulty: z.enum(DIFFICULTIES as unknown as [string, ...string[]]).optional().describe("Filter by difficulty"),
     query: z.string().optional().describe("Search query (matches title, composer, tags, description)"),
+    composer: z.string().optional().describe("Filter by composer (case-insensitive substring match)"),
   },
   async (params) => {
     const results = searchSongs({
       genre: params.genre as Genre | undefined,
       difficulty: params.difficulty as Difficulty | undefined,
       query: params.query,
+      composer: params.composer,
     });
 
     const text = results.length === 0
@@ -561,7 +563,7 @@ let activeVoiceId: string = "grand";
 let activeNotes: Set<number> = new Set();
 
 /** Stop whatever is currently playing. */
-function stopActive(): void {
+async function stopActive(): Promise<void> {
   if (activeSession && activeSession.state === "playing") {
     activeSession.stop();
   }
@@ -578,9 +580,11 @@ function stopActive(): void {
   activeController = null;
 
   if (activeConnector) {
-    activeConnector.disconnect().catch((err) => {
+    try {
+      await activeConnector.disconnect();
+    } catch (err) {
       console.error(`Disconnect error: ${err instanceof Error ? err.message : String(err)}`);
-    });
+    }
     activeConnector = null;
   }
   activeNotes.clear();
@@ -608,17 +612,18 @@ server.tool(
   },
   async ({ id, speed, tempo, mode, startMeasure, endMeasure, withSinging, withTeaching, singMode, keyboard, engine, tractVoice, guitarVoice }) => {
     // Stop whatever is currently playing
-    stopActive();
+    await stopActive();
 
-    // Determine if this is a .mid file path or a library song ID
-    const isMidiFile = id.endsWith(".mid") || id.endsWith(".midi") || existsSync(id);
+    // Determine if this is a .mid file path or a library song ID — require explicit extension
+    const isMidiFile = id.endsWith(".mid") || id.endsWith(".midi");
 
-    // Path traversal protection for file paths
+    // Path containment check for file paths
     if (isMidiFile) {
       const resolved = pathResolve(id);
-      if (resolved.includes("..") || !resolved.endsWith(".mid") && !resolved.endsWith(".midi")) {
+      const home = pathResolve(process.env.HOME ?? process.env.USERPROFILE ?? "");
+      if (!home || !(resolved.startsWith(home + "/") || resolved.startsWith(home + "\\"))) {
         return {
-          content: [{ type: "text", text: `Invalid MIDI file path: "${id}". Path must point to a .mid or .midi file.` }],
+          content: [{ type: "text", text: `Invalid MIDI file path: "${id}". Path must be within your home directory.` }],
           isError: true,
         };
       }
@@ -758,7 +763,7 @@ server.tool(
       if (features.length > 0) {
         lines.push(`- **Features:** ${features.join(", ")}`);
       }
-      lines.push(``, `Use \`stop_playback\` to stop. Playback runs in the background.`);
+      lines.push(``, `Use \`playback_status\` to check progress, \`stop_playback\` to stop. Playback runs in the background.`);
 
       return { content: [{ type: "text", text: lines.join("\n") }] };
     }
@@ -862,7 +867,7 @@ server.tool(
     if (warnings.length > 0) {
       lines.push(``, `⚠ ${warnings.length} note(s) had parse warnings and will be skipped.`);
     }
-    lines.push(``, `Use \`stop_playback\` to stop. Playback runs in the background.`);
+    lines.push(``, `Use \`playback_status\` to check progress, \`stop_playback\` to stop. Playback runs in the background.`);
     lines.push(``, `Tip: After listening, use \`save_practice_note\` to record what you learned.`);
 
     return { content: [{ type: "text", text: lines.join("\n") }] };
@@ -891,7 +896,7 @@ server.tool(
           ? `MIDI file (${activeController.eventsPlayed}/${activeController.totalEvents} events played)`
           : "Unknown";
 
-    stopActive();
+    await stopActive();
 
     return {
       content: [{ type: "text", text: `Stopped: ${info}` }],
@@ -1067,7 +1072,10 @@ server.tool(
   },
   async ({ song: songJson }) => {
     try {
-      const parsed = JSON.parse(songJson) as SongEntry;
+      const parsed = JSON.parse(songJson, (key, value) => {
+        if (key === "__proto__" || key === "constructor" || key === "prototype") return undefined;
+        return value;
+      }) as SongEntry;
 
       // Song ID sanitization
       if (!/^[a-z0-9][a-z0-9-]*[a-z0-9]$/.test(parsed.id) && !/^[a-z0-9]$/.test(parsed.id)) {
@@ -1144,11 +1152,18 @@ server.tool(
   },
   async ({ midi_path, id, title, genre, difficulty, key, composer, description, tags }) => {
     try {
-      // Path traversal protection
+      // Path traversal protection + directory containment
       const resolvedMidiPath = pathResolve(midi_path);
       if (!resolvedMidiPath.endsWith(".mid") && !resolvedMidiPath.endsWith(".midi")) {
         return {
           content: [{ type: "text", text: `Invalid MIDI path: must be a .mid or .midi file.` }],
+          isError: true,
+        };
+      }
+      const midiHome = pathResolve(process.env.HOME ?? process.env.USERPROFILE ?? "");
+      if (!midiHome || !(resolvedMidiPath.startsWith(midiHome + "/") || resolvedMidiPath.startsWith(midiHome + "\\"))) {
+        return {
+          content: [{ type: "text", text: `Invalid MIDI path: file must be within your home directory.` }],
           isError: true,
         };
       }

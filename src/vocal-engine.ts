@@ -24,6 +24,7 @@
 
 import type { VmpkConnector, MidiStatus, MidiNote } from "./types.js";
 import { loadCarrierBank, pickCarrier, defaultCarrierDir, type CarrierBank } from "./vocal-carriers.js";
+import { JamError } from "./errors.js";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -222,13 +223,21 @@ export function createVocalEngine(options?: VocalEngineOptions): VmpkConnector &
       } catch (err) {
         currentStatus = "error";
         const msg = err instanceof Error ? err.message : String(err);
+        const cause = err instanceof Error ? err : undefined;
         if (msg.includes("ENOENT") && msg.includes("samples")) {
-          throw new Error(
-            `Vocal carrier samples not found at "${carrierDir}". ` +
-            `Run 'pnpm setup' to generate them, or use --engine piano instead.`,
-          );
+          throw new JamError({
+            code: 'RUNTIME_ENGINE',
+            message: `Vocal carrier samples not found at "${carrierDir}"`,
+            hint: "Run 'pnpm setup' to generate carrier samples, or use --engine piano instead",
+            cause,
+          });
         }
-        throw new Error(`Failed to start vocal engine: ${msg}`);
+        throw new JamError({
+          code: 'RUNTIME_ENGINE',
+          message: `Failed to start vocal engine: ${msg}`,
+          hint: 'Check that node-web-audio-api is installed and your audio device is not in use by another application',
+          cause,
+        });
       }
     },
 

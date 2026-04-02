@@ -212,6 +212,16 @@ export function searchSongs(options: SearchOptions): SongEntry[] {
     results = results.filter((s) => s.durationSeconds >= options.minDuration!);
   }
 
+  if (options.key) {
+    const k = options.key.toLowerCase();
+    results = results.filter((s) => s.key.toLowerCase().includes(k));
+  }
+
+  if (options.composer) {
+    const c = options.composer.toLowerCase();
+    results = results.filter((s) => s.composer?.toLowerCase().includes(c) ?? false);
+  }
+
   if (options.query) {
     const q = options.query.toLowerCase();
     results = results.filter(

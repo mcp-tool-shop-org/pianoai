@@ -1,6 +1,6 @@
 # AI Jam Session — Claude Code Plugin
 
-Claude Code plugin that wraps the [AI Jam Session](https://github.com/mcp-tool-shop-org/ai_jam_sessions)
+Claude Code plugin that wraps the [AI Jam Sessions](https://github.com/mcp-tool-shop-org/ai-jam-sessions)
 MCP server, adding slash commands, agent personalities, and structured
 teaching and jam session workflows.
 
@@ -14,7 +14,7 @@ teaching and jam session workflows.
 | Skill | `/ai-jam-sessions:jam` | Start a jam session — improvise on a song or genre |
 | Agent | `piano-teacher` | Patient AI piano teacher persona |
 | Agent | `jam-musician` | Laid-back jam band musician persona |
-| MCP Server | `ai_jam_sessions` | 15 tools for playback, teaching, jamming, and song management |
+| MCP Server | `ai_jam_sessions` | 34 tools for playback, teaching, jamming, and song management |
 
 ## Install
 

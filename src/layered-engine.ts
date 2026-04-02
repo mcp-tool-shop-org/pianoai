@@ -40,7 +40,19 @@ export function createLayeredEngine(
 
   const connector: VmpkConnector = {
     async connect(): Promise<void> {
-      await Promise.all(engines.map((e) => e.connect()));
+      const connected: VmpkConnector[] = [];
+      for (const e of engines) {
+        try {
+          await e.connect();
+          connected.push(e);
+        } catch (err) {
+          // Disconnect already-connected engines before re-throwing
+          for (const c of connected) {
+            try { await c.disconnect(); } catch { /* best-effort cleanup */ }
+          }
+          throw err;
+        }
+      }
     },
 
     async disconnect(): Promise<void> {
@@ -61,15 +73,21 @@ export function createLayeredEngine(
     },
 
     noteOn(note: number, velocity: number, channel?: number): void {
-      for (const e of engines) e.noteOn(note, velocity, channel);
+      for (const e of engines) {
+        try { e.noteOn(note, velocity, channel); } catch (err) { console.error('Layered engine noteOn error:', err); }
+      }
     },
 
     noteOff(note: number, channel?: number): void {
-      for (const e of engines) e.noteOff(note, channel);
+      for (const e of engines) {
+        try { e.noteOff(note, channel); } catch (err) { console.error('Layered engine noteOff error:', err); }
+      }
     },
 
     allNotesOff(channel?: number): void {
-      for (const e of engines) e.allNotesOff(channel);
+      for (const e of engines) {
+        try { e.allNotesOff(channel); } catch (err) { console.error('Layered engine allNotesOff error:', err); }
+      }
     },
 
     async playNote(note: MidiNote): Promise<void> {

@@ -71,6 +71,7 @@ export function parseDuration(suffix: string): number {
  * A half note at 120 BPM = 1000ms.
  */
 export function durationToMs(multiplier: number, bpm: number): number {
+  if (bpm <= 0) return 0;
   const quarterMs = 60_000 / bpm;
   return quarterMs * multiplier;
 }

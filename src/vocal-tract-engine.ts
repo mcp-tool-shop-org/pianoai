@@ -23,6 +23,7 @@
 
 import type { VmpkConnector, MidiStatus, MidiNote } from "./types.js";
 import { Synthesizer } from "./vendor/pink-trombone.js";
+import { JamError } from "./errors.js";
 
 // ─── Voice Presets ────────────────────────────────────────────────────────
 
@@ -315,9 +316,12 @@ export function createTractEngine(options?: TractEngineOptions): VmpkConnector &
         console.error(`Tract engine connected (Pink Trombone ${voice}, ${SAMPLE_RATE}Hz, tract=${tractLength} cells, tenseness=${preset.tenseness})`);
       } catch (err) {
         currentStatus = "error";
-        throw new Error(
-          `Failed to start tract engine: ${err instanceof Error ? err.message : String(err)}`,
-        );
+        throw new JamError({
+          code: 'RUNTIME_ENGINE',
+          message: `Failed to start tract engine: ${err instanceof Error ? err.message : String(err)}`,
+          hint: 'Check that node-web-audio-api is installed and your audio device is not in use by another application',
+          cause: err instanceof Error ? err : undefined,
+        });
       }
     },
 

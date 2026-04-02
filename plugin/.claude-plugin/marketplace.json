@@ -11,8 +11,8 @@
     {
       "name": "ai-jam-sessions",
       "source": "./",
-      "description": "Piano player with built-in audio engine — plays through speakers, no external software required.",
-      "version": "1.0.0",
+      "description": "Piano, guitar, and vocal player with built-in audio engine — plays through speakers, no external software required.",
+      "version": "1.1.0",
       "author": {
         "name": "mcp-tool-shop"
       },

@@ -39,6 +39,7 @@ export class MidiPlaybackEngine {
   private _wallStartTime: number = 0;
   private _pausedAtTime: number = 0;
   private _activeNotes = new Set<string>(); // "channel-note" keys
+  private _noteOffTimers: Set<ReturnType<typeof setTimeout>> = new Set();
   private _abortController: AbortController | null = null;
   private _resolveWait: (() => void) | null = null;
 
@@ -216,6 +217,10 @@ export class MidiPlaybackEngine {
 
   /** Send all-notes-off to silence everything. */
   private silenceAll(): void {
+    for (const timer of this._noteOffTimers) {
+      clearTimeout(timer);
+    }
+    this._noteOffTimers.clear();
     try {
       this.connector.allNotesOff();
     } catch {
@@ -226,7 +231,8 @@ export class MidiPlaybackEngine {
 
   /** Schedule a noteOff after a delay. */
   private scheduleNoteOff(event: MidiNoteEvent, delayMs: number, key: string): void {
-    setTimeout(() => {
+    const timer = setTimeout(() => {
+      this._noteOffTimers.delete(timer);
       try {
         this.connector.noteOff(event.note, event.channel);
       } catch {
@@ -234,6 +240,7 @@ export class MidiPlaybackEngine {
       }
       this._activeNotes.delete(key);
     }, delayMs);
+    this._noteOffTimers.add(timer);
   }
 
   /** Sleep that can be interrupted by AbortSignal. */

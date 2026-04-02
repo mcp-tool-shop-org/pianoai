@@ -235,7 +235,7 @@ export function renderGuitarTab(
       teachingNote: m.teachingNote ?? null,
     })),
     notes: tabNotes,
-  });
+  }).replace(/<\//g, "<\\/");
 
   return `<!DOCTYPE html>
 <html lang="en">

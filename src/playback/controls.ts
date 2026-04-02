@@ -116,6 +116,8 @@ export class PlaybackController {
   private _teachingHook: TeachingHook | null = null;
   private _lastState: MidiPlaybackState = "idle";
 
+  private wrappedConnector: VmpkConnector | null = null;
+
   constructor(
     private readonly connector: VmpkConnector,
     public readonly midi: ParsedMidi
@@ -162,14 +164,14 @@ export class PlaybackController {
     const typeListeners = this.listeners.get(event.type);
     if (typeListeners) {
       for (const fn of typeListeners) {
-        try { fn(event); } catch { /* listener errors don't break playback */ }
+        try { fn(event); } catch (e) { console.error('Playback listener error:', e); }
       }
     }
     // Fire wildcard listeners
     const allListeners = this.listeners.get("*");
     if (allListeners) {
       for (const fn of allListeners) {
-        try { fn(event); } catch { /* listener errors don't break playback */ }
+        try { fn(event); } catch (e) { console.error('Playback listener error:', e); }
       }
     }
   }
@@ -197,11 +199,11 @@ export class PlaybackController {
     const previousState = this.engine.state;
     this._teachingHook = options.teachingHook ?? null;
 
-    // Wrap the connector to intercept note events
-    const wrappedConnector = this.createWrappedConnector();
-
-    // Swap the engine to use the wrapped connector (recreate)
-    this.engine = new MidiPlaybackEngine(wrappedConnector, this.midi);
+    // Only create the wrapped connector and engine once
+    if (!this.wrappedConnector) {
+      this.wrappedConnector = this.createWrappedConnector();
+      this.engine = new MidiPlaybackEngine(this.wrappedConnector, this.midi);
+    }
 
     // Emit state change
     const onProgress: ProgressCallback = (p) => {

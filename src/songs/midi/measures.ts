@@ -41,7 +41,7 @@ export function computeTotalMeasures(
   tpm: number,
 ): number {
   if (notes.length === 0) return 1;
-  const lastNoteTick = Math.max(...notes.map(n => n.startTick + n.durationTicks));
+  const lastNoteTick = notes.reduce((m, n) => Math.max(m, n.startTick + n.durationTicks), -Infinity);
   return Math.max(1, Math.ceil(lastNoteTick / tpm));
 }
 

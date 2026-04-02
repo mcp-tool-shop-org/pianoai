@@ -145,9 +145,10 @@ export function flattenSongToExpected(song: SongEntry, bpm?: number): ExpectedNo
   let measureStartTime = 0;
 
   // Parse time signature for measure duration
-  const [beatsNum] = song.timeSignature.split("/").map(Number);
+  const [beatsNum, beatsDen] = song.timeSignature.split("/").map(Number);
   const beatsPerMeasure = beatsNum || 4;
-  const measureDurationSec = (beatsPerMeasure * 60) / effectiveBpm;
+  const beatUnit = beatsDen || 4;
+  const measureDurationSec = (beatsPerMeasure * (4 / beatUnit) * 60) / effectiveBpm;
 
   for (const measure of song.measures) {
     const rh = parseHandTokens(
@@ -172,10 +173,23 @@ export function scorePerformance(
   playedEvents: MidiNoteEvent[],
   options: { toleranceMs?: number; bpm?: number } = {},
 ): PerformanceResult {
-  const toleranceMs = options.toleranceMs ?? 150;
-  const toleranceSec = toleranceMs / 1000;
+  const INPUT_LIMIT = 10_000;
 
   const expected = flattenSongToExpected(song, options.bpm);
+
+  // Guard against excessively large inputs that would cause O(N*M) stall
+  if (expected.length > INPUT_LIMIT || playedEvents.length > INPUT_LIMIT) {
+    return {
+      songId: song.id,
+      songTitle: song.title,
+      metrics: { overallScore: 0, pitchAccuracy: 0, timingAccuracyMs: 0, completeness: 0, extraNoteCount: 0 },
+      details: { totalExpected: expected.length, totalPlayed: playedEvents.length, matched: 0, missed: [], extras: [], timingIssues: [] },
+      feedback: `Input too large for scoring: expected ${expected.length} notes, played ${playedEvents.length} notes. Maximum is ${INPUT_LIMIT} per array.`,
+    };
+  }
+
+  const toleranceMs = options.toleranceMs ?? 150;
+  const toleranceSec = toleranceMs / 1000;
   const played = [...playedEvents]
     .filter(e => e.velocity > 0)
     .sort((a, b) => a.time - b.time);

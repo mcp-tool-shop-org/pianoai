@@ -41,6 +41,7 @@ import {
   type GuitarVoiceId,
   type GuitarVoiceConfig,
 } from "./guitar-voices.js";
+import { JamError } from "./errors.js";
 
 // ─── Lazy Import ────────────────────────────────────────────────────────────
 
@@ -520,9 +521,12 @@ export function createGuitarEngine(options: GuitarEngineOptions = {}): VmpkConne
         );
       } catch (err) {
         currentStatus = "error";
-        throw new Error(
-          `Failed to start guitar engine: ${err instanceof Error ? err.message : String(err)}`,
-        );
+        throw new JamError({
+          code: 'RUNTIME_ENGINE',
+          message: `Failed to start guitar engine: ${err instanceof Error ? err.message : String(err)}`,
+          hint: 'Check that node-web-audio-api is installed and your audio device is not in use by another application',
+          cause: err instanceof Error ? err : undefined,
+        });
       }
     },
 

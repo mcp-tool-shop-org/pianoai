@@ -12,7 +12,53 @@ What's next to make this feel less like a developer utility and more like a musi
 - [x] **Auto-save journal** — Every CLI play session writes to `~/.ai-jam-sessions/journal/`
 - [x] **Fix ports command** — Actually lists available MIDI ports (was a stub)
 - [x] **Guitar tab MCP parity** — `view_guitar_tab` returns tab overview text so LLM can see the arrangement
-- [x] **README tool count** — Updated 24 → 31, added guitar engine/tab references
+- [x] **README tool count** — Updated 24 → 34, added guitar engine/tab/vocal/scoring references
+
+---
+
+## Tier 1 — Core Teaching Gaps (Swarm-identified, 2026-04-02)
+
+These are the high-impact, medium/large-effort gaps identified during the dogfood swarm health + feature pass. They represent the difference between "plays music" and "teaches music."
+
+### Metronome / Click Track Engine
+A music teaching tool needs a steady click alongside the song for tempo internalization.
+- MetronomeEngine: accented beat 1, unaccented beats 2-4, synced to session tempo
+- Wire into SessionController as optional parallel track
+- Toggle via session options + MCP `play_song` parameter
+- **Effort:** Medium | **Priority:** HIGH
+
+### Recording Pipeline → Scoring
+Scoring exists but has no way to receive live session data. The loop is broken.
+- RecordingConnector wrapper that intercepts noteOn/noteOff and timestamps them
+- Expose getRecording() on SessionController and PlaybackController
+- After play completes, caller passes recording to scorePerformance()
+- **Effort:** Medium | **Priority:** HIGH
+
+### Practice Loop / Section Repeat
+A real teacher says "play measures 5-8 again, slower." The system can't do that.
+- PracticeLoop concept: teaching hook emits repeat-section directive
+- PlaybackController honors (startMeasure, endMeasure, suggestedTempo)
+- scorePerformance identifies worst measures → drill recommendation
+- **Effort:** Medium | **Priority:** HIGH
+
+### Song Library Annotation (96/120 songs raw)
+Only 24/120 songs are "ready" with musicalLanguage annotations. 80% of the library is inert.
+- Batch annotation script (MIDI analysis + LLM pass for musicalLanguage)
+- Prioritize genres with 0 ready songs: blues, rock, pop, latin, ragtime, folk
+- **Effort:** Large | **Priority:** HIGH
+
+### MCP Server + CLI Test Coverage
+The two largest files (mcp-server.ts: 2108 lines, cli.ts: 1308 lines) plus all 6 engines have zero unit tests.
+- mcp-server.test.ts: tool registration, input validation, error responses
+- cli.test.ts: argument parsing, subcommand dispatch
+- Engine unit tests (mock node-web-audio-api)
+- **Effort:** Large | **Priority:** HIGH
+
+### Scored Piano Roll Overlay
+Piano roll renders SVG, scorer produces results, but they never connect.
+- renderScoredPianoRoll(song, performanceResult): red=missed, orange=timing, green=correct
+- The visual "marked-up score" every music teacher uses
+- **Effort:** Medium | **Priority:** HIGH
 
 ---
 

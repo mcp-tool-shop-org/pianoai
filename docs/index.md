@@ -57,17 +57,17 @@ A full instrument studio that runs in your browser alongside the MCP server:
 - **Score import/export** — full JSON serialization, bidirectional
 - **LLM API** — `window.__cockpit` exposes `exportScore()`, `importScore()`, `addNote()`, `play()`, `stop()`, `panic()`, `setMode()`, `getScore()` for programmatic composition
 
-### 31 MCP tools
+### 34 MCP tools
 
-**Learn:** `list_songs`, `song_info`, `registry_stats`, `library_progress`, `list_measures`, `teaching_note`, `suggest_song`, `practice_setup`
+**Learn:** `list_songs`, `song_info`, `registry_stats`, `list_measures`, `teaching_note`, `suggest_song`, `practice_setup`, `compare_songs`, `annotation_progress`
 
-**Play:** `play_song`, `stop_playback`, `pause_playback`, `set_speed`, `playback_status`, `view_piano_roll`
+**Play:** `play_song`, `stop_playback`, `pause_playback`, `set_speed`, `playback_status`, `view_piano_roll`, `score_performance`
 
 **Sing:** `sing_along` (note-names, solfege, contour, syllables — with or without piano), `ai_jam_sessions` (jam briefs)
 
 **Guitar:** `view_guitar_tab`, `list_guitar_voices`, `list_guitar_tunings`, `tune_guitar`, `get_guitar_config`, `reset_guitar`
 
-**Build:** `add_song`, `import_midi`, `annotate_song`, `save_practice_note`, `read_practice_journal`, `list_keyboards`, `tune_keyboard`, `get_keyboard_config`, `reset_keyboard`
+**Build:** `add_song`, `import_midi`, `annotate_song`, `save_practice_note`, `read_practice_journal`, `list_keyboards`, `tune_keyboard`, `get_keyboard_config`, `reset_keyboard`, `score_annotation`
 
 ### The practice journal
 

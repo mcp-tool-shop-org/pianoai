@@ -76,12 +76,21 @@ async function openInBrowser(filePath: string): Promise<void> {
   const { execFile } = await import("node:child_process");
   const os = platform();
   if (os === "win32") {
+    if (/["&|`<>^()!%]/.test(filePath)) {
+      throw new Error(`Refusing to open path with shell-special characters: "${filePath}"`);
+    }
     execFile("cmd", ["/c", "start", "", `"${filePath}"`]);
   } else if (os === "darwin") {
     execFile("open", [filePath]);
   } else {
     execFile("xdg-open", [filePath]);
   }
+}
+
+/** Standard "song not found" error message with a hint to run `list`. */
+function songNotFoundError(songId: string, extra?: string): string {
+  const base = `Song not found: "${songId}". Run \`ai-jam-sessions list\` to see available songs.`;
+  return extra ? `${base} ${extra}` : base;
 }
 
 function printSongTable(songs: SongEntry[]): void {
@@ -204,7 +213,7 @@ function cmdInfo(args: string[]): void {
   }
   const song = getSong(songId);
   if (!song) {
-    console.error(`Song not found: "${songId}"`);
+    console.error(songNotFoundError(songId));
     process.exit(1);
   }
   printSongInfo(song);
@@ -275,7 +284,7 @@ async function cmdPlay(args: string[]): Promise<void> {
   if (!isMidiFile) {
     const song = getSong(target);
     if (!song) {
-      console.error(`Song not found: "${target}". Run 'ai-jam-sessions list' to see available songs, or provide a .mid file path.`);
+      console.error(songNotFoundError(target, "Or provide a .mid file path."));
       process.exit(1);
     }
   }
@@ -401,7 +410,7 @@ async function cmdPlay(args: string[]): Promise<void> {
       // ── Library song playback ──
       const song = getSong(target);
       if (!song) {
-        console.error(`Song not found: "${target}". Run 'ai-jam-sessions list' to see available songs, or provide a .mid file path.`);
+        console.error(songNotFoundError(target, "Or provide a .mid file path."));
         process.exit(1);
       }
 
@@ -537,7 +546,7 @@ async function cmdSing(args: string[]): Promise<void> {
   }
   const song = getSong(songId);
   if (!song) {
-    console.error(`Song not found: "${songId}". Run 'ai-jam-sessions list' to see available songs.`);
+    console.error(songNotFoundError(songId));
     process.exit(1);
   }
 
@@ -734,7 +743,7 @@ async function cmdView(args: string[]): Promise<void> {
   }
   const song = getSong(songId);
   if (!song) {
-    console.error(`Song not found: "${songId}". Run 'ai-jam-sessions list' to see available songs.`);
+    console.error(songNotFoundError(songId));
     process.exit(1);
   }
 
@@ -802,7 +811,7 @@ async function cmdViewGuitar(args: string[]): Promise<void> {
   }
   const song = getSong(songId);
   if (!song) {
-    console.error(`Song not found: "${songId}". Run 'ai-jam-sessions list' to see available songs.`);
+    console.error(songNotFoundError(songId));
     process.exit(1);
   }
 
@@ -1107,6 +1116,7 @@ Commands:
   tune-guitar <voice> [opts] Tune a guitar voice (persists across sessions)
   stats                      Registry statistics
   ports                      List MIDI output ports
+  version                    Show version
   help                       Show this help
 
 Play options:
@@ -1276,6 +1286,7 @@ async function main(): Promise<void> {
     case "ports":
       cmdPorts();
       break;
+    case "version":
     case "--version":
     case "-V":
       console.log(`ai-jam-sessions v${VERSION}`);

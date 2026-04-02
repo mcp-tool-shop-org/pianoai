@@ -149,7 +149,13 @@ export function createMidiFeedbackHook(
     voiceDirectives,
     asideDirectives,
 
-    async onMeasureStart(eventIndex, _teachingNote, _dynamics) {
+    async onMeasureStart(eventIndex: number, _teachingNote, _dynamics) {
+      // NOTE: Despite the TeachingHook interface naming this "measureNumber",
+      // PlaybackController passes the 1-based event index for MIDI files.
+
+      // Bounds guard: eventIndex is 1-based, so valid range is [1, events.length]
+      if (eventIndex < 1 || eventIndex > events.length) return;
+
       noteCount++;
       const midiEvent = events[eventIndex - 1]; // 1-based to 0-based
       if (!midiEvent) return;

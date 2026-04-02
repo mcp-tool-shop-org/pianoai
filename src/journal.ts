@@ -11,6 +11,7 @@
 
 import { existsSync, mkdirSync, readFileSync, appendFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
+import type { PerformanceResult } from "./score-performance.js";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -62,11 +63,17 @@ function timeString(date: Date): string {
 
 /**
  * Build a markdown journal entry from session data + LLM reflection.
+ *
+ * @param session  Session metadata (null for general notes)
+ * @param note     LLM-generated reflection text
+ * @param now      Timestamp for the entry header
+ * @param score    Optional performance score to embed in the entry
  */
 export function buildJournalEntry(
   session: SessionSnapshot | null,
   note: string,
   now: Date = new Date(),
+  score?: PerformanceResult,
 ): string {
   const time = timeString(now);
   const lines: string[] = [];
@@ -87,6 +94,14 @@ export function buildJournalEntry(
     lines.push(`### ${time} — General notes`);
   }
 
+  if (score) {
+    const grade = score.metrics.overallScore >= 90 ? "A"
+      : score.metrics.overallScore >= 80 ? "B"
+      : score.metrics.overallScore >= 70 ? "C"
+      : score.metrics.overallScore >= 60 ? "D" : "F";
+    lines.push(`Score: ${grade} (${score.metrics.overallScore}/100) | Pitch ${score.metrics.pitchAccuracy}% | Timing ±${score.metrics.timingAccuracyMs}ms | Complete ${score.metrics.completeness}%`);
+  }
+
   lines.push("");
   lines.push(note.trim());
   lines.push("");
@@ -102,19 +117,31 @@ export function buildJournalEntry(
  * Append a journal entry to today's file.
  */
 export function appendJournalEntry(entry: string, date: Date = new Date()): string {
-  const dir = ensureJournalDir();
+  let dir: string;
+  try {
+    dir = ensureJournalDir();
+  } catch (err) {
+    const path = getJournalDir();
+    throw new Error(`Failed to create journal directory "${path}": ${err instanceof Error ? err.message : String(err)}`);
+  }
+
   const filename = dateToFilename(date);
   const filepath = join(dir, filename);
 
-  // Add day header if this is a new file
-  if (!existsSync(filepath)) {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, "0");
-    const d = String(date.getDate()).padStart(2, "0");
-    appendFileSync(filepath, `# Practice Journal — ${y}-${m}-${d}\n\n`, "utf8");
+  try {
+    // Add day header if this is a new file
+    if (!existsSync(filepath)) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      appendFileSync(filepath, `# Practice Journal — ${y}-${m}-${d}\n\n`, "utf8");
+    }
+
+    appendFileSync(filepath, entry, "utf8");
+  } catch (err) {
+    throw new Error(`Failed to write journal entry to "${filepath}": ${err instanceof Error ? err.message : String(err)}`);
   }
 
-  appendFileSync(filepath, entry, "utf8");
   return filepath;
 }
 
@@ -181,9 +208,9 @@ export function journalStats(): { totalEntries: number; totalDays: number; recen
   let totalEntries = 0;
   for (const file of files) {
     const content = readFileSync(join(dir, file), "utf8");
-    // Count --- delimiters (each entry starts with one)
-    const matches = content.match(/^---$/gm);
-    if (matches) totalEntries += Math.floor(matches.length / 2); // pairs of ---
+    // Count entry headers (### HH:MM pattern) — each entry starts with one
+    const matches = content.match(/^### \d{2}:\d{2}/gm);
+    if (matches) totalEntries += matches.length;
   }
 
   return {

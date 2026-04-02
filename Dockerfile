@@ -38,7 +38,10 @@ RUN corepack enable && pnpm install --frozen-lockfile --prod
 
 COPY --from=builder /app/dist/ dist/
 COPY songs/library/ songs/library/
+COPY samples/vocal/ samples/vocal/
 COPY logo.png README.md LICENSE ./
+
+USER node
 
 # Default: run MCP server (stdio transport)
 ENTRYPOINT ["node", "dist/mcp-server.js"]

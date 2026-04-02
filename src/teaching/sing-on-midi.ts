@@ -217,7 +217,7 @@ export function createSingOnMidiHook(
     directives,
     clusters,
 
-    async onMeasureStart(eventIndex, _teachingNote, _dynamics) {
+    async onMeasureStart(eventIndex: number, _teachingNote, _dynamics) {
       // eventIndex from PlaybackController is the note index (1-based)
       const clusterIndex = eventToCluster.get(eventIndex - 1);
       if (clusterIndex === undefined || clusterIndex === lastAnnouncedCluster) return;

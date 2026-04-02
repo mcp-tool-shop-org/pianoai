@@ -60,17 +60,20 @@ export interface VocalSynthTelemetry {
  * in node_modules, or a local presets/ dir if present.
  */
 function findPresetsDir(): string {
-  // Check for local presets/ first (development)
-  const local = resolve("presets");
-  if (existsSync(local)) return local;
-
-  // Look in node_modules
-  const nmPath = resolve("node_modules", "vocal-synth-engine", "presets");
-  if (existsSync(nmPath)) return nmPath;
-
-  // Fallback: resolve relative to this file's location
+  // Primary: resolve relative to this file's location (works regardless of cwd)
   const pkgPath = join(__dirname, "..", "node_modules", "vocal-synth-engine", "presets");
   if (existsSync(pkgPath)) return pkgPath;
+
+  // Package-local presets/ relative to this file
+  const localPkg = join(__dirname, "..", "presets");
+  if (existsSync(localPkg)) return localPkg;
+
+  // Fallback: cwd-relative (works when launched from repo root)
+  const cwdNm = resolve("node_modules", "vocal-synth-engine", "presets");
+  if (existsSync(cwdNm)) return cwdNm;
+
+  const cwdLocal = resolve("presets");
+  if (existsSync(cwdLocal)) return cwdLocal;
 
   throw new Error(
     "vocal-synth-engine presets not found. Install: npm install github:mcp-tool-shop-org/vocal-synth-engine"
@@ -272,6 +275,12 @@ export function createVocalSynthEngine(options?: VocalSynthOptions): VmpkConnect
 
     noteOn(note: number, velocity: number, _channel?: number): void {
       if (!engine || currentStatus !== "connected") return;
+
+      // Release previous voice on this note to prevent leaks
+      const existingId = activeNoteIds.get(note);
+      if (existingId) {
+        engine.noteOff(existingId);
+      }
 
       const noteId = `n${noteCounter++}`;
       activeNoteIds.set(note, noteId);

@@ -7,6 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-04-02
+
+### Security
+- Fix ineffective path traversal guard in MCP `play_song` and `import_midi` tools (directory containment check)
+- Fix XSS vulnerability in guitar tab HTML output (`</script>` breakout)
+- Fix command injection risk in CLI `openInBrowser` on Windows
+- Fix prototype pollution via `JSON.parse` in `add_song` MCP tool
+- Docker container now runs as non-root user
+
+### Added
+- Per-hand scoring breakdown (`breakdownByHand()`) — identifies weaker hand with actionable feedback
+- Journal now captures performance scores (grade, pitch accuracy, timing, completeness)
+- Composer filter on `list_songs` MCP tool
+- Key signature and composer search filters on song registry
+- `play_song` response now references `playback_status` for progress monitoring
+- `version` CLI subcommand
+- Consistent "song not found" errors across all CLI commands with `list` suggestion
+- New test coverage: errors (19), chord-detect (24), journal (19), per-hand scoring (14), registry filters (13)
+- Long-term roadmap Tier 1: metronome, recording pipeline, practice loops, scored piano roll overlay
+
+### Fixed
+- PlaybackController engine reuse on resume (was recreating engine every play)
+- Untracked noteOff timeouts leaking after stop/pause
+- Voice re-trigger leaking old voices in vocal-synth-adapter
+- Time signature denominator ignored in performance scoring (6/8, 3/8 now correct)
+- Journal entry counting (was undercounting due to delimiter mismatch)
+- `stopActive()` race condition (now properly async with await)
+- Vocal synth preset resolution from wrong working directory
+- Math.max/min spread stack overflow on large MIDI files
+- Duplicate npm publish workflow (removed publish.yml, release.yml handles both)
+- Stale tool counts across 6 doc files (31/35 → 34)
+- Docker image missing vocal carrier samples
+
+### Changed
+- Engine connection errors now use structured JamError with actionable hints
+- Layered engine has fault isolation (one engine failure doesn't kill others)
+- Teaching hook composition has error isolation (one hook failure doesn't skip others)
+- PlaybackController listener errors are now logged (were silently swallowed)
+- Dep audit in CI now fails on high/critical vulnerabilities (was no-op)
+
 ## [1.1.0] - 2026-03-19
 
 ### Added

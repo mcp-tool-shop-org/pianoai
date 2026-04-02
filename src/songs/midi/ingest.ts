@@ -66,7 +66,7 @@ export function midiToSongEntry(
 
   // 8. Compute duration in seconds
   const lastNoteTick = notes.length > 0
-    ? Math.max(...notes.map(n => n.startTick + n.durationTicks))
+    ? notes.reduce((m, n) => Math.max(m, n.startTick + n.durationTicks), -Infinity)
     : 0;
   const durationSeconds = ticksToSeconds(lastNoteTick, tempoEvents, tpb);
 
