@@ -34,7 +34,7 @@ jobs:
       - run: pnpm test
 
       - name: Verify tarball contents
-        run: pnpm pack --dry-run
+        run: pnpm pack && ls -la *.tgz
 
       - name: Publish to npm
         run: pnpm publish --no-git-checks --access public
