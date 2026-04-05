@@ -520,7 +520,12 @@ export function createGuitarEngine(options: GuitarEngineOptions = {}): VmpkConne
           `Guitar engine connected (${voice.name}, A4=${a4} Hz)`,
         );
       } catch (err) {
-        currentStatus = "error";
+        // Clean up partial resources so connect() can be retried
+        try { if (ctx) ctx.close(); } catch { /* ok */ }
+        ctx = null as any;
+        compressor = null as any;
+        master = null as any;
+        currentStatus = "disconnected";
         throw new JamError({
           code: 'RUNTIME_ENGINE',
           message: `Failed to start guitar engine: ${err instanceof Error ? err.message : String(err)}`,

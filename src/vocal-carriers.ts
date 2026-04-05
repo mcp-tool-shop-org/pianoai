@@ -159,23 +159,35 @@ export function loadCarrierBank(ctx: any, carrierDir: string): CarrierBank {
 
   const carriers: VocalCarrier[] = [];
 
+  let skipped = 0;
   for (const filename of files) {
     const midi = filenameToMidi(filename);
     if (midi === null) {
       console.error(`  SKIP ${filename}: can't determine MIDI note`);
+      skipped++;
       continue;
     }
 
     const filePath = join(carrierDir, filename);
-    const buffer = parseWavToAudioBuffer(ctx, filePath);
+    try {
+      const buffer = parseWavToAudioBuffer(ctx, filePath);
+      carriers.push({ referenceMidi: midi, buffer, filename });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error(`  SKIP ${filename}: failed to parse WAV — ${msg}`);
+      skipped++;
+    }
+  }
 
-    carriers.push({ referenceMidi: midi, buffer, filename });
+  if (carriers.length === 0) {
+    throw new Error(`No usable carrier WAV files in ${carrierDir} (${skipped} skipped)`);
   }
 
   // Sort ascending by MIDI note
   carriers.sort((a, b) => a.referenceMidi - b.referenceMidi);
 
-  console.error(`Loaded ${carriers.length} vocal carriers (${carriers[0]?.filename} – ${carriers[carriers.length - 1]?.filename})`);
+  const skippedNote = skipped > 0 ? `, ${skipped} skipped` : "";
+  console.error(`Loaded ${carriers.length} vocal carriers (${carriers[0]?.filename} – ${carriers[carriers.length - 1]?.filename}${skippedNote})`);
 
   return { carriers };
 }

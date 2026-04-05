@@ -272,12 +272,23 @@ export class PlaybackController {
     if (this.engine.state !== "paused") return;
     const prev = this.engine.state;
     this.emitStateChange(prev);
-    await this.engine.resume({
-      speed: options.speed,
-      onProgress: options.onProgress,
-      signal: options.signal,
-    });
-    this.emitStateChange(this._lastState);
+    try {
+      await this.engine.resume({
+        speed: options.speed,
+        onProgress: options.onProgress,
+        signal: options.signal,
+      });
+    } catch (err) {
+      this.emit({
+        type: "error",
+        state: this.engine.state,
+        positionSeconds: this.engine.positionSeconds,
+        error: err instanceof Error ? err : new Error(String(err)),
+      });
+      throw err;
+    } finally {
+      this.emitStateChange(this._lastState);
+    }
   }
 
   /** Stop playback and reset. Fires stateChange event. */
