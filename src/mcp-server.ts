@@ -227,7 +227,7 @@ server.tool(
     const song = getSong(id);
     if (!song) {
       return {
-        content: [{ type: "text", text: `Song not found: "${id}". Use list_songs to see available songs.` }],
+        content: [{ type: "text", text: `No song called "${id}" in the library. Try list_songs to see what's available.` }],
         isError: true,
       };
     }
@@ -317,7 +317,7 @@ server.tool(
     const song = getSong(id);
     if (!song) {
       return {
-        content: [{ type: "text", text: `Song not found: "${id}"` }],
+        content: [{ type: "text", text: `No song called "${id}" in the library.` }],
         isError: true,
       };
     }
@@ -325,7 +325,7 @@ server.tool(
     const m = song.measures[measure - 1];
     if (!m) {
       return {
-        content: [{ type: "text", text: `Measure ${measure} not found (song has ${song.measures.length} measures)` }],
+        content: [{ type: "text", text: `Measure ${measure} doesn't exist — this song only has ${song.measures.length} measures.` }],
         isError: true,
       };
     }
@@ -402,7 +402,7 @@ server.tool(
     const song = getSong(id);
     if (!song) {
       return {
-        content: [{ type: "text", text: `Song not found: "${id}"` }],
+        content: [{ type: "text", text: `No song called "${id}" in the library.` }],
         isError: true,
       };
     }
@@ -411,7 +411,7 @@ server.tool(
     const end = Math.min((endMeasure ?? song.measures.length) - 1, song.measures.length - 1);
     if (start > end) {
       return {
-        content: [{ type: "text", text: `Invalid measure range: ${startMeasure}–${endMeasure}. Song has ${song.measures.length} measures.` }],
+        content: [{ type: "text", text: `That measure range doesn't fit — this song has ${song.measures.length} measures (1–${song.measures.length}).` }],
         isError: true,
       };
     }
@@ -464,7 +464,7 @@ server.tool(
     const song = getSong(id);
     if (!song) {
       return {
-        content: [{ type: "text", text: `Song not found: "${id}". Use list_songs to see available songs.` }],
+        content: [{ type: "text", text: `No song called "${id}" in the library. Try list_songs to browse.` }],
         isError: true,
       };
     }
@@ -552,7 +552,7 @@ server.tool(
     const song = getSong(id);
     if (!song) {
       return {
-        content: [{ type: "text", text: `Song not found: "${id}". Use list_songs to see available songs.` }],
+        content: [{ type: "text", text: `No song called "${id}" in the library. Try list_songs to browse.` }],
         isError: true,
       };
     }
@@ -564,7 +564,7 @@ server.tool(
     const end = Math.min((endMeasure ?? song.measures.length) - 1, song.measures.length - 1);
     if (start > end) {
       return {
-        content: [{ type: "text", text: `Invalid measure range: ${startMeasure}–${endMeasure}. Song has ${song.measures.length} measures.` }],
+        content: [{ type: "text", text: `That measure range doesn't fit — this song has ${song.measures.length} measures (1–${song.measures.length}).` }],
         isError: true,
       };
     }
@@ -691,7 +691,7 @@ server.tool(
     // Path containment check for file paths
     if (isMidiFile && !safeMidiPath) {
       return {
-        content: [{ type: "text", text: `Invalid MIDI file path: "${id}". Path must be within your home directory.` }],
+        content: [{ type: "text", text: `Can't access "${id}" — for safety, MIDI files must be inside your home directory.` }],
         isError: true,
       };
     }
@@ -700,7 +700,7 @@ server.tool(
 
     if (!isMidiFile && !librarySong) {
       return {
-        content: [{ type: "text", text: `Song not found: "${id}". Use list_songs to see available songs, or provide a path to a .mid file.` }],
+        content: [{ type: "text", text: `No song called "${id}" in the library. Try list_songs to browse, or provide a path to a .mid file.` }],
         isError: true,
       };
     }
@@ -721,7 +721,7 @@ server.tool(
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       return {
-        content: [{ type: "text", text: `${engine === "tract" ? "Tract" : engine === "vocal" ? "Vocal" : engine === "guitar" ? "Guitar" : "Piano"} engine failed to start: ${msg}` }],
+        content: [{ type: "text", text: `Couldn't start the ${engine === "tract" ? "vocal tract" : engine === "vocal" ? "vocal" : engine === "guitar" ? "guitar" : "piano"} engine: ${msg}` }],
         isError: true,
       };
     }
@@ -737,7 +737,7 @@ server.tool(
         connector.disconnect().catch((e) => console.error(`Disconnect error: ${e instanceof Error ? e.message : String(e)}`));
         activeConnector = null;
         return {
-          content: [{ type: "text", text: `Failed to parse MIDI file: ${msg}` }],
+          content: [{ type: "text", text: `Couldn't read that MIDI file — it may be corrupted or in an unsupported format. (${msg})` }],
           isError: true,
         };
       }
@@ -876,13 +876,13 @@ server.tool(
     // ── Library song playback ──
     if ((startMeasure !== undefined) !== (endMeasure !== undefined)) {
       return {
-        content: [{ type: "text", text: `Loop playback requires both startMeasure and endMeasure.` }],
+        content: [{ type: "text", text: `To loop a section, provide both startMeasure and endMeasure.` }],
         isError: true,
       };
     }
     if (startMeasure !== undefined && endMeasure !== undefined && endMeasure < startMeasure) {
       return {
-        content: [{ type: "text", text: `Invalid loop range: endMeasure (${endMeasure}) must be >= startMeasure (${startMeasure}).` }],
+        content: [{ type: "text", text: `The end measure (${endMeasure}) needs to be at or after the start measure (${startMeasure}).` }],
         isError: true,
       };
     }
@@ -1174,7 +1174,7 @@ server.tool(
   async ({ songId, genre, style, mood, difficulty, measures }) => {
     if (!songId && !genre) {
       return {
-        content: [{ type: "text", text: "Provide either a songId or a genre. Use list_songs to browse, or pass a genre like \"jazz\" to jam on a random pick." }],
+        content: [{ type: "text", text: "I need either a song ID or a genre to jam. Try list_songs to browse, or just pass a genre like \"jazz\" for a random pick." }],
         isError: true,
       };
     }
@@ -1184,7 +1184,7 @@ server.tool(
       song = getSong(songId);
       if (!song) {
         return {
-          content: [{ type: "text", text: `Song not found: "${songId}". Use list_songs to see available songs.` }],
+          content: [{ type: "text", text: `No song called "${songId}" in the library. Try list_songs to browse.` }],
           isError: true,
         };
       }
@@ -1192,7 +1192,7 @@ server.tool(
       const candidates = getSongsByGenre(genre as Genre);
       if (candidates.length === 0) {
         return {
-          content: [{ type: "text", text: `No songs found in genre "${genre}". Use registry_stats to see available genres.` }],
+          content: [{ type: "text", text: `No songs in the "${genre}" genre yet. Try registry_stats to see what genres are available.` }],
           isError: true,
         };
       }
@@ -1231,7 +1231,7 @@ server.tool(
         return {
           content: [{
             type: "text",
-            text: `Invalid song ID: "${parsed.id}". Must be kebab-case (a-z, 0-9, hyphens), no path separators.`,
+            text: `"${parsed.id}" isn't a valid song ID — use lowercase letters, numbers, and hyphens (e.g. "amazing-grace").`,
           }],
           isError: true,
         };
@@ -1242,7 +1242,7 @@ server.tool(
         return {
           content: [{
             type: "text",
-            text: `Song validation failed:\n  - ${errors.join("\n  - ")}`,
+            text: `This song didn't pass validation:\n  - ${errors.join("\n  - ")}`,
           }],
           isError: true,
         };
@@ -1418,7 +1418,7 @@ server.tool(
     const song = getSong(songId);
     if (!song) {
       return {
-        content: [{ type: "text" as const, text: `Song not found: "${songId}". Use list_songs to see available songs.` }],
+        content: [{ type: "text" as const, text: `No song called "${songId}" in the library. Try list_songs to browse.` }],
         isError: true,
       };
     }
@@ -1455,7 +1455,7 @@ server.tool(
     const song = getSong(songId);
     if (!song) {
       return {
-        content: [{ type: "text" as const, text: `Song not found: "${songId}". Use list_songs to see available songs.` }],
+        content: [{ type: "text" as const, text: `No song called "${songId}" in the library. Try list_songs to browse.` }],
         isError: true,
       };
     }
@@ -1551,7 +1551,7 @@ server.tool(
 
     if (Object.keys(overrides).length === 0) {
       return {
-        content: [{ type: "text", text: `No tuning parameters provided. Available: ${TUNING_PARAMS.map(p => p.key).join(", ")}` }],
+        content: [{ type: "text", text: `No tuning parameters provided. You can adjust: ${TUNING_PARAMS.map(p => p.key).join(", ")}` }],
         isError: true,
       };
     }
@@ -2094,7 +2094,7 @@ server.tool(
     const song = getSong(song_id);
     if (!song) {
       return {
-        content: [{ type: "text", text: `Song not found: "${song_id}". Use list_songs to see available songs.` }],
+        content: [{ type: "text", text: `No song called "${song_id}" in the library. Try list_songs to browse.` }],
         isError: true,
       };
     }
@@ -2103,7 +2103,7 @@ server.tool(
     const resolvedPath = pathResolve(midi_path);
     if (!resolvedPath.endsWith(".mid") && !resolvedPath.endsWith(".midi")) {
       return {
-        content: [{ type: "text", text: "Invalid path: must be a .mid or .midi file." }],
+        content: [{ type: "text", text: "That doesn't look like a MIDI file — the path should end with .mid or .midi." }],
         isError: true,
       };
     }
@@ -2112,7 +2112,7 @@ server.tool(
     const safePath = scoreHomeDir ? resolveContainedExistingPath(resolvedPath, scoreHomeDir) : null;
     if (!safePath) {
       return {
-        content: [{ type: "text", text: `Path not allowed: MIDI file must be inside your home directory.` }],
+        content: [{ type: "text", text: `Can't access that file — for safety, MIDI files must be inside your home directory.` }],
         isError: true,
       };
     }
@@ -2163,7 +2163,7 @@ server.tool(
     const song = getSong(song_id);
     if (!song) {
       return {
-        content: [{ type: "text", text: `Song not found: "${song_id}". Use list_songs to see available songs.` }],
+        content: [{ type: "text", text: `No song called "${song_id}" in the library. Try list_songs to browse.` }],
         isError: true,
       };
     }
@@ -2249,14 +2249,14 @@ server.tool(
     const a = getSong(song_a);
     if (!a) {
       return {
-        content: [{ type: "text", text: `Song not found: "${song_a}". Use list_songs to see available songs.` }],
+        content: [{ type: "text", text: `No song called "${song_a}" in the library. Try list_songs to browse.` }],
         isError: true,
       };
     }
     const b = getSong(song_b);
     if (!b) {
       return {
-        content: [{ type: "text", text: `Song not found: "${song_b}". Use list_songs to see available songs.` }],
+        content: [{ type: "text", text: `No song called "${song_b}" in the library. Try list_songs to browse.` }],
         isError: true,
       };
     }
