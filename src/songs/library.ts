@@ -47,6 +47,15 @@ export interface LibraryProgress {
   byGenre: Partial<Record<Genre, GenreProgress>>;
 }
 
+export interface InitReport {
+  loaded: number;
+  skipped: number;
+  notReady: number;
+  total: number;
+  userSongsLoaded: number;
+  errors: Array<{ id: string; reason: string }>;
+}
+
 // ─── Scan ────────────────────────────────────────────────────────────────────
 
 /**
@@ -167,30 +176,40 @@ export function ingestSong(entry: LibraryEntry): SongEntry {
  * Only "ready" songs with existing MIDI files are loaded.
  * User songs from ~/.ai-jam-sessions/songs/ are also loaded.
  */
-export function initializeFromLibrary(libraryDir: string, userDir?: string): void {
+export function initializeFromLibrary(libraryDir: string, userDir?: string): InitReport {
   clearRegistry();
+
+  const report: InitReport = {
+    loaded: 0,
+    skipped: 0,
+    notReady: 0,
+    total: 0,
+    userSongsLoaded: 0,
+    errors: [],
+  };
 
   if (existsSync(libraryDir)) {
     const entries = scanLibrary(libraryDir);
+    report.total = entries.length;
     const ready = entries.filter(e => e.config.status === "ready" && existsSync(e.midiPath));
+    report.notReady = entries.length - ready.length;
 
-    let loaded = 0;
-    let skipped = 0;
     for (const entry of ready) {
       try {
         const song = ingestSong(entry);
         registerSong(song);
-        loaded++;
+        report.loaded++;
       } catch (err) {
-        console.error(`  SKIP ${entry.config.id}: ${err instanceof Error ? err.message : String(err)}`);
-        skipped++;
+        const reason = err instanceof Error ? err.message : String(err);
+        console.error(`  SKIP ${entry.config.id}: ${reason}`);
+        report.errors.push({ id: entry.config.id, reason });
+        report.skipped++;
       }
     }
 
-    const skippedNote = skipped > 0 ? `, ${skipped} skipped` : "";
-    const notReady = entries.length - ready.length;
-    const notReadyNote = notReady > 0 ? `, ${notReady} not ready` : "";
-    console.error(`Song library initialized: ${loaded} ready songs loaded (${entries.length} total${skippedNote}${notReadyNote})`);
+    const skippedNote = report.skipped > 0 ? `, ${report.skipped} skipped` : "";
+    const notReadyNote = report.notReady > 0 ? `, ${report.notReady} not ready` : "";
+    console.error(`Song library initialized: ${report.loaded} ready songs loaded (${report.total} total${skippedNote}${notReadyNote})`);
   } else {
     console.error(
       `Song library not found at ${libraryDir}. ` +
@@ -204,9 +223,14 @@ export function initializeFromLibrary(libraryDir: string, userDir?: string): voi
     for (const song of userSongs) {
       try {
         registerSong(song);
+        report.userSongsLoaded++;
       } catch (err) {
-        console.error(`  SKIP user ${song.id}: ${err instanceof Error ? err.message : String(err)}`);
+        const reason = err instanceof Error ? err.message : String(err);
+        console.error(`  SKIP user ${song.id}: ${reason}`);
+        report.errors.push({ id: `user:${song.id}`, reason });
       }
     }
   }
+
+  return report;
 }

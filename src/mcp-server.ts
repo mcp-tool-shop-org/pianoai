@@ -8,17 +8,19 @@
 // Usage:
 //   node dist/mcp-server.js          # stdio transport
 //
-// Tools:
-//   list_songs      — browse/search the song library
-//   song_info       — get detailed info for a specific song (+ practice tips)
-//   registry_stats  — get registry statistics
-//   teaching_note   — get the teaching note for a specific measure
-//   suggest_song    — get a song recommendation based on criteria
-//   list_measures   — overview of measures with teaching notes
-//   practice_setup  — suggest speed, mode, and voice settings for a song
-//   sing_along      — get singable text (note names/solfege/contour/syllables) for measures
-//   play_song       — play a song through VMPK via MIDI
-//   stop_playback   — stop the currently playing song
+// Tools (34):
+//   Library:    list_songs, song_info, registry_stats, suggest_song, compare_songs, add_song
+//   Teaching:   teaching_note, list_measures, practice_setup, sing_along
+//   Playback:   play_song, stop_playback, pause_playback, set_speed, playback_status
+//   Synthesis:  list_voices, voice_info, tune_voice, reset_tuning
+//              list_guitar_voices, guitar_voice_info, tune_guitar, reset_guitar_tuning
+//   Rendering:  view_piano_roll, view_guitar_tab
+//   MIDI:       import_midi, detect_chord
+//   Scoring:    score_performance, score_annotation, annotation_progress
+//   Annotation: annotate_song
+//   Jam:        ai_jam_sessions
+//   Journal:    save_practice_note, practice_journal
+//   Config:     server_info, validate_song_entry
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -664,9 +666,9 @@ server.tool(
   "Play a song through the built-in audio engine. Supports piano (default) and vocal engines. Accepts a library song ID or a path to a .mid file. Returns immediately with session info while playback runs in the background.",
   {
     id: z.string().describe("Song ID (e.g. 'autumn-leaves', 'let-it-be') OR path to a .mid file"),
-    speed: z.number().min(0.1).max(4).optional().describe("Speed multiplier (0.5 = half speed, 1.0 = normal, 2.0 = double). Default: 1.0"),
-    tempo: z.number().int().min(10).max(400).optional().describe("Override tempo in BPM (10-400). Default: song's tempo"),
-    mode: z.enum(["full", "measure", "hands", "loop"]).optional().describe("Playback mode: full (default), measure (one at a time), hands (separate then together), loop"),
+    speed: z.number().min(0.1).max(4).optional().describe("Speed multiplier (0.5 = half speed, 1.0 = normal, 2.0 = double)"),
+    tempo: z.number().int().min(10).max(400).optional().describe("Override tempo in BPM (10-400). Omit to use the song's original tempo"),
+    mode: z.enum(["full", "measure", "hands", "loop"]).optional().describe("Playback mode: 'full' (default), 'measure' (one at a time), 'hands' (separate then together), 'loop'"),
     startMeasure: z.number().int().min(1).optional().describe("Start measure for loop mode (1-based)"),
     endMeasure: z.number().int().min(1).optional().describe("End measure for loop mode (1-based)"),
     withSinging: z.boolean().optional().describe("Enable sing-along narration during playback (note-names by default). Default: false"),
@@ -676,8 +678,9 @@ server.tool(
     engine: z.enum(["piano", "vocal", "tract", "guitar"]).optional().describe("Sound engine: 'piano' (default) plays piano, 'vocal' plays sustained vowel tones, 'tract' uses Pink Trombone vocal tract synthesis, 'guitar' plays physically-modeled guitar."),
     tractVoice: z.enum(TRACT_VOICE_IDS as unknown as [string, ...string[]]).optional().describe("Voice preset for tract engine: soprano (default), alto, tenor, bass. Only used when engine='tract'."),
     guitarVoice: z.enum(GUITAR_VOICE_IDS as unknown as [string, ...string[]]).optional().describe("Guitar voice preset: classical-nylon, steel-dreadnought (default), electric-clean, electric-jazz. Only used when engine='guitar'."),
+    syncMode: z.enum(["before", "concurrent"]).optional().describe("Voice sync timing when singing: 'before' (hear voice first, then play together) or 'concurrent' (simultaneous). Default: 'before' when singing only, 'concurrent' with teaching."),
   },
-  async ({ id, speed, tempo, mode, startMeasure, endMeasure, withSinging, withTeaching, singMode, keyboard, engine, tractVoice, guitarVoice }) => {
+  async ({ id, speed, tempo, mode, startMeasure, endMeasure, withSinging, withTeaching, singMode, keyboard, engine, tractVoice, guitarVoice, syncMode: syncModeParam }) => {
     // Stop whatever is currently playing
     await stopActive();
 
@@ -920,7 +923,7 @@ server.tool(
     libHooks.push(createConsoleTeachingHook());
     const teachingHook = composeTeachingHooks(...libHooks);
 
-    const syncMode = (withSinging && !withTeaching) ? "before" as SyncMode : "concurrent" as SyncMode;
+    const syncMode: SyncMode = syncModeParam ?? ((withSinging && !withTeaching) ? "before" : "concurrent");
     const session = createSession(song, connector, {
       mode: playbackMode,
       syncMode,
@@ -983,7 +986,8 @@ server.tool(
     ];
 
     if (loopRange) {
-      lines.push(`- **Loop range:** measures ${loopRange[0]}–${loopRange[1]}`);
+      const loopMeasureCount = loopRange[1] - loopRange[0] + 1;
+      lines.push(`- **Loop range:** measures ${loopRange[0]}–${loopRange[1]} (${loopMeasureCount} measures)`);
     }
     if (warnings.length > 0) {
       lines.push(``, `⚠ ${warnings.length} note(s) had parse warnings and will be skipped.`);
@@ -2265,6 +2269,88 @@ server.tool(
     const text = formatComparison(result);
 
     return { content: [{ type: "text", text }] };
+  }
+);
+
+// ─── Tool: server_info ───────────────────────────────────────────────────
+
+server.tool(
+  "server_info",
+  "Get server capabilities, version, and available options at a glance — genres, difficulties, engines, voice presets, and tool count.",
+  {},
+  async () => {
+    const stats = getStats();
+    const lines = [
+      `# ai-jam-sessions v${VERSION}`,
+      ``,
+      `**Songs loaded:** ${stats.totalSongs}`,
+      `**Tools:** 36`,
+      ``,
+      `**Genres:** ${GENRES.join(", ")}`,
+      `**Difficulties:** ${DIFFICULTIES.join(", ")}`,
+      `**Sound engines:** piano, vocal, tract, guitar`,
+      `**Piano voices:** ${VOICE_IDS.join(", ")}`,
+      `**Guitar voices:** ${GUITAR_VOICE_IDS.join(", ")}`,
+      `**Tract voices:** ${TRACT_VOICE_IDS.join(", ")}`,
+      ``,
+      `**Playback modes:** full, measure, hands, loop`,
+      `**Sing-along modes:** note-names, solfege, contour, syllables`,
+      ``,
+      `Get started: \`list_songs\` to browse, \`song_info\` for details, \`play_song\` to listen.`,
+    ];
+    return { content: [{ type: "text", text: lines.join("\n") }] };
+  }
+);
+
+// ─── Tool: validate_song_entry ──────────────────────────────────────────
+
+server.tool(
+  "validate_song_entry",
+  "Validate a SongEntry JSON without adding it to the registry. Use this to check if your song data is correct before calling add_song.",
+  {
+    song: z.string().describe("Full SongEntry JSON string to validate"),
+  },
+  async ({ song: songJson }) => {
+    let parsed: SongEntry;
+    try {
+      parsed = JSON.parse(songJson, (key, value) => {
+        if (key === "__proto__" || key === "constructor" || key === "prototype") return undefined;
+        return value;
+      }) as SongEntry;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      return {
+        content: [{ type: "text", text: `Invalid JSON: ${msg}` }],
+        isError: true,
+      };
+    }
+
+    const errors = validateSong(parsed);
+    if (errors.length > 0) {
+      return {
+        content: [{
+          type: "text",
+          text: `Validation found ${errors.length} issue(s):\n  - ${errors.join("\n  - ")}`,
+        }],
+        isError: true,
+      };
+    }
+
+    return {
+      content: [{
+        type: "text",
+        text: [
+          `Song "${parsed.id}" is valid!`,
+          ``,
+          `- **Title:** ${parsed.title}`,
+          `- **Genre:** ${parsed.genre} | **Difficulty:** ${parsed.difficulty}`,
+          `- **Measures:** ${parsed.measures?.length ?? 0}`,
+          `- **Key:** ${parsed.key} | **Tempo:** ${parsed.tempo} BPM`,
+          ``,
+          `Ready to add with \`add_song\`.`,
+        ].join("\n"),
+      }],
+    };
   }
 );
 

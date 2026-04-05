@@ -81,7 +81,7 @@ export {
   ingestSong,
   initializeFromLibrary,
 } from "./library.js";
-export type { LibraryEntry, GenreProgress, LibraryProgress } from "./library.js";
+export type { LibraryEntry, GenreProgress, LibraryProgress, InitReport } from "./library.js";
 
 // Config loader
 export { loadSongConfigs, loadSongConfig, listConfigIds } from "./config/loader.js";
