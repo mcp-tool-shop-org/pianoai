@@ -242,23 +242,35 @@ export function createTractEngine(options?: TractEngineOptions): VmpkConnector &
 
   // ── Audio callback: fills buffers from Pink Trombone DSP ──
 
+  let audioErrorLogged = false;
+
   function processAudio(event: any): void {
     if (!synth) return;
     const output = event.outputBuffer.getChannelData(0);
     const n = output.length;
 
-    // Synthesize into a temp buffer (Pink Trombone writes mono Float32)
-    const raw = new Float32Array(n);
-    synth.synthesize(raw);
+    try {
+      // Synthesize into a temp buffer (Pink Trombone writes mono Float32)
+      const raw = new Float32Array(n);
+      synth.synthesize(raw);
 
-    // Apply gain envelope (smooth attack/release to avoid clicks)
-    for (let i = 0; i < n; i++) {
-      if (currentGain < targetGain) {
-        currentGain = Math.min(currentGain + GAIN_ATTACK_RATE, targetGain);
-      } else if (currentGain > targetGain) {
-        currentGain = Math.max(currentGain - GAIN_RELEASE_RATE, targetGain);
+      // Apply gain envelope (smooth attack/release to avoid clicks)
+      for (let i = 0; i < n; i++) {
+        if (currentGain < targetGain) {
+          currentGain = Math.min(currentGain + GAIN_ATTACK_RATE, targetGain);
+        } else if (currentGain > targetGain) {
+          currentGain = Math.max(currentGain - GAIN_RELEASE_RATE, targetGain);
+        }
+        output[i] = raw[i] * currentGain;
       }
-      output[i] = raw[i] * currentGain;
+    } catch (err) {
+      // Fill with silence on error, log once to avoid flooding
+      for (let i = 0; i < n; i++) output[i] = 0;
+      if (!audioErrorLogged) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.error(`Tract engine audio error (further errors suppressed): ${msg}`);
+        audioErrorLogged = true;
+      }
     }
   }
 

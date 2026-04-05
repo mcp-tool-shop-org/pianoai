@@ -220,14 +220,24 @@ export function createVocalSynthEngine(options?: VocalSynthOptions): VmpkConnect
       // Script processor: pump engine blocks into Web Audio
       // 0 input channels, 1 output channel
       scriptNode = ctx.createScriptProcessor(blockSize, 0, 1);
+      let synthAudioErrorLogged = false;
       scriptNode.onaudioprocess = (event: any) => {
         if (!engine) return;
         const output = event.outputBuffer.getChannelData(0);
-        const rendered = engine.render();
-        // Copy rendered PCM into output (lengths should match)
-        const len = Math.min(output.length, rendered.length);
-        for (let i = 0; i < len; i++) {
-          output[i] = rendered[i];
+        try {
+          const rendered = engine.render();
+          // Copy rendered PCM into output (lengths should match)
+          const len = Math.min(output.length, rendered.length);
+          for (let i = 0; i < len; i++) {
+            output[i] = rendered[i];
+          }
+        } catch (err) {
+          for (let i = 0; i < output.length; i++) output[i] = 0;
+          if (!synthAudioErrorLogged) {
+            const msg = err instanceof Error ? err.message : String(err);
+            console.error(`Vocal synth audio error (further errors suppressed): ${msg}`);
+            synthAudioErrorLogged = true;
+          }
         }
       };
       scriptNode.connect(gainNode);

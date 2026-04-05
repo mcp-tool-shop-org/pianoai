@@ -175,6 +175,7 @@ export function initializeFromLibrary(libraryDir: string, userDir?: string): voi
     const ready = entries.filter(e => e.config.status === "ready" && existsSync(e.midiPath));
 
     let loaded = 0;
+    let skipped = 0;
     for (const entry of ready) {
       try {
         const song = ingestSong(entry);
@@ -182,12 +183,19 @@ export function initializeFromLibrary(libraryDir: string, userDir?: string): voi
         loaded++;
       } catch (err) {
         console.error(`  SKIP ${entry.config.id}: ${err instanceof Error ? err.message : String(err)}`);
+        skipped++;
       }
     }
 
-    console.error(`Song library initialized: ${loaded} ready songs loaded (${entries.length} total in library)`);
+    const skippedNote = skipped > 0 ? `, ${skipped} skipped` : "";
+    const notReady = entries.length - ready.length;
+    const notReadyNote = notReady > 0 ? `, ${notReady} not ready` : "";
+    console.error(`Song library initialized: ${loaded} ready songs loaded (${entries.length} total${skippedNote}${notReadyNote})`);
   } else {
-    console.error(`Song library not found at ${libraryDir}`);
+    console.error(
+      `Song library not found at ${libraryDir}. ` +
+      `The package may need reinstalling: npm install ai-jam-sessions`
+    );
   }
 
   // Also load user songs (plain SongEntry JSONs)

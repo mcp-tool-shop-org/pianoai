@@ -2286,6 +2286,14 @@ async function main(): Promise<void> {
   const userDir = getUserSongsDir();
   initializeFromLibrary(libraryDir, userDir);
 
+  // Warn operator if the library dir is missing — common after a bad install
+  if (!existsSync(libraryDir)) {
+    console.error(
+      "WARNING: Song library directory not found. The server will start but " +
+      "no built-in songs will be available. Reinstall with: npm install ai-jam-sessions"
+    );
+  }
+
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error("ai-jam-sessions MCP server running on stdio");

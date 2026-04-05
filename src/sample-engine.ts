@@ -280,7 +280,11 @@ export function createSampleEngine(options: SampleEngineOptions): VmpkConnector 
     }
 
     const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+    const skipped = uniqueSamples.size - loaded;
     console.error(`Loaded ${loaded}/${uniqueSamples.size} samples in ${elapsed}s`);
+    if (skipped > 0 && loaded < uniqueSamples.size * 0.5) {
+      console.error(`WARNING: only ${loaded}/${uniqueSamples.size} samples loaded — playback will have gaps. Check the sample directory.`);
+    }
   }
 
   // ── Voice Management ──

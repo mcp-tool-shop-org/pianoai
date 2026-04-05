@@ -81,13 +81,16 @@ export function midiToSongEntry(
     tempo: effectiveTempo,
     timeSignature: `${effectiveTimeSig.numerator}/${effectiveTimeSig.denominator}`,
     durationSeconds: Math.round(durationSeconds),
-    musicalLanguage: config.musicalLanguage ?? {
-      description: "",
-      structure: "",
-      keyMoments: [],
-      teachingGoals: [],
-      styleTips: [],
-    },
+    musicalLanguage: config.musicalLanguage ?? (() => {
+      console.error(`  WARNING: config for "${config.id}" has no musicalLanguage — song will be registered as raw (not ready)`);
+      return {
+        description: `Imported from MIDI: ${config.title}`,
+        structure: "Unknown",
+        keyMoments: [],
+        teachingGoals: [],
+        styleTips: [],
+      };
+    })(),
     measures,
     tags: config.tags,
     source: config.source,

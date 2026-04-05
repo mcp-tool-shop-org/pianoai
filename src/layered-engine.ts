@@ -91,7 +91,14 @@ export function createLayeredEngine(
     },
 
     async playNote(note: MidiNote): Promise<void> {
-      await Promise.all(engines.map((e) => e.playNote(note)));
+      const results = await Promise.allSettled(engines.map((e) => e.playNote(note)));
+      for (let i = 0; i < results.length; i++) {
+        const r = results[i];
+        if (r.status === "rejected") {
+          const msg = r.reason instanceof Error ? r.reason.message : String(r.reason);
+          console.error(`Layered engine child ${i} playNote error: ${msg}`);
+        }
+      }
     },
   };
 
