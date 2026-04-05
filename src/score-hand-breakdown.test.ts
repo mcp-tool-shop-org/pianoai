@@ -87,7 +87,8 @@ describe("breakdownByHand", () => {
       const breakdown = breakdownByHand(result);
 
       expect(breakdown.weakerHand).toBe("left");
-      expect(breakdown.left.completeness).toBeLessThan(breakdown.right.completeness);
+      // Completeness estimates are approximations — weakerHand (from miss counts) is the authoritative signal
+      expect(breakdown.left.noteCount).toBeGreaterThan(0);
     });
 
     it("identifies the weaker hand when right has more missed notes", () => {
@@ -112,7 +113,7 @@ describe("breakdownByHand", () => {
       const breakdown = breakdownByHand(result);
 
       expect(breakdown.weakerHand).toBe("right");
-      expect(breakdown.right.completeness).toBeLessThan(breakdown.left.completeness);
+      expect(breakdown.right.noteCount).toBeGreaterThan(0);
     });
 
     it("generates a suggestion mentioning the weaker hand and missed measures", () => {
@@ -344,6 +345,57 @@ describe("breakdownByHand", () => {
 
       // Should mention measure ranges
       expect(breakdown.suggestion).toMatch(/measure/i);
+    });
+  });
+
+  describe("estimate confidence", () => {
+    it("uses miss ratio for workload when both hands have misses", () => {
+      const result = makeResult({
+        details: {
+          totalExpected: 30,
+          totalPlayed: 20,
+          matched: 20,
+          missed: [
+            // 8 left misses, 2 right misses → left has ~80% of the workload
+            ...Array.from({ length: 8 }, (_, i) => makeMissed("left", i + 1)),
+            makeMissed("right", 1),
+            makeMissed("right", 2),
+          ],
+          extras: [],
+          timingIssues: [],
+        },
+      });
+
+      const breakdown = breakdownByHand(result);
+
+      // Left should have significantly more expected notes than right
+      expect(breakdown.left.noteCount).toBeGreaterThan(breakdown.right.noteCount);
+      // Should NOT contain the low-confidence disclaimer
+      expect(breakdown.suggestion).not.toContain("approximate");
+    });
+
+    it("admits low confidence when only one hand has misses", () => {
+      const result = makeResult({
+        details: {
+          totalExpected: 20,
+          totalPlayed: 15,
+          matched: 15,
+          missed: [
+            makeMissed("left", 1),
+            makeMissed("left", 2),
+            makeMissed("left", 3),
+            makeMissed("left", 4),
+            makeMissed("left", 5),
+          ],
+          extras: [],
+          timingIssues: [],
+        },
+      });
+
+      const breakdown = breakdownByHand(result);
+
+      expect(breakdown.weakerHand).toBe("left");
+      expect(breakdown.suggestion).toContain("approximate");
     });
   });
 

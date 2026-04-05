@@ -112,6 +112,12 @@ function parseKey(keyStr: string): { root: number; mode: string } | null {
   return { root, mode: (match[2] ?? "major").toLowerCase() };
 }
 
+/**
+ * Describe the harmonic relationship between two keys.
+ * Returns a human-readable label. If either key cannot be parsed,
+ * returns "unknown" — callers must handle this as a valid result,
+ * not as an error.
+ */
 function describeKeyRelationship(keyA: string, keyB: string): string {
   const a = parseKey(keyA);
   const b = parseKey(keyB);

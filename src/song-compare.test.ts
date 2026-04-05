@@ -147,6 +147,14 @@ describe("compareSongs", () => {
     expect(result.teachingConnections.some(t => t.includes("Cross-genre"))).toBe(true);
   });
 
+  it("returns unknown key relationship for unparseable keys", () => {
+    const a = makeSong({ id: "a", title: "A", key: "??? nonsense" });
+    const b = makeSong({ id: "b", title: "B", key: "C major" });
+    const result = compareSongs(a, b);
+
+    expect(result.metrics.keyRelationship).toBe("unknown");
+  });
+
   it("handles songs with empty measures", () => {
     const a = makeSong({ id: "a", title: "A", measures: [] });
     const b = makeSong({ id: "b", title: "B", measures: [] });

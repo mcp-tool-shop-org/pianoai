@@ -119,10 +119,30 @@ export function breakdownByHand(result: PerformanceResult): HandBreakdown {
   // something about the hand distribution. For the matched pool we split evenly
   // unless we have better info.
 
-  // Without per-match hand data we assume matched notes split evenly between hands,
-  // then add per-hand missed counts to get per-hand expected totals.
-  const matchedLeftEstimate = Math.round(totalMatched / 2);
-  const matchedRightEstimate = totalMatched - matchedLeftEstimate;
+  // Without per-match hand data, we estimate the matched distribution using
+  // the missed-note ratio as a proxy for hand workload. If one hand has more
+  // missed notes, it likely had more expected notes overall.
+  //
+  // When both hands have missed notes, use the miss ratio to infer workload.
+  // When only one hand has misses, we can't infer reliably — split evenly
+  // and mark the estimate as low-confidence (used in suggestion text).
+  const bothHandsMissed = missedLeft.length > 0 && missedRight.length > 0;
+  let matchedLeftEstimate: number;
+  let matchedRightEstimate: number;
+  let estimateConfidence: "high" | "low";
+
+  if (bothHandsMissed && totalMissed > 0) {
+    // Use missed-note ratio as proxy for hand workload distribution
+    const leftRatio = missedLeft.length / totalMissed;
+    matchedLeftEstimate = Math.round(totalMatched * leftRatio);
+    matchedRightEstimate = totalMatched - matchedLeftEstimate;
+    estimateConfidence = "high";
+  } else {
+    // Can't infer distribution — even split with low confidence
+    matchedLeftEstimate = Math.round(totalMatched / 2);
+    matchedRightEstimate = totalMatched - matchedLeftEstimate;
+    estimateConfidence = "low";
+  }
 
   const expectedLeft = missedLeft.length + Math.max(matchedLeftEstimate, 0);
   const expectedRight = missedRight.length + Math.max(matchedRightEstimate, 0);
@@ -163,20 +183,27 @@ export function breakdownByHand(result: PerformanceResult): HandBreakdown {
     noteCount: expectedRight,
   };
 
-  // Determine weaker hand
-  const leftScore = handScore(left);
-  const rightScore = handScore(right);
-  const BALANCE_THRESHOLD = 5; // within 5 points = balanced
-
+  // Determine weaker hand from hard facts: missed note counts.
+  // The estimated matched-note distribution is useful for metrics display
+  // but too unreliable for hand-weakness determination. Miss counts are
+  // ground truth from the scoring engine.
   let weakerHand: "left" | "right" | "balanced";
-  if (Math.abs(leftScore - rightScore) < BALANCE_THRESHOLD) {
-    weakerHand = "balanced";
+  if (missedLeft.length === missedRight.length) {
+    // Equal misses — fall back to handScore from estimated metrics
+    const leftScore = handScore(left);
+    const rightScore = handScore(right);
+    const BALANCE_THRESHOLD = 5;
+    if (Math.abs(leftScore - rightScore) < BALANCE_THRESHOLD) {
+      weakerHand = "balanced";
+    } else {
+      weakerHand = leftScore < rightScore ? "left" : "right";
+    }
   } else {
-    weakerHand = leftScore < rightScore ? "left" : "right";
+    weakerHand = missedLeft.length > missedRight.length ? "left" : "right";
   }
 
   // Generate suggestion
-  const suggestion = generateSuggestion(weakerHand, left, right, missedLeft, missedRight);
+  const suggestion = generateSuggestion(weakerHand, left, right, missedLeft, missedRight, estimateConfidence);
 
   return { left, right, weakerHand, suggestion };
 }
@@ -187,6 +214,7 @@ function generateSuggestion(
   right: HandMetrics,
   missedLeft: MissedNote[],
   missedRight: MissedNote[],
+  confidence: "high" | "low" = "high",
 ): string {
   if (left.noteCount === 0 && right.noteCount === 0) {
     return "No notes in this piece to evaluate.";
@@ -217,6 +245,10 @@ function generateSuggestion(
     parts.push(`Work on ${handName} hand timing with a metronome.`);
   } else {
     parts.push(`Focus on ${handName} hand accuracy in your next practice session.`);
+  }
+
+  if (confidence === "low") {
+    parts.push(`(Per-hand estimate is approximate — only one hand had missed notes.)`);
   }
 
   return parts.join(" ");
