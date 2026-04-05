@@ -254,9 +254,15 @@ ai-jam-sessions sing <song-id> [--with-piano] [--engine <engine>]
 ai-jam-sessions view <song-id> [--measures <start-end>] [--out <file.svg>]
 ai-jam-sessions view-guitar <song-id> [--measures <start-end>] [--tuning <tuning>]
 ai-jam-sessions info <song-id>
+ai-jam-sessions tune <keyboard-id> [--param value ...] [--reset] [--show]
+ai-jam-sessions tune-guitar <voice-id> [--param value ...] [--reset] [--show]
+ai-jam-sessions keyboards
+ai-jam-sessions guitars
 ai-jam-sessions stats
 ai-jam-sessions library
 ai-jam-sessions ports
+ai-jam-sessions help
+ai-jam-sessions --version
 ```
 
 ## Status
