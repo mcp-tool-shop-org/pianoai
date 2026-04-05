@@ -2273,6 +2273,115 @@ server.tool(
   }
 );
 
+// ─── Tool: list_sections ─────────────────────────────────────────────────
+
+server.tool(
+  "list_sections",
+  "List the structural sections of a song (Intro, Verse, Chorus, etc.). Sections help with navigation, practice planning, and understanding song form.",
+  {
+    id: z.string().describe("Song ID"),
+  },
+  async ({ id }) => {
+    const song = getSong(id);
+    if (!song) {
+      return {
+        content: [{ type: "text", text: `No song called "${id}" in the library. Try list_songs to browse.` }],
+        isError: true,
+      };
+    }
+
+    if (!song.sections || song.sections.length === 0) {
+      return {
+        content: [{
+          type: "text",
+          text: [
+            `**${song.title}** has no section markers yet.`,
+            ``,
+            `Use \`add_section\` to label parts of the song (e.g., Intro, Verse, Chorus).`,
+            `The song has ${song.measures.length} measures total.`,
+          ].join("\n"),
+        }],
+      };
+    }
+
+    const lines = [
+      `# ${song.title} — Sections`,
+      ``,
+      `| Section | Measures | Description |`,
+      `|---------|----------|-------------|`,
+    ];
+
+    for (const s of song.sections) {
+      const desc = s.description ?? "";
+      lines.push(`| ${s.name} | ${s.startMeasure}–${s.endMeasure} | ${desc} |`);
+    }
+
+    lines.push(``, `Total: ${song.measures.length} measures, ${song.sections.length} sections.`);
+
+    return { content: [{ type: "text", text: lines.join("\n") }] };
+  }
+);
+
+// ─── Tool: add_section ──────────────────────────────────────────────────
+
+server.tool(
+  "add_section",
+  "Add a structural section marker to a song. Sections label parts like Intro, Verse, Chorus, Bridge, Coda — useful for teaching, navigation, and practice planning.",
+  {
+    id: z.string().describe("Song ID"),
+    name: z.string().min(1).max(50).describe("Section label (e.g., 'Intro', 'Verse 1', 'Chorus', 'Bridge')"),
+    startMeasure: z.number().int().min(1).describe("First measure of this section (1-based)"),
+    endMeasure: z.number().int().min(1).describe("Last measure of this section (1-based)"),
+    description: z.string().max(200).optional().describe("Optional description for teaching context"),
+  },
+  async ({ id, name: sectionName, startMeasure, endMeasure, description }) => {
+    const song = getSong(id);
+    if (!song) {
+      return {
+        content: [{ type: "text", text: `No song called "${id}" in the library. Try list_songs to browse.` }],
+        isError: true,
+      };
+    }
+
+    if (endMeasure < startMeasure) {
+      return {
+        content: [{ type: "text", text: `The end measure (${endMeasure}) needs to be at or after the start measure (${startMeasure}).` }],
+        isError: true,
+      };
+    }
+
+    if (startMeasure > song.measures.length || endMeasure > song.measures.length) {
+      return {
+        content: [{ type: "text", text: `This song only has ${song.measures.length} measures. Adjust the range to fit.` }],
+        isError: true,
+      };
+    }
+
+    if (!song.sections) song.sections = [];
+
+    song.sections.push({
+      name: sectionName,
+      startMeasure,
+      endMeasure,
+      description,
+    });
+
+    // Sort sections by start measure
+    song.sections.sort((a, b) => a.startMeasure - b.startMeasure);
+
+    return {
+      content: [{
+        type: "text",
+        text: [
+          `Added section **${sectionName}** to **${song.title}** (measures ${startMeasure}–${endMeasure}).`,
+          ``,
+          `The song now has ${song.sections.length} section(s). Use \`list_sections\` to see them all.`,
+        ].join("\n"),
+      }],
+    };
+  }
+);
+
 // ─── Tool: transpose_song ────────────────────────────────────────────────
 
 server.tool(

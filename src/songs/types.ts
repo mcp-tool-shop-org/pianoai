@@ -96,6 +96,27 @@ export interface Measure {
   tempoOverride?: number;
 }
 
+// ─── Section Markers ────────────────────────────────────────────────────────
+
+/**
+ * A labeled section of a song (e.g., Intro, Verse, Chorus, Bridge).
+ * Sections divide the measure array into named regions for teaching,
+ * navigation, and structural analysis.
+ */
+export interface Section {
+  /** Section label, e.g. "Intro", "Verse 1", "Chorus", "Coda". */
+  name: string;
+
+  /** First measure of this section (1-based, inclusive). */
+  startMeasure: number;
+
+  /** Last measure of this section (1-based, inclusive). */
+  endMeasure: number;
+
+  /** Optional description for teaching context. */
+  description?: string;
+}
+
 // ─── Song Entry (the complete hybrid record) ────────────────────────────────
 
 export interface SongEntry {
@@ -140,6 +161,9 @@ export interface SongEntry {
 
   /** Source/attribution for the arrangement. */
   source?: string;
+
+  /** Optional section markers for structural navigation. */
+  sections?: Section[];
 }
 
 // ─── Registry Types ─────────────────────────────────────────────────────────
