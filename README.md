@@ -19,7 +19,7 @@
 <p align="center">
   <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml"><img src="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://codecov.io/gh/mcp-tool-shop-org/ai-jam-sessions"><img src="https://codecov.io/gh/mcp-tool-shop-org/ai-jam-sessions/branch/main/graph/badge.svg" alt="codecov"></a>
-  <a href="https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions"><img src="https://img.shields.io/npm/v/@mcptoolshop/ai-jam-sessions" alt="npm"></a>
+  <a href="https://www.npmjs.com/package/ai-jam-sessions"><img src="https://img.shields.io/npm/v/ai-jam-sessions" alt="npm"></a>
   <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/songs-120_across_12_genres-blue" alt="Songs"></a>
   <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/annotated-24-green" alt="Ready"></a>
 </p>
@@ -164,7 +164,7 @@ One markdown file per day, stored in `~/.ai-jam-sessions/journal/`. Human-readab
 ## Install
 
 ```bash
-npm install -g @mcptoolshop/ai-jam-sessions
+npm install -g ai-jam-sessions
 ```
 
 Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external software.
@@ -176,7 +176,7 @@ Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external softwar
   "mcpServers": {
     "ai_jam_sessions": {
       "command": "npx",
-      "args": ["-y", "-p", "@mcptoolshop/ai-jam-sessions", "ai-jam-sessions-mcp"]
+      "args": ["-y", "-p", "ai-jam-sessions", "ai-jam-sessions-mcp"]
     }
   }
 }
@@ -261,7 +261,7 @@ ai-jam-sessions ports
 
 ## Status
 
-v1.1.0. Six sound engines, 34 MCP tools, 120 songs across 12 genres with deeply annotated exemplars. Interactive guitar tablature editor. Browser cockpit with 20 vocal presets, 10 instrument voices, 7 tuning systems, and an LLM-facing score API. Piano roll visualization in two color modes. Practice journal for persistent learning. MIDI play-along scoring, annotation quality assessment, and cross-genre pattern recognition. The MIDI is all there — the library grows as the AI learns.
+v1.3.0. Six sound engines, 34 MCP tools, 120 songs across 12 genres with deeply annotated exemplars. Interactive guitar tablature editor. Browser cockpit with 20 vocal presets, 10 instrument voices, 7 tuning systems, and an LLM-facing score API. Piano roll visualization in two color modes. Practice journal for persistent learning. MIDI play-along scoring, annotation quality assessment, and cross-genre pattern recognition. The MIDI is all there — the library grows as the AI learns.
 
 ## Security & Privacy
 

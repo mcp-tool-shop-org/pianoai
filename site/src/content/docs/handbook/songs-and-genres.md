@@ -39,7 +39,7 @@ Use the Learn tools to explore:
 - `list_songs` — filter by genre, difficulty, or keyword
 - `song_info` — full musical analysis for any song
 - `registry_stats` — library-wide totals (songs, genres, difficulties)
-- `library_progress` — annotation status across all genres
+- `annotation_progress` — annotation status across all genres
 - `suggest_song` — recommendation based on genre, difficulty, and play history
 
 ## Annotation workflow

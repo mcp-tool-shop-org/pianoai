@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-04-05
+
+### Changed
+- **Package renamed** from `@mcptoolshop/ai-jam-sessions` to `ai-jam-sessions` (unscoped on npm)
+
+### Added
+- 190 new tests (392 → 582): songs loader, jam brief, library, playback controls, registry filters, MIDI parser edge cases, vmpk mock, vocal carriers
+- Measure range validation in `list_measures` and `sing_along` MCP tools (now returns error instead of empty results)
+- Handbook updated with all 34 MCP tools including Score category (`score_performance`, `score_annotation`, `compare_songs`, `annotation_progress`)
+
+### Fixed
+- Handbook tool count (31 → 34) and missing v1.1.0/v1.2.0 tool documentation
+- Landing page feature list updated to reflect 34 tools
+
 ## [1.2.0] - 2026-04-02
 
 ### Security

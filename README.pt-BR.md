@@ -18,7 +18,7 @@
 
 [![CI](https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml/badge.svg)](https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/mcp-tool-shop-org/ai-jam-sessions/branch/main/graph/badge.svg)](https://codecov.io/gh/mcp-tool-shop-org/ai-jam-sessions)
-[![npm](https://img.shields.io/npm/v/@mcptoolshop/ai-jam-sessions)](https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions)
+[![npm](https://img.shields.io/npm/v/ai-jam-sessions)](https://www.npmjs.com/package/ai-jam-sessions)
 [![Músicas](https://img.shields.io/badge/músicas-120_em_12_gêneros-blue)](https://github.com/mcp-tool-shop-org/ai-jam-sessions)
 [![Pronto](https://img.shields.io/badge/annotado-24-green)](https://github.com/mcp-tool-shop-org/ai-jam-sessions)
 
@@ -162,7 +162,7 @@ Um arquivo Markdown por dia, armazenado em `~/.ai-jam-sessions/journal/`. Legív
 ## Instalação
 
 ```bash
-npm install -g @mcptoolshop/ai-jam-sessions
+npm install -g ai-jam-sessions
 ```
 
 Requer **Node.js 18+**. Sem drivers MIDI, sem portas virtuais, sem software externo.
@@ -174,7 +174,7 @@ Requer **Node.js 18+**. Sem drivers MIDI, sem portas virtuais, sem software exte
   "mcpServers": {
     "ai_jam_sessions": {
       "command": "npx",
-      "args": ["-y", "-p", "@mcptoolshop/ai-jam-sessions", "ai-jam-sessions-mcp"]
+      "args": ["-y", "-p", "ai-jam-sessions", "ai-jam-sessions-mcp"]
     }
   }
 }

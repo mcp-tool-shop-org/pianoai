@@ -1,13 +1,13 @@
 ---
 title: MCP tools reference
-description: All 31 MCP tools organized by category — Learn, Play, Sing, Guitar, and Build.
+description: All 34 MCP tools organized by category — Learn, Play, Sing, Guitar, Build, and Score.
 sidebar:
   order: 4
 ---
 
-AI Jam Sessions exposes 31 tools through the Model Context Protocol, organized into five categories.
+AI Jam Sessions exposes 34 tools through the Model Context Protocol, organized into six categories.
 
-## Learn (8 tools)
+## Learn (9 tools)
 
 Tools for exploring the song library and understanding music.
 
@@ -16,11 +16,12 @@ Tools for exploring the song library and understanding music.
 | `list_songs` | Browse by genre, difficulty, or keyword |
 | `song_info` | Full musical analysis — structure, key moments, teaching goals, style tips |
 | `registry_stats` | Library-wide stats: total songs, genres, difficulties |
-| `library_progress` | Annotation status across all genres |
+| `annotation_progress` | Annotation status across all genres — scores, grades, and improvement suggestions |
 | `list_measures` | Every measure's notes, dynamics, and teaching notes |
 | `teaching_note` | Deep dive into a single measure — fingering, dynamics, context |
 | `suggest_song` | Recommendation based on genre, difficulty, and what you've played |
 | `practice_setup` | Recommended speed, mode, voice settings, and CLI command for a song |
+| `compare_songs` | Cross-genre pattern recognition — key relationships, pitch/interval similarity, shared forms, teaching connections |
 
 ## Play (6 tools)
 
@@ -72,3 +73,12 @@ Tools for adding songs, writing annotations, journaling, and keyboard tuning.
 | `tune_keyboard` | Adjust any parameter of any keyboard voice. Persists across sessions |
 | `get_keyboard_config` | Current config vs factory defaults |
 | `reset_keyboard` | Factory reset a keyboard voice |
+
+## Score (2 tools)
+
+Tools for evaluating performances and annotation quality.
+
+| Tool | Description |
+|------|-------------|
+| `score_performance` | Score a MIDI play-along against a library song — pitch accuracy, timing, completeness, with graded feedback and practice suggestions |
+| `score_annotation` | Score annotation quality across 5 dimensions — completeness, depth, specificity, teaching value, and musical vocabulary |

@@ -352,8 +352,14 @@ server.tool(
       };
     }
 
-    const start = (startMeasure ?? 1) - 1;
+    const start = Math.max(0, (startMeasure ?? 1) - 1);
     const end = Math.min((endMeasure ?? song.measures.length) - 1, song.measures.length - 1);
+    if (start > end) {
+      return {
+        content: [{ type: "text", text: `Invalid measure range: ${startMeasure}–${endMeasure}. Song has ${song.measures.length} measures.` }],
+        isError: true,
+      };
+    }
     const measures = song.measures.slice(start, end + 1);
 
     // Check for parse warnings
@@ -499,8 +505,14 @@ server.tool(
     const effectiveMode: SingAlongMode = (mode as SingAlongMode) ?? "note-names";
     const effectiveHand = hand ?? "right";
     const effectiveSyncMode = syncMode ?? "concurrent";
-    const start = (startMeasure ?? 1) - 1;
+    const start = Math.max(0, (startMeasure ?? 1) - 1);
     const end = Math.min((endMeasure ?? song.measures.length) - 1, song.measures.length - 1);
+    if (start > end) {
+      return {
+        content: [{ type: "text", text: `Invalid measure range: ${startMeasure}–${endMeasure}. Song has ${song.measures.length} measures.` }],
+        isError: true,
+      };
+    }
     const measures = song.measures.slice(start, end + 1);
 
     const lines = [

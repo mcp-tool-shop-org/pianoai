@@ -6,7 +6,7 @@ export const config: SiteConfig = {
   logoBadge: 'JS',
   brandName: 'AI Jam Sessions',
   repoUrl: 'https://github.com/mcp-tool-shop-org/ai-jam-sessions',
-  npmUrl: 'https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions',
+  npmUrl: 'https://www.npmjs.com/package/ai-jam-sessions',
   footerText: 'MIT Licensed — built by <a href="https://github.com/mcp-tool-shop-org" style="color:var(--color-muted);text-decoration:underline">mcp-tool-shop-org</a>',
 
   hero: {
@@ -17,7 +17,7 @@ export const config: SiteConfig = {
     primaryCta: { href: '#quick-start', label: 'Get started' },
     secondaryCta: { href: 'handbook/', label: 'Read the Handbook' },
     previews: [
-      { label: 'Install', code: 'npm install -g @mcptoolshop/ai-jam-sessions' },
+      { label: 'Install', code: 'npm install -g ai-jam-sessions' },
       { label: 'Play', code: 'ai-jam-sessions play fur-elise --engine piano --speed 0.7' },
       { label: 'Sing', code: 'ai-jam-sessions sing imagine --with-piano' },
     ],
@@ -51,8 +51,8 @@ export const config: SiteConfig = {
           desc: 'Vocal tract synthesis with 20 voice presets. Sing-along mode with solfege, contour, and syllable narration.',
         },
         {
-          title: '31 MCP Tools',
-          desc: 'Learn, play, sing, build — browse songs, play at any speed, render piano rolls, write annotations, and journal reflections.',
+          title: '34 MCP Tools',
+          desc: 'Learn, play, sing, build, score — browse songs, play at any speed, render piano rolls, write annotations, score performances, compare songs, and journal reflections.',
         },
       ],
     },
@@ -63,7 +63,7 @@ export const config: SiteConfig = {
       cards: [
         {
           title: 'Install globally',
-          code: `npm install -g @mcptoolshop/ai-jam-sessions`,
+          code: `npm install -g ai-jam-sessions`,
         },
         {
           title: 'Claude Desktop config',
@@ -73,7 +73,7 @@ export const config: SiteConfig = {
       "command": "npx",
       "args": [
         "-y", "-p",
-        "@mcptoolshop/ai-jam-sessions",
+        "ai-jam-sessions",
         "ai-jam-sessions-mcp"
       ]
     }
@@ -142,13 +142,14 @@ ai-jam-sessions list --genre folk`,
       kind: 'data-table',
       id: 'tools',
       title: 'MCP tools',
-      subtitle: '31 tools across four categories: Learn, Play, Sing, and Build.',
+      subtitle: '34 tools across six categories: Learn, Play, Sing, Guitar, Build, and Score.',
       columns: ['Tool', 'Category', 'Description'],
       rows: [
         ['`list_songs`', 'Learn', 'Browse by genre, difficulty, or keyword'],
         ['`song_info`', 'Learn', 'Full musical analysis — structure, key moments, teaching goals'],
         ['`suggest_song`', 'Learn', 'Recommendation based on genre, difficulty, and play history'],
         ['`practice_setup`', 'Learn', 'Recommended speed, mode, voice settings for a song'],
+        ['`compare_songs`', 'Learn', 'Cross-genre pattern recognition — key relationships, shared forms, teaching connections'],
         ['`play_song`', 'Play', 'Play through speakers — any engine, speed, mode, measure range'],
         ['`view_piano_roll`', 'Play', 'Render as SVG (hand color or pitch-class chromatic rainbow)'],
         ['`sing_along`', 'Sing', 'Singable text — note-names, solfege, contour, or syllables'],
@@ -157,6 +158,9 @@ ai-jam-sessions list --genre folk`,
         ['`annotate_song`', 'Build', 'Write musical language for a raw song and promote it'],
         ['`save_practice_note`', 'Build', 'Journal entry with auto-captured session data'],
         ['`tune_keyboard`', 'Build', 'Adjust any parameter of any keyboard voice'],
+        ['`score_performance`', 'Score', 'Score a MIDI play-along — pitch accuracy, timing, graded feedback'],
+        ['`score_annotation`', 'Score', 'Score annotation quality across 5 dimensions'],
+        ['`annotation_progress`', 'Score', 'Track annotation quality across the library'],
       ],
     },
   ],

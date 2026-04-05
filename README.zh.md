@@ -18,7 +18,7 @@
 
 [![CI](https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml/badge.svg)](https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/mcp-tool-shop-org/ai-jam-sessions/branch/main/graph/badge.svg)](https://codecov.io/gh/mcp-tool-shop-org/ai-jam-sessions)
-[![npm](https://img.shields.io/npm/v/@mcptoolshop/ai-jam-sessions)](https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions)
+[![npm](https://img.shields.io/npm/v/ai-jam-sessions)](https://www.npmjs.com/package/ai-jam-sessions)
 [![Songs](https://img.shields.io/badge/songs-120_across_12_genres-blue)](https://github.com/mcp-tool-shop-org/ai-jam-sessions)
 [![Ready](https://img.shields.io/badge/annotated-24-green)](https://github.com/mcp-tool-shop-org/ai-jam-sessions)
 
@@ -162,7 +162,7 @@ Next: try at full speed. Compare the Ipanema bridge modulation with this.
 ## 安装
 
 ```bash
-npm install -g @mcptoolshop/ai-jam-sessions
+npm install -g ai-jam-sessions
 ```
 
 需要 **Node.js 18+**。不需要 MIDI 驱动程序、虚拟端口或外部软件。
@@ -174,7 +174,7 @@ npm install -g @mcptoolshop/ai-jam-sessions
   "mcpServers": {
     "ai_jam_sessions": {
       "command": "npx",
-      "args": ["-y", "-p", "@mcptoolshop/ai-jam-sessions", "ai-jam-sessions-mcp"]
+      "args": ["-y", "-p", "ai-jam-sessions", "ai-jam-sessions-mcp"]
     }
   }
 }

@@ -15,7 +15,7 @@ sidebar:
 Install globally from npm:
 
 ```bash
-npm install -g @mcptoolshop/ai-jam-sessions
+npm install -g ai-jam-sessions
 ```
 
 ## Claude Desktop setup
@@ -27,7 +27,7 @@ Add the MCP server to your Claude Desktop configuration:
   "mcpServers": {
     "ai_jam_sessions": {
       "command": "npx",
-      "args": ["-y", "-p", "@mcptoolshop/ai-jam-sessions", "ai-jam-sessions-mcp"]
+      "args": ["-y", "-p", "ai-jam-sessions", "ai-jam-sessions-mcp"]
     }
   }
 }
@@ -37,7 +37,7 @@ The server uses stdio transport only (no HTTP).
 
 ## Claude Code setup
 
-For Claude Code, the same configuration applies. Add it to your MCP server settings and the 31 tools become available in your coding session.
+For Claude Code, the same configuration applies. Add it to your MCP server settings and the 34 tools become available in your coding session.
 
 ## First commands
 

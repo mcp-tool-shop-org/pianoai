@@ -82,7 +82,7 @@ SVG renderer with two color modes: **hand** (blue right hand, coral left hand) o
 ## Quick start
 
 ```bash
-npm install -g @mcptoolshop/ai-jam-sessions
+npm install -g ai-jam-sessions
 ```
 
 Node.js 18+. No MIDI drivers, no virtual ports, no extra software.
@@ -94,7 +94,7 @@ Node.js 18+. No MIDI drivers, no virtual ports, no extra software.
   "mcpServers": {
     "ai_jam_sessions": {
       "command": "npx",
-      "args": ["-y", "-p", "@mcptoolshop/ai-jam-sessions", "ai-jam-sessions-mcp"]
+      "args": ["-y", "-p", "ai-jam-sessions", "ai-jam-sessions-mcp"]
     }
   }
 }
@@ -118,7 +118,7 @@ ai-jam-sessions library
 ## Links
 
 - [GitHub](https://github.com/mcp-tool-shop-org/ai-jam-sessions)
-- [npm](https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions)
+- [npm](https://www.npmjs.com/package/ai-jam-sessions)
 - [MCP Tool Shop](https://github.com/mcp-tool-shop-org)
 
 ## License

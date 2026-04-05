@@ -12,6 +12,6 @@ describe("version", () => {
   });
 
   it("should export package name", () => {
-    expect(NAME).toBe("@mcptoolshop/ai-jam-sessions");
+    expect(NAME).toBe("ai-jam-sessions");
   });
 });
