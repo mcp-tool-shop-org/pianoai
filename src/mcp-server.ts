@@ -44,6 +44,7 @@ import {
   midiToSongEntry,
   generateJamBrief,
   formatJamBrief,
+  transposeSong,
   GENRES,
   DIFFICULTIES,
 } from "./songs/index.js";
@@ -2269,6 +2270,71 @@ server.tool(
     const text = formatComparison(result);
 
     return { content: [{ type: "text", text }] };
+  }
+);
+
+// ─── Tool: transpose_song ────────────────────────────────────────────────
+
+server.tool(
+  "transpose_song",
+  "Transpose a song to a different key. Shifts all notes by the specified number of semitones and registers the transposed version as a new song. Useful for matching student range or practicing in different keys.",
+  {
+    id: z.string().describe("Song ID to transpose"),
+    semitones: z.number().int().min(-12).max(12).describe("Semitones to shift: positive = up, negative = down (e.g., 2 = up a whole step, -3 = down a minor third)"),
+  },
+  async ({ id, semitones }) => {
+    const song = getSong(id);
+    if (!song) {
+      return {
+        content: [{ type: "text", text: `No song called "${id}" in the library. Try list_songs to browse.` }],
+        isError: true,
+      };
+    }
+
+    if (semitones === 0) {
+      return {
+        content: [{ type: "text", text: `No transposition needed — the song is already in ${song.key}.` }],
+      };
+    }
+
+    try {
+      const transposed = transposeSong(song, semitones);
+
+      // Check if already registered
+      if (getSong(transposed.id)) {
+        return {
+          content: [{
+            type: "text",
+            text: `This transposition already exists as "${transposed.id}" in ${transposed.key}.`,
+          }],
+        };
+      }
+
+      registerSong(transposed);
+
+      const direction = semitones > 0 ? "up" : "down";
+      return {
+        content: [{
+          type: "text",
+          text: [
+            `Transposed **${song.title}** ${direction} ${Math.abs(semitones)} semitone(s):`,
+            ``,
+            `- **Original key:** ${song.key}`,
+            `- **New key:** ${transposed.key}`,
+            `- **New ID:** ${transposed.id}`,
+            `- **Measures:** ${transposed.measures.length}`,
+            ``,
+            `The transposed version is now playable — try \`play_song { id: "${transposed.id}" }\``,
+          ].join("\n"),
+        }],
+      };
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      return {
+        content: [{ type: "text", text: `Transposition failed: ${msg}` }],
+        isError: true,
+      };
+    }
   }
 );
 

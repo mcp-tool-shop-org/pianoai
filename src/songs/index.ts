@@ -86,6 +86,9 @@ export type { LibraryEntry, GenreProgress, LibraryProgress, InitReport } from ".
 // Config loader
 export { loadSongConfigs, loadSongConfig, listConfigIds } from "./config/loader.js";
 
+// Transposition
+export { transposeSong } from "./transpose.js";
+
 // Jam session
 export { generateJamBrief, formatJamBrief, inferChord, computeContour, getStyleGuidance } from "./jam.js";
 export type { JamBrief, JamBriefOptions, ChordMeasure, MelodyMeasure } from "./jam.js";
