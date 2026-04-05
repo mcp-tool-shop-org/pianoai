@@ -1343,6 +1343,41 @@ server.tool(
   }
 );
 
+// ─── Tool: mute_hand ─────────────────────────────────────────────────────
+
+server.tool(
+  "mute_hand",
+  "Mute or unmute a hand during playback. Muting the left hand lets you focus on the right hand (and vice versa). Great for hands-separate practice.",
+  {
+    hand: z.enum(["left", "right"]).describe("Which hand to mute/unmute"),
+    muted: z.boolean().describe("true = mute (silence), false = unmute (play)"),
+  },
+  async ({ hand, muted }) => {
+    if (!activeSession) {
+      return {
+        content: [{ type: "text", text: "No song is currently playing. Start one with play_song first." }],
+        isError: true,
+      };
+    }
+
+    if (muted) {
+      activeSession.muteHand(hand);
+    } else {
+      activeSession.unmuteHand(hand);
+    }
+
+    const leftStatus = activeSession.isHandMuted("left") ? "muted" : "playing";
+    const rightStatus = activeSession.isHandMuted("right") ? "muted" : "playing";
+
+    return {
+      content: [{
+        type: "text",
+        text: `${hand === "left" ? "Left" : "Right"} hand ${muted ? "muted" : "unmuted"}. Status: RH ${rightStatus}, LH ${leftStatus}.`,
+      }],
+    };
+  }
+);
+
 // ─── Tool: ai_jam_sessions ──────────────────────────────────────────────
 
 server.tool(

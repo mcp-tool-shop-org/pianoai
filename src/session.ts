@@ -84,6 +84,9 @@ export class SessionController {
   /** Parse warnings collected during measure parsing (bad notes skipped). */
   readonly parseWarnings: ParseWarning[] = [];
 
+  /** Hand mute state — muted hands are silenced during playback. */
+  private _mutedHands: { left: boolean; right: boolean } = { left: false, right: false };
+
   constructor(
     public readonly session: Session,
     private readonly connector: VmpkConnector,
@@ -279,6 +282,26 @@ export class SessionController {
     this.reParseMeasures();
   }
 
+  /**
+   * Mute a hand — the muted hand will be silenced during playback.
+   * Takes effect on the next measure (current measure plays out).
+   */
+  muteHand(hand: "left" | "right"): void {
+    this._mutedHands[hand] = true;
+  }
+
+  /**
+   * Unmute a previously muted hand.
+   */
+  unmuteHand(hand: "left" | "right"): void {
+    this._mutedHands[hand] = false;
+  }
+
+  /** Check whether a hand is currently muted. */
+  isHandMuted(hand: "left" | "right"): boolean {
+    return this._mutedHands[hand];
+  }
+
   /** Get a summary of the current session state. */
   summary(): string {
     const s = this.session;
@@ -396,11 +419,11 @@ export class SessionController {
     pm: PlayableMeasure,
     signal: AbortSignal
   ): Promise<void> {
-    // Play both hands simultaneously
-    await Promise.all([
-      this.playBeats(pm.rightBeats, signal),
-      this.playBeats(pm.leftBeats, signal),
-    ]);
+    // Play both hands simultaneously, respecting mute state
+    const hands: Promise<void>[] = [];
+    if (!this._mutedHands.right) hands.push(this.playBeats(pm.rightBeats, signal));
+    if (!this._mutedHands.left) hands.push(this.playBeats(pm.leftBeats, signal));
+    await Promise.all(hands);
   }
 
   /**
@@ -445,13 +468,14 @@ export class SessionController {
 
     // ── Voice + first hand pass: concurrent or sequential ──
     if (concurrent) {
+      const firstHandBeats = this._mutedHands.right ? [] : pm.rightBeats;
       await Promise.all([
         this.teachingHook.onMeasureStart(
           measureNum,
           pm.source.teachingNote,
           pm.source.dynamics
         ),
-        this.playBeats(pm.rightBeats, signal),
+        firstHandBeats.length > 0 ? this.playBeats(firstHandBeats, signal) : Promise.resolve(),
       ]);
     } else {
       await this.teachingHook.onMeasureStart(
@@ -459,12 +483,16 @@ export class SessionController {
         pm.source.teachingNote,
         pm.source.dynamics
       );
-      await this.playBeats(pm.rightBeats, signal);
+      if (!this._mutedHands.right) {
+        await this.playBeats(pm.rightBeats, signal);
+      }
     }
     if (signal.aborted) return;
 
     // Left hand alone
-    await this.playBeats(pm.leftBeats, signal);
+    if (!this._mutedHands.left) {
+      await this.playBeats(pm.leftBeats, signal);
+    }
     if (signal.aborted) return;
 
     // Both together

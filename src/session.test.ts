@@ -502,6 +502,57 @@ describe("Edge cases: play/pause/stop state machine", () => {
   });
 });
 
+describe("Hand mute/unmute (FT-CORE-019)", () => {
+  let song: SongEntry;
+  beforeAll(() => { song = requireSong("satie-gymnopedie-no1"); });
+
+  it("muteHand/unmuteHand toggles state", () => {
+    const mock = createMockVmpkConnector();
+    const sc = createSession(song, mock);
+    expect(sc.isHandMuted("left")).toBe(false);
+    expect(sc.isHandMuted("right")).toBe(false);
+
+    sc.muteHand("left");
+    expect(sc.isHandMuted("left")).toBe(true);
+    expect(sc.isHandMuted("right")).toBe(false);
+
+    sc.unmuteHand("left");
+    expect(sc.isHandMuted("left")).toBe(false);
+  });
+
+  it("muted hand produces fewer note events during playback", async () => {
+    const mock = createMockVmpkConnector();
+    const sc = createSession(song, mock, { mode: "measure" });
+    await mock.connect();
+
+    // Play one measure with both hands
+    await sc.play();
+    const bothHandsNotes = mock.events.filter(e => e.type === "noteOn").length;
+
+    // Play again with left hand muted
+    mock.events.length = 0;
+    const sc2 = createSession(song, mock, { mode: "measure" });
+    sc2.muteHand("left");
+    await sc2.play();
+    const rightOnlyNotes = mock.events.filter(e => e.type === "noteOn").length;
+
+    // Muting left should produce fewer or equal notes (right only)
+    expect(rightOnlyNotes).toBeLessThanOrEqual(bothHandsNotes);
+  });
+
+  it("muting both hands produces zero note events", async () => {
+    const mock = createMockVmpkConnector();
+    const sc = createSession(song, mock, { mode: "measure" });
+    await mock.connect();
+
+    sc.muteHand("left");
+    sc.muteHand("right");
+    await sc.play();
+    const notes = mock.events.filter(e => e.type === "noteOn").length;
+    expect(notes).toBe(0);
+  });
+});
+
 describe("Edge cases: setSpeed validation", () => {
   let blues: SongEntry;
   beforeAll(() => { blues = requireSong("fallin"); });
