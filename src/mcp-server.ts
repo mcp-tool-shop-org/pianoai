@@ -2012,7 +2012,7 @@ server.tool(
       };
     }
 
-    // Path traversal protection
+    // Path traversal protection — same containment as play_song/import_midi
     const resolvedPath = pathResolve(midi_path);
     if (!resolvedPath.endsWith(".mid") && !resolvedPath.endsWith(".midi")) {
       return {
@@ -2021,8 +2021,17 @@ server.tool(
       };
     }
 
+    const scoreHomeDir = getCanonicalHomeDir();
+    const safePath = scoreHomeDir ? resolveContainedExistingPath(resolvedPath, scoreHomeDir) : null;
+    if (!safePath) {
+      return {
+        content: [{ type: "text", text: `Path not allowed: MIDI file must be inside your home directory.` }],
+        isError: true,
+      };
+    }
+
     try {
-      const parsed = await parseMidiFile(resolvedPath);
+      const parsed = await parseMidiFile(safePath);
 
       const result = scorePerformance(song, parsed.events, {
         toleranceMs: tolerance_ms,
