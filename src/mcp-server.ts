@@ -988,6 +988,7 @@ server.tool(
               durationSeconds: elapsed,
               timestamp: new Date().toISOString(),
             };
+            persistSessionState();
             console.error(`Finished playing MIDI file: ${id} (${parsed.noteCount} notes, ${parsed.durationSeconds.toFixed(1)}s)`);
           })
           .catch((err) => {
@@ -1024,6 +1025,7 @@ server.tool(
               durationSeconds: elapsed,
               timestamp: new Date().toISOString(),
             };
+            persistSessionState();
             console.error(`Finished playing MIDI file: ${id} (${parsed.noteCount} notes, ${parsed.durationSeconds.toFixed(1)}s)`);
           })
           .catch((err) => {
@@ -1143,6 +1145,7 @@ server.tool(
           durationSeconds: elapsed,
           timestamp: new Date().toISOString(),
         };
+        persistSessionState();
         console.error(`Finished playing: ${song.title} (${session.session.measuresPlayed} measures)`);
       })
       .catch((err) => {
@@ -1529,7 +1532,7 @@ server.tool(
 
 server.tool(
   "import_midi",
-  "Import a MIDI file as a song. Provide the file path and metadata. The MIDI is parsed, converted to a SongEntry, and saved to the user songs directory.",
+  "Import a MIDI file as a song. Provide the file path and metadata. The MIDI is parsed into measures with right/left hand separation, converted to a SongEntry JSON, and saved to ~/.ai-jam-sessions/songs/. User songs persist across server restarts and package updates.",
   {
     midi_path: z.string().describe("Path to .mid file"),
     id: z.string().describe("Song ID (kebab-case, e.g. 'fur-elise')"),
@@ -2757,6 +2760,31 @@ function getUserSongsDir(): string {
   return pathJoin(home, ".ai-jam-sessions", "songs");
 }
 
+const STATE_FILE = pathJoin(
+  process.env.HOME ?? process.env.USERPROFILE ?? ".",
+  ".ai-jam-sessions",
+  "server-state.json"
+);
+
+function persistSessionState(): void {
+  if (!lastCompletedSession) return;
+  try {
+    const { mkdirSync } = require("node:fs") as typeof import("node:fs");
+    mkdirSync(pathJoin(process.env.HOME ?? process.env.USERPROFILE ?? ".", ".ai-jam-sessions"), { recursive: true });
+    writeFileSync(STATE_FILE, JSON.stringify({ lastCompletedSession }, null, 2));
+  } catch { /* best-effort */ }
+}
+
+function loadSessionState(): void {
+  try {
+    if (!existsSync(STATE_FILE)) return;
+    const data = JSON.parse(readFileSync(STATE_FILE, "utf8"));
+    if (data.lastCompletedSession) {
+      lastCompletedSession = data.lastCompletedSession;
+    }
+  } catch { /* best-effort */ }
+}
+
 // ─── Start ──────────────────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
@@ -2767,6 +2795,7 @@ async function main(): Promise<void> {
   const libraryDir = pathJoin(__dirname, "..", "songs", "library");
   const userDir = getUserSongsDir();
   initializeFromLibrary(libraryDir, userDir);
+  loadSessionState();
 
   // Warn operator if the library dir is missing — common after a bad install
   if (!existsSync(libraryDir)) {
