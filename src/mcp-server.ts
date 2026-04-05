@@ -182,6 +182,7 @@ const server = new McpServer({
 // ─── Practice Journal State ─────────────────────────────────────────────────
 
 let lastCompletedSession: SessionSnapshot | null = null;
+let lastPlaybackError: { message: string; songOrFile: string; timestamp: string } | null = null;
 
 // ─── Tool: list_songs ───────────────────────────────────────────────────────
 
@@ -628,19 +629,19 @@ let activeConnector: VmpkConnector | null = null;
 let activeVoiceId: string = "grand";
 let activeNotes: Set<number> = new Set();
 
-/** Stop whatever is currently playing. */
+/** Stop whatever is currently playing or paused. */
 async function stopActive(): Promise<void> {
-  if (activeSession && activeSession.state === "playing") {
+  if (activeSession && (activeSession.state === "playing" || activeSession.state === "paused")) {
     activeSession.stop();
   }
   activeSession = null;
 
-  if (activeMidiEngine && activeMidiEngine.state === "playing") {
+  if (activeMidiEngine && (activeMidiEngine.state === "playing" || activeMidiEngine.state === "paused")) {
     activeMidiEngine.stop();
   }
   activeMidiEngine = null;
 
-  if (activeController && activeController.state === "playing") {
+  if (activeController && (activeController.state === "playing" || activeController.state === "paused")) {
     activeController.stop();
   }
   activeController = null;
@@ -777,13 +778,32 @@ server.tool(
         const controller = new PlaybackController(connector, parsed);
         activeController = controller;
 
+        const midiPlayStart = Date.now();
         const playPromise = controller.play({ speed: speed ?? 1.0, teachingHook });
         playPromise
           .then(() => {
+            const elapsed = Math.round((Date.now() - midiPlayStart) / 1000);
+            lastCompletedSession = {
+              songId: id,
+              title: id,
+              composer: undefined,
+              genre: "classical",
+              difficulty: "intermediate",
+              key: "unknown",
+              tempo: parsed.bpm,
+              speed: speed ?? 1.0,
+              mode: "full",
+              measuresPlayed: 0,
+              totalMeasures: 0,
+              durationSeconds: elapsed,
+              timestamp: new Date().toISOString(),
+            };
             console.error(`Finished playing MIDI file: ${id} (${parsed.noteCount} notes, ${parsed.durationSeconds.toFixed(1)}s)`);
           })
           .catch((err) => {
-            console.error(`Playback error: ${err instanceof Error ? err.message : String(err)}`);
+            const msg = err instanceof Error ? err.message : String(err);
+            console.error(`Playback error [${id}]: ${msg}`);
+            lastPlaybackError = { message: msg, songOrFile: id, timestamp: new Date().toISOString() };
           })
           .finally(() => {
             connector.disconnect().catch((e) => console.error(`Disconnect error: ${e instanceof Error ? e.message : String(e)}`));
@@ -794,13 +814,32 @@ server.tool(
         const engine = new MidiPlaybackEngine(connector, parsed);
         activeMidiEngine = engine;
 
+        const rawMidiPlayStart = Date.now();
         const playPromise = engine.play({ speed: speed ?? 1.0 });
         playPromise
           .then(() => {
+            const elapsed = Math.round((Date.now() - rawMidiPlayStart) / 1000);
+            lastCompletedSession = {
+              songId: id,
+              title: id,
+              composer: undefined,
+              genre: "classical",
+              difficulty: "intermediate",
+              key: "unknown",
+              tempo: parsed.bpm,
+              speed: speed ?? 1.0,
+              mode: "full",
+              measuresPlayed: 0,
+              totalMeasures: 0,
+              durationSeconds: elapsed,
+              timestamp: new Date().toISOString(),
+            };
             console.error(`Finished playing MIDI file: ${id} (${parsed.noteCount} notes, ${parsed.durationSeconds.toFixed(1)}s)`);
           })
           .catch((err) => {
-            console.error(`Playback error: ${err instanceof Error ? err.message : String(err)}`);
+            const msg = err instanceof Error ? err.message : String(err);
+            console.error(`Playback error [${id}]: ${msg}`);
+            lastPlaybackError = { message: msg, songOrFile: id, timestamp: new Date().toISOString() };
           })
           .finally(() => {
             connector.disconnect().catch((e) => console.error(`Disconnect error: ${e instanceof Error ? e.message : String(e)}`));
@@ -893,6 +932,7 @@ server.tool(
     activeSession = session;
 
     // Play in background
+    lastPlaybackError = null;
     const playStartTime = Date.now();
     const playPromise = session.play();
     playPromise
@@ -916,7 +956,9 @@ server.tool(
         console.error(`Finished playing: ${song.title} (${session.session.measuresPlayed} measures)`);
       })
       .catch((err) => {
-        console.error(`Playback error: ${err instanceof Error ? err.message : String(err)}`);
+        const msg = err instanceof Error ? err.message : String(err);
+        console.error(`Playback error [${song.id}]: ${msg}`);
+        lastPlaybackError = { message: msg, songOrFile: song.id, timestamp: new Date().toISOString() };
       })
       .finally(() => {
         connector.disconnect().catch((e) => console.error(`Disconnect error: ${e instanceof Error ? e.message : String(e)}`));
@@ -1220,8 +1262,21 @@ server.tool(
       registerSong(parsed);
 
       // Save to user songs directory
-      const userDir = getUserSongsDir();
-      const filePath = saveSong(parsed, userDir);
+      let filePath: string;
+      try {
+        const userDir = getUserSongsDir();
+        filePath = saveSong(parsed, userDir);
+      } catch (saveErr) {
+        const msg = saveErr instanceof Error ? saveErr.message : String(saveErr);
+        return {
+          content: [{
+            type: "text",
+            text: `Song "${parsed.title}" (${parsed.id}) was registered in memory but failed to save to disk: ${msg}\n` +
+              `The song is available for this session but will be lost on restart.`,
+          }],
+          isError: true,
+        };
+      }
 
       return {
         content: [{
@@ -1238,6 +1293,7 @@ server.tool(
           type: "text",
           text: `Failed to add song: ${err instanceof Error ? err.message : String(err)}`,
         }],
+        isError: true,
       };
     }
   }
@@ -1854,6 +1910,11 @@ server.tool(
 
     if (activeMidiEngine) {
       return { content: [{ type: "text", text: `Playback active (MIDI engine, no detailed status available).` }] };
+    }
+
+    if (lastPlaybackError) {
+      const e = lastPlaybackError;
+      return { content: [{ type: "text", text: `No active playback.\n\n**Last error:** ${e.message}\n**Source:** ${e.songOrFile}\n**When:** ${e.timestamp}\n\nUse \`play_song\` to try again.` }] };
     }
 
     return { content: [{ type: "text", text: `No active playback. Use \`play_song\` to start playing.` }] };

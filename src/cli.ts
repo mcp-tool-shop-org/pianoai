@@ -539,8 +539,9 @@ async function cmdPlay(args: string[]): Promise<void> {
         const entry = buildJournalEntry(snapshot, "CLI practice session.");
         appendJournalEntry(entry);
         console.log("  📝 Session logged to practice journal.");
-      } catch {
-        // Journal write failures are non-fatal
+      } catch (journalErr) {
+        const msg = journalErr instanceof Error ? (journalErr as Error).message : String(journalErr);
+        console.warn(`  ⚠ Could not save journal entry: ${msg}`);
       }
     }
   } catch (err) {

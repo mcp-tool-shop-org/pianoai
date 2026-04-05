@@ -484,6 +484,22 @@ describe("Edge cases: play/pause/stop state machine", () => {
     const offEvents = mock.events.filter((e) => e.type === "allNotesOff");
     expect(offEvents.length).toBe(1);
   });
+
+  it("stop() works from paused state (B-SRV-002)", async () => {
+    const mock = createMockVmpkConnector();
+    const sc = createSession(moonlight, mock, { mode: "measure" });
+    await mock.connect();
+
+    await sc.play(); // measure mode pauses after first measure
+    expect(sc.state).toBe("paused");
+
+    mock.events.length = 0;
+    sc.stop();
+    // stop() resets to idle and sends allNotesOff — no orphaned state
+    expect(sc.state).toBe("idle");
+    const offEvents = mock.events.filter((e) => e.type === "allNotesOff");
+    expect(offEvents.length).toBeGreaterThanOrEqual(1);
+  });
 });
 
 describe("Edge cases: setSpeed validation", () => {
