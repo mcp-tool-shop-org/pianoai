@@ -16,11 +16,13 @@
   A browser cockpit with vocal synthesizer. A practice journal that remembers everything.
 </p>
 
-[![CI](https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml/badge.svg)](https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/mcp-tool-shop-org/ai-jam-sessions/branch/main/graph/badge.svg)](https://codecov.io/gh/mcp-tool-shop-org/ai-jam-sessions)
-[![npm](https://img.shields.io/npm/v/ai-jam-sessions)](https://www.npmjs.com/package/ai-jam-sessions)
-[![Songs](https://img.shields.io/badge/songs-120_across_12_genres-blue)](https://github.com/mcp-tool-shop-org/ai-jam-sessions)
-[![Ready](https://img.shields.io/badge/annotated-24-green)](https://github.com/mcp-tool-shop-org/ai-jam-sessions)
+<p align="center">
+  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml"><img src="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://codecov.io/gh/mcp-tool-shop-org/ai-jam-sessions"><img src="https://codecov.io/gh/mcp-tool-shop-org/ai-jam-sessions/branch/main/graph/badge.svg" alt="codecov"></a>
+  <a href="https://www.npmjs.com/package/ai-jam-sessions"><img src="https://img.shields.io/npm/v/ai-jam-sessions" alt="npm"></a>
+  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/songs-120_across_12_genres-blue" alt="Songs"></a>
+  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/annotated-24-green" alt="Ready"></a>
+</p>
 
 ---
 
@@ -182,7 +184,7 @@ npm install -g ai-jam-sessions
 
 ## MCP Tools
 
-5つのカテゴリに分かれた、34のツール
+41種類のツールと、6つのカテゴリに分けられた3つのプロンプトテンプレート。
 
 ### 学習
 
@@ -197,6 +199,7 @@ npm install -g ai-jam-sessions
 | `practice_setup` | 楽曲に対する推奨テンポ、モード、ボイス設定、およびCLIコマンド |
 | `compare_songs` | ジャンルを越えたパターン認識 — キーの関係、ピッチ/インターバルの類似性、共通の形式、教育的な関連性 |
 | `annotation_progress` | ライブラリ全体の注釈品質を評価します。スコア、評価、改善提案を表示します。 |
+| `server_info` | サーバーのバージョン、ライブラリの統計情報、エンジンのリスト、アクティブなセッション。 |
 
 ### 再生
 
@@ -209,6 +212,8 @@ npm install -g ai-jam-sessions
 | `playback_status` | リアルタイム表示：現在の小節、テンポ、速度、キーボード音色、状態 |
 | `view_piano_roll` | SVG形式でレンダリング (手動着色、またはピッチクラスごとのカラフルな虹) |
 | `score_performance` | MIDI伴奏の演奏を評価：音程の正確さ、タイミング、完全性。評価結果を表示します。 |
+| `mute_hand` | 練習中に、左手または右手をミュートまたはミュート解除します。一度に片方の手だけを集中させることができます。 |
+| `preview_teaching_cues` | 演奏前に、すべてのレッスンノートと重要なポイントを確認できます。 |
 
 ### 歌う
 
@@ -242,6 +247,20 @@ npm install -g ai-jam-sessions
 | `get_keyboard_config` | 現在の設定と工場出荷時のデフォルト設定の比較 |
 | `reset_keyboard` | キーボード音色を工場出荷時の状態にリセット |
 | `score_annotation` | 5つの次元（完全性、深さ、具体性、教育的価値、語彙）で注釈の品質を評価 |
+| `validate_song_entry` | 追加する前に、楽曲のJSONファイルをスキーマに対して検証します。 |
+| `transpose_song` | 楽曲を半音階で上げたり下げたりできます。新しいキー、新しい音になります。 |
+| `list_sections` | 楽曲の構成要素（イントロ、ヴァース、コーラスなど）を表示します。 |
+| `add_section` | 楽曲の構成要素を示すマーカーを追加して、構造的なナビゲーションを可能にします。 |
+
+### MCPプロンプト
+
+構造化されたレッスンワークフローのための3つのプロンプトテンプレート。
+
+| プロンプト | 機能 |
+|--------|--------------|
+| `annotate_song` | ガイド付きのアノテーションワークフロー。模範を研究し、未加工の楽曲に対して音楽用語を記述します。 |
+| `practice_plan` | ジャンル、難易度、目標に基づいて、構造化された練習プランを作成します。 |
+| `performance_review` | 完了したセッションをレビューします。何がうまくいったか、次に何を重点的に取り組むべきかを把握します。 |
 
 ## コマンドラインインターフェース
 
@@ -252,14 +271,20 @@ ai-jam-sessions sing <song-id> [--with-piano] [--engine <engine>]
 ai-jam-sessions view <song-id> [--measures <start-end>] [--out <file.svg>]
 ai-jam-sessions view-guitar <song-id> [--measures <start-end>] [--tuning <tuning>]
 ai-jam-sessions info <song-id>
+ai-jam-sessions tune <keyboard-id> [--param value ...] [--reset] [--show]
+ai-jam-sessions tune-guitar <voice-id> [--param value ...] [--reset] [--show]
+ai-jam-sessions keyboards
+ai-jam-sessions guitars
 ai-jam-sessions stats
 ai-jam-sessions library
 ai-jam-sessions ports
+ai-jam-sessions help
+ai-jam-sessions --version
 ```
 
 ## 状態
 
-バージョン1.1.0。6つのサウンドエンジン、34種類のMCPツール、12のジャンルにまたがる120曲。詳細な注釈が付いたサンプルが含まれています。インタラクティブなギタータブ譜エディター。20種類のボーカルプリセット、10種類の楽器音色、7種類のチューニングシステム、およびLLM連携スコアAPIを備えたブラウザベースのインターフェース。2つのカラーモードでピアノロールを可視化。継続的な学習のための練習ジャーナル。MIDI伴奏の評価、注釈品質の評価、およびクロスジャンルのパターン認識。MIDIデータはすべて含まれており、AIが学習するにつれてライブラリは拡張されます。
+v1.4.0。6つのサウンドエンジン、41種類のMCPツール、3つのプロンプトテンプレート、12のジャンルにまたがる120曲。詳細なアノテーションが施された模範が含まれています。楽曲の移調、セクションマーカー、集中的な練習のための、手ごとのミュート/ソロ機能。インタラクティブなギタータブ譜エディター。20種類のボーカルプリセット、10種類の楽器音色、7種類のチューニングシステム、およびLLMに対応したスコアAPIを備えたブラウザインターフェース。2つのカラーモードで表示できるピアノロール。継続的な学習のための練習記録。サーバーの再起動後もセッションの状態が保持されます。MIDIによる同伴機能、アノテーションの品質評価、およびクロスジャンルのパターン認識。MIDIデータはすべて含まれており、AIが学習するにつれてライブラリは成長します。
 
 ## セキュリティとプライバシー
 

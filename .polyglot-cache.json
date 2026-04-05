@@ -4648,6 +4648,3849 @@
       "timestamp": 1775099229198,
       "source": "MIT\r",
       "targetLang": "pt"
+    },
+    "302a89c031e1b99b": {
+      "translation": "这是什么？",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "What is this?",
+      "targetLang": "zh"
+    },
+    "cd06ab86a18ff15e": {
+      "translation": "一种人工智能学习演奏的钢琴和吉他。它不是合成器，也不是 MIDI 库，而是一种教学工具。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "A piano and guitar that AI learns to play. Not a synthesizer, not a MIDI library — a teaching instrument.\r",
+      "targetLang": "zh"
+    },
+    "8dba4452bffc2b05": {
+      "translation": "大型语言模型（LLM）可以阅读和书写文本，但它无法像人类一样体验音乐。它没有耳朵，没有手指，也没有肌肉记忆。AI Jam Sessions 通过赋予模型它实际可以使用的感官来弥补这一差距：",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "An LLM can read and write text, but it can't experience music the way we do. No ears, no fingers, no muscle memory. AI Jam Sessions closes that gap by giving the model senses it can actually use:\r",
+      "targetLang": "zh"
+    },
+    "cb338cae487ca196": {
+      "translation": "- **阅读**：真实的 MIDI 音符，带有详细的音乐注释。不是手工编写的近似值，而是经过解析、分析和解释的内容。\n- **听觉**：六个音频引擎（钢琴音源、采样钢琴、人声样本、物理人声声道、加法人声合成器、物理建模吉他），通过您的扬声器播放，让房间里的“人类”成为人工智能的“耳朵”。\n- **视觉**：钢琴卷轴，以 SVG 格式显示演奏的内容，模型可以读取并验证。一个交互式的吉他指法编辑器。一个带有可视化键盘、双模式音符编辑器和调音实验室的浏览器界面。\n- **记忆**：一个练习记录，可以跨会话保存，从而随着时间的推移不断积累学习成果。\n- **歌唱**：带有 20 种预设人声的物理人声合成，从歌剧女高音到电子合唱。带有音阶、旋律和音节叙述的合唱模式。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "- **Reading** — real MIDI sheet music with deep musical annotations. Not hand-written approximations — parsed, analyzed, and explained.\r\n- **Hearing** — six audio engines (oscillator piano, sample piano, vocal samples, physical vocal tract, additive vocal synth, physically-modeled guitar) that play through your speakers, so the humans in the room become the AI's ears.\r\n- **Seeing** — a piano roll that renders what was played as SVG the model can read back and verify. An interactive guitar tablature editor. A browser cockpit with a visual keyboard, dual-mode note editor, and tuning lab.\r\n- **Remembering** — a practice journal that persists across sessions, so learning compounds over time.\r\n- **Singing** — vocal tract synthesis with 20 voice presets, from operatic soprano to electronic choir. Sing-along mode with solfege, contour, and syllable narration.\r",
+      "targetLang": "zh"
+    },
+    "a3dfdac414027b0e": {
+      "translation": "每个 12 个流派中的一个都包含一个经过丰富注释的示例——一个参考作品，人工智能首先研究，并包含历史背景、逐小节的结构分析、关键时刻、教学目标和演奏技巧。其他 96 首歌曲是原始 MIDI 文件，等待人工智能吸收模式、演奏音乐并编写自己的注释。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Each of the 12 genres has a richly annotated exemplar — a reference piece the AI studies first, with historical context, bar-by-bar structural analysis, key moments, teaching goals, and performance tips. The other 96 songs are raw MIDI, waiting for the AI to absorb the patterns, play the music, and write its own annotations.\r",
+      "targetLang": "zh"
+    },
+    "03611abda24fd0a8": {
+      "translation": "钢琴卷轴",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "The Piano Roll",
+      "targetLang": "zh"
+    },
+    "27bdf37156f163cf": {
+      "translation": "钢琴卷轴是人工智能观察音乐的方式。它将任何歌曲都以 SVG 格式显示——蓝色表示右手，珊瑚色表示左手，并带有节拍网格、力度变化和小节边界：",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "The piano roll is how the AI sees music. It renders any song as SVG — blue for right hand, coral for left, with beat grids, dynamics, and measure boundaries:\r",
+      "targetLang": "zh"
+    },
+    "1b274eec02f509b2": {
+      "translation": "有两种颜色模式：**手部**（蓝色/珊瑚色）或**音高类别**（彩色光谱——每个 C 是红色，每个 F# 是青色）。SVG 格式意味着模型既可以查看图像，也可以读取标记以验证音高、节奏和手部独立性。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Two color modes: **hand** (blue/coral) or **pitch-class** (chromatic rainbow — every C is red, every F# is cyan). The SVG format means the model can both see the image and read the markup to verify pitch, rhythm, and hand independence.\r",
+      "targetLang": "zh"
+    },
+    "992402feea44b06b": {
+      "translation": "控制面板",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "The Cockpit",
+      "targetLang": "zh"
+    },
+    "d4a6937d03693d5e": {
+      "translation": "一个基于浏览器的乐器和人声工作室，它与 MCP 服务器并行打开。没有插件，没有数字音频工作站（DAW），而是一个带有钢琴的网页。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "A browser-based instrument and vocal studio that opens alongside the MCP server. No plugins, no DAW — just a web page with a piano.\r",
+      "targetLang": "zh"
+    },
+    "e37fbd5ff99ac450": {
+      "translation": "- **双模式钢琴卷轴**：在乐器模式（彩色音高类别）和人声模式（音符按元音形状着色：/a/ /e/ /i/ /o/ /u/）之间切换。\n- **可视化键盘**：C4 的两个八度，映射到您的 QWERTY 键盘。单击或键入。\n- **20 种人声预设**：15 种 Kokoro 映射的人声（Aoede、Heart、Jessica、Sky、Eric、Fenrir、Liam、Onyx、Alice、Emma、Isabella、George、Lewis，以及合唱和合成人声），4 种声道映射的人声，以及一个合成合唱部分。\n- **10 种乐器预设**：6 种服务器端的钢琴音色，以及合成垫、风琴、钟声和弦乐。\n- **音符检查器**：单击任何音符以编辑力度、元音和呼吸感。\n- **7 种调音系统**：平均律、纯音律（大调/小调）、毕达哥拉斯、四度音程均音律、韦克迈斯特三号，或自定义的音高偏移量。可调节的 A4 参考音（392–494 Hz）。\n- **调音审计**：频率表、音程测试器（带有拍频分析），以及调音导出/导入功能。\n- **乐谱导入/导出**：将整个乐谱序列化为 JSON 格式，并将其加载回来。\n- **面向 LLM 的 API**：`window.__cockpit` 暴露了 `exportScore()`、`importScore()`、`addNote()`、`play()`、`stop()`、`panic()`、`setMode()` 和 `getScore()` 函数，以便大型语言模型可以编程地进行作曲、编排和播放。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "- **Dual-mode piano roll** — switch between Instrument mode (chromatic pitch-class colors) and Vocal mode (notes colored by vowel shape: /a/ /e/ /i/ /o/ /u/)\r\n- **Visual keyboard** — two octaves from C4, mapped to your QWERTY keyboard. Click or type.\r\n- **20 voice presets** — 15 Kokoro-mapped voices (Aoede, Heart, Jessica, Sky, Eric, Fenrir, Liam, Onyx, Alice, Emma, Isabella, George, Lewis, plus choir and synth-vox), 4 tract-mapped voices, and a synthetic choir section\r\n- **10 instrument presets** — the 6 server-side piano voices plus synth-pad, organ, bell, and strings\r\n- **Note inspector** — click any note to edit velocity, vowel, and breathiness\r\n- **7 tuning systems** — Equal temperament, just intonation (major/minor), Pythagorean, quarter-comma meantone, Werckmeister III, or custom cent offsets. Adjustable A4 reference (392–494 Hz).\r\n- **Tuning audit** — frequency table, interval tester with beat-frequency analysis, and tuning export/import\r\n- **Score import/export** — serialize the entire score as JSON and load it back\r\n- **LLM-facing API** — `window.__cockpit` exposes `exportScore()`, `importScore()`, `addNote()`, `play()`, `stop()`, `panic()`, `setMode()`, and `getScore()` so an LLM can compose, arrange, and play back programmatically\r",
+      "targetLang": "zh"
+    },
+    "6eae6d704291081b": {
+      "translation": "学习循环",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "The Learning Loop",
+      "targetLang": "zh"
+    },
+    "ef7a1fa61c1597b2": {
+      "translation": "歌曲库",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "The Song Library",
+      "targetLang": "zh"
+    },
+    "a6dbb81fef32ebf5": {
+      "translation": "包含 12 个流派的 120 首歌曲，全部来自真实的 MIDI 文件。每个流派都有一份经过详细注释的示例，包括历史背景、逐小节的和谐分析、关键时刻、教学目标和演奏技巧（包括人声指导）。这些示例作为模板：人工智能首先研究一个示例，然后对其他歌曲进行注释。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "120 songs across 12 genres, built from real MIDI files. Each genre has one deeply annotated exemplar — with historical context, bar-by-bar harmonic analysis, key moments, teaching goals, and performance tips (including vocal guidance). These exemplars serve as templates: the AI studies one, then annotates the rest.\r",
+      "targetLang": "zh"
+    },
+    "36eebfaab42416a5": {
+      "translation": "流派",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Genre",
+      "targetLang": "zh"
+    },
+    "842c15fa772ac073": {
+      "translation": "示例",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Exemplar",
+      "targetLang": "zh"
+    },
+    "1cc65f178602707f": {
+      "translation": "关键",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Key",
+      "targetLang": "zh"
+    },
+    "2dd7381b7bf90516": {
+      "translation": "它所教授的内容",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "What it teaches",
+      "targetLang": "zh"
+    },
+    "ee49be3b42803663": {
+      "translation": "布鲁斯",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Blues",
+      "targetLang": "zh"
+    },
+    "255630e6874423d0": {
+      "translation": "《The Thrill Is Gone》（B.B. King）",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "The Thrill Is Gone (B.B. King)",
+      "targetLang": "zh"
+    },
+    "667c33ad886a2b92": {
+      "translation": "B小调",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "B minor",
+      "targetLang": "zh"
+    },
+    "dfef512805575034": {
+      "translation": "小调布鲁斯形式，呼应，在节拍之后演奏",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Minor blues form, call-and-response, playing behind the beat",
+      "targetLang": "zh"
+    },
+    "c286892032560a9d": {
+      "translation": "古典",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Classical",
+      "targetLang": "zh"
+    },
+    "057731312a935e80": {
+      "translation": "《致爱丽丝》（贝多芬）",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Für Elise (Beethoven)",
+      "targetLang": "zh"
+    },
+    "558d0e3024c52fbd": {
+      "translation": "A小调",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "A minor",
+      "targetLang": "zh"
+    },
+    "33aeea3d01d0d47f": {
+      "translation": "回旋曲形式，触键技巧，踏板技巧",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Rondo form, touch differentiation, pedaling discipline",
+      "targetLang": "zh"
+    },
+    "9fb580c74884743f": {
+      "translation": "电影配乐",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Film",
+      "targetLang": "zh"
+    },
+    "f9f1b5d802a8b721": {
+      "translation": "《Comptine d'un autre été》（蒂尔森）",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Comptine d'un autre été (Tiersen)",
+      "targetLang": "zh"
+    },
+    "400dea6d2d4d9297": {
+      "translation": "E小调",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "E minor",
+      "targetLang": "zh"
+    },
+    "9100f1a85cd53a8c": {
+      "translation": "琶音织体，动态的音响架构，不改变和声",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Arpeggiated textures, dynamic architecture without harmonic change",
+      "targetLang": "zh"
+    },
+    "9f1217eff927ab8e": {
+      "translation": "民谣",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Folk",
+      "targetLang": "zh"
+    },
+    "07daa39d7d882230": {
+      "translation": "《Greensleeves》",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Greensleeves",
+      "targetLang": "zh"
+    },
+    "0691233fbf6db0b0": {
+      "translation": "3/4拍子的华尔兹节奏，调式混合，文艺复兴时期的声乐风格",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "3/4 waltz feel, modal mixture, Renaissance vocal style",
+      "targetLang": "zh"
+    },
+    "8e4c4d855a712f14": {
+      "translation": "爵士乐",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Jazz",
+      "targetLang": "zh"
+    },
+    "88618358c78ae68e": {
+      "translation": "《Autumn Leaves》（科斯玛）",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Autumn Leaves (Kosma)",
+      "targetLang": "zh"
+    },
+    "face5ae00b192e92": {
+      "translation": "G小调",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "G minor",
+      "targetLang": "zh"
+    },
+    "d2ab19f00047d7d4": {
+      "translation": "ii-V-I进行，导音，切分八分音符，无根音的伴奏",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "ii-V-I progressions, guide tones, swing eighths, rootless voicings",
+      "targetLang": "zh"
+    },
+    "28ee23eee0575697": {
+      "translation": "拉丁",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Latin",
+      "targetLang": "zh"
+    },
+    "0027e61fbb00b73d": {
+      "translation": "《The Girl from Ipanema》（若林）",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "The Girl from Ipanema (Jobim)",
+      "targetLang": "zh"
+    },
+    "cd89eb1cdb368dac": {
+      "translation": "F大调",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "F major",
+      "targetLang": "zh"
+    },
+    "44044d7e489ddbfe": {
+      "translation": "桑巴节奏，色彩变化，人声的克制",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Bossa nova rhythm, chromatic modulation, vocal restraint",
+      "targetLang": "zh"
+    },
+    "beb635c673bcb1a0": {
+      "translation": "新世纪音乐",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "New-Age",
+      "targetLang": "zh"
+    },
+    "b0ba89c21281dbf3": {
+      "translation": "《River Flows in You》（Yiruma）",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "River Flows in You (Yiruma)",
+      "targetLang": "zh"
+    },
+    "53e344323acda2d8": {
+      "translation": "A大调",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "A major",
+      "targetLang": "zh"
+    },
+    "591750824ccac65b": {
+      "translation": "I-V-vi-IV和弦识别，流畅的琶音，弹性节奏",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "I-V-vi-IV recognition, flowing arpeggios, rubato",
+      "targetLang": "zh"
+    },
+    "8528c9920d3d82c1": {
+      "translation": "流行音乐",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Pop",
+      "targetLang": "zh"
+    },
+    "b6f43a2b85e8654b": {
+      "translation": "《Imagine》（约翰·列侬）",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Imagine (Lennon)",
+      "targetLang": "zh"
+    },
+    "f406b2da6d40ed38": {
+      "translation": "C大调",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "C major",
+      "targetLang": "zh"
+    },
+    "7518ee5e8208730d": {
+      "translation": "琶音伴奏，克制，人声的真诚",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Arpeggiated accompaniment, restraint, vocal sincerity",
+      "targetLang": "zh"
+    },
+    "5fe399889ed7a07f": {
+      "translation": "拉格音乐",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Ragtime",
+      "targetLang": "zh"
+    },
+    "b5f86491165775a5": {
+      "translation": "《The Entertainer》（乔普林）",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "The Entertainer (Joplin)",
+      "targetLang": "zh"
+    },
+    "61b38d93e9ddd07d": {
+      "translation": "低音“oom-pah”，切分音，多乐段形式，节奏控制",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Oom-pah bass, syncopation, multi-strain form, tempo discipline",
+      "targetLang": "zh"
+    },
+    "2ca9c44ce04a0ccb": {
+      "translation": "R&B",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "R&B",
+      "targetLang": "zh"
+    },
+    "578051035226c4b9": {
+      "translation": "《Superstition》（史蒂夫·汪达）",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Superstition (Stevie Wonder)",
+      "targetLang": "zh"
+    },
+    "0ddb02970f58aa22": {
+      "translation": "Eb小调",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Eb minor",
+      "targetLang": "zh"
+    },
+    "fcc8f6ead38465d4": {
+      "translation": "16分音符的放克，打击乐键盘，弱音",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "16th-note funk, percussive keyboard, ghost notes",
+      "targetLang": "zh"
+    },
+    "d08757e8fda26f7c": {
+      "translation": "摇滚乐",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Rock",
+      "targetLang": "zh"
+    },
+    "a6323c9f0e2c36c6": {
+      "translation": "《Your Song》（埃尔顿·约翰）",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Your Song (Elton John)",
+      "targetLang": "zh"
+    },
+    "dff92cb4bd2abbc5": {
+      "translation": "Eb大调",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Eb major",
+      "targetLang": "zh"
+    },
+    "ebce3ef74f719ae3": {
+      "translation": "钢琴抒情曲的声部进行，转位，对话式的演唱",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Piano ballad voice-leading, inversions, conversational singing",
+      "targetLang": "zh"
+    },
+    "2f0482a57d10d9d7": {
+      "translation": "灵魂乐",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Soul",
+      "targetLang": "zh"
+    },
+    "86a56963729f8faf": {
+      "translation": "《Lean on Me》（比尔·惠特尼）",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Lean on Me (Bill Withers)",
+      "targetLang": "zh"
+    },
+    "b5b0cca4f64c9834": {
+      "translation": "音阶旋律，福音风格的伴奏，呼应",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Diatonic melody, gospel accompaniment, call-and-response",
+      "targetLang": "zh"
+    },
+    "d17437c26f94963f": {
+      "translation": "歌曲从**原始**（仅MIDI）状态 → **已注释** → **已完成**（可完全使用音乐语言播放）状态进行转换。人工智能通过学习歌曲并使用`annotate_song`进行注释来推广歌曲。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Songs progress from **raw** (MIDI only) → **annotated** → **ready** (fully playable with musical language). The AI promotes songs by studying them and writing annotations with `annotate_song`.\r",
+      "targetLang": "zh"
+    },
+    "d537b4bf265f5f67": {
+      "translation": "声音引擎",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Sound Engines",
+      "targetLang": "zh"
+    },
+    "cdaadf7cea1a1d04": {
+      "translation": "六个引擎，以及一个分层组合器，可以同时运行任意两个：",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Six engines, plus a layered combinator that runs any two simultaneously:\r",
+      "targetLang": "zh"
+    },
+    "ea3f7b4ee391c7b5": {
+      "translation": "引擎",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Engine",
+      "targetLang": "zh"
+    },
+    "df5b7f308c803d5c": {
+      "translation": "类型",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Type",
+      "targetLang": "zh"
+    },
+    "89d279af664d494a": {
+      "translation": "声音特点",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "What it sounds like",
+      "targetLang": "zh"
+    },
+    "0c3f51391ec80ea8": {
+      "translation": "加法合成",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Additive synthesis",
+      "targetLang": "zh"
+    },
+    "8847884ae0e6e7a6": {
+      "translation": "带锤击声的复音钢琴，非谐性，48声部复音，立体声效果。无任何依赖。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Multi-harmonic piano with hammer noise, inharmonicity, 48-voice polyphony, stereo imaging. Zero dependencies.",
+      "targetLang": "zh"
+    },
+    "ddec5d9dcf1d936b": {
+      "translation": "WAV播放",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "WAV playback",
+      "targetLang": "zh"
+    },
+    "b6be1566e9645cbf": {
+      "translation": "Salamander Grand Piano — 480个采样，16个力度层，88个琴键。真正的钢琴音色。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Salamander Grand Piano — 480 samples, 16 velocity layers, 88 keys. The real thing.",
+      "targetLang": "zh"
+    },
+    "064d8d8ef1c514d8": {
+      "translation": "移调采样",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Pitch-shifted samples",
+      "targetLang": "zh"
+    },
+    "9a0ddd3d7ae8328a": {
+      "translation": "带有滑音和连奏模式的持续元音。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Sustained vowel tones with portamento and legato mode.",
+      "targetLang": "zh"
+    },
+    "f896e51be9042ab1": {
+      "translation": "物理建模",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Physical model",
+      "targetLang": "zh"
+    },
+    "7a9213553f038113": {
+      "translation": "Pink Trombone — 通过44个数字波导的LF声带波形。四个预设：高音、中音、次中音、低音。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Pink Trombone — LF glottal waveform through a 44-cell digital waveguide. Four presets: soprano, alto, tenor, bass.",
+      "targetLang": "zh"
+    },
+    "8969719dd8b4bca8": {
+      "translation": "15个带有音色塑造、呼吸感、颤音的物理建模人声预设。确定性（带种子数的随机数生成器）。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "15 Kokoro voice presets with formant shaping, breathiness, vibrato. Deterministic (seeded RNG).",
+      "targetLang": "zh"
+    },
+    "fe30d6b4fb9949bc": {
+      "translation": "物理建模拨弦乐器 — 4个预设（钢弦原声吉他、尼龙古典吉他、爵士拱琴、12弦吉他），8种调弦，17个可调参数。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Physically-modeled plucked string — 4 presets (steel dreadnought, nylon classical, jazz archtop, twelve-string), 8 tunings, 17 tunable parameters.",
+      "targetLang": "zh"
+    },
+    "0392ae719db57cbf": {
+      "translation": "组合器",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Combinator",
+      "targetLang": "zh"
+    },
+    "0bf0fe7beee63e3c": {
+      "translation": "将两个引擎组合在一起，并将每个MIDI事件发送到两个引擎 — 钢琴+合成器，人声+合成器，等等。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Wraps two engines and dispatches every MIDI event to both — piano+synth, vocal+synth, etc.",
+      "targetLang": "zh"
+    },
+    "680f397bc17c13dd": {
+      "translation": "键盘音色",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Keyboard Voices",
+      "targetLang": "zh"
+    },
+    "a132dfd024059747": {
+      "translation": "六个可调的钢琴音色，每个音色可以独立调整参数（明亮度、衰减、琴槌硬度、失谐、立体声宽度等）：",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Six tunable piano voices, each adjustable per-parameter (brightness, decay, hammer hardness, detune, stereo width, and more):\r",
+      "targetLang": "zh"
+    },
+    "41fd12bb6371094a": {
+      "translation": "音色",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Voice",
+      "targetLang": "zh"
+    },
+    "51a957196ab2b1ea": {
+      "translation": "特点",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Character",
+      "targetLang": "zh"
+    },
+    "c0d8e615ad9fbfbc": {
+      "translation": "大钢琴",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Concert Grand",
+      "targetLang": "zh"
+    },
+    "71776f0b19d8d54b": {
+      "translation": "丰富、饱满、古典",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Rich, full, classical",
+      "targetLang": "zh"
+    },
+    "c36d5e8250a5b339": {
+      "translation": "立式钢琴",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Upright",
+      "targetLang": "zh"
+    },
+    "0108ccbf51c15072": {
+      "translation": "温暖、亲密、民谣",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Warm, intimate, folk",
+      "targetLang": "zh"
+    },
+    "e1353826da7a5acf": {
+      "translation": "电钢琴",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Electric Piano",
+      "targetLang": "zh"
+    },
+    "c26a3e045ebae8be": {
+      "translation": "丝滑、爵士、Fender Rhodes 风格",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Silky, jazzy, Fender Rhodes feel",
+      "targetLang": "zh"
+    },
+    "7cefd10c5603eb14": {
+      "translation": "酒吧钢琴",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Honky-Tonk",
+      "targetLang": "zh"
+    },
+    "99c1691c41cc0485": {
+      "translation": "失谐、拉格泰姆、酒馆",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Detuned, ragtime, saloon",
+      "targetLang": "zh"
+    },
+    "62fe0db893b858ab": {
+      "translation": "音乐盒",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Music Box",
+      "targetLang": "zh"
+    },
+    "63a5bc06137add07": {
+      "translation": "晶莹剔透、空灵",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Crystalline, ethereal",
+      "targetLang": "zh"
+    },
+    "85f27d8d77fa2e27": {
+      "translation": "明亮的大钢琴",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Bright Grand",
+      "targetLang": "zh"
+    },
+    "73bf9546a5bdae00": {
+      "translation": "锐利、现代、流行",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Cutting, contemporary, pop",
+      "targetLang": "zh"
+    },
+    "a1ffea5142f017d9": {
+      "translation": "吉他音色",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Guitar Voices",
+      "targetLang": "zh"
+    },
+    "968f65234dc75656": {
+      "translation": "四种吉他音色预设，采用物理建模的弦乐合成技术，每个预设包含17个可调节参数（明亮度、共鸣、拨弦位置、弦阻尼等）：",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Four guitar voice presets with physically-modeled string synthesis, each with 17 tunable parameters (brightness, body resonance, pluck position, string damping, and more):\r",
+      "targetLang": "zh"
+    },
+    "4c6469fa47c9cb26": {
+      "translation": "钢制大号吉他",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Steel Dreadnought",
+      "targetLang": "zh"
+    },
+    "5e7a91cf5c7b8828": {
+      "translation": "明亮、平衡、经典原声",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Bright, balanced, classic acoustic",
+      "targetLang": "zh"
+    },
+    "8aadccfad420adab": {
+      "translation": "尼龙古典吉他",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Nylon Classical",
+      "targetLang": "zh"
+    },
+    "c49bf0fcf5180705": {
+      "translation": "温暖、柔和、圆润",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Warm, soft, rounded",
+      "targetLang": "zh"
+    },
+    "f33bfe329882d4cd": {
+      "translation": "爵士拱琴",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Jazz Archtop",
+      "targetLang": "zh"
+    },
+    "6b3bd2a0a89b02f9": {
+      "translation": "柔和、木质、干净",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Mellow, woody, clean",
+      "targetLang": "zh"
+    },
+    "8b7a63ffa1782310": {
+      "translation": "12弦吉他",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Twelve-String",
+      "targetLang": "zh"
+    },
+    "1913dbf72dd8c4d4": {
+      "translation": "闪耀、双倍、合唱效果",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Shimmering, doubled, chorus-like",
+      "targetLang": "zh"
+    },
+    "f50c0eb8838263eb": {
+      "translation": "练习日记",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "The Practice Journal",
+      "targetLang": "zh"
+    },
+    "6f81e9e041eb964d": {
+      "translation": "每次练习结束后，服务器会记录发生的情况，包括歌曲、速度、节拍数、时长。人工智能会添加自己的见解：它注意到了什么、识别到了什么模式、以及接下来应该尝试什么。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "After every session, the server captures what happened — which song, what speed, how many measures, how long. The AI adds its own reflections: what it noticed, what patterns it recognized, what to try next.\r",
+      "targetLang": "zh"
+    },
+    "5ef077769fb0fa97": {
+      "translation": "每天生成一个Markdown文件，存储在`~/.ai-jam-sessions/journal/`目录下。可读性强，只允许追加。下次练习时，人工智能会读取日记，并从上次停止的地方继续。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "One markdown file per day, stored in `~/.ai-jam-sessions/journal/`. Human-readable, append-only. Next session, the AI reads its journal and picks up where it left off.\r",
+      "targetLang": "zh"
+    },
+    "ed61d0d109031128": {
+      "translation": "安装",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Install",
+      "targetLang": "zh"
+    },
+    "4737aaf1586c5a76": {
+      "translation": "需要**Node.js 18+**。不需要MIDI驱动程序、虚拟端口或外部软件。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external software.\r",
+      "targetLang": "zh"
+    },
+    "21f06e44d7b1312e": {
+      "translation": "Claude Desktop / Claude Code",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Claude Desktop / Claude Code",
+      "targetLang": "zh"
+    },
+    "8c1c73cce1e5447b": {
+      "translation": "MCP 工具",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "MCP Tools",
+      "targetLang": "zh"
+    },
+    "abc6f0e5e425d461": {
+      "translation": "包含41个工具和3个提示模板，分布在六个类别中：",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "41 tools and 3 prompt templates across six categories:\r",
+      "targetLang": "zh"
+    },
+    "5d543993fd048703": {
+      "translation": "学习",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Learn",
+      "targetLang": "zh"
+    },
+    "759f4b4ba76e488f": {
+      "translation": "工具",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Tool",
+      "targetLang": "zh"
+    },
+    "e69eb472f86c7cb9": {
+      "translation": "功能",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "What it does",
+      "targetLang": "zh"
+    },
+    "f31a7ab3304d91bf": {
+      "translation": "按流派、难度或关键词浏览",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Browse by genre, difficulty, or keyword",
+      "targetLang": "zh"
+    },
+    "ed91e5050fb6d846": {
+      "translation": "完整的乐曲分析，包括结构、关键部分、教学目标、风格技巧",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Full musical analysis — structure, key moments, teaching goals, style tips",
+      "targetLang": "zh"
+    },
+    "106b9d9c4c09e94d": {
+      "translation": "整个库的统计数据：歌曲总数、流派、难度",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Library-wide stats: total songs, genres, difficulties",
+      "targetLang": "zh"
+    },
+    "6f1c81a1a05bfd02": {
+      "translation": "每个音符的音高、力度和教学提示",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Every measure's notes, dynamics, and teaching notes",
+      "targetLang": "zh"
+    },
+    "ac416da6bf542694": {
+      "translation": "深入分析单个音符：指法、力度、上下文",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Deep dive into a single measure — fingering, dynamics, context",
+      "targetLang": "zh"
+    },
+    "6e6c8156cf4a7ea3": {
+      "translation": "根据流派、难度以及您已演奏过的乐曲进行推荐",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Recommendation based on genre, difficulty, and what you've played",
+      "targetLang": "zh"
+    },
+    "9bf2e6cca93f003f": {
+      "translation": "为一首歌曲推荐速度、调式、音色设置和命令行",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Recommended speed, mode, voice settings, and CLI command for a song",
+      "targetLang": "zh"
+    },
+    "7b9713cf3bfadfd1": {
+      "translation": "跨流派的模式识别：关键关系、音高/音程相似性、共享结构、教学关联",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Cross-genre pattern recognition — key relationships, pitch/interval similarity, shared forms, teaching connections",
+      "targetLang": "zh"
+    },
+    "3c573836c1be1d74": {
+      "translation": "跟踪整个库的标注质量：评分、等级和改进建议",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Track annotation quality across the library — scores, grades, and improvement suggestions",
+      "targetLang": "zh"
+    },
+    "5a0d9bd7c5f3b0b7": {
+      "translation": "服务器版本、库统计数据、引擎列表、活动会话",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Server version, library stats, engine list, active session",
+      "targetLang": "zh"
+    },
+    "00d722982f8f4df2": {
+      "translation": "播放",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Play",
+      "targetLang": "zh"
+    },
+    "cadb92ae3c04294c": {
+      "translation": "通过扬声器播放：库中的歌曲或原始.mid文件。可以使用任何引擎、速度、调式和节拍范围。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Play through speakers — library songs or raw .mid files. Any engine, speed, mode, measure range.",
+      "targetLang": "zh"
+    },
+    "02bceb07217fde91": {
+      "translation": "停止",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Stop",
+      "targetLang": "zh"
+    },
+    "52fc4e5ade84ffa9": {
+      "translation": "暂停或继续",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Pause or resume",
+      "targetLang": "zh"
+    },
+    "dfbe16a6afdfbfb7": {
+      "translation": "在播放过程中更改速度（0.1×–4.0×）",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Change speed mid-playback (0.1×–4.0×)",
+      "targetLang": "zh"
+    },
+    "7711533845cd6613": {
+      "translation": "实时快照：当前节拍、速度、音色、状态",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Real-time snapshot: current measure, tempo, speed, keyboard voice, state",
+      "targetLang": "zh"
+    },
+    "9ca219c522da5adf": {
+      "translation": "渲染为SVG（可手动着色或音阶色轮）",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Render as SVG (hand color or pitch-class chromatic rainbow)",
+      "targetLang": "zh"
+    },
+    "a0bcb4223ddeac06": {
+      "translation": "对MIDI播放进行评分：音高准确性、节奏、完整性，并提供等级反馈",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Score a MIDI play-along — pitch accuracy, timing, completeness, with graded feedback",
+      "targetLang": "zh"
+    },
+    "5a24f94c57f26224": {
+      "translation": "练习时，可以静音或取消静音左手/右手，以便一次隔离一只手",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Mute or unmute left/right hand during practice — isolate one hand at a time",
+      "targetLang": "zh"
+    },
+    "282443abf7271f93": {
+      "translation": "在播放之前，查看所有教学提示和关键部分",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "See all teaching notes and key moments before playing",
+      "targetLang": "zh"
+    },
+    "afdd8f9e2d96991e": {
+      "translation": "唱歌",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Sing",
+      "targetLang": "zh"
+    },
+    "80ff47620b3aea20": {
+      "translation": "可演唱的文本：音符名称、音阶、音高轮廓或音节。可以带或不带钢琴伴奏。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Singable text — note-names, solfege, contour, or syllables. With or without piano accompaniment.",
+      "targetLang": "zh"
+    },
+    "a07871ee0bf8fb47": {
+      "translation": "生成即兴演奏提示：和弦进行、旋律框架和风格提示，用于重新演绎",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Generate a jam brief — chord progression, melody outline, and style hints for reinterpretation",
+      "targetLang": "zh"
+    },
+    "0adf17ba4e87f8fd": {
+      "translation": "吉他",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Guitar",
+      "targetLang": "zh"
+    },
+    "2c3d3ef43deff6e3": {
+      "translation": "将交互式吉他谱以HTML形式渲染：可点击编辑、播放光标、键盘快捷键",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Render interactive guitar tablature as HTML — click-to-edit, playback cursor, keyboard shortcuts",
+      "targetLang": "zh"
+    },
+    "2c6e43bee008df10": {
+      "translation": "可用的吉他音色预设",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Available guitar voice presets",
+      "targetLang": "zh"
+    },
+    "53131ffd62f4f530": {
+      "translation": "可用的吉他调弦系统（标准调、降D调、开放G调、DADGAD调等）",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Available guitar tuning systems (standard, drop-D, open G, DADGAD, etc.)",
+      "targetLang": "zh"
+    },
+    "4832b078fe3c42e6": {
+      "translation": "调整任何吉他音色的任何参数。参数设置在不同会话中保持不变。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Adjust any parameter of any guitar voice. Persists across sessions.",
+      "targetLang": "zh"
+    },
+    "58f415388d1204a0": {
+      "translation": "当前吉他音色的配置与默认设置的比较",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Current guitar voice config vs factory defaults",
+      "targetLang": "zh"
+    },
+    "82852c559966f678": {
+      "translation": "重置吉他音色的默认设置",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Factory reset a guitar voice",
+      "targetLang": "zh"
+    },
+    "d4856eb53baefc4d": {
+      "translation": "构建",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Build",
+      "targetLang": "zh"
+    },
+    "3d172bc59f63a819": {
+      "translation": "以JSON格式添加新的歌曲",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Add a new song as JSON",
+      "targetLang": "zh"
+    },
+    "4a98a846a5b8368c": {
+      "translation": "导入包含元数据的.mid文件",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Import a .mid file with metadata",
+      "targetLang": "zh"
+    },
+    "9eb15c2e9baabcb8": {
+      "translation": "为一段未加工的歌曲编写音乐语言，并将其完善。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Write musical language for a raw song and promote it to ready",
+      "targetLang": "zh"
+    },
+    "30265e9405fb71ee": {
+      "translation": "带有自动捕获会话数据的日记条目。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Journal entry with auto-captured session data",
+      "targetLang": "zh"
+    },
+    "bb156bd76a166c59": {
+      "translation": "加载最近的条目，用于参考。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704921,
+      "source": "Load recent entries for context",
+      "targetLang": "zh"
+    },
+    "cc9813f52f59b088": {
+      "translation": "可用的键盘音色。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704922,
+      "source": "Available keyboard voices",
+      "targetLang": "zh"
+    },
+    "e98c90621cd11bc7": {
+      "translation": "调整任何键盘音色的任何参数。 这些设置会跨会话保存。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704922,
+      "source": "Adjust any parameter of any keyboard voice. Persists across sessions.",
+      "targetLang": "zh"
+    },
+    "23a7e89cbc08ed33": {
+      "translation": "当前配置与出厂默认设置的比较。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704922,
+      "source": "Current config vs factory defaults",
+      "targetLang": "zh"
+    },
+    "0c8989aa476fd20e": {
+      "translation": "将键盘音色恢复到出厂设置。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704922,
+      "source": "Factory reset a keyboard voice",
+      "targetLang": "zh"
+    },
+    "5abcd956f695dbce": {
+      "translation": "从五个维度评估乐谱标注的质量：完整性、深度、具体性、教学价值、词汇。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704922,
+      "source": "Score annotation quality across 5 dimensions — completeness, depth, specificity, teaching value, vocabulary",
+      "targetLang": "zh"
+    },
+    "648da2fe34bb112c": {
+      "translation": "在添加歌曲之前，验证歌曲的 JSON 文件是否符合 schema。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704922,
+      "source": "Validate a song JSON against the schema before adding",
+      "targetLang": "zh"
+    },
+    "ee593ed6fc68c827": {
+      "translation": "将歌曲的调性升高或降低半音——改变主音，改变音符。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704922,
+      "source": "Transpose a song up or down by semitones — new key, new notes",
+      "targetLang": "zh"
+    },
+    "f101fa55c10e7428": {
+      "translation": "查看歌曲的结构部分（引子、主歌、副歌等）。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704922,
+      "source": "View structural sections of a song (Intro, Verse, Chorus, etc.)",
+      "targetLang": "zh"
+    },
+    "61c589527fe33190": {
+      "translation": "为歌曲添加结构标记，用于结构化导航。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704922,
+      "source": "Add a section marker to a song for structural navigation",
+      "targetLang": "zh"
+    },
+    "9c226c99278f19bc": {
+      "translation": "MCP 提示。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704922,
+      "source": "MCP Prompts",
+      "targetLang": "zh"
+    },
+    "c67cd117da53638d": {
+      "translation": "三个用于结构化教学工作流程的提示模板：",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704922,
+      "source": "Three prompt templates for structured teaching workflows:\r",
+      "targetLang": "zh"
+    },
+    "abfdf94f47a8e52f": {
+      "translation": "提示。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704922,
+      "source": "Prompt",
+      "targetLang": "zh"
+    },
+    "738d9254627d2e70": {
+      "translation": "引导式乐谱标注工作流程：学习范例，为一段未加工的歌曲编写音乐语言。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704922,
+      "source": "Guided annotation workflow — study an exemplar, write musical language for a raw song",
+      "targetLang": "zh"
+    },
+    "118849f810313eac": {
+      "translation": "基于流派、难度和目标，构建结构化的练习计划。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704922,
+      "source": "Build a structured practice plan based on genre, difficulty, and goals",
+      "targetLang": "zh"
+    },
+    "46cf995319dec584": {
+      "translation": "回顾已完成的会话：哪些方面做得好，接下来应该关注哪些方面。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704922,
+      "source": "Review a completed session — what went well, what to focus on next",
+      "targetLang": "zh"
+    },
+    "9001ce35ed1f8824": {
+      "translation": "命令行界面。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704922,
+      "source": "CLI",
+      "targetLang": "zh"
+    },
+    "32267c3a5dcfbc50": {
+      "translation": "状态。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704922,
+      "source": "Status",
+      "targetLang": "zh"
+    },
+    "573409f794be0b5b": {
+      "translation": "v1.4.0 版本：包含六个音源引擎，41 个 MCP 工具，3 个提示模板，12 个流派，共 120 首歌曲，并带有详细的范例乐谱。支持歌曲调性转换、添加结构标记，以及针对每只手的静音/独奏功能，用于专注练习。包含交互式吉他谱编辑器。浏览器界面包含 20 种人声预设、10 种乐器音色、7 种调音系统，以及一个面向 LLM 的乐谱 API。提供钢琴滚筒可视化，支持两种颜色模式。包含练习日记，用于持续学习。会话状态在服务器重启后仍然有效。支持 MIDI 伴奏、乐谱质量评估以及跨流派的模式识别。MIDI 数据已全部包含，随着 AI 的学习，库会不断扩展。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704922,
+      "source": "v1.4.0. Six sound engines, 41 MCP tools, 3 prompt templates, 120 songs across 12 genres with deeply annotated exemplars. Song transposition, section markers, per-hand mute/solo for focused practice. Interactive guitar tablature editor. Browser cockpit with 20 vocal presets, 10 instrument voices, 7 tuning systems, and an LLM-facing score API. Piano roll visualization in two color modes. Practice journal for persistent learning. Session state persistence across server restarts. MIDI play-along scoring, annotation quality assessment, and cross-genre pattern recognition. The MIDI is all there — the library grows as the AI learns.\r",
+      "targetLang": "zh"
+    },
+    "12d8f7cbd2ba033c": {
+      "translation": "安全与隐私。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704922,
+      "source": "Security & Privacy",
+      "targetLang": "zh"
+    },
+    "cbae4ae16f200768": {
+      "translation": "**访问的数据：** 歌曲库（JSON + MIDI），用户歌曲目录（`~/.ai-jam-sessions/songs/`），吉他调音配置，练习日记条目，本地音频输出设备。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704922,
+      "source": "**Data touched:** song library (JSON + MIDI), user songs directory (`~/.ai-jam-sessions/songs/`), guitar tuning configs, practice journal entries, local audio output device.\r",
+      "targetLang": "zh"
+    },
+    "d652e49ece33ac10": {
+      "translation": "**未访问的数据：** 不使用任何云 API，不涉及任何用户凭据，不收集任何浏览数据，不访问用户歌曲目录之外的任何系统文件。 不会收集或发送任何遥测数据。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704922,
+      "source": "**Data NOT touched:** no cloud APIs, no user credentials, no browsing data, no system files outside the user song directory. No telemetry is collected or sent.\r",
+      "targetLang": "zh"
+    },
+    "67f2796f4c1caef0": {
+      "translation": "**权限：** MCP 服务器仅使用标准输入/输出（不使用 HTTP）。 命令行界面访问本地文件系统和音频设备。 详细的权限策略请参见 [SECURITY.md](SECURITY.md)。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704922,
+      "source": "**Permissions:** MCP server uses stdio transport only (no HTTP). CLI accesses local filesystem and audio devices. See [SECURITY.md](SECURITY.md) for the full policy.\r",
+      "targetLang": "zh"
+    },
+    "1fb815b9a436fadb": {
+      "translation": "许可证。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704922,
+      "source": "License",
+      "targetLang": "zh"
+    },
+    "6325e155e3ad88d6": {
+      "translation": "MIT。",
+      "model": "translategemma:12b",
+      "timestamp": 1775432704922,
+      "source": "MIT\r",
+      "targetLang": "zh"
+    },
+    "1676e9ca02607edc": {
+      "translation": "¿Qué es esto?",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816595,
+      "source": "What is this?",
+      "targetLang": "es"
+    },
+    "5c798734d306ece3": {
+      "translation": "Un piano y una guitarra que una IA aprende a tocar. No es un sintetizador, ni una biblioteca MIDI; es un instrumento de aprendizaje.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816595,
+      "source": "A piano and guitar that AI learns to play. Not a synthesizer, not a MIDI library — a teaching instrument.\r",
+      "targetLang": "es"
+    },
+    "51235c49d5ce55ae": {
+      "translation": "Un modelo de lenguaje grande (LLM) puede leer y escribir texto, pero no puede experimentar la música de la misma manera que nosotros. No tiene oídos, dedos ni memoria muscular. AI Jam Sessions cierra esa brecha al proporcionar al modelo los sentidos que realmente puede usar:",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816595,
+      "source": "An LLM can read and write text, but it can't experience music the way we do. No ears, no fingers, no muscle memory. AI Jam Sessions closes that gap by giving the model senses it can actually use:\r",
+      "targetLang": "es"
+    },
+    "c636c8f458b2eaa1": {
+      "translation": "- **Lectura:** Partituras MIDI reales con anotaciones musicales detalladas. No son aproximaciones escritas a mano, sino que se analizan, se explican y se interpretan.\n- **Audición:** Seis motores de audio (piano de oscilador, piano de muestras, muestras vocales, tracto vocal físico, sintetizador vocal aditivo, guitarra modelada físicamente) que reproducen a través de tus altavoces, para que los humanos en la habitación se conviertan en los \"oídos\" de la IA.\n- **Visualización:** Un piano roll que representa lo que se ha tocado en formato SVG, que el modelo puede leer y verificar. Un editor interactivo de tablaturas de guitarra. Un panel de control en el navegador con un teclado visual, un editor de notas de doble modo y un laboratorio de afinación.\n- **Memoria:** Un diario de práctica que persiste a través de las sesiones, para que el aprendizaje se acumule con el tiempo.\n- **Canto:** Síntesis del tracto vocal con 20 preajustes de voz, desde soprano lírica hasta coro electrónico. Modo de canto con narración de solfeo, contorno y sílabas.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816595,
+      "source": "- **Reading** — real MIDI sheet music with deep musical annotations. Not hand-written approximations — parsed, analyzed, and explained.\r\n- **Hearing** — six audio engines (oscillator piano, sample piano, vocal samples, physical vocal tract, additive vocal synth, physically-modeled guitar) that play through your speakers, so the humans in the room become the AI's ears.\r\n- **Seeing** — a piano roll that renders what was played as SVG the model can read back and verify. An interactive guitar tablature editor. A browser cockpit with a visual keyboard, dual-mode note editor, and tuning lab.\r\n- **Remembering** — a practice journal that persists across sessions, so learning compounds over time.\r\n- **Singing** — vocal tract synthesis with 20 voice presets, from operatic soprano to electronic choir. Sing-along mode with solfege, contour, and syllable narration.\r",
+      "targetLang": "es"
+    },
+    "b73418729cb2fde7": {
+      "translation": "Cada uno de los 12 géneros tiene un ejemplo ricamente anotado: una pieza de referencia que la IA estudia primero, con contexto histórico, análisis estructural barra por barra, momentos clave, objetivos de enseñanza y consejos de interpretación. Las otras 96 canciones son archivos MIDI sin procesar, esperando a que la IA absorba los patrones, interprete la música y escriba sus propias anotaciones.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816595,
+      "source": "Each of the 12 genres has a richly annotated exemplar — a reference piece the AI studies first, with historical context, bar-by-bar structural analysis, key moments, teaching goals, and performance tips. The other 96 songs are raw MIDI, waiting for the AI to absorb the patterns, play the music, and write its own annotations.\r",
+      "targetLang": "es"
+    },
+    "622cc8572838ac43": {
+      "translation": "El Piano Roll",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816595,
+      "source": "The Piano Roll",
+      "targetLang": "es"
+    },
+    "60d1ac4466dfe2de": {
+      "translation": "El piano roll es la forma en que la IA \"ve\" la música. Representa cualquier canción en formato SVG: azul para la mano derecha, coral para la izquierda, con cuadrículas de ritmo, dinámica y límites de compás:",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816595,
+      "source": "The piano roll is how the AI sees music. It renders any song as SVG — blue for right hand, coral for left, with beat grids, dynamics, and measure boundaries:\r",
+      "targetLang": "es"
+    },
+    "3ea8241cda6fee8c": {
+      "translation": "Dos modos de color: **mano** (azul/coral) o **clase de tono** (arcoíris cromático: cada do es rojo, cada si es cian). El formato SVG permite que el modelo vea la imagen y lea la información para verificar el tono, el ritmo y la independencia de las manos.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816595,
+      "source": "Two color modes: **hand** (blue/coral) or **pitch-class** (chromatic rainbow — every C is red, every F# is cyan). The SVG format means the model can both see the image and read the markup to verify pitch, rhythm, and hand independence.\r",
+      "targetLang": "es"
+    },
+    "d7fe9bf5ae0c6b17": {
+      "translation": "El Panel de Control",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816595,
+      "source": "The Cockpit",
+      "targetLang": "es"
+    },
+    "83028aa2bf6af631": {
+      "translation": "Un estudio de instrumentos y voz basado en un navegador que se abre junto con el servidor MCP. No requiere plugins ni DAWs; solo una página web con un piano.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "A browser-based instrument and vocal studio that opens alongside the MCP server. No plugins, no DAW — just a web page with a piano.\r",
+      "targetLang": "es"
+    },
+    "c0d163e759eecaf9": {
+      "translation": "- **Piano roll de doble modo:** Cambia entre el modo Instrumento (colores de clase de tono cromáticos) y el modo Vocal (las notas se colorean según la forma de la vocal: /a/ /e/ /i/ /o/ /u/).\n- **Teclado visual:** Dos octavas desde C4, mapeadas a tu teclado QWERTY. Haz clic o escribe.\n- **20 preajustes de voz:** 15 voces mapeadas a Kokoro (Aoede, Heart, Jessica, Sky, Eric, Fenrir, Liam, Onyx, Alice, Emma, Isabella, George, Lewis, además de coro y voz sintética), 4 voces mapeadas al tracto vocal y una sección de coro sintético.\n- **10 preajustes de instrumento:** Las 6 voces de piano del servidor, más un sintetizador, un órgano, un timbre y cuerdas.\n- **Inspector de notas:** Haz clic en cualquier nota para editar la velocidad, la vocal y el brillo.\n- **7 sistemas de afinación:** Temperamento igual, afinación justa (mayor/menor), pitagórico, meantone de cuarto comma, Werckmeister III, o desplazamientos de centésimas personalizables. Referencia A4 ajustable (392–494 Hz).\n- **Auditoría de afinación:** Tabla de frecuencias, probador de intervalos con análisis de frecuencia de latidos, y exportación/importación de afinación.\n- **Importación/exportación de partituras:** Serializa toda la partitura como JSON y cárgala de nuevo.\n- **API para LLM:** `window.__cockpit` expone `exportScore()`, `importScore()`, `addNote()`, `play()`, `stop()`, `panic()`, `setMode()` y `getScore()`, para que un LLM pueda componer, arreglar y reproducir música de forma programática.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "- **Dual-mode piano roll** — switch between Instrument mode (chromatic pitch-class colors) and Vocal mode (notes colored by vowel shape: /a/ /e/ /i/ /o/ /u/)\r\n- **Visual keyboard** — two octaves from C4, mapped to your QWERTY keyboard. Click or type.\r\n- **20 voice presets** — 15 Kokoro-mapped voices (Aoede, Heart, Jessica, Sky, Eric, Fenrir, Liam, Onyx, Alice, Emma, Isabella, George, Lewis, plus choir and synth-vox), 4 tract-mapped voices, and a synthetic choir section\r\n- **10 instrument presets** — the 6 server-side piano voices plus synth-pad, organ, bell, and strings\r\n- **Note inspector** — click any note to edit velocity, vowel, and breathiness\r\n- **7 tuning systems** — Equal temperament, just intonation (major/minor), Pythagorean, quarter-comma meantone, Werckmeister III, or custom cent offsets. Adjustable A4 reference (392–494 Hz).\r\n- **Tuning audit** — frequency table, interval tester with beat-frequency analysis, and tuning export/import\r\n- **Score import/export** — serialize the entire score as JSON and load it back\r\n- **LLM-facing API** — `window.__cockpit` exposes `exportScore()`, `importScore()`, `addNote()`, `play()`, `stop()`, `panic()`, `setMode()`, and `getScore()` so an LLM can compose, arrange, and play back programmatically\r",
+      "targetLang": "es"
+    },
+    "546865fd7aad1fe9": {
+      "translation": "El Ciclo de Aprendizaje",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "The Learning Loop",
+      "targetLang": "es"
+    },
+    "e0133e324406cd09": {
+      "translation": "La Biblioteca de Canciones",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "The Song Library",
+      "targetLang": "es"
+    },
+    "04beed200ccb03eb": {
+      "translation": "120 canciones en 12 géneros, creadas a partir de archivos MIDI reales. Cada género tiene un ejemplo ricamente anotado, con contexto histórico, análisis armónico barra por barra, momentos clave, objetivos de enseñanza y consejos de interpretación (incluida la guía vocal). Estos ejemplos sirven como plantillas: la IA estudia uno, y luego anota el resto.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "120 songs across 12 genres, built from real MIDI files. Each genre has one deeply annotated exemplar — with historical context, bar-by-bar harmonic analysis, key moments, teaching goals, and performance tips (including vocal guidance). These exemplars serve as templates: the AI studies one, then annotates the rest.\r",
+      "targetLang": "es"
+    },
+    "a937794a8f92e5df": {
+      "translation": "Género",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Genre",
+      "targetLang": "es"
+    },
+    "8067d42ec472e6aa": {
+      "translation": "Ejemplo",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Exemplar",
+      "targetLang": "es"
+    },
+    "08fbeeea72e7566f": {
+      "translation": "Clave",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Key",
+      "targetLang": "es"
+    },
+    "45699f8b8bd1a190": {
+      "translation": "Lo que enseña",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "What it teaches",
+      "targetLang": "es"
+    },
+    "5e9ae52befb4ec96": {
+      "translation": "Blues",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Blues",
+      "targetLang": "es"
+    },
+    "69b78cc3c2f1d476": {
+      "translation": "The Thrill Is Gone (B.B. King)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "The Thrill Is Gone (B.B. King)",
+      "targetLang": "es"
+    },
+    "0bf00c4aaa813409": {
+      "translation": "Si menor",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "B minor",
+      "targetLang": "es"
+    },
+    "823dee6e137c87b7": {
+      "translation": "Forma de blues menor, llamada y respuesta, tocar por detrás del ritmo.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Minor blues form, call-and-response, playing behind the beat",
+      "targetLang": "es"
+    },
+    "6866d11d85ddf4a6": {
+      "translation": "Clásico",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Classical",
+      "targetLang": "es"
+    },
+    "93a68e7066363fde": {
+      "translation": "Für Elise (Beethoven)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Für Elise (Beethoven)",
+      "targetLang": "es"
+    },
+    "41514573a8938b8f": {
+      "translation": "La menor",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "A minor",
+      "targetLang": "es"
+    },
+    "c81086ee99bf960c": {
+      "translation": "Forma de rondo, diferenciación del tacto, disciplina del pedal.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Rondo form, touch differentiation, pedaling discipline",
+      "targetLang": "es"
+    },
+    "610c3dae01259207": {
+      "translation": "Película",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Film",
+      "targetLang": "es"
+    },
+    "7221af4ebe92c015": {
+      "translation": "Comptine d'un autre été (Tiersen)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Comptine d'un autre été (Tiersen)",
+      "targetLang": "es"
+    },
+    "0348f7a69d57f9ca": {
+      "translation": "Mi menor",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "E minor",
+      "targetLang": "es"
+    },
+    "60393a2223a79a67": {
+      "translation": "Texturas arpegiadas, arquitectura dinámica sin cambio armónico.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Arpeggiated textures, dynamic architecture without harmonic change",
+      "targetLang": "es"
+    },
+    "a0fad48e8fc3d92b": {
+      "translation": "Folclórico",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Folk",
+      "targetLang": "es"
+    },
+    "f6f74c53f3644a9f": {
+      "translation": "Greensleeves",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Greensleeves",
+      "targetLang": "es"
+    },
+    "f8988f963de57c79": {
+      "translation": "Sensación de vals en 3/4, mezcla modal, estilo vocal renacentista.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "3/4 waltz feel, modal mixture, Renaissance vocal style",
+      "targetLang": "es"
+    },
+    "f8ade56fa70598a3": {
+      "translation": "Jazz",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Jazz",
+      "targetLang": "es"
+    },
+    "7a968f14223d18d6": {
+      "translation": "Autumn Leaves (Kosma)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Autumn Leaves (Kosma)",
+      "targetLang": "es"
+    },
+    "32a3dc6f6e8ce61a": {
+      "translation": "Sol menor",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "G minor",
+      "targetLang": "es"
+    },
+    "e6064e8fef10afd4": {
+      "translation": "Progresiones ii-V-I, tonos guía, corcheas con swing, voicings sin fundamentales.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "ii-V-I progressions, guide tones, swing eighths, rootless voicings",
+      "targetLang": "es"
+    },
+    "7f8ed0a3428d8b7a": {
+      "translation": "Latino",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Latin",
+      "targetLang": "es"
+    },
+    "ea348b2eac418b54": {
+      "translation": "The Girl from Ipanema (Jobim)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "The Girl from Ipanema (Jobim)",
+      "targetLang": "es"
+    },
+    "bd1babe7190ea76f": {
+      "translation": "Fa mayor",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "F major",
+      "targetLang": "es"
+    },
+    "8d87955577a44f87": {
+      "translation": "Ritmo de bossa nova, modulación cromática, contención vocal.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Bossa nova rhythm, chromatic modulation, vocal restraint",
+      "targetLang": "es"
+    },
+    "e9000f5cef68aed2": {
+      "translation": "New-Age",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "New-Age",
+      "targetLang": "es"
+    },
+    "af5dd085210c1f5f": {
+      "translation": "River Flows in You (Yiruma)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "River Flows in You (Yiruma)",
+      "targetLang": "es"
+    },
+    "a09cd50e5912b028": {
+      "translation": "La mayor",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "A major",
+      "targetLang": "es"
+    },
+    "8c749cd00eb0740b": {
+      "translation": "Reconocimiento de I-V-vi-IV, arpegios fluidos, rubato.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "I-V-vi-IV recognition, flowing arpeggios, rubato",
+      "targetLang": "es"
+    },
+    "a239694a051f77d4": {
+      "translation": "Pop",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Pop",
+      "targetLang": "es"
+    },
+    "b02465423753581a": {
+      "translation": "Imagine (Lennon)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Imagine (Lennon)",
+      "targetLang": "es"
+    },
+    "c5dfd8a0509dd934": {
+      "translation": "Do mayor",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "C major",
+      "targetLang": "es"
+    },
+    "52cb09c8a1cbc413": {
+      "translation": "Acompañamiento arpegiado, contención, sinceridad vocal.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Arpeggiated accompaniment, restraint, vocal sincerity",
+      "targetLang": "es"
+    },
+    "94a5e43d5fb27562": {
+      "translation": "Ragtime",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Ragtime",
+      "targetLang": "es"
+    },
+    "6840aa40a4995ff8": {
+      "translation": "The Entertainer (Joplin)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "The Entertainer (Joplin)",
+      "targetLang": "es"
+    },
+    "1001c94d3966019b": {
+      "translation": "Bajo \"oom-pah\", síncopa, forma de múltiples secciones, disciplina del tempo.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Oom-pah bass, syncopation, multi-strain form, tempo discipline",
+      "targetLang": "es"
+    },
+    "451f4af3a3a71a98": {
+      "translation": "R&B",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "R&B",
+      "targetLang": "es"
+    },
+    "a31093b87163682e": {
+      "translation": "Superstition (Stevie Wonder)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Superstition (Stevie Wonder)",
+      "targetLang": "es"
+    },
+    "45b6daeca81df798": {
+      "translation": "Si menor",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Eb minor",
+      "targetLang": "es"
+    },
+    "7ce195d650d0d325": {
+      "translation": "Funk en semicorcheas, teclado percusivo, notas fantasma.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "16th-note funk, percussive keyboard, ghost notes",
+      "targetLang": "es"
+    },
+    "b5ea890b29336873": {
+      "translation": "Rock",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Rock",
+      "targetLang": "es"
+    },
+    "357c9788227eea10": {
+      "translation": "Your Song (Elton John)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Your Song (Elton John)",
+      "targetLang": "es"
+    },
+    "4ea21f83cc2ea14b": {
+      "translation": "Si mayor",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Eb major",
+      "targetLang": "es"
+    },
+    "eb55eea28db72f9a": {
+      "translation": "Conducción de la voz en balada de piano, inversiones, canto conversacional.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Piano ballad voice-leading, inversions, conversational singing",
+      "targetLang": "es"
+    },
+    "63373ca1ef758c6c": {
+      "translation": "Soul",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Soul",
+      "targetLang": "es"
+    },
+    "58a1943312a428f5": {
+      "translation": "Lean on Me (Bill Withers)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Lean on Me (Bill Withers)",
+      "targetLang": "es"
+    },
+    "a7aae9c68ca38ba7": {
+      "translation": "Melodía diatónica, acompañamiento gospel, llamada y respuesta.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Diatonic melody, gospel accompaniment, call-and-response",
+      "targetLang": "es"
+    },
+    "bd75154aa21c0e32": {
+      "translation": "Las canciones progresan desde **crudas** (solo MIDI) → **anotadas** → **listas** (totalmente reproducibles con lenguaje musical). La IA promueve las canciones estudiándolas y escribiendo anotaciones con `annotate_song`.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Songs progress from **raw** (MIDI only) → **annotated** → **ready** (fully playable with musical language). The AI promotes songs by studying them and writing annotations with `annotate_song`.\r",
+      "targetLang": "es"
+    },
+    "4ab619a82f4ed510": {
+      "translation": "Motores de Sonido",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Sound Engines",
+      "targetLang": "es"
+    },
+    "0ddbaea4ca6a90b5": {
+      "translation": "Seis motores, más un combinador en capas que ejecuta dos simultáneamente:",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Six engines, plus a layered combinator that runs any two simultaneously:\r",
+      "targetLang": "es"
+    },
+    "2a8ae3dac439a15f": {
+      "translation": "Motor",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Engine",
+      "targetLang": "es"
+    },
+    "e6232fdd7690afaa": {
+      "translation": "Tipo",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Type",
+      "targetLang": "es"
+    },
+    "8edf56c70de050b5": {
+      "translation": "Cómo suena",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "What it sounds like",
+      "targetLang": "es"
+    },
+    "5bb1e59f439ddcfe": {
+      "translation": "Síntesis aditiva",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Additive synthesis",
+      "targetLang": "es"
+    },
+    "7dbba9f7677fe972": {
+      "translation": "Piano multi-armónico con ruido de martillo, inarmonía, polifonía de 48 voces, imagen estéreo. Sin dependencias.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Multi-harmonic piano with hammer noise, inharmonicity, 48-voice polyphony, stereo imaging. Zero dependencies.",
+      "targetLang": "es"
+    },
+    "c5af493cbe75f201": {
+      "translation": "Reproducción de WAV",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "WAV playback",
+      "targetLang": "es"
+    },
+    "0e5c66dc77c5d744": {
+      "translation": "Salamander Grand Piano — 480 muestras, 16 capas de velocidad, 88 teclas. Lo real.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Salamander Grand Piano — 480 samples, 16 velocity layers, 88 keys. The real thing.",
+      "targetLang": "es"
+    },
+    "06d45a53707c03a8": {
+      "translation": "Muestras con cambio de tono",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Pitch-shifted samples",
+      "targetLang": "es"
+    },
+    "27d124bde6f10215": {
+      "translation": "Tonos vocálicos sostenidos con portamento y modo legato.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Sustained vowel tones with portamento and legato mode.",
+      "targetLang": "es"
+    },
+    "bf0b186ab899eb3a": {
+      "translation": "Modelo físico",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Physical model",
+      "targetLang": "es"
+    },
+    "1f65c6c739f8556b": {
+      "translation": "Pink Trombone — Forma de onda glotal de baja frecuencia a través de una guía de onda digital de 44 celdas. Cuatro presets: soprano, alto, tenor, bajo.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Pink Trombone — LF glottal waveform through a 44-cell digital waveguide. Four presets: soprano, alto, tenor, bass.",
+      "targetLang": "es"
+    },
+    "7a2528e91ab58844": {
+      "translation": "15 presets de voz Kokoro con modelado de formantes, aspereza, vibrato. Determinista (RNG con semilla).",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "15 Kokoro voice presets with formant shaping, breathiness, vibrato. Deterministic (seeded RNG).",
+      "targetLang": "es"
+    },
+    "e92519eb8d9154c1": {
+      "translation": "Cuerda pulsada modelada físicamente — 4 presets (acústica de acero, clásica de nylon, archtop de jazz, de doce cuerdas), 8 afinaciones, 17 parámetros ajustables.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Physically-modeled plucked string — 4 presets (steel dreadnought, nylon classical, jazz archtop, twelve-string), 8 tunings, 17 tunable parameters.",
+      "targetLang": "es"
+    },
+    "f5ba625904bfce0f": {
+      "translation": "Combinador",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Combinator",
+      "targetLang": "es"
+    },
+    "d2749351a11f8238": {
+      "translation": "Envuelve dos motores y envía cada evento MIDI a ambos — piano + sintetizador, voz + sintetizador, etc.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Wraps two engines and dispatches every MIDI event to both — piano+synth, vocal+synth, etc.",
+      "targetLang": "es"
+    },
+    "947f9b784d313644": {
+      "translation": "Voces de Teclado",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Keyboard Voices",
+      "targetLang": "es"
+    },
+    "2aa93ffa37130d4b": {
+      "translation": "Seis voces de piano ajustables, cada una ajustable por parámetro (brillo, decaimiento, dureza del martillo, desafinación, ancho estéreo, y más):",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Six tunable piano voices, each adjustable per-parameter (brightness, decay, hammer hardness, detune, stereo width, and more):\r",
+      "targetLang": "es"
+    },
+    "1883eac3ad6f08e2": {
+      "translation": "Voz",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Voice",
+      "targetLang": "es"
+    },
+    "d9a7501c21b6af52": {
+      "translation": "Característica",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Character",
+      "targetLang": "es"
+    },
+    "e2e6f8dc4cfb95b4": {
+      "translation": "Gran piano de concierto",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Concert Grand",
+      "targetLang": "es"
+    },
+    "a2fa9a50f4425d66": {
+      "translation": "Rico, completo, clásico",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Rich, full, classical",
+      "targetLang": "es"
+    },
+    "488684f9a9c09ce7": {
+      "translation": "Piano vertical",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Upright",
+      "targetLang": "es"
+    },
+    "6ab89754fc5b09bb": {
+      "translation": "Cálido, íntimo, folclórico",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Warm, intimate, folk",
+      "targetLang": "es"
+    },
+    "25b905b32ecf4db2": {
+      "translation": "Piano eléctrico",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Electric Piano",
+      "targetLang": "es"
+    },
+    "3270d86d831d62b7": {
+      "translation": "Sedoso, jazzy, sensación Fender Rhodes",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Silky, jazzy, Fender Rhodes feel",
+      "targetLang": "es"
+    },
+    "e2512c9d36d79397": {
+      "translation": "Honky-Tonk",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Honky-Tonk",
+      "targetLang": "es"
+    },
+    "6a863b9d0d542f53": {
+      "translation": "Detunado, ragtime, salón",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Detuned, ragtime, saloon",
+      "targetLang": "es"
+    },
+    "13a142a3eafd1538": {
+      "translation": "Caja de música",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Music Box",
+      "targetLang": "es"
+    },
+    "cbe8b2bb018b6b5d": {
+      "translation": "Cristalino, etéreo",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Crystalline, ethereal",
+      "targetLang": "es"
+    },
+    "f8233febd8f5b6f4": {
+      "translation": "Piano de cola brillante",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Bright Grand",
+      "targetLang": "es"
+    },
+    "6c877f5cffc233ff": {
+      "translation": "Moderno, pop, contundente",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Cutting, contemporary, pop",
+      "targetLang": "es"
+    },
+    "69cbad53033c265b": {
+      "translation": "Voces de guitarra",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Guitar Voices",
+      "targetLang": "es"
+    },
+    "b44e28b66b14a383": {
+      "translation": "Cuatro presets de voces de guitarra con síntesis de cuerdas modelada físicamente, cada uno con 17 parámetros ajustables (brillo, resonancia del cuerpo, posición de pulsación, amortiguación de las cuerdas, y más):",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Four guitar voice presets with physically-modeled string synthesis, each with 17 tunable parameters (brightness, body resonance, pluck position, string damping, and more):\r",
+      "targetLang": "es"
+    },
+    "48dda8d6d0a72079": {
+      "translation": "Acústica tipo Dreadnought",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Steel Dreadnought",
+      "targetLang": "es"
+    },
+    "138ed1d47bfde680": {
+      "translation": "Brillante, equilibrado, acústico clásico",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Bright, balanced, classic acoustic",
+      "targetLang": "es"
+    },
+    "e5d8db914054af41": {
+      "translation": "Clásica de nylon",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Nylon Classical",
+      "targetLang": "es"
+    },
+    "242bac0fa8fd8b2b": {
+      "translation": "Cálido, suave, redondeado",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Warm, soft, rounded",
+      "targetLang": "es"
+    },
+    "f3ba164a857def02": {
+      "translation": "Archtop de jazz",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Jazz Archtop",
+      "targetLang": "es"
+    },
+    "2caff7bcdc8d0e68": {
+      "translation": "Suave, amaderado, limpio",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Mellow, woody, clean",
+      "targetLang": "es"
+    },
+    "d0337e1e9620a428": {
+      "translation": "De 12 cuerdas",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Twelve-String",
+      "targetLang": "es"
+    },
+    "71bd16144209253e": {
+      "translation": "Brillante, con doble sonido, tipo coro",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Shimmering, doubled, chorus-like",
+      "targetLang": "es"
+    },
+    "b0baaff064f23c3b": {
+      "translation": "El diario de práctica",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "The Practice Journal",
+      "targetLang": "es"
+    },
+    "853bd34e8c07b914": {
+      "translation": "Después de cada sesión, el servidor registra lo que sucedió: qué canción, a qué velocidad, cuántas compases, cuánto tiempo. La IA añade sus propias reflexiones: lo que observó, los patrones que reconoció, qué probar a continuación.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "After every session, the server captures what happened — which song, what speed, how many measures, how long. The AI adds its own reflections: what it noticed, what patterns it recognized, what to try next.\r",
+      "targetLang": "es"
+    },
+    "47dc4e57afa0a716": {
+      "translation": "Un archivo Markdown por día, almacenado en `~/.ai-jam-sessions/journal/`. Legible por humanos, solo se puede añadir contenido. En la siguiente sesión, la IA lee su diario y continúa desde donde lo dejó.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "One markdown file per day, stored in `~/.ai-jam-sessions/journal/`. Human-readable, append-only. Next session, the AI reads its journal and picks up where it left off.\r",
+      "targetLang": "es"
+    },
+    "144b06b61516beec": {
+      "translation": "Instalar",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Install",
+      "targetLang": "es"
+    },
+    "8090b634c0f18ae4": {
+      "translation": "Requiere **Node.js 18+**. No requiere controladores MIDI, ni puertos virtuales, ni software externo.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external software.\r",
+      "targetLang": "es"
+    },
+    "d62a52d9410edd9a": {
+      "translation": "Claude Desktop / Claude Code",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Claude Desktop / Claude Code",
+      "targetLang": "es"
+    },
+    "86d6362d882f770f": {
+      "translation": "MCP Tools",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "MCP Tools",
+      "targetLang": "es"
+    },
+    "7cef4f6b606b9e55": {
+      "translation": "41 herramientas y 3 plantillas de prompts en seis categorías:",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "41 tools and 3 prompt templates across six categories:\r",
+      "targetLang": "es"
+    },
+    "4298178850e8f5f9": {
+      "translation": "Aprender",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Learn",
+      "targetLang": "es"
+    },
+    "c9b5cf24257305b3": {
+      "translation": "Herramienta",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Tool",
+      "targetLang": "es"
+    },
+    "0e509b9c9203fa41": {
+      "translation": "Qué hace",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "What it does",
+      "targetLang": "es"
+    },
+    "41828db645360a22": {
+      "translation": "Explorar por género, dificultad o palabra clave",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Browse by genre, difficulty, or keyword",
+      "targetLang": "es"
+    },
+    "8ab3c0934c4e8dee": {
+      "translation": "Análisis musical completo: estructura, momentos clave, objetivos de enseñanza, consejos de estilo",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Full musical analysis — structure, key moments, teaching goals, style tips",
+      "targetLang": "es"
+    },
+    "9352e24ecb37b401": {
+      "translation": "Estadísticas de toda la biblioteca: número total de canciones, géneros, dificultades",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Library-wide stats: total songs, genres, difficulties",
+      "targetLang": "es"
+    },
+    "1faab9a89fae56b5": {
+      "translation": "Notas, dinámicas y notas de enseñanza de cada compás",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Every measure's notes, dynamics, and teaching notes",
+      "targetLang": "es"
+    },
+    "ce9ae591a3427e7f": {
+      "translation": "Análisis detallado de un compás: digitación, dinámicas, contexto",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Deep dive into a single measure — fingering, dynamics, context",
+      "targetLang": "es"
+    },
+    "41a54297cf7dc499": {
+      "translation": "Recomendación basada en género, dificultad y lo que has tocado",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Recommendation based on genre, difficulty, and what you've played",
+      "targetLang": "es"
+    },
+    "7b1f964dbdf9c678": {
+      "translation": "Velocidad, modo, configuración de voz y comando de línea de comandos recomendados para una canción",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Recommended speed, mode, voice settings, and CLI command for a song",
+      "targetLang": "es"
+    },
+    "21bfa033ce1adeeb": {
+      "translation": "Reconocimiento de patrones entre géneros: relaciones de tonalidades, similitud de notas/intervalos, formas compartidas, conexiones de enseñanza",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Cross-genre pattern recognition — key relationships, pitch/interval similarity, shared forms, teaching connections",
+      "targetLang": "es"
+    },
+    "45d82606a64da036": {
+      "translation": "Evaluación de la calidad de las anotaciones en toda la biblioteca: puntuaciones, calificaciones y sugerencias de mejora",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Track annotation quality across the library — scores, grades, and improvement suggestions",
+      "targetLang": "es"
+    },
+    "17eaf888aa8309fd": {
+      "translation": "Versión del servidor, estadísticas de la biblioteca, lista de motores, sesión activa",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Server version, library stats, engine list, active session",
+      "targetLang": "es"
+    },
+    "592d9f791fc9f5b5": {
+      "translation": "Reproducir",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Play",
+      "targetLang": "es"
+    },
+    "ee604628ad1c79ff": {
+      "translation": "Reproducir a través de los altavoces: canciones de la biblioteca o archivos .mid sin procesar. Cualquier motor, velocidad, modo, rango de compases.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Play through speakers — library songs or raw .mid files. Any engine, speed, mode, measure range.",
+      "targetLang": "es"
+    },
+    "0ccc30502abd4a8a": {
+      "translation": "Detener",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Stop",
+      "targetLang": "es"
+    },
+    "9dc45c4ee0e3c4a6": {
+      "translation": "Pausar o reanudar",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Pause or resume",
+      "targetLang": "es"
+    },
+    "910c7c875218fd67": {
+      "translation": "Cambiar la velocidad durante la reproducción (0.1×–4.0×)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Change speed mid-playback (0.1×–4.0×)",
+      "targetLang": "es"
+    },
+    "4380f5787c65e70c": {
+      "translation": "Captura en tiempo real: compás actual, tempo, velocidad, voz del teclado, estado",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Real-time snapshot: current measure, tempo, speed, keyboard voice, state",
+      "targetLang": "es"
+    },
+    "a4144fc8ea66ba98": {
+      "translation": "Renderizar como SVG (coloración manual o arcoíris cromático por clase de tono)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Render as SVG (hand color or pitch-class chromatic rainbow)",
+      "targetLang": "es"
+    },
+    "1a4575bdfbd80d63": {
+      "translation": "Evaluar una interpretación MIDI: precisión de la afinación, ritmo, integridad, con retroalimentación graduada",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Score a MIDI play-along — pitch accuracy, timing, completeness, with graded feedback",
+      "targetLang": "es"
+    },
+    "9cbf562bec90478d": {
+      "translation": "Silenciar o activar la mano izquierda/derecha durante la práctica: aislar una mano a la vez",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Mute or unmute left/right hand during practice — isolate one hand at a time",
+      "targetLang": "es"
+    },
+    "9e351ae7819d5985": {
+      "translation": "Ver todas las notas de enseñanza y momentos clave antes de tocar",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "See all teaching notes and key moments before playing",
+      "targetLang": "es"
+    },
+    "bf3cacd5e126c976": {
+      "translation": "Cantar",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Sing",
+      "targetLang": "es"
+    },
+    "0d12c3122a2bae09": {
+      "translation": "Texto cantable: nombres de notas, solfeo, contorno o sílabas. Con o sin acompañamiento de piano.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Singable text — note-names, solfege, contour, or syllables. With or without piano accompaniment.",
+      "targetLang": "es"
+    },
+    "f76a77929e5459c4": {
+      "translation": "Generar un esquema de improvisación: progresión de acordes, esquema melódico y sugerencias de estilo para la reinterpretación",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Generate a jam brief — chord progression, melody outline, and style hints for reinterpretation",
+      "targetLang": "es"
+    },
+    "ba7201e3832b1a85": {
+      "translation": "Guitarra",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Guitar",
+      "targetLang": "es"
+    },
+    "0f7f4fb2864b15a7": {
+      "translation": "Renderizar tablaturas de guitarra interactivas como HTML: edición con un clic, cursor de reproducción, atajos de teclado",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Render interactive guitar tablature as HTML — click-to-edit, playback cursor, keyboard shortcuts",
+      "targetLang": "es"
+    },
+    "cb96f80fed46c66a": {
+      "translation": "Presets de voces de guitarra disponibles",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Available guitar voice presets",
+      "targetLang": "es"
+    },
+    "d86fcf33071d77ea": {
+      "translation": "Sistemas de afinación de guitarra disponibles (estándar, drop-D, open G, DADGAD, etc.)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Available guitar tuning systems (standard, drop-D, open G, DADGAD, etc.)",
+      "targetLang": "es"
+    },
+    "6692b950b8fee9ea": {
+      "translation": "Ajustar cualquier parámetro de cualquier voz de guitarra. Se mantiene a través de las sesiones.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Adjust any parameter of any guitar voice. Persists across sessions.",
+      "targetLang": "es"
+    },
+    "82b7038ce9b3d5ef": {
+      "translation": "Configuración actual de la voz de guitarra frente a los valores predeterminados de fábrica",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Current guitar voice config vs factory defaults",
+      "targetLang": "es"
+    },
+    "7e217142b1b03566": {
+      "translation": "Restablecer la configuración de fábrica de una voz de guitarra",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Factory reset a guitar voice",
+      "targetLang": "es"
+    },
+    "c9ee7e56a356f6ed": {
+      "translation": "Construir",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Build",
+      "targetLang": "es"
+    },
+    "99edc4be26aaf735": {
+      "translation": "Añadir una nueva canción como JSON",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Add a new song as JSON",
+      "targetLang": "es"
+    },
+    "8113ed5149fcd69b": {
+      "translation": "Importar un archivo .mid con metadatos",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Import a .mid file with metadata",
+      "targetLang": "es"
+    },
+    "0779e18d431ad64f": {
+      "translation": "Escribir la notación musical para una canción básica y convertirla en una pieza terminada.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Write musical language for a raw song and promote it to ready",
+      "targetLang": "es"
+    },
+    "dd359ff7e62b1e11": {
+      "translation": "Entrada de diario con datos de sesión capturados automáticamente.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Journal entry with auto-captured session data",
+      "targetLang": "es"
+    },
+    "022877df90230d84": {
+      "translation": "Cargar las entradas recientes para proporcionar contexto.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Load recent entries for context",
+      "targetLang": "es"
+    },
+    "35c580d2f502f513": {
+      "translation": "Voces de teclado disponibles.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Available keyboard voices",
+      "targetLang": "es"
+    },
+    "f00b1245f15856f8": {
+      "translation": "Ajustar cualquier parámetro de cualquier voz de teclado. Los ajustes se guardan entre sesiones.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Adjust any parameter of any keyboard voice. Persists across sessions.",
+      "targetLang": "es"
+    },
+    "8888fa86dc1b0a0c": {
+      "translation": "Configuración actual frente a los valores predeterminados de fábrica.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Current config vs factory defaults",
+      "targetLang": "es"
+    },
+    "a25ffaef8901aac4": {
+      "translation": "Restablecer una voz de teclado a los valores de fábrica.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Factory reset a keyboard voice",
+      "targetLang": "es"
+    },
+    "c5e977f6b998c805": {
+      "translation": "Calidad de la anotación de una partitura en 5 dimensiones: exhaustividad, profundidad, especificidad, valor educativo, vocabulario.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Score annotation quality across 5 dimensions — completeness, depth, specificity, teaching value, vocabulary",
+      "targetLang": "es"
+    },
+    "f45ac75d825ad184": {
+      "translation": "Validar un archivo JSON de una canción contra el esquema antes de añadirlo.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Validate a song JSON against the schema before adding",
+      "targetLang": "es"
+    },
+    "e8f3d4277d1753a6": {
+      "translation": "Transponer una canción hacia arriba o hacia abajo en semitonos: nueva tonalidad, nuevas notas.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Transpose a song up or down by semitones — new key, new notes",
+      "targetLang": "es"
+    },
+    "d01c9d1c0acc89d7": {
+      "translation": "Ver las secciones estructurales de una canción (Introducción, Verso, Estribillo, etc.).",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "View structural sections of a song (Intro, Verse, Chorus, etc.)",
+      "targetLang": "es"
+    },
+    "3b25faa90a642c8f": {
+      "translation": "Añadir un marcador de sección a una canción para facilitar la navegación estructural.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Add a section marker to a song for structural navigation",
+      "targetLang": "es"
+    },
+    "c57ecc2c2ef6a6e8": {
+      "translation": "Indicaciones (Prompts) de MCP.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "MCP Prompts",
+      "targetLang": "es"
+    },
+    "021c9526b4521d1a": {
+      "translation": "Tres plantillas de indicaciones para flujos de trabajo de enseñanza estructurados:",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Three prompt templates for structured teaching workflows:\r",
+      "targetLang": "es"
+    },
+    "839a7a689f586445": {
+      "translation": "Indicación.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Prompt",
+      "targetLang": "es"
+    },
+    "ef498f69a3de8cfe": {
+      "translation": "Flujo de trabajo de anotación guiado: estudiar un ejemplo, escribir la notación musical para una canción básica.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Guided annotation workflow — study an exemplar, write musical language for a raw song",
+      "targetLang": "es"
+    },
+    "82c4d75bf3dd6f56": {
+      "translation": "Crear un plan de práctica estructurado basado en el género, la dificultad y los objetivos.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Build a structured practice plan based on genre, difficulty, and goals",
+      "targetLang": "es"
+    },
+    "c6414baadb8a41b1": {
+      "translation": "Revisar una sesión completada: ¿qué funcionó bien?, ¿en qué enfocarse a continuación?",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Review a completed session — what went well, what to focus on next",
+      "targetLang": "es"
+    },
+    "9ff25987b511484d": {
+      "translation": "Interfaz de línea de comandos (CLI).",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "CLI",
+      "targetLang": "es"
+    },
+    "bc143d1ce1653d6a": {
+      "translation": "Estado.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Status",
+      "targetLang": "es"
+    },
+    "71f88376a8cac7dc": {
+      "translation": "v1.4.0. Seis motores de sonido, 41 herramientas de MCP, 3 plantillas de indicaciones, 120 canciones en 12 géneros con ejemplos anotados en profundidad. Transposición de canciones, marcadores de sección, silencio/solo por mano para una práctica enfocada. Editor interactivo de tablaturas de guitarra. Panel de control en el navegador con 20 presets de voz, 10 voces de instrumentos, 7 sistemas de afinación y una API de partitura orientada a modelos de lenguaje. Visualización de piano roll en dos modos de color. Diario de práctica para un aprendizaje continuo. Persistencia del estado de la sesión a través de reinicios del servidor. Partitura MIDI para tocar junto, evaluación de la calidad de la anotación y reconocimiento de patrones entre géneros. Todos los archivos MIDI están disponibles; la biblioteca crece a medida que la IA aprende.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "v1.4.0. Six sound engines, 41 MCP tools, 3 prompt templates, 120 songs across 12 genres with deeply annotated exemplars. Song transposition, section markers, per-hand mute/solo for focused practice. Interactive guitar tablature editor. Browser cockpit with 20 vocal presets, 10 instrument voices, 7 tuning systems, and an LLM-facing score API. Piano roll visualization in two color modes. Practice journal for persistent learning. Session state persistence across server restarts. MIDI play-along scoring, annotation quality assessment, and cross-genre pattern recognition. The MIDI is all there — the library grows as the AI learns.\r",
+      "targetLang": "es"
+    },
+    "e7394a6b98603f64": {
+      "translation": "Seguridad y privacidad.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "Security & Privacy",
+      "targetLang": "es"
+    },
+    "d4b7be29c19e1c35": {
+      "translation": "**Datos accedidos:** biblioteca de canciones (JSON + MIDI), directorio de canciones del usuario (`~/.ai-jam-sessions/songs/`), configuraciones de afinación de guitarra, entradas del diario de práctica, dispositivo de salida de audio local.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "**Data touched:** song library (JSON + MIDI), user songs directory (`~/.ai-jam-sessions/songs/`), guitar tuning configs, practice journal entries, local audio output device.\r",
+      "targetLang": "es"
+    },
+    "b38b04973934ee99": {
+      "translation": "**Datos NO accedidos:** no hay APIs en la nube, no hay credenciales de usuario, no hay datos de navegación, no hay archivos del sistema fuera del directorio de canciones del usuario. No se recopilan ni se envían datos de telemetría.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "**Data NOT touched:** no cloud APIs, no user credentials, no browsing data, no system files outside the user song directory. No telemetry is collected or sent.\r",
+      "targetLang": "es"
+    },
+    "63c8832a9ba14849": {
+      "translation": "**Permisos:** El servidor de MCP utiliza únicamente el transporte stdio (sin HTTP). La CLI accede al sistema de archivos local y a los dispositivos de audio. Consulte [SECURITY.md](SECURITY.md) para obtener la política completa.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "**Permissions:** MCP server uses stdio transport only (no HTTP). CLI accesses local filesystem and audio devices. See [SECURITY.md](SECURITY.md) for the full policy.\r",
+      "targetLang": "es"
+    },
+    "9572f74b6d3f62b1": {
+      "translation": "Licencia.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "License",
+      "targetLang": "es"
+    },
+    "ed7f97ee046bbb09": {
+      "translation": "MIT.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432816596,
+      "source": "MIT\r",
+      "targetLang": "es"
+    },
+    "09306f752490f8bf": {
+      "translation": "Cos'è questo?",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "What is this?",
+      "targetLang": "it"
+    },
+    "2fd516cb1ee59992": {
+      "translation": "Un pianoforte e una chitarra che un'intelligenza artificiale impara a suonare. Non un sintetizzatore, né una libreria MIDI, ma uno strumento didattico.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "A piano and guitar that AI learns to play. Not a synthesizer, not a MIDI library — a teaching instrument.\r",
+      "targetLang": "it"
+    },
+    "2c84c0c2767b9784": {
+      "translation": "Un modello linguistico di grandi dimensioni (LLM) può leggere e scrivere testi, ma non può sperimentare la musica nello stesso modo in cui lo facciamo noi. Non ha orecchie, dita o memoria muscolare. AI Jam Sessions colma questa lacuna fornendo al modello dei \"sensi\" che può effettivamente utilizzare:",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "An LLM can read and write text, but it can't experience music the way we do. No ears, no fingers, no muscle memory. AI Jam Sessions closes that gap by giving the model senses it can actually use:\r",
+      "targetLang": "it"
+    },
+    "154bd727fb1681ba": {
+      "translation": "- **Lettura:** partiture MIDI reali con annotazioni musicali dettagliate. Non approssimazioni scritte a mano, ma elementi analizzati, spiegati e interpretati.\n- **Ascolto:** sei motori audio (pianoforte a oscillatore, pianoforte con campioni, campioni vocali, tratto vocale fisico, sintetizzatore vocale additivo, chitarra modellata fisicamente) che riproducono il suono attraverso i tuoi altoparlanti, in modo che le persone nella stanza diventino le \"orecchie\" dell'IA.\n- **Visione:** una rappresentazione grafica delle note (piano roll) che mostra ciò che è stato suonato in formato SVG, un formato che il modello può leggere e verificare. Un editor di tablature interattivo per chitarra. Un'interfaccia utente con una tastiera virtuale, un editor di note in modalità doppia e un laboratorio di accordatura.\n- **Memoria:** un diario di pratica che viene salvato tra le sessioni, in modo che l'apprendimento si accumuli nel tempo.\n- **Canto:** sintesi del tratto vocale con 20 preset vocali, dall'alto soprano all'intero coro elettronico. Modalità di accompagnamento con narrazione di note, melodie e sillabe.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "- **Reading** — real MIDI sheet music with deep musical annotations. Not hand-written approximations — parsed, analyzed, and explained.\r\n- **Hearing** — six audio engines (oscillator piano, sample piano, vocal samples, physical vocal tract, additive vocal synth, physically-modeled guitar) that play through your speakers, so the humans in the room become the AI's ears.\r\n- **Seeing** — a piano roll that renders what was played as SVG the model can read back and verify. An interactive guitar tablature editor. A browser cockpit with a visual keyboard, dual-mode note editor, and tuning lab.\r\n- **Remembering** — a practice journal that persists across sessions, so learning compounds over time.\r\n- **Singing** — vocal tract synthesis with 20 voice presets, from operatic soprano to electronic choir. Sing-along mode with solfege, contour, and syllable narration.\r",
+      "targetLang": "it"
+    },
+    "f5483571f44a058d": {
+      "translation": "Ogni uno dei 12 generi musicali include un esempio ricco di annotazioni: un brano di riferimento che l'IA studia per prima, con contesto storico, analisi strutturale battuta per battuta, momenti chiave, obiettivi didattici e suggerimenti per l'esecuzione. Gli altri 96 brani sono file MIDI grezzi, in attesa che l'IA ne comprenda i modelli, suoni la musica e scriva le proprie annotazioni.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Each of the 12 genres has a richly annotated exemplar — a reference piece the AI studies first, with historical context, bar-by-bar structural analysis, key moments, teaching goals, and performance tips. The other 96 songs are raw MIDI, waiting for the AI to absorb the patterns, play the music, and write its own annotations.\r",
+      "targetLang": "it"
+    },
+    "45be6060dd5bff8f": {
+      "translation": "La rappresentazione grafica delle note (Piano Roll)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "The Piano Roll",
+      "targetLang": "it"
+    },
+    "5c4f4c42a965fe38": {
+      "translation": "La rappresentazione grafica delle note è il modo in cui l'IA \"vede\" la musica. Trasforma qualsiasi brano in un file SVG: il blu rappresenta la mano destra, il corallo la mano sinistra, con griglie di ritmo, dinamiche e confini delle battute:",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "The piano roll is how the AI sees music. It renders any song as SVG — blue for right hand, coral for left, with beat grids, dynamics, and measure boundaries:\r",
+      "targetLang": "it"
+    },
+    "14183492bd51063e": {
+      "translation": "Due modalità di colore: **mano** (blu/corallo) o **altezza** (arcobaleno cromatico: ogni Do è rosso, ogni Fa# è ciano). Il formato SVG consente al modello di vedere l'immagine e di leggere i dati per verificare l'altezza, il ritmo e l'indipendenza delle mani.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Two color modes: **hand** (blue/coral) or **pitch-class** (chromatic rainbow — every C is red, every F# is cyan). The SVG format means the model can both see the image and read the markup to verify pitch, rhythm, and hand independence.\r",
+      "targetLang": "it"
+    },
+    "d229af1e0b5baa7d": {
+      "translation": "L'interfaccia utente (Cockpit)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "The Cockpit",
+      "targetLang": "it"
+    },
+    "202a437d881edc52": {
+      "translation": "Un'interfaccia utente per strumenti e voce, basata su browser, che si apre insieme al server MCP. Nessun plugin, nessuna DAW, solo una pagina web con un pianoforte.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "A browser-based instrument and vocal studio that opens alongside the MCP server. No plugins, no DAW — just a web page with a piano.\r",
+      "targetLang": "it"
+    },
+    "6f5cdaaecbd099bd": {
+      "translation": "- **Rappresentazione grafica delle note in modalità doppia:** passa dalla modalità Strumento (colori cromatici per le altezze) alla modalità Voce (note colorate in base alla forma della vocale: /a/ /e/ /i/ /o/ /u/)\n- **Tastiera virtuale:** due ottave dal Do4, mappate alla tua tastiera QWERTY. Clicca o digita.\n- **20 preset vocali:** 15 voci mappate a Kokoro (Aoede, Heart, Jessica, Sky, Eric, Fenrir, Liam, Onyx, Alice, Emma, Isabella, George, Lewis, più coro e voce sintetizzata), 4 voci mappate al tratto vocale e una sezione di coro sintetico.\n- **10 preset di strumenti:** i 6 suoni di pianoforte lato server, più synth-pad, organo, campanelli e archi.\n- **Ispezione delle note:** clicca su qualsiasi nota per modificare la velocità, la vocale e la \"respirazione\".\n- **7 sistemi di accordatura:** Temperamento equabile, intonazione giusta (maggiore/minore), pitagorico, meantone a quarto di comma, Werckmeister III, oppure offset personalizzati in centesimi di tono. Riferimento A4 regolabile (392–494 Hz).\n- **Controllo dell'accordatura:** tabella delle frequenze, tester degli intervalli con analisi della frequenza delle battute, e possibilità di esportare/importare l'accordatura.\n- **Importazione/esportazione di partiture:** serializza l'intera partitura in formato JSON e caricala nuovamente.\n- **API per LLM:** `window.__cockpit` espone `exportScore()`, `importScore()`, `addNote()`, `play()`, `stop()`, `panic()`, `setMode()` e `getScore()`, in modo che un LLM possa comporre, arrangiare e riprodurre la musica in modo programmatico.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "- **Dual-mode piano roll** — switch between Instrument mode (chromatic pitch-class colors) and Vocal mode (notes colored by vowel shape: /a/ /e/ /i/ /o/ /u/)\r\n- **Visual keyboard** — two octaves from C4, mapped to your QWERTY keyboard. Click or type.\r\n- **20 voice presets** — 15 Kokoro-mapped voices (Aoede, Heart, Jessica, Sky, Eric, Fenrir, Liam, Onyx, Alice, Emma, Isabella, George, Lewis, plus choir and synth-vox), 4 tract-mapped voices, and a synthetic choir section\r\n- **10 instrument presets** — the 6 server-side piano voices plus synth-pad, organ, bell, and strings\r\n- **Note inspector** — click any note to edit velocity, vowel, and breathiness\r\n- **7 tuning systems** — Equal temperament, just intonation (major/minor), Pythagorean, quarter-comma meantone, Werckmeister III, or custom cent offsets. Adjustable A4 reference (392–494 Hz).\r\n- **Tuning audit** — frequency table, interval tester with beat-frequency analysis, and tuning export/import\r\n- **Score import/export** — serialize the entire score as JSON and load it back\r\n- **LLM-facing API** — `window.__cockpit` exposes `exportScore()`, `importScore()`, `addNote()`, `play()`, `stop()`, `panic()`, `setMode()`, and `getScore()` so an LLM can compose, arrange, and play back programmatically\r",
+      "targetLang": "it"
+    },
+    "4c16c5917122a7b3": {
+      "translation": "Il ciclo di apprendimento",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "The Learning Loop",
+      "targetLang": "it"
+    },
+    "b8436d6134e7764a": {
+      "translation": "La libreria di canzoni",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "The Song Library",
+      "targetLang": "it"
+    },
+    "736f46e0e46cc892": {
+      "translation": "120 canzoni in 12 generi musicali, create da file MIDI reali. Ogni genere include un esempio ricco di annotazioni: con contesto storico, analisi armonica battuta per battuta, momenti chiave, obiettivi didattici e suggerimenti per l'esecuzione (inclusi suggerimenti vocali). Questi esempi fungono da modelli: l'IA ne studia uno, quindi annota gli altri.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "120 songs across 12 genres, built from real MIDI files. Each genre has one deeply annotated exemplar — with historical context, bar-by-bar harmonic analysis, key moments, teaching goals, and performance tips (including vocal guidance). These exemplars serve as templates: the AI studies one, then annotates the rest.\r",
+      "targetLang": "it"
+    },
+    "da8a728f6b4e561d": {
+      "translation": "Genere",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Genre",
+      "targetLang": "it"
+    },
+    "b318051ca276cee3": {
+      "translation": "Esempio",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Exemplar",
+      "targetLang": "it"
+    },
+    "c26b69aad0060414": {
+      "translation": "Chiave",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Key",
+      "targetLang": "it"
+    },
+    "97ac945cb6dff2d8": {
+      "translation": "Cosa insegna",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "What it teaches",
+      "targetLang": "it"
+    },
+    "2a7861f42d298c10": {
+      "translation": "Blues",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Blues",
+      "targetLang": "it"
+    },
+    "08e7cdf690a468aa": {
+      "translation": "The Thrill Is Gone (B.B. King)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "The Thrill Is Gone (B.B. King)",
+      "targetLang": "it"
+    },
+    "76831a2a15d5ab63": {
+      "translation": "Si minore",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "B minor",
+      "targetLang": "it"
+    },
+    "d18f9701414840d3": {
+      "translation": "Forma blues minore, risposta e chiamata, suonare leggermente indietro rispetto al ritmo.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Minor blues form, call-and-response, playing behind the beat",
+      "targetLang": "it"
+    },
+    "25064b90ba384478": {
+      "translation": "Classica",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Classical",
+      "targetLang": "it"
+    },
+    "3a513035bae780cb": {
+      "translation": "Für Elise (Beethoven)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Für Elise (Beethoven)",
+      "targetLang": "it"
+    },
+    "3f35ca43367d0768": {
+      "translation": "La minore",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "A minor",
+      "targetLang": "it"
+    },
+    "f379873d9b061e94": {
+      "translation": "Forma rondò, differenziazione del tocco, disciplina nell'uso dei pedali.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Rondo form, touch differentiation, pedaling discipline",
+      "targetLang": "it"
+    },
+    "dd8ff5772fd8ecd4": {
+      "translation": "Colonna sonora",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Film",
+      "targetLang": "it"
+    },
+    "72dab60951626d85": {
+      "translation": "Comptine d'un autre été (Tiersen)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Comptine d'un autre été (Tiersen)",
+      "targetLang": "it"
+    },
+    "4f47e60d5d6b29d3": {
+      "translation": "Mi minore",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "E minor",
+      "targetLang": "it"
+    },
+    "34ff00e66a66f841": {
+      "translation": "Tessiture arpeggiate, architettura dinamica senza cambiamento armonico.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Arpeggiated textures, dynamic architecture without harmonic change",
+      "targetLang": "it"
+    },
+    "e733035fd416974d": {
+      "translation": "Folk",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Folk",
+      "targetLang": "it"
+    },
+    "31133c707558603b": {
+      "translation": "Greensleeves",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Greensleeves",
+      "targetLang": "it"
+    },
+    "51337e4a62daa126": {
+      "translation": "Sensazione di valzer in 3/4, mescolanza di modi, stile vocale rinascimentale.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "3/4 waltz feel, modal mixture, Renaissance vocal style",
+      "targetLang": "it"
+    },
+    "3bd1ed8e603809cb": {
+      "translation": "Jazz",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Jazz",
+      "targetLang": "it"
+    },
+    "11fe5e07ad134dac": {
+      "translation": "Autumn Leaves (Kosma)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Autumn Leaves (Kosma)",
+      "targetLang": "it"
+    },
+    "f1b5022210689e13": {
+      "translation": "Sol minore",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "G minor",
+      "targetLang": "it"
+    },
+    "dd43d796fbad2425": {
+      "translation": "Progressioni ii-V-I, note guida, ottavi swing, accordi senza fondamentale.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "ii-V-I progressions, guide tones, swing eighths, rootless voicings",
+      "targetLang": "it"
+    },
+    "dbc4944fa6c933d9": {
+      "translation": "Latina",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Latin",
+      "targetLang": "it"
+    },
+    "95a1888d2f96159c": {
+      "translation": "The Girl from Ipanema (Jobim)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "The Girl from Ipanema (Jobim)",
+      "targetLang": "it"
+    },
+    "fdd99c86d572b807": {
+      "translation": "Fa maggiore",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "F major",
+      "targetLang": "it"
+    },
+    "04eaa544d4fc80ad": {
+      "translation": "Ritmo bossa nova, modulazione cromatica, restrizione vocale.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Bossa nova rhythm, chromatic modulation, vocal restraint",
+      "targetLang": "it"
+    },
+    "ca36f3d213913f6a": {
+      "translation": "New-Age",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "New-Age",
+      "targetLang": "it"
+    },
+    "878fb8f44f77ad06": {
+      "translation": "River Flows in You (Yiruma)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "River Flows in You (Yiruma)",
+      "targetLang": "it"
+    },
+    "07cbbb977c99894d": {
+      "translation": "La maggiore",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "A major",
+      "targetLang": "it"
+    },
+    "2f786ebaa273d732": {
+      "translation": "Riconoscimento di accordi I-V-vi-IV, arpeggi fluidi, rubato.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "I-V-vi-IV recognition, flowing arpeggios, rubato",
+      "targetLang": "it"
+    },
+    "63c996cc6cc64ef1": {
+      "translation": "Pop",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Pop",
+      "targetLang": "it"
+    },
+    "221a1a161e18e68d": {
+      "translation": "Imagine (Lennon)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Imagine (Lennon)",
+      "targetLang": "it"
+    },
+    "68225f8225f5cf90": {
+      "translation": "Do maggiore",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "C major",
+      "targetLang": "it"
+    },
+    "dc89573cedee2df8": {
+      "translation": "Accompagnamento arpeggiato, restrizione, sincerità vocale.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Arpeggiated accompaniment, restraint, vocal sincerity",
+      "targetLang": "it"
+    },
+    "269583e989cb2add": {
+      "translation": "Ragtime",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Ragtime",
+      "targetLang": "it"
+    },
+    "4eb825896265202a": {
+      "translation": "The Entertainer (Joplin)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "The Entertainer (Joplin)",
+      "targetLang": "it"
+    },
+    "65dda21967dfe6ed": {
+      "translation": "Basso \"oom-pah\", sincopazione, forma a più sezioni, disciplina del tempo.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Oom-pah bass, syncopation, multi-strain form, tempo discipline",
+      "targetLang": "it"
+    },
+    "e1ebb2c548a8a61e": {
+      "translation": "R&B",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "R&B",
+      "targetLang": "it"
+    },
+    "fcf83227687c0a31": {
+      "translation": "Superstition (Stevie Wonder)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Superstition (Stevie Wonder)",
+      "targetLang": "it"
+    },
+    "26dc72b2415790cd": {
+      "translation": "Si minore",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Eb minor",
+      "targetLang": "it"
+    },
+    "f8a4af26b9ce876a": {
+      "translation": "Funk a sedicesimi, tastiera percussiva, note fantasma.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "16th-note funk, percussive keyboard, ghost notes",
+      "targetLang": "it"
+    },
+    "65680e280868c4fd": {
+      "translation": "Rock",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Rock",
+      "targetLang": "it"
+    },
+    "054a591179901543": {
+      "translation": "Your Song (Elton John)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Your Song (Elton John)",
+      "targetLang": "it"
+    },
+    "cc0435c6f8554085": {
+      "translation": "Si maggiore",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Eb major",
+      "targetLang": "it"
+    },
+    "667368db942e5403": {
+      "translation": "Voicing di pianoforte in stile ballata, inversioni, canto conversazionale.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Piano ballad voice-leading, inversions, conversational singing",
+      "targetLang": "it"
+    },
+    "d9ce3f9e8a1ce5fa": {
+      "translation": "Soul",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Soul",
+      "targetLang": "it"
+    },
+    "e334f3d77a725238": {
+      "translation": "Lean on Me (Bill Withers)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Lean on Me (Bill Withers)",
+      "targetLang": "it"
+    },
+    "9241dfea3ada5a0b": {
+      "translation": "Melodia diatonica, accompagnamento gospel, risposta e chiamata.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Diatonic melody, gospel accompaniment, call-and-response",
+      "targetLang": "it"
+    },
+    "eb9c4286ceca227b": {
+      "translation": "I brani passano da uno stato **grezzo** (solo MIDI) a uno stato **annotato** e infine a uno stato **pronto** (completamente riproducibile con linguaggio musicale). L'intelligenza artificiale promuove i brani studiandoli e scrivendo annotazioni con la funzione `annotate_song`.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Songs progress from **raw** (MIDI only) → **annotated** → **ready** (fully playable with musical language). The AI promotes songs by studying them and writing annotations with `annotate_song`.\r",
+      "targetLang": "it"
+    },
+    "e61fb388886c307a": {
+      "translation": "Motori Sonori",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Sound Engines",
+      "targetLang": "it"
+    },
+    "f8a95c650d96de24": {
+      "translation": "Sei motori, più un combinatore a strati che ne esegue due contemporaneamente:",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Six engines, plus a layered combinator that runs any two simultaneously:\r",
+      "targetLang": "it"
+    },
+    "d1fae346f1a14a0c": {
+      "translation": "Motore",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Engine",
+      "targetLang": "it"
+    },
+    "55f06fdb366629d8": {
+      "translation": "Tipo",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Type",
+      "targetLang": "it"
+    },
+    "2c421c7a71358822": {
+      "translation": "Come suona",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "What it sounds like",
+      "targetLang": "it"
+    },
+    "580dd6e89533885a": {
+      "translation": "Sintesi additiva",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Additive synthesis",
+      "targetLang": "it"
+    },
+    "06eedd077b5bbafd": {
+      "translation": "Pianoforte multi-armonico con rumore di martelletto, inarmonia, polifonia a 48 voci, imaging stereo. Nessuna dipendenza.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Multi-harmonic piano with hammer noise, inharmonicity, 48-voice polyphony, stereo imaging. Zero dependencies.",
+      "targetLang": "it"
+    },
+    "6d8417136c68e2f5": {
+      "translation": "Riproduzione di file WAV",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "WAV playback",
+      "targetLang": "it"
+    },
+    "67396e0c03691fee": {
+      "translation": "Salamander Grand Piano — 480 campioni, 16 livelli di velocità, 88 tasti. La versione reale.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Salamander Grand Piano — 480 samples, 16 velocity layers, 88 keys. The real thing.",
+      "targetLang": "it"
+    },
+    "5026ee0d9c67b4e1": {
+      "translation": "Campioni con variazione di altezza",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Pitch-shifted samples",
+      "targetLang": "it"
+    },
+    "d3e8d5f41b6bbbe4": {
+      "translation": "Timbri vocalici prolungati con portamento e modalità legato.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Sustained vowel tones with portamento and legato mode.",
+      "targetLang": "it"
+    },
+    "1f305c4718e250b9": {
+      "translation": "Modello fisico",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Physical model",
+      "targetLang": "it"
+    },
+    "cfbe0c08d181daef": {
+      "translation": "Pink Trombone — Forma d'onda glottale a bassa frequenza attraverso un waveguide digitale a 44 celle. Quattro preset: soprano, contralto, tenore, basso.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Pink Trombone — LF glottal waveform through a 44-cell digital waveguide. Four presets: soprano, alto, tenor, bass.",
+      "targetLang": "it"
+    },
+    "6fc6b0762bc11334": {
+      "translation": "15 preset vocali Kokoro con modellazione della formante, respiro, vibrato. Deterministico (generatore di numeri casuali con seme).",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "15 Kokoro voice presets with formant shaping, breathiness, vibrato. Deterministic (seeded RNG).",
+      "targetLang": "it"
+    },
+    "4fc14cf89c0ae72e": {
+      "translation": "Corda pizzicata modellata fisicamente — 4 preset (acciaio dreadnought, nylon classico, jazz archtop, dodici corde), 8 accordature, 17 parametri regolabili.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Physically-modeled plucked string — 4 presets (steel dreadnought, nylon classical, jazz archtop, twelve-string), 8 tunings, 17 tunable parameters.",
+      "targetLang": "it"
+    },
+    "e317bcb40761b79a": {
+      "translation": "Combinatore",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Combinator",
+      "targetLang": "it"
+    },
+    "67e2892aa7de734f": {
+      "translation": "Avvolge due motori e invia ogni evento MIDI a entrambi: pianoforte+sintetizzatore, voce+sintetizzatore, ecc.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Wraps two engines and dispatches every MIDI event to both — piano+synth, vocal+synth, etc.",
+      "targetLang": "it"
+    },
+    "97f4108da1a704a2": {
+      "translation": "Timbri per tastiera",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Keyboard Voices",
+      "targetLang": "it"
+    },
+    "edb2aa7429c5d52e": {
+      "translation": "Sei timbri per pianoforte regolabili, ognuno con parametri modificabili individualmente (brillantezza, decadimento, durezza del martelletto, disaccordatura, ampiezza stereo e altro):",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Six tunable piano voices, each adjustable per-parameter (brightness, decay, hammer hardness, detune, stereo width, and more):\r",
+      "targetLang": "it"
+    },
+    "02d5fdc48227119c": {
+      "translation": "Timbre",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Voice",
+      "targetLang": "it"
+    },
+    "7f2c2e24459e68ec": {
+      "translation": "Caratteristica",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Character",
+      "targetLang": "it"
+    },
+    "675e3034d29dc625": {
+      "translation": "Grand Concert",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Concert Grand",
+      "targetLang": "it"
+    },
+    "7c31a9e18f358db0": {
+      "translation": "Ricco, pieno, classico",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Rich, full, classical",
+      "targetLang": "it"
+    },
+    "fd9fb83ae8e2e9db": {
+      "translation": "Pianoforte verticale",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Upright",
+      "targetLang": "it"
+    },
+    "49878132e12e3621": {
+      "translation": "Caldo, intimo, folk",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Warm, intimate, folk",
+      "targetLang": "it"
+    },
+    "690f49e7f6b05de2": {
+      "translation": "Pianoforte elettrico",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Electric Piano",
+      "targetLang": "it"
+    },
+    "c58632de04cb3047": {
+      "translation": "Setoso, jazz, sensazione Fender Rhodes",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Silky, jazzy, Fender Rhodes feel",
+      "targetLang": "it"
+    },
+    "39328d66faed59e3": {
+      "translation": "Honky-Tonk",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Honky-Tonk",
+      "targetLang": "it"
+    },
+    "bb67e174e01a1b33": {
+      "translation": "Detuned, ragtime, saloon",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Detuned, ragtime, saloon",
+      "targetLang": "it"
+    },
+    "23c094d6ddde3a91": {
+      "translation": "Music Box",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Music Box",
+      "targetLang": "it"
+    },
+    "9712eda0b771b0a8": {
+      "translation": "Cristallino, etereo",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Crystalline, ethereal",
+      "targetLang": "it"
+    },
+    "4a14bb900db3a761": {
+      "translation": "Grande, brillante",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Bright Grand",
+      "targetLang": "it"
+    },
+    "7c728300cf8f8c02": {
+      "translation": "Moderno, pop, ritmico",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Cutting, contemporary, pop",
+      "targetLang": "it"
+    },
+    "a45dcc91c32b012e": {
+      "translation": "Voci di chitarra",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Guitar Voices",
+      "targetLang": "it"
+    },
+    "8df89c584c3698bf": {
+      "translation": "Quattro preset di voci di chitarra con sintesi del suono delle corde modellata fisicamente, ognuno con 17 parametri regolabili (brillantezza, risonanza del corpo, posizione del pizzico, smorzamento delle corde e altro):",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Four guitar voice presets with physically-modeled string synthesis, each with 17 tunable parameters (brightness, body resonance, pluck position, string damping, and more):\r",
+      "targetLang": "it"
+    },
+    "983a15917e7170c1": {
+      "translation": "Chitarra Dreadnought in acciaio",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Steel Dreadnought",
+      "targetLang": "it"
+    },
+    "6cfb122a04ba993d": {
+      "translation": "Brillante, equilibrato, acustico classico",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Bright, balanced, classic acoustic",
+      "targetLang": "it"
+    },
+    "a08a0589ae41308f": {
+      "translation": "Chitarra classica in nylon",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Nylon Classical",
+      "targetLang": "it"
+    },
+    "c2528859f104028e": {
+      "translation": "Caldo, morbido, rotondo",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Warm, soft, rounded",
+      "targetLang": "it"
+    },
+    "db091a9d68816032": {
+      "translation": "Jazz Archtop",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Jazz Archtop",
+      "targetLang": "it"
+    },
+    "bb3324d54b8387c6": {
+      "translation": "Suadente, legnoso, pulito",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Mellow, woody, clean",
+      "targetLang": "it"
+    },
+    "b10a6b0964484f40": {
+      "translation": "Chitarra a 12 corde",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Twelve-String",
+      "targetLang": "it"
+    },
+    "beb90c14be9b2d89": {
+      "translation": "Luminoso, raddoppiato, simile a un chorus",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Shimmering, doubled, chorus-like",
+      "targetLang": "it"
+    },
+    "a529b6c25bc3624d": {
+      "translation": "Il diario di pratica",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "The Practice Journal",
+      "targetLang": "it"
+    },
+    "cc24cf07814fa436": {
+      "translation": "Dopo ogni sessione, il server registra ciò che è accaduto: quale canzone, a quale velocità, quante battute, per quanto tempo. L'intelligenza artificiale aggiunge le proprie osservazioni: cosa ha notato, quali schemi ha riconosciuto, cosa provare successivamente.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "After every session, the server captures what happened — which song, what speed, how many measures, how long. The AI adds its own reflections: what it noticed, what patterns it recognized, what to try next.\r",
+      "targetLang": "it"
+    },
+    "09b39e20f11f1983": {
+      "translation": "Un file Markdown al giorno, salvato in `~/.ai-jam-sessions/journal/`. Leggibile dagli umani, solo in modalità append. Nella sessione successiva, l'intelligenza artificiale legge il suo diario e riprende da dove si era interrotta.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "One markdown file per day, stored in `~/.ai-jam-sessions/journal/`. Human-readable, append-only. Next session, the AI reads its journal and picks up where it left off.\r",
+      "targetLang": "it"
+    },
+    "ff5580523b6052cc": {
+      "translation": "Installazione",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Install",
+      "targetLang": "it"
+    },
+    "f1ef3801b8cbbb59": {
+      "translation": "Richiede **Node.js 18+**. Nessun driver MIDI, nessuna porta virtuale, nessun software esterno.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external software.\r",
+      "targetLang": "it"
+    },
+    "31a77a207495c641": {
+      "translation": "Claude Desktop / Claude Code",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Claude Desktop / Claude Code",
+      "targetLang": "it"
+    },
+    "9b31e8f22e59df4a": {
+      "translation": "MCP Tools",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "MCP Tools",
+      "targetLang": "it"
+    },
+    "847e32fe24a5fb05": {
+      "translation": "41 strumenti e 3 modelli di prompt in sei categorie:",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "41 tools and 3 prompt templates across six categories:\r",
+      "targetLang": "it"
+    },
+    "0089a1e0de192cb2": {
+      "translation": "Impara",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Learn",
+      "targetLang": "it"
+    },
+    "54f7300799a90874": {
+      "translation": "Strumento",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Tool",
+      "targetLang": "it"
+    },
+    "7a3f850cba096da0": {
+      "translation": "Cosa fa",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "What it does",
+      "targetLang": "it"
+    },
+    "ccc64f0061017eea": {
+      "translation": "Esplora per genere, difficoltà o parola chiave",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Browse by genre, difficulty, or keyword",
+      "targetLang": "it"
+    },
+    "5fd2748b302a26f7": {
+      "translation": "Analisi musicale completa: struttura, momenti chiave, obiettivi didattici, suggerimenti di stile",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Full musical analysis — structure, key moments, teaching goals, style tips",
+      "targetLang": "it"
+    },
+    "e74a21e4dab1e2a4": {
+      "translation": "Statistiche a livello di libreria: numero totale di canzoni, generi, difficoltà",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Library-wide stats: total songs, genres, difficulties",
+      "targetLang": "it"
+    },
+    "8c9144e44b5c8e55": {
+      "translation": "Note, dinamiche e note didattiche per ogni battuta",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Every measure's notes, dynamics, and teaching notes",
+      "targetLang": "it"
+    },
+    "b58b71e0e15b460c": {
+      "translation": "Analisi approfondita di una singola battuta: diteggiatura, dinamiche, contesto",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Deep dive into a single measure — fingering, dynamics, context",
+      "targetLang": "it"
+    },
+    "89062588907468be": {
+      "translation": "Raccomandazione basata su genere, difficoltà e ciò che hai già suonato",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Recommendation based on genre, difficulty, and what you've played",
+      "targetLang": "it"
+    },
+    "fdf42a81080ee555": {
+      "translation": "Velocità, modalità, impostazioni della voce e comando CLI consigliati per una canzone",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Recommended speed, mode, voice settings, and CLI command for a song",
+      "targetLang": "it"
+    },
+    "f89502c82086497f": {
+      "translation": "Riconoscimento di schemi tra generi: relazioni tra le tonalità, somiglianze di altezze/intervalli, forme comuni, collegamenti didattici",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Cross-genre pattern recognition — key relationships, pitch/interval similarity, shared forms, teaching connections",
+      "targetLang": "it"
+    },
+    "5fae7f7c4781b717": {
+      "translation": "Valutazione della qualità delle annotazioni in tutta la libreria: punteggi, voti e suggerimenti di miglioramento",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Track annotation quality across the library — scores, grades, and improvement suggestions",
+      "targetLang": "it"
+    },
+    "6cc862bbdb3d0358": {
+      "translation": "Versione del server, statistiche della libreria, elenco dei motori, sessione attiva",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Server version, library stats, engine list, active session",
+      "targetLang": "it"
+    },
+    "8a709b4fb6d29737": {
+      "translation": "Riproduci",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Play",
+      "targetLang": "it"
+    },
+    "1a9884ab67b59e79": {
+      "translation": "Riproduzione tramite altoparlanti: canzoni della libreria o file .mid grezzi. Qualsiasi motore, velocità, modalità, intervallo di battute.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Play through speakers — library songs or raw .mid files. Any engine, speed, mode, measure range.",
+      "targetLang": "it"
+    },
+    "a204c7f855b25b97": {
+      "translation": "Ferma",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Stop",
+      "targetLang": "it"
+    },
+    "66061d7fa15bb44b": {
+      "translation": "Metti in pausa o riprendi",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Pause or resume",
+      "targetLang": "it"
+    },
+    "e23b59c463087809": {
+      "translation": "Cambia la velocità durante la riproduzione (0.1×–4.0×)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Change speed mid-playback (0.1×–4.0×)",
+      "targetLang": "it"
+    },
+    "7ffcc3716b0ce4ec": {
+      "translation": "Snapshot in tempo reale: battuta corrente, tempo, velocità, voce della tastiera, stato",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Real-time snapshot: current measure, tempo, speed, keyboard voice, state",
+      "targetLang": "it"
+    },
+    "96f19e15ea0fd2dd": {
+      "translation": "Rendering come SVG (colorazione manuale o arcobaleno cromatico per classe di altezze)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Render as SVG (hand color or pitch-class chromatic rainbow)",
+      "targetLang": "it"
+    },
+    "98ed1c21563d78a4": {
+      "translation": "Partitura di un accompagnamento MIDI: accuratezza dell'intonazione, tempismo, completezza, con feedback graduato",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Score a MIDI play-along — pitch accuracy, timing, completeness, with graded feedback",
+      "targetLang": "it"
+    },
+    "4bb5c2729f2dcbbe": {
+      "translation": "Silenzia o riattiva la mano sinistra/destra durante la pratica: isola una mano alla volta",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Mute or unmute left/right hand during practice — isolate one hand at a time",
+      "targetLang": "it"
+    },
+    "76fe733df4b9bdfc": {
+      "translation": "Visualizza tutte le note didattiche e i momenti chiave prima di suonare",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "See all teaching notes and key moments before playing",
+      "targetLang": "it"
+    },
+    "78b7549ff105aca6": {
+      "translation": "Canta",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Sing",
+      "targetLang": "it"
+    },
+    "caae81ff3c1dab70": {
+      "translation": "Testo cantabile: nomi delle note, solfeggio, contorno o sillabe. Con o senza accompagnamento di pianoforte.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Singable text — note-names, solfege, contour, or syllables. With or without piano accompaniment.",
+      "targetLang": "it"
+    },
+    "fd7fcc10d3733569": {
+      "translation": "Genera un breve per l'improvvisazione: progressione di accordi, schema melodico e suggerimenti di stile per la reinterpretazione",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Generate a jam brief — chord progression, melody outline, and style hints for reinterpretation",
+      "targetLang": "it"
+    },
+    "4ddba870a6d703fa": {
+      "translation": "Chitarra",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Guitar",
+      "targetLang": "it"
+    },
+    "0c71ee15f3305516": {
+      "translation": "Rendering di tablature interattive per chitarra come HTML: modifica con un clic, cursore di riproduzione, scorciatoie da tastiera",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Render interactive guitar tablature as HTML — click-to-edit, playback cursor, keyboard shortcuts",
+      "targetLang": "it"
+    },
+    "8c54d61a672c828c": {
+      "translation": "Preset di voci di chitarra disponibili",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Available guitar voice presets",
+      "targetLang": "it"
+    },
+    "a9fbde753bb661dd": {
+      "translation": "Sistemi di accordatura per chitarra disponibili (standard, drop-D, open G, DADGAD, ecc.)",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Available guitar tuning systems (standard, drop-D, open G, DADGAD, etc.)",
+      "targetLang": "it"
+    },
+    "e3488898b673a40d": {
+      "translation": "Regola qualsiasi parametro di qualsiasi voce di chitarra. Le impostazioni vengono mantenute tra le sessioni.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Adjust any parameter of any guitar voice. Persists across sessions.",
+      "targetLang": "it"
+    },
+    "6294069b89e626c0": {
+      "translation": "Configurazione corrente della voce di chitarra rispetto alle impostazioni predefinite di fabbrica",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Current guitar voice config vs factory defaults",
+      "targetLang": "it"
+    },
+    "93bd892be4a34e01": {
+      "translation": "Ripristina le impostazioni predefinite di una voce di chitarra",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Factory reset a guitar voice",
+      "targetLang": "it"
+    },
+    "2f40127ec851aec2": {
+      "translation": "Crea",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Build",
+      "targetLang": "it"
+    },
+    "50af24a714878869": {
+      "translation": "Aggiungi una nuova canzone in formato JSON",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Add a new song as JSON",
+      "targetLang": "it"
+    },
+    "0c6e9646b9e33bb2": {
+      "translation": "Importa un file .mid con metadati",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935683,
+      "source": "Import a .mid file with metadata",
+      "targetLang": "it"
+    },
+    "b3b78d34318b5949": {
+      "translation": "Scrivere la notazione musicale per un brano grezzo e trasformarlo in una versione completa.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "Write musical language for a raw song and promote it to ready",
+      "targetLang": "it"
+    },
+    "b0d235f79ee427d3": {
+      "translation": "Voce di diario con dati della sessione acquisiti automaticamente.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "Journal entry with auto-captured session data",
+      "targetLang": "it"
+    },
+    "31bdc6b901e1bf74": {
+      "translation": "Caricare le voci recenti per fornire contesto.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "Load recent entries for context",
+      "targetLang": "it"
+    },
+    "141953a5e66c32be": {
+      "translation": "Timbri di tastiera disponibili.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "Available keyboard voices",
+      "targetLang": "it"
+    },
+    "dd7416c9260fa012": {
+      "translation": "Regolare qualsiasi parametro di qualsiasi timbro di tastiera. Le impostazioni vengono mantenute tra le sessioni.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "Adjust any parameter of any keyboard voice. Persists across sessions.",
+      "targetLang": "it"
+    },
+    "9a2387a4b1d7714c": {
+      "translation": "Configurazione corrente rispetto alle impostazioni di fabbrica.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "Current config vs factory defaults",
+      "targetLang": "it"
+    },
+    "2345d6a8207e02c2": {
+      "translation": "Ripristinare un timbro di tastiera alle impostazioni di fabbrica.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "Factory reset a keyboard voice",
+      "targetLang": "it"
+    },
+    "80ed6068fead8874": {
+      "translation": "Valutazione della qualità della notazione musicale in 5 dimensioni: completezza, profondità, specificità, valore didattico, vocabolario.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "Score annotation quality across 5 dimensions — completeness, depth, specificity, teaching value, vocabulary",
+      "targetLang": "it"
+    },
+    "23644186e3c73fa4": {
+      "translation": "Validare un file JSON di un brano rispetto allo schema prima di aggiungerlo.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "Validate a song JSON against the schema before adding",
+      "targetLang": "it"
+    },
+    "8ca71db0cdf72bef": {
+      "translation": "Trasporre un brano di un numero di semitoni, modificando la tonalità e le note.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "Transpose a song up or down by semitones — new key, new notes",
+      "targetLang": "it"
+    },
+    "a17610a6f11868ba": {
+      "translation": "Visualizzare le sezioni strutturali di un brano (introduzione, strofa, ritornello, ecc.).",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "View structural sections of a song (Intro, Verse, Chorus, etc.)",
+      "targetLang": "it"
+    },
+    "705d84355b00b7c2": {
+      "translation": "Aggiungere un marcatore di sezione a un brano per la navigazione strutturale.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "Add a section marker to a song for structural navigation",
+      "targetLang": "it"
+    },
+    "d783686bdf0f0723": {
+      "translation": "Suggerimenti MCP.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "MCP Prompts",
+      "targetLang": "it"
+    },
+    "58321eea7fac632b": {
+      "translation": "Tre modelli di suggerimento per flussi di lavoro didattici strutturati:",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "Three prompt templates for structured teaching workflows:\r",
+      "targetLang": "it"
+    },
+    "6f8833ed708c785a": {
+      "translation": "Suggerimento",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "Prompt",
+      "targetLang": "it"
+    },
+    "c51f79b9fe7ed9d5": {
+      "translation": "Flusso di lavoro guidato per la notazione: studiare un esempio, scrivere la notazione musicale per un brano grezzo.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "Guided annotation workflow — study an exemplar, write musical language for a raw song",
+      "targetLang": "it"
+    },
+    "92473026183901c1": {
+      "translation": "Creare un piano di pratica strutturato basato su genere, difficoltà e obiettivi.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "Build a structured practice plan based on genre, difficulty, and goals",
+      "targetLang": "it"
+    },
+    "6dc3a72d125f47a1": {
+      "translation": "Analizzare una sessione completata: cosa ha funzionato bene, su cosa concentrarsi successivamente.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "Review a completed session — what went well, what to focus on next",
+      "targetLang": "it"
+    },
+    "4f4c533c003cf132": {
+      "translation": "Interfaccia a riga di comando (CLI).",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "CLI",
+      "targetLang": "it"
+    },
+    "dcc569eca4c93eef": {
+      "translation": "Stato.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "Status",
+      "targetLang": "it"
+    },
+    "cff465d30c1460a9": {
+      "translation": "Versione 1.4.0. Sei motori audio, 41 strumenti MCP, 3 modelli di suggerimento, 120 brani in 12 generi con esempi dettagliatamente annotati. Trasposizione di brani, marcatori di sezione, mute/solo per mano per una pratica mirata. Editor interattivo di tablature per chitarra. Interfaccia web con 20 preset vocali, 10 timbri di strumenti, 7 sistemi di accordatura e un'API per la notazione accessibile tramite LLM. Visualizzazione della tastiera in due modalità di colore. Diario di pratica per un apprendimento continuo. Persistenza dello stato della sessione anche dopo il riavvio del server. Creazione di partiture MIDI, valutazione della qualità della notazione e riconoscimento di schemi tra generi. Tutti i file MIDI sono inclusi: la libreria cresce man mano che l'intelligenza artificiale impara.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "v1.4.0. Six sound engines, 41 MCP tools, 3 prompt templates, 120 songs across 12 genres with deeply annotated exemplars. Song transposition, section markers, per-hand mute/solo for focused practice. Interactive guitar tablature editor. Browser cockpit with 20 vocal presets, 10 instrument voices, 7 tuning systems, and an LLM-facing score API. Piano roll visualization in two color modes. Practice journal for persistent learning. Session state persistence across server restarts. MIDI play-along scoring, annotation quality assessment, and cross-genre pattern recognition. The MIDI is all there — the library grows as the AI learns.\r",
+      "targetLang": "it"
+    },
+    "98d8272ed74ce5af": {
+      "translation": "Sicurezza e privacy.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "Security & Privacy",
+      "targetLang": "it"
+    },
+    "5523c04e22db38c1": {
+      "translation": "**Dati accessibili:** libreria di brani (JSON + MIDI), directory dei brani dell'utente (`~/.ai-jam-sessions/songs/`), configurazioni di accordatura della chitarra, voci del diario di pratica, dispositivo di output audio locale.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "**Data touched:** song library (JSON + MIDI), user songs directory (`~/.ai-jam-sessions/songs/`), guitar tuning configs, practice journal entries, local audio output device.\r",
+      "targetLang": "it"
+    },
+    "7969c8400de9fb61": {
+      "translation": "**Dati NON accessibili:** nessuna API cloud, nessuna credenziale utente, nessun dato di navigazione, nessun file di sistema al di fuori della directory dei brani dell'utente. Non vengono raccolti o trasmessi dati di telemetria.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "**Data NOT touched:** no cloud APIs, no user credentials, no browsing data, no system files outside the user song directory. No telemetry is collected or sent.\r",
+      "targetLang": "it"
+    },
+    "08f87d9f5e80bcb8": {
+      "translation": "**Autorizzazioni:** Il server MCP utilizza solo il trasporto stdio (nessun HTTP). L'interfaccia a riga di comando accede al file system locale e ai dispositivi audio. Consultare [SECURITY.md](SECURITY.md) per la politica completa.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "**Permissions:** MCP server uses stdio transport only (no HTTP). CLI accesses local filesystem and audio devices. See [SECURITY.md](SECURITY.md) for the full policy.\r",
+      "targetLang": "it"
+    },
+    "0870aa1dcfea97cc": {
+      "translation": "Licenza.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "License",
+      "targetLang": "it"
+    },
+    "cf7d056fb6111803": {
+      "translation": "MIT.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432935684,
+      "source": "MIT\r",
+      "targetLang": "it"
+    },
+    "4deb6d51772cb945": {
+      "translation": "41 ferramentas e 3 modelos de prompts, divididos em seis categorias:",
+      "model": "translategemma:12b",
+      "timestamp": 1775432948012,
+      "source": "41 tools and 3 prompt templates across six categories:\r",
+      "targetLang": "pt"
+    },
+    "65acc6ad9ea64b30": {
+      "translation": "Versão do servidor, estatísticas da biblioteca, lista de engines, sessão ativa.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432948012,
+      "source": "Server version, library stats, engine list, active session",
+      "targetLang": "pt"
+    },
+    "a740cab1e54886ed": {
+      "translation": "Silenciar ou ativar a mão esquerda/direita durante a prática — isole uma mão de cada vez.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432948012,
+      "source": "Mute or unmute left/right hand during practice — isolate one hand at a time",
+      "targetLang": "pt"
+    },
+    "392a15a3ccb9207b": {
+      "translation": "Visualize todas as notas de instrução e momentos-chave antes de tocar.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432948012,
+      "source": "See all teaching notes and key moments before playing",
+      "targetLang": "pt"
+    },
+    "bfaace20cff73148": {
+      "translation": "Valide um arquivo JSON de música em relação ao esquema antes de adicionar.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432948012,
+      "source": "Validate a song JSON against the schema before adding",
+      "targetLang": "pt"
+    },
+    "8386bf1339e4ce65": {
+      "translation": "Transponha uma música para cima ou para baixo em semitons — nova tonalidade, novas notas.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432948012,
+      "source": "Transpose a song up or down by semitones — new key, new notes",
+      "targetLang": "pt"
+    },
+    "e0013a51d5137cf0": {
+      "translation": "Visualize as seções estruturais de uma música (Introdução, Verso, Refrão, etc.).",
+      "model": "translategemma:12b",
+      "timestamp": 1775432948012,
+      "source": "View structural sections of a song (Intro, Verse, Chorus, etc.)",
+      "targetLang": "pt"
+    },
+    "6cb03f835401d92b": {
+      "translation": "Adicione um marcador de seção a uma música para navegação estrutural.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432948012,
+      "source": "Add a section marker to a song for structural navigation",
+      "targetLang": "pt"
+    },
+    "d0fedf872e27249b": {
+      "translation": "Prompts MCP.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432948012,
+      "source": "MCP Prompts",
+      "targetLang": "pt"
+    },
+    "4feeabaac1d1086d": {
+      "translation": "Três modelos de prompts para fluxos de trabalho de ensino estruturados:",
+      "model": "translategemma:12b",
+      "timestamp": 1775432948012,
+      "source": "Three prompt templates for structured teaching workflows:\r",
+      "targetLang": "pt"
+    },
+    "e79a41d3b02abf87": {
+      "translation": "Prompt.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432948012,
+      "source": "Prompt",
+      "targetLang": "pt"
+    },
+    "f2f6581cd068f9ea": {
+      "translation": "Fluxo de trabalho de anotação guiado — estude um exemplo, escreva a linguagem musical para uma música bruta.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432948012,
+      "source": "Guided annotation workflow — study an exemplar, write musical language for a raw song",
+      "targetLang": "pt"
+    },
+    "1ab197fe0e505f0f": {
+      "translation": "Crie um plano de prática estruturado com base no gênero, dificuldade e objetivos.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432948012,
+      "source": "Build a structured practice plan based on genre, difficulty, and goals",
+      "targetLang": "pt"
+    },
+    "270d8478af4c5eb9": {
+      "translation": "Revise uma sessão concluída — o que funcionou bem, em que focar a seguir.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432948012,
+      "source": "Review a completed session — what went well, what to focus on next",
+      "targetLang": "pt"
+    },
+    "35cf8643c9be04a5": {
+      "translation": "v1.4.0. Seis engines de som, 41 ferramentas MCP, 3 modelos de prompts, 120 músicas em 12 gêneros com exemplos ricamente anotados. Transposição de músicas, marcadores de seção, silenciamento/solo por mão para prática focada. Editor de tablaturas de guitarra interativo. Painel de navegador com 20 presets vocais, 10 vozes de instrumentos, 7 sistemas de afinação e uma API de partitura voltada para LLM. Visualização de piano roll em dois modos de cor. Diário de prática para aprendizado contínuo. Persistência do estado da sessão durante as reinicializações do servidor. Partitura MIDI para tocar junto, avaliação da qualidade da anotação e reconhecimento de padrões entre gêneros. Todos os arquivos MIDI estão disponíveis — a biblioteca cresce à medida que a IA aprende.",
+      "model": "translategemma:12b",
+      "timestamp": 1775432948012,
+      "source": "v1.4.0. Six sound engines, 41 MCP tools, 3 prompt templates, 120 songs across 12 genres with deeply annotated exemplars. Song transposition, section markers, per-hand mute/solo for focused practice. Interactive guitar tablature editor. Browser cockpit with 20 vocal presets, 10 instrument voices, 7 tuning systems, and an LLM-facing score API. Piano roll visualization in two color modes. Practice journal for persistent learning. Session state persistence across server restarts. MIDI play-along scoring, annotation quality assessment, and cross-genre pattern recognition. The MIDI is all there — the library grows as the AI learns.\r",
+      "targetLang": "pt"
     }
   }
 }

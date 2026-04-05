@@ -16,11 +16,13 @@
   A browser cockpit with vocal synthesizer. A practice journal that remembers everything.
 </p>
 
-[![CI](https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml/badge.svg)](https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/mcp-tool-shop-org/ai-jam-sessions/branch/main/graph/badge.svg)](https://codecov.io/gh/mcp-tool-shop-org/ai-jam-sessions)
-[![npm](https://img.shields.io/npm/v/ai-jam-sessions)](https://www.npmjs.com/package/ai-jam-sessions)
-[![Songs](https://img.shields.io/badge/songs-120_across_12_genres-blue)](https://github.com/mcp-tool-shop-org/ai-jam-sessions)
-[![Ready](https://img.shields.io/badge/annotated-24-green)](https://github.com/mcp-tool-shop-org/ai-jam-sessions)
+<p align="center">
+  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml"><img src="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://codecov.io/gh/mcp-tool-shop-org/ai-jam-sessions"><img src="https://codecov.io/gh/mcp-tool-shop-org/ai-jam-sessions/branch/main/graph/badge.svg" alt="codecov"></a>
+  <a href="https://www.npmjs.com/package/ai-jam-sessions"><img src="https://img.shields.io/npm/v/ai-jam-sessions" alt="npm"></a>
+  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/songs-120_across_12_genres-blue" alt="Songs"></a>
+  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/annotated-24-green" alt="Ready"></a>
+</p>
 
 ---
 
@@ -182,7 +184,7 @@ Nécessite **Node.js 18+**. Pas de pilotes MIDI, pas de ports virtuels, pas de l
 
 ## MCP Tools
 
-34 outils répartis dans cinq catégories :
+41 outils et 3 modèles de requêtes répartis dans six catégories :
 
 ### Apprentissage
 
@@ -197,6 +199,7 @@ Nécessite **Node.js 18+**. Pas de pilotes MIDI, pas de ports virtuels, pas de l
 | `practice_setup` | Vitesse, mode, paramètres de voix et commande CLI recommandés pour une chanson |
 | `compare_songs` | Reconnaissance de schémas inter-genres — relations de tonalités, similarités de hauteur/intervalle, formes communes, liens pédagogiques. |
 | `annotation_progress` | Suivi de la qualité des annotations dans la bibliothèque : scores, notes et suggestions d'amélioration. |
+| `server_info` | Version du serveur, statistiques de la bibliothèque, liste des moteurs, session active. |
 
 ### Lecture
 
@@ -209,6 +212,8 @@ Nécessite **Node.js 18+**. Pas de pilotes MIDI, pas de ports virtuels, pas de l
 | `playback_status` | Capture instantanée en temps réel : mesure actuelle, tempo, vitesse, timbre du clavier, état. |
 | `view_piano_roll` | Rendu au format SVG (couleurs manuelles ou arc-en-ciel chromatique basé sur la hauteur). |
 | `score_performance` | Notation d'un morceau MIDI pour jouer en suivant : justesse de la hauteur, timing, exhaustivité, avec un retour d'information gradué. |
+| `mute_hand` | Mettre en sourdine ou activer le son de la main gauche ou de la main droite pendant la pratique – isoler une main à la fois. |
+| `preview_teaching_cues` | Consulter toutes les notes pédagogiques et les moments clés avant de jouer. |
 
 ### Chant
 
@@ -242,6 +247,20 @@ Nécessite **Node.js 18+**. Pas de pilotes MIDI, pas de ports virtuels, pas de l
 | `get_keyboard_config` | Configuration actuelle par rapport aux paramètres par défaut. |
 | `reset_keyboard` | Réinitialisation d'un timbre de clavier aux paramètres d'usine. |
 | `score_annotation` | Évaluation de la qualité des annotations selon 5 dimensions : exhaustivité, profondeur, spécificité, valeur pédagogique, vocabulaire. |
+| `validate_song_entry` | Valider un fichier JSON de chanson par rapport au schéma avant de l'ajouter. |
+| `transpose_song` | Transposer une chanson vers le haut ou vers le bas par demi-tons – nouvelle tonalité, nouvelles notes. |
+| `list_sections` | Afficher les sections structurelles d'une chanson (introduction, couplet, refrain, etc.). |
+| `add_section` | Ajouter un marqueur de section à une chanson pour la navigation structurée. |
+
+### Requêtes MCP
+
+Trois modèles de requêtes pour des flux de travail pédagogiques structurés :
+
+| Requête. | Ce qu'il fait |
+|--------|--------------|
+| `annotate_song` | Flux de travail d'annotation guidé – étudier un exemple, écrire le langage musical pour une chanson brute. |
+| `practice_plan` | Créer un plan de pratique structuré basé sur le genre, la difficulté et les objectifs. |
+| `performance_review` | Examiner une session terminée – ce qui a bien fonctionné, sur quoi se concentrer ensuite. |
 
 ## Interface en ligne de commande (CLI)
 
@@ -252,14 +271,20 @@ ai-jam-sessions sing <song-id> [--with-piano] [--engine <engine>]
 ai-jam-sessions view <song-id> [--measures <start-end>] [--out <file.svg>]
 ai-jam-sessions view-guitar <song-id> [--measures <start-end>] [--tuning <tuning>]
 ai-jam-sessions info <song-id>
+ai-jam-sessions tune <keyboard-id> [--param value ...] [--reset] [--show]
+ai-jam-sessions tune-guitar <voice-id> [--param value ...] [--reset] [--show]
+ai-jam-sessions keyboards
+ai-jam-sessions guitars
 ai-jam-sessions stats
 ai-jam-sessions library
 ai-jam-sessions ports
+ai-jam-sessions help
+ai-jam-sessions --version
 ```
 
 ## État
 
-v1.1.0. Six moteurs audio, 34 outils MCP, 120 morceaux dans 12 genres avec des exemples annotés de manière approfondie. Éditeur de tablatures de guitare interactives. Interface utilisateur pour navigateur avec 20 présets vocaux, 10 timbres d'instruments, 7 systèmes d'accordage et une API de notation compatible avec les modèles de langage. Visualisation du piano roll en deux modes de couleur. Journal de pratique pour un apprentissage continu. Notation des morceaux MIDI, évaluation de la qualité des annotations et reconnaissance de motifs inter-genres. Tous les fichiers MIDI sont présents : la bibliothèque s'enrichit au fur et à mesure que l'IA apprend.
+Version 1.4.0. Six moteurs audio, 41 outils MCP, 3 modèles de requêtes, 120 chansons dans 12 genres avec des exemples annotés de manière approfondie. Transposition de chansons, marqueurs de section, mise en sourdine/solo par main pour une pratique ciblée. Éditeur de tablatures de guitare interactif. Interface de navigation web avec 20 préréglages vocaux, 10 voix d'instruments, 7 systèmes d'accordage et une API de partition compatible avec les LLM. Visualisation du piano roll en deux modes de couleur. Journal de pratique pour un apprentissage continu. Persistance de l'état de la session lors des redémarrages du serveur. Accompagnement MIDI, évaluation de la qualité de l'annotation et reconnaissance de motifs inter-genres. Tous les fichiers MIDI sont présents – la bibliothèque s'agrandit au fur et à mesure que l'IA apprend.
 
 ## Sécurité et confidentialité
 

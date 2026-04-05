@@ -16,11 +16,13 @@
   A browser cockpit with vocal synthesizer. A practice journal that remembers everything.
 </p>
 
-[![CI](https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml/badge.svg)](https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/mcp-tool-shop-org/ai-jam-sessions/branch/main/graph/badge.svg)](https://codecov.io/gh/mcp-tool-shop-org/ai-jam-sessions)
-[![npm](https://img.shields.io/npm/v/ai-jam-sessions)](https://www.npmjs.com/package/ai-jam-sessions)
-[![Songs](https://img.shields.io/badge/songs-120_across_12_genres-blue)](https://github.com/mcp-tool-shop-org/ai-jam-sessions)
-[![Ready](https://img.shields.io/badge/annotated-24-green)](https://github.com/mcp-tool-shop-org/ai-jam-sessions)
+<p align="center">
+  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml"><img src="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://codecov.io/gh/mcp-tool-shop-org/ai-jam-sessions"><img src="https://codecov.io/gh/mcp-tool-shop-org/ai-jam-sessions/branch/main/graph/badge.svg" alt="codecov"></a>
+  <a href="https://www.npmjs.com/package/ai-jam-sessions"><img src="https://img.shields.io/npm/v/ai-jam-sessions" alt="npm"></a>
+  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/songs-120_across_12_genres-blue" alt="Songs"></a>
+  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/annotated-24-green" alt="Ready"></a>
+</p>
 
 ---
 
@@ -182,7 +184,7 @@ npm install -g ai-jam-sessions
 
 ## MCP टूल्स
 
-पांच श्रेणियों में 34 उपकरण:
+41 उपकरण और छह श्रेणियों में 3 प्रॉम्प्ट टेम्पलेट:
 
 ### सीखें
 
@@ -197,6 +199,7 @@ npm install -g ai-jam-sessions
 | `practice_setup` | एक गाने के लिए अनुशंसित गति, मोड, वॉयस सेटिंग्स और CLI कमांड |
 | `compare_songs` | विभिन्न शैलियों के पैटर्न की पहचान - प्रमुख संबंध, पिच/अंतराल समानता, साझा रूप, शिक्षण संबंध |
 | `annotation_progress` | लाइब्रेरी में ट्रैक की गुणवत्ता का मूल्यांकन करें - स्कोर, ग्रेड और सुधार के सुझाव। |
+| `server_info` | सर्वर संस्करण, लाइब्रेरी आँकड़े, इंजन सूची, सक्रिय सत्र |
 
 ### प्ले (चलाएं)
 
@@ -209,6 +212,8 @@ npm install -g ai-jam-sessions
 | `playback_status` | रियल-टाइम स्नैपशॉट: वर्तमान माप, टेम्पो, गति, कीबोर्ड ध्वनि, स्थिति। |
 | `view_piano_roll` | SVG के रूप में प्रस्तुत करें (हाथ से रंग या पिच-क्लास क्रोमेटिक रेनबो)। |
 | `score_performance` | MIDI प्ले-एलोंग का स्कोर करें - पिच की सटीकता, समय, पूर्णता, और वर्गीकृत प्रतिक्रिया के साथ। |
+| `mute_hand` | अभ्यास के दौरान बाएं/दाएं हाथ को म्यूट या अनम्यूट करें - एक समय में एक हाथ को अलग करें। |
+| `preview_teaching_cues` | प्ले करने से पहले सभी शिक्षण नोट्स और महत्वपूर्ण क्षण देखें। |
 
 ### गाना
 
@@ -242,6 +247,20 @@ npm install -g ai-jam-sessions
 | `get_keyboard_config` | वर्तमान कॉन्फ़िगरेशन बनाम फ़ैक्टरी डिफ़ॉल्ट। |
 | `reset_keyboard` | किसी कीबोर्ड ध्वनि को फ़ैक्टरी पर रीसेट करें। |
 | `score_annotation` | 5 आयामों में एनोटेशन गुणवत्ता का मूल्यांकन करें - पूर्णता, गहराई, विशिष्टता, शिक्षण मूल्य, शब्दावली। |
+| `validate_song_entry` | जोड़ने से पहले एक गाने के JSON को स्कीमा के विरुद्ध सत्यापित करें। |
+| `transpose_song` | एक गाने को अर्ध-स्वर (सेमिटोन) से ऊपर या नीचे स्थानांतरित करें - नया की, नए नोट्स। |
+| `list_sections` | एक गाने के संरचनात्मक अनुभागों को देखें (इंट्रो, वर्स, कोरस, आदि)। |
+| `add_section` | संरचनात्मक नेविगेशन के लिए एक गाने में एक अनुभाग मार्कर जोड़ें। |
+
+### MCP प्रॉम्प्ट
+
+संरचित शिक्षण वर्कफ़्लो के लिए तीन प्रॉम्प्ट टेम्पलेट:
+
+| प्रॉम्प्ट | यह क्या करता है |
+|--------|--------------|
+| `annotate_song` | गाइडेड एनोटेशन वर्कफ़्लो - एक उदाहरण का अध्ययन करें, एक कच्चे गाने के लिए संगीत भाषा लिखें। |
+| `practice_plan` | शैली, कठिनाई और लक्ष्यों के आधार पर एक संरचित अभ्यास योजना बनाएं। |
+| `performance_review` | एक पूर्ण सत्र की समीक्षा करें - क्या अच्छा रहा, आगे क्या ध्यान केंद्रित करना है। |
 
 ## सीएलआई (कमांड लाइन इंटरफेस)
 
@@ -252,14 +271,20 @@ ai-jam-sessions sing <song-id> [--with-piano] [--engine <engine>]
 ai-jam-sessions view <song-id> [--measures <start-end>] [--out <file.svg>]
 ai-jam-sessions view-guitar <song-id> [--measures <start-end>] [--tuning <tuning>]
 ai-jam-sessions info <song-id>
+ai-jam-sessions tune <keyboard-id> [--param value ...] [--reset] [--show]
+ai-jam-sessions tune-guitar <voice-id> [--param value ...] [--reset] [--show]
+ai-jam-sessions keyboards
+ai-jam-sessions guitars
 ai-jam-sessions stats
 ai-jam-sessions library
 ai-jam-sessions ports
+ai-jam-sessions help
+ai-jam-sessions --version
 ```
 
 ## स्थिति
 
-v1.1.0। छह ध्वनि इंजन, 34 एमसीपी उपकरण, 12 शैलियों में 120 गाने, जिनमें गहराई से एनोटेट किए गए उदाहरण हैं। इंटरैक्टिव गिटार टैबुलेशन संपादक। 20 वोकल प्रीसेट, 10 इंस्ट्रूमेंट वॉयस, 7 ट्यूनिंग सिस्टम और एक एलएलएम-फेसिंग स्कोर एपीआई के साथ ब्राउज़र कॉकपिट। दो रंग मोड में पियानो रोल विज़ुअलाइज़ेशन। लगातार सीखने के लिए अभ्यास जर्नल। MIDI प्ले-एलोंग स्कोरिंग, एनोटेशन गुणवत्ता मूल्यांकन और क्रॉस-शैली पैटर्न पहचान। MIDI सब कुछ मौजूद है - जैसे-जैसे एआई सीखता है, लाइब्रेरी बढ़ती है।
+v1.4.0। छह ध्वनि इंजन, 41 MCP उपकरण, 3 प्रॉम्प्ट टेम्पलेट, 120 गाने 12 शैलियों में, जो गहराई से एनोटेट किए गए उदाहरणों के साथ हैं। गाने का ट्रांसपोज़िशन, अनुभाग मार्कर, केंद्रित अभ्यास के लिए प्रति-हाथ म्यूट/सोलो। इंटरैक्टिव गिटार टैब संपादक। 20 वोकल प्रीसेट, 10 इंस्ट्रूमेंट वॉयस, 7 ट्यूनिंग सिस्टम और एक LLM-फेसिंग स्कोर API के साथ ब्राउज़र कॉकपिट। दो रंग मोड में पियानो रोल विज़ुअलाइज़ेशन। निरंतर सीखने के लिए अभ्यास जर्नल। सर्वर रीस्टार्ट होने पर सत्र की स्थिति बनी रहती है। MIDI प्ले-अलॉन्ग स्कोरिंग, एनोटेशन गुणवत्ता मूल्यांकन और क्रॉस-शैली पैटर्न पहचान। MIDI सब कुछ मौजूद है - जैसे-जैसे AI सीखता है, लाइब्रेरी बढ़ती जाती है।
 
 ## सुरक्षा और गोपनीयता
 
