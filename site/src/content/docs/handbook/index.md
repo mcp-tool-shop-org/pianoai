@@ -34,6 +34,6 @@ Each of the 12 genres has a richly annotated exemplar that serves as a reference
 - [Getting started](/ai-jam-sessions/handbook/getting-started/) — installation, Claude Desktop setup, first commands
 - [Instruments](/ai-jam-sessions/handbook/instruments/) — piano voices, guitar presets, vocal engines, and the layered combinator
 - [Songs and genres](/ai-jam-sessions/handbook/songs-and-genres/) — the 120-song library, 12 genre exemplars, and annotation workflow
-- [MCP tools](/ai-jam-sessions/handbook/mcp-tools/) — all 31 tools organized by category
+- [MCP tools](/ai-jam-sessions/handbook/mcp-tools/) — all 41 tools and 3 prompt templates organized by category
 - [Browser cockpit](/ai-jam-sessions/handbook/browser-cockpit/) — the cockpit UI, practice journal, and tuning lab
 - [For beginners](/ai-jam-sessions/handbook/beginners/) — new to AI Jam Sessions? Start here

@@ -37,7 +37,7 @@ The server uses stdio transport only (no HTTP).
 
 ## Claude Code setup
 
-For Claude Code, the same configuration applies. Add it to your MCP server settings and the 34 tools become available in your coding session.
+For Claude Code, the same configuration applies. Add it to your MCP server settings and all 41 tools and 3 prompt templates become available in your coding session.
 
 ## First commands
 

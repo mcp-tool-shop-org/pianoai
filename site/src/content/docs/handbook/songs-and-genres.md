@@ -56,6 +56,16 @@ The AI promotes songs from raw to ready by studying them and writing annotations
 - `list_measures` — every measure's notes, dynamics, and existing teaching notes
 - `teaching_note` — deep dive into a single measure with fingering, dynamics, and musical context
 
+## Transposition
+
+Transpose any song up or down by semitones using `transpose_song`. The tool shifts all notes and updates the key signature automatically. Useful for matching a singer's range or practicing in different keys.
+
+## Section markers
+
+Songs can have structural section markers (Intro, Verse, Chorus, Bridge, Coda) for navigation and teaching. Use `list_sections` to view them and `add_section` to annotate song structure.
+
 ## Practice setup
 
 Before playing, use `practice_setup` to get recommended speed, mode, voice settings, and the exact CLI command for a song. This factors in the song's difficulty and the AI's current skill level.
+
+Use `mute_hand` to isolate left or right hand practice. Use `preview_teaching_cues` to see all teaching notes and key moments before playing.
