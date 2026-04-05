@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-04-05
+
+### Added
+- **7 new MCP tools**: `server_info`, `validate_song_entry`, `transpose_song`, `list_sections`, `add_section`, `preview_teaching_cues`, `mute_hand` (34 → 41 tools)
+- **3 MCP prompt templates**: `annotate_song`, `practice_plan`, `performance_review`
+- Song transposition — shift any song up or down by semitones with key signature update
+- Section markers — structural navigation (Intro, Verse, Chorus, Bridge) on songs
+- Per-hand mute/solo — isolate left or right hand during practice sessions
+- Teaching cue preview — see all teaching notes and key moments before playing
+- Session state persistence — last completed session survives server restarts
+- `import_midi` now documents output format in tool description
+- `play_song` supports `syncMode` parameter (concurrent vs before) for voice timing
+- `initializeFromLibrary` returns structured `InitReport` with error details
+- 76 new MIDI ingest tests, 14 transposition tests, 3 mute tests, 5 library edge case tests
+
+### Changed
+- Humanized all MCP error messages — conversational tone replaces robotic responses
+- Defensive coding improvements across all sound engines (graceful degradation, operator warnings)
+
 ## [1.3.1] - 2026-04-05
 
 ### Changed

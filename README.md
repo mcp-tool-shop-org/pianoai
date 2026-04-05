@@ -184,7 +184,7 @@ Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external softwar
 
 ## MCP Tools
 
-34 tools across five categories:
+41 tools and 3 prompt templates across six categories:
 
 ### Learn
 
@@ -199,6 +199,7 @@ Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external softwar
 | `practice_setup` | Recommended speed, mode, voice settings, and CLI command for a song |
 | `compare_songs` | Cross-genre pattern recognition — key relationships, pitch/interval similarity, shared forms, teaching connections |
 | `annotation_progress` | Track annotation quality across the library — scores, grades, and improvement suggestions |
+| `server_info` | Server version, library stats, engine list, active session |
 
 ### Play
 
@@ -211,6 +212,8 @@ Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external softwar
 | `playback_status` | Real-time snapshot: current measure, tempo, speed, keyboard voice, state |
 | `view_piano_roll` | Render as SVG (hand color or pitch-class chromatic rainbow) |
 | `score_performance` | Score a MIDI play-along — pitch accuracy, timing, completeness, with graded feedback |
+| `mute_hand` | Mute or unmute left/right hand during practice — isolate one hand at a time |
+| `preview_teaching_cues` | See all teaching notes and key moments before playing |
 
 ### Sing
 
@@ -244,6 +247,20 @@ Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external softwar
 | `get_keyboard_config` | Current config vs factory defaults |
 | `reset_keyboard` | Factory reset a keyboard voice |
 | `score_annotation` | Score annotation quality across 5 dimensions — completeness, depth, specificity, teaching value, vocabulary |
+| `validate_song_entry` | Validate a song JSON against the schema before adding |
+| `transpose_song` | Transpose a song up or down by semitones — new key, new notes |
+| `list_sections` | View structural sections of a song (Intro, Verse, Chorus, etc.) |
+| `add_section` | Add a section marker to a song for structural navigation |
+
+### MCP Prompts
+
+Three prompt templates for structured teaching workflows:
+
+| Prompt | What it does |
+|--------|--------------|
+| `annotate_song` | Guided annotation workflow — study an exemplar, write musical language for a raw song |
+| `practice_plan` | Build a structured practice plan based on genre, difficulty, and goals |
+| `performance_review` | Review a completed session — what went well, what to focus on next |
 
 ## CLI
 
@@ -267,7 +284,7 @@ ai-jam-sessions --version
 
 ## Status
 
-v1.3.1. Six sound engines, 34 MCP tools, 120 songs across 12 genres with deeply annotated exemplars. Interactive guitar tablature editor. Browser cockpit with 20 vocal presets, 10 instrument voices, 7 tuning systems, and an LLM-facing score API. Piano roll visualization in two color modes. Practice journal for persistent learning. MIDI play-along scoring, annotation quality assessment, and cross-genre pattern recognition. The MIDI is all there — the library grows as the AI learns.
+v1.4.0. Six sound engines, 41 MCP tools, 3 prompt templates, 120 songs across 12 genres with deeply annotated exemplars. Song transposition, section markers, per-hand mute/solo for focused practice. Interactive guitar tablature editor. Browser cockpit with 20 vocal presets, 10 instrument voices, 7 tuning systems, and an LLM-facing score API. Piano roll visualization in two color modes. Practice journal for persistent learning. Session state persistence across server restarts. MIDI play-along scoring, annotation quality assessment, and cross-genre pattern recognition. The MIDI is all there — the library grows as the AI learns.
 
 ## Security & Privacy
 
