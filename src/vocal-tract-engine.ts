@@ -223,14 +223,19 @@ export function createTractEngine(options?: TractEngineOptions): VmpkConnector &
         highestVel = vel;
       }
     }
+    const glottis = synth?.glottis ?? null;
     if (highest !== soundingNote) {
       soundingNote = highest;
-      const freq = midiToFreq(highest + transpose);
-      synth.glottis.targetFrequency = freq;
+      if (glottis) {
+        const freq = midiToFreq(highest + transpose);
+        glottis.targetFrequency = freq;
+      }
     }
     const vel01 = highestVel / 127;
     targetGain = vel01 * maxIntensity;
-    synth.glottis.isTouched = true;
+    if (glottis) {
+      glottis.isTouched = true;
+    }
   }
 
   const debugLog: TractNoteEvent[] = [];

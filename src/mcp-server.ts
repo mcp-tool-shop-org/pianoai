@@ -82,8 +82,14 @@ import { scoreAnnotation, formatAnnotationScore } from "./annotation-scorer.js";
 import { compareSongs, formatComparison } from "./song-compare.js";
 import type { VoiceDirective, AsideDirective } from "./types.js";
 import { readFile } from "node:fs/promises";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { join as pathJoin, resolve as pathResolve, basename as pathBasename } from "node:path";
+import { existsSync, readFileSync, writeFileSync, realpathSync } from "node:fs";
+import {
+  join as pathJoin,
+  resolve as pathResolve,
+  basename as pathBasename,
+  relative as pathRelative,
+  isAbsolute as pathIsAbsolute,
+} from "node:path";
 import {
   type SessionSnapshot,
   buildJournalEntry,
@@ -116,6 +122,48 @@ function suggestMode(difficulty: Difficulty): { mode: string; reason: string } {
     default:
       return { mode: "full", reason: "Play straight through at tempo" };
   }
+}
+
+
+/** Resolve the user's home directory to a canonical path, if available. */
+function getCanonicalHomeDir(): string | null {
+  const home = process.env.HOME ?? process.env.USERPROFILE ?? "";
+  if (!home) return null;
+
+  try {
+    return realpathSync(home);
+  } catch {
+    const resolved = pathResolve(home);
+    return existsSync(resolved) ? resolved : null;
+  }
+}
+
+/**
+ * Resolve an existing path and ensure it stays within the allowed root after
+ * following symlinks. Returns the canonical path on success, or null on failure.
+ */
+function resolveContainedExistingPath(inputPath: string, allowedRoot: string): string | null {
+  const resolvedInput = pathResolve(inputPath);
+  if (!existsSync(resolvedInput)) {
+    return null;
+  }
+
+  let canonicalRoot: string;
+  let canonicalInput: string;
+
+  try {
+    canonicalRoot = realpathSync(allowedRoot);
+    canonicalInput = realpathSync(resolvedInput);
+  } catch {
+    return null;
+  }
+
+  const relative = pathRelative(canonicalRoot, canonicalInput);
+  if (relative === "" || (!relative.startsWith("..") && !pathIsAbsolute(relative))) {
+    return canonicalInput;
+  }
+
+  return null;
 }
 
 // ─── Server ─────────────────────────────────────────────────────────────────
@@ -628,17 +676,17 @@ server.tool(
 
     // Determine if this is a .mid file path or a library song ID — require explicit extension
     const isMidiFile = id.endsWith(".mid") || id.endsWith(".midi");
+    const homeDir = getCanonicalHomeDir();
+    const safeMidiPath = isMidiFile && homeDir
+      ? resolveContainedExistingPath(id, homeDir)
+      : null;
 
     // Path containment check for file paths
-    if (isMidiFile) {
-      const resolved = pathResolve(id);
-      const home = pathResolve(process.env.HOME ?? process.env.USERPROFILE ?? "");
-      if (!home || !(resolved.startsWith(home + "/") || resolved.startsWith(home + "\\"))) {
-        return {
-          content: [{ type: "text", text: `Invalid MIDI file path: "${id}". Path must be within your home directory.` }],
-          isError: true,
-        };
-      }
+    if (isMidiFile && !safeMidiPath) {
+      return {
+        content: [{ type: "text", text: `Invalid MIDI file path: "${id}". Path must be within your home directory.` }],
+        isError: true,
+      };
     }
 
     const librarySong = isMidiFile ? null : getSong(id);
@@ -676,7 +724,7 @@ server.tool(
     if (isMidiFile) {
       let parsed;
       try {
-        parsed = await parseMidiFile(id);
+        parsed = await parseMidiFile(safeMidiPath!);
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         connector.disconnect().catch((e) => console.error(`Disconnect error: ${e instanceof Error ? e.message : String(e)}`));
@@ -928,12 +976,40 @@ server.tool(
     if (resume) {
       // Resume
       if (activeController && activeController.state === "paused") {
-        activeController.resume().catch((e) => console.error(`Resume error: ${e instanceof Error ? e.message : String(e)}`));
-        return { content: [{ type: "text", text: "Resumed playback." }] };
+        try {
+          await activeController.resume();
+          return { content: [{ type: "text", text: "Resumed playback." }] };
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : String(e);
+          return {
+            content: [{ type: "text", text: `Failed to resume playback: ${msg}` }],
+            isError: true,
+          };
+        }
+      }
+      if (activeMidiEngine && activeMidiEngine.state === "paused") {
+        try {
+          await activeMidiEngine.resume();
+          return { content: [{ type: "text", text: "Resumed playback." }] };
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : String(e);
+          return {
+            content: [{ type: "text", text: `Failed to resume playback: ${msg}` }],
+            isError: true,
+          };
+        }
       }
       if (activeSession && activeSession.state === "paused") {
-        activeSession.play().catch((e) => console.error(`Resume error: ${e instanceof Error ? e.message : String(e)}`));
-        return { content: [{ type: "text", text: "Resumed playback." }] };
+        try {
+          await activeSession.play();
+          return { content: [{ type: "text", text: "Resumed playback." }] };
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : String(e);
+          return {
+            content: [{ type: "text", text: `Failed to resume playback: ${msg}` }],
+            isError: true,
+          };
+        }
       }
       return { content: [{ type: "text", text: "Nothing is paused." }] };
     }
@@ -1172,8 +1248,11 @@ server.tool(
           isError: true,
         };
       }
-      const midiHome = pathResolve(process.env.HOME ?? process.env.USERPROFILE ?? "");
-      if (!midiHome || !(resolvedMidiPath.startsWith(midiHome + "/") || resolvedMidiPath.startsWith(midiHome + "\\"))) {
+      const midiHome = getCanonicalHomeDir();
+      const safeMidiPath = midiHome
+        ? resolveContainedExistingPath(resolvedMidiPath, midiHome)
+        : null;
+      if (!safeMidiPath) {
         return {
           content: [{ type: "text", text: `Invalid MIDI path: file must be within your home directory.` }],
           isError: true,
@@ -1188,7 +1267,7 @@ server.tool(
         };
       }
 
-      const midiBuffer = new Uint8Array(readFileSync(resolvedMidiPath));
+      const midiBuffer = new Uint8Array(readFileSync(safeMidiPath));
 
       const config = {
         id,

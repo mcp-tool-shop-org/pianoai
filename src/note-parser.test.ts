@@ -45,8 +45,16 @@ describe("parseNoteToMidi", () => {
     expect(parseNoteToMidi("C2")).toBe(36);
   });
 
+  it("handles MIDI floor: C-1 = 0", () => {
+    expect(parseNoteToMidi("C-1")).toBe(0);
+  });
+
   it("handles high notes: C7 = 96", () => {
     expect(parseNoteToMidi("C7")).toBe(96);
+  });
+
+  it("handles MIDI ceiling: G9 = 127", () => {
+    expect(parseNoteToMidi("G9")).toBe(127);
   });
 
   it("returns -1 for rest (R)", () => {
@@ -59,6 +67,11 @@ describe("parseNoteToMidi", () => {
 
   it("throws on note without octave", () => {
     expect(() => parseNoteToMidi("C")).toThrow("Invalid note");
+  });
+
+  it("throws when note resolves above MIDI range", () => {
+    expect(() => parseNoteToMidi("A9")).toThrow("MIDI note out of range");
+    expect(() => parseNoteToMidi("C10")).toThrow("MIDI note out of range");
   });
 });
 

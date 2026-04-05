@@ -25,7 +25,7 @@ export function parseNoteToMidi(noteStr: string): number {
 
   // Match: letter + optional accidental + octave
   // e.g. "C4", "F#5", "Bb3", "G#4"
-  const match = trimmed.match(/^([A-Ga-g])(#|b)?(\d)$/);
+  const match = trimmed.match(/^([A-Ga-g])(#|b)?(-?\d+)$/);
   if (!match) {
     throw new Error(`Invalid note: "${noteStr}"`);
   }
@@ -37,6 +37,10 @@ export function parseNoteToMidi(noteStr: string): number {
   }
 
   const octave = parseInt(octaveStr, 10);
+  if (!Number.isInteger(octave)) {
+    throw new Error(`Invalid octave in note: "${noteStr}"`);
+  }
+
   let midi = (octave + 1) * 12 + base;
 
   if (accidental === "#") midi += 1;

@@ -285,12 +285,22 @@ export function createVocalSynthEngine(options?: VocalSynthOptions): VmpkConnect
       const noteId = `n${noteCounter++}`;
       activeNoteIds.set(note, noteId);
 
-      engine.noteOn({
+      const noteOnConfig: {
+        noteId: string;
+        midi: number;
+        velocity: number;
+        breathiness?: number;
+      } = {
         noteId,
         midi: note,
         velocity: velocity / 127,
-        breathiness: breathiness,
-      });
+      };
+
+      if (typeof breathiness === "number" && Number.isFinite(breathiness)) {
+        noteOnConfig.breathiness = Math.max(0, Math.min(1, breathiness));
+      }
+
+      engine.noteOn(noteOnConfig);
 
       if (debug) {
         debugLog.push({ type: "on", t: now(), midi: note, velocity });

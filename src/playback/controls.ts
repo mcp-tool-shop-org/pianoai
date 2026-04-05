@@ -117,6 +117,7 @@ export class PlaybackController {
   private _lastState: MidiPlaybackState = "idle";
 
   private wrappedConnector: VmpkConnector | null = null;
+  private playbackGeneration = 0;
 
   constructor(
     private readonly connector: VmpkConnector,
@@ -199,9 +200,14 @@ export class PlaybackController {
     const previousState = this.engine.state;
     this._teachingHook = options.teachingHook ?? null;
 
-    // Only create the wrapped connector and engine once
-    if (!this.wrappedConnector) {
-      this.wrappedConnector = this.createWrappedConnector();
+    const startingFresh =
+      previousState === "idle" ||
+      previousState === "stopped" ||
+      previousState === "finished";
+
+    if (startingFresh) {
+      const generation = ++this.playbackGeneration;
+      this.wrappedConnector = this.createWrappedConnector(generation);
       this.engine = new MidiPlaybackEngine(this.wrappedConnector, this.midi);
     }
 
@@ -275,6 +281,7 @@ export class PlaybackController {
   stop(): void {
     const prev = this.engine.state;
     this.engine.stop();
+    this.playbackGeneration++;
     this.emitStateChange(prev);
   }
 
@@ -304,7 +311,7 @@ export class PlaybackController {
    * Create a connector wrapper that intercepts noteOn/noteOff to emit events
    * and invoke teaching hooks.
    */
-  private createWrappedConnector(): VmpkConnector {
+  private createWrappedConnector(generation: number): VmpkConnector {
     const self = this;
     const inner = this.connector;
     let noteIndex = 0;
@@ -316,6 +323,7 @@ export class PlaybackController {
       listPorts: () => inner.listPorts(),
 
       noteOn(note: number, velocity: number, channel?: number) {
+        if (generation !== self.playbackGeneration) return;
         inner.noteOn(note, velocity, channel);
 
         const ch = channel ?? 0;
@@ -345,6 +353,7 @@ export class PlaybackController {
       },
 
       noteOff(note: number, channel?: number) {
+        if (generation !== self.playbackGeneration) return;
         inner.noteOff(note, channel);
 
         self.emit({
@@ -358,10 +367,16 @@ export class PlaybackController {
       },
 
       allNotesOff(channel?: number) {
+        if (generation !== self.playbackGeneration) return;
         inner.allNotesOff(channel);
       },
 
-      playNote: (midiNote) => inner.playNote(midiNote),
+      playNote: (midiNote) => {
+        if (generation !== self.playbackGeneration) {
+          return Promise.resolve();
+        }
+        return inner.playNote(midiNote);
+      },
     };
   }
 }
