@@ -28,17 +28,23 @@ export function loadSongConfigs(dir: string): SongConfig[] {
 
   for (const file of files) {
     const filePath = join(dir, file);
-    const raw = JSON.parse(readFileSync(filePath, "utf8"));
-    const result = SongConfigSchema.safeParse(raw);
+    try {
+      const raw = JSON.parse(readFileSync(filePath, "utf8"));
+      const result = SongConfigSchema.safeParse(raw);
 
-    if (!result.success) {
-      const issues = result.error.issues
-        .map(i => `  ${i.path.join(".")}: ${i.message}`)
-        .join("\n");
-      throw new Error(`Invalid config ${file}:\n${issues}`);
+      if (!result.success) {
+        const issues = result.error.issues
+          .map(i => `  ${i.path.join(".")}: ${i.message}`)
+          .join("\n");
+        console.error(`  SKIP config ${file}:\n${issues}`);
+        continue;
+      }
+
+      configs.push(result.data);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error(`  SKIP config ${file}: ${msg}`);
     }
-
-    configs.push(result.data);
   }
 
   return configs;

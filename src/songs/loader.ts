@@ -50,7 +50,13 @@ export function loadSongsFromDir(dir: string): SongEntry[] {
  * Validates the parsed object and returns a typed SongEntry.
  */
 export function loadSongFile(filePath: string): SongEntry {
-  const raw = JSON.parse(readFileSync(filePath, "utf8"));
+  let raw: unknown;
+  try {
+    raw = JSON.parse(readFileSync(filePath, "utf8"));
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    throw new Error(`Failed to parse ${basename(filePath)}: ${msg}`);
+  }
   const errors = validateSong(raw as SongEntry);
   if (errors.length > 0) {
     throw new Error(`Invalid song in ${basename(filePath)}:\n  - ${errors.join("\n  - ")}`);

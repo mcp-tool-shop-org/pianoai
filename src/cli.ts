@@ -76,15 +76,21 @@ async function openInBrowser(filePath: string): Promise<void> {
   const { platform } = await import("node:os");
   const { execFile } = await import("node:child_process");
   const os = platform();
+  const onError = (err: Error | null) => {
+    if (err) {
+      console.warn(`Could not open browser automatically: ${err.message}`);
+      console.warn(`File saved at: ${filePath}`);
+    }
+  };
   if (os === "win32") {
     if (/["&|`<>^()!%]/.test(filePath)) {
       throw new Error(`Refusing to open path with shell-special characters: "${filePath}"`);
     }
-    execFile("cmd", ["/c", "start", "", `"${filePath}"`]);
+    execFile("cmd", ["/c", "start", "", `"${filePath}"`], onError);
   } else if (os === "darwin") {
-    execFile("open", [filePath]);
+    execFile("open", [filePath], onError);
   } else {
-    execFile("xdg-open", [filePath]);
+    execFile("xdg-open", [filePath], onError);
   }
 }
 
@@ -290,7 +296,10 @@ async function cmdPlay(args: string[]): Promise<void> {
   const voiceFilter = voiceFilterStr as SingVoiceFilter;
 
   // Determine source: .mid file or library song
-  const isMidiFile = target.endsWith(".mid") || target.endsWith(".midi") || existsSync(target);
+  // Only treat as MIDI file if it has a MIDI extension, or looks like a file path (has separator/extension) and exists
+  const hasMidiExtension = target.endsWith(".mid") || target.endsWith(".midi");
+  const looksLikeFilePath = target.includes("/") || target.includes("\\") || target.includes(".");
+  const isMidiFile = hasMidiExtension || (looksLikeFilePath && existsSync(target));
 
   // Validate song ID early (before connecting engine) for library songs
   if (!isMidiFile) {
