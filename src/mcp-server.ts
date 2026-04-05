@@ -182,6 +182,117 @@ const server = new McpServer({
   version: VERSION,
 });
 
+// ─── Prompts ────────────────────────────────────────────────────────────────
+
+server.prompt(
+  "annotate_song",
+  "Walk through annotating a raw song with musical language — description, structure, key moments, teaching goals, and style tips. Use this prompt to guide the annotation process for unannotated songs.",
+  { song_id: z.string().describe("Song ID to annotate") },
+  ({ song_id }) => {
+    const song = getSong(song_id);
+    const songInfo = song
+      ? `Song: "${song.title}" by ${song.composer ?? "Unknown"}\nGenre: ${song.genre} | Key: ${song.key} | Tempo: ${song.tempo} BPM | Time: ${song.timeSignature}\nDifficulty: ${song.difficulty} | Measures: ${song.measures.length}`
+      : `Song "${song_id}" not found — check the ID with list_songs first.`;
+
+    return {
+      messages: [{
+        role: "user",
+        content: {
+          type: "text",
+          text: [
+            `I want to annotate a song in ai-jam-sessions with rich musical language so it can be taught effectively.`,
+            ``,
+            songInfo,
+            ``,
+            `Please help me write the musical language annotation with these fields:`,
+            `1. **description** — 1-3 sentences: mood, era, why this piece matters`,
+            `2. **structure** — Musical form: "ABA", "Verse-Chorus-Verse", "Sonata-Allegro", etc.`,
+            `3. **key_moments** — 3-5 notable moments worth highlighting to a student`,
+            `4. **teaching_goals** — 2-4 skills the student will practice`,
+            `5. **style_tips** — 2-4 performance tips: "legato", "swing eighths", "rubato in the coda"`,
+            ``,
+            `After we agree on the annotation, use the \`annotate_song\` tool to save it.`,
+          ].join("\n"),
+        },
+      }],
+    };
+  }
+);
+
+server.prompt(
+  "practice_plan",
+  "Create a practice plan for a song — warm-up, section-by-section work, speed progression, and goals. Great for structuring a focused practice session.",
+  { song_id: z.string().describe("Song ID to plan practice for") },
+  ({ song_id }) => {
+    const song = getSong(song_id);
+    const songInfo = song
+      ? [
+          `Song: "${song.title}" by ${song.composer ?? "Unknown"}`,
+          `Genre: ${song.genre} | Key: ${song.key} | Tempo: ${song.tempo} BPM`,
+          `Difficulty: ${song.difficulty} | Measures: ${song.measures.length}`,
+          song.sections?.length
+            ? `Sections: ${song.sections.map(s => `${s.name} (m${s.startMeasure}–${s.endMeasure})`).join(", ")}`
+            : `No section markers yet — consider adding them with add_section.`,
+          song.musicalLanguage?.teachingGoals?.length
+            ? `Teaching goals: ${song.musicalLanguage.teachingGoals.join("; ")}`
+            : "",
+        ].filter(Boolean).join("\n")
+      : `Song "${song_id}" not found — check the ID with list_songs first.`;
+
+    return {
+      messages: [{
+        role: "user",
+        content: {
+          type: "text",
+          text: [
+            `I want to create a structured practice plan for a piano piece.`,
+            ``,
+            songInfo,
+            ``,
+            `Please create a practice plan covering:`,
+            `1. **Warm-up** — 5 min: scales/arpeggios in the song's key`,
+            `2. **Hands separate** — which sections to practice each hand alone`,
+            `3. **Trouble spots** — measures that need extra attention (use teaching_note to check)`,
+            `4. **Speed ladder** — suggested tempo progression (start at 50%, build to full)`,
+            `5. **Run-through** — when to try the whole piece, how to handle mistakes`,
+            `6. **Cool-down** — review goals, note what improved`,
+            ``,
+            `Use play_song with different speeds and measure ranges to practice each section.`,
+          ].join("\n"),
+        },
+      }],
+    };
+  }
+);
+
+server.prompt(
+  "performance_review",
+  "Reflect on a practice session — what went well, what needs work, and what to focus on next time. Use after playing through a song.",
+  {},
+  () => {
+    return {
+      messages: [{
+        role: "user",
+        content: {
+          type: "text",
+          text: [
+            `I just finished a practice session and want to reflect on it.`,
+            ``,
+            `Please help me with a performance review:`,
+            `1. Check \`playback_status\` for what was just played`,
+            `2. Ask me: What went well? What felt difficult?`,
+            `3. Help me identify specific measures or passages to revisit`,
+            `4. Suggest what to focus on in the next practice session`,
+            `5. Use \`save_practice_note\` to record my reflections`,
+            ``,
+            `Keep the review encouraging but honest — I want to improve!`,
+          ].join("\n"),
+        },
+      }],
+    };
+  }
+);
+
 // ─── Practice Journal State ─────────────────────────────────────────────────
 
 let lastCompletedSession: SessionSnapshot | null = null;
