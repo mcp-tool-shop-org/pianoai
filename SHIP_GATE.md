@@ -44,7 +44,7 @@
 ## D. Shipping Hygiene
 
 - [x] `[all]` `verify` script exists (test + build + smoke in one command) (2026-02-27)
-- [x] `[all]` Version in manifest matches git tag (2026-02-27) — package.json version = "1.3.0"
+- [x] `[all]` Version in manifest matches git tag (2026-02-27) — package.json version = "1.3.1"
 - [x] `[all]` Dependency scanning runs in CI (ecosystem-appropriate) (2026-02-27) — pnpm audit in CI
 - [x] `[all]` Automated dependency update mechanism exists (2026-02-27) — GitHub Dependabot
 - [x] `[npm]` `npm pack --dry-run` includes: dist/, README.md, CHANGELOG.md, LICENSE (2026-02-27)

@@ -261,7 +261,7 @@ ai-jam-sessions ports
 
 ## Status
 
-v1.3.0. Six sound engines, 34 MCP tools, 120 songs across 12 genres with deeply annotated exemplars. Interactive guitar tablature editor. Browser cockpit with 20 vocal presets, 10 instrument voices, 7 tuning systems, and an LLM-facing score API. Piano roll visualization in two color modes. Practice journal for persistent learning. MIDI play-along scoring, annotation quality assessment, and cross-genre pattern recognition. The MIDI is all there — the library grows as the AI learns.
+v1.3.1. Six sound engines, 34 MCP tools, 120 songs across 12 genres with deeply annotated exemplars. Interactive guitar tablature editor. Browser cockpit with 20 vocal presets, 10 instrument voices, 7 tuning systems, and an LLM-facing score API. Piano roll visualization in two color modes. Practice journal for persistent learning. MIDI play-along scoring, annotation quality assessment, and cross-genre pattern recognition. The MIDI is all there — the library grows as the AI learns.
 
 ## Security & Privacy
 
