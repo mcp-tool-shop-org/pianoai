@@ -564,6 +564,81 @@ server.tool(
   }
 );
 
+// ─── Tool: preview_teaching_cues ─────────────────────────────────────────
+
+server.tool(
+  "preview_teaching_cues",
+  "Preview all teaching cues for a song — teaching notes, dynamics markings, and fingering suggestions per measure. Use this to see what guidance is available before playing.",
+  {
+    id: z.string().describe("Song ID"),
+    types: z.array(z.enum(["teaching", "dynamics", "fingering"])).optional()
+      .describe("Filter by cue type (default: all). Options: teaching, dynamics, fingering"),
+  },
+  async ({ id, types }) => {
+    const song = getSong(id);
+    if (!song) {
+      return {
+        content: [{ type: "text", text: `No song called "${id}" in the library. Try list_songs to browse.` }],
+        isError: true,
+      };
+    }
+
+    const showAll = !types || types.length === 0;
+    const showTeaching = showAll || types!.includes("teaching");
+    const showDynamics = showAll || types!.includes("dynamics");
+    const showFingering = showAll || types!.includes("fingering");
+
+    interface Cue { measure: number; type: string; text: string }
+    const cues: Cue[] = [];
+
+    for (const m of song.measures) {
+      if (showTeaching && m.teachingNote) {
+        cues.push({ measure: m.number, type: "teaching", text: m.teachingNote });
+      }
+      if (showDynamics && m.dynamics) {
+        cues.push({ measure: m.number, type: "dynamics", text: m.dynamics });
+      }
+      if (showFingering && m.fingering) {
+        cues.push({ measure: m.number, type: "fingering", text: m.fingering });
+      }
+    }
+
+    if (cues.length === 0) {
+      return {
+        content: [{
+          type: "text",
+          text: `**${song.title}** has no teaching cues yet. Use \`annotate_song\` to add musical language, or \`teaching_note\` to check individual measures.`,
+        }],
+      };
+    }
+
+    const lines = [
+      `# ${song.title} — Teaching Cues`,
+      ``,
+      `| Measure | Type | Cue |`,
+      `|---------|------|-----|`,
+    ];
+
+    for (const c of cues) {
+      lines.push(`| ${c.measure} | ${c.type} | ${c.text} |`);
+    }
+
+    const typeCount = {
+      teaching: cues.filter(c => c.type === "teaching").length,
+      dynamics: cues.filter(c => c.type === "dynamics").length,
+      fingering: cues.filter(c => c.type === "fingering").length,
+    };
+    const summary = Object.entries(typeCount)
+      .filter(([, n]) => n > 0)
+      .map(([t, n]) => `${n} ${t}`)
+      .join(", ");
+
+    lines.push(``, `**${cues.length} cues** across ${song.measures.length} measures (${summary}).`);
+
+    return { content: [{ type: "text", text: lines.join("\n") }] };
+  }
+);
+
 // ─── Tool: practice_setup ──────────────────────────────────────────────────
 
 server.tool(
