@@ -5,8 +5,15 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { readdirSync, readFileSync, existsSync } from "node:fs";
-import { join, basename } from "node:path";
+import { join, basename, resolve, relative, isAbsolute } from "node:path";
 import { SongConfigSchema, type SongConfig } from "./schema.js";
+
+function sanitizeConfigId(id: string): string {
+  if (!/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/.test(id) || id.includes("..") || id.includes("/") || id.includes("\\") ) {
+    throw new Error(`Invalid config ID: "${id}"`);
+  }
+  return id;
+}
 
 /**
  * Load and validate all song configs from a directory.
@@ -41,7 +48,14 @@ export function loadSongConfigs(dir: string): SongConfig[] {
  * Load a single song config by ID from a directory.
  */
 export function loadSongConfig(id: string, dir: string): SongConfig {
-  const filePath = join(dir, `${id}.json`);
+  const safeId = sanitizeConfigId(id);
+  const resolvedDir = resolve(dir);
+  const filePath = resolve(dir, `${safeId}.json`);
+  const relativePath = relative(resolvedDir, filePath);
+
+  if (relativePath.startsWith("..") || isAbsolute(relativePath)) {
+    throw new Error(`Config path escapes config directory: "${id}"`);
+  }
   if (!existsSync(filePath)) {
     throw new Error(`Config not found: ${filePath}`);
   }

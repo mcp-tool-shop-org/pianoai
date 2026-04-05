@@ -75,6 +75,12 @@ describe("scoreAnnotation", () => {
     const result = scoreAnnotation(mediumAnnotation);
     expect(result.overall).toBeGreaterThanOrEqual(40);
     expect(result.overall).toBeLessThanOrEqual(85);
+    const expectedGrade = result.overall >= 90 ? "A"
+      : result.overall >= 80 ? "B"
+      : result.overall >= 70 ? "C"
+      : result.overall >= 60 ? "D"
+      : "F";
+    expect(result.grade).toBe(expectedGrade);
   });
 
   it("detects missing fields", () => {

@@ -138,6 +138,12 @@ function getCanonicalHomeDir(): string | null {
   }
 }
 
+const SAFE_SONG_ID_PATTERN = /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
+
+function isSafeSongId(id: string): boolean {
+  return SAFE_SONG_ID_PATTERN.test(id) && !id.includes("..") && !id.includes("/") && !id.includes("\\");
+}
+
 /**
  * Resolve an existing path and ensure it stays within the allowed root after
  * following symlinks. Returns the canonical path on success, or null on failure.
@@ -829,9 +835,22 @@ server.tool(
     }
 
     // ── Library song playback ──
+    if ((startMeasure !== undefined) !== (endMeasure !== undefined)) {
+      return {
+        content: [{ type: "text", text: `Loop playback requires both startMeasure and endMeasure.` }],
+        isError: true,
+      };
+    }
+    if (startMeasure !== undefined && endMeasure !== undefined && endMeasure < startMeasure) {
+      return {
+        content: [{ type: "text", text: `Invalid loop range: endMeasure (${endMeasure}) must be >= startMeasure (${startMeasure}).` }],
+        isError: true,
+      };
+    }
+
     const song = librarySong!;
     const loopRange: [number, number] | undefined =
-      startMeasure && endMeasure ? [startMeasure, endMeasure] : undefined;
+      startMeasure !== undefined && endMeasure !== undefined ? [startMeasure, endMeasure] : undefined;
 
     const playbackMode = (mode ?? "full") as PlaybackMode;
 
@@ -1166,7 +1185,7 @@ server.tool(
       }) as SongEntry;
 
       // Song ID sanitization
-      if (!/^[a-z0-9][a-z0-9-]*[a-z0-9]$/.test(parsed.id) && !/^[a-z0-9]$/.test(parsed.id)) {
+      if (!isSafeSongId(parsed.id)) {
         return {
           content: [{
             type: "text",
@@ -1183,6 +1202,7 @@ server.tool(
             type: "text",
             text: `Song validation failed:\n  - ${errors.join("\n  - ")}`,
           }],
+          isError: true,
         };
       }
 
@@ -1193,6 +1213,7 @@ server.tool(
             type: "text",
             text: `A song with ID "${parsed.id}" already exists in the library.`,
           }],
+          isError: true,
         };
       }
 
@@ -1260,7 +1281,7 @@ server.tool(
       }
 
       // Song ID sanitization
-      if (!/^[a-z0-9][a-z0-9-]*[a-z0-9]$/.test(id) || id.includes("..")) {
+      if (!isSafeSongId(id)) {
         return {
           content: [{ type: "text", text: `Invalid song ID: "${id}". Must be kebab-case (a-z, 0-9, hyphens), no path separators.` }],
           isError: true,
@@ -1296,6 +1317,7 @@ server.tool(
             type: "text",
             text: `A song with ID "${song.id}" already exists in the library.`,
           }],
+          isError: true,
         };
       }
 
@@ -1782,13 +1804,15 @@ server.tool(
       const baseTempo = activeSession.baseTempo();
       const speed = s.speed;
 
+      const measurePercent = total > 0 ? Math.round((measure / total) * 100) : 0;
+
       const lines = [
         `# Playback Status`,
         ``,
         `- **Song:** ${song.title}${song.composer ? ` — ${song.composer}` : ""}`,
         `- **State:** ${state}`,
         `- **Keyboard:** ${activeVoiceId}`,
-        `- **Measure:** ${measure} / ${total} (${Math.round(measure / total * 100)}%)`,
+        `- **Measure:** ${measure} / ${total} (${measurePercent}%)`,
         `- **Tempo:** ${baseTempo} BPM × ${speed}x = ${effectiveTempo} BPM`,
         `- **Key:** ${song.key} | **Time:** ${song.timeSignature}`,
         `- **Mode:** ${s.mode}`,
@@ -1813,13 +1837,15 @@ server.tool(
       const total = activeController.totalEvents;
       const speed = activeController.speed;
 
+      const eventPercent = total > 0 ? Math.round((events / total) * 100) : 0;
+
       const lines = [
         `# Playback Status (MIDI)`,
         ``,
         `- **State:** ${state}`,
         `- **Keyboard:** ${activeVoiceId}`,
         `- **Position:** ${pos.toFixed(1)}s`,
-        `- **Events:** ${events} / ${total} (${Math.round(events / total * 100)}%)`,
+        `- **Events:** ${events} / ${total} (${eventPercent}%)`,
         `- **Speed:** ${speed}x`,
       ];
 

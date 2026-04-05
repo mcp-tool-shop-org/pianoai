@@ -17,6 +17,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { VmpkConnector, MidiStatus, MidiNote } from "./types.js";
 import { parseSfzFile, type SfzRegion, type SfzData } from "./sfz-parser.js";
+import { JamError } from "./errors.js";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -180,8 +181,8 @@ export function createSampleEngine(options: SampleEngineOptions): VmpkConnector 
       offset += 8 + chunkSize + (chunkSize % 2);
     }
 
-    if (fmtOffset < 0) throw new Error(`No 'fmt ' chunk in ${filePath}`);
-    if (dataOffset < 0) throw new Error(`No 'data' chunk in ${filePath}`);
+    if (fmtOffset < 0) throw new JamError({ code: "IO_FILE_READ", message: `No 'fmt ' chunk in ${filePath}` });
+    if (dataOffset < 0) throw new JamError({ code: "IO_FILE_READ", message: `No 'data' chunk in ${filePath}` });
 
     // ── Parse format ──
     let audioFormat = view.getUint16(fmtOffset, true);
@@ -199,7 +200,7 @@ export function createSampleEngine(options: SampleEngineOptions): VmpkConnector 
     }
 
     if (audioFormat !== 1 && audioFormat !== 3) {
-      throw new Error(`Unsupported WAV format ${audioFormat} (need PCM=1 or IEEE_FLOAT=3) in ${filePath}`);
+      throw new JamError({ code: "IO_FILE_READ", message: `Unsupported WAV format ${audioFormat} (need PCM=1 or IEEE_FLOAT=3) in ${filePath}` });
     }
     const isFloat = audioFormat === 3;
 
@@ -235,7 +236,7 @@ export function createSampleEngine(options: SampleEngineOptions): VmpkConnector 
           // 16-bit signed little-endian → float
           sample = view.getInt16(sampleOffset, true) / 32768; // 2^15
         } else {
-          throw new Error(`Unsupported bit depth ${bitsPerSample} in ${filePath}`);
+          throw new JamError({ code: "IO_FILE_READ", message: `Unsupported bit depth ${bitsPerSample} in ${filePath}` });
         }
 
         channelData[i] = sample;
@@ -353,15 +354,8 @@ export function createSampleEngine(options: SampleEngineOptions): VmpkConnector 
         master.connect(ctx.destination);
 
         // 3. Parse SFZ
-        const sfzFile = join(
-          samplesDir,
-          sfzProfile,
-          sfzProfile === "sfz_minimum"
-            ? "Accurate-SalamanderGrandPiano_flat.Recommended.sfz"
-            : sfzProfile === "sfz_daw"
-              ? "Accurate-SalamanderGrandPiano_flat.Recommended.sfz"
-              : "Accurate-SalamanderGrandPiano_flat.Recommended.sfz",
-        );
+        const sfzFilename = "Accurate-SalamanderGrandPiano_flat.Recommended.sfz";
+        const sfzFile = join(samplesDir, sfzProfile, sfzFilename);
         sfzData = parseSfzFile(sfzFile);
         regionMap = buildRegionMap(sfzData.regions);
 
@@ -372,9 +366,12 @@ export function createSampleEngine(options: SampleEngineOptions): VmpkConnector 
         console.error(`Piano engine connected (sample-based, ${audioBuffers.size} samples)`);
       } catch (err) {
         currentStatus = "error";
-        throw new Error(
-          `Failed to start sample engine: ${err instanceof Error ? err.message : String(err)}`,
-        );
+        throw new JamError({
+          code: "RUNTIME_ENGINE",
+          message: `Failed to start sample engine: ${err instanceof Error ? err.message : String(err)}`,
+          hint: "Verify the Accurate-Salamander sample directory and selected SFZ profile are installed correctly.",
+          cause: err instanceof Error ? err : undefined,
+        });
       }
     },
 

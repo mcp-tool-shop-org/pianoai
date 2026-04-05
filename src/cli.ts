@@ -27,6 +27,7 @@ import {
 import type { SongEntry, Genre, Difficulty } from "./songs/types.js";
 import type { PlaybackProgress, PlaybackMode, SyncMode, VoiceDirective, AsideDirective, VmpkConnector } from "./types.js";
 import type { SingAlongMode } from "./note-parser.js";
+import type { SingVoiceFilter } from "./teaching/sing-on-midi.js";
 import { createAudioEngine } from "./audio-engine.js";
 import { createVocalEngine } from "./vocal-engine.js";
 import { createTractEngine, TRACT_VOICE_IDS, type TractVoiceId } from "./vocal-tract-engine.js";
@@ -168,6 +169,7 @@ function truncate(s: string, max: number): string {
 
 const VALID_MODES: PlaybackMode[] = ["full", "measure", "hands", "loop"];
 const VALID_SING_MODES: SingAlongMode[] = ["note-names", "solfege", "contour", "syllables"];
+const VALID_VOICE_FILTERS: SingVoiceFilter[] = ["all", "melody-only", "harmony"];
 const VALID_HANDS = ["right", "left", "both"] as const;
 const VALID_SYNC_MODES: SyncMode[] = ["concurrent", "before"];
 
@@ -275,7 +277,17 @@ async function cmdPlay(args: string[]): Promise<void> {
   }
 
   // Validate sing mode
+  if (!VALID_SING_MODES.includes(singModeStr as SingAlongMode)) {
+    console.error(`Invalid --sing-mode: "${singModeStr}". Available: ${VALID_SING_MODES.join(", ")}`);
+    process.exit(1);
+  }
   const singMode = singModeStr as SingAlongMode;
+
+  if (!VALID_VOICE_FILTERS.includes(voiceFilterStr as SingVoiceFilter)) {
+    console.error(`Invalid --voice-filter: "${voiceFilterStr}". Available: ${VALID_VOICE_FILTERS.join(", ")}`);
+    process.exit(1);
+  }
+  const voiceFilter = voiceFilterStr as SingVoiceFilter;
 
   // Determine source: .mid file or library song
   const isMidiFile = target.endsWith(".mid") || target.endsWith(".midi") || existsSync(target);
@@ -352,7 +364,7 @@ async function cmdPlay(args: string[]): Promise<void> {
       console.log(`  Tracks: ${trackInfo} (${parsed.trackCount})`);
       console.log(`  Notes: ${parsed.noteCount} | Tempo: ${parsed.bpm} BPM | Duration: ~${Math.round(durationAtSpeed)}s`);
       console.log(`  Measures: ~${tracker.totalMeasures} (estimated)`);
-      if (seekSec) {
+      if (seekSec !== undefined) {
         const seekSnap = tracker.snapshotAt(seekSec);
         console.log(`  Seeking to: ${seekSec}s (measure ${seekSnap.measure}, beat ${seekSnap.beatInMeasure.toFixed(1)})`);
       }
@@ -368,7 +380,7 @@ async function cmdPlay(args: string[]): Promise<void> {
         };
         hooks.push(createSingOnMidiHook(voiceSink, parsed, {
           mode: singMode,
-          voiceFilter: voiceFilterStr as import("./teaching/sing-on-midi.js").SingVoiceFilter,
+          voiceFilter,
           speechSpeed: speed ?? 1.0,
         }));
       }
@@ -395,6 +407,7 @@ async function cmdPlay(args: string[]): Promise<void> {
           speed: speed ?? 1.0,
           teachingHook,
           onProgress: printProgress,
+          startAtSeconds: seekSec,
         });
         console.log(`\nFinished! ${controller.eventsPlayed} notes played.`);
       } else {
@@ -403,6 +416,7 @@ async function cmdPlay(args: string[]): Promise<void> {
         await engine.play({
           speed: speed ?? 1.0,
           onProgress: printProgress,
+          startAtSeconds: seekSec,
         });
         console.log(`\nFinished! ${engine.eventsPlayed} notes played.`);
       }
@@ -767,6 +781,10 @@ async function cmdView(args: string[]): Promise<void> {
       console.error(`Invalid --measures range: start ${startMeasure} exceeds song length (${song.measures.length} measures).`);
       process.exit(1);
     }
+    if (endMeasure < startMeasure) {
+      console.error(`Invalid --measures range: end ${endMeasure} must be >= start ${startMeasure}.`);
+      process.exit(1);
+    }
     if (endMeasure > song.measures.length) {
       console.error(`Warning: end measure ${endMeasure} exceeds song length (${song.measures.length}), clamping.`);
       endMeasure = song.measures.length;
@@ -833,6 +851,10 @@ async function cmdViewGuitar(args: string[]): Promise<void> {
     }
     if (startMeasure > song.measures.length) {
       console.error(`Invalid --measures range: start ${startMeasure} exceeds song length (${song.measures.length} measures).`);
+      process.exit(1);
+    }
+    if (endMeasure < startMeasure) {
+      console.error(`Invalid --measures range: end ${endMeasure} must be >= start ${startMeasure}.`);
       process.exit(1);
     }
     if (endMeasure > song.measures.length) {

@@ -47,16 +47,6 @@ export interface VocalEngineOptions {
   /** Enable per-note chorus (two detuned voices). Default: false.
    *  Only enable once carriers produce clean, stationary sustain. */
   chorus?: boolean;
-  /** Monophonic legato mode. Default: true.
-   *
-   *  When true: one continuous source per phrase, pitch changes by ramping
-   *  playbackRate (portamento/glide). No per-note retrigger. This is how
-   *  a real singer works — one sound source that slides between pitches.
-   *
-   *  When false: polyphonic sampler mode (one source per note, independent). */
-  legato?: boolean;
-  /** Pitch glide time in seconds for legato transitions. Default: 0.06 (60ms). */
-  glideTime?: number;
   /** If true, log note events to debugLog array. Default: false. */
   debug?: boolean;
 }

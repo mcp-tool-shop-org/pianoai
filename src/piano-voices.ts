@@ -481,6 +481,13 @@ import { homedir } from "node:os";
 /** Partial overrides the user has saved for a voice. Keyed by friendly param name. */
 export type UserTuning = Record<string, number>;
 
+function sanitizePersistedVoiceId(voiceId: string): string {
+  if (!/^[a-z0-9-]+$/.test(voiceId) || voiceId.includes("..") || voiceId.includes("/") || voiceId.includes("\\")) {
+    throw new Error(`Invalid voice ID: "${voiceId}"`);
+  }
+  return voiceId;
+}
+
 function tuningDir(): string {
   const dir = join(homedir(), ".ai-jam-sessions", "voices");
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
@@ -488,7 +495,8 @@ function tuningDir(): string {
 }
 
 function tuningPath(voiceId: string): string {
-  return join(tuningDir(), `${voiceId}.json`);
+  const safeVoiceId = sanitizePersistedVoiceId(voiceId);
+  return join(tuningDir(), `${safeVoiceId}.json`);
 }
 
 /** Load user tuning overrides for a voice. Returns empty object if none saved. */

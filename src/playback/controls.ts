@@ -91,6 +91,8 @@ export type PlaybackListener = (event: AnyPlaybackEvent) => void;
 export interface PlaybackControlOptions {
   /** Speed multiplier (0.1–4.0). Default: 1.0. */
   speed?: number;
+  /** Start playback from a specific time offset in seconds. */
+  startAtSeconds?: number;
   /** Teaching hook to invoke during playback. */
   teachingHook?: TeachingHook;
   /** Progress callback (in addition to event-based listeners). */
@@ -231,6 +233,7 @@ export class PlaybackController {
     try {
       await this.engine.play({
         speed: options.speed,
+        startAtSeconds: options.startAtSeconds,
         onProgress,
         signal: options.signal,
       });
@@ -314,7 +317,6 @@ export class PlaybackController {
   private createWrappedConnector(generation: number): VmpkConnector {
     const self = this;
     const inner = this.connector;
-    let noteIndex = 0;
 
     return {
       connect: () => inner.connect(),
@@ -327,6 +329,7 @@ export class PlaybackController {
         inner.noteOn(note, velocity, channel);
 
         const ch = channel ?? 0;
+        const eventIndex = self.engine.eventsPlayed + 1;
         const event: NoteOnEvent = {
           type: "noteOn",
           state: self.engine.state,
@@ -336,7 +339,7 @@ export class PlaybackController {
           velocity,
           channel: ch,
           duration: 0, // filled by engine scheduling
-          eventIndex: noteIndex++,
+          eventIndex,
           totalEvents: self.midi.events.length,
         };
         self.emit(event);
@@ -345,7 +348,7 @@ export class PlaybackController {
         if (self._teachingHook) {
           const noteName = midiToNoteName(note);
           self._teachingHook.onMeasureStart(
-            noteIndex, // use event index as measure proxy for MIDI files
+            eventIndex, // use event index as measure proxy for MIDI files
             `Note: ${noteName} (${note}) vel=${velocity}`,
             undefined
           ).catch(() => { /* hook errors don't break playback */ });

@@ -1,6 +1,6 @@
 // ─── Error Shape Tests ──────────────────────────────────────────────────────
 
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import {
   JamError,
   handleError,
@@ -8,6 +8,10 @@ import {
   EXIT_USER,
   EXIT_RUNTIME,
 } from "./errors.js";
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe("JamError", () => {
   it("constructs with required fields", () => {

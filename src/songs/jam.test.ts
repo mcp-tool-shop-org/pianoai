@@ -328,6 +328,16 @@ describe("parseMeasureRange (via generateJamBrief)", () => {
     expect(brief.chordProgression).toHaveLength(4);
   });
 
+  it("throws on non-numeric measure ranges", () => {
+    const song = makeSong();
+    expect(() => generateJamBrief(song, { measures: "one-two" })).toThrow("Measures must be numeric");
+  });
+
+  it("throws when end measure is before start measure", () => {
+    const song = makeSong();
+    expect(() => generateJamBrief(song, { measures: "4-2" })).toThrow("End measure must be >= start measure");
+  });
+
   it("handles single measure number", () => {
     const song = makeSong();
     const brief = generateJamBrief(song, { measures: "2" });

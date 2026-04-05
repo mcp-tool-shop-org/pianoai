@@ -15,6 +15,8 @@ import type { VmpkConnector, PlaybackProgress, ProgressCallback } from "../types
 export interface MidiPlaybackOptions {
   /** Speed multiplier (0.1–4.0). Default: 1.0. */
   speed?: number;
+  /** Start playback from a specific time offset in seconds. */
+  startAtSeconds?: number;
   /** Progress callback. */
   onProgress?: ProgressCallback;
   /** AbortSignal for external cancellation. */
@@ -86,6 +88,9 @@ export class MidiPlaybackEngine {
     if (this._state === "playing") return;
 
     this._speed = options.speed ?? this._speed;
+    if (options.startAtSeconds !== undefined && this._state !== "paused") {
+      this.seekToTime(options.startAtSeconds);
+    }
     this._state = "playing";
     this._abortController = new AbortController();
     this._wallStartTime = Date.now();
@@ -214,6 +219,27 @@ export class MidiPlaybackEngine {
   }
 
   // ─── Internal ─────────────────────────────────────────────────────────────
+
+  private seekToTime(timeSec: number): void {
+    const clampedTime = Math.max(0, Math.min(timeSec, this.midi.durationSeconds));
+    this._playbackTime = clampedTime;
+    this._eventIndex = this.findEventIndex(clampedTime);
+  }
+
+  private findEventIndex(timeSec: number): number {
+    const events = this.midi.events;
+    let lo = 0;
+    let hi = events.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >>> 1;
+      if (events[mid].time < timeSec) {
+        lo = mid + 1;
+      } else {
+        hi = mid;
+      }
+    }
+    return lo;
+  }
 
   /** Send all-notes-off to silence everything. */
   private silenceAll(): void {

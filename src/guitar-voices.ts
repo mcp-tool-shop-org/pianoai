@@ -653,6 +653,13 @@ export const GUITAR_TUNING_PARAMS: GuitarTuningParam[] = [
 
 export type GuitarUserTuning = Record<string, number>;
 
+function sanitizePersistedVoiceId(voiceId: string): string {
+  if (!/^[a-z0-9-]+$/.test(voiceId) || voiceId.includes("..") || voiceId.includes("/") || voiceId.includes("\\")) {
+    throw new Error(`Invalid voice ID: "${voiceId}"`);
+  }
+  return voiceId;
+}
+
 function guitarTuningDir(): string {
   const dir = join(homedir(), ".ai-jam-sessions", "guitars");
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
@@ -660,7 +667,8 @@ function guitarTuningDir(): string {
 }
 
 function guitarTuningPath(voiceId: string): string {
-  return join(guitarTuningDir(), `${voiceId}.json`);
+  const safeVoiceId = sanitizePersistedVoiceId(voiceId);
+  return join(guitarTuningDir(), `${safeVoiceId}.json`);
 }
 
 export function loadGuitarUserTuning(voiceId: string): GuitarUserTuning {

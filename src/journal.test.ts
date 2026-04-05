@@ -252,6 +252,7 @@ describe("readJournal", () => {
 
     const result = readJournal(1, "Fallin");
     expect(result).toContain("Fallin");
+    expect(result).not.toContain("Imagine");
   });
 
   it("returns 'not found' message when song filter has no matches", () => {

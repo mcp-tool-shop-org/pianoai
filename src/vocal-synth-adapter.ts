@@ -241,6 +241,7 @@ export function createVocalSynthEngine(options?: VocalSynthOptions): VmpkConnect
     },
 
     async disconnect(): Promise<void> {
+      const disconnectAt = now();
       if (engine) {
         engine.stop();
         engine = null;
@@ -261,7 +262,7 @@ export function createVocalSynthEngine(options?: VocalSynthOptions): VmpkConnect
       currentStatus = "disconnected";
 
       if (debug) {
-        debugLog.push({ type: "disconnect", t: now() });
+        debugLog.push({ type: "disconnect", t: disconnectAt });
       }
     },
 

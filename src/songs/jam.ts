@@ -307,9 +307,23 @@ export function getStyleGuidance(genre?: Genre, mood?: string): string[] {
 
 /** Parse a measure range string like "1-8" into [start, end] (0-based indices). */
 function parseMeasureRange(rangeStr: string, total: number): [number, number] {
-  const parts = rangeStr.split("-").map(s => parseInt(s.trim(), 10));
-  const start = Math.max(0, (parts[0] ?? 1) - 1);
-  const end = Math.min(total - 1, (parts[1] ?? parts[0] ?? total) - 1);
+  const parts = rangeStr.split("-").map((s) => s.trim());
+  if (parts.length === 0 || parts.length > 2 || parts.some((part) => part.length === 0)) {
+    throw new Error(`Invalid measure range: "${rangeStr}". Use "N" or "start-end".`);
+  }
+
+  const startMeasure = Number.parseInt(parts[0], 10);
+  const endMeasure = parts.length === 2 ? Number.parseInt(parts[1], 10) : startMeasure;
+
+  if (Number.isNaN(startMeasure) || Number.isNaN(endMeasure)) {
+    throw new Error(`Invalid measure range: "${rangeStr}". Measures must be numeric.`);
+  }
+  if (endMeasure < startMeasure) {
+    throw new Error(`Invalid measure range: "${rangeStr}". End measure must be >= start measure.`);
+  }
+
+  const start = Math.max(0, startMeasure - 1);
+  const end = Math.min(total - 1, endMeasure - 1);
   return [start, end];
 }
 
