@@ -93,17 +93,54 @@ export const MidiSidecarSchema = z.object({
 
 export type MidiSidecar = z.infer<typeof MidiSidecarSchema>;
 
-// REMI tokens or a TODO placeholder marker — Slice 1 allows either, validators
-// in the report flag any record still carrying the placeholder.
+// ─── Token schemas (Slice 3: placeholder rejection) ──────────────────────────
+//
+// From Slice 3 onward, records with placeholder tokens MUST FAIL validation
+// unless the caller passes `allow_placeholders: true` to the validator.
+//
+// Placeholder shapes (Slice 1 legacy):
+//   tokens_remi: { todo: "..." }  — rejected by RealRemiTokensSchema
+//   tokens_abc:  { todo: "..." }  — rejected by RealAbcTokensSchema
+//
+// Use the exported factory functions `makeRemiSchema(allowPlaceholders)` and
+// `makeAbcSchema(allowPlaceholders)` to get the right schema for the context.
+
+/** Placeholder shape — only valid when allow_placeholders is true. */
+export const PlaceholderSchema = z.object({ todo: z.string().min(1) });
+
+/** Real REMI tokens: non-empty array of strings. */
+export const RealRemiTokensSchema = z.array(z.string().min(1)).min(1);
+
+/** Real ABC tokens: non-empty string. */
+export const RealAbcTokensSchema = z.string().min(1);
+
+/** REMI schema with optional placeholder support. */
 export const RemiTokensSchema = z.union([
-  z.array(z.string()),
-  z.object({ todo: z.string().min(1) }),
+  RealRemiTokensSchema,
+  PlaceholderSchema,
 ]);
 
+/** ABC schema with optional placeholder support. */
 export const AbcTokensSchema = z.union([
-  z.string().min(1),
-  z.object({ todo: z.string().min(1) }),
+  RealAbcTokensSchema,
+  PlaceholderSchema,
 ]);
+
+/**
+ * Returns a REMI tokens schema that either accepts or rejects placeholder shapes.
+ * @param allowPlaceholders — if true, `{ todo: "..." }` is accepted.
+ */
+export function makeRemiSchema(allowPlaceholders: boolean) {
+  return allowPlaceholders ? RemiTokensSchema : RealRemiTokensSchema;
+}
+
+/**
+ * Returns an ABC tokens schema that either accepts or rejects placeholder shapes.
+ * @param allowPlaceholders — if true, `{ todo: "..." }` is accepted.
+ */
+export function makeAbcSchema(allowPlaceholders: boolean) {
+  return allowPlaceholders ? AbcTokensSchema : RealAbcTokensSchema;
+}
 
 export const ObservationSchema = z.object({
   midi_sidecar: MidiSidecarSchema,
@@ -213,3 +250,46 @@ export const RecordSchema = z.object({
 export type Record = z.infer<typeof RecordSchema>;
 
 export const SCHEMA_VERSION = "jam-actions-v0/1.0.0";
+
+// ─── Placeholder-aware record validation ─────────────────────────────────────
+
+export interface ValidateRecordOptions {
+  /**
+   * If true, placeholder token shapes (`{ todo: "..." }`) are accepted.
+   * Default: false (Slice 3+ behavior — placeholders must fail).
+   */
+  allow_placeholders?: boolean;
+}
+
+/**
+ * Build a RecordSchema variant that enforces or allows placeholder tokens
+ * depending on the `allow_placeholders` option.
+ *
+ * This is the canonical validation entry point for Slice 3+.
+ * Previous callers using `RecordSchema.safeParse(record)` get the permissive
+ * (allow-placeholder) behavior because `RemiTokensSchema` / `AbcTokensSchema`
+ * include the union branch.
+ *
+ * To enforce no-placeholder (default for all new records), use:
+ *   `makeRecordSchema({ allow_placeholders: false })`.
+ */
+export function makeRecordSchema(opts: ValidateRecordOptions = {}) {
+  const allowPlaceholders = opts.allow_placeholders ?? false;
+  const observationSchema = z.object({
+    midi_sidecar: MidiSidecarSchema,
+    tokens_remi: makeRemiSchema(allowPlaceholders),
+    tokens_abc: makeAbcSchema(allowPlaceholders),
+    piano_roll_svg_path: z.string().min(1),
+    piano_roll_svg_inline: z.string().min(1),
+  });
+  return z.object({
+    id: z.string().min(1),
+    schema_version: z.string().regex(/^jam-actions-v0\/\d+\.\d+\.\d+$/),
+    provenance: ProvenanceSchema,
+    scope: ScopeSchema,
+    observation: observationSchema,
+    annotation_target: AnnotationTargetSchema,
+    target_trace: TargetTraceSchema,
+    eval_metadata: EvalMetadataSchema,
+  });
+}
