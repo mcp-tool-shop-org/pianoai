@@ -1,0 +1,149 @@
+{
+  "evalDate": "2026-05-16T19:48:37.541Z",
+  "toolSchemasDerivedAt": "2026-05-16T13:46:09.703Z",
+  "records": [
+    {
+      "recordId": "bach-prelude-c-major-bwv846:m001-004:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "fur-elise:m001-008:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "mozart-k545-mvt1:m001-004:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    }
+  ],
+  "controls": [
+    {
+      "controlName": "dummy_tool_name",
+      "description": "Tool name \"view_piano_roll_xyz\" does not exist in the MCP catalog. Dataset-grounding kill switch: a model that learned to call nonexistent tools is not grounded in the real instrument surface.",
+      "detected": true,
+      "detectedFailureMode": "tool_name_invalid",
+      "expectedFailureMode": "tool_name_invalid",
+      "score": 0
+    },
+    {
+      "controlName": "snake_case_args",
+      "description": "Arguments use snake_case (song_id, start_measure, end_measure) instead of camelCase (songId, startMeasure, endMeasure). Schema requires camelCase. Wrong casing must fail even if value types are correct.",
+      "detected": true,
+      "detectedFailureMode": "args_schema_invalid",
+      "expectedFailureMode": "args_schema_invalid",
+      "score": 0
+    },
+    {
+      "controlName": "unsupported_arg_dynamic",
+      "description": "Argument \"dynamic\" (value \"p\") is not in view_piano_roll's schema. The tool schema sets additionalProperties: false (via hardening in trace-validator). This was a desired_future_capability in the synthesis — not a live arg.",
+      "detected": true,
+      "detectedFailureMode": "args_schema_invalid",
+      "expectedFailureMode": "args_schema_invalid",
+      "score": 0
+    },
+    {
+      "controlName": "unsupported_arg_articulation",
+      "description": "Argument \"articulation\" (value \"legato\") is not in view_piano_roll's schema. This was a desired_future_capability — not a live arg.",
+      "detected": true,
+      "detectedFailureMode": "args_schema_invalid",
+      "expectedFailureMode": "args_schema_invalid",
+      "score": 0
+    },
+    {
+      "controlName": "unsupported_arg_hand_both",
+      "description": "Argument \"hand\" with value \"both\" is not valid for any tool in the surface. mute_hand accepts enum {left, right} — not both. This tests enum boundary enforcement.",
+      "detected": true,
+      "detectedFailureMode": "args_schema_invalid",
+      "expectedFailureMode": "args_schema_invalid",
+      "score": 0
+    },
+    {
+      "controlName": "missing_required_arg",
+      "description": "Required argument songId is omitted from view_piano_roll call. Schema declares songId as required — missing it must fail.",
+      "detected": true,
+      "detectedFailureMode": "args_schema_invalid",
+      "expectedFailureMode": "args_schema_invalid",
+      "score": 0
+    },
+    {
+      "controlName": "wrong_arg_type",
+      "description": "Argument startMeasure is \"1\" (string) instead of 1 (integer). Schema type is integer — type coercion must NOT be accepted.",
+      "detected": true,
+      "detectedFailureMode": "args_schema_invalid",
+      "expectedFailureMode": "args_schema_invalid",
+      "score": 0
+    },
+    {
+      "controlName": "trajectory_order_swap",
+      "description": "play_song is called BEFORE view_piano_roll on the same scope (fur-elise, mm. 1-8). Canonical order requires observation before action. Swapping violates the multi-turn dependency rule.",
+      "detected": true,
+      "detectedFailureMode": "trajectory_order_invalid",
+      "expectedFailureMode": "trajectory_order_invalid",
+      "score": 0
+    }
+  ],
+  "summary": {
+    "goldPassRate": 1,
+    "controlFailureRate": 1,
+    "dummyBaselineScore": 0
+  }
+}
