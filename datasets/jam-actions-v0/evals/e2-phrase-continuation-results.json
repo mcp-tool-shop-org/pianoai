@@ -1,0 +1,601 @@
+{
+  "evalDate": "2026-05-16T20:36:54.089Z",
+  "schemaVersion": "e2-phrase-continuation/1.0.0",
+  "integrityCheck": {
+    "passed": true,
+    "pairCount": 22,
+    "orphanCount": 0,
+    "missingPairedIds": [],
+    "orphanTargetIds": [],
+    "details": "All 22 pairs valid. 0 orphans. pair_count=22/22."
+  },
+  "pairResults": [
+    {
+      "promptId": "bach-prelude-c-major-bwv846:m001-004:piano:mcp-session:v1",
+      "targetId": "bach-prelude-c-major-bwv846:m005-008:piano:mcp-session:v1",
+      "songId": "bach-prelude-c-major-bwv846",
+      "timeSignature": "4/4",
+      "targetMeasureRange": "measures 5-8",
+      "targetEventCount": 64,
+      "targetBarCount": 4,
+      "shuffleStatus": {
+        "computable": true
+      },
+      "metrics": {
+        "noteOverlap_goldVsGold": 1,
+        "noteOverlap_goldVsShuffled": 0.3333333333333333,
+        "pitchClassOA_goldVsShuffled": 1,
+        "rhythmSimilarity_goldVsShuffled": 1,
+        "grooveSimilarity_goldVsShuffled": 1
+      }
+    },
+    {
+      "promptId": "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1",
+      "targetId": "bach-prelude-c-major-bwv846:m013-016:piano:mcp-session:v1",
+      "songId": "bach-prelude-c-major-bwv846",
+      "timeSignature": "4/4",
+      "targetMeasureRange": "measures 13-16",
+      "targetEventCount": 64,
+      "targetBarCount": 4,
+      "shuffleStatus": {
+        "computable": true
+      },
+      "metrics": {
+        "noteOverlap_goldVsGold": 1,
+        "noteOverlap_goldVsShuffled": 0.3333333333333333,
+        "pitchClassOA_goldVsShuffled": 1,
+        "rhythmSimilarity_goldVsShuffled": 1,
+        "grooveSimilarity_goldVsShuffled": 1
+      }
+    },
+    {
+      "promptId": "chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1",
+      "targetId": "chopin-nocturne-op9-no2:m005-008:piano:mcp-session:v1",
+      "songId": "chopin-nocturne-op9-no2",
+      "timeSignature": "4/4",
+      "targetMeasureRange": "measures 5-8",
+      "targetEventCount": 42,
+      "targetBarCount": 4,
+      "shuffleStatus": {
+        "computable": true
+      },
+      "metrics": {
+        "noteOverlap_goldVsGold": 1,
+        "noteOverlap_goldVsShuffled": 0.21739130434782608,
+        "pitchClassOA_goldVsShuffled": 1,
+        "rhythmSimilarity_goldVsShuffled": 0.5533167449931867,
+        "grooveSimilarity_goldVsShuffled": 0.45296167247386754
+      }
+    },
+    {
+      "promptId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1",
+      "targetId": "chopin-nocturne-op9-no2:m013-016:piano:mcp-session:v1",
+      "songId": "chopin-nocturne-op9-no2",
+      "timeSignature": "4/4",
+      "targetMeasureRange": "measures 13-16",
+      "targetEventCount": 40,
+      "targetBarCount": 4,
+      "shuffleStatus": {
+        "computable": true
+      },
+      "metrics": {
+        "noteOverlap_goldVsGold": 1,
+        "noteOverlap_goldVsShuffled": 0.3559322033898305,
+        "pitchClassOA_goldVsShuffled": 1,
+        "rhythmSimilarity_goldVsShuffled": 0.8421052631578946,
+        "grooveSimilarity_goldVsShuffled": 0.775
+      }
+    },
+    {
+      "promptId": "chopin-nocturne-op9-no2:m017-020:piano:mcp-session:v1",
+      "targetId": "chopin-nocturne-op9-no2:m021-024:piano:mcp-session:v1",
+      "songId": "chopin-nocturne-op9-no2",
+      "timeSignature": "4/4",
+      "targetMeasureRange": "measures 21-24",
+      "targetEventCount": 50,
+      "targetBarCount": 4,
+      "shuffleStatus": {
+        "computable": true
+      },
+      "metrics": {
+        "noteOverlap_goldVsGold": 1,
+        "noteOverlap_goldVsShuffled": 0,
+        "pitchClassOA_goldVsShuffled": 1.0000000000000002,
+        "rhythmSimilarity_goldVsShuffled": 0.37037037037037035,
+        "grooveSimilarity_goldVsShuffled": 0.36
+      }
+    },
+    {
+      "promptId": "chopin-prelude-e-minor:m001-004:piano:mcp-session:v1",
+      "targetId": "chopin-prelude-e-minor:m005-008:piano:mcp-session:v1",
+      "songId": "chopin-prelude-e-minor",
+      "timeSignature": "4/4",
+      "targetMeasureRange": "measures 5-8",
+      "targetEventCount": 45,
+      "targetBarCount": 4,
+      "shuffleStatus": {
+        "computable": true
+      },
+      "metrics": {
+        "noteOverlap_goldVsGold": 1,
+        "noteOverlap_goldVsShuffled": 0.034482758620689655,
+        "pitchClassOA_goldVsShuffled": 1,
+        "rhythmSimilarity_goldVsShuffled": 0.3429971702850177,
+        "grooveSimilarity_goldVsShuffled": 0.20634920634920637
+      }
+    },
+    {
+      "promptId": "chopin-prelude-e-minor:m009-012:piano:mcp-session:v1",
+      "targetId": "chopin-prelude-e-minor:m013-016:piano:mcp-session:v1",
+      "songId": "chopin-prelude-e-minor",
+      "timeSignature": "4/4",
+      "targetMeasureRange": "measures 13-16",
+      "targetEventCount": 45,
+      "targetBarCount": 4,
+      "shuffleStatus": {
+        "computable": true
+      },
+      "metrics": {
+        "noteOverlap_goldVsGold": 1,
+        "noteOverlap_goldVsShuffled": 0.07142857142857142,
+        "pitchClassOA_goldVsShuffled": 0.9999999999999999,
+        "rhythmSimilarity_goldVsShuffled": 0.27777777777777785,
+        "grooveSimilarity_goldVsShuffled": 0.24444444444444446
+      }
+    },
+    {
+      "promptId": "clair-de-lune:m001-004:piano:mcp-session:v1",
+      "targetId": "clair-de-lune:m005-008:piano:mcp-session:v1",
+      "songId": "clair-de-lune",
+      "timeSignature": "9/8",
+      "targetMeasureRange": "measures 5-8",
+      "targetEventCount": 47,
+      "targetBarCount": 4,
+      "shuffleStatus": {
+        "computable": true
+      },
+      "metrics": {
+        "noteOverlap_goldVsGold": 1,
+        "noteOverlap_goldVsShuffled": 0.13253012048192772,
+        "pitchClassOA_goldVsShuffled": 1,
+        "rhythmSimilarity_goldVsShuffled": 0.8275862068965518,
+        "grooveSimilarity_goldVsShuffled": 0.851063829787234
+      }
+    },
+    {
+      "promptId": "clair-de-lune:m015-018:piano:mcp-session:v1",
+      "targetId": "clair-de-lune:m019-022:piano:mcp-session:v1",
+      "songId": "clair-de-lune",
+      "timeSignature": "9/8",
+      "targetMeasureRange": "measures 19-22",
+      "targetEventCount": 134,
+      "targetBarCount": 4,
+      "shuffleStatus": {
+        "computable": true
+      },
+      "metrics": {
+        "noteOverlap_goldVsGold": 1,
+        "noteOverlap_goldVsShuffled": 0.2822966507177033,
+        "pitchClassOA_goldVsShuffled": 1,
+        "rhythmSimilarity_goldVsShuffled": 0.7307692307692308,
+        "grooveSimilarity_goldVsShuffled": 0.6641791044776121
+      }
+    },
+    {
+      "promptId": "debussy-arabesque-no1:m001-004:piano:mcp-session:v1",
+      "targetId": "debussy-arabesque-no1:m005-008:piano:mcp-session:v1",
+      "songId": "debussy-arabesque-no1",
+      "timeSignature": "4/4",
+      "targetMeasureRange": "measures 5-8",
+      "targetEventCount": 63,
+      "targetBarCount": 4,
+      "shuffleStatus": {
+        "computable": true
+      },
+      "metrics": {
+        "noteOverlap_goldVsGold": 1,
+        "noteOverlap_goldVsShuffled": 0.17757009345794392,
+        "pitchClassOA_goldVsShuffled": 1,
+        "rhythmSimilarity_goldVsShuffled": 0.7599999999999999,
+        "grooveSimilarity_goldVsShuffled": 0.73015873015873
+      }
+    },
+    {
+      "promptId": "debussy-arabesque-no1:m009-012:piano:mcp-session:v1",
+      "targetId": "debussy-arabesque-no1:m013-016:piano:mcp-session:v1",
+      "songId": "debussy-arabesque-no1",
+      "timeSignature": "4/4",
+      "targetMeasureRange": "measures 13-16",
+      "targetEventCount": 51,
+      "targetBarCount": 4,
+      "shuffleStatus": {
+        "computable": true
+      },
+      "metrics": {
+        "noteOverlap_goldVsGold": 1,
+        "noteOverlap_goldVsShuffled": 0.14606741573033707,
+        "pitchClassOA_goldVsShuffled": 1,
+        "rhythmSimilarity_goldVsShuffled": 0.9444444444444444,
+        "grooveSimilarity_goldVsShuffled": 0.843137254901961
+      }
+    },
+    {
+      "promptId": "fur-elise:m009-012:piano:mcp-session:v1",
+      "targetId": "fur-elise:m013-016:piano:mcp-session:v1",
+      "songId": "fur-elise",
+      "timeSignature": "3/8",
+      "targetMeasureRange": "measures 13-16",
+      "targetEventCount": 27,
+      "targetBarCount": 4,
+      "shuffleStatus": {
+        "computable": true
+      },
+      "metrics": {
+        "noteOverlap_goldVsGold": 1,
+        "noteOverlap_goldVsShuffled": 0.08,
+        "pitchClassOA_goldVsShuffled": 0.9999999999999998,
+        "rhythmSimilarity_goldVsShuffled": 1.0000000000000002,
+        "grooveSimilarity_goldVsShuffled": 0.9629629629629626
+      }
+    },
+    {
+      "promptId": "mozart-k545-mvt1:m001-004:piano:mcp-session:v1",
+      "targetId": "mozart-k545-mvt1:m005-008:piano:mcp-session:v1",
+      "songId": "mozart-k545-mvt1",
+      "timeSignature": "4/4",
+      "targetMeasureRange": "measures 5-8",
+      "targetEventCount": 75,
+      "targetBarCount": 4,
+      "shuffleStatus": {
+        "computable": true
+      },
+      "metrics": {
+        "noteOverlap_goldVsGold": 1,
+        "noteOverlap_goldVsShuffled": 0.02040816326530612,
+        "pitchClassOA_goldVsShuffled": 1,
+        "rhythmSimilarity_goldVsShuffled": 0.9999999999999999,
+        "grooveSimilarity_goldVsShuffled": 0.9866666666666658
+      }
+    },
+    {
+      "promptId": "mozart-k545-mvt1:m009-012:piano:mcp-session:v1",
+      "targetId": "mozart-k545-mvt1:m013-016:piano:mcp-session:v1",
+      "songId": "mozart-k545-mvt1",
+      "timeSignature": "4/4",
+      "targetMeasureRange": "measures 13-16",
+      "targetEventCount": 85,
+      "targetBarCount": 4,
+      "shuffleStatus": {
+        "computable": true
+      },
+      "metrics": {
+        "noteOverlap_goldVsGold": 1,
+        "noteOverlap_goldVsShuffled": 0.5740740740740741,
+        "pitchClassOA_goldVsShuffled": 1,
+        "rhythmSimilarity_goldVsShuffled": 1,
+        "grooveSimilarity_goldVsShuffled": 0.9176470588235284
+      }
+    },
+    {
+      "promptId": "pathetique-mvt2:m001-004:piano:mcp-session:v1",
+      "targetId": "pathetique-mvt2:m005-008:piano:mcp-session:v1",
+      "songId": "pathetique-mvt2",
+      "timeSignature": "4/4",
+      "targetMeasureRange": "measures 5-8",
+      "targetEventCount": 30,
+      "targetBarCount": 4,
+      "shuffleStatus": {
+        "computable": true
+      },
+      "metrics": {
+        "noteOverlap_goldVsGold": 1,
+        "noteOverlap_goldVsShuffled": 0,
+        "pitchClassOA_goldVsShuffled": 1,
+        "rhythmSimilarity_goldVsShuffled": 0.6086956521739131,
+        "grooveSimilarity_goldVsShuffled": 0.4666666666666666
+      }
+    },
+    {
+      "promptId": "pathetique-mvt2:m009-012:piano:mcp-session:v1",
+      "targetId": "pathetique-mvt2:m013-016:piano:mcp-session:v1",
+      "songId": "pathetique-mvt2",
+      "timeSignature": "4/4",
+      "targetMeasureRange": "measures 13-16",
+      "targetEventCount": 27,
+      "targetBarCount": 4,
+      "shuffleStatus": {
+        "computable": true
+      },
+      "metrics": {
+        "noteOverlap_goldVsGold": 1,
+        "noteOverlap_goldVsShuffled": 0,
+        "pitchClassOA_goldVsShuffled": 1,
+        "rhythmSimilarity_goldVsShuffled": 0.055555555555555566,
+        "grooveSimilarity_goldVsShuffled": 0.037037037037037035
+      }
+    },
+    {
+      "promptId": "satie-gymnopedie-no1:m003-006:piano:mcp-session:v1",
+      "targetId": "satie-gymnopedie-no1:m007-010:piano:mcp-session:v1",
+      "songId": "satie-gymnopedie-no1",
+      "timeSignature": "3/4",
+      "targetMeasureRange": "measures 7-10",
+      "targetEventCount": 21,
+      "targetBarCount": 4,
+      "shuffleStatus": {
+        "computable": true
+      },
+      "metrics": {
+        "noteOverlap_goldVsGold": 1,
+        "noteOverlap_goldVsShuffled": 0.10526315789473684,
+        "pitchClassOA_goldVsShuffled": 1,
+        "rhythmSimilarity_goldVsShuffled": 0.8888888888888888,
+        "grooveSimilarity_goldVsShuffled": 0.857142857142857
+      }
+    },
+    {
+      "promptId": "satie-gymnopedie-no1:m011-014:piano:mcp-session:v1",
+      "targetId": "satie-gymnopedie-no1:m015-018:piano:mcp-session:v1",
+      "songId": "satie-gymnopedie-no1",
+      "timeSignature": "3/4",
+      "targetMeasureRange": "measures 15-18",
+      "targetEventCount": 22,
+      "targetBarCount": 4,
+      "shuffleStatus": {
+        "computable": true
+      },
+      "metrics": {
+        "noteOverlap_goldVsGold": 1,
+        "noteOverlap_goldVsShuffled": 0.375,
+        "pitchClassOA_goldVsShuffled": 1,
+        "rhythmSimilarity_goldVsShuffled": 1,
+        "grooveSimilarity_goldVsShuffled": 1
+      }
+    },
+    {
+      "promptId": "satie-gymnopedie-no1:m019-022:piano:mcp-session:v1",
+      "targetId": "satie-gymnopedie-no1:m023-026:piano:mcp-session:v1",
+      "songId": "satie-gymnopedie-no1",
+      "timeSignature": "3/4",
+      "targetMeasureRange": "measures 23-26",
+      "targetEventCount": 27,
+      "targetBarCount": 4,
+      "shuffleStatus": {
+        "computable": true
+      },
+      "metrics": {
+        "noteOverlap_goldVsGold": 1,
+        "noteOverlap_goldVsShuffled": 0.2558139534883721,
+        "pitchClassOA_goldVsShuffled": 1,
+        "rhythmSimilarity_goldVsShuffled": 0.9090909090909091,
+        "grooveSimilarity_goldVsShuffled": 0.8888888888888888
+      }
+    },
+    {
+      "promptId": "schumann-traumerei:m001-004:piano:mcp-session:v1",
+      "targetId": "schumann-traumerei:m005-008:piano:mcp-session:v1",
+      "songId": "schumann-traumerei",
+      "timeSignature": "4/4",
+      "targetMeasureRange": "measures 5-8",
+      "targetEventCount": 42,
+      "targetBarCount": 4,
+      "shuffleStatus": {
+        "computable": true
+      },
+      "metrics": {
+        "noteOverlap_goldVsGold": 1,
+        "noteOverlap_goldVsShuffled": 0.13513513513513514,
+        "pitchClassOA_goldVsShuffled": 0.9999999999999999,
+        "rhythmSimilarity_goldVsShuffled": 0.26315789473684204,
+        "grooveSimilarity_goldVsShuffled": 0.3333333333333333
+      }
+    },
+    {
+      "promptId": "schumann-traumerei:m009-012:piano:mcp-session:v1",
+      "targetId": "schumann-traumerei:m013-016:piano:mcp-session:v1",
+      "songId": "schumann-traumerei",
+      "timeSignature": "4/4",
+      "targetMeasureRange": "measures 13-16",
+      "targetEventCount": 39,
+      "targetBarCount": 4,
+      "shuffleStatus": {
+        "computable": true
+      },
+      "metrics": {
+        "noteOverlap_goldVsGold": 1,
+        "noteOverlap_goldVsShuffled": 0,
+        "pitchClassOA_goldVsShuffled": 1,
+        "rhythmSimilarity_goldVsShuffled": 0.18200630207731605,
+        "grooveSimilarity_goldVsShuffled": 0.10323886639676114
+      }
+    },
+    {
+      "promptId": "schumann-traumerei:m017-020:piano:mcp-session:v1",
+      "targetId": "schumann-traumerei:m021-024:piano:mcp-session:v1",
+      "songId": "schumann-traumerei",
+      "timeSignature": "4/4",
+      "targetMeasureRange": "measures 21-24",
+      "targetEventCount": 40,
+      "targetBarCount": 4,
+      "shuffleStatus": {
+        "computable": true
+      },
+      "metrics": {
+        "noteOverlap_goldVsGold": 1,
+        "noteOverlap_goldVsShuffled": 0.3333333333333333,
+        "pitchClassOA_goldVsShuffled": 1,
+        "rhythmSimilarity_goldVsShuffled": 0.4999999999999999,
+        "grooveSimilarity_goldVsShuffled": 0.55
+      }
+    }
+  ],
+  "aggregate": {
+    "noteOverlap_goldVsGold": {
+      "metricName": "note_overlap_gold_vs_gold",
+      "computablePairCount": 22,
+      "notComputablePairCount": 0,
+      "goldValues": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "mean": 1,
+      "min": 1,
+      "max": 1
+    },
+    "noteOverlap_goldVsShuffled": {
+      "metricName": "note_overlap_gold_vs_shuffled",
+      "computablePairCount": 22,
+      "notComputablePairCount": 0,
+      "goldValues": [
+        0.3333333333333333,
+        0.3333333333333333,
+        0.21739130434782608,
+        0.3559322033898305,
+        0,
+        0.034482758620689655,
+        0.07142857142857142,
+        0.13253012048192772,
+        0.2822966507177033,
+        0.17757009345794392,
+        0.14606741573033707,
+        0.08,
+        0.02040816326530612,
+        0.5740740740740741,
+        0,
+        0,
+        0.10526315789473684,
+        0.375,
+        0.2558139534883721,
+        0.13513513513513514,
+        0,
+        0.3333333333333333
+      ],
+      "mean": 0.1801542546378388,
+      "min": 0,
+      "max": 0.5740740740740741
+    },
+    "pitchClassOA_goldVsShuffled": {
+      "metricName": "pitch_class_oa_gold_vs_shuffled",
+      "computablePairCount": 22,
+      "notComputablePairCount": 0,
+      "goldValues": [
+        1,
+        1,
+        1,
+        1,
+        1.0000000000000002,
+        1,
+        0.9999999999999999,
+        1,
+        1,
+        1,
+        1,
+        0.9999999999999998,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0.9999999999999999,
+        1,
+        1
+      ],
+      "mean": 1,
+      "min": 0.9999999999999998,
+      "max": 1.0000000000000002
+    },
+    "rhythmSimilarity_goldVsShuffled": {
+      "metricName": "rhythm_similarity_gold_vs_shuffled",
+      "computablePairCount": 22,
+      "notComputablePairCount": 0,
+      "goldValues": [
+        1,
+        1,
+        0.5533167449931867,
+        0.8421052631578946,
+        0.37037037037037035,
+        0.3429971702850177,
+        0.27777777777777785,
+        0.8275862068965518,
+        0.7307692307692308,
+        0.7599999999999999,
+        0.9444444444444444,
+        1.0000000000000002,
+        0.9999999999999999,
+        1,
+        0.6086956521739131,
+        0.055555555555555566,
+        0.8888888888888888,
+        1,
+        0.9090909090909091,
+        0.26315789473684204,
+        0.18200630207731605,
+        0.4999999999999999
+      ],
+      "mean": 0.6843982914189954,
+      "min": 0.055555555555555566,
+      "max": 1.0000000000000002
+    },
+    "grooveSimilarity_goldVsShuffled": {
+      "metricName": "groove_similarity_gold_vs_shuffled",
+      "computablePairCount": 22,
+      "notComputablePairCount": 0,
+      "goldValues": [
+        1,
+        1,
+        0.45296167247386754,
+        0.775,
+        0.36,
+        0.20634920634920637,
+        0.24444444444444446,
+        0.851063829787234,
+        0.6641791044776121,
+        0.73015873015873,
+        0.843137254901961,
+        0.9629629629629626,
+        0.9866666666666658,
+        0.9176470588235284,
+        0.4666666666666666,
+        0.037037037037037035,
+        0.857142857142857,
+        1,
+        0.8888888888888888,
+        0.3333333333333333,
+        0.10323886639676114,
+        0.55
+      ],
+      "mean": 0.646858117295989,
+      "min": 0.037037037037037035,
+      "max": 1
+    }
+  },
+  "hardGates": {
+    "integrityPassed": true,
+    "rhythmGoldBeatShuffledPairCount": 16,
+    "grooveGoldBeatShuffledPairCount": 17,
+    "grooveOAMeanDelta": 0.35314188270401103,
+    "notComputableAudit": []
+  }
+}
