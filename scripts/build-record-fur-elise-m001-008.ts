@@ -301,9 +301,11 @@ async function main(): Promise<void> {
 
 // ─── Inline provenance gate (Slice 1 — Für Elise hardcoded) ──────────────────
 //
-// TODO[Slice 2]: extract into src/dataset/provenance-gate.ts as a rule engine
-// that drives both initial classification and verification promotion across all
-// songs. See synthesis Section 5 verdict rules (tiered: public_candidate →
+// TODO[Slice 2 — DONE]: The reusable rule engine now lives at
+// src/dataset/provenance.ts (classifyProvenance). This inline gate is kept
+// as-is per Slice 2 forbidden zones — rewiring the build script to use the
+// rule engine is deferred to Slice 3 (real builder).
+// See synthesis Section 5 verdict rules (tiered: public_candidate →
 // public requires source-evidence verification).
 
 function furElisePublicCandidateGate(p: Provenance): { ok: true } | { ok: false; reason: string } {

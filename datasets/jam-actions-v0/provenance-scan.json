@@ -1,0 +1,423 @@
+{
+  "scan_date": "2026-05-16",
+  "total_songs": 24,
+  "by_verdict": {
+    "public_candidate": 10,
+    "internal": 2,
+    "excluded": 12
+  },
+  "records": [
+    {
+      "song_id": "bach-prelude-c-major-bwv846",
+      "song_title": "Prelude in C Major, BWV 846 (Well-Tempered Clavier)",
+      "genre": "classical",
+      "composer": "Johann Sebastian Bach",
+      "verdict": "public_candidate",
+      "verdict_reason": "Prelude in C Major, BWV 846 (Well-Tempered Clavier) (1722) by Johann Sebastian Bach. Composition: US=public_domain, EU=public_domain. Arrangement by Bernd Krueger. License: CC-BY-SA. Evidence: https://piano-midi.de/. All initial public_candidate rules met. Awaiting Slice 2.5 verification: source URL resolves, license text preserved at source, license version confirmed. Until verified, treat as internal for distribution.",
+      "composition_pd_status_us": "public_domain",
+      "composition_pd_status_eu": "public_domain",
+      "extracted_fields": {
+        "arrangement_creator": "Bernd Krueger",
+        "arrangement_license": "CC-BY-SA",
+        "arrangement_evidence_url": "https://piano-midi.de/"
+      },
+      "open_questions": []
+    },
+    {
+      "song_id": "chopin-nocturne-op9-no2",
+      "song_title": "Nocturne in Eb Major, Op. 9 No. 2",
+      "genre": "classical",
+      "composer": "Frederic Chopin",
+      "verdict": "public_candidate",
+      "verdict_reason": "Nocturne in E-flat major, Op. 9 No. 2 (1832) by Frederic Chopin. Composition: US=public_domain, EU=public_domain. Arrangement by Bernd Krueger. License: CC-BY-SA. Evidence: https://piano-midi.de/. All initial public_candidate rules met. Awaiting Slice 2.5 verification: source URL resolves, license text preserved at source, license version confirmed. Until verified, treat as internal for distribution.",
+      "composition_pd_status_us": "public_domain",
+      "composition_pd_status_eu": "public_domain",
+      "extracted_fields": {
+        "arrangement_creator": "Bernd Krueger",
+        "arrangement_license": "CC-BY-SA",
+        "arrangement_evidence_url": "https://piano-midi.de/"
+      },
+      "open_questions": []
+    },
+    {
+      "song_id": "chopin-prelude-e-minor",
+      "song_title": "Prelude in E Minor, Op. 28 No. 4",
+      "genre": "classical",
+      "composer": "Frederic Chopin",
+      "verdict": "public_candidate",
+      "verdict_reason": "Prelude in E minor, Op. 28 No. 4 (1839) by Frederic Chopin. Composition: US=public_domain, EU=public_domain. Arrangement by Bernd Krueger. License: CC-BY-SA. Evidence: https://piano-midi.de/. All initial public_candidate rules met. Awaiting Slice 2.5 verification: source URL resolves, license text preserved at source, license version confirmed. Until verified, treat as internal for distribution.",
+      "composition_pd_status_us": "public_domain",
+      "composition_pd_status_eu": "public_domain",
+      "extracted_fields": {
+        "arrangement_creator": "Bernd Krueger",
+        "arrangement_license": "CC-BY-SA",
+        "arrangement_evidence_url": "https://piano-midi.de/"
+      },
+      "open_questions": []
+    },
+    {
+      "song_id": "clair-de-lune",
+      "song_title": "Clair de Lune (Suite bergamasque, III)",
+      "genre": "classical",
+      "composer": "Claude Debussy",
+      "verdict": "public_candidate",
+      "verdict_reason": "Clair de Lune (Suite Bergamasque, L. 75) (1905) by Claude Debussy. Composition: US=public_domain, EU=public_domain. Arrangement by Bernd Krueger. License: CC-BY-SA. Evidence: https://piano-midi.de/. All initial public_candidate rules met. Awaiting Slice 2.5 verification: source URL resolves, license text preserved at source, license version confirmed. Until verified, treat as internal for distribution.",
+      "composition_pd_status_us": "public_domain",
+      "composition_pd_status_eu": "public_domain",
+      "extracted_fields": {
+        "arrangement_creator": "Bernd Krueger",
+        "arrangement_license": "CC-BY-SA",
+        "arrangement_evidence_url": "https://piano-midi.de/"
+      },
+      "open_questions": []
+    },
+    {
+      "song_id": "debussy-arabesque-no1",
+      "song_title": "Arabesque No. 1 in E Major",
+      "genre": "classical",
+      "composer": "Claude Debussy",
+      "verdict": "public_candidate",
+      "verdict_reason": "Arabesque No. 1 in E major, L. 66 (1891) by Claude Debussy. Composition: US=public_domain, EU=public_domain. Arrangement by Bernd Krueger. License: CC-BY-SA. Evidence: https://piano-midi.de/. All initial public_candidate rules met. Awaiting Slice 2.5 verification: source URL resolves, license text preserved at source, license version confirmed. Until verified, treat as internal for distribution.",
+      "composition_pd_status_us": "public_domain",
+      "composition_pd_status_eu": "public_domain",
+      "extracted_fields": {
+        "arrangement_creator": "Bernd Krueger",
+        "arrangement_license": "CC-BY-SA",
+        "arrangement_evidence_url": "https://piano-midi.de/"
+      },
+      "open_questions": []
+    },
+    {
+      "song_id": "fur-elise",
+      "song_title": "Fur Elise (Bagatelle No. 25 in A minor)",
+      "genre": "classical",
+      "composer": "Ludwig van Beethoven",
+      "verdict": "public_candidate",
+      "verdict_reason": "Bagatelle No. 25 in A minor (Für Elise) (1810) by Ludwig van Beethoven. Composition: US=public_domain, EU=public_domain. Arrangement by Bernd Krueger. License: CC-BY-SA. Evidence: https://piano-midi.de/. All initial public_candidate rules met. Awaiting Slice 2.5 verification: source URL resolves, license text preserved at source, license version confirmed. Until verified, treat as internal for distribution.",
+      "composition_pd_status_us": "public_domain",
+      "composition_pd_status_eu": "public_domain",
+      "extracted_fields": {
+        "arrangement_creator": "Bernd Krueger",
+        "arrangement_license": "CC-BY-SA",
+        "arrangement_evidence_url": "https://piano-midi.de/"
+      },
+      "open_questions": []
+    },
+    {
+      "song_id": "mozart-k545-mvt1",
+      "song_title": "Piano Sonata No. 16 in C Major, K. 545, I. Allegro",
+      "genre": "classical",
+      "composer": "Wolfgang Amadeus Mozart",
+      "verdict": "public_candidate",
+      "verdict_reason": "Piano Sonata in C major, K. 545 (Mvt. 1) (1788) by Wolfgang Amadeus Mozart. Composition: US=public_domain, EU=public_domain. Arrangement by Bernd Krueger. License: CC-BY-SA. Evidence: https://piano-midi.de/. All initial public_candidate rules met. Awaiting Slice 2.5 verification: source URL resolves, license text preserved at source, license version confirmed. Until verified, treat as internal for distribution.",
+      "composition_pd_status_us": "public_domain",
+      "composition_pd_status_eu": "public_domain",
+      "extracted_fields": {
+        "arrangement_creator": "Bernd Krueger",
+        "arrangement_license": "CC-BY-SA",
+        "arrangement_evidence_url": "https://piano-midi.de/"
+      },
+      "open_questions": []
+    },
+    {
+      "song_id": "pathetique-mvt2",
+      "song_title": "Pathetique Sonata, 2nd Movement (Adagio cantabile)",
+      "genre": "classical",
+      "composer": "Ludwig van Beethoven",
+      "verdict": "public_candidate",
+      "verdict_reason": "Piano Sonata No. 8 'Pathétique', Op. 13 (Mvt. 2) (1799) by Ludwig van Beethoven. Composition: US=public_domain, EU=public_domain. Arrangement by Bernd Krueger. License: CC-BY-SA. Evidence: https://piano-midi.de/. All initial public_candidate rules met. Awaiting Slice 2.5 verification: source URL resolves, license text preserved at source, license version confirmed. Until verified, treat as internal for distribution.",
+      "composition_pd_status_us": "public_domain",
+      "composition_pd_status_eu": "public_domain",
+      "extracted_fields": {
+        "arrangement_creator": "Bernd Krueger",
+        "arrangement_license": "CC-BY-SA",
+        "arrangement_evidence_url": "https://piano-midi.de/"
+      },
+      "open_questions": []
+    },
+    {
+      "song_id": "satie-gymnopedie-no1",
+      "song_title": "Gymnopedie No. 1",
+      "genre": "classical",
+      "composer": "Erik Satie",
+      "verdict": "public_candidate",
+      "verdict_reason": "Gymnopédie No. 1 (1888) by Erik Satie. Composition: US=public_domain, EU=public_domain. Arrangement by Bernd Krueger. License: CC-BY-SA. Evidence: https://piano-midi.de/. All initial public_candidate rules met. Awaiting Slice 2.5 verification: source URL resolves, license text preserved at source, license version confirmed. Until verified, treat as internal for distribution.",
+      "composition_pd_status_us": "public_domain",
+      "composition_pd_status_eu": "public_domain",
+      "extracted_fields": {
+        "arrangement_creator": "Bernd Krueger",
+        "arrangement_license": "CC-BY-SA",
+        "arrangement_evidence_url": "https://piano-midi.de/"
+      },
+      "open_questions": []
+    },
+    {
+      "song_id": "schumann-traumerei",
+      "song_title": "Traumerei (Dreaming) from Kinderszenen",
+      "genre": "classical",
+      "composer": "Robert Schumann",
+      "verdict": "public_candidate",
+      "verdict_reason": "Träumerei, Op. 15 No. 7 (from Kinderszenen) (1838) by Robert Schumann. Composition: US=public_domain, EU=public_domain. Arrangement by Bernd Krueger. License: CC-BY-SA. Evidence: https://piano-midi.de/. All initial public_candidate rules met. Awaiting Slice 2.5 verification: source URL resolves, license text preserved at source, license version confirmed. Until verified, treat as internal for distribution.",
+      "composition_pd_status_us": "public_domain",
+      "composition_pd_status_eu": "public_domain",
+      "extracted_fields": {
+        "arrangement_creator": "Bernd Krueger",
+        "arrangement_license": "CC-BY-SA",
+        "arrangement_evidence_url": "https://piano-midi.de/"
+      },
+      "open_questions": []
+    },
+    {
+      "song_id": "autumn-leaves",
+      "song_title": "Autumn Leaves",
+      "genre": "jazz",
+      "composer": "Joseph Kosma",
+      "verdict": "excluded",
+      "verdict_reason": "Autumn Leaves (Les Feuilles mortes) (1945) by Joseph Kosma. Composition: US=copyrighted, EU=copyrighted. Composition is copyrighted in both US and EU. Cannot assign public_candidate without explicit redistribution + training license from rights holder.",
+      "composition_pd_status_us": "copyrighted",
+      "composition_pd_status_eu": "copyrighted",
+      "extracted_fields": {
+        "arrangement_creator": null,
+        "arrangement_license": null,
+        "arrangement_evidence_url": null
+      },
+      "open_questions": [
+        "Source field is empty or missing. Provenance unknown."
+      ]
+    },
+    {
+      "song_id": "imagine",
+      "song_title": "Imagine",
+      "genre": "pop",
+      "composer": "John Lennon",
+      "verdict": "excluded",
+      "verdict_reason": "Imagine (1971) by John Lennon. Composition: US=copyrighted, EU=copyrighted. Composition is copyrighted in both US and EU. Cannot assign public_candidate without explicit redistribution + training license from rights holder.",
+      "composition_pd_status_us": "copyrighted",
+      "composition_pd_status_eu": "copyrighted",
+      "extracted_fields": {
+        "arrangement_creator": null,
+        "arrangement_license": null,
+        "arrangement_evidence_url": null
+      },
+      "open_questions": [
+        "Source field is empty or missing. Provenance unknown."
+      ]
+    },
+    {
+      "song_id": "the-thrill-is-gone",
+      "song_title": "The Thrill Is Gone",
+      "genre": "blues",
+      "composer": "Roy Hawkins",
+      "verdict": "excluded",
+      "verdict_reason": "The Thrill Is Gone (1951) by Roy Hawkins. Composition: US=copyrighted, EU=copyrighted. Composition is copyrighted in both US and EU. Cannot assign public_candidate without explicit redistribution + training license from rights holder.",
+      "composition_pd_status_us": "copyrighted",
+      "composition_pd_status_eu": "copyrighted",
+      "extracted_fields": {
+        "arrangement_creator": null,
+        "arrangement_license": null,
+        "arrangement_evidence_url": null
+      },
+      "open_questions": [
+        "Source field is empty or missing. Provenance unknown."
+      ]
+    },
+    {
+      "song_id": "your-song",
+      "song_title": "Your Song",
+      "genre": "rock",
+      "composer": "Elton John",
+      "verdict": "excluded",
+      "verdict_reason": "Your Song (1970) by Elton John. Composition: US=copyrighted, EU=copyrighted. Composition is copyrighted in both US and EU. Cannot assign public_candidate without explicit redistribution + training license from rights holder.",
+      "composition_pd_status_us": "copyrighted",
+      "composition_pd_status_eu": "copyrighted",
+      "extracted_fields": {
+        "arrangement_creator": null,
+        "arrangement_license": null,
+        "arrangement_evidence_url": null
+      },
+      "open_questions": [
+        "Source field is empty or missing. Provenance unknown."
+      ]
+    },
+    {
+      "song_id": "fallin",
+      "song_title": "Fallin'",
+      "genre": "rnb",
+      "composer": "Alicia Keys",
+      "verdict": "excluded",
+      "verdict_reason": "Fallin' (2001) by Alicia Keys. Composition: US=copyrighted, EU=copyrighted. Composition is copyrighted in both US and EU. Cannot assign public_candidate without explicit redistribution + training license from rights holder.",
+      "composition_pd_status_us": "copyrighted",
+      "composition_pd_status_eu": "copyrighted",
+      "extracted_fields": {
+        "arrangement_creator": null,
+        "arrangement_license": null,
+        "arrangement_evidence_url": null
+      },
+      "open_questions": [
+        "Source field is empty or missing. Provenance unknown."
+      ]
+    },
+    {
+      "song_id": "if-i-aint-got-you",
+      "song_title": "If I Ain't Got You",
+      "genre": "rnb",
+      "composer": "Alicia Keys",
+      "verdict": "excluded",
+      "verdict_reason": "If I Ain't Got You (2003) by Alicia Keys. Composition: US=copyrighted, EU=copyrighted. Composition is copyrighted in both US and EU. Cannot assign public_candidate without explicit redistribution + training license from rights holder.",
+      "composition_pd_status_us": "copyrighted",
+      "composition_pd_status_eu": "copyrighted",
+      "extracted_fields": {
+        "arrangement_creator": null,
+        "arrangement_license": null,
+        "arrangement_evidence_url": null
+      },
+      "open_questions": [
+        "Source field is empty or missing. Provenance unknown."
+      ]
+    },
+    {
+      "song_id": "isnt-she-lovely",
+      "song_title": "Isn't She Lovely",
+      "genre": "rnb",
+      "composer": "Stevie Wonder",
+      "verdict": "excluded",
+      "verdict_reason": "Isn't She Lovely (1976) by Stevie Wonder. Composition: US=copyrighted, EU=copyrighted. Composition is copyrighted in both US and EU. Cannot assign public_candidate without explicit redistribution + training license from rights holder.",
+      "composition_pd_status_us": "copyrighted",
+      "composition_pd_status_eu": "copyrighted",
+      "extracted_fields": {
+        "arrangement_creator": null,
+        "arrangement_license": null,
+        "arrangement_evidence_url": null
+      },
+      "open_questions": [
+        "Source field is empty or missing. Provenance unknown."
+      ]
+    },
+    {
+      "song_id": "superstition",
+      "song_title": "Superstition",
+      "genre": "rnb",
+      "composer": "Stevie Wonder",
+      "verdict": "excluded",
+      "verdict_reason": "Superstition (1972) by Stevie Wonder. Composition: US=copyrighted, EU=copyrighted. Composition is copyrighted in both US and EU. Cannot assign public_candidate without explicit redistribution + training license from rights holder.",
+      "composition_pd_status_us": "copyrighted",
+      "composition_pd_status_eu": "copyrighted",
+      "extracted_fields": {
+        "arrangement_creator": null,
+        "arrangement_license": null,
+        "arrangement_evidence_url": null
+      },
+      "open_questions": [
+        "Source field is empty or missing. Provenance unknown."
+      ]
+    },
+    {
+      "song_id": "lean-on-me",
+      "song_title": "Lean on Me",
+      "genre": "soul",
+      "composer": "Bill Withers",
+      "verdict": "excluded",
+      "verdict_reason": "Lean on Me (1972) by Bill Withers. Composition: US=copyrighted, EU=copyrighted. Composition is copyrighted in both US and EU. Cannot assign public_candidate without explicit redistribution + training license from rights holder.",
+      "composition_pd_status_us": "copyrighted",
+      "composition_pd_status_eu": "copyrighted",
+      "extracted_fields": {
+        "arrangement_creator": null,
+        "arrangement_license": null,
+        "arrangement_evidence_url": null
+      },
+      "open_questions": [
+        "Source field is empty or missing. Provenance unknown."
+      ]
+    },
+    {
+      "song_id": "girl-from-ipanema",
+      "song_title": "The Girl from Ipanema",
+      "genre": "latin",
+      "composer": "Antonio Carlos Jobim",
+      "verdict": "excluded",
+      "verdict_reason": "Garota de Ipanema (The Girl from Ipanema) (1962) by Antonio Carlos Jobim. Composition: US=copyrighted, EU=copyrighted. Composition is copyrighted in both US and EU. Cannot assign public_candidate without explicit redistribution + training license from rights holder.",
+      "composition_pd_status_us": "copyrighted",
+      "composition_pd_status_eu": "copyrighted",
+      "extracted_fields": {
+        "arrangement_creator": null,
+        "arrangement_license": null,
+        "arrangement_evidence_url": null
+      },
+      "open_questions": [
+        "Source field is empty or missing. Provenance unknown."
+      ]
+    },
+    {
+      "song_id": "comptine-dun-autre-ete",
+      "song_title": "Comptine d'un autre ete (Amelie)",
+      "genre": "film",
+      "composer": "Yann Tiersen",
+      "verdict": "excluded",
+      "verdict_reason": "Comptine d'un autre été: L'après-midi (2001) by Yann Tiersen. Composition: US=copyrighted, EU=copyrighted. Composition is copyrighted in both US and EU. Cannot assign public_candidate without explicit redistribution + training license from rights holder.",
+      "composition_pd_status_us": "copyrighted",
+      "composition_pd_status_eu": "copyrighted",
+      "extracted_fields": {
+        "arrangement_creator": null,
+        "arrangement_license": null,
+        "arrangement_evidence_url": null
+      },
+      "open_questions": [
+        "Source field is empty or missing. Provenance unknown."
+      ]
+    },
+    {
+      "song_id": "the-entertainer",
+      "song_title": "The Entertainer",
+      "genre": "ragtime",
+      "composer": "Scott Joplin",
+      "verdict": "internal",
+      "verdict_reason": "The Entertainer (1902) by Scott Joplin. Composition: US=public_domain, EU=public_domain. Arrangement creator not identified from source metadata. Cannot assign public_candidate without named creator.",
+      "composition_pd_status_us": "public_domain",
+      "composition_pd_status_eu": "public_domain",
+      "extracted_fields": {
+        "arrangement_creator": null,
+        "arrangement_license": null,
+        "arrangement_evidence_url": null
+      },
+      "open_questions": [
+        "Source field is empty or missing. Provenance unknown."
+      ]
+    },
+    {
+      "song_id": "river-flows-in-you",
+      "song_title": "River Flows in You",
+      "genre": "new-age",
+      "composer": "Yiruma",
+      "verdict": "excluded",
+      "verdict_reason": "River Flows in You (2001) by Yiruma. Composition: US=copyrighted, EU=copyrighted. Composition is copyrighted in both US and EU. Cannot assign public_candidate without explicit redistribution + training license from rights holder.",
+      "composition_pd_status_us": "copyrighted",
+      "composition_pd_status_eu": "copyrighted",
+      "extracted_fields": {
+        "arrangement_creator": null,
+        "arrangement_license": null,
+        "arrangement_evidence_url": null
+      },
+      "open_questions": [
+        "Source field is empty or missing. Provenance unknown."
+      ]
+    },
+    {
+      "song_id": "greensleeves",
+      "song_title": "Greensleeves",
+      "genre": "folk",
+      "composer": "Traditional",
+      "verdict": "internal",
+      "verdict_reason": "Greensleeves (1580) by Traditional. Composition: US=public_domain, EU=public_domain. Arrangement creator not identified from source metadata. Cannot assign public_candidate without named creator.",
+      "composition_pd_status_us": "public_domain",
+      "composition_pd_status_eu": "public_domain",
+      "extracted_fields": {
+        "arrangement_creator": null,
+        "arrangement_license": null,
+        "arrangement_evidence_url": null
+      },
+      "open_questions": [
+        "Source field is empty or missing. Provenance unknown."
+      ]
+    }
+  ]
+}
