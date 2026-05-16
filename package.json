@@ -64,14 +64,14 @@
     "midi-file": "^1.2.4",
     "node-web-audio-api": "^1.0.8",
     "pink-trombone-mod": "^0.1.0",
-    "vocal-synth-engine": "github:mcp-tool-shop-org/vocal-synth-engine#630fb4216a9bc32fe1a5b76507b701ea62267d77",
+    "vocal-synth-engine": "github:mcp-tool-shop-org/vocal-synth-engine#7269cd539b20907743601f66812b3d904d43508e",
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/node": "^25.5.0",
+    "@types/node": "^22.19.11",
     "tsx": "^4.19",
-    "typescript": "^6.0",
-    "@vitest/coverage-v8": "^4.1",
-    "vitest": "^4.1"
+    "typescript": "^5.9.3",
+    "@vitest/coverage-v8": "^3.2.4",
+    "vitest": "^3.2.4"
   }
 }
