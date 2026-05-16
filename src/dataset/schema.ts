@@ -56,14 +56,67 @@ export type Provenance = z.infer<typeof ProvenanceSchema>;
 
 // ─── Scope ───────────────────────────────────────────────────────────────────
 
-export const ScopeSchema = z.object({
-  song_id: z.string().min(1),
-  phrase_window: z.string().min(1),
-  instrument: z.string().min(1),
-  key: z.string().min(1),
-  tempo_bpm: z.number().positive(),
-  time_signature: z.string().regex(/^\d+\/\d+$/),
-});
+// Slice 5 additions: window pair metadata for E2 continuation eval.
+// All fields are optional so that Slice 1–4 records remain backward-compatible.
+//
+// Validation rules (enforced by ScopeSchema refinements):
+//   - window_role 'prompt'               → continuation_target_window MUST be present
+//   - window_role 'continuation_target'  → paired_prompt_record_id MUST be present
+//   - window_role 'standalone'           → neither field required
+//   - Any other window_role value        → rejected by the enum
+//   - Cross-record orphan check (prompt↔continuation_target pair integrity)
+//     is done in the corpus validator, NOT in this per-record schema.
+//
+// WindowRole enum:
+export const WINDOW_ROLES = [
+  "prompt",
+  "continuation_target",
+  "standalone",
+] as const;
+export type WindowRole = (typeof WINDOW_ROLES)[number];
+
+export const ScopeSchema = z
+  .object({
+    song_id: z.string().min(1),
+    phrase_window: z.string().min(1),
+    instrument: z.string().min(1),
+    key: z.string().min(1),
+    tempo_bpm: z.number().positive(),
+    time_signature: z.string().regex(/^\d+\/\d+$/),
+    // ── Slice 5 optional pair-metadata fields ──
+    window_role: z.enum(WINDOW_ROLES).optional(),
+    /** [mid+1, end] — which window this prompt's continuation covers. */
+    continuation_target_window: z
+      .tuple([z.number().int().min(1), z.number().int().min(1)])
+      .optional(),
+    /** Human label, e.g. "opening antecedent" or "recapitulation". */
+    musical_phrase_label: z.string().min(1).optional(),
+    /** True if this window ends on a natural musical phrase boundary. */
+    natural_phrase_boundary: z.boolean().optional(),
+    /** Record ID of the paired prompt (required when window_role === 'continuation_target'). */
+    paired_prompt_record_id: z.string().min(1).optional(),
+  })
+  .superRefine((val, ctx) => {
+    if (val.window_role === "prompt" && val.continuation_target_window == null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["continuation_target_window"],
+        message:
+          "continuation_target_window is required when window_role is 'prompt'",
+      });
+    }
+    if (
+      val.window_role === "continuation_target" &&
+      val.paired_prompt_record_id == null
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["paired_prompt_record_id"],
+        message:
+          "paired_prompt_record_id is required when window_role is 'continuation_target'",
+      });
+    }
+  });
 
 export type Scope = z.infer<typeof ScopeSchema>;
 

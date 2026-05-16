@@ -26,7 +26,14 @@
     "instrument": "piano",
     "key": "C major",
     "tempo_bpm": 137,
-    "time_signature": "4/4"
+    "time_signature": "4/4",
+    "window_role": "prompt",
+    "continuation_target_window": [
+      5,
+      8
+    ],
+    "musical_phrase_label": "opening theme antecedent",
+    "natural_phrase_boundary": true
   },
   "observation": {
     "midi_sidecar": {
@@ -979,9 +986,10 @@
     "leakage_check": "pending",
     "eval_eligibility": [
       "E1_tool_use",
+      "E2_phrase_continuation",
       "E3_annotation_grounding"
     ],
-    "phrase_continuation_eligible": false,
-    "phrase_continuation_eligible_reason": "Record covers mm. 1–4 entirely; for E2 a separate record with held-out measures is required."
+    "phrase_continuation_eligible": true,
+    "phrase_continuation_eligible_reason": "window_role='prompt' — paired with mozart-k545-mvt1:m005-008:piano:mcp-session:v1 for E2 eval."
   }
 }

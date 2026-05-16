@@ -1,9 +1,513 @@
 {
-  "evalDate": "2026-05-16T19:48:37.541Z",
+  "evalDate": "2026-05-16T20:11:55.323Z",
   "toolSchemasDerivedAt": "2026-05-16T13:46:09.703Z",
   "records": [
     {
       "recordId": "bach-prelude-c-major-bwv846:m001-004:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "bach-prelude-c-major-bwv846:m005-008:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "bach-prelude-c-major-bwv846:m013-016:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "chopin-nocturne-op9-no2:m005-008:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "chopin-nocturne-op9-no2:m013-016:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "chopin-nocturne-op9-no2:m017-020:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "chopin-nocturne-op9-no2:m021-024:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "chopin-prelude-e-minor:m001-004:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "chopin-prelude-e-minor:m005-008:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "chopin-prelude-e-minor:m009-012:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "chopin-prelude-e-minor:m013-016:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "clair-de-lune:m001-004:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "clair-de-lune:m005-008:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "clair-de-lune:m015-018:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "clair-de-lune:m019-022:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "debussy-arabesque-no1:m001-004:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "debussy-arabesque-no1:m005-008:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "debussy-arabesque-no1:m009-012:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "debussy-arabesque-no1:m013-016:piano:mcp-session:v1",
       "toolCalls": [
         {
           "turn": 2,
@@ -51,7 +555,511 @@
       "overallScore": 1
     },
     {
+      "recordId": "fur-elise:m009-012:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "fur-elise:m013-016:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
       "recordId": "mozart-k545-mvt1:m001-004:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "mozart-k545-mvt1:m005-008:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "mozart-k545-mvt1:m009-012:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "mozart-k545-mvt1:m013-016:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "pathetique-mvt2:m001-004:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "pathetique-mvt2:m005-008:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "pathetique-mvt2:m009-012:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "pathetique-mvt2:m013-016:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "satie-gymnopedie-no1:m003-006:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "satie-gymnopedie-no1:m007-010:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "satie-gymnopedie-no1:m011-014:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "satie-gymnopedie-no1:m015-018:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "satie-gymnopedie-no1:m019-022:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "satie-gymnopedie-no1:m023-026:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "schumann-traumerei:m001-004:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "schumann-traumerei:m005-008:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "schumann-traumerei:m009-012:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "schumann-traumerei:m013-016:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "schumann-traumerei:m017-020:piano:mcp-session:v1",
+      "toolCalls": [
+        {
+          "turn": 2,
+          "tool": "view_piano_roll",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        },
+        {
+          "turn": 4,
+          "tool": "play_song",
+          "toolNameValid": true,
+          "argsSchemaValid": true,
+          "failureMode": null
+        }
+      ],
+      "trajectoryValid": true,
+      "trajectoryFailureReason": null,
+      "multiTurnDependencyValid": true,
+      "multiTurnDependencyFailureReason": null,
+      "overallScore": 1
+    },
+    {
+      "recordId": "schumann-traumerei:m021-024:piano:mcp-session:v1",
       "toolCalls": [
         {
           "turn": 2,

@@ -1,0 +1,51 @@
+{
+  "dataset_name": "jam-actions-v0",
+  "version": "0.1.0",
+  "built_at": "2026-05-16",
+  "tool_schemas_derived_at": "2026-05-16",
+  "instrument_surfaces": {
+    "ai_jam_sessions": {
+      "repo": "mcp-tool-shop-org/ai-jam-sessions",
+      "mcp_schema_source": "src/dataset/tool-schemas.json",
+      "status": "active",
+      "v0_usage": "primary"
+    },
+    "vocal_synth_engine": {
+      "repo": "mcp-tool-shop-org/vocal-synth-engine",
+      "dependency": "github:mcp-tool-shop-org/vocal-synth-engine#7269cd539b20907743601f66812b3d904d43508e",
+      "score_schema": "VocalScore",
+      "status": "declared_dependency_surface",
+      "v0_usage": "sidecar/deferred",
+      "future_record_types": [
+        "vocal_phrase",
+        "sing_along_trace",
+        "phoneme_alignment",
+        "vocal_render_score"
+      ]
+    }
+  },
+  "record_count": 45,
+  "pair_count": 22,
+  "standalone_count": 1,
+  "pair_completeness": true,
+  "songs_included": [
+    "bach-prelude-c-major-bwv846",
+    "chopin-nocturne-op9-no2",
+    "chopin-prelude-e-minor",
+    "clair-de-lune",
+    "debussy-arabesque-no1",
+    "fur-elise",
+    "mozart-k545-mvt1",
+    "pathetique-mvt2",
+    "satie-gymnopedie-no1",
+    "schumann-traumerei"
+  ],
+  "songs_count": 10,
+  "verdict_summary": {
+    "public_candidate": 10,
+    "internal": 0,
+    "excluded": 0
+  },
+  "e1_gold_pass_rate": 1,
+  "splits_path": "splits.json"
+}

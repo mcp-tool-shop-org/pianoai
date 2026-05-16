@@ -613,7 +613,7 @@ describe("runFullEval aggregate metrics", () => {
     evalRun = runFullEval(pilotRecords, catalog);
   });
 
-  it("goldPassRate is 1.0 (all 3 records pass)", () => {
+  it("goldPassRate is 1.0 (all corpus records pass)", () => {
     expect(evalRun.summary.goldPassRate).toBe(1.0);
   });
 
@@ -625,8 +625,9 @@ describe("runFullEval aggregate metrics", () => {
     expect(evalRun.summary.dummyBaselineScore).toBe(0);
   });
 
-  it("evalRun contains 3 record evaluations", () => {
-    expect(evalRun.records.length).toBe(3);
+  it("evalRun contains at least 3 record evaluations (Slice 5: 45 records)", () => {
+    // Slice 3 had 3 pilot records. Slice 5 expanded to 45. The test loads all records on disk.
+    expect(evalRun.records.length).toBeGreaterThanOrEqual(3);
   });
 
   it("evalRun contains 8 control evaluations", () => {

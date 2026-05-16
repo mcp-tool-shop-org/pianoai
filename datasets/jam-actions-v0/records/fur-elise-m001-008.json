@@ -26,7 +26,10 @@
     "instrument": "piano",
     "key": "A minor",
     "tempo_bpm": 69,
-    "time_signature": "3/8"
+    "time_signature": "3/8",
+    "window_role": "standalone",
+    "musical_phrase_label": "complete A-theme opening",
+    "natural_phrase_boundary": false
   },
   "observation": {
     "midi_sidecar": {
@@ -984,6 +987,6 @@
       "E3_annotation_grounding"
     ],
     "phrase_continuation_eligible": false,
-    "phrase_continuation_eligible_reason": "Record covers mm. 1–8 entirely; for E2 a separate record with held-out measures is required."
+    "phrase_continuation_eligible_reason": "window_role='standalone' — full mm. 1-8 window not split for E2 evaluation."
   }
 }
