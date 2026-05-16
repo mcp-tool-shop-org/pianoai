@@ -1,0 +1,1355 @@
+{
+  "server_name": "ai-jam-sessions",
+  "derived_from": "dist/mcp-server.js via MCP tools/list",
+  "derived_at": "2026-05-16T13:46:09.703Z",
+  "tool_count": 41,
+  "tools": [
+    {
+      "name": "add_section",
+      "description": "Add a structural section marker to a song. Sections label parts like Intro, Verse, Chorus, Bridge, Coda — useful for teaching, navigation, and practice planning.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Song ID"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "description": "Section label (e.g., 'Intro', 'Verse 1', 'Chorus', 'Bridge')"
+          },
+          "startMeasure": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991,
+            "description": "First measure of this section (1-based)"
+          },
+          "endMeasure": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991,
+            "description": "Last measure of this section (1-based)"
+          },
+          "description": {
+            "description": "Optional description for teaching context",
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "startMeasure",
+          "endMeasure"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "add_song",
+      "description": "Add a new song to the library. Provide a complete SongEntry as JSON. The song is validated, registered, and saved to the user songs directory.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "song": {
+            "type": "string",
+            "description": "Complete SongEntry as a JSON string"
+          }
+        },
+        "required": [
+          "song"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "ai_jam_sessions",
+      "description": "Start a jam session — get a 'jam brief' with chord progression, melody outline, structure, and style hints. Provide a songId for a specific song, or just a genre to jam on a random pick. Use the brief to create your own interpretation, then save with add_song and play with play_song.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "songId": {
+            "description": "Source song ID to jam on (e.g. 'autumn-leaves'). Optional if genre is provided.",
+            "type": "string"
+          },
+          "genre": {
+            "description": "Pick a random song from this genre to jam on (e.g., 'jazz', 'blues'). Used when no songId is provided.",
+            "type": "string",
+            "enum": [
+              "classical",
+              "jazz",
+              "pop",
+              "blues",
+              "rock",
+              "rnb",
+              "soul",
+              "latin",
+              "film",
+              "ragtime",
+              "new-age",
+              "folk"
+            ]
+          },
+          "style": {
+            "description": "Target genre for reinterpretation (e.g., turn a classical piece into jazz)",
+            "type": "string",
+            "enum": [
+              "classical",
+              "jazz",
+              "pop",
+              "blues",
+              "rock",
+              "rnb",
+              "soul",
+              "latin",
+              "film",
+              "ragtime",
+              "new-age",
+              "folk"
+            ]
+          },
+          "mood": {
+            "description": "Target mood (e.g., 'upbeat', 'melancholic', 'dreamy', 'energetic', 'gentle', 'playful')",
+            "type": "string"
+          },
+          "difficulty": {
+            "description": "Target difficulty level",
+            "type": "string",
+            "enum": [
+              "beginner",
+              "intermediate",
+              "advanced"
+            ]
+          },
+          "measures": {
+            "description": "Measure range to focus on (e.g., '1-8' for just the opening)",
+            "type": "string"
+          }
+        },
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "annotate_song",
+      "description": "Annotate a raw song with musical language and promote it to 'ready' status. This is how you do your homework — study the exemplar in the genre, then write your own annotation for a raw song. Once annotated, the song becomes playable immediately.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "song_id": {
+            "type": "string",
+            "description": "The song ID to annotate (must be a raw or annotated song in the library)"
+          },
+          "description": {
+            "type": "string",
+            "description": "1-3 sentence musical description of the piece"
+          },
+          "structure": {
+            "type": "string",
+            "description": "Form/structure description (e.g. 'AABA 32-bar form', '12-bar blues')"
+          },
+          "key_moments": {
+            "minItems": 1,
+            "maxItems": 5,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Notable musical moments (1-5 items)"
+          },
+          "teaching_goals": {
+            "minItems": 1,
+            "maxItems": 5,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "What this song teaches (1-5 items)"
+          },
+          "style_tips": {
+            "minItems": 1,
+            "maxItems": 5,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "How to play it authentically (1-5 items)"
+          }
+        },
+        "required": [
+          "song_id",
+          "description",
+          "structure",
+          "key_moments",
+          "teaching_goals",
+          "style_tips"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "annotation_progress",
+      "description": "Show annotation progress for the song library — how many songs are raw (unannotated), annotated, or ready, broken down by genre. Use this to see which genres still need work and pick your next annotation target.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "compare_songs",
+      "description": "Compare two songs to find shared harmonic, structural, and rhythmic patterns. Surfaces cross-genre connections and teaching opportunities. Use this to understand how different pieces relate musically.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "song_a": {
+            "type": "string",
+            "description": "First song ID (e.g. 'fur-elise')"
+          },
+          "song_b": {
+            "type": "string",
+            "description": "Second song ID (e.g. 'autumn-leaves')"
+          }
+        },
+        "required": [
+          "song_a",
+          "song_b"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_guitar_config",
+      "description": "Show the full configuration of a guitar voice, including any user tuning overrides. Shows factory preset values and custom adjustments.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "classical-nylon",
+              "steel-dreadnought",
+              "electric-clean",
+              "electric-jazz"
+            ],
+            "description": "Guitar voice ID to inspect"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_keyboard_config",
+      "description": "Show the full configuration of a keyboard voice, including any user tuning overrides. Shows both the factory preset values and any custom adjustments.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "grand",
+              "upright",
+              "electric",
+              "honkytonk",
+              "musicbox",
+              "bright"
+            ],
+            "description": "Voice ID to inspect"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "import_midi",
+      "description": "Import a MIDI file as a song. Provide the file path and metadata. The MIDI is parsed into measures with right/left hand separation, converted to a SongEntry JSON, and saved to ~/.ai-jam-sessions/songs/. User songs persist across server restarts and package updates.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "midi_path": {
+            "type": "string",
+            "description": "Path to .mid file"
+          },
+          "id": {
+            "type": "string",
+            "description": "Song ID (kebab-case, e.g. 'fur-elise')"
+          },
+          "title": {
+            "type": "string",
+            "description": "Song title"
+          },
+          "genre": {
+            "type": "string",
+            "enum": [
+              "classical",
+              "jazz",
+              "pop",
+              "blues",
+              "rock",
+              "rnb",
+              "soul",
+              "latin",
+              "film",
+              "ragtime",
+              "new-age",
+              "folk"
+            ],
+            "description": "Genre"
+          },
+          "difficulty": {
+            "type": "string",
+            "enum": [
+              "beginner",
+              "intermediate",
+              "advanced"
+            ],
+            "description": "Difficulty"
+          },
+          "key": {
+            "type": "string",
+            "description": "Key signature (e.g. 'C major', 'A minor')"
+          },
+          "composer": {
+            "description": "Composer or artist",
+            "type": "string"
+          },
+          "description": {
+            "description": "1-3 sentence description of the piece",
+            "type": "string"
+          },
+          "tags": {
+            "description": "Tags for search (default: genre + difficulty)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "midi_path",
+          "id",
+          "title",
+          "genre",
+          "difficulty",
+          "key"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "list_guitar_tunings",
+      "description": "List available guitar tuning systems (standard, drop-D, open G, DADGAD, etc.). Shows open string MIDI note numbers for each tuning.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "list_guitar_voices",
+      "description": "List available guitar voice presets. Each voice models a different guitar type with physically accurate synthesis parameters. Use the guitarVoice parameter in play_song (with engine='guitar') to choose one.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "list_keyboards",
+      "description": "List available piano keyboard voices. Each voice has a different timbre suited to different genres. Use the keyboard parameter in play_song to choose one.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "list_measures",
+      "description": "Get an overview of all measures in a song, showing right hand, left hand, and any teaching notes.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Song ID"
+          },
+          "startMeasure": {
+            "description": "Start measure (1-based, default: 1)",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "endMeasure": {
+            "description": "End measure (1-based, default: last)",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "list_sections",
+      "description": "List the structural sections of a song (Intro, Verse, Chorus, etc.). Sections help with navigation, practice planning, and understanding song form.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Song ID"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "list_songs",
+      "description": "Browse and search the piano song library. Filter by genre, difficulty, composer, or search query.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "genre": {
+            "description": "Filter by genre",
+            "type": "string",
+            "enum": [
+              "classical",
+              "jazz",
+              "pop",
+              "blues",
+              "rock",
+              "rnb",
+              "soul",
+              "latin",
+              "film",
+              "ragtime",
+              "new-age",
+              "folk"
+            ]
+          },
+          "difficulty": {
+            "description": "Filter by difficulty",
+            "type": "string",
+            "enum": [
+              "beginner",
+              "intermediate",
+              "advanced"
+            ]
+          },
+          "query": {
+            "description": "Search query (matches title, composer, tags, description)",
+            "type": "string"
+          },
+          "composer": {
+            "description": "Filter by composer (case-insensitive substring match)",
+            "type": "string"
+          }
+        },
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "mute_hand",
+      "description": "Mute or unmute a hand during playback. Muting the left hand lets you focus on the right hand (and vice versa). Great for hands-separate practice.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "hand": {
+            "type": "string",
+            "enum": [
+              "left",
+              "right"
+            ],
+            "description": "Which hand to mute/unmute"
+          },
+          "muted": {
+            "type": "boolean",
+            "description": "true = mute (silence), false = unmute (play)"
+          }
+        },
+        "required": [
+          "hand",
+          "muted"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "pause_playback",
+      "description": "Pause or resume the currently playing song.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "resume": {
+            "description": "If true, resume playback. If false or omitted, pause.",
+            "type": "boolean"
+          }
+        },
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "play_song",
+      "description": "Play a song through the built-in audio engine. Supports piano (default) and vocal engines. Accepts a library song ID or a path to a .mid file. Returns immediately with session info while playback runs in the background.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Song ID (e.g. 'autumn-leaves', 'let-it-be') OR path to a .mid file"
+          },
+          "speed": {
+            "description": "Speed multiplier (0.5 = half speed, 1.0 = normal, 2.0 = double)",
+            "type": "number",
+            "minimum": 0.1,
+            "maximum": 4
+          },
+          "tempo": {
+            "description": "Override tempo in BPM (10-400). Omit to use the song's original tempo",
+            "type": "integer",
+            "minimum": 10,
+            "maximum": 400
+          },
+          "mode": {
+            "description": "Playback mode: 'full' (default), 'measure' (one at a time), 'hands' (separate then together), 'loop'",
+            "type": "string",
+            "enum": [
+              "full",
+              "measure",
+              "hands",
+              "loop"
+            ]
+          },
+          "startMeasure": {
+            "description": "Start measure for loop mode (1-based)",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "endMeasure": {
+            "description": "End measure for loop mode (1-based)",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "withSinging": {
+            "description": "Enable sing-along narration during playback (note-names by default). Default: false",
+            "type": "boolean"
+          },
+          "withTeaching": {
+            "description": "Enable live teaching feedback (encouragement, dynamics tips, difficulty warnings). Default: false",
+            "type": "boolean"
+          },
+          "singMode": {
+            "description": "Sing-along mode when withSinging is true. Default: note-names",
+            "type": "string",
+            "enum": [
+              "note-names",
+              "solfege",
+              "contour",
+              "syllables"
+            ]
+          },
+          "keyboard": {
+            "description": "Piano voice/keyboard: grand (default), upright, electric, honkytonk, musicbox, bright. Each has a different character suited to different genres.",
+            "type": "string",
+            "enum": [
+              "grand",
+              "upright",
+              "electric",
+              "honkytonk",
+              "musicbox",
+              "bright"
+            ]
+          },
+          "engine": {
+            "description": "Sound engine: 'piano' (default) plays piano, 'vocal' plays sustained vowel tones, 'tract' uses Pink Trombone vocal tract synthesis, 'guitar' plays physically-modeled guitar.",
+            "type": "string",
+            "enum": [
+              "piano",
+              "vocal",
+              "tract",
+              "guitar"
+            ]
+          },
+          "tractVoice": {
+            "description": "Voice preset for tract engine: soprano (default), alto, tenor, bass. Only used when engine='tract'.",
+            "type": "string",
+            "enum": [
+              "soprano",
+              "alto",
+              "tenor",
+              "bass"
+            ]
+          },
+          "guitarVoice": {
+            "description": "Guitar voice preset: classical-nylon, steel-dreadnought (default), electric-clean, electric-jazz. Only used when engine='guitar'.",
+            "type": "string",
+            "enum": [
+              "classical-nylon",
+              "steel-dreadnought",
+              "electric-clean",
+              "electric-jazz"
+            ]
+          },
+          "syncMode": {
+            "description": "Voice sync timing when singing: 'before' (hear voice first, then play together) or 'concurrent' (simultaneous). Default: 'before' when singing only, 'concurrent' with teaching.",
+            "type": "string",
+            "enum": [
+              "before",
+              "concurrent"
+            ]
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "playback_status",
+      "description": "Get a real-time snapshot of the current playback state: measure, tempo, speed, keyboard voice, and more. Returns nothing if no song is playing.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "practice_setup",
+      "description": "Get a recommended practice configuration for a song — speed, mode, voice settings, and CLI command. Tailored to the song's difficulty and teaching goals.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Song ID"
+          },
+          "playerLevel": {
+            "description": "Player's skill level (overrides song-based suggestion)",
+            "type": "string",
+            "enum": [
+              "beginner",
+              "intermediate",
+              "advanced"
+            ]
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "preview_teaching_cues",
+      "description": "Preview all teaching cues for a song — teaching notes, dynamics markings, and fingering suggestions per measure. Use this to see what guidance is available before playing.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Song ID"
+          },
+          "types": {
+            "description": "Filter by cue type (default: all). Options: teaching, dynamics, fingering",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "teaching",
+                "dynamics",
+                "fingering"
+              ]
+            }
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "read_practice_journal",
+      "description": "Read your practice journal — reflections, observations, and session history from previous sessions. Use this at the start of a session to remember what you learned before, or to review notes on a specific song.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "days": {
+            "description": "How many days back to read (default: 7)",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 90
+          },
+          "song_id": {
+            "description": "Filter entries to a specific song",
+            "type": "string"
+          }
+        },
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "registry_stats",
+      "description": "Get statistics about the song registry: total songs, genres, difficulties, measures.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "reset_guitar",
+      "description": "Reset a guitar voice to factory default settings, clearing all user tuning overrides.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "classical-nylon",
+              "steel-dreadnought",
+              "electric-clean",
+              "electric-jazz"
+            ],
+            "description": "Guitar voice ID to reset"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "reset_keyboard",
+      "description": "Reset a keyboard voice to factory default settings, clearing all user tuning overrides.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "grand",
+              "upright",
+              "electric",
+              "honkytonk",
+              "musicbox",
+              "bright"
+            ],
+            "description": "Voice ID to reset"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "save_practice_note",
+      "description": "Save a practice journal entry. Combines your reflections with auto-captured session data (what you just played, speed, measures, duration). The journal persists across sessions — next time, use read_practice_journal to pick up where you left off.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "note": {
+            "type": "string",
+            "description": "Your reflection — what you learned, what you noticed, what to try next. Write naturally, like a musician's notebook."
+          },
+          "song_id": {
+            "description": "Override which song this entry is about (defaults to the last song you played)",
+            "type": "string"
+          }
+        },
+        "required": [
+          "note"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "score_annotation",
+      "description": "Score the quality of a song's annotation (musicalLanguage) against exemplar standards. Evaluates completeness, depth, specificity, teaching value, and musical vocabulary. Use this after annotating a raw song to check your work before moving on.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "song_id": {
+            "type": "string",
+            "description": "Song ID to evaluate (must have musicalLanguage)"
+          }
+        },
+        "required": [
+          "song_id"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "score_performance",
+      "description": "Score a MIDI performance against a song from the library. Compares note-by-note: pitch accuracy, timing, missed notes, and extra notes. Returns a structured assessment with metrics and practice suggestions. Use this after recording yourself playing a song to see how you did.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "song_id": {
+            "type": "string",
+            "description": "Song ID to compare against (e.g. 'fur-elise')"
+          },
+          "midi_path": {
+            "type": "string",
+            "description": "Path to the recorded performance .mid file"
+          },
+          "tolerance_ms": {
+            "description": "Timing tolerance in ms (default 150). Lower = stricter grading.",
+            "type": "number",
+            "minimum": 10,
+            "maximum": 500
+          },
+          "bpm": {
+            "description": "Override BPM for scoring (default: song's tempo). Use if you played at a different speed.",
+            "type": "number",
+            "minimum": 10,
+            "maximum": 400
+          }
+        },
+        "required": [
+          "song_id",
+          "midi_path"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "server_info",
+      "description": "Get server capabilities, version, and available options at a glance — genres, difficulties, engines, voice presets, and tool count.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "set_speed",
+      "description": "Change the playback speed of the currently playing song. Takes effect on the next note.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "speed": {
+            "type": "number",
+            "minimum": 0.1,
+            "maximum": 4,
+            "description": "New speed multiplier (0.1–4.0)"
+          }
+        },
+        "required": [
+          "speed"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "sing_along",
+      "description": "Get singable text (note names, solfege, contour, or syllables) for a range of measures. Optionally enable piano accompaniment for synchronized singing + playback.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Song ID"
+          },
+          "startMeasure": {
+            "description": "Start measure (1-based, default: 1)",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "endMeasure": {
+            "description": "End measure (1-based, default: last)",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "mode": {
+            "description": "Sing-along mode (default: 'note-names')",
+            "type": "string",
+            "enum": [
+              "note-names",
+              "solfege",
+              "contour",
+              "syllables"
+            ]
+          },
+          "hand": {
+            "description": "Which hand to narrate (default: 'right')",
+            "type": "string",
+            "enum": [
+              "right",
+              "left",
+              "both"
+            ]
+          },
+          "withPiano": {
+            "description": "Include piano accompaniment info and CLI command for live playback (default: false)",
+            "type": "boolean"
+          },
+          "syncMode": {
+            "description": "Voice+piano sync mode: 'concurrent' = duet feel, 'before' = voice first (default: 'concurrent')",
+            "type": "string",
+            "enum": [
+              "concurrent",
+              "before"
+            ]
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "song_info",
+      "description": "Get detailed information about a specific song — musical language, teaching goals, key moments, structure.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Song ID (kebab-case, e.g. 'moonlight-sonata-mvt1')"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "stop_playback",
+      "description": "Stop the currently playing song and disconnect MIDI.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "suggest_song",
+      "description": "Get a song recommendation based on genre preference and/or difficulty level.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "genre": {
+            "description": "Preferred genre",
+            "type": "string",
+            "enum": [
+              "classical",
+              "jazz",
+              "pop",
+              "blues",
+              "rock",
+              "rnb",
+              "soul",
+              "latin",
+              "film",
+              "ragtime",
+              "new-age",
+              "folk"
+            ]
+          },
+          "difficulty": {
+            "description": "Desired difficulty",
+            "type": "string",
+            "enum": [
+              "beginner",
+              "intermediate",
+              "advanced"
+            ]
+          },
+          "maxDuration": {
+            "description": "Maximum duration in seconds",
+            "type": "number"
+          }
+        },
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "teaching_note",
+      "description": "Get the teaching note, fingering, and dynamics for a specific measure in a song.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Song ID"
+          },
+          "measure": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991,
+            "description": "Measure number (1-based)"
+          }
+        },
+        "required": [
+          "id",
+          "measure"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "transpose_song",
+      "description": "Transpose a song to a different key. Shifts all notes by the specified number of semitones and registers the transposed version as a new song. Useful for matching student range or practicing in different keys.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Song ID to transpose"
+          },
+          "semitones": {
+            "type": "integer",
+            "minimum": -12,
+            "maximum": 12,
+            "description": "Semitones to shift: positive = up, negative = down (e.g., 2 = up a whole step, -3 = down a minor third)"
+          }
+        },
+        "required": [
+          "id",
+          "semitones"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "tune_guitar",
+      "description": "Tune a guitar voice by adjusting synthesis parameters. Changes are saved and persist across sessions. Use get_guitar_config to see current settings, reset_guitar to restore factory defaults.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "classical-nylon",
+              "steel-dreadnought",
+              "electric-clean",
+              "electric-jazz"
+            ],
+            "description": "Guitar voice ID to tune"
+          },
+          "pluck-position": {
+            "description": "Pluck position along string (0=bridge, 0.5=middle). Defines harmonic content.",
+            "type": "number",
+            "minimum": 0.05,
+            "maximum": 0.5
+          },
+          "pluck-noise": {
+            "description": "Pluck attack noise intensity (0=none)",
+            "type": "number",
+            "minimum": 0,
+            "maximum": 0.5
+          },
+          "brightness": {
+            "description": "Brightness at moderate velocity (lower=brighter)",
+            "type": "number",
+            "minimum": 0.05,
+            "maximum": 0.5
+          },
+          "brightness-slope": {
+            "description": "Velocity sensitivity for upper partials",
+            "type": "number",
+            "minimum": 0.03,
+            "maximum": 0.2
+          },
+          "decay": {
+            "description": "Sustain length in seconds (treble end)",
+            "type": "number",
+            "minimum": 0.5,
+            "maximum": 10
+          },
+          "bass-decay": {
+            "description": "Additional sustain for bass strings in seconds",
+            "type": "number",
+            "minimum": 1,
+            "maximum": 15
+          },
+          "body-freq": {
+            "description": "Body resonance frequency (Hz)",
+            "type": "number",
+            "minimum": 60,
+            "maximum": 8000
+          },
+          "body-q": {
+            "description": "Body resonance Q factor",
+            "type": "number",
+            "minimum": 0.5,
+            "maximum": 12
+          },
+          "body-gain": {
+            "description": "Body resonance boost (dB)",
+            "type": "number",
+            "minimum": 0,
+            "maximum": 15
+          },
+          "odd-boost": {
+            "description": "Odd harmonic emphasis (1.0=neutral)",
+            "type": "number",
+            "minimum": 1,
+            "maximum": 2
+          },
+          "detune": {
+            "description": "Intonation spread in cents",
+            "type": "number",
+            "minimum": 0,
+            "maximum": 15
+          },
+          "stereo": {
+            "description": "Stereo width (0=mono, 1=full)",
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "volume": {
+            "description": "Per-voice volume",
+            "type": "number",
+            "minimum": 0.05,
+            "maximum": 0.5
+          },
+          "release": {
+            "description": "Mute speed in seconds",
+            "type": "number",
+            "minimum": 0.01,
+            "maximum": 0.3
+          },
+          "rolloff": {
+            "description": "Harmonic darkness (higher=darker)",
+            "type": "number",
+            "minimum": 0.3,
+            "maximum": 1.5
+          },
+          "attack-fast": {
+            "description": "Fastest attack (ff) in seconds",
+            "type": "number",
+            "minimum": 0.0002,
+            "maximum": 0.005
+          },
+          "attack-slow": {
+            "description": "Slowest attack (pp) in seconds",
+            "type": "number",
+            "minimum": 0.001,
+            "maximum": 0.01
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "tune_keyboard",
+      "description": "Tune a piano keyboard voice by adjusting synthesis parameters. Changes are saved and persist across sessions. Use get_keyboard_config to see current settings, reset_keyboard to restore factory defaults.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "grand",
+              "upright",
+              "electric",
+              "honkytonk",
+              "musicbox",
+              "bright"
+            ],
+            "description": "Voice ID to tune"
+          },
+          "brightness": {
+            "description": "Brightness at moderate velocity (0.05=very bright, 0.5=very dark)",
+            "type": "number",
+            "minimum": 0.05,
+            "maximum": 0.5
+          },
+          "brightness-slope": {
+            "description": "Velocity sensitivity for upper partials",
+            "type": "number",
+            "minimum": 0.03,
+            "maximum": 0.2
+          },
+          "decay": {
+            "description": "Sustain length in seconds (treble end)",
+            "type": "number",
+            "minimum": 1,
+            "maximum": 10
+          },
+          "bass-decay": {
+            "description": "Additional sustain for bass in seconds",
+            "type": "number",
+            "minimum": 4,
+            "maximum": 25
+          },
+          "hammer": {
+            "description": "Hammer attack intensity (0=none)",
+            "type": "number",
+            "minimum": 0,
+            "maximum": 0.5
+          },
+          "detune": {
+            "description": "Random detuning in cents (chorus effect)",
+            "type": "number",
+            "minimum": 0,
+            "maximum": 20
+          },
+          "stereo": {
+            "description": "Stereo spread (0=mono, 1=full)",
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "volume": {
+            "description": "Per-voice volume",
+            "type": "number",
+            "minimum": 0.1,
+            "maximum": 0.5
+          },
+          "release": {
+            "description": "Damper speed in seconds",
+            "type": "number",
+            "minimum": 0.03,
+            "maximum": 0.3
+          },
+          "rolloff": {
+            "description": "Harmonic darkness (higher=darker)",
+            "type": "number",
+            "minimum": 0.3,
+            "maximum": 1.5
+          },
+          "attack-fast": {
+            "description": "Fastest attack time (ff) in seconds",
+            "type": "number",
+            "minimum": 0.001,
+            "maximum": 0.01
+          },
+          "attack-slow": {
+            "description": "Slowest attack time (pp) in seconds",
+            "type": "number",
+            "minimum": 0.003,
+            "maximum": 0.02
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "validate_song_entry",
+      "description": "Validate a SongEntry JSON without adding it to the registry. Use this to check if your song data is correct before calling add_song.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "song": {
+            "type": "string",
+            "description": "Full SongEntry JSON string to validate"
+          }
+        },
+        "required": [
+          "song"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "view_guitar_tab",
+      "description": "Render an interactive guitar tablature editor for a song as a self-contained HTML page. Open the output file in a browser for real-time playback cursor, click-to-add notes, drag editing, string/fret reassignment, and JSON export. Supports configurable guitar tunings.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "songId": {
+            "type": "string",
+            "description": "Song ID from the library (e.g. 'autumn-leaves')"
+          },
+          "startMeasure": {
+            "description": "First measure to render (1-based). Default: 1",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "endMeasure": {
+            "description": "Last measure to render (1-based). Default: last measure",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "tuning": {
+            "description": "Guitar tuning: standard (default), drop-d, open-g, open-d, dadgad, open-e, half-step-down, full-step-down",
+            "type": "string"
+          },
+          "tempo": {
+            "description": "Override tempo in BPM. Default: song's tempo",
+            "type": "integer",
+            "minimum": 10,
+            "maximum": 400
+          }
+        },
+        "required": [
+          "songId"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "view_piano_roll",
+      "description": "Render a piano roll visualization of a song as SVG. Returns an image showing note positions over time. Color modes: 'hand' (blue RH / coral LH, default) or 'pitch-class' (chromatic rainbow — each pitch class gets its own color, making harmonic patterns visible).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "songId": {
+            "type": "string",
+            "description": "Song ID from the library (e.g. 'fur-elise')"
+          },
+          "startMeasure": {
+            "description": "First measure to render (1-based). Default: 1",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "endMeasure": {
+            "description": "Last measure to render (1-based). Default: last measure",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "color_mode": {
+            "description": "Note coloring: 'hand' (RH/LH, default) or 'pitch-class' (chromatic rainbow)",
+            "type": "string",
+            "enum": [
+              "hand",
+              "pitch-class"
+            ]
+          }
+        },
+        "required": [
+          "songId"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    }
+  ]
+}

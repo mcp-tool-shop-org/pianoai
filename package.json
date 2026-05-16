@@ -60,6 +60,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.26.0",
+    "ajv": "^8.18.0",
     "jzz": "^1.8.0",
     "midi-file": "^1.2.4",
     "node-web-audio-api": "^1.0.8",
