@@ -474,3 +474,34 @@ Once the user installs the required dependencies and authorizes Phase 2:
 **Training data:** ready. 20 examples, all assertions pass, no clair-de-lune, correct E2 prompt shape.
 **Scaffold:** ready. Safety assertions, QLoRA config, val split, receipt writing, dry-run mode all implemented.
 **Environment:** missing all 5 ML dependencies. Install command documented above.
+
+---
+
+## Phase 2 — STOPPED 2026-05-17
+
+Phase 2 stopped before training artifact creation. Local 7B QLoRA on RTX 5080 Laptop / Windows / nightly CUDA stack caused unsafe system pressure. No adapter produced. Fine-tuning deferred until a safer compute substrate is available.
+
+**What was attempted:**
+- Python ML environment built in `experiments/jam-actions-v0-lora/.venv/` (Python 3.11.9, PyTorch 2.12.0.dev+cu128 with sm_120 Blackwell support, transformers 5.8.1, peft 0.19.1, trl 1.4.0, bitsandbytes 0.49.2, accelerate 1.13.0)
+- Qwen2.5-7B-Instruct cached at `C:/vLLM/cache/hub/`
+- `train_lora.py --dry-run` validates the stack: model handle loads, dataset maps, LoRA applies (40.4M trainable / 7.66B total = 0.53%)
+- Four retry-patched API changes surfaced during actual training:
+  - `evaluation_strategy` → `eval_strategy` (transformers 5.x rename)
+  - `max_seq_length` → `max_length` (TRL 1.4.x rename)
+  - `tokenizer=` → `processing_class=` (TRL 1.4.x rename)
+  - `fp16=True` → `bf16=True` (Blackwell + 4-bit base compute_dtype interaction)
+- After the four patches, training reached step 0/25 before causing system memory pressure that nearly crashed the host. User halted.
+
+**Why this is not a product failure:**
+- The dataset and eval spine are working as designed (Slice 8.5 / 9a / 9d produced clear product signal)
+- The training failure is a compute-substrate constraint, not a dataset problem
+- The LoRA export scaffold + training JSONL remain valid artifacts — useful when a safer substrate is available
+
+**Mitigation path (future):**
+- Desktop GPU (24+ GB VRAM) without paging pressure
+- Cloud GPU (only if local-first rule is relaxed for a one-off experiment)
+- Reduce footprint *radically*: rank=4, ctx=1024, batch=1, no gradient accumulation, swap `paged_adamw_32bit` → `adamw_torch` — and verify VRAM peak via `nvidia-smi` before launch
+
+**Current train_lora.py state (post-revert):** original Phase 1 scaffold. The four API-rename patches were reverted because they only matter for actual training; dry-run still passes against the original.
+
+**Pivot:** Slice 9b — corpus expansion. Pure TypeScript, no GPU. Extends dataset value via the infrastructure we understand.

@@ -13,3 +13,6 @@ scripts/midi-cache/
 ci-failed.log
 package-lock.json
 !site/package-lock.json
+
+# Local Python venv for Slice 9c LoRA experiment
+experiments/jam-actions-v0-lora/.venv/
