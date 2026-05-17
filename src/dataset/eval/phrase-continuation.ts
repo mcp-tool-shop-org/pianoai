@@ -60,8 +60,8 @@ export type MetricResult = number | NotComputable;
 /** Serializable metric result. */
 export type MetricResultJson = number | NotComputableJson;
 
-export function isNotComputable(r: MetricResult): r is NotComputable {
-  return typeof r === "object" && r.not_computable === true;
+export function isNotComputable<T>(r: T | NotComputable): r is NotComputable {
+  return typeof r === "object" && r !== null && (r as NotComputable).not_computable === true;
 }
 
 export function notComputable(reason: string): NotComputable {
