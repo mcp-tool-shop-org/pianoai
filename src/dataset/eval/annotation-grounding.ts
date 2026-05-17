@@ -100,6 +100,25 @@ export interface MCQuestion {
   midiGrounded: boolean;
   /** Details used by answerers for logic (e.g., extracted value). */
   goldValue: string;
+  /**
+   * Which evidence source is required to answer this question correctly.
+   * "midi_sidecar" means the answerer must look up the note at a specific
+   * (hand, measure, beat) position in timed_events — annotation prose is
+   * insufficient.  Absent (undefined) for prose-answerable question types.
+   */
+  evidence_required?: "midi_sidecar";
+  /**
+   * Structured claim metadata for annotation_grounding questions.
+   * Carries the exact (hand, measure, beat, note) anchor used to generate
+   * the question so the gold answerer and random-MIDI answerer can perform
+   * precise event lookup rather than re-parsing the question text.
+   */
+  midiClaim?: {
+    hand: "right" | "left";
+    measure: number;
+    beat: number;
+    note: number;   // MIDI note number of the correct answer
+  };
 }
 
 /** A question set for one record. */
@@ -628,18 +647,35 @@ export function generateProvenanceQuestion(record: E3Record): MCQuestion | NotCo
 // ─── Type 7: Annotation-to-MIDI grounding check (LOAD-BEARING) ───────────────
 
 /**
- * Question: "Which statement about this phrase is supported by the MIDI?"
- * One true statement (MIDI-derived), three plausible-but-false distractors
- * using generic music language.
+ * Hardened (Slice 8) question: "Which pitch does the {hand} hand play in
+ * measure {M} on beat {B}?"
  *
- * True statement: generated from MIDI extraction (e.g., "The right hand plays
- * more notes than the left hand [RH: X, LH: Y]").
+ * This replaces the Slice 7 hand-count comparison, which was text-leakable:
+ * all 4 options now have identical structure (note name strings like "E5"),
+ * and the question text itself varies per record, so the text_only LCG seed
+ * differs per question rather than being constant across all records.
  *
- * Plausible-but-false: generic claims that sound musical but contradict the
- * actual MIDI data (e.g., "The left hand plays more notes than the right hand").
+ * Claim shape:
+ *   evidence_required: "midi_sidecar"
+ *   question: "In measure M, which pitch does the right hand play on beat B?"
+ *   answer: "E5"
+ *   distractors: ["F5", "D#5", "F#5"]   ← ±1/±2/±3 semitones
  *
- * This is the hardest type for text_only: the annotation prose may describe
- * general hand roles but won't give exact counts that contradict the MIDI.
+ * Anchor selection:
+ *   Priority 1: (hand=right) position where exactly 1 RH note sounds → uses RH.
+ *   Priority 2: (hand=left) position where exactly 1 LH note sounds → uses LH.
+ *   (All 45 corpus records satisfy P1 or P2; P3 highest-note-in-chord is reserved
+ *   but not needed for the current corpus.)
+ *
+ * Gold answerer:  finds the event at (hand, measure, beat) in real MIDI → 1.0.
+ * Text_only:      annotation prose never states specific MIDI pitches → ~0.25.
+ * Random-MIDI:    looks up the same position in the wrong MIDI → absent or wrong.
+ *
+ * Why this is model-independent:
+ *   The options are 4 note names that are structurally identical. No option "looks
+ *   more musical" than another without MIDI access. A language model must inspect
+ *   timed_events to answer; musical prior knowledge is insufficient because any
+ *   note within ±3 semitones is plausible in any musical context.
  */
 export function generateAnnotationGroundingQuestion(record: E3Record): MCQuestion | NotComputable {
   const events = record.observation.midi_sidecar.timed_events;
@@ -654,62 +690,89 @@ export function generateAnnotationGroundingQuestion(record: E3Record): MCQuestio
     return notComputable("no events have hand field — annotation grounding check not computable");
   }
 
-  // Derive a MIDI-grounded true statement.
-  const totalEvents = events.length;
-  const rhCount = rhEvents.length;
-  const lhCount = lhEvents.length;
-  const uniquePcs = uniquePitchClasses(events);
-  const highestPitch = Math.max(...events.map((e) => e.note));
-  const lowestPitch = Math.min(...events.map((e) => e.note));
-  const highestName = noteName(highestPitch);
-  const lowestName = noteName(lowestPitch);
+  // ── Find an anchor: a (hand, measure, beat) position with exactly 1 note. ──
+  // Priority 1: right-hand single-note positions.
+  // Priority 2: left-hand single-note positions (fallback for chord-only phrases).
 
-  // True statement: always the RH vs LH count comparison (most MIDI-grounded).
-  let trueStatement: string;
-  if (rhCount > lhCount) {
-    trueStatement = `The right hand plays more notes than the left hand (RH: ${rhCount}, LH: ${lhCount})`;
-  } else if (lhCount > rhCount) {
-    trueStatement = `The left hand plays more notes than the right hand (LH: ${lhCount}, RH: ${rhCount})`;
-  } else {
-    trueStatement = `The right and left hands play an equal number of notes (${rhCount} each)`;
+  type PosEntry = { hand: "right" | "left"; measure: number; beat: number; event: TimedEvent };
+
+  function buildSingleNotePositions(handEvts: TimedEvent[], hand: "right" | "left"): PosEntry[] {
+    const posMap = new Map<string, TimedEvent[]>();
+    for (const e of handEvts) {
+      const key = `${e.measure}_${e.beat}`;
+      const arr = posMap.get(key);
+      if (arr) arr.push(e);
+      else posMap.set(key, [e]);
+    }
+    return [...posMap.values()]
+      .filter((arr) => arr.length === 1)
+      .map((arr) => ({ hand, measure: arr[0].measure, beat: arr[0].beat, event: arr[0] }));
   }
 
-  // Plausible-but-false distractors: contradict the MIDI.
-  let d1: string, d2: string, d3: string;
-  if (rhCount > lhCount) {
-    d1 = `The left hand plays more notes than the right hand (LH: ${lhCount + rhCount - lhCount + 1}, RH: ${rhCount - 1})`;
-    d1 = `The left hand plays more notes than the right hand`;
-    d2 = `The highest pitch in this phrase is ${lowestName}`;
-    d3 = `This phrase contains ${uniquePcs.length + 2} distinct pitch classes`;
-  } else if (lhCount > rhCount) {
-    d1 = `The right hand plays more notes than the left hand`;
-    d2 = `The highest pitch in this phrase is ${lowestName}`;
-    d3 = `This phrase contains ${uniquePcs.length + 2} distinct pitch classes`;
-  } else {
-    d1 = `The right hand plays more notes than the left hand`;
-    d2 = `The highest pitch in this phrase is ${lowestName}`;
-    d3 = `This phrase contains ${uniquePcs.length + 2} distinct pitch classes`;
+  let candidates = buildSingleNotePositions(rhEvents, "right");
+  if (candidates.length === 0) {
+    candidates = buildSingleNotePositions(lhEvents, "left");
   }
 
-  const distractors = [d1, d2, d3];
+  if (candidates.length === 0) {
+    return notComputable(
+      "no single-note hand positions found — annotation grounding not computable",
+    );
+  }
 
-  // Validate: ensure none of the distractors accidentally match the true statement.
-  for (const d of distractors) {
-    if (d === trueStatement) {
-      return notComputable("distractor collision with true statement — not computable");
+  // Deterministic anchor selection: use per-record LCG so different records pick
+  // different positions, making the question text (and therefore text_only seed) vary.
+  const lcg = makeLcg(hashString(record.id + "annotation_grounding_q"));
+  const anchorIdx = lcgInt(lcg, candidates.length);
+  const anchor = candidates[anchorIdx];
+  const anchorNote = anchor.event.note;
+  const correctNoteName = noteName(anchorNote);
+
+  // ── Distractors: 3 distinct pitches differing by ±1/±2/±3 semitones. ──
+  // All options are structurally identical (note name strings). No option "looks"
+  // more correct than another without MIDI access.
+  const wrongNotes: string[] = [];
+  const seenNotes = new Set<number>([anchorNote]);
+  for (const offset of [1, -1, 2, -2, 3, -3, 4, -4, 5, -5]) {
+    const n = anchorNote + offset;
+    if (n >= 21 && n <= 108 && !seenNotes.has(n)) {
+      wrongNotes.push(noteName(n));
+      seenNotes.add(n);
+      if (wrongNotes.length === 3) break;
     }
   }
 
-  const lcg = makeLcg(hashString(record.id + "annotation_grounding_q"));
-  const [options, correctIndex] = buildOptions(trueStatement, distractors, lcg);
+  if (wrongNotes.length < 3) {
+    return notComputable(
+      `cannot generate 3 distinct pitch distractors for note ${correctNoteName} (midi ${anchorNote})`,
+    );
+  }
+
+  // ── Build options (correct answer + 3 distractors). ──
+  const [options, correctIndex] = buildOptions(correctNoteName, wrongNotes, lcg);
+
+  // ── Question text: includes specific measure, beat, hand ── per-record! ──
+  // beat is stored 0-indexed in the sidecar; display as 1-indexed for readability.
+  const beatDisplay = anchor.beat + 1;
+  const beatLabel =
+    beatDisplay % 1 === 0 ? `beat ${beatDisplay}` : `beat ${beatDisplay}`;
+  const handLabel = anchor.hand === "right" ? "right hand" : "left hand";
+  const questionText = `In measure ${anchor.measure}, which pitch does the ${handLabel} play on ${beatLabel}?`;
 
   return {
     questionType: QUESTION_TYPES.ANNOTATION_GROUNDING,
-    questionText: `Which of the following statements about this phrase is supported by the MIDI data?`,
+    questionText,
     options,
     correctOptionIndex: correctIndex,
     midiGrounded: true,
-    goldValue: trueStatement,
+    goldValue: correctNoteName,
+    evidence_required: "midi_sidecar",
+    midiClaim: {
+      hand: anchor.hand,
+      measure: anchor.measure,
+      beat: anchor.beat,
+      note: anchorNote,
+    },
   };
 }
 
@@ -909,21 +972,24 @@ export function randomMidiAnswer(
       break;
     }
     case QUESTION_TYPES.ANNOTATION_GROUNDING: {
-      if (randomEvents.length > 0) {
-        const rhCount = randomEvents.filter((e) => e.hand === "right").length;
-        const lhCount = randomEvents.filter((e) => e.hand === "left").length;
-        const uniquePcs = uniquePitchClasses(randomEvents);
-        const highestPitch = Math.max(...randomEvents.map((e) => e.note));
-        const lowestPitch = Math.min(...randomEvents.map((e) => e.note));
-        const lowestName = noteName(lowestPitch);
-
-        if (rhCount > lhCount) {
-          wrongValue = `The right hand plays more notes than the left hand (RH: ${rhCount}, LH: ${lhCount})`;
-        } else if (lhCount > rhCount) {
-          wrongValue = `The left hand plays more notes than the right hand (LH: ${lhCount}, RH: ${rhCount})`;
-        } else {
-          wrongValue = `The right and left hands play an equal number of notes (${rhCount} each)`;
+      // Hardened (Slice 8): the question asks about a specific (hand, measure, beat)
+      // position.  Look up that exact position in the random-MIDI record.
+      // If found: use that note name (likely differs from correct → wrong answer).
+      // If not found: wrongValue stays null → falls through to LCG random below.
+      if (q.midiClaim && randomEvents.length > 0) {
+        const { hand, measure, beat } = q.midiClaim;
+        const BEAT_EPSILON = 0.01;
+        const partnerEvent = randomEvents.find(
+          (e) =>
+            e.hand === hand &&
+            e.measure === measure &&
+            Math.abs(e.beat - beat) < BEAT_EPSILON,
+        );
+        if (partnerEvent) {
+          wrongValue = noteName(partnerEvent.note);
         }
+        // If no partner event at that position (different phrase structure),
+        // wrongValue stays null → falls through to LCG random fallback.
       }
       break;
     }

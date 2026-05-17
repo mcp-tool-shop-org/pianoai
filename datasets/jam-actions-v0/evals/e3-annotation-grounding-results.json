@@ -1,5 +1,5 @@
 {
-  "evalDate": "2026-05-16T20:54:35.283Z",
+  "evalDate": "2026-05-17T02:05:03.526Z",
   "schemaVersion": "e3-annotation-grounding/1.0.0",
   "totalRecords": 45,
   "partnerAssignments": [
@@ -415,36 +415,36 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 4, which pitch does the right hand play on beat 2.5021?",
           "options": [
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is B3",
-            "This phrase contains 9 distinct pitch classes",
-            "The right hand plays more notes than the left hand (RH: 62, LH: 2)"
+            "C#5",
+            "B4",
+            "C5",
+            "D5"
           ],
-          "correctOptionIndex": 3,
+          "correctOptionIndex": 2,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 62, LH: 2)",
+          "goldValue": "C5",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 2,
             "correct": true,
             "score": 1
           },
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 3,
             "correct": false,
             "score": 0
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 3,
             "correct": false,
             "score": 0
           },
@@ -692,22 +692,22 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 7, which pitch does the right hand play on beat 3.7521?",
           "options": [
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is B3",
-            "The right hand plays more notes than the left hand (RH: 60, LH: 4)",
-            "This phrase contains 9 distinct pitch classes"
+            "D#5",
+            "D5",
+            "C#5",
+            "E5"
           ],
-          "correctOptionIndex": 2,
+          "correctOptionIndex": 1,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 60, LH: 4)",
+          "goldValue": "D5",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 2,
+            "selectedOptionIndex": 1,
             "correct": true,
             "score": 1
           },
@@ -721,7 +721,7 @@
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 2,
             "correct": false,
             "score": 0
           },
@@ -969,36 +969,36 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 11, which pitch does the right hand play on beat 4.5021?",
           "options": [
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is D3",
-            "The right hand plays more notes than the left hand (RH: 50, LH: 14)",
-            "This phrase contains 11 distinct pitch classes"
+            "G4",
+            "G#4",
+            "F#4",
+            "A4"
           ],
-          "correctOptionIndex": 2,
+          "correctOptionIndex": 0,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 50, LH: 14)",
+          "goldValue": "G4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 2,
+            "selectedOptionIndex": 0,
             "correct": true,
             "score": 1
           },
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 1,
             "correct": false,
             "score": 0
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 1,
             "correct": false,
             "score": 0
           },
@@ -1246,22 +1246,22 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 13, which pitch does the right hand play on beat 4.0021?",
           "options": [
-            "The right hand plays more notes than the left hand (RH: 44, LH: 20)",
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is E3",
-            "This phrase contains 10 distinct pitch classes"
+            "D#5",
+            "D5",
+            "C#5",
+            "E5"
           ],
-          "correctOptionIndex": 0,
+          "correctOptionIndex": 1,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 44, LH: 20)",
+          "goldValue": "D5",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 1,
             "correct": true,
             "score": 1
           },
@@ -1269,13 +1269,13 @@
             "answerer": "text_only",
             "questionType": "annotation_grounding",
             "selectedOptionIndex": 0,
-            "correct": true,
-            "score": 1
+            "correct": false,
+            "score": 0
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 0,
             "correct": false,
             "score": 0
           },
@@ -1284,12 +1284,12 @@
       ],
       "scores": {
         "gold": 1,
-        "text_only": 0.2857142857142857,
+        "text_only": 0.14285714285714285,
         "random_midi": 0.5714285714285714
       },
       "loadBearingScores": {
         "gold": 1,
-        "text_only": 0.25,
+        "text_only": 0,
         "random_midi": 0.25
       }
     },
@@ -1523,16 +1523,16 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 3, which pitch does the right hand play on beat 1.475?",
           "options": [
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is C2",
-            "The right hand plays more notes than the left hand (RH: 20, LH: 13)",
-            "This phrase contains 10 distinct pitch classes"
+            "F#5",
+            "E5",
+            "F5",
+            "G5"
           ],
           "correctOptionIndex": 2,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 20, LH: 13)",
+          "goldValue": "F5",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
@@ -1545,7 +1545,7 @@
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 1,
             "correct": false,
             "score": 0
           },
@@ -1800,36 +1800,36 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 5, which pitch does the right hand play on beat 2.3083?",
           "options": [
-            "The right hand plays more notes than the left hand (RH: 28, LH: 14)",
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is F2",
-            "This phrase contains 11 distinct pitch classes"
+            "D5",
+            "C5",
+            "C#5",
+            "D#5"
           ],
-          "correctOptionIndex": 0,
+          "correctOptionIndex": 2,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 28, LH: 14)",
+          "goldValue": "C#5",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 2,
             "correct": true,
             "score": 1
           },
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 2,
             "correct": true,
             "score": 1
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 0,
             "correct": false,
             "score": 0
           },
@@ -2077,22 +2077,22 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 11, which pitch does the right hand play on beat 1.6583?",
           "options": [
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is A#1",
-            "The right hand plays more notes than the left hand (RH: 28, LH: 11)",
-            "This phrase contains 11 distinct pitch classes"
+            "A#4",
+            "B4",
+            "A4",
+            "C5"
           ],
-          "correctOptionIndex": 2,
+          "correctOptionIndex": 0,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 28, LH: 11)",
+          "goldValue": "A#4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 2,
+            "selectedOptionIndex": 0,
             "correct": true,
             "score": 1
           },
@@ -2100,13 +2100,13 @@
             "answerer": "text_only",
             "questionType": "annotation_grounding",
             "selectedOptionIndex": 0,
-            "correct": false,
-            "score": 0
+            "correct": true,
+            "score": 1
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 1,
             "correct": false,
             "score": 0
           },
@@ -2115,12 +2115,12 @@
       ],
       "scores": {
         "gold": 1,
-        "text_only": 0.2857142857142857,
+        "text_only": 0.42857142857142855,
         "random_midi": 0.42857142857142855
       },
       "loadBearingScores": {
         "gold": 1,
-        "text_only": 0.25,
+        "text_only": 0.5,
         "random_midi": 0
       }
     },
@@ -2354,16 +2354,16 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 16, which pitch does the right hand play on beat 1.5292?",
           "options": [
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is D#2",
-            "This phrase contains 10 distinct pitch classes",
-            "The right hand plays more notes than the left hand (RH: 26, LH: 14)"
+            "D#4",
+            "C#4",
+            "E4",
+            "D4"
           ],
           "correctOptionIndex": 3,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 26, LH: 14)",
+          "goldValue": "D4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
@@ -2376,7 +2376,7 @@
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 2,
             "correct": false,
             "score": 0
           },
@@ -2631,22 +2631,22 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 17, which pitch does the right hand play on beat 3.0333?",
           "options": [
-            "The right hand plays more notes than the left hand (RH: 37, LH: 14)",
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is F2",
-            "This phrase contains 12 distinct pitch classes"
+            "E4",
+            "D#4",
+            "D4",
+            "F4"
           ],
-          "correctOptionIndex": 0,
+          "correctOptionIndex": 1,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 37, LH: 14)",
+          "goldValue": "D#4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 1,
             "correct": true,
             "score": 1
           },
@@ -2654,8 +2654,8 @@
             "answerer": "text_only",
             "questionType": "annotation_grounding",
             "selectedOptionIndex": 0,
-            "correct": true,
-            "score": 1
+            "correct": false,
+            "score": 0
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
@@ -2669,12 +2669,12 @@
       ],
       "scores": {
         "gold": 1,
-        "text_only": 0.42857142857142855,
+        "text_only": 0.2857142857142857,
         "random_midi": 0.42857142857142855
       },
       "loadBearingScores": {
         "gold": 1,
-        "text_only": 0.25,
+        "text_only": 0,
         "random_midi": 0
       }
     },
@@ -2908,16 +2908,16 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 21, which pitch does the right hand play on beat 3.9833?",
           "options": [
-            "The right hand plays more notes than the left hand (RH: 40, LH: 10)",
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is A2",
-            "This phrase contains 13 distinct pitch classes"
+            "F5",
+            "F#5",
+            "E5",
+            "G5"
           ],
           "correctOptionIndex": 0,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 40, LH: 10)",
+          "goldValue": "F5",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
@@ -2930,14 +2930,14 @@
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
-            "correct": true,
-            "score": 1
+            "selectedOptionIndex": 2,
+            "correct": false,
+            "score": 0
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 1,
             "correct": false,
             "score": 0
           },
@@ -2946,12 +2946,12 @@
       ],
       "scores": {
         "gold": 1,
-        "text_only": 0.2857142857142857,
+        "text_only": 0.14285714285714285,
         "random_midi": 0.42857142857142855
       },
       "loadBearingScores": {
         "gold": 1,
-        "text_only": 0.25,
+        "text_only": 0,
         "random_midi": 0
       }
     },
@@ -3185,36 +3185,36 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 2, which pitch does the right hand play on beat 4.0365?",
           "options": [
-            "The left hand plays more notes than the right hand (LH: 17, RH: 11)",
-            "The right hand plays more notes than the left hand",
-            "The highest pitch in this phrase is G3",
-            "This phrase contains 6 distinct pitch classes"
+            "C5",
+            "B4",
+            "A#4",
+            "C#5"
           ],
-          "correctOptionIndex": 0,
+          "correctOptionIndex": 1,
           "midiGrounded": true,
-          "goldValue": "The left hand plays more notes than the right hand (LH: 17, RH: 11)",
+          "goldValue": "B4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 1,
             "correct": true,
             "score": 1
           },
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 1,
             "correct": true,
             "score": 1
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 2,
             "correct": false,
             "score": 0
           },
@@ -3462,36 +3462,36 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 8, which pitch does the right hand play on beat 1.0833?",
           "options": [
-            "The right hand plays more notes than the left hand",
-            "The highest pitch in this phrase is F3",
-            "This phrase contains 10 distinct pitch classes",
-            "The left hand plays more notes than the right hand (LH: 28, RH: 17)"
+            "E4",
+            "D4",
+            "D#4",
+            "F4"
           ],
-          "correctOptionIndex": 3,
+          "correctOptionIndex": 2,
           "midiGrounded": true,
-          "goldValue": "The left hand plays more notes than the right hand (LH: 28, RH: 17)",
+          "goldValue": "D#4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 2,
             "correct": true,
             "score": 1
           },
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 1,
             "correct": false,
             "score": 0
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 3,
             "correct": false,
             "score": 0
           },
@@ -3739,22 +3739,22 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 9, which pitch does the right hand play on beat 1.8176999999999999?",
           "options": [
-            "The left hand plays more notes than the right hand (LH: 24, RH: 16)",
-            "The right hand plays more notes than the left hand",
-            "The highest pitch in this phrase is E3",
-            "This phrase contains 12 distinct pitch classes"
+            "D#4",
+            "C#4",
+            "E4",
+            "D4"
           ],
-          "correctOptionIndex": 0,
+          "correctOptionIndex": 3,
           "midiGrounded": true,
-          "goldValue": "The left hand plays more notes than the right hand (LH: 24, RH: 16)",
+          "goldValue": "D4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 3,
             "correct": true,
             "score": 1
           },
@@ -3762,13 +3762,13 @@
             "answerer": "text_only",
             "questionType": "annotation_grounding",
             "selectedOptionIndex": 0,
-            "correct": true,
-            "score": 1
+            "correct": false,
+            "score": 0
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 0,
             "correct": false,
             "score": 0
           },
@@ -3777,12 +3777,12 @@
       ],
       "scores": {
         "gold": 1,
-        "text_only": 0.5714285714285714,
+        "text_only": 0.42857142857142855,
         "random_midi": 0.42857142857142855
       },
       "loadBearingScores": {
         "gold": 1,
-        "text_only": 0.5,
+        "text_only": 0.25,
         "random_midi": 0
       }
     },
@@ -4016,36 +4016,36 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 16, which pitch does the right hand play on beat 3.1927?",
           "options": [
-            "The right hand plays more notes than the left hand",
-            "The highest pitch in this phrase is D#3",
-            "This phrase contains 9 distinct pitch classes",
-            "The left hand plays more notes than the right hand (LH: 28, RH: 17)"
+            "C4",
+            "C#4",
+            "B3",
+            "D4"
           ],
-          "correctOptionIndex": 3,
+          "correctOptionIndex": 0,
           "midiGrounded": true,
-          "goldValue": "The left hand plays more notes than the right hand (LH: 28, RH: 17)",
+          "goldValue": "C4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 0,
             "correct": true,
             "score": 1
           },
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 3,
             "correct": false,
             "score": 0
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 3,
             "correct": false,
             "score": 0
           },
@@ -4293,22 +4293,22 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 3, which pitch does the right hand play on beat 3.25?",
           "options": [
-            "The left hand plays more notes than the right hand",
-            "The right hand plays more notes than the left hand (RH: 32, LH: 0)",
-            "The highest pitch in this phrase is D#4",
-            "This phrase contains 10 distinct pitch classes"
+            "F5",
+            "F#5",
+            "E5",
+            "G5"
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 0,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 32, LH: 0)",
+          "goldValue": "F5",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 1,
+            "selectedOptionIndex": 0,
             "correct": true,
             "score": 1
           },
@@ -4316,13 +4316,13 @@
             "answerer": "text_only",
             "questionType": "annotation_grounding",
             "selectedOptionIndex": 0,
-            "correct": false,
-            "score": 0
+            "correct": true,
+            "score": 1
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 1,
             "correct": false,
             "score": 0
           },
@@ -4331,12 +4331,12 @@
       ],
       "scores": {
         "gold": 1,
-        "text_only": 0.14285714285714285,
+        "text_only": 0.2857142857142857,
         "random_midi": 0.42857142857142855
       },
       "loadBearingScores": {
         "gold": 1,
-        "text_only": 0,
+        "text_only": 0.25,
         "random_midi": 0
       }
     },
@@ -4570,22 +4570,22 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 5, which pitch does the right hand play on beat 3.5?",
           "options": [
-            "The right hand plays more notes than the left hand (RH: 35, LH: 12)",
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is G#2",
-            "This phrase contains 10 distinct pitch classes"
+            "B4",
+            "A4",
+            "C5",
+            "A#4"
           ],
-          "correctOptionIndex": 0,
+          "correctOptionIndex": 3,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 35, LH: 12)",
+          "goldValue": "A#4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 3,
             "correct": true,
             "score": 1
           },
@@ -4593,13 +4593,13 @@
             "answerer": "text_only",
             "questionType": "annotation_grounding",
             "selectedOptionIndex": 0,
-            "correct": true,
-            "score": 1
+            "correct": false,
+            "score": 0
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 0,
             "correct": false,
             "score": 0
           },
@@ -4608,12 +4608,12 @@
       ],
       "scores": {
         "gold": 1,
-        "text_only": 0.5714285714285714,
+        "text_only": 0.42857142857142855,
         "random_midi": 0.42857142857142855
       },
       "loadBearingScores": {
         "gold": 1,
-        "text_only": 0.75,
+        "text_only": 0.5,
         "random_midi": 0
       }
     },
@@ -4847,36 +4847,36 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 18, which pitch does the right hand play on beat 3.1875?",
           "options": [
-            "The right hand plays more notes than the left hand (RH: 146, LH: 7)",
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is D#1",
-            "This phrase contains 8 distinct pitch classes"
+            "E6",
+            "D#6",
+            "D6",
+            "F6"
           ],
-          "correctOptionIndex": 0,
+          "correctOptionIndex": 1,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 146, LH: 7)",
+          "goldValue": "D#6",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 1,
             "correct": true,
             "score": 1
           },
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
-            "correct": true,
-            "score": 1
+            "selectedOptionIndex": 2,
+            "correct": false,
+            "score": 0
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 2,
             "correct": false,
             "score": 0
           },
@@ -4885,12 +4885,12 @@
       ],
       "scores": {
         "gold": 1,
-        "text_only": 0.2857142857142857,
+        "text_only": 0.14285714285714285,
         "random_midi": 0.42857142857142855
       },
       "loadBearingScores": {
         "gold": 1,
-        "text_only": 0.5,
+        "text_only": 0.25,
         "random_midi": 0
       }
     },
@@ -5124,36 +5124,36 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 20, which pitch does the left hand play on beat 3.5?",
           "options": [
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is G#1",
-            "The right hand plays more notes than the left hand (RH: 100, LH: 34)",
-            "This phrase contains 10 distinct pitch classes"
+            "A3",
+            "G#3",
+            "G3",
+            "A#3"
           ],
-          "correctOptionIndex": 2,
+          "correctOptionIndex": 1,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 100, LH: 34)",
+          "goldValue": "G#3",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 2,
+            "selectedOptionIndex": 1,
             "correct": true,
             "score": 1
           },
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 3,
             "correct": false,
             "score": 0
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 0,
             "correct": false,
             "score": 0
           },
@@ -5401,36 +5401,36 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 2, which pitch does the right hand play on beat 2.3333?",
           "options": [
-            "The right hand plays more notes than the left hand",
-            "The right and left hands play an equal number of notes (25 each)",
-            "The highest pitch in this phrase is B2",
-            "This phrase contains 9 distinct pitch classes"
+            "F4",
+            "D#4",
+            "F#4",
+            "E4"
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 3,
           "midiGrounded": true,
-          "goldValue": "The right and left hands play an equal number of notes (25 each)",
+          "goldValue": "E4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 1,
+            "selectedOptionIndex": 3,
             "correct": true,
             "score": 1
           },
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
-            "correct": false,
-            "score": 0
+            "selectedOptionIndex": 3,
+            "correct": true,
+            "score": 1
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 0,
             "correct": false,
             "score": 0
           },
@@ -5439,12 +5439,12 @@
       ],
       "scores": {
         "gold": 1,
-        "text_only": 0.42857142857142855,
+        "text_only": 0.5714285714285714,
         "random_midi": 0.42857142857142855
       },
       "loadBearingScores": {
         "gold": 1,
-        "text_only": 0.5,
+        "text_only": 0.75,
         "random_midi": 0
       }
     },
@@ -5678,36 +5678,36 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 6, which pitch does the right hand play on beat 3?",
           "options": [
-            "The right hand plays more notes than the left hand",
-            "The left hand plays more notes than the right hand (LH: 39, RH: 24)",
-            "The highest pitch in this phrase is E2",
-            "This phrase contains 9 distinct pitch classes"
+            "G4",
+            "G#4",
+            "F#4",
+            "A4"
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 0,
           "midiGrounded": true,
-          "goldValue": "The left hand plays more notes than the right hand (LH: 39, RH: 24)",
+          "goldValue": "G4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 1,
+            "selectedOptionIndex": 0,
             "correct": true,
             "score": 1
           },
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 1,
             "correct": false,
             "score": 0
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 2,
             "correct": false,
             "score": 0
           },
@@ -5955,16 +5955,16 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 12, which pitch does the right hand play on beat 3?",
           "options": [
-            "The right hand plays more notes than the left hand",
-            "The highest pitch in this phrase is E2",
-            "This phrase contains 9 distinct pitch classes",
-            "The left hand plays more notes than the right hand (LH: 32, RH: 22)"
+            "F4",
+            "D#4",
+            "F#4",
+            "E4"
           ],
           "correctOptionIndex": 3,
           "midiGrounded": true,
-          "goldValue": "The left hand plays more notes than the right hand (LH: 32, RH: 22)",
+          "goldValue": "E4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
@@ -5977,14 +5977,14 @@
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
-            "correct": false,
-            "score": 0
+            "selectedOptionIndex": 3,
+            "correct": true,
+            "score": 1
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 2,
             "correct": false,
             "score": 0
           },
@@ -5993,12 +5993,12 @@
       ],
       "scores": {
         "gold": 1,
-        "text_only": 0.42857142857142855,
+        "text_only": 0.5714285714285714,
         "random_midi": 0.42857142857142855
       },
       "loadBearingScores": {
         "gold": 1,
-        "text_only": 0,
+        "text_only": 0.25,
         "random_midi": 0
       }
     },
@@ -6232,22 +6232,22 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 13, which pitch does the right hand play on beat 4.6667000000000005?",
           "options": [
-            "The left hand plays more notes than the right hand (LH: 30, RH: 21)",
-            "The right hand plays more notes than the left hand",
-            "The highest pitch in this phrase is E2",
-            "This phrase contains 8 distinct pitch classes"
+            "D4",
+            "C4",
+            "C#4",
+            "D#4"
           ],
-          "correctOptionIndex": 0,
+          "correctOptionIndex": 2,
           "midiGrounded": true,
-          "goldValue": "The left hand plays more notes than the right hand (LH: 30, RH: 21)",
+          "goldValue": "C#4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 2,
             "correct": true,
             "score": 1
           },
@@ -6255,13 +6255,13 @@
             "answerer": "text_only",
             "questionType": "annotation_grounding",
             "selectedOptionIndex": 0,
-            "correct": true,
-            "score": 1
+            "correct": false,
+            "score": 0
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 1,
             "correct": false,
             "score": 0
           },
@@ -6270,12 +6270,12 @@
       ],
       "scores": {
         "gold": 1,
-        "text_only": 0.5714285714285714,
+        "text_only": 0.42857142857142855,
         "random_midi": 0.42857142857142855
       },
       "loadBearingScores": {
         "gold": 1,
-        "text_only": 0.75,
+        "text_only": 0.5,
         "random_midi": 0
       }
     },
@@ -6509,36 +6509,36 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 7, which pitch does the right hand play on beat 1?",
           "options": [
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is E2",
-            "This phrase contains 9 distinct pitch classes",
-            "The right hand plays more notes than the left hand (RH: 34, LH: 15)"
+            "A4",
+            "A#4",
+            "G#4",
+            "B4"
           ],
-          "correctOptionIndex": 3,
+          "correctOptionIndex": 0,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 34, LH: 15)",
+          "goldValue": "A4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 0,
             "correct": true,
             "score": 1
           },
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 3,
             "correct": false,
             "score": 0
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 1,
             "correct": false,
             "score": 0
           },
@@ -6786,16 +6786,16 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 12, which pitch does the right hand play on beat 2?",
           "options": [
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is E2",
-            "This phrase contains 9 distinct pitch classes",
-            "The right hand plays more notes than the left hand (RH: 17, LH: 9)"
+            "A4",
+            "G4",
+            "A#4",
+            "G#4"
           ],
           "correctOptionIndex": 3,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 17, LH: 9)",
+          "goldValue": "G#4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
@@ -6808,14 +6808,14 @@
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 1,
             "correct": false,
             "score": 0
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 1,
             "correct": false,
             "score": 0
           },
@@ -7063,16 +7063,16 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 13, which pitch does the right hand play on beat 2?",
           "options": [
-            "The right hand plays more notes than the left hand (RH: 18, LH: 9)",
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is E2",
-            "This phrase contains 9 distinct pitch classes"
+            "E5",
+            "F5",
+            "D#5",
+            "F#5"
           ],
           "correctOptionIndex": 0,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 18, LH: 9)",
+          "goldValue": "E5",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
@@ -7092,7 +7092,7 @@
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 1,
             "correct": false,
             "score": 0
           },
@@ -7340,36 +7340,36 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 3, which pitch does the right hand play on beat 3.5?",
           "options": [
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is B3",
-            "The right hand plays more notes than the left hand (RH: 48, LH: 1)",
-            "This phrase contains 9 distinct pitch classes"
+            "G#4",
+            "F#4",
+            "A4",
+            "G4"
           ],
-          "correctOptionIndex": 2,
+          "correctOptionIndex": 3,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 48, LH: 1)",
+          "goldValue": "G4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 2,
+            "selectedOptionIndex": 3,
             "correct": true,
             "score": 1
           },
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 1,
             "correct": false,
             "score": 0
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 0,
             "correct": false,
             "score": 0
           },
@@ -7617,36 +7617,36 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 8, which pitch does the right hand play on beat 4.25?",
           "options": [
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is C3",
-            "This phrase contains 9 distinct pitch classes",
-            "The right hand plays more notes than the left hand (RH: 66, LH: 9)"
+            "G#4",
+            "F#4",
+            "G4",
+            "A4"
           ],
-          "correctOptionIndex": 3,
+          "correctOptionIndex": 2,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 66, LH: 9)",
+          "goldValue": "G4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 2,
             "correct": true,
             "score": 1
           },
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
-            "correct": false,
-            "score": 0
+            "selectedOptionIndex": 2,
+            "correct": true,
+            "score": 1
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 3,
             "correct": false,
             "score": 0
           },
@@ -7655,12 +7655,12 @@
       ],
       "scores": {
         "gold": 1,
-        "text_only": 0.2857142857142857,
+        "text_only": 0.42857142857142855,
         "random_midi": 0.42857142857142855
       },
       "loadBearingScores": {
         "gold": 1,
-        "text_only": 0,
+        "text_only": 0.25,
         "random_midi": 0
       }
     },
@@ -7894,36 +7894,36 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 10, which pitch does the right hand play on beat 4?",
           "options": [
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is G2",
-            "The right hand plays more notes than the left hand (RH: 44, LH: 25)",
-            "This phrase contains 11 distinct pitch classes"
+            "F#5",
+            "F5",
+            "E5",
+            "G5"
           ],
-          "correctOptionIndex": 2,
+          "correctOptionIndex": 1,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 44, LH: 25)",
+          "goldValue": "F5",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 2,
+            "selectedOptionIndex": 1,
             "correct": true,
             "score": 1
           },
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 3,
             "correct": false,
             "score": 0
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 0,
             "correct": false,
             "score": 0
           },
@@ -8171,16 +8171,16 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 14, which pitch does the right hand play on beat 2.75?",
           "options": [
-            "The left hand plays more notes than the right hand",
-            "The right hand plays more notes than the left hand (RH: 64, LH: 21)",
-            "The highest pitch in this phrase is A3",
-            "This phrase contains 9 distinct pitch classes"
+            "D#4",
+            "D4",
+            "C#4",
+            "E4"
           ],
           "correctOptionIndex": 1,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 64, LH: 21)",
+          "goldValue": "D4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
@@ -8193,14 +8193,14 @@
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 2,
             "correct": false,
             "score": 0
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 2,
             "correct": false,
             "score": 0
           },
@@ -8448,22 +8448,22 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 1, which pitch does the right hand play on beat 4.9979?",
           "options": [
-            "The left hand plays more notes than the right hand (LH: 16, RH: 2)",
-            "The right hand plays more notes than the left hand",
-            "The highest pitch in this phrase is G#2",
-            "This phrase contains 8 distinct pitch classes"
+            "C#4",
+            "B3",
+            "D4",
+            "C4"
           ],
-          "correctOptionIndex": 0,
+          "correctOptionIndex": 3,
           "midiGrounded": true,
-          "goldValue": "The left hand plays more notes than the right hand (LH: 16, RH: 2)",
+          "goldValue": "C4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 3,
             "correct": true,
             "score": 1
           },
@@ -8471,13 +8471,13 @@
             "answerer": "text_only",
             "questionType": "annotation_grounding",
             "selectedOptionIndex": 0,
-            "correct": true,
-            "score": 1
+            "correct": false,
+            "score": 0
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 0,
             "correct": false,
             "score": 0
           },
@@ -8486,12 +8486,12 @@
       ],
       "scores": {
         "gold": 1,
-        "text_only": 0.2857142857142857,
+        "text_only": 0.14285714285714285,
         "random_midi": 0.5714285714285714
       },
       "loadBearingScores": {
         "gold": 1,
-        "text_only": 0.25,
+        "text_only": 0,
         "random_midi": 0.25
       }
     },
@@ -8725,36 +8725,36 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 7, which pitch does the right hand play on beat 2.1063?",
           "options": [
-            "The right hand plays more notes than the left hand",
-            "The highest pitch in this phrase is D#2",
-            "This phrase contains 10 distinct pitch classes",
-            "The left hand plays more notes than the right hand (LH: 22, RH: 8)"
+            "D#4",
+            "C#4",
+            "D4",
+            "E4"
           ],
-          "correctOptionIndex": 3,
+          "correctOptionIndex": 2,
           "midiGrounded": true,
-          "goldValue": "The left hand plays more notes than the right hand (LH: 22, RH: 8)",
+          "goldValue": "D4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 2,
             "correct": true,
             "score": 1
           },
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
-            "correct": false,
-            "score": 0
+            "selectedOptionIndex": 2,
+            "correct": true,
+            "score": 1
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 3,
             "correct": false,
             "score": 0
           },
@@ -8763,12 +8763,12 @@
       ],
       "scores": {
         "gold": 1,
-        "text_only": 0.42857142857142855,
+        "text_only": 0.5714285714285714,
         "random_midi": 0.42857142857142855
       },
       "loadBearingScores": {
         "gold": 1,
-        "text_only": 0.75,
+        "text_only": 1,
         "random_midi": 0
       }
     },
@@ -9002,16 +9002,16 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 9, which pitch does the right hand play on beat 1.8479?",
           "options": [
-            "The left hand plays more notes than the right hand (LH: 22, RH: 5)",
-            "The right hand plays more notes than the left hand",
-            "The highest pitch in this phrase is C#2",
-            "This phrase contains 11 distinct pitch classes"
+            "E4",
+            "F4",
+            "D#4",
+            "F#4"
           ],
           "correctOptionIndex": 0,
           "midiGrounded": true,
-          "goldValue": "The left hand plays more notes than the right hand (LH: 22, RH: 5)",
+          "goldValue": "E4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
@@ -9024,14 +9024,14 @@
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
-            "correct": true,
-            "score": 1
+            "selectedOptionIndex": 1,
+            "correct": false,
+            "score": 0
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 2,
             "correct": false,
             "score": 0
           },
@@ -9040,12 +9040,12 @@
       ],
       "scores": {
         "gold": 1,
-        "text_only": 0.42857142857142855,
+        "text_only": 0.2857142857142857,
         "random_midi": 0.5714285714285714
       },
       "loadBearingScores": {
         "gold": 1,
-        "text_only": 0.25,
+        "text_only": 0,
         "random_midi": 0.25
       }
     },
@@ -9279,29 +9279,29 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 13, which pitch does the right hand play on beat 3.7646?",
           "options": [
-            "The right hand plays more notes than the left hand",
-            "The left hand plays more notes than the right hand (LH: 25, RH: 2)",
-            "The highest pitch in this phrase is G#1",
-            "This phrase contains 9 distinct pitch classes"
+            "D4",
+            "C4",
+            "C#4",
+            "D#4"
           ],
-          "correctOptionIndex": 1,
+          "correctOptionIndex": 2,
           "midiGrounded": true,
-          "goldValue": "The left hand plays more notes than the right hand (LH: 25, RH: 2)",
+          "goldValue": "C#4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 1,
+            "selectedOptionIndex": 2,
             "correct": true,
             "score": 1
           },
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 3,
             "correct": false,
             "score": 0
           },
@@ -9556,31 +9556,31 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 5, which pitch does the right hand play on beat 3?",
           "options": [
-            "The right hand plays more notes than the left hand (RH: 13, LH: 8)",
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is D2",
-            "This phrase contains 8 distinct pitch classes"
+            "A#5",
+            "G#5",
+            "A5",
+            "B5"
           ],
-          "correctOptionIndex": 0,
+          "correctOptionIndex": 2,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 13, LH: 8)",
+          "goldValue": "A5",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 2,
             "correct": true,
             "score": 1
           },
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
-            "correct": true,
-            "score": 1
+            "selectedOptionIndex": 3,
+            "correct": false,
+            "score": 0
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
@@ -9594,12 +9594,12 @@
       ],
       "scores": {
         "gold": 1,
-        "text_only": 0.2857142857142857,
+        "text_only": 0.14285714285714285,
         "random_midi": 0.42857142857142855
       },
       "loadBearingScores": {
         "gold": 1,
-        "text_only": 0.5,
+        "text_only": 0.25,
         "random_midi": 0
       }
     },
@@ -9833,36 +9833,36 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 7, which pitch does the right hand play on beat 1?",
           "options": [
-            "The right hand plays more notes than the left hand (RH: 13, LH: 8)",
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is D2",
-            "This phrase contains 8 distinct pitch classes"
+            "C5",
+            "A#4",
+            "B4",
+            "C#5"
           ],
-          "correctOptionIndex": 0,
+          "correctOptionIndex": 2,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 13, LH: 8)",
+          "goldValue": "B4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 2,
             "correct": true,
             "score": 1
           },
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
-            "correct": true,
-            "score": 1
+            "selectedOptionIndex": 3,
+            "correct": false,
+            "score": 0
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 1,
             "correct": false,
             "score": 0
           },
@@ -9871,12 +9871,12 @@
       ],
       "scores": {
         "gold": 1,
-        "text_only": 0.2857142857142857,
+        "text_only": 0.14285714285714285,
         "random_midi": 0.42857142857142855
       },
       "loadBearingScores": {
         "gold": 1,
-        "text_only": 0.5,
+        "text_only": 0.25,
         "random_midi": 0
       }
     },
@@ -10110,29 +10110,29 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 14, which pitch does the right hand play on beat 3?",
           "options": [
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is D2",
-            "This phrase contains 8 distinct pitch classes",
-            "The right hand plays more notes than the left hand (RH: 13, LH: 8)"
+            "D5",
+            "C#5",
+            "C5",
+            "D#5"
           ],
-          "correctOptionIndex": 3,
+          "correctOptionIndex": 1,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 13, LH: 8)",
+          "goldValue": "C#5",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 1,
             "correct": true,
             "score": 1
           },
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 3,
             "correct": false,
             "score": 0
           },
@@ -10387,36 +10387,36 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 17, which pitch does the right hand play on beat 1?",
           "options": [
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is B1",
-            "The right hand plays more notes than the left hand (RH: 14, LH: 8)",
-            "This phrase contains 8 distinct pitch classes"
+            "C#5",
+            "D5",
+            "C5",
+            "D#5"
           ],
-          "correctOptionIndex": 2,
+          "correctOptionIndex": 0,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 14, LH: 8)",
+          "goldValue": "C#5",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 2,
+            "selectedOptionIndex": 0,
             "correct": true,
             "score": 1
           },
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 3,
             "correct": false,
             "score": 0
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 2,
             "correct": false,
             "score": 0
           },
@@ -10664,29 +10664,29 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 19, which pitch does the right hand play on beat 1?",
           "options": [
-            "The left hand plays more notes than the right hand (LH: 10, RH: 9)",
-            "The right hand plays more notes than the left hand",
-            "The highest pitch in this phrase is A1",
-            "This phrase contains 9 distinct pitch classes"
+            "F4",
+            "D#4",
+            "E4",
+            "F#4"
           ],
-          "correctOptionIndex": 0,
+          "correctOptionIndex": 2,
           "midiGrounded": true,
-          "goldValue": "The left hand plays more notes than the right hand (LH: 10, RH: 9)",
+          "goldValue": "E4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 2,
             "correct": true,
             "score": 1
           },
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 2,
             "correct": true,
             "score": 1
           },
@@ -10941,16 +10941,16 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 26, which pitch does the right hand play on beat 2?",
           "options": [
-            "The right hand plays more notes than the left hand",
-            "The highest pitch in this phrase is D2",
-            "This phrase contains 9 distinct pitch classes",
-            "The left hand plays more notes than the right hand (LH: 15, RH: 12)"
+            "D#4",
+            "C#4",
+            "E4",
+            "D4"
           ],
           "correctOptionIndex": 3,
           "midiGrounded": true,
-          "goldValue": "The left hand plays more notes than the right hand (LH: 15, RH: 12)",
+          "goldValue": "D4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
@@ -11218,36 +11218,36 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 1, which pitch does the right hand play on beat 3.25?",
           "options": [
-            "The right hand plays more notes than the left hand (RH: 11, LH: 6)",
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is F2",
-            "This phrase contains 8 distinct pitch classes"
+            "C#4",
+            "B3",
+            "D4",
+            "C4"
           ],
-          "correctOptionIndex": 0,
+          "correctOptionIndex": 3,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 11, LH: 6)",
+          "goldValue": "C4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 3,
             "correct": true,
             "score": 1
           },
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
-            "correct": true,
-            "score": 1
+            "selectedOptionIndex": 1,
+            "correct": false,
+            "score": 0
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 0,
             "correct": false,
             "score": 0
           },
@@ -11256,12 +11256,12 @@
       ],
       "scores": {
         "gold": 1,
-        "text_only": 0.5714285714285714,
+        "text_only": 0.42857142857142855,
         "random_midi": 0.42857142857142855
       },
       "loadBearingScores": {
         "gold": 1,
-        "text_only": 0.5,
+        "text_only": 0.25,
         "random_midi": 0
       }
     },
@@ -11495,16 +11495,16 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 5, which pitch does the right hand play on beat 4.7707999999999995?",
           "options": [
-            "The right hand plays more notes than the left hand (RH: 24, LH: 18)",
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is A2",
-            "This phrase contains 9 distinct pitch classes"
+            "F4",
+            "F#4",
+            "E4",
+            "G4"
           ],
           "correctOptionIndex": 0,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 24, LH: 18)",
+          "goldValue": "F4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
@@ -11524,7 +11524,7 @@
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 1,
             "correct": false,
             "score": 0
           },
@@ -11772,22 +11772,22 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 11, which pitch does the right hand play on beat 2.5208?",
           "options": [
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is F2",
-            "The right hand plays more notes than the left hand (RH: 13, LH: 8)",
-            "This phrase contains 8 distinct pitch classes"
+            "C#5",
+            "B4",
+            "D5",
+            "C5"
           ],
-          "correctOptionIndex": 2,
+          "correctOptionIndex": 3,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 13, LH: 8)",
+          "goldValue": "C5",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 2,
+            "selectedOptionIndex": 3,
             "correct": true,
             "score": 1
           },
@@ -11801,7 +11801,7 @@
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 0,
             "correct": false,
             "score": 0
           },
@@ -12049,16 +12049,16 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 16, which pitch does the right hand play on beat 1.5417?",
           "options": [
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is G2",
-            "This phrase contains 13 distinct pitch classes",
-            "The right hand plays more notes than the left hand (RH: 26, LH: 13)"
+            "F4",
+            "D#4",
+            "F#4",
+            "E4"
           ],
           "correctOptionIndex": 3,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 26, LH: 13)",
+          "goldValue": "E4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
@@ -12071,14 +12071,14 @@
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 2,
             "correct": false,
             "score": 0
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
+            "selectedOptionIndex": 2,
             "correct": false,
             "score": 0
           },
@@ -12326,22 +12326,22 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 19, which pitch does the right hand play on beat 2.7188?",
           "options": [
-            "The left hand plays more notes than the right hand",
-            "The highest pitch in this phrase is F2",
-            "The right hand plays more notes than the left hand (RH: 18, LH: 9)",
-            "This phrase contains 8 distinct pitch classes"
+            "F4",
+            "F#4",
+            "E4",
+            "G4"
           ],
-          "correctOptionIndex": 2,
+          "correctOptionIndex": 0,
           "midiGrounded": true,
-          "goldValue": "The right hand plays more notes than the left hand (RH: 18, LH: 9)",
+          "goldValue": "F4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
             "answerer": "gold",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 2,
+            "selectedOptionIndex": 0,
             "correct": true,
             "score": 1
           },
@@ -12349,13 +12349,13 @@
             "answerer": "text_only",
             "questionType": "annotation_grounding",
             "selectedOptionIndex": 0,
-            "correct": false,
-            "score": 0
+            "correct": true,
+            "score": 1
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 2,
             "correct": false,
             "score": 0
           },
@@ -12364,12 +12364,12 @@
       ],
       "scores": {
         "gold": 1,
-        "text_only": 0.42857142857142855,
+        "text_only": 0.5714285714285714,
         "random_midi": 0.42857142857142855
       },
       "loadBearingScores": {
         "gold": 1,
-        "text_only": 0,
+        "text_only": 0.25,
         "random_midi": 0
       }
     },
@@ -12603,16 +12603,16 @@
         },
         {
           "questionType": "annotation_grounding",
-          "questionText": "Which of the following statements about this phrase is supported by the MIDI data?",
+          "questionText": "In measure 23, which pitch does the right hand play on beat 1.2292?",
           "options": [
-            "The right hand plays more notes than the left hand",
-            "The highest pitch in this phrase is F2",
-            "The left hand plays more notes than the right hand (LH: 21, RH: 19)",
-            "This phrase contains 9 distinct pitch classes"
+            "G#4",
+            "F#4",
+            "G4",
+            "A4"
           ],
           "correctOptionIndex": 2,
           "midiGrounded": true,
-          "goldValue": "The left hand plays more notes than the right hand (LH: 21, RH: 19)",
+          "goldValue": "G4",
           "not_computable": false,
           "not_computable_reason": null,
           "goldAnswer": {
@@ -12625,14 +12625,14 @@
           "textOnlyAnswer": {
             "answerer": "text_only",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 0,
-            "correct": false,
-            "score": 0
+            "selectedOptionIndex": 2,
+            "correct": true,
+            "score": 1
           },
           "randomMidiAnswer": {
             "answerer": "random_midi",
             "questionType": "annotation_grounding",
-            "selectedOptionIndex": 3,
+            "selectedOptionIndex": 0,
             "correct": false,
             "score": 0
           },
@@ -12641,12 +12641,12 @@
       ],
       "scores": {
         "gold": 1,
-        "text_only": 0.14285714285714285,
+        "text_only": 0.2857142857142857,
         "random_midi": 0.5714285714285714
       },
       "loadBearingScores": {
         "gold": 1,
-        "text_only": 0,
+        "text_only": 0.25,
         "random_midi": 0.25
       }
     }
@@ -12724,24 +12724,24 @@
       "computedCount": 45,
       "notComputedCount": 0,
       "goldMean": 1,
-      "textOnlyMean": 0.37777777777777777,
+      "textOnlyMean": 0.28888888888888886,
       "randomMidiMean": 0,
-      "goldMinusTextOnly": 0.6222222222222222,
+      "goldMinusTextOnly": 0.7111111111111111,
       "goldMinusRandomMidi": 1
     }
   ],
   "overallAggregate": {
     "goldMean": 1,
-    "textOnlyMean": 0.31746031746031744,
+    "textOnlyMean": 0.3047619047619048,
     "randomMidiMean": 0.45396825396825397,
-    "goldMinusTextOnly": 0.6825396825396826,
+    "goldMinusTextOnly": 0.6952380952380952,
     "goldMinusRandomMidi": 0.5460317460317461
   },
   "loadBearingAggregate": {
     "goldMean": 1,
-    "textOnlyMean": 0.2833333333333333,
+    "textOnlyMean": 0.2611111111111111,
     "randomMidiMean": 0.044444444444444446,
-    "goldMinusTextOnly": 0.7166666666666667,
+    "goldMinusTextOnly": 0.7388888888888889,
     "goldMinusRandomMidi": 0.9555555555555556
   },
   "hardGates": {
