@@ -30,6 +30,7 @@ import {
   runE1ForRecord,
   runE2ForPair,
   runE3Question,
+  isNoteEmptyRemi,
   E1_GOLD_PASS_RATE_THRESHOLD,
   E2_GROOVE_THRESHOLD,
   E3_MARGIN_THRESHOLD,
@@ -1064,6 +1065,258 @@ describe("backend dispatching via LlmBackend interface", () => {
     );
     expect(result.meta.backend).toBe("anthropic");
     expect(result.meta.costUsd).toBeGreaterThan(0);
+  });
+});
+
+// ─── Slice 9d: isNoteEmptyRemi ────────────────────────────────────────────────
+
+describe("isNoteEmptyRemi", () => {
+  it("returns true for empty token array", () => {
+    expect(isNoteEmptyRemi([])).toBe(true);
+  });
+
+  it("returns true when only Bar/Position/Velocity/Duration tokens present", () => {
+    expect(isNoteEmptyRemi([
+      "Bar_1", "Position_0", "Velocity_64", "Duration_4",
+      "Bar_2", "Position_0", "Velocity_60", "Duration_4",
+    ])).toBe(true);
+  });
+
+  it("returns false when at least one Pitch_* token present", () => {
+    expect(isNoteEmptyRemi([
+      "Bar_1", "Position_0", "Pitch_60", "Velocity_64", "Duration_4",
+    ])).toBe(false);
+  });
+
+  it("returns false when multiple Pitch_* tokens present", () => {
+    expect(isNoteEmptyRemi([
+      "Bar_1", "Position_0", "Pitch_60", "Velocity_64", "Duration_4",
+      "Position_24", "Pitch_64", "Velocity_62", "Duration_4",
+    ])).toBe(false);
+  });
+
+  it("returns true for Bar-only token list (no Position or others)", () => {
+    expect(isNoteEmptyRemi(["Bar_1", "Bar_2", "Bar_3"])).toBe(true);
+  });
+
+  it("is case-sensitive — Pitch_ prefix must match exactly", () => {
+    // pitch_ (lowercase) should NOT match
+    expect(isNoteEmptyRemi(["Bar_1", "pitch_60"])).toBe(true);
+    // PITCH_60 (uppercase) should NOT match
+    expect(isNoteEmptyRemi(["Bar_1", "PITCH_60"])).toBe(true);
+  });
+
+  it("does not false-match tokens that contain 'Pitch' in non-prefix position", () => {
+    // A token like "NotPitch_60" should not count as a Pitch_* token
+    expect(isNoteEmptyRemi(["Bar_1", "NotPitch_60"])).toBe(true);
+  });
+
+  it("returns false for a single Pitch token with no other tokens", () => {
+    expect(isNoteEmptyRemi(["Pitch_60"])).toBe(false);
+  });
+});
+
+// ─── Slice 9d: FM-4 retry loop in runE2ForPair ────────────────────────────────
+
+describe("runE2ForPair — Slice 9d retry loop", () => {
+  // Helper: make a backend with raw text support that returns note-empty REMI
+  function makeNoteEmptyBackend(retryTokens?: string[]): LlmBackend & { lastRawText(): string | null } {
+    let callCount = 0;
+    const noteEmptyJson = JSON.stringify({
+      tokens_remi: ["Bar_1", "Position_0", "Velocity_64", "Duration_4",
+                    "Bar_2", "Position_0", "Velocity_60", "Duration_8"],
+      tokens_abc: "X:1\nM:9/8\nL:1/8\nK:Db\n|(no notes)|",
+    });
+    const notesPresentJson = retryTokens
+      ? JSON.stringify({
+          tokens_remi: retryTokens,
+          tokens_abc: "X:1\nM:9/8\nL:1/8\nK:Db\n|F3 G3 A3|",
+        })
+      : null;
+
+    let rawText = noteEmptyJson;
+    return {
+      name: "mock",
+      model: "mock-model",
+      callWithTools: async () => ({ toolCalls: [], rawText: null }),
+      callStructured: async () => {
+        callCount++;
+        if (callCount === 1) {
+          rawText = noteEmptyJson;
+        } else {
+          rawText = notesPresentJson ?? noteEmptyJson;
+        }
+        return {} as unknown; // raw text path is used
+      },
+      callPlain: async () => "",
+      lastCallMetadata: () => ({
+        promptTokens: 100,
+        completionTokens: 50,
+        latencyMs: 100,
+        costEstimate: 0,
+      }),
+      lastRawText: () => rawText,
+    };
+  }
+
+  it("does NOT retry when first pass produces note-present REMI", async () => {
+    const notesPresentJson = JSON.stringify({
+      tokens_remi: ["Bar_1", "Position_0", "Pitch_63", "Velocity_32", "Duration_16"],
+      tokens_abc: "X:1\nM:9/8\nL:1/8\nK:Db\n|D3 E3 F3|",
+    });
+    let callCount = 0;
+    const backend: LlmBackend & { lastRawText(): string | null } = {
+      name: "mock",
+      model: "mock-model",
+      callWithTools: async () => ({ toolCalls: [], rawText: null }),
+      callStructured: async () => { callCount++; return {} as unknown; },
+      callPlain: async () => "",
+      lastCallMetadata: () => ({ promptTokens: 100, completionTokens: 50, latencyMs: 100, costEstimate: 0 }),
+      lastRawText: () => notesPresentJson,
+    };
+
+    const result = await runE2ForPair(
+      FIXTURE_PROMPT_RECORD, FIXTURE_TARGET_PAIR_RECORD, backend, 0,
+    );
+    expect(result.firstPassNoteEmpty).toBe(false);
+    expect(result.retryFired).toBe(false);
+    expect(callCount).toBe(1); // only one call made
+  });
+
+  it("fires retry when first pass is note-empty (FM-4)", async () => {
+    // Retry also note-empty (worst case — both fail)
+    let callCount = 0;
+    const noteEmptyJson = JSON.stringify({
+      tokens_remi: ["Bar_1", "Position_0", "Velocity_64", "Duration_4"],
+      tokens_abc: "X:1\nM:9/8\nL:1/8\nK:Db\n|(empty)|",
+    });
+    const backend: LlmBackend & { lastRawText(): string | null } = {
+      name: "mock",
+      model: "mock-model",
+      callWithTools: async () => ({ toolCalls: [], rawText: null }),
+      callStructured: async () => { callCount++; return {} as unknown; },
+      callPlain: async () => "",
+      lastCallMetadata: () => ({ promptTokens: 100, completionTokens: 50, latencyMs: 100, costEstimate: 0 }),
+      lastRawText: () => noteEmptyJson,
+    };
+
+    const result = await runE2ForPair(
+      FIXTURE_PROMPT_RECORD, FIXTURE_TARGET_PAIR_RECORD, backend, 0,
+    );
+    expect(result.firstPassNoteEmpty).toBe(true);
+    expect(result.retryFired).toBe(true);
+    expect(callCount).toBe(2); // first pass + one retry
+  });
+
+  it("retry rescues FM-4 when retry produces note-present REMI", async () => {
+    const retryTokens = [
+      "Bar_1", "Position_0", "Pitch_63", "Velocity_32", "Duration_16",
+      "Bar_2", "Position_0", "Pitch_66", "Velocity_36", "Duration_16",
+      "Bar_3", "Position_0", "Pitch_65", "Velocity_33", "Duration_16",
+      "Bar_4", "Position_0", "Pitch_68", "Velocity_39", "Duration_16",
+    ];
+    const backend = makeNoteEmptyBackend(retryTokens);
+
+    const result = await runE2ForPair(
+      FIXTURE_PROMPT_RECORD, FIXTURE_TARGET_PAIR_RECORD, backend, 0,
+    );
+    expect(result.firstPassNoteEmpty).toBe(true);
+    expect(result.retryFired).toBe(true);
+    expect(result.retryPassNoteEmpty).toBe(false);
+    // After retry rescue, parsedOutput should have Pitch tokens
+    expect(result.parsedOutput).not.toBeNull();
+    expect(result.parsedOutput!.tokens_remi.some((t) => t.startsWith("Pitch_"))).toBe(true);
+  });
+
+  it("retry does NOT fire on parse failure (unrecoverable status)", async () => {
+    // Backend throws hard → unrecoverable, no retry
+    const backend = makeMockBackend({ shouldThrow: new Error("backend crash") });
+
+    const result = await runE2ForPair(
+      FIXTURE_PROMPT_RECORD, FIXTURE_TARGET_PAIR_RECORD, backend, 0,
+    );
+    expect(result.passed).toBe(false);
+    expect(result.meta.parseStatus).toBe("unrecoverable");
+    // retryFired should be absent/false — parse failures are not retried
+    expect(result.retryFired).toBeFalsy();
+  });
+
+  it("retry does NOT fire on low grooveOA (music quality failure)", async () => {
+    // Return valid REMI with Pitch tokens but the groove score will be low —
+    // since the mock target record has specific events, groove may be <0.797.
+    // Regardless of groove score, retryFired must be false when notes are present.
+    const notesPresentJson = JSON.stringify({
+      tokens_remi: [
+        "Bar_1", "Position_0", "Pitch_0", "Velocity_1", "Duration_1",
+      ],
+      tokens_abc: "X:1\nM:9/8\nL:1/8\nK:Db\n|C|",
+    });
+    let callCount = 0;
+    const backend: LlmBackend & { lastRawText(): string | null } = {
+      name: "mock",
+      model: "mock-model",
+      callWithTools: async () => ({ toolCalls: [], rawText: null }),
+      callStructured: async () => { callCount++; return {} as unknown; },
+      callPlain: async () => "",
+      lastCallMetadata: () => ({ promptTokens: 100, completionTokens: 50, latencyMs: 100, costEstimate: 0 }),
+      lastRawText: () => notesPresentJson,
+    };
+
+    const result = await runE2ForPair(
+      FIXTURE_PROMPT_RECORD, FIXTURE_TARGET_PAIR_RECORD, backend, 0,
+    );
+    // Notes ARE present → no retry regardless of grooveOA
+    expect(result.firstPassNoteEmpty).toBe(false);
+    expect(result.retryFired).toBe(false);
+    expect(callCount).toBe(1); // only one call
+  });
+
+  it("retry max-attempts cap: only 1 retry fires even when it also fails", async () => {
+    let callCount = 0;
+    const noteEmptyJson = JSON.stringify({
+      tokens_remi: ["Bar_1", "Position_0", "Velocity_64", "Duration_4"],
+      tokens_abc: "X:1\nM:9/8\nL:1/8\nK:Db\n|(empty)|",
+    });
+    const backend: LlmBackend & { lastRawText(): string | null } = {
+      name: "mock",
+      model: "mock-model",
+      callWithTools: async () => ({ toolCalls: [], rawText: null }),
+      callStructured: async () => { callCount++; return {} as unknown; },
+      callPlain: async () => "",
+      lastCallMetadata: () => ({ promptTokens: 100, completionTokens: 50, latencyMs: 100, costEstimate: 0 }),
+      lastRawText: () => noteEmptyJson,
+    };
+
+    const result = await runE2ForPair(
+      FIXTURE_PROMPT_RECORD, FIXTURE_TARGET_PAIR_RECORD, backend, 0,
+    );
+    // Exactly 2 total calls: first pass + one retry (max-1 cap enforced)
+    expect(callCount).toBe(2);
+    expect(result.retryFired).toBe(true);
+    expect(result.retryPassNoteEmpty).toBe(true);
+    expect(result.passed).toBe(false);
+  });
+
+  it("retryFired=false and retryPassNoteEmpty=false when no retry needed", async () => {
+    const notesPresentJson = JSON.stringify({
+      tokens_remi: ["Bar_1", "Position_0", "Pitch_65", "Velocity_36", "Duration_16"],
+      tokens_abc: "X:1\nM:9/8\nL:1/8\nK:Db\n|F3|",
+    });
+    const backend: LlmBackend & { lastRawText(): string | null } = {
+      name: "mock",
+      model: "mock-model",
+      callWithTools: async () => ({ toolCalls: [], rawText: null }),
+      callStructured: async () => ({}),
+      callPlain: async () => "",
+      lastCallMetadata: () => ({ promptTokens: 100, completionTokens: 50, latencyMs: 100, costEstimate: 0 }),
+      lastRawText: () => notesPresentJson,
+    };
+
+    const result = await runE2ForPair(
+      FIXTURE_PROMPT_RECORD, FIXTURE_TARGET_PAIR_RECORD, backend, 0,
+    );
+    expect(result.retryFired).toBe(false);
+    expect(result.retryPassNoteEmpty).toBe(false);
   });
 });
 

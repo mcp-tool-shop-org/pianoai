@@ -297,18 +297,33 @@ export function checkE1Pass(runs: E1RunResult[]): boolean {
 
 // ─── E2: Phrase continuation prompt builder ───────────────────────────────────
 
-// ─── Slice 9a: Hardened E2 system prompt ─────────────────────────────────────
+// ─── Slice 9a + 9d: Hardened E2 system prompt ─────────────────────────────────
 //
-// Changes from Slice 7.5 (addressing Slice 8.5 dominant failure modes):
-//
+// Slice 9a changes (addressing FM-1 through FM-6 from Slice 8.5):
 //   FM-1 (token-as-string-in-array): Added explicit "each token = one element"
 //   FM-2 (thinking-block bleed): Added "No thinking blocks"
 //   FM-3/FM-4 (empty/invalid REMI): Added explicit vocab + example
 //   FM-5 (markdown fences): Added "No markdown code fences"
 //   FM-6 (prose before/after): Added "No explanation text"
 //
-// One-shot example of valid output format is included to demonstrate the
-// expected JSON shape. Uses a simple 2-note sequence for clarity.
+// Slice 9d additions (targeting FM-4: note-empty REMI — valid JSON with no
+// Pitch_* tokens). Three general-principle tactics applied in order:
+//
+//   Tactic 1 — Explicit minimum-note-token requirement:
+//     Added "MUST include at least one Pitch_* token per bar" to critical rules.
+//
+//   Tactic 2 — One-shot example of valid 3-bar continuation:
+//     Expanded the example from 1-note to 3 bars showing canonical interleaving
+//     of Bar_*, Position_*, Pitch_*, Velocity_*, Duration_* tokens. Makes the
+//     requirement concrete rather than declarative-only.
+//
+//   Tactic 3 — Self-check instruction:
+//     Added explicit "Before output, verify..." self-check instruction.
+//     Engages the model's instruction-following to check its own output.
+//
+// These tactics are general principles (minimum-token requirement, exemplar,
+// self-check) — not qwen2.5:7b-specific quirks. Per Slice 8 doctrine: do not
+// over-tune the prompt to the specific model being tested.
 //
 // Ollama format:"json" is still used (set in callStructured). This prompt
 // adds guardrails for cases where format:"json" is not strict enough.
@@ -319,8 +334,8 @@ const E2_SYSTEM_TEXT =
   "Given the REMI token sequence and metadata for a prompt phrase, " +
   "output the continuation phrase as valid JSON with this exact schema:\n\n" +
   "{\n" +
-  '  "tokens_remi": ["Bar_1", "Position_0", "Pitch_60", "Velocity_64", "Duration_4"],\n' +
-  '  "tokens_abc": "X:1\\nT:test\\nM:4/4\\nL:1/8\\nK:C\\n|CDEF|"\n' +
+  '  "tokens_remi": [...],\n' +
+  '  "tokens_abc": "X:1\\nT:...\\nM:...\\nL:1/8\\nK:...\\n|...|"\n' +
   "}\n\n" +
   "REMI token vocabulary (the ONLY valid token formats):\n" +
   "  Bar_N       — bar marker (e.g. Bar_1, Bar_2, ...)\n" +
@@ -328,6 +343,19 @@ const E2_SYSTEM_TEXT =
   "  Pitch_N     — MIDI pitch 0-127 (e.g. Pitch_60 for middle C)\n" +
   "  Velocity_N  — velocity 0-124 in steps of 4 (e.g. Velocity_64)\n" +
   "  Duration_N  — duration in 1/16th note units (e.g. Duration_4 = quarter note)\n\n" +
+  "ONE-SHOT EXAMPLE — valid 3-bar continuation in C major, 4/4, quarter-note melody:\n" +
+  '{"tokens_remi": [\n' +
+  '  "Bar_1", "Position_0", "Pitch_60", "Velocity_64", "Duration_4",\n' +
+  '  "Position_24", "Pitch_62", "Velocity_60", "Duration_4",\n' +
+  '  "Position_48", "Pitch_64", "Velocity_62", "Duration_4",\n' +
+  '  "Position_72", "Pitch_65", "Velocity_58", "Duration_4",\n' +
+  '  "Bar_2", "Position_0", "Pitch_67", "Velocity_64", "Duration_8",\n' +
+  '  "Position_48", "Pitch_65", "Velocity_60", "Duration_4",\n' +
+  '  "Position_72", "Pitch_64", "Velocity_58", "Duration_4",\n' +
+  '  "Bar_3", "Position_0", "Pitch_62", "Velocity_64", "Duration_8",\n' +
+  '  "Position_48", "Pitch_60", "Velocity_62", "Duration_16"\n' +
+  '], "tokens_abc": "X:1\\nT:Example\\nM:4/4\\nL:1/8\\nK:C\\n|CDEF|G2 FE|D2 C4|"}\n\n' +
+  "Notice: every bar (Bar_1, Bar_2, Bar_3) has at least one Pitch_N token.\n\n" +
   "CRITICAL RULES:\n" +
   "- Output ONLY valid JSON. Nothing else.\n" +
   "- No markdown code fences (no ```json or ```).\n" +
@@ -338,6 +366,10 @@ const E2_SYSTEM_TEXT =
   "  RIGHT: {\"tokens_remi\": [\"Bar_1\", \"Position_0\", \"Pitch_60\"]}\n" +
   "- Each token must use ONLY the 5 valid prefixes above. No Note_On_, Note_Off_, BPM_, etc.\n" +
   "- Include multiple measures (at least 4 bars of tokens) matching the specified window.\n" +
+  "- Your continuation MUST include at least one Pitch_N token per bar. " +
+  "  A bar with only Bar_N, Position_N, Velocity_N, or Duration_N but no Pitch_N is INVALID.\n" +
+  "- Before your final output, verify: does every bar in your continuation contain " +
+  "  at least one Pitch_N token? If not, add the missing Pitch_N tokens before outputting.\n" +
   "- The continuation must match the musical style, key, tempo, and rhythmic patterns of the prompt.";
 
 /** JSON schema for E2 structured output (backend-agnostic). */
@@ -390,6 +422,25 @@ export function buildE2UserPrompt(promptRecord: PairRecord): string {
   );
 }
 
+// ─── E2: Note-presence check (FM-4 detector) ─────────────────────────────────
+//
+// FM-4: note-empty REMI — valid JSON with correct token structure but no
+// Pitch_* tokens (the model emits Bar/Position/Velocity/Duration but omits
+// actual note events). Parse succeeds, grooveOA returns null because
+// synthTimedEventsFromRemi produces an empty event array.
+//
+// This check is used by the retry loop to distinguish FM-4 from other failures.
+// It must NOT be used to relax parse stringency — a note-empty output is still
+// considered parseable (status=clean or recovered); the retry fires on top.
+
+/**
+ * Returns true if a tokens_remi array contains no Pitch_* tokens.
+ * An empty array is also considered note-empty.
+ */
+export function isNoteEmptyRemi(tokens: string[]): boolean {
+  return !tokens.some((t) => t.startsWith("Pitch_"));
+}
+
 // ─── E2 output parser ─────────────────────────────────────────────────────────
 
 export interface E2ParsedOutput {
@@ -423,6 +474,13 @@ export interface E2RunResult {
   passed: boolean;
   // Slice 9a: tolerant parser result (always present for E2 runs from Slice 9a+)
   parseResult?: ParseResult;
+  // Slice 9d: retry tracking (note-empty retry)
+  // firstPassNoteEmpty — true if first call produced FM-4 (valid parse, no Pitch tokens)
+  // retryFired        — true if FM-4 retry was attempted
+  // retryPassNoteEmpty — true if retry also produced FM-4 (retry failed to fix it)
+  firstPassNoteEmpty?: boolean;
+  retryFired?: boolean;
+  retryPassNoteEmpty?: boolean;
 }
 
 /** Type guard: backend with lastRawText() capability (OllamaBackend, OllamaInternBackend). */
@@ -558,10 +616,124 @@ export async function runE2ForPair(
       grooveOA: null,
       passed: false,
       parseResult,
+      firstPassNoteEmpty: false,
+      retryFired: false,
     };
   }
 
-  // Parser succeeded (clean or recovered) — score the music
+  // ─── Slice 9d: FM-4 note-empty retry ──────────────────────────────────────
+  //
+  // If the parsed output contains no Pitch_* tokens (FM-4), fire a single
+  // retry with explicit feedback. This fires ONLY on note-empty REMI:
+  //   - NOT on parse failures (handled above — unrecoverable)
+  //   - NOT on low-grooveOA (that's a music quality failure; not retryable here)
+  //   - Max 1 retry — no second-level retries.
+  //
+  // Retry tracking is always written to the run result so first-pass vs
+  // retry-pass rates can be reported separately in the results JSON and report.
+  // ─────────────────────────────────────────────────────────────────────────
+
+  const firstPassNoteEmpty = isNoteEmptyRemi(parseResult.tokens_remi);
+  let retryFired = false;
+  let retryPassNoteEmpty = false;
+
+  if (firstPassNoteEmpty) {
+    retryFired = true;
+
+    const retryFeedback =
+      "Your previous continuation contained no Pitch_N tokens — it was musically empty. " +
+      "Every bar MUST contain at least one Pitch_N token (e.g. Pitch_60, Pitch_64, Pitch_67). " +
+      "A continuation with only Bar_N, Position_N, Velocity_N, or Duration_N tokens " +
+      "produces silence and is invalid. Please produce a new continuation where " +
+      "every bar has at least one Pitch_N token.";
+
+    let retryStructuredOutput: unknown = null;
+    let retryParseError: string | null = null;
+    try {
+      retryStructuredOutput = await backend.callStructured<unknown>({
+        systemPrompt: E2_SYSTEM_TEXT,
+        userMessage: `${buildE2UserPrompt(promptRecord as unknown as PairRecord)}\n\n${retryFeedback}`,
+        outputSchema: E2_OUTPUT_SCHEMA,
+      });
+    } catch (err) {
+      retryParseError = String(err);
+    }
+
+    const retryCallMeta = backend.lastCallMetadata();
+
+    let retryRawText: string | null = null;
+    if (hasLastRawText(backend)) {
+      retryRawText = backend.lastRawText();
+    }
+
+    let retryParseResult: ParseResult;
+    if (retryRawText !== null) {
+      retryParseResult = parseRemiOutput(retryRawText);
+    } else if (retryStructuredOutput !== null) {
+      const legacyRetryParsed = parseE2Output(retryStructuredOutput);
+      if (legacyRetryParsed) {
+        retryParseResult = {
+          status: "clean",
+          tokens_remi: legacyRetryParsed.tokens_remi,
+          tokens_abc: legacyRetryParsed.tokens_abc,
+        };
+      } else {
+        retryParseResult = {
+          status: "unrecoverable",
+          tokens_remi: [],
+          tokens_abc: "",
+          reason: retryParseError ?? "retry: no parseable output",
+        };
+      }
+    } else {
+      retryParseResult = {
+        status: "unrecoverable",
+        tokens_remi: [],
+        tokens_abc: "",
+        reason: retryParseError ?? "retry: no output from backend",
+      };
+    }
+
+    // If retry also produced unrecoverable or note-empty → mark and fall
+    // through with first-pass result (which is note-empty, i.e. grooveOA=null).
+    // If retry succeeded → replace parseResult with retry output for scoring.
+    if (
+      retryParseResult.status !== "unrecoverable" &&
+      !isNoteEmptyRemi(retryParseResult.tokens_remi)
+    ) {
+      // Retry rescued FM-4 — use retry output for groove scoring
+      parseResult = retryParseResult;
+      // Update baseMeta tokens to include retry latency (accumulated)
+      baseMeta.latencyMs += retryCallMeta.latencyMs;
+      baseMeta.promptTokens += retryCallMeta.promptTokens;
+      baseMeta.completionTokens += retryCallMeta.completionTokens;
+      retryPassNoteEmpty = false;
+    } else {
+      retryPassNoteEmpty = true;
+      // Retry did not rescue FM-4 — parseResult stays note-empty/unrecoverable.
+      // Return the first-pass result as the final result (both passes failed).
+      const finalMeta: RunMeta = {
+        ...baseMeta,
+        latencyMs: baseMeta.latencyMs + retryCallMeta.latencyMs,
+        promptTokens: baseMeta.promptTokens + retryCallMeta.promptTokens,
+        completionTokens: baseMeta.completionTokens + retryCallMeta.completionTokens,
+      };
+      return {
+        run: runIndex + 1,
+        meta: finalMeta,
+        parsedOutput: null,
+        pairResult: null,
+        grooveOA: null,
+        passed: false,
+        parseResult,
+        firstPassNoteEmpty: true,
+        retryFired: true,
+        retryPassNoteEmpty: true,
+      };
+    }
+  }
+
+  // Parser succeeded (clean or recovered, and notes present) — score the music
   const parsed: E2ParsedOutput = {
     tokens_remi: parseResult.tokens_remi,
     tokens_abc: parseResult.tokens_abc,
@@ -603,6 +775,9 @@ export async function runE2ForPair(
     grooveOA,
     passed: grooveOA !== null && grooveOA >= E2_GROOVE_THRESHOLD,
     parseResult,
+    firstPassNoteEmpty,
+    retryFired,
+    retryPassNoteEmpty: retryFired ? retryPassNoteEmpty : false,
   };
 }
 

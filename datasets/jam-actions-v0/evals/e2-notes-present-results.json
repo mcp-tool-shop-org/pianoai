@@ -1,0 +1,270 @@
+{
+  "schema_version": "e2-notes-present/1.0.0",
+  "slice": "9d",
+  "slice_description": "E2 Notes-Present Prompt Hardening — Slice 9d",
+  "generated_at": "2026-05-17T03:57:06.249Z",
+  "backend": "ollama",
+  "model": "qwen2.5:7b",
+  "n_runs": 3,
+  "test_set": [
+    "clair-de-lune:m001-004:piano:mcp-session:v1",
+    "clair-de-lune:m005-008:piano:mcp-session:v1",
+    "clair-de-lune:m015-018:piano:mcp-session:v1",
+    "clair-de-lune:m019-022:piano:mcp-session:v1"
+  ],
+  "parameters": {
+    "e2_groove_threshold": 0.797,
+    "fm4_retry_enabled": true,
+    "fm4_retry_max_attempts": 1,
+    "prompt_changes": [
+      "tactic1:explicit-minimum-note-token-requirement",
+      "tactic2:one-shot-example-3-bars-with-pitch-tokens",
+      "tactic3:self-check-instruction-verify-before-output",
+      "tactic4:validator-feedback-retry-on-fm4-only"
+    ]
+  },
+  "results": {
+    "e2": {
+      "pairs": [
+        {
+          "promptId": "clair-de-lune:m001-004:piano:mcp-session:v1",
+          "targetId": "clair-de-lune:m005-008:piano:mcp-session:v1",
+          "majorityPass": true,
+          "passedCount": 3,
+          "totalRuns": 3,
+          "meanGrooveOA": 1,
+          "grooveOAs": [
+            1.0000000000000002,
+            0.9999999999999998,
+            1
+          ],
+          "clean_parse_count": 3,
+          "recovered_parse_count": 0,
+          "unrecoverable_count": 0,
+          "clean_parse_rate": 1,
+          "first_pass_note_empty_count": 0,
+          "first_pass_note_empty_rate": 0,
+          "retry_fired_count": 0,
+          "retry_rescued_count": 0,
+          "retry_failed_count": 0,
+          "first_pass_pass_count": 3,
+          "retry_pass_pass_count": 0,
+          "groove_oa_first_pass_only": 1,
+          "groove_oa_retry_pass_only": null,
+          "runs": [
+            {
+              "run": 1,
+              "passed": true,
+              "grooveOA": 1.0000000000000002,
+              "meta": {
+                "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E2:run1",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 1483,
+                "completionTokens": 504,
+                "costUsd": 0,
+                "latencyMs": 18248,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 66,
+                "hasAbc": true
+              },
+              "parse_status": "clean",
+              "recovery_steps": null,
+              "first_pass_note_empty": false,
+              "retry_fired": false,
+              "retry_pass_note_empty": false
+            },
+            {
+              "run": 2,
+              "passed": true,
+              "grooveOA": 0.9999999999999998,
+              "meta": {
+                "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E2:run2",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 1483,
+                "completionTokens": 542,
+                "costUsd": 0,
+                "latencyMs": 19286,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 78,
+                "hasAbc": true
+              },
+              "parse_status": "clean",
+              "recovery_steps": null,
+              "first_pass_note_empty": false,
+              "retry_fired": false,
+              "retry_pass_note_empty": false
+            },
+            {
+              "run": 3,
+              "passed": true,
+              "grooveOA": 1,
+              "meta": {
+                "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E2:run3",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 1483,
+                "completionTokens": 835,
+                "costUsd": 0,
+                "latencyMs": 29399,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 116,
+                "hasAbc": true
+              },
+              "parse_status": "clean",
+              "recovery_steps": null,
+              "first_pass_note_empty": false,
+              "retry_fired": false,
+              "retry_pass_note_empty": false
+            }
+          ]
+        },
+        {
+          "promptId": "clair-de-lune:m015-018:piano:mcp-session:v1",
+          "targetId": "clair-de-lune:m019-022:piano:mcp-session:v1",
+          "majorityPass": false,
+          "passedCount": 0,
+          "totalRuns": 3,
+          "meanGrooveOA": 0.6279761904761904,
+          "grooveOAs": [
+            0.6875,
+            0.625,
+            0.5714285714285713
+          ],
+          "clean_parse_count": 3,
+          "recovered_parse_count": 0,
+          "unrecoverable_count": 0,
+          "clean_parse_rate": 1,
+          "first_pass_note_empty_count": 0,
+          "first_pass_note_empty_rate": 0,
+          "retry_fired_count": 0,
+          "retry_rescued_count": 0,
+          "retry_failed_count": 0,
+          "first_pass_pass_count": 0,
+          "retry_pass_pass_count": 0,
+          "groove_oa_first_pass_only": null,
+          "groove_oa_retry_pass_only": null,
+          "runs": [
+            {
+              "run": 1,
+              "passed": false,
+              "grooveOA": 0.6875,
+              "meta": {
+                "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E2:run1",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 2851,
+                "completionTokens": 495,
+                "costUsd": 0,
+                "latencyMs": 18923,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 69,
+                "hasAbc": true
+              },
+              "parse_status": "clean",
+              "recovery_steps": null,
+              "first_pass_note_empty": false,
+              "retry_fired": false,
+              "retry_pass_note_empty": false
+            },
+            {
+              "run": 2,
+              "passed": false,
+              "grooveOA": 0.625,
+              "meta": {
+                "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E2:run2",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 2851,
+                "completionTokens": 534,
+                "costUsd": 0,
+                "latencyMs": 18152,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 69,
+                "hasAbc": true
+              },
+              "parse_status": "clean",
+              "recovery_steps": null,
+              "first_pass_note_empty": false,
+              "retry_fired": false,
+              "retry_pass_note_empty": false
+            },
+            {
+              "run": 3,
+              "passed": false,
+              "grooveOA": 0.5714285714285713,
+              "meta": {
+                "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E2:run3",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 2851,
+                "completionTokens": 472,
+                "costUsd": 0,
+                "latencyMs": 17652,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 60,
+                "hasAbc": true
+              },
+              "parse_status": "clean",
+              "recovery_steps": null,
+              "first_pass_note_empty": false,
+              "retry_fired": false,
+              "retry_pass_note_empty": false
+            }
+          ]
+        }
+      ],
+      "aggregate": {
+        "pairsPass": 1,
+        "pairsTotal": 2,
+        "allPairsPass": false,
+        "threshold": 0.797,
+        "total_runs": 6,
+        "clean_parse_rate": 1,
+        "recovered_parse_rate": 0,
+        "unrecoverable_rate": 0,
+        "first_pass_note_empty_rate": 0,
+        "retry_fired_count": 0,
+        "retry_rescued_count": 0,
+        "retry_failed_count": 0,
+        "first_pass_pass_count": 3,
+        "retry_pass_pass_count": 0,
+        "total_pass_count": 3,
+        "mean_groove_oa_first_pass_passes": 1,
+        "mean_groove_oa_retry_pass_passes": null,
+        "mean_groove_oa_all_passes": 1
+      }
+    }
+  }
+}
