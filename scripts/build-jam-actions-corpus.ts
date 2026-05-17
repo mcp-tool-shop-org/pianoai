@@ -1,8 +1,13 @@
 #!/usr/bin/env tsx
-// ─── Slice 5 bulk corpus builder ─────────────────────────────────────────────
+// ─── Slice 5 + Slice 9b bulk corpus builder ───────────────────────────────────
 //
-// Builds ~50 phrase records across the 10 public_candidate classical songs,
-// structured for E2 continuation eval. Every record passes:
+// Slice 5: builds ~50 phrase records across the 10 public_candidate classical
+//   songs, structured for E2 continuation eval.
+// Slice 9b: expands to ~147 records by adding additional natural phrase pairs
+//   per song (avg 2.2 pairs/song → ~7 pairs/song). Pure additive — no changes
+//   to the 45 Slice 5 records.
+//
+// Every record passes:
 //   - Strict schema (no placeholders)
 //   - E1 trace validator (tool names + args against tool-schemas.json)
 //   - Provenance rule engine (verdict = public_candidate)
@@ -185,6 +190,133 @@ const SONG_SPECS: SongSpec[] = [
         contSummary:
           "Bach C Major Prelude mm. 13–16: Am → D7 → G → G7 cadential approach. Continuation from mm. 9–12. Teaching focus: secondary dominant recognition.",
       },
+      // ── Slice 9b new pairs ────────────────────────────────────────────────────
+      {
+        promptStart: 17,
+        promptEnd: 20,
+        contStart: 21,
+        contEnd: 24,
+        promptLabel: "third cycle — tonic return antecedent",
+        contLabel: "third cycle — consequent with chromatic motion",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 17–20 of the Bach Prelude — how does this third harmonic cycle begin?",
+        contUserPrompt:
+          "Play measures 21–24 and describe the chromatic movement that follows.",
+        promptAnalysis:
+          "Measures 17–20 continue the arpeggiated pattern: m.17 C major returns (tonic), m.18 Am7, m.19 D minor, m.20 B diminished. The texture remains even 16th notes while the harmonics move forward. Let me loop mm. 17–20.",
+        promptSummary:
+          "Bach C Major Prelude mm. 17–20: third cycle, C → Am7 → Dm → Bdim. Continued arpeggiated texture.",
+        contAnalysis:
+          "Measures 21–24 push into chromatic territory: m.21 G7, m.22 Cmaj7, m.23 Fmaj7, m.24 F/D diminished. The motion becomes more harmonically adventurous while the arpeggio template holds steady. Let me loop mm. 21–24.",
+        contSummary:
+          "Bach C Major Prelude mm. 21–24: chromatic motion, G7 → Cmaj7 → Fmaj7 → Fdim. Continuation from mm. 17–20.",
+      },
+      {
+        promptStart: 25,
+        promptEnd: 28,
+        contStart: 29,
+        contEnd: 32,
+        promptLabel: "fourth cycle — deep harmonic exploration antecedent",
+        contLabel: "fourth cycle — dominant preparation consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 25–28 of the Bach Prelude — what makes this section harmonically distinctive?",
+        contUserPrompt:
+          "Play measures 29–32 and describe the dominant preparation.",
+        promptAnalysis:
+          "Measures 25–28 are the harmonic peak of the prelude's exploration: chords move through diminished and augmented areas, creating the most chromatic tension in the piece. The 16th-note arpeggio remains unwavering. Let me loop mm. 25–28.",
+        promptSummary:
+          "Bach C Major Prelude mm. 25–28: harmonic peak, chromatic and diminished chords, maximum tension. Teaching focus: tension–release arc.",
+        contAnalysis:
+          "Measures 29–32 begin the preparation for the final dominant pedal: the harmony moves back through G7 territory, building toward the long pedal point that concludes the piece. Let me loop mm. 29–32.",
+        contSummary:
+          "Bach C Major Prelude mm. 29–32: returning toward dominant, G7 approach. Continuation from mm. 25–28.",
+      },
+      {
+        promptStart: 33,
+        promptEnd: 36,
+        contStart: 37,
+        contEnd: 40,
+        promptLabel: "dominant pedal — antecedent",
+        contLabel: "dominant pedal — continuation",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 33–36 of the Bach Prelude — the famous dominant pedal begins here. Describe it.",
+        contUserPrompt:
+          "Play measures 37–40 and describe how the pedal continues.",
+        promptAnalysis:
+          "Measures 33–36 introduce the famous low G pedal point: a sustained G in the bass underpins shifting upper harmonies. The 16th-note arpeggio texture is unchanged but now a drone-like G bass creates immense tension. Let me loop mm. 33–36.",
+        promptSummary:
+          "Bach C Major Prelude mm. 33–36: dominant G pedal point begins, sustained bass drone under arpeggios. Maximum tension.",
+        contAnalysis:
+          "Measures 37–40 continue the dominant pedal with different upper voicings — the G bass persists while the arpeggios shift harmony above it. The tension of the pedal point is maintained. Let me loop mm. 37–40.",
+        contSummary:
+          "Bach C Major Prelude mm. 37–40: dominant pedal continues, shifting upper harmonies. Continuation from mm. 33–36.",
+      },
+      {
+        promptStart: 41,
+        promptEnd: 44,
+        contStart: 45,
+        contEnd: 48,
+        promptLabel: "tonic resolution — antecedent",
+        contLabel: "tonic resolution — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 41–44 of the Bach Prelude — does the pedal resolve here?",
+        contUserPrompt:
+          "Play measures 45–48 and describe how the tonic arrival feels.",
+        promptAnalysis:
+          "Measures 41–44 bring the resolution of the dominant pedal: the G bass gives way and tonic C harmony returns. The relief is palpable after the long pedal tension. Let me loop mm. 41–44.",
+        promptSummary:
+          "Bach C Major Prelude mm. 41–44: dominant pedal resolves, tonic C returns, harmonic relief. Teaching focus: resolution recognition.",
+        contAnalysis:
+          "Measures 45–48 continue the tonic resolution area — the harmony cycles calmly back toward the home key after the dramatic pedal point. The arpeggios return to their opening serenity. Let me loop mm. 45–48.",
+        contSummary:
+          "Bach C Major Prelude mm. 45–48: post-pedal tonic stability, calm arpeggios returning to home character. Continuation from mm. 41–44.",
+      },
+      {
+        promptStart: 49,
+        promptEnd: 52,
+        contStart: 53,
+        contEnd: 56,
+        promptLabel: "penultimate section — antecedent",
+        contLabel: "penultimate section — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 49–52 of the Bach Prelude — how does the piece approach its conclusion?",
+        contUserPrompt:
+          "Play measures 53–56 and describe the final approach.",
+        promptAnalysis:
+          "Measures 49–52 continue the penultimate section: the arpeggios move through the final chord cycles before the piece's conclusive cadence. The texture remains even; the harmony is calm and goal-directed. Let me loop mm. 49–52.",
+        promptSummary:
+          "Bach C Major Prelude mm. 49–52: penultimate section, final harmonic cycles, goal-directed calm.",
+        contAnalysis:
+          "Measures 53–56 complete the penultimate phrase and move toward the final cadential gesture. The piece is winding down — the harmonic motion slows toward the cadence. Let me loop mm. 53–56.",
+        contSummary:
+          "Bach C Major Prelude mm. 53–56: approach to final cadence, harmonic motion slowing. Continuation from mm. 49–52.",
+      },
+      {
+        promptStart: 57,
+        promptEnd: 60,
+        contStart: 61,
+        contEnd: 64,
+        promptLabel: "final approach — antecedent",
+        contLabel: "final cadence — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 57–60 of the Bach Prelude — the final approach to the cadence.",
+        contUserPrompt:
+          "Play measures 61–64 and describe the final cadential arrival.",
+        promptAnalysis:
+          "Measures 57–60 are the final approach: the arpeggio texture moves through the last dominant preparation before the piece's closing tonic statement. The emotional arc is completing. Let me loop mm. 57–60.",
+        promptSummary:
+          "Bach C Major Prelude mm. 57–60: final dominant preparation, approaching the close.",
+        contAnalysis:
+          "Measures 61–64 complete the prelude with the final tonic C arrival — the last arpeggios settle onto the home key. The entire harmonic journey resolves peacefully. Let me loop mm. 61–64.",
+        contSummary:
+          "Bach C Major Prelude mm. 61–64: final tonic C arrival, conclusion of the harmonic journey. Continuation from mm. 57–60.",
+      },
     ],
     pairAnnotations: [
       {
@@ -301,6 +433,260 @@ const SONG_SPECS: SongSpec[] = [
           ],
         },
       },
+      // ── Slice 9b Bach annotations ────────────────────────────────────────────
+      {
+        promptAnnotation: {
+          structure: "Third harmonic cycle antecedent — C → Am7 → Dm → Bdim",
+          key_moments: [
+            "m17 tonic C returns",
+            "m18 A minor 7th — relative minor with added color",
+            "m20 B diminished — chromatic passing chord",
+          ],
+          teaching_goals: [
+            "recognize the pattern repeating with new chord colors",
+            "hear Am7 vs simple Am from the first cycle",
+          ],
+          style_tips: ["same even arpeggio texture as the opening", "notice the added 7ths coloring the harmony"],
+          teaching_notes: [
+            {
+              measure: 18,
+              note: "Am7 adds C to the arpeggio — hear the added color within the same pattern.",
+              technique: ["listen for the 7th interval"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Chromatic consequent — G7 → Cmaj7 → Fmaj7 → Fdim",
+          key_moments: [
+            "m21 G7 dominant seventh",
+            "m22 Cmaj7 — tonic with added major seventh",
+            "m23 Fmaj7 — subdominant with color",
+            "m24 F diminished — chromatic passing",
+          ],
+          teaching_goals: [
+            "major seventh chords introduce a richer, warmer color",
+            "maintain even texture through the added-chord territory",
+          ],
+          style_tips: ["the major sevenths sound warmer than dominant sevenths", "same tempo throughout"],
+          teaching_notes: [
+            {
+              measure: 22,
+              note: "Cmaj7 contains B natural — hear it sparkle in the arpeggio.",
+              technique: ["listen for the major 7th interval above C"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Harmonic peak antecedent — chromatic and diminished chords",
+          key_moments: [
+            "m25 chromatic territory begins",
+            "m27 most distant chord from home key",
+            "m28 partial cadential approach",
+          ],
+          teaching_goals: [
+            "recognize this as the harmonic climax of the prelude's exploration",
+            "maintain even arpeggio through dissonant territory",
+          ],
+          style_tips: ["the chromatic tension peaks here — don't rush", "no accent changes; the harmony does the work"],
+          teaching_notes: [
+            {
+              measure: 27,
+              note: "The most harmonically distant point — the arpeggio holds the tension steady.",
+              technique: ["even weight regardless of dissonance"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Dominant approach consequent — returning to G7 territory",
+          key_moments: [
+            "m29 returning toward dominant G area",
+            "m31 G7 dominant seventh",
+            "m32 continued dominant preparation",
+          ],
+          teaching_goals: [
+            "feel the harmonic direction reversing — returning home",
+            "the tension is releasing toward the dominant",
+          ],
+          style_tips: ["sense the homecoming even though you haven't arrived yet", "same even texture"],
+          teaching_notes: [
+            {
+              measure: 29,
+              note: "The return begins here — the harmonic journey starts curving back.",
+              technique: ["listen for the G in the bass returning"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Dominant pedal antecedent — sustained low G with shifting upper voices",
+          key_moments: [
+            "m33 low G pedal begins",
+            "m35 upper voices shift over pedal",
+            "m36 pedal maintained with harmonic motion above",
+          ],
+          teaching_goals: [
+            "hear the bass drone as a separate layer from the arpeggios",
+            "the pedal creates a special tension — a single note held against moving harmony",
+          ],
+          style_tips: ["the G bass is the anchor — let it ring", "upper voices float above the pedal"],
+          teaching_notes: [
+            {
+              measure: 33,
+              note: "The low G creates an organ-point effect — held while harmony moves above.",
+              technique: ["sustain the G; let the right-hand harmonies change above it"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Dominant pedal continuation — G bass persists under shifting harmonies",
+          key_moments: [
+            "m37 pedal continues",
+            "m39 upper voices at furthest harmonic point above pedal",
+            "m40 beginning of resolution approach",
+          ],
+          teaching_goals: [
+            "feel the accumulated tension of several measures of pedal point",
+            "anticipate the relief when the pedal resolves",
+          ],
+          style_tips: ["the tension is at its peak here — hold steady", "the resolution will feel enormous after this"],
+          teaching_notes: [
+            {
+              measure: 40,
+              note: "The long pedal is about to resolve — feel the energy building toward release.",
+              technique: ["slight lean into the final pedal measure before resolution"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Tonic resolution antecedent — pedal releases, C major returns",
+          key_moments: [
+            "m41 dominant pedal releases",
+            "m42 C major harmony restored",
+            "m44 tonic stability re-established",
+          ],
+          teaching_goals: [
+            "feel the relief of the tonic return after the long pedal",
+            "recognize this as a structural cadence point",
+          ],
+          style_tips: ["let the tonic arrival breathe — don't rush past the relief", "the opening serenity returns"],
+          teaching_notes: [
+            {
+              measure: 41,
+              note: "The pedal resolves — tension releases into C major. It should feel like exhaling.",
+              technique: ["lighten the touch as the harmony settles"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Post-resolution consequent — calm tonic cycling returns",
+          key_moments: [
+            "m45 tonic stability continues",
+            "m47 familiar harmonic cycle",
+            "m48 calm progression",
+          ],
+          teaching_goals: [
+            "return to the opening character — even, serene arpeggios",
+            "the piece has returned home after its adventure",
+          ],
+          style_tips: ["back to the opening dynamic and character", "the serenity is restored"],
+          teaching_notes: [
+            {
+              measure: 45,
+              note: "Back to the familiar texture — play it with fresh ears, not like a routine.",
+              technique: ["same even touch as the opening four measures"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Penultimate antecedent — final harmonic cycles before coda",
+          key_moments: [
+            "m49 harmonic motion continues",
+            "m51 approaching final stages",
+            "m52 penultimate phrase",
+          ],
+          teaching_goals: [
+            "sense the approaching end — the harmonic trajectory is goal-directed",
+            "same even texture all the way to the close",
+          ],
+          style_tips: ["no change in character — Bach ends without announcement", "the serenity continues"],
+          teaching_notes: [
+            {
+              measure: 51,
+              note: "The end approaches without drama — Bach's genius is the seamless arc.",
+              technique: ["no ritardando until marked; maintain tempo"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Penultimate consequent — final approach to cadence",
+          key_moments: [
+            "m53 continuing toward cadence",
+            "m55 cadential approach",
+            "m56 final dominant",
+          ],
+          teaching_goals: [
+            "feel the harmonic motion slowing toward the final cadence",
+            "the piece is completing its long arc from tonic through tension back to tonic",
+          ],
+          style_tips: ["slight anticipation of the final resolution", "the ending is earned — not rushed"],
+          teaching_notes: [
+            {
+              measure: 56,
+              note: "The final dominant — the resolution to C major is now inevitable.",
+              technique: ["slight tenuto on the final dominant before resolution"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Final approach antecedent — last dominant preparation",
+          key_moments: [
+            "m57 approaching the final cadence",
+            "m59 last dominant-area harmony",
+            "m60 penultimate chord",
+          ],
+          teaching_goals: [
+            "recognize the piece's final approach — the arc is completing",
+            "even arpeggio through the very last phrase",
+          ],
+          style_tips: ["the ending is near — no ritardando yet unless the score marks it", "let the harmony do the work"],
+          teaching_notes: [
+            {
+              measure: 59,
+              note: "One of the last dominant harmonies — the resolution is one phrase away.",
+              technique: ["steady tempo", "listen for the pull toward C major"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Final cadence — tonic C arrival, prelude complete",
+          key_moments: [
+            "m61 tonic C return",
+            "m63 final arpeggiated tonic",
+            "m64 conclusion of harmonic journey",
+          ],
+          teaching_goals: [
+            "feel the completion of the entire harmonic arc — opening C major returns as the destination",
+            "the final arpeggios should feel like homecoming",
+          ],
+          style_tips: ["the conclusion is calm, not triumphant — Bach ends quietly", "let the final C major chord ring"],
+          teaching_notes: [
+            {
+              measure: 64,
+              note: "The journey from C major through all those chord cycles returns to C major. Complete.",
+              technique: ["slight diminuendo on the final measures", "let the last arpeggio ring naturally"],
+            },
+          ],
+        },
+      },
     ],
   },
 
@@ -378,6 +764,133 @@ const SONG_SPECS: SongSpec[] = [
           "Measures 21–24 resolve the tension from mm. 17–20 with a long descent and the famous extended cadential trill. The mood settles as the melody falls to the midrange. Let me loop mm. 21–24.",
         contSummary:
           "Chopin Nocturne mm. 21–24: developmental consequent, descending resolution, extended trill. Pair with mm. 17–20.",
+      },
+      // ── Slice 9b new pairs ────────────────────────────────────────────────────
+      {
+        promptStart: 25,
+        promptEnd: 28,
+        contStart: 29,
+        contEnd: 32,
+        promptLabel: "second period — third antecedent",
+        contLabel: "second period — third consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 25–28 of the Nocturne — does the theme continue its variation here?",
+        contUserPrompt:
+          "Play measures 29–32 and describe how this phrase resolves.",
+        promptAnalysis:
+          "Measures 25–28 present another variant of the theme — the melody has grown more ornate and the LH continues its broken chord support. The cantabile quality is preserved while Chopin introduces new ornamental detail. Let me loop mm. 25–28.",
+        promptSummary:
+          "Chopin Nocturne mm. 25–28: theme variant with growing ornamentation, cantabile quality preserved.",
+        contAnalysis:
+          "Measures 29–32 complete this phrase with a decorated resolution. The ornamental detail continues while the melody descends toward the tonic. Let me loop mm. 29–32.",
+        contSummary:
+          "Chopin Nocturne mm. 29–32: ornamented resolution, melody descends to tonic. Pairs with mm. 25–28.",
+      },
+      {
+        promptStart: 33,
+        promptEnd: 36,
+        contStart: 37,
+        contEnd: 40,
+        promptLabel: "lyrical peak — fourth antecedent",
+        contLabel: "lyrical peak — fourth consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 33–36 of the Nocturne — what is the character here?",
+        contUserPrompt:
+          "Play measures 37–40 and describe how this peak resolves.",
+        promptAnalysis:
+          "Measures 33–36 bring one of the Nocturne's lyrical peaks — the melody soars above the broken-chord accompaniment with rich ornamentation. The emotional intensity is high. Let me loop mm. 33–36.",
+        promptSummary:
+          "Chopin Nocturne mm. 33–36: lyrical peak, melody soars with rich ornamentation, high emotional intensity.",
+        contAnalysis:
+          "Measures 37–40 descend from the peak — the melody returns toward the midrange with a graceful fall. The ornamental detail softens as the phrase closes. Let me loop mm. 37–40.",
+        contSummary:
+          "Chopin Nocturne mm. 37–40: descent from lyrical peak, graceful melodic fall, phrase closes. Pairs with mm. 33–36.",
+      },
+      {
+        promptStart: 41,
+        promptEnd: 44,
+        contStart: 45,
+        contEnd: 48,
+        promptLabel: "expressive continuation — fifth antecedent",
+        contLabel: "expressive continuation — fifth consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 41–44 of the Nocturne — how does the character evolve here?",
+        contUserPrompt:
+          "Play measures 45–48 and describe the continuation.",
+        promptAnalysis:
+          "Measures 41–44 continue the nocturne's long melodic arc — the theme has been through many variations and now carries the accumulated expressive weight of the piece. The LH accompaniment is lush. Let me loop mm. 41–44.",
+        promptSummary:
+          "Chopin Nocturne mm. 41–44: accumulated expressive weight, theme continues with lyrical depth.",
+        contAnalysis:
+          "Measures 45–48 extend the phrase with Chopin's characteristic long melodic lines. The melody breathes and the LH supports from below. Let me loop mm. 45–48.",
+        contSummary:
+          "Chopin Nocturne mm. 45–48: long melodic lines, LH support, breathing quality. Pairs with mm. 41–44.",
+      },
+      {
+        promptStart: 57,
+        promptEnd: 60,
+        contStart: 61,
+        contEnd: 64,
+        promptLabel: "late section — antecedent",
+        contLabel: "late section — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 57–60 of the Nocturne — what is the character in this later section?",
+        contUserPrompt:
+          "Play measures 61–64 and describe how this phrase closes.",
+        promptAnalysis:
+          "Measures 57–60 are in the nocturne's later section — the melody has now been heard in many variations and carries a sense of accumulated beauty. The ornamental detail is rich. Let me loop mm. 57–60.",
+        promptSummary:
+          "Chopin Nocturne mm. 57–60: later section, accumulated ornamental beauty, rich melodic character.",
+        contAnalysis:
+          "Measures 61–64 complete this late-section phrase — the melody descends with its characteristically beautiful ornaments. Let me loop mm. 61–64.",
+        contSummary:
+          "Chopin Nocturne mm. 61–64: late-section consequent, ornamented descent. Pairs with mm. 57–60.",
+      },
+      {
+        promptStart: 65,
+        promptEnd: 68,
+        contStart: 69,
+        contEnd: 72,
+        promptLabel: "late section — sixth antecedent",
+        contLabel: "late section — sixth consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 65–68 of the Nocturne.",
+        contUserPrompt:
+          "Play measures 69–72 and describe the completion.",
+        promptAnalysis:
+          "Measures 65–68 continue the nocturne's extended cantabile melody — a further variation on the theme in the later section. The ornamentation grows ever more elaborate. Let me loop mm. 65–68.",
+        promptSummary:
+          "Chopin Nocturne mm. 65–68: later section variant, elaborate ornamentation.",
+        contAnalysis:
+          "Measures 69–72 complete this phrase — the melody resolves through ornaments to the tonic. Let me loop mm. 69–72.",
+        contSummary:
+          "Chopin Nocturne mm. 69–72: ornamented tonic resolution. Pairs with mm. 65–68.",
+      },
+      {
+        promptStart: 73,
+        promptEnd: 76,
+        contStart: 77,
+        contEnd: 80,
+        promptLabel: "coda approach — antecedent",
+        contLabel: "coda approach — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 73–76 of the Nocturne — are we approaching the coda?",
+        contUserPrompt:
+          "Play measures 77–80 and describe how this section concludes.",
+        promptAnalysis:
+          "Measures 73–76 are approaching the final sections of the nocturne. The theme has come full circle through its many variations. The melody here has the weight of the entire piece behind it. Let me loop mm. 73–76.",
+        promptSummary:
+          "Chopin Nocturne mm. 73–76: approaching final sections, full-circle melodic weight.",
+        contAnalysis:
+          "Measures 77–80 bring the phrase to a quiet, ornamented close — the melody settles softly. Let me loop mm. 77–80.",
+        contSummary:
+          "Chopin Nocturne mm. 77–80: quiet ornamented close. Pairs with mm. 73–76.",
       },
     ],
     pairAnnotations: [
@@ -521,6 +1034,259 @@ const SONG_SPECS: SongSpec[] = [
           ],
         },
       },
+      // ── Slice 9b Chopin Nocturne annotations ─────────────────────────────────
+      {
+        promptAnnotation: {
+          structure: "Third period antecedent — theme variant with growing ornamental complexity",
+          key_moments: [
+            "m25 theme variant enters",
+            "m27 melodic ornamentation increases",
+            "m28 dominant approach",
+          ],
+          teaching_goals: [
+            "feel the ornaments as natural outgrowths of the melody, not additions",
+            "maintain cantabile quality through the added detail",
+          ],
+          style_tips: ["ornaments should feel inevitable, not interpolated", "same LH pp underneath"],
+          teaching_notes: [
+            {
+              measure: 25,
+              note: "The theme grows more ornate — the melody is maturing through the piece.",
+              technique: ["relaxed wrist for ornamental turns", "melody tone still primary"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Third period consequent — ornamented resolution, descending close",
+          key_moments: [
+            "m29 melody descends with ornaments",
+            "m31 tonic approach",
+            "m32 tonic arrival",
+          ],
+          teaching_goals: [
+            "ornaments on the resolution should feel like a sigh",
+            "the tonic arrival is soft and complete",
+          ],
+          style_tips: ["diminuendo toward the resolution", "let the final tonic breathe"],
+          teaching_notes: [
+            {
+              measure: 32,
+              note: "Ornamented tonic arrival — the decoration softens the landing.",
+              technique: ["light ornament, full melodic tone on the resolution note"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Lyrical peak antecedent — melody soars with elaborate ornaments",
+          key_moments: [
+            "m33 melody rises toward lyrical peak",
+            "m35 highest ornamental complexity",
+            "m36 dominant suspension",
+          ],
+          teaching_goals: [
+            "shape the phrase toward the peak — arc toward m.35",
+            "ornaments require arm weight, not just finger speed",
+          ],
+          style_tips: ["crescendo toward the peak", "this is one of the piece's expressive summits"],
+          teaching_notes: [
+            {
+              measure: 35,
+              note: "The ornamental peak — arm weight supports the melodic line even through the trills.",
+              technique: ["arm weight on melody note before ornament"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Lyrical peak descent — graceful fall from peak, ornamental close",
+          key_moments: [
+            "m37 descent begins",
+            "m39 melodic arc completing",
+            "m40 soft arrival",
+          ],
+          teaching_goals: [
+            "the descent should feel like a natural exhale after the peak",
+            "ornaments soften during descent",
+          ],
+          style_tips: ["decrescendo through the fall", "the ending should be pp — after the peak, quiet"],
+          teaching_notes: [
+            {
+              measure: 37,
+              note: "The descent from the peak: controlled, beautiful, inevitable.",
+              technique: ["arm relaxes as melody descends", "ornaments become lighter"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Expressive continuation antecedent — mature melodic variant",
+          key_moments: [
+            "m41 theme continues in richer form",
+            "m43 LH texture grows more active",
+            "m44 dominant approach",
+          ],
+          teaching_goals: [
+            "feel the accumulated weight of the theme through its many variations",
+            "the LH has become an equal partner — both voices matter",
+          ],
+          style_tips: ["more LH presence here — bring out the inner voices", "both hands are singing now"],
+          teaching_notes: [
+            {
+              measure: 43,
+              note: "The LH is growing more active — listen to it as a second voice.",
+              technique: ["LH weight increases slightly here"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Expressive continuation consequent — long melodic line, breathing quality",
+          key_moments: [
+            "m45 long melodic phrase continues",
+            "m47 breathing space",
+            "m48 phrase close",
+          ],
+          teaching_goals: [
+            "long melodic phrases require sustained arm weight",
+            "the phrase should feel like a long, slow breath",
+          ],
+          style_tips: ["no rushing — this phrase needs time to breathe", "slight rubato is appropriate"],
+          teaching_notes: [
+            {
+              measure: 47,
+              note: "A moment of repose within the phrase — let it breathe here.",
+              technique: ["slight tenuto", "wrist leads into the phrase arc"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Late section antecedent — theme with full ornamental maturity",
+          key_moments: [
+            "m57 mature theme variant",
+            "m59 full ornamental development",
+            "m60 dominant approach",
+          ],
+          teaching_goals: [
+            "the late section has the accumulated beauty of the whole piece",
+            "ornaments are now completely integrated — they ARE the melody",
+          ],
+          style_tips: ["play with the emotional depth of having heard this theme many times", "full expressivity"],
+          teaching_notes: [
+            {
+              measure: 59,
+              note: "The ornaments at this stage feel like native speech — they flow naturally.",
+              technique: ["relaxed, integrated ornamental technique"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Late section consequent — ornamented descent, late-section resolution",
+          key_moments: [
+            "m61 melodic descent with ornaments",
+            "m63 tonic approach",
+            "m64 quiet arrival",
+          ],
+          teaching_goals: [
+            "late-section resolutions feel heavier — more weight behind each note",
+            "ornaments in the descent are light decorations on the inevitable landing",
+          ],
+          style_tips: ["the resolution carries the weight of the entire nocturne now", "p and contemplative"],
+          teaching_notes: [
+            {
+              measure: 64,
+              note: "Each arrival in the late section feels earned — let it settle.",
+              technique: ["soft, weighted landing on the resolution"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Later section sixth antecedent — elaborate ornamental phrase",
+          key_moments: [
+            "m65 ornamental elaboration continues",
+            "m67 melodic peak within phrase",
+            "m68 expectant dominant",
+          ],
+          teaching_goals: [
+            "recognize the familiar structural gesture in a new ornamental guise",
+            "ornaments should never obscure the underlying melody",
+          ],
+          style_tips: ["the melody is always primary — the ornaments serve it", "mp to mf at the peak"],
+          teaching_notes: [
+            {
+              measure: 67,
+              note: "Even with complex ornaments, the melody note must sing above them.",
+              technique: ["finger weight on the main note", "ornaments lighter"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Later section sixth consequent — tonic resolution through ornaments",
+          key_moments: [
+            "m69 descent toward tonic",
+            "m71 tonic approach",
+            "m72 tonic arrival",
+          ],
+          teaching_goals: [
+            "the ornamental resolution should feel like a sigh, not an exercise",
+            "let the final tonic ring quietly",
+          ],
+          style_tips: ["p toward the resolution", "the arrival is warm and inevitable"],
+          teaching_notes: [
+            {
+              measure: 72,
+              note: "Tonic arrival — quiet, ornamented, complete.",
+              technique: ["soft landing", "let the chord resonate"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Coda approach antecedent — theme approaching final statement",
+          key_moments: [
+            "m73 theme in final approach",
+            "m75 penultimate ornamental gesture",
+            "m76 dominant preparation",
+          ],
+          teaching_goals: [
+            "feel that the piece is nearing its conclusion",
+            "the final statements of the theme have extra weight",
+          ],
+          style_tips: ["slight broadening of tempo is appropriate here", "the full weight of the piece is in these notes"],
+          teaching_notes: [
+            {
+              measure: 75,
+              note: "A penultimate ornamental gesture — the piece is completing its thought.",
+              technique: ["full arm weight", "unhurried even at the approach to the end"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Coda approach consequent — quiet, ornamented close",
+          key_moments: [
+            "m77 final melodic descent",
+            "m79 near-final cadence",
+            "m80 quiet settling",
+          ],
+          teaching_goals: [
+            "the piece closes with the same ornamental grace it opened with",
+            "the final note of each phrase should ring softly",
+          ],
+          style_tips: ["pp — the nocturne ends in a whisper", "let the final arpeggios of the LH fade naturally"],
+          teaching_notes: [
+            {
+              measure: 80,
+              note: "The quiet close — the cantabile melody ends in soft ornamental beauty.",
+              technique: ["ppp touch", "pedal for the final shimmer"],
+            },
+          ],
+        },
+      },
     ],
   },
 
@@ -576,6 +1342,91 @@ const SONG_SPECS: SongSpec[] = [
           "Measures 13–16 push toward the climax with more harmonic intensity. The bass is now far from the opening E, and the RH melody reaches upward in response. This is the prelude's expressive peak approach. Let me loop mm. 13–16.",
         contSummary:
           "Chopin Prelude E minor mm. 13–16: intensification toward climax, RH reaches upward, harmonic peak. Pairs with mm. 9–12 descent.",
+      },
+      // ── Slice 9b new pairs ────────────────────────────────────────────────────
+      {
+        promptStart: 17,
+        promptEnd: 20,
+        contStart: 21,
+        contEnd: 24,
+        promptLabel: "post-climax — descent antecedent",
+        contLabel: "post-climax — descent consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 17–20 of the Chopin Prelude — what happens after the climax?",
+        contUserPrompt:
+          "Play measures 21–24 and describe the continuation of the descent.",
+        promptAnalysis:
+          "Measures 17–20 follow the climax: the RH begins its descent as the LH chromatic bass continues its relentless downward motion. The emotional intensity is still high but now falling. Let me loop mm. 17–20.",
+        promptSummary:
+          "Chopin Prelude E minor mm. 17–20: post-climax descent begins, RH falls while LH continues chromatic bass.",
+        contAnalysis:
+          "Measures 21–24 continue the descent — the music is moving toward resignation. The chromatic bass has traveled far from the opening E and the RH melody settles. Let me loop mm. 21–24.",
+        contSummary:
+          "Chopin Prelude E minor mm. 21–24: descent continues, resignation quality, bass far from opening. Pairs with mm. 17–20.",
+      },
+      {
+        promptStart: 25,
+        promptEnd: 28,
+        contStart: 29,
+        contEnd: 32,
+        promptLabel: "middle descent — antecedent",
+        contLabel: "middle descent — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 25–28 of the Prelude — how deep is the harmonic descent now?",
+        contUserPrompt:
+          "Play measures 29–32 and describe where the bass has traveled.",
+        promptAnalysis:
+          "Measures 25–28 are deep in the descent — the chromatic bass has moved through many semitone steps from the opening. The RH chords are now quiet, almost whispered. Let me loop mm. 25–28.",
+        promptSummary:
+          "Chopin Prelude E minor mm. 25–28: deep descent, bass far from opening E, RH whispered chords.",
+        contAnalysis:
+          "Measures 29–32 continue the downward journey — the bass is approaching its lowest point and the emotional depth is at its most austere. Let me loop mm. 29–32.",
+        contSummary:
+          "Chopin Prelude E minor mm. 29–32: bass approaching lowest point, austere emotional depth. Pairs with mm. 25–28.",
+      },
+      {
+        promptStart: 33,
+        promptEnd: 36,
+        contStart: 37,
+        contEnd: 40,
+        promptLabel: "near-end — antecedent",
+        contLabel: "near-end — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 33–36 of the Prelude — the piece is approaching its conclusion. Describe it.",
+        contUserPrompt:
+          "Play measures 37–40 and describe the penultimate phrase.",
+        promptAnalysis:
+          "Measures 33–36 are near the end of the descent — the bass is in its deepest register and the RH melody has lost its upward aspiration entirely. The mood is final and resigned. Let me loop mm. 33–36.",
+        promptSummary:
+          "Chopin Prelude E minor mm. 33–36: near-conclusion, bass in deepest register, resigned RH melody.",
+        contAnalysis:
+          "Measures 37–40 continue toward the piece's final pages — the chromatic motion persists and the mood is one of complete acceptance. Let me loop mm. 37–40.",
+        contSummary:
+          "Chopin Prelude E minor mm. 37–40: approaching conclusion, complete resignation, chromatic motion continues. Pairs with mm. 33–36.",
+      },
+      {
+        promptStart: 41,
+        promptEnd: 44,
+        contStart: 45,
+        contEnd: 48,
+        promptLabel: "final approach — antecedent",
+        contLabel: "final approach — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 41–44 of the Prelude — is this the final approach?",
+        contUserPrompt:
+          "Play measures 45–48 and describe the closing phrase.",
+        promptAnalysis:
+          "Measures 41–44 are in the prelude's final pages — the music has arrived at complete harmonic stillness. The bass drone and sustained RH chords create a final settling. Let me loop mm. 41–44.",
+        promptSummary:
+          "Chopin Prelude E minor mm. 41–44: final pages, harmonic stillness, complete settling.",
+        contAnalysis:
+          "Measures 45–48 bring the prelude toward its final E minor chord. The piece has spent its entire length descending into this profound quietude. Let me loop mm. 45–48.",
+        contSummary:
+          "Chopin Prelude E minor mm. 45–48: approaching final E minor, profound quietude. Pairs with mm. 41–44.",
       },
     ],
     pairAnnotations: [
@@ -679,6 +1530,175 @@ const SONG_SPECS: SongSpec[] = [
           ],
         },
       },
+      // ── Slice 9b Chopin Prelude annotations ──────────────────────────────────
+      {
+        promptAnnotation: {
+          structure: "Post-climax descent antecedent — RH falls while chromatic bass continues",
+          key_moments: [
+            "m17 descent begins from climactic peak",
+            "m19 RH melody settles into midrange",
+            "m20 LH bass in lower territory",
+          ],
+          teaching_goals: [
+            "the descent should feel controlled, not collapsed",
+            "match the piano dynamic that preceded the climax",
+          ],
+          style_tips: ["pp returning — the climax is over", "the descent is inevitable and unhurried"],
+          teaching_notes: [
+            {
+              measure: 17,
+              note: "The descent from the climax — controlled and resigned, not deflated.",
+              technique: ["arm relaxes as dynamic returns to pp"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Post-climax descent consequent — resignation, bass far from home",
+          key_moments: [
+            "m21 bass has traveled far from opening E",
+            "m23 RH melody quiets further",
+            "m24 deep harmonic area",
+          ],
+          teaching_goals: [
+            "the mood is resignation — not sadness, but acceptance",
+            "LH continues its patient chromatic descent",
+          ],
+          style_tips: ["even softer than the opening — pp to ppp", "the descent is now complete emotionally"],
+          teaching_notes: [
+            {
+              measure: 21,
+              note: "The bass has traveled far — its distance from the opening is part of the emotional arc.",
+              technique: ["listen to the bass journey across the whole piece"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Middle descent antecedent — bass deep, RH whispered chords",
+          key_moments: [
+            "m25 bass in deep register",
+            "m27 RH chords barely above silence",
+            "m28 harmonic depth maximum",
+          ],
+          teaching_goals: [
+            "the piece is deep in its most austere section",
+            "RH chords should float — barely touching the keys",
+          ],
+          style_tips: ["ppp — the quietest the piece gets", "the silence between notes is music too"],
+          teaching_notes: [
+            {
+              measure: 27,
+              note: "The RH chords here are whispered — barely audible but still present.",
+              technique: ["minimal arm weight", "keys depressed slowly without attack"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Middle descent consequent — approaching lowest point",
+          key_moments: [
+            "m29 bass approaching lowest register",
+            "m31 maximum harmonic distance from opening",
+            "m32 approaching the end",
+          ],
+          teaching_goals: [
+            "the descent is reaching its endpoint",
+            "sustain the mood of complete austerity",
+          ],
+          style_tips: ["no change in dynamic — consistent ppp through the end", "the austerity is the beauty"],
+          teaching_notes: [
+            {
+              measure: 31,
+              note: "The harmonic journey has reached its deepest point — the opening E seems very far away.",
+              technique: ["sustain the quiet through pedal", "no crescendo here"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Near-end antecedent — bass in deepest register, resigned melody",
+          key_moments: [
+            "m33 bass in lowest area",
+            "m35 RH melody without aspiration",
+            "m36 penultimate area",
+          ],
+          teaching_goals: [
+            "the piece has arrived at complete resignation",
+            "the RH chords have no upward aspiration — pure acceptance",
+          ],
+          style_tips: ["the character is now one of serene acceptance", "no expression changes — just stillness"],
+          teaching_notes: [
+            {
+              measure: 35,
+              note: "The RH chords have lost their upward yearning — they simply are.",
+              technique: ["flat, even touch — no phrase shaping needed here"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Near-end consequent — complete resignation, approaching final measures",
+          key_moments: [
+            "m37 chromatic motion continues in stillness",
+            "m39 final harmonic area",
+            "m40 one of the final chromatic steps",
+          ],
+          teaching_goals: [
+            "recognize that the chromatic descent has been the entire engine of the piece",
+            "the ending is coming — sustain the mood without preparing for it",
+          ],
+          style_tips: ["consistent ppp to the end", "no ritardando unless marked"],
+          teaching_notes: [
+            {
+              measure: 40,
+              note: "Each chromatic step here is one of the last — but play it with the same stillness as the first.",
+              technique: ["consistent pp regardless of proximity to the end"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Final approach antecedent — complete harmonic stillness",
+          key_moments: [
+            "m41 near the end",
+            "m43 final measures approaching",
+            "m44 penultimate phrase",
+          ],
+          teaching_goals: [
+            "the piece has arrived — nothing more to say dynamically",
+            "the RH and LH both settle into their final positions",
+          ],
+          style_tips: ["absolute stillness — this is the most restrained moment", "ppp throughout"],
+          teaching_notes: [
+            {
+              measure: 41,
+              note: "One of the final phrases — play it with the same composure as the opening.",
+              technique: ["return to the opening composure, but deeper"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Final approach consequent — approaching final E minor chord",
+          key_moments: [
+            "m45 penultimate phrases",
+            "m47 final E minor approach",
+            "m48 near the final chord",
+          ],
+          teaching_goals: [
+            "the prelude is completing — the long chromatic journey arrives at its destination",
+            "E minor at the end is not a triumph — it is an acceptance",
+          ],
+          style_tips: ["no accent on the final chord — it should arrive quietly", "ppp to the very end"],
+          teaching_notes: [
+            {
+              measure: 48,
+              note: "The final phrase — the E minor arrives as inevitably as the sea finding the shore.",
+              technique: ["quiet, slow, final — no ritardando unless marked"],
+            },
+          ],
+        },
+      },
     ],
   },
 
@@ -734,6 +1754,91 @@ const SONG_SPECS: SongSpec[] = [
           "Measures 19–22 continue and deepen the melody, reaching the emotional summit of the piece. The dynamics build to mf/f, and the melody's arc peaks before beginning its descent. The harmonic richness is maximum here. Let me loop mm. 19–22.",
         contSummary:
           "Clair de Lune mm. 19–22: emotional summit, melody peaks, harmonic richness at maximum. Continuation from mm. 15–18. Teaching focus: controlled crescendo, dynamic shaping.",
+      },
+      // ── Slice 9b new pairs ────────────────────────────────────────────────────
+      {
+        promptStart: 23,
+        promptEnd: 26,
+        contStart: 27,
+        contEnd: 30,
+        promptLabel: "post-peak descent — antecedent",
+        contLabel: "post-peak descent — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 23–26 of Clair de Lune — after the emotional peak, how does the piece descend?",
+        contUserPrompt:
+          "Play measures 27–30 and describe the continuing descent.",
+        promptAnalysis:
+          "Measures 23–26 are after the emotional summit — the melody begins its long, graceful descent. The dynamics soften from the peak and the triplet rippling accompaniment continues. The mood shifts from passionate to tender. Let me loop mm. 23–26.",
+        promptSummary:
+          "Clair de Lune mm. 23–26: post-peak descent begins, dynamics soften from summit, tender quality emerges.",
+        contAnalysis:
+          "Measures 27–30 continue the descent with increasing calm — the melody moves to a lower register and the ripple texture softens. The piece is entering its middle section. Let me loop mm. 27–30.",
+        contSummary:
+          "Clair de Lune mm. 27–30: continuing descent, lower register, ripple texture softens. Pairs with mm. 23–26.",
+      },
+      {
+        promptStart: 31,
+        promptEnd: 34,
+        contStart: 35,
+        contEnd: 38,
+        promptLabel: "middle section — atmospheric antecedent",
+        contLabel: "middle section — atmospheric consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 31–34 of Clair de Lune — what does the middle section feel like?",
+        contUserPrompt:
+          "Play measures 35–38 and describe the continuation.",
+        promptAnalysis:
+          "Measures 31–34 are in the middle section — a more active, rippling passage with flowing triplets. The character shifts from the lyrical melody to a more fluid, impressionistic texture. The harmonics shift impressionistically. Let me loop mm. 31–34.",
+        promptSummary:
+          "Clair de Lune mm. 31–34: middle section, flowing triplet texture, impressionistic harmonic shifts.",
+        contAnalysis:
+          "Measures 35–38 continue the middle section's flowing character — the ripples continue with coloristic harmonic changes. The mood is one of shimmering movement. Let me loop mm. 35–38.",
+        contSummary:
+          "Clair de Lune mm. 35–38: middle section continuation, shimmering ripples, coloristic harmonics. Pairs with mm. 31–34.",
+      },
+      {
+        promptStart: 37,
+        promptEnd: 40,
+        contStart: 41,
+        contEnd: 44,
+        promptLabel: "middle section — dramatic antecedent",
+        contLabel: "middle section — dramatic resolution",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 37–40 of Clair de Lune — is this a more dramatic passage?",
+        contUserPrompt:
+          "Play measures 41–44 and describe how this dramatic section resolves.",
+        promptAnalysis:
+          "Measures 37–40 bring the middle section's dramatic climax — the rippling texture suddenly swells into full, rich chords. The dynamic rises toward the piece's second expressive peak. Let me loop mm. 37–40.",
+        promptSummary:
+          "Clair de Lune mm. 37–40: middle section dramatic swell, rich chords, second expressive peak.",
+        contAnalysis:
+          "Measures 41–44 resolve the dramatic swell — the texture returns to the rippling triplets and the dynamic softens. The dramatic moment passes and the piece returns to its dreaming character. Let me loop mm. 41–44.",
+        contSummary:
+          "Clair de Lune mm. 41–44: dramatic swell resolves, ripples return, dynamic softens. Pairs with mm. 37–40.",
+      },
+      {
+        promptStart: 51,
+        promptEnd: 54,
+        contStart: 55,
+        contEnd: 58,
+        promptLabel: "recapitulation — antecedent",
+        contLabel: "recapitulation — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 51–54 of Clair de Lune — does the opening theme return here?",
+        contUserPrompt:
+          "Play measures 55–58 and describe how the recapitulation continues.",
+        promptAnalysis:
+          "Measures 51–54 bring a recapitulation — the opening atmospheric texture returns after the middle section's journey. The 9/8 ripple and floating melody are restored. The mood is now tinged with memory. Let me loop mm. 51–54.",
+        promptSummary:
+          "Clair de Lune mm. 51–54: recapitulation, opening atmosphere returns, memory-tinged quality.",
+        contAnalysis:
+          "Measures 55–58 continue the recapitulation — the familiar melody and rippling accompaniment settle further into their concluding statement. Let me loop mm. 55–58.",
+        contSummary:
+          "Clair de Lune mm. 55–58: recapitulation continuation, familiar melody settling toward conclusion. Pairs with mm. 51–54.",
       },
     ],
     pairAnnotations: [
@@ -834,6 +1939,175 @@ const SONG_SPECS: SongSpec[] = [
           ],
         },
       },
+      // ── Slice 9b Clair de Lune annotations ───────────────────────────────────
+      {
+        promptAnnotation: {
+          structure: "Post-peak descent antecedent — melody descends, dynamics soften",
+          key_moments: [
+            "m23 descent begins from emotional summit",
+            "m25 dynamic softens from mf/f",
+            "m26 melody in midrange, tender quality",
+          ],
+          teaching_goals: [
+            "the descent must feel like a natural release, not a deflation",
+            "maintain the 9/8 ripple texture through the dynamic change",
+          ],
+          style_tips: ["mp to p — controlled decrescendo", "the tenderness after the peak is equally beautiful"],
+          teaching_notes: [
+            {
+              measure: 23,
+              note: "The post-peak descent: the intensity has passed, now tenderness.",
+              technique: ["reduce arm weight gradually", "ripple texture maintains its shimmer"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Post-peak descent consequent — melody settles, middle section approaches",
+          key_moments: [
+            "m27 melody moves lower",
+            "m29 pp dynamic restored",
+            "m30 middle section character emerging",
+          ],
+          teaching_goals: [
+            "the mood has shifted from passionate to contemplative",
+            "the 9/8 shimmer continues throughout",
+          ],
+          style_tips: ["pp — return to the opening atmospheric quality", "the middle section is approaching"],
+          teaching_notes: [
+            {
+              measure: 30,
+              note: "The lower register here feels like the moon setting — quieter, deeper.",
+              technique: ["arm weight adjusts to the lower register", "same shimmer quality"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Middle section atmospheric antecedent — flowing triplets, impressionistic shifts",
+          key_moments: [
+            "m31 middle section texture",
+            "m33 coloristic harmonic shift",
+            "m34 phrase incomplete",
+          ],
+          teaching_goals: [
+            "the middle section has a more flowing, continuous quality than the lyrical sections",
+            "harmonic colors change rapidly — follow them",
+          ],
+          style_tips: ["continuous flow — no accents on beat 1", "listen to the harmonic colors change within the triplets"],
+          teaching_notes: [
+            {
+              measure: 33,
+              note: "The harmonic colors shift impressionistically — don't analyze, listen.",
+              technique: ["follow the harmonic color with slight dynamic shading"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Middle section atmospheric consequent — shimmering ripples, coloristic resolution",
+          key_moments: [
+            "m35 ripple texture continues",
+            "m37 coloristic harmonics",
+            "m38 phrase settling",
+          ],
+          teaching_goals: [
+            "the ripple texture is continuous and never mechanical",
+            "each harmonic color has its own quality — hear them",
+          ],
+          style_tips: ["pp throughout", "the ripples are like reflections on water — never still"],
+          teaching_notes: [
+            {
+              measure: 38,
+              note: "The phrase settles but the ripples continue — no break in the flow.",
+              technique: ["seamless legato through the phrase boundary"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Dramatic middle section antecedent — texture swells to rich chords",
+          key_moments: [
+            "m37 dramatic swell begins",
+            "m39 full chordal texture",
+            "m40 dynamic peak of middle section",
+          ],
+          teaching_goals: [
+            "this is Debussy's second climactic gesture — different from the lyrical first peak",
+            "the texture is more percussive here, more dramatic",
+          ],
+          style_tips: ["f — allow the full chordal texture to ring", "this is the most 'orchestral' moment of the piece"],
+          teaching_notes: [
+            {
+              measure: 39,
+              note: "Full chords in the 9/8 texture — let both hands ring together.",
+              technique: ["full arm weight", "pedal for resonance"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Dramatic middle section resolution — texture returns to ripples, dynamic softens",
+          key_moments: [
+            "m41 tripple texture returns",
+            "m43 dynamic softens from dramatic peak",
+            "m44 return to dreaming character",
+          ],
+          teaching_goals: [
+            "the dramatic moment passes — return to the impressionistic shimmer",
+            "the transition back should feel natural, not abrupt",
+          ],
+          style_tips: ["pp returning — as if waking from a brief intense vision", "the ripples return seamlessly"],
+          teaching_notes: [
+            {
+              measure: 41,
+              note: "The dramatic peak passes — return to the shimmer without a seam.",
+              technique: ["reduce arm weight smoothly", "ripple texture flows back in"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Recapitulation antecedent — opening atmosphere returns, memory-tinged",
+          key_moments: [
+            "m51 opening texture returns",
+            "m53 floating melody again",
+            "m54 familiar harmonic quality",
+          ],
+          teaching_goals: [
+            "the recapitulation sounds familiar but carries the weight of everything that came before",
+            "play it as if remembering — not as if returning",
+          ],
+          style_tips: ["ppp to pp — slightly softer than the opening", "memory has a gentler quality"],
+          teaching_notes: [
+            {
+              measure: 51,
+              note: "The opening returns — but you've heard the emotional journey. Play it with that knowledge.",
+              technique: ["same technique as the opening, but softer and more inward"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Recapitulation consequent — familiar melody settling toward conclusion",
+          key_moments: [
+            "m55 melody continues in recapitulation",
+            "m57 familiar harmonic colors",
+            "m58 concluding phrase",
+          ],
+          teaching_goals: [
+            "the conclusion is approaching — play with the sense of completion",
+            "the ripples should feel like they are slowing down toward rest",
+          ],
+          style_tips: ["pp with slight broadening as the conclusion approaches", "the piece is winding down"],
+          teaching_notes: [
+            {
+              measure: 58,
+              note: "The familiar phrase settling toward conclusion — let it rest.",
+              technique: ["slight broadening of pulse", "arm weight decreases toward pp ending"],
+            },
+          ],
+        },
+      },
     ],
   },
 
@@ -889,6 +2163,133 @@ const SONG_SPECS: SongSpec[] = [
           "Measures 13–16 resolve the developmental tension back toward E major stability. The triplet texture softens and the phrase settles. A gentle return to the opening character. Let me loop mm. 13–16.",
         contSummary:
           "Debussy Arabesque No. 1 mm. 13–16: harmonic resolution, settling back to E major character. Pairs with mm. 9–12.",
+      },
+      // ── Slice 9b new pairs ────────────────────────────────────────────────────
+      {
+        promptStart: 17,
+        promptEnd: 20,
+        contStart: 21,
+        contEnd: 24,
+        promptLabel: "second theme section — antecedent",
+        contLabel: "second theme section — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 17–20 of the Arabesque — does the character change here?",
+        contUserPrompt:
+          "Play measures 21–24 and describe the continuation.",
+        promptAnalysis:
+          "Measures 17–20 bring a second melodic idea — the flowing triplets continue but a new melodic contour emerges. The E major brightness is more present here and the melody takes on a more lyrical quality. Let me loop mm. 17–20.",
+        promptSummary:
+          "Debussy Arabesque No. 1 mm. 17–20: second melodic idea, lyrical quality in E major, flowing triplets continue.",
+        contAnalysis:
+          "Measures 21–24 complete the second theme section — the melody continues with its lyrical arc and the triplets support it underneath. The phrase closes gently. Let me loop mm. 21–24.",
+        contSummary:
+          "Debussy Arabesque No. 1 mm. 21–24: second theme completion, lyrical arc closes. Pairs with mm. 17–20.",
+      },
+      {
+        promptStart: 25,
+        promptEnd: 28,
+        contStart: 29,
+        contEnd: 32,
+        promptLabel: "lyrical peak — antecedent",
+        contLabel: "lyrical peak — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 25–28 of the Arabesque — is this a more expressive passage?",
+        contUserPrompt:
+          "Play measures 29–32 and describe the resolution.",
+        promptAnalysis:
+          "Measures 25–28 develop the triplet arabesques into a more expressive passage — the melody soars above the flowing texture. The E major color is warm and the dynamic rises. Let me loop mm. 25–28.",
+        promptSummary:
+          "Debussy Arabesque No. 1 mm. 25–28: expressive development, melody soars, dynamic rises in E major.",
+        contAnalysis:
+          "Measures 29–32 resolve from the expressive peak — the melody descends and the triplets soften. The phrase closes gracefully. Let me loop mm. 29–32.",
+        contSummary:
+          "Debussy Arabesque No. 1 mm. 29–32: descent from expressive peak, graceful close. Pairs with mm. 25–28.",
+      },
+      {
+        promptStart: 33,
+        promptEnd: 36,
+        contStart: 37,
+        contEnd: 40,
+        promptLabel: "contrasting section — antecedent",
+        contLabel: "contrasting section — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 33–36 of the Arabesque — does the character shift here?",
+        contUserPrompt:
+          "Play measures 37–40 and describe the continuation.",
+        promptAnalysis:
+          "Measures 33–36 introduce a more contemplative character — the triplet flow shifts to a quieter texture and the harmonic language becomes more exploratory. Debussy's impressionism is at its most delicate. Let me loop mm. 33–36.",
+        promptSummary:
+          "Debussy Arabesque No. 1 mm. 33–36: contemplative character, quieter texture, exploratory harmonics.",
+        contAnalysis:
+          "Measures 37–40 continue the quieter section — the triplets move more gently and the melody floats. The phrase ends with a light, open quality. Let me loop mm. 37–40.",
+        contSummary:
+          "Debussy Arabesque No. 1 mm. 37–40: quiet triplet continuation, floating melody. Pairs with mm. 33–36.",
+      },
+      {
+        promptStart: 41,
+        promptEnd: 44,
+        contStart: 45,
+        contEnd: 48,
+        promptLabel: "flowing continuation — antecedent",
+        contLabel: "flowing continuation — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 41–44 of the Arabesque.",
+        contUserPrompt:
+          "Play measures 45–48 and describe the continuation.",
+        promptAnalysis:
+          "Measures 41–44 bring back the flowing triplet character with melodic content — the arabesque texture is in full voice. The phrase feels natural and spontaneous. Let me loop mm. 41–44.",
+        promptSummary:
+          "Debussy Arabesque No. 1 mm. 41–44: flowing triplet arabesques in full voice, natural melodic character.",
+        contAnalysis:
+          "Measures 45–48 continue the flowing character — the triplets cascade forward and the phrase completes with Debussy's characteristic lightness. Let me loop mm. 45–48.",
+        contSummary:
+          "Debussy Arabesque No. 1 mm. 45–48: cascading triplets, phrase closes lightly. Pairs with mm. 41–44.",
+      },
+      {
+        promptStart: 57,
+        promptEnd: 60,
+        contStart: 61,
+        contEnd: 64,
+        promptLabel: "recapitulation — antecedent",
+        contLabel: "recapitulation — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 57–60 of the Arabesque — does the opening material return here?",
+        contUserPrompt:
+          "Play measures 61–64 and describe the continuation of the recapitulation.",
+        promptAnalysis:
+          "Measures 57–60 are in the recapitulation — the opening triplet arabesque texture returns with renewed freshness. The E major brightness is fully restored after the middle section's exploration. Let me loop mm. 57–60.",
+        promptSummary:
+          "Debussy Arabesque No. 1 mm. 57–60: recapitulation, opening triplet arabesque returns, E major brightness restored.",
+        contAnalysis:
+          "Measures 61–64 continue the recapitulation — the familiar flowing texture is back in its full E major character. The phrase completes with an elegant resolution. Let me loop mm. 61–64.",
+        contSummary:
+          "Debussy Arabesque No. 1 mm. 61–64: recapitulation continuation, flowing texture, elegant resolution. Pairs with mm. 57–60.",
+      },
+      {
+        promptStart: 77,
+        promptEnd: 80,
+        contStart: 81,
+        contEnd: 84,
+        promptLabel: "coda approach — antecedent",
+        contLabel: "coda approach — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 77–80 of the Arabesque — are we near the conclusion?",
+        contUserPrompt:
+          "Play measures 81–84 and describe the final approach.",
+        promptAnalysis:
+          "Measures 77–80 are approaching the coda — the triplet arabesques are moving toward their final statement. The E major is clear and the phrase has a conclusive direction. Let me loop mm. 77–80.",
+        promptSummary:
+          "Debussy Arabesque No. 1 mm. 77–80: approaching coda, triplet arabesques moving toward conclusion, clear E major.",
+        contAnalysis:
+          "Measures 81–84 bring the phrase toward the final close — the triplets are settling and the harmonic direction is firmly toward E major resolution. Let me loop mm. 81–84.",
+        contSummary:
+          "Debussy Arabesque No. 1 mm. 81–84: final approach, triplets settling, E major resolution. Pairs with mm. 77–80.",
       },
     ],
     pairAnnotations: [
@@ -978,6 +2379,259 @@ const SONG_SPECS: SongSpec[] = [
           ],
         },
       },
+      // ── Slice 9b Debussy Arabesque annotations ────────────────────────────────
+      {
+        promptAnnotation: {
+          structure: "Second theme section antecedent — lyrical E major melody over triplets",
+          key_moments: [
+            "m17 second melodic idea enters",
+            "m19 lyrical melody arc",
+            "m20 phrase continues upward",
+          ],
+          teaching_goals: [
+            "bring out the new melodic contour over the triplets",
+            "E major here is warm and present",
+          ],
+          style_tips: ["mp to mf — more presence than the opening", "the second theme has a warmer character"],
+          teaching_notes: [
+            {
+              measure: 17,
+              note: "A new melodic contour appears over the familiar triplets — let it sing.",
+              technique: ["top-voice weight in RH", "triplets remain light underneath"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Second theme consequent — lyrical arc closes gently",
+          key_moments: [
+            "m21 melody continues its arc",
+            "m23 descent toward close",
+            "m24 gentle resolution",
+          ],
+          teaching_goals: [
+            "the lyrical arc completes naturally",
+            "the close is gentle, not a stop",
+          ],
+          style_tips: ["slight decrescendo toward the resolution", "the ending feels like an exhale"],
+          teaching_notes: [
+            {
+              measure: 24,
+              note: "The phrase closes gently — let the triplets carry the resolution.",
+              technique: ["diminuendo into the final note of the phrase"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Lyrical peak antecedent — melody soars, dynamic rises",
+          key_moments: [
+            "m25 expressive development begins",
+            "m27 melody at its peak in this section",
+            "m28 sustained peak before descent",
+          ],
+          teaching_goals: [
+            "this is one of the arabesque's expressive summits",
+            "melody must be clearly above the triplet texture",
+          ],
+          style_tips: ["mf — allow the warmth to build", "the triplets support, not dominate"],
+          teaching_notes: [
+            {
+              measure: 27,
+              note: "The melodic peak: bring it out with top-finger weight.",
+              technique: ["4th/5th finger of RH for melody peak", "triplets pp underneath"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Lyrical peak descent consequent — melody descends, triplets soften",
+          key_moments: [
+            "m29 descent from peak",
+            "m31 returning to mp",
+            "m32 graceful close",
+          ],
+          teaching_goals: [
+            "the descent should feel natural and flowing",
+            "don't rush back to the soft dynamic",
+          ],
+          style_tips: ["decrescendo as melody descends", "graceful and unhurried"],
+          teaching_notes: [
+            {
+              measure: 32,
+              note: "The close after the peak: gentle and flowing.",
+              technique: ["arm relaxes as melody descends", "smooth decrescendo"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Contemplative section antecedent — quieter triplet texture, exploratory harmonics",
+          key_moments: [
+            "m33 texture quiets",
+            "m35 harmonic exploration",
+            "m36 open, incomplete phrase",
+          ],
+          teaching_goals: [
+            "Debussy's impressionism at its most delicate — follow the harmonic colors",
+            "the triplets become even more transparent here",
+          ],
+          style_tips: ["pp — the most delicate section of the piece", "listen to each harmonic color as it passes"],
+          teaching_notes: [
+            {
+              measure: 35,
+              note: "The harmony is exploring — let it happen without forcing direction.",
+              technique: ["light touch throughout", "listen more than you play"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Contemplative consequent — floating melody, light open resolution",
+          key_moments: [
+            "m37 melody floats above quiet triplets",
+            "m39 light harmonic resolution",
+            "m40 open quality",
+          ],
+          teaching_goals: [
+            "the floating melody must feel genuinely light — no arm weight",
+            "the phrase ends with an airy, open quality",
+          ],
+          style_tips: ["the lightest touch in the piece", "let the notes float and ring"],
+          teaching_notes: [
+            {
+              measure: 40,
+              note: "The phrase ends lightly, openly — no strong landing.",
+              technique: ["lift the wrist gently at the phrase end"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Flowing continuation antecedent — arabesques in full voice",
+          key_moments: [
+            "m41 arabesque texture fully flowing",
+            "m43 melodic content clear",
+            "m44 phrase continues naturally",
+          ],
+          teaching_goals: [
+            "the arabesque texture here is completely natural — it should feel effortless",
+            "the melody rides above the triplets without strain",
+          ],
+          style_tips: ["mp — flowing and natural", "no special expressive gesture needed — just let it flow"],
+          teaching_notes: [
+            {
+              measure: 43,
+              note: "The arabesque at its most natural — like water flowing.",
+              technique: ["relaxed wrist", "even weight throughout the triplets"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Flowing continuation consequent — cascading triplets, light close",
+          key_moments: [
+            "m45 triplets cascade",
+            "m47 phrase completing",
+            "m48 light, clean resolution",
+          ],
+          teaching_goals: [
+            "the close should feel natural, not prepared",
+            "the triplets can slightly broaden toward the close",
+          ],
+          style_tips: ["the light landing is characteristic of Debussy — no strong cadence", "pp at the close"],
+          teaching_notes: [
+            {
+              measure: 48,
+              note: "The phrase closes lightly — Debussy never ends a phrase with force.",
+              technique: ["slight relaxation toward the resolution", "light final note"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Recapitulation antecedent — opening arabesque returns, E major bright",
+          key_moments: [
+            "m57 recapitulation opens",
+            "m59 E major clarity restored",
+            "m60 phrase momentum continues",
+          ],
+          teaching_goals: [
+            "the recapitulation should feel fresh, not like a repeat",
+            "play the opening texture with renewed lightness",
+          ],
+          style_tips: ["pp to mp — the recapitulation has the same character as the opening", "fresh ears"],
+          teaching_notes: [
+            {
+              measure: 57,
+              note: "The return — play it as if hearing the arabesque for the first time again.",
+              technique: ["same relaxed wrist and even triplets as the opening"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Recapitulation consequent — flowing texture continues, elegant resolution",
+          key_moments: [
+            "m61 arabesque continues in recapitulation",
+            "m63 moving toward resolution",
+            "m64 elegant close",
+          ],
+          teaching_goals: [
+            "the recapitulation closes more confidently than the exposition",
+            "the E major resolution is the goal",
+          ],
+          style_tips: ["the elegant close comes naturally — don't rush it", "slight broadening is fine"],
+          teaching_notes: [
+            {
+              measure: 64,
+              note: "The recapitulation's close — slightly more confident than the opening.",
+              technique: ["allow slight broadening toward the resolution"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Coda approach antecedent — triplets moving toward final statement",
+          key_moments: [
+            "m77 approaching the coda",
+            "m79 conclusive direction clear",
+            "m80 final approach",
+          ],
+          teaching_goals: [
+            "sense the approaching end — the triplets are moving toward their last statement",
+            "the E major is clear and final",
+          ],
+          style_tips: ["slight broadening is appropriate", "the conclusion earns a gentle ritardando"],
+          teaching_notes: [
+            {
+              measure: 79,
+              note: "Approaching the end — the triplets have a conclusive direction now.",
+              technique: ["slight broadening toward the final measures"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Coda approach consequent — triplets settling, E major resolution",
+          key_moments: [
+            "m81 triplets settling toward close",
+            "m83 E major final clarity",
+            "m84 closing measures",
+          ],
+          teaching_goals: [
+            "the arabesque is completing its journey — let it settle peacefully",
+            "E major at the close should feel like the sun breaking through",
+          ],
+          style_tips: ["ritardando and pp toward the final measure", "the conclusion is gentle, not triumphant"],
+          teaching_notes: [
+            {
+              measure: 84,
+              note: "The arabesque settles finally into E major — let it ring clearly and gently.",
+              technique: ["soft landing on the final E major chord", "pedal for resonance"],
+            },
+          ],
+        },
+      },
     ],
   },
 
@@ -1010,6 +2664,112 @@ const SONG_SPECS: SongSpec[] = [
           "Measures 13–16 continue the B section in the relative major, completing the phrase. The LH adds fuller support. The phrase settles on a half cadence that prepares the return to the A theme. Let me loop mm. 13–16.",
         contSummary:
           "Für Elise mm. 13–16: B section continuation, fuller LH, half cadence preparing A theme return. Pairs with mm. 9–12.",
+      },
+      // ── Slice 9b new pairs ────────────────────────────────────────────────────
+      {
+        promptStart: 17,
+        promptEnd: 20,
+        contStart: 21,
+        contEnd: 24,
+        promptLabel: "A theme second statement — antecedent",
+        contLabel: "A theme second statement — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 17–20 of Für Elise — the A theme returns here after the B section. Describe it.",
+        contUserPrompt:
+          "Play measures 21–24 and describe the continuation.",
+        promptAnalysis:
+          "Measures 17–20 bring the second statement of the A theme in A minor — the oscillating E-D# figure returns after the B section's relative major warmth. The character contracts back to the piece's introspective beginning. Let me loop mm. 17–20.",
+        promptSummary:
+          "Für Elise mm. 17–20: A theme second statement, A minor oscillating figure returns after B section.",
+        contAnalysis:
+          "Measures 21–24 continue the A theme second statement — the familiar oscillation continues its patient rocking motion. The phrase will again end on the dominant. Let me loop mm. 21–24.",
+        contSummary:
+          "Für Elise mm. 21–24: A theme continuation, oscillating figure, approaches dominant. Pairs with mm. 17–20.",
+      },
+      {
+        promptStart: 25,
+        promptEnd: 28,
+        contStart: 29,
+        contEnd: 32,
+        promptLabel: "C section — contrasting antecedent",
+        contLabel: "C section — contrasting consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 25–28 of Für Elise — is this the C section with different character?",
+        contUserPrompt:
+          "Play measures 29–32 and describe the continuation of the C section.",
+        promptAnalysis:
+          "Measures 25–28 enter the C section of the rondo — the most contrasting episode. The key shifts and the texture becomes more flowing and arpeggio-like, quite different from the A theme's oscillation. Let me loop mm. 25–28.",
+        promptSummary:
+          "Für Elise mm. 25–28: C section enters, contrasting texture, arpeggio-like character, key shift.",
+        contAnalysis:
+          "Measures 29–32 continue the C section — the contrasting character persists with flowing arpeggios and a more open harmonic area. The rondo's structural contrast is at its maximum here. Let me loop mm. 29–32.",
+        contSummary:
+          "Für Elise mm. 29–32: C section continuation, flowing arpeggios, open harmonic area. Pairs with mm. 25–28.",
+      },
+      {
+        promptStart: 33,
+        promptEnd: 36,
+        contStart: 37,
+        contEnd: 40,
+        promptLabel: "C section — development antecedent",
+        contLabel: "C section — development consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 33–36 of Für Elise — how does the C section develop?",
+        contUserPrompt:
+          "Play measures 37–40 and describe the continuation.",
+        promptAnalysis:
+          "Measures 33–36 continue the C section's development — the arpeggios continue their flowing character. The piece is in its most developmental episode here, far from the simple A theme oscillation. Let me loop mm. 33–36.",
+        promptSummary:
+          "Für Elise mm. 33–36: C section development, flowing arpeggios, developmental character.",
+        contAnalysis:
+          "Measures 37–40 bring the C section toward its end — the arpeggios begin to prepare the return of the A theme. The approaching return is felt in the harmonic direction. Let me loop mm. 37–40.",
+        contSummary:
+          "Für Elise mm. 37–40: C section approaching close, preparing A theme return. Pairs with mm. 33–36.",
+      },
+      {
+        promptStart: 41,
+        promptEnd: 44,
+        contStart: 45,
+        contEnd: 48,
+        promptLabel: "A theme third return — antecedent",
+        contLabel: "A theme third return — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 41–44 of Für Elise — does the A theme return again here?",
+        contUserPrompt:
+          "Play measures 45–48 and describe the continuation.",
+        promptAnalysis:
+          "Measures 41–44 bring a third return of the A theme — the oscillating E-D# figure is back in A minor. Each return feels slightly different in character because of what preceded it. Let me loop mm. 41–44.",
+        promptSummary:
+          "Für Elise mm. 41–44: third A theme return, oscillating figure, character deepened by rondo context.",
+        contAnalysis:
+          "Measures 45–48 continue the A theme's third statement — the oscillating figure maintains its patient quality. The phrase develops toward its cadential gesture. Let me loop mm. 45–48.",
+        contSummary:
+          "Für Elise mm. 45–48: A theme third statement continuation. Pairs with mm. 41–44.",
+      },
+      {
+        promptStart: 57,
+        promptEnd: 60,
+        contStart: 61,
+        contEnd: 64,
+        promptLabel: "late return — antecedent",
+        contLabel: "late return — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 57–60 of Für Elise — another return in the rondo structure?",
+        contUserPrompt:
+          "Play measures 61–64 and describe the continuation.",
+        promptAnalysis:
+          "Measures 57–60 bring another appearance of the rondo material — the oscillating A theme or its variants continue their journey through the piece. Each appearance has the accumulated context of the whole. Let me loop mm. 57–60.",
+        promptSummary:
+          "Für Elise mm. 57–60: late rondo return, accumulated context.",
+        contAnalysis:
+          "Measures 61–64 continue the late-section material — the piece is moving toward its conclusion through the familiar rondo returns. Let me loop mm. 61–64.",
+        contSummary:
+          "Für Elise mm. 61–64: late rondo continuation. Pairs with mm. 57–60.",
       },
     ],
     pairAnnotations: [
@@ -1058,6 +2818,217 @@ const SONG_SPECS: SongSpec[] = [
               measure: 16,
               note: "The dominant G cadence is a door back to the A theme — leave it open.",
               technique: ["slight tenuto on G", "prepare for A theme return"],
+            },
+          ],
+        },
+      },
+      // ── Slice 9b Für Elise annotations ───────────────────────────────────────
+      {
+        promptAnnotation: {
+          structure: "A theme second statement antecedent — oscillating figure returns after B section",
+          key_moments: [
+            "m17 A minor oscillation resumes",
+            "m19 character contrast with preceding B section",
+            "m20 familiar phrase shape",
+          ],
+          teaching_goals: [
+            "feel the character contrast — returning from C major warmth to A minor introspection",
+            "same light touch as the opening A theme",
+          ],
+          style_tips: ["the return to A minor should feel like a return to a familiar place", "same pp as the opening"],
+          teaching_notes: [
+            {
+              measure: 17,
+              note: "The A theme returns — the contrast with the B section's warmth makes it feel different.",
+              technique: ["light oscillating touch", "introspective character"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "A theme second statement consequent — oscillation continues, approaches dominant",
+          key_moments: [
+            "m21 oscillation continues",
+            "m23 cadential approach",
+            "m24 dominant E arrival",
+          ],
+          teaching_goals: [
+            "same patient quality as the first A theme statement",
+            "the rondo's structure becomes clear through repeated hearings",
+          ],
+          style_tips: ["no change in character — the oscillation is steady", "slight tenuto on the dominant arrival"],
+          teaching_notes: [
+            {
+              measure: 24,
+              note: "The dominant arrival again — the rondo structure is asserting itself.",
+              technique: ["slight tenuto on E dominant", "pause before the next phrase"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "C section antecedent — contrasting arpeggio texture, key shift",
+          key_moments: [
+            "m25 C section enters with arpeggios",
+            "m27 key area different from A minor",
+            "m28 arpeggio momentum continues",
+          ],
+          teaching_goals: [
+            "the C section is the most contrasting episode — the character changes completely",
+            "arpeggio figures require wrist flexibility",
+          ],
+          style_tips: ["more dynamic here — this section has more energy than the A theme", "wrist-driven arpeggios"],
+          teaching_notes: [
+            {
+              measure: 25,
+              note: "The C section arrives — a complete change of character. Let the arpeggios flow.",
+              technique: ["wrist-driven arpeggio", "more energetic dynamic than A theme"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "C section consequent — flowing arpeggios, open harmonic exploration",
+          key_moments: [
+            "m29 arpeggios continue flowing",
+            "m31 harmonic area explored",
+            "m32 continued C section character",
+          ],
+          teaching_goals: [
+            "the arpeggios should feel free and flowing, not driven",
+            "the harmonic openness of the C section is part of its character",
+          ],
+          style_tips: ["let the arpeggios breathe — no rigid rhythm", "the C section has more rubato than the A theme"],
+          teaching_notes: [
+            {
+              measure: 29,
+              note: "The arpeggios flow freely in the C section — slightly more flexible tempo.",
+              technique: ["slight rubato in the arpeggios", "wrist leads the motion"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "C section development antecedent — arpeggios continue, developmental momentum",
+          key_moments: [
+            "m33 development of C section",
+            "m35 harmonic movement continues",
+            "m36 forward momentum",
+          ],
+          teaching_goals: [
+            "feel the developmental quality — moving forward with energy",
+            "the arpeggios have momentum here",
+          ],
+          style_tips: ["maintain the energy through the development", "slight crescendo is natural"],
+          teaching_notes: [
+            {
+              measure: 35,
+              note: "The development has momentum — the arpeggios want to move forward.",
+              technique: ["slight lean into each arpeggio group"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "C section closing antecedent — arpeggios prepare A theme return",
+          key_moments: [
+            "m37 approach to A theme return",
+            "m39 harmonic preparation",
+            "m40 dominant of A minor approaching",
+          ],
+          teaching_goals: [
+            "sense the returning A theme — the harmony is moving toward E dominant",
+            "the arpeggios begin to settle before the A theme returns",
+          ],
+          style_tips: ["slight ritardando as the arpeggios prepare the return", "the energy is resolving"],
+          teaching_notes: [
+            {
+              measure: 40,
+              note: "The arpeggios are preparing the A theme return — feel the approach.",
+              technique: ["slight broadening", "prepare for the A minor return"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Third A theme return antecedent — oscillating figure returns, deepened by context",
+          key_moments: [
+            "m41 third A theme return",
+            "m43 oscillation familiar",
+            "m44 accumlated context of three hearings",
+          ],
+          teaching_goals: [
+            "each rondo return is the same music but different because of what preceded it",
+            "the third return carries the most accumulated context",
+          ],
+          style_tips: ["the same light touch, but the piece has depth now", "play as if remembering"],
+          teaching_notes: [
+            {
+              measure: 41,
+              note: "Third A theme return — familiar, but enriched by everything that came before.",
+              technique: ["same technique, deeper listening"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Third A theme return consequent — oscillation continues",
+          key_moments: [
+            "m45 oscillation continues",
+            "m47 patient rocking motion",
+            "m48 cadential approach",
+          ],
+          teaching_goals: [
+            "patience is the virtue here — the rondo teaches through repetition",
+            "each note still matters even in the third hearing",
+          ],
+          style_tips: ["no complacency — the A theme must be fresh each time", "pp and light"],
+          teaching_notes: [
+            {
+              measure: 47,
+              note: "The patient oscillation — by the third hearing it should feel inevitable.",
+              technique: ["light, even oscillation", "no changes from previous A theme statements"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Late rondo return antecedent — oscillating material in final section",
+          key_moments: [
+            "m57 late rondo appearance",
+            "m59 material familiar",
+            "m60 phrase momentum",
+          ],
+          teaching_goals: [
+            "the late section returns carry the weight of the entire rondo",
+            "the oscillating figure is now deeply familiar",
+          ],
+          style_tips: ["the depth of familiarity gives these later appearances a different quality", "mp — slightly fuller than the beginning"],
+          teaching_notes: [
+            {
+              measure: 59,
+              note: "Late in the rondo — the familiar material carries accumulated meaning.",
+              technique: ["play with awareness of the whole piece's journey"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Late rondo consequent — approaching the conclusion",
+          key_moments: [
+            "m61 continuation of late material",
+            "m63 approaching conclusion",
+            "m64 final direction",
+          ],
+          teaching_goals: [
+            "the rondo is approaching its conclusion — the piece is completing",
+            "sustain the character to the very end",
+          ],
+          style_tips: ["maintain the pp character", "the conclusion is coming — no anticipation in the playing"],
+          teaching_notes: [
+            {
+              measure: 64,
+              note: "The conclusion is approaching — play each note as if it might be the last.",
+              technique: ["sustained pp", "light touch to the end"],
             },
           ],
         },
@@ -1117,6 +3088,133 @@ const SONG_SPECS: SongSpec[] = [
           "Measures 13–16 arrive in G major with the second theme — a new melodic character. The melody is lighter and more playful than the opening, with a decorated top voice. The Alberti bass continues but now in G. Let me loop mm. 13–16.",
         contSummary:
           "Mozart K545 mm. 13–16: second theme in G major, lighter/more playful character. Pair with mm. 9–12 transition for key-arrival prediction.",
+      },
+      // ── Slice 9b new pairs ────────────────────────────────────────────────────
+      {
+        promptStart: 17,
+        promptEnd: 20,
+        contStart: 21,
+        contEnd: 24,
+        promptLabel: "second theme continuation — antecedent",
+        contLabel: "second theme continuation — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 17–20 of Mozart K545 — how does the second theme develop?",
+        contUserPrompt:
+          "Play measures 21–24 and describe the continuation.",
+        promptAnalysis:
+          "Measures 17–20 continue the second theme in G major — the lighter, playful character of the exposition's second theme is in full flow. The Alberti bass continues supporting the decorated melody. Let me loop mm. 17–20.",
+        promptSummary:
+          "Mozart K545 mm. 17–20: second theme development in G major, playful decorated melody over Alberti bass.",
+        contAnalysis:
+          "Measures 21–24 extend the second theme — the G major area continues with Mozart's characteristic elegance. The phrase closes toward a cadential gesture. Let me loop mm. 21–24.",
+        contSummary:
+          "Mozart K545 mm. 21–24: second theme G major extension, cadential approach. Pairs with mm. 17–20.",
+      },
+      {
+        promptStart: 25,
+        promptEnd: 28,
+        contStart: 29,
+        contEnd: 32,
+        promptLabel: "exposition close — antecedent",
+        contLabel: "exposition close — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 25–28 of Mozart K545 — are we closing the exposition here?",
+        contUserPrompt:
+          "Play measures 29–32 and describe the exposition close.",
+        promptAnalysis:
+          "Measures 25–28 are the exposition's closing section — Mozart wraps up the G major second theme area with cadential gestures and a sense of completion. The Alberti bass continues. Let me loop mm. 25–28.",
+        promptSummary:
+          "Mozart K545 mm. 25–28: exposition closing section, G major cadential gestures, completion approaching.",
+        contAnalysis:
+          "Measures 29–32 complete the exposition — the final cadential gestures in G major bring the first half to a close. The double bar (or its musical equivalent) is approaching. Let me loop mm. 29–32.",
+        contSummary:
+          "Mozart K545 mm. 29–32: exposition close, final G major cadences. Pairs with mm. 25–28.",
+      },
+      {
+        promptStart: 33,
+        promptEnd: 36,
+        contStart: 37,
+        contEnd: 40,
+        promptLabel: "development section — antecedent",
+        contLabel: "development section — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 33–36 of Mozart K545 — the development section. What does Mozart do here?",
+        contUserPrompt:
+          "Play measures 37–40 and describe the continuation of the development.",
+        promptAnalysis:
+          "Measures 33–36 enter the development — Mozart's short but purposeful development section moves through related keys. The thematic material from the exposition is transformed and the harmony becomes more dynamic. Let me loop mm. 33–36.",
+        promptSummary:
+          "Mozart K545 mm. 33–36: development section begins, thematic transformation, harmonic movement through related keys.",
+        contAnalysis:
+          "Measures 37–40 continue the development — Mozart drives toward the dominant for the recapitulation. The harmonic momentum builds. Let me loop mm. 37–40.",
+        contSummary:
+          "Mozart K545 mm. 37–40: development continues, driving toward dominant recapitulation approach. Pairs with mm. 33–36.",
+      },
+      {
+        promptStart: 57,
+        promptEnd: 60,
+        contStart: 61,
+        contEnd: 64,
+        promptLabel: "recapitulation — second theme antecedent",
+        contLabel: "recapitulation — second theme consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 57–60 of Mozart K545 — the recapitulation's second theme. Compare it to the exposition.",
+        contUserPrompt:
+          "Play measures 61–64 and describe the continuation.",
+        promptAnalysis:
+          "Measures 57–60 bring the recapitulation's second theme — but now it's in C major (tonic) rather than G. This is the sonata form's satisfying structural surprise: the same theme but now harmonically resolved. Let me loop mm. 57–60.",
+        promptSummary:
+          "Mozart K545 mm. 57–60: recapitulation second theme in tonic C (was G in exposition), structural resolution.",
+        contAnalysis:
+          "Measures 61–64 continue the recapitulation's second theme in C major — the harmonic home is fully established. Let me loop mm. 61–64.",
+        contSummary:
+          "Mozart K545 mm. 61–64: recapitulation second theme continues in C major. Pairs with mm. 57–60.",
+      },
+      {
+        promptStart: 73,
+        promptEnd: 76,
+        contStart: 77,
+        contEnd: 80,
+        promptLabel: "recapitulation close — antecedent",
+        contLabel: "recapitulation close — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 73–76 of Mozart K545 — closing the recapitulation.",
+        contUserPrompt:
+          "Play measures 77–80 and describe the final close.",
+        promptAnalysis:
+          "Measures 73–76 are closing the recapitulation in C major — the same cadential gestures as the exposition but now in the tonic. The sonata form is completing its arc. Let me loop mm. 73–76.",
+        promptSummary:
+          "Mozart K545 mm. 73–76: recapitulation closing, C major cadential gestures, sonata form completing.",
+        contAnalysis:
+          "Measures 77–80 bring the recapitulation's final cadences in C major. The form is complete. Let me loop mm. 77–80.",
+        contSummary:
+          "Mozart K545 mm. 77–80: recapitulation final cadences, C major. Pairs with mm. 73–76.",
+      },
+      {
+        promptStart: 81,
+        promptEnd: 84,
+        contStart: 85,
+        contEnd: 88,
+        promptLabel: "coda — antecedent",
+        contLabel: "coda — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 81–84 of Mozart K545 — is this the coda?",
+        contUserPrompt:
+          "Play measures 85–88 and describe the final close.",
+        promptAnalysis:
+          "Measures 81–84 are in the coda — the final section that reinforces the tonic C. The Alberti bass continues and the melody makes its final statements with Classical elegance. Let me loop mm. 81–84.",
+        promptSummary:
+          "Mozart K545 mm. 81–84: coda, tonic C reinforcement, Classical elegance in final statements.",
+        contAnalysis:
+          "Measures 85–88 bring the coda toward its conclusion — the final C major cadences approach and the piece will end cleanly and simply. Let me loop mm. 85–88.",
+        contSummary:
+          "Mozart K545 mm. 85–88: coda conclusion, final C major cadences. Pairs with mm. 81–84.",
       },
     ],
     pairAnnotations: [
@@ -1217,6 +3315,223 @@ const SONG_SPECS: SongSpec[] = [
           ],
         },
       },
+      // ── Slice 9b Mozart annotations ───────────────────────────────────────────
+      {
+        promptAnnotation: {
+          structure: "Second theme continuation antecedent — G major playful melody",
+          key_moments: [
+            "m17 second theme continues in G",
+            "m19 decorated melody",
+            "m20 cadential approach",
+          ],
+          teaching_goals: ["maintain the lighter, more playful character of the second theme", "G major has a different brightness than C"],
+          style_tips: ["still no pedal — Classical transparency", "lighter arm weight than the first theme"],
+          teaching_notes: [
+            {
+              measure: 17,
+              note: "The second theme's playful character continues — keep it conversational.",
+              technique: ["light touch", "Alberti bass quiet underneath"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Second theme consequent — G major cadential approach",
+          key_moments: [
+            "m21 cadential figures approach",
+            "m23 G major cadence",
+            "m24 tonic G arrival",
+          ],
+          teaching_goals: ["feel the G major cadence as a local tonic — satisfying but temporary", "the exposition will repeat or develop"],
+          style_tips: ["clean cadence — no ritardando unless marked", "the G major arrival is elegant"],
+          teaching_notes: [
+            {
+              measure: 24,
+              note: "G major tonic arrival — elegant and clean, as the Classical style demands.",
+              technique: ["slight emphasis on the G tonic", "then continue without pause"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Exposition closing antecedent — G major cadential gestures",
+          key_moments: [
+            "m25 closing figures in G",
+            "m27 cadential momentum",
+            "m28 formal close approaching",
+          ],
+          teaching_goals: ["feel the sense of formal completion as the exposition closes", "cadential figures should feel purposeful"],
+          style_tips: ["slight broadening toward the exposition close is appropriate", "formal and clean"],
+          teaching_notes: [
+            {
+              measure: 27,
+              note: "Closing cadential figures — purposeful and clear.",
+              technique: ["clean articulation on the cadential figures"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Exposition close consequent — final G major cadences",
+          key_moments: [
+            "m29 final cadential gesture",
+            "m31 G major resolution",
+            "m32 exposition complete",
+          ],
+          teaching_goals: ["the exposition close is a structural landmark — feel its weight", "G major tonic is fully established here"],
+          style_tips: ["the double bar is coming — or the repeat — play with finality", "clean and bright"],
+          teaching_notes: [
+            {
+              measure: 32,
+              note: "Exposition complete — G major tonic fully confirmed. A structural arrival.",
+              technique: ["slight pause before the development or repeat"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Development antecedent — thematic material transformed, harmonic movement",
+          key_moments: [
+            "m33 development begins",
+            "m35 thematic material transformed",
+            "m36 harmonic direction",
+          ],
+          teaching_goals: ["the development is purposeful — not random harmonizing", "the familiar thematic material takes on new meaning here"],
+          style_tips: ["the development has more energy than the exposition areas", "slight forward lean"],
+          teaching_notes: [
+            {
+              measure: 35,
+              note: "Thematic material transformed in the development — hear the familiar in new guise.",
+              technique: ["more forward energy than the exposition", "purposeful harmonic direction"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Development consequent — building toward recapitulation",
+          key_moments: [
+            "m37 momentum builds",
+            "m39 dominant preparation begins",
+            "m40 recapitulation approaching",
+          ],
+          teaching_goals: ["feel the harmonic momentum building toward the recapitulation", "the development is purposeful and short in Mozart's early style"],
+          style_tips: ["forward energy — the recapitulation is coming", "don't slow down here"],
+          teaching_notes: [
+            {
+              measure: 40,
+              note: "Approaching the recapitulation — the harmonic momentum is purposeful.",
+              technique: ["forward lean", "no ritardando before the recapitulation"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Recapitulation second theme antecedent — now in tonic C (was G)",
+          key_moments: [
+            "m57 second theme returns but now in C",
+            "m59 tonic resolution in the theme itself",
+            "m60 structural satisfaction of sonata form",
+          ],
+          teaching_goals: ["recognize the structural surprise — same theme, different key", "the tonic second theme is the sonata form's satisfying answer"],
+          style_tips: ["same character as the exposition's second theme but now at home", "this resolution is a structural satisfaction"],
+          teaching_notes: [
+            {
+              measure: 57,
+              note: "The second theme is home now — in C major instead of G. Hear the structural resolution.",
+              technique: ["same touch as the exposition second theme", "but hear the tonic arrival"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Recapitulation second theme consequent — C major, completing the form",
+          key_moments: [
+            "m61 theme continues in C",
+            "m63 C major cadential approach",
+            "m64 tonic C arrival",
+          ],
+          teaching_goals: ["feel the form completing — the second theme is now fully in tonic", "this is the sonata form's structural resolution"],
+          style_tips: ["same character as the exposition but with a sense of completion", "the form is satisfied"],
+          teaching_notes: [
+            {
+              measure: 64,
+              note: "C major tonic — the same cadence as the exposition, but now fully home.",
+              technique: ["slight sense of arrival — the structural circle is completing"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Recapitulation closing antecedent — C major cadential gestures",
+          key_moments: [
+            "m73 closing figures in C major",
+            "m75 cadential momentum",
+            "m76 formal close approaching",
+          ],
+          teaching_goals: ["same closing gestures as the exposition but now fully in C", "the recapitulation is completing"],
+          style_tips: ["the closing is even more satisfying now — we're home", "same articulation as the exposition close"],
+          teaching_notes: [
+            {
+              measure: 75,
+              note: "Closing in C major — the same gesture as m.27 but now at home.",
+              technique: ["clean articulation", "same character as the exposition close"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Recapitulation final cadences — C major, form complete",
+          key_moments: [
+            "m77 final recapitulation cadence",
+            "m79 C major tonic confirmed",
+            "m80 recapitulation complete",
+          ],
+          teaching_goals: ["the recapitulation is complete — the form has resolved", "C major tonic is fully confirmed"],
+          style_tips: ["formal and clean — a structural arrival", "slight broadening is appropriate"],
+          teaching_notes: [
+            {
+              measure: 80,
+              note: "Recapitulation complete — C major fully home. The coda will follow.",
+              technique: ["sense of structural completion", "slightly more weight on the final C"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Coda antecedent — tonic C reinforcement, final melodic statements",
+          key_moments: [
+            "m81 coda begins",
+            "m83 final melodic statements",
+            "m84 approaching the end",
+          ],
+          teaching_goals: ["the coda is the final confirmation — enjoy the home key", "Classical purity in the final measures"],
+          style_tips: ["the ending is simple and elegant — no excess", "pp to p — ending quietly is Classical style"],
+          teaching_notes: [
+            {
+              measure: 83,
+              note: "Final melodic statements — simple and elegant, as Mozart always ends.",
+              technique: ["clean, light touch", "no sentimentality at the close"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Coda consequent — final C major cadences, clean conclusion",
+          key_moments: [
+            "m85 final cadential gestures",
+            "m87 penultimate cadence",
+            "m88 final C major arrival",
+          ],
+          teaching_goals: ["the movement ends cleanly and simply — no lingering", "Mozart's endings are decisive"],
+          style_tips: ["clean final cadence — no ritardando unless marked", "simple and bright"],
+          teaching_notes: [
+            {
+              measure: 88,
+              note: "Final C major — decisive and clean. Mozart ends without sentiment.",
+              technique: ["clean final chord", "hands release together"],
+            },
+          ],
+        },
+      },
     ],
   },
 
@@ -1272,6 +3587,133 @@ const SONG_SPECS: SongSpec[] = [
           "Measures 13–16 bring a return to stability — the melody settles back from the developmental excursion. The phrase resolves more peacefully. Let me loop mm. 13–16.",
         contSummary:
           "Pathetique mvt 2 mm. 13–16: return from development, melody settles, peaceful resolution. Pairs with mm. 9–12.",
+      },
+      // ── Slice 9b new pairs ────────────────────────────────────────────────────
+      {
+        promptStart: 17,
+        promptEnd: 20,
+        contStart: 21,
+        contEnd: 24,
+        promptLabel: "second period — antecedent",
+        contLabel: "second period — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 17–20 of Pathetique mvt 2 — the second period begins here. Describe it.",
+        contUserPrompt:
+          "Play measures 21–24 and describe how the second period closes.",
+        promptAnalysis:
+          "Measures 17–20 begin the movement's second period — a restatement and continuation of the cantabile theme with slightly different harmonic coloring. The singing quality is maintained and the LH arpeggios continue their rocking motion. Let me loop mm. 17–20.",
+        promptSummary:
+          "Pathetique mvt 2 mm. 17–20: second period antecedent, cantabile theme continues, slightly varied harmony.",
+        contAnalysis:
+          "Measures 21–24 complete the second period — the melody settles with a peaceful resolution. Let me loop mm. 21–24.",
+        contSummary:
+          "Pathetique mvt 2 mm. 21–24: second period consequent, peaceful resolution. Pairs with mm. 17–20.",
+      },
+      {
+        promptStart: 25,
+        promptEnd: 28,
+        contStart: 29,
+        contEnd: 32,
+        promptLabel: "middle section — episode antecedent",
+        contLabel: "middle section — episode consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 25–28 of Pathetique mvt 2 — a contrasting episode enters here. Describe it.",
+        contUserPrompt:
+          "Play measures 29–32 and describe the continuation of this episode.",
+        promptAnalysis:
+          "Measures 25–28 bring a contrasting episode — the character shifts from the cantabile main theme to a more active, slightly agitated passage. The LH texture becomes busier. Let me loop mm. 25–28.",
+        promptSummary:
+          "Pathetique mvt 2 mm. 25–28: contrasting episode, more active texture, slight agitation.",
+        contAnalysis:
+          "Measures 29–32 continue the contrasting episode — the busier texture persists before the return of the main theme. Let me loop mm. 29–32.",
+        contSummary:
+          "Pathetique mvt 2 mm. 29–32: episode continuation, active texture. Pairs with mm. 25–28.",
+      },
+      {
+        promptStart: 33,
+        promptEnd: 36,
+        contStart: 37,
+        contEnd: 40,
+        promptLabel: "theme return — antecedent",
+        contLabel: "theme return — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 33–36 of Pathetique mvt 2 — does the cantabile theme return here?",
+        contUserPrompt:
+          "Play measures 37–40 and describe the continuation.",
+        promptAnalysis:
+          "Measures 33–36 bring the return of the cantabile Ab major theme — the rocking LH arpeggios and singing melody resume after the contrasting episode. Let me loop mm. 33–36.",
+        promptSummary:
+          "Pathetique mvt 2 mm. 33–36: cantabile theme return, Ab major, rocking LH resumes.",
+        contAnalysis:
+          "Measures 37–40 continue the theme return — the melody continues its singing arc and the rocking arpeggios provide their steady support. Let me loop mm. 37–40.",
+        contSummary:
+          "Pathetique mvt 2 mm. 37–40: theme return continuation, singing arc continues. Pairs with mm. 33–36.",
+      },
+      {
+        promptStart: 57,
+        promptEnd: 60,
+        contStart: 61,
+        contEnd: 64,
+        promptLabel: "late section — antecedent",
+        contLabel: "late section — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 57–60 of Pathetique mvt 2 — what is the character in this later section?",
+        contUserPrompt:
+          "Play measures 61–64 and describe the continuation.",
+        promptAnalysis:
+          "Measures 57–60 are in the movement's later section — the rondo structure has brought the theme back again with the accumulated depth of several hearings. The cantabile quality is deep and warm. Let me loop mm. 57–60.",
+        promptSummary:
+          "Pathetique mvt 2 mm. 57–60: late section, deep cantabile quality, accumulated warmth.",
+        contAnalysis:
+          "Measures 61–64 continue the late section phrase — the melody is at its most expressive depth. Let me loop mm. 61–64.",
+        contSummary:
+          "Pathetique mvt 2 mm. 61–64: late section continuation, maximum expressive depth. Pairs with mm. 57–60.",
+      },
+      {
+        promptStart: 73,
+        promptEnd: 76,
+        contStart: 77,
+        contEnd: 80,
+        promptLabel: "final return — antecedent",
+        contLabel: "final return — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 73–76 of Pathetique mvt 2 — approaching the final section.",
+        contUserPrompt:
+          "Play measures 77–80 and describe the final approach.",
+        promptAnalysis:
+          "Measures 73–76 are approaching the movement's conclusion — the cantabile theme or its variants are in their final statements. The dream-like quality is at its deepest. Let me loop mm. 73–76.",
+        promptSummary:
+          "Pathetique mvt 2 mm. 73–76: approaching conclusion, dream-like depth, cantabile theme final statements.",
+        contAnalysis:
+          "Measures 77–80 continue toward the conclusion — the peaceful character is maintained as the movement approaches its final pages. Let me loop mm. 77–80.",
+        contSummary:
+          "Pathetique mvt 2 mm. 77–80: final approach, peaceful character maintained. Pairs with mm. 73–76.",
+      },
+      {
+        promptStart: 81,
+        promptEnd: 84,
+        contStart: 85,
+        contEnd: 88,
+        promptLabel: "coda approach — antecedent",
+        contLabel: "coda approach — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 81–84 of Pathetique mvt 2 — is this the coda?",
+        contUserPrompt:
+          "Play measures 85–88 and describe the final phrases.",
+        promptAnalysis:
+          "Measures 81–84 are in the coda area — the movement is completing. The final Ab major statements carry the full weight of the Adagio cantabile. Let me loop mm. 81–84.",
+        promptSummary:
+          "Pathetique mvt 2 mm. 81–84: coda, final Ab major statements, full Adagio cantabile weight.",
+        contAnalysis:
+          "Measures 85–88 bring the final phrases — the melody makes its last statement over the rocking arpeggios. Let me loop mm. 85–88.",
+        contSummary:
+          "Pathetique mvt 2 mm. 85–88: final phrases, melody's last statement. Pairs with mm. 81–84.",
       },
     ],
     pairAnnotations: [
@@ -1367,6 +3809,223 @@ const SONG_SPECS: SongSpec[] = [
           ],
         },
       },
+      // ── Slice 9b Pathetique annotations ──────────────────────────────────────
+      {
+        promptAnnotation: {
+          structure: "Second period antecedent — cantabile theme with slightly varied harmony",
+          key_moments: [
+            "m17 theme restatement with variation",
+            "m19 harmonic color slightly different",
+            "m20 dominant approach",
+          ],
+          teaching_goals: ["feel the variation in the harmony while maintaining the cantabile quality", "the theme is maturing through the movement"],
+          style_tips: ["same pp/mp character as the opening", "the variation enriches without changing the mood"],
+          teaching_notes: [
+            {
+              measure: 17,
+              note: "The theme returns with subtle variation — familiar but enriched.",
+              technique: ["same cantabile touch", "listen for the harmonic difference"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Second period consequent — peaceful resolution",
+          key_moments: [
+            "m21 theme continues",
+            "m23 tonic approach",
+            "m24 peaceful Ab arrival",
+          ],
+          teaching_goals: ["the second period close is as peaceful as the first", "the Ab tonic is a regular resting point"],
+          style_tips: ["slight diminuendo toward the resolution", "peace is the constant"],
+          teaching_notes: [
+            {
+              measure: 24,
+              note: "Second period resolution — same peace as the first, slightly deepened.",
+              technique: ["soft Ab arrival", "continue arm weight through the note"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Contrasting episode antecedent — more active texture, slight agitation",
+          key_moments: [
+            "m25 episode texture begins",
+            "m27 LH becomes busier",
+            "m28 contrast with main theme",
+          ],
+          teaching_goals: ["feel the contrast — this episode is more active than the main theme", "the LH texture requires more precision here"],
+          style_tips: ["mp to mf — more energy than the main theme", "the contrast is intentional — don't smooth it out"],
+          teaching_notes: [
+            {
+              measure: 25,
+              note: "The contrasting episode — more active, slightly urgent. A different character entirely.",
+              technique: ["increased energy", "LH texture needs clarity"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Contrasting episode consequent — active texture continues, return approaching",
+          key_moments: [
+            "m29 episode continues",
+            "m31 harmonic approach to theme return",
+            "m32 return is imminent",
+          ],
+          teaching_goals: ["sustain the contrasting character", "feel the approach of the main theme return"],
+          style_tips: ["maintain the energy until the theme returns", "slight preparation for the cantabile's return"],
+          teaching_notes: [
+            {
+              measure: 32,
+              note: "The theme return is approaching — slight preparation without losing the episode's energy.",
+              technique: ["prepare the cantabile touch", "ease into the return"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Main theme return antecedent — cantabile resumes, Ab major",
+          key_moments: [
+            "m33 cantabile theme returns",
+            "m35 rocking LH resumes",
+            "m36 familiar phrase shape",
+          ],
+          teaching_goals: ["feel the return as a relief after the episode's agitation", "the cantabile quality should feel like coming home"],
+          style_tips: ["pp — the contrast with the episode makes the return even more peaceful", "let the rocking LH settle"],
+          teaching_notes: [
+            {
+              measure: 33,
+              note: "The theme returns — relief after the episode. Let the peace return fully.",
+              technique: ["immediate cantabile touch on return", "rocking LH settles immediately"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Main theme return consequent — singing arc continues",
+          key_moments: [
+            "m37 melody arc continues",
+            "m39 rocking LH steady",
+            "m40 phrase completes",
+          ],
+          teaching_goals: ["the return feels completely settled now", "the cantabile quality is fully restored"],
+          style_tips: ["same quality as the opening — or perhaps even more settled", "the rocking LH is completely steady"],
+          teaching_notes: [
+            {
+              measure: 40,
+              note: "The return is fully settled — as peaceful as the opening, but with more weight.",
+              technique: ["full cantabile", "steady rocking LH"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Late section antecedent — deep cantabile, accumulated warmth",
+          key_moments: [
+            "m57 late theme statement",
+            "m59 maximum expressive depth",
+            "m60 warmth accumulated from whole movement",
+          ],
+          teaching_goals: ["the late section carries all the accumulated experience of the movement", "the cantabile quality is at its deepest"],
+          style_tips: ["mp with warmth — the most expressive moment of the movement", "the whole movement has led here"],
+          teaching_notes: [
+            {
+              measure: 59,
+              note: "The deepest cantabile moment — the movement's accumulated warmth is in every note.",
+              technique: ["full arm weight", "the most expressive phrasing of the movement"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Late section consequent — maximum expressive depth",
+          key_moments: [
+            "m61 melody at its deepest",
+            "m63 phrase completing",
+            "m64 resolution at maximum depth",
+          ],
+          teaching_goals: ["the late section resolution carries more weight than the opening's", "feel the difference between the first and late resolutions"],
+          style_tips: ["the late Ab arrival is deeper — more resonant", "hold slightly longer after the resolution"],
+          teaching_notes: [
+            {
+              measure: 64,
+              note: "The late-section resolution — deeper and more resonant than the opening's.",
+              technique: ["weight and depth on the Ab", "pause and breathe after"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Final approach antecedent — dream-like depth, approaching conclusion",
+          key_moments: [
+            "m73 final approach begins",
+            "m75 penultimate statements",
+            "m76 conclusion imminent",
+          ],
+          teaching_goals: ["the movement is completing — the cantabile has one of its final statements", "play with full awareness that this is nearly the end"],
+          style_tips: ["slight broadening is appropriate", "the weight of the approaching end is in the phrasing"],
+          teaching_notes: [
+            {
+              measure: 75,
+              note: "One of the final cantabile phrases — play it with full awareness of the approaching end.",
+              technique: ["full weight", "slight broadening toward the conclusion"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Final approach consequent — peaceful, approaching coda",
+          key_moments: [
+            "m77 final approach continues",
+            "m79 coda approaching",
+            "m80 last phrase before coda",
+          ],
+          teaching_goals: ["the movement is on its final pages", "sustain the peace through to the very end"],
+          style_tips: ["pp — the ending approaches in complete peace", "no rush"],
+          teaching_notes: [
+            {
+              measure: 80,
+              note: "The last phrase before the coda — let it breathe fully.",
+              technique: ["gentle, unhurried", "full resonance in the final chords"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Coda antecedent — final Ab major, full Adagio cantabile weight",
+          key_moments: [
+            "m81 coda begins",
+            "m83 final theme statements",
+            "m84 conclusion very near",
+          ],
+          teaching_goals: ["the coda carries the full weight of the entire movement", "each final note should be played with complete awareness"],
+          style_tips: ["pp — the ending is hushed", "the rocking LH should barely be audible"],
+          teaching_notes: [
+            {
+              measure: 83,
+              note: "Final theme statement in the coda — all the movement's warmth in these notes.",
+              technique: ["pp with arm weight", "the melody sings even as it fades"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Coda consequent — melody's final statement, peaceful Ab conclusion",
+          key_moments: [
+            "m85 melody's last arc",
+            "m87 final resolution approaching",
+            "m88 Ab major final chord",
+          ],
+          teaching_goals: ["the movement ends in complete peace", "the final Ab should ring and then fade"],
+          style_tips: ["ppp — Beethoven's Adagio ends as quietly as it began", "let the pedal sustain the final chord"],
+          teaching_notes: [
+            {
+              measure: 88,
+              note: "The final Ab — peaceful, resonant, complete. Let it ring into silence.",
+              technique: ["full pedal on the final chord", "arms release gently after"],
+            },
+          ],
+        },
+      },
     ],
   },
 
@@ -1444,6 +4103,91 @@ const SONG_SPECS: SongSpec[] = [
           "Measures 23–26 complete the third phrase group quietly. The melody settles once more, reinforcing the piece's hypnotic repetitive structure. Let me loop mm. 23–26.",
         contSummary:
           "Satie Gymnopedie No. 1 mm. 23–26: third phrase consequent, quiet settling. Pairs with mm. 19–22.",
+      },
+      // ── Slice 9b new pairs ────────────────────────────────────────────────────
+      {
+        promptStart: 27,
+        promptEnd: 30,
+        contStart: 31,
+        contEnd: 34,
+        promptLabel: "fourth phrase group — antecedent",
+        contLabel: "fourth phrase group — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 27–30 of Satie's Gymnopedie — another phrase group begins here.",
+        contUserPrompt:
+          "Play measures 31–34 and describe the completion of this phrase.",
+        promptAnalysis:
+          "Measures 27–30 begin a fourth phrase group — the Gymnopedie's meditative repetition continues. The melody maintains its melancholy character and the LH waltz pattern continues unchanged. Each phrase group is a fresh thought. Let me loop mm. 27–30.",
+        promptSummary:
+          "Satie Gymnopedie No. 1 mm. 27–30: fourth phrase antecedent, meditative continuation, same melancholy character.",
+        contAnalysis:
+          "Measures 31–34 complete the fourth phrase group with another quiet settling. Let me loop mm. 31–34.",
+        contSummary:
+          "Satie Gymnopedie No. 1 mm. 31–34: fourth phrase consequent, quiet settling. Pairs with mm. 27–30.",
+      },
+      {
+        promptStart: 35,
+        promptEnd: 38,
+        contStart: 39,
+        contEnd: 42,
+        promptLabel: "fifth phrase group — antecedent",
+        contLabel: "fifth phrase group — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 35–38 of Satie's Gymnopedie.",
+        contUserPrompt:
+          "Play measures 39–42 and describe the completion.",
+        promptAnalysis:
+          "Measures 35–38 begin the fifth phrase group — the hypnotic meditation continues. Each phrase has the same unhurried quality. Let me loop mm. 35–38.",
+        promptSummary:
+          "Satie Gymnopedie No. 1 mm. 35–38: fifth phrase antecedent, hypnotic meditation continues.",
+        contAnalysis:
+          "Measures 39–42 complete the fifth phrase group — another quiet, spaced arrival. Let me loop mm. 39–42.",
+        contSummary:
+          "Satie Gymnopedie No. 1 mm. 39–42: fifth phrase consequent. Pairs with mm. 35–38.",
+      },
+      {
+        promptStart: 43,
+        promptEnd: 46,
+        contStart: 47,
+        contEnd: 50,
+        promptLabel: "sixth phrase group — antecedent",
+        contLabel: "sixth phrase group — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 43–46 of Satie's Gymnopedie.",
+        contUserPrompt:
+          "Play measures 47–50 and describe the completion.",
+        promptAnalysis:
+          "Measures 43–46 continue the meditation — the phrase groups repeat with Satie's characteristic intentional repetition. Each hearing is both familiar and fresh. Let me loop mm. 43–46.",
+        promptSummary:
+          "Satie Gymnopedie No. 1 mm. 43–46: sixth phrase antecedent, intentional repetition, fresh familiarity.",
+        contAnalysis:
+          "Measures 47–50 complete the phrase group quietly. Let me loop mm. 47–50.",
+        contSummary:
+          "Satie Gymnopedie No. 1 mm. 47–50: sixth phrase consequent. Pairs with mm. 43–46.",
+      },
+      {
+        promptStart: 51,
+        promptEnd: 54,
+        contStart: 55,
+        contEnd: 58,
+        promptLabel: "near-final phrase group — antecedent",
+        contLabel: "near-final phrase group — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 51–54 of Satie's Gymnopedie — approaching the conclusion.",
+        contUserPrompt:
+          "Play measures 55–58 and describe the final phrases.",
+        promptAnalysis:
+          "Measures 51–54 are in the Gymnopedie's final section — the same unhurried meditation has now accumulated the weight of the entire piece. The ending is approaching without announcement. Let me loop mm. 51–54.",
+        promptSummary:
+          "Satie Gymnopedie No. 1 mm. 51–54: near-final section, accumulated meditation, approach without announcement.",
+        contAnalysis:
+          "Measures 55–58 bring the piece near its close — the melody makes its last statements in the same quiet character. Let me loop mm. 55–58.",
+        contSummary:
+          "Satie Gymnopedie No. 1 mm. 55–58: near-final phrase completion. Pairs with mm. 51–54.",
       },
     ],
     pairAnnotations: [
@@ -1581,6 +4325,175 @@ const SONG_SPECS: SongSpec[] = [
           ],
         },
       },
+      // ── Slice 9b Satie annotations ────────────────────────────────────────────
+      {
+        promptAnnotation: {
+          structure: "Fourth phrase antecedent — meditative repetition continues, each phrase a fresh thought",
+          key_moments: [
+            "m27 fourth phrase begins",
+            "m29 subtle harmonic color",
+            "m30 open ending",
+          ],
+          teaching_goals: [
+            "embrace the hypnotic repetition — same approach as all previous phrases",
+            "each phrase feels like hearing the meditation again for the first time",
+          ],
+          style_tips: ["identical approach throughout — Satie's constancy is the art", "pp"],
+          teaching_notes: [
+            {
+              measure: 27,
+              note: "The repetition is never monotony — listen to each chord with fresh attention.",
+              technique: ["same unhurried touch", "LH chords detached and quiet"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Fourth phrase consequent — quiet settling, same spaciousness",
+          key_moments: [
+            "m31 melody completes arc",
+            "m33 descent",
+            "m34 quiet resolution",
+          ],
+          teaching_goals: [
+            "each phrase completion is a sigh — let it release naturally",
+            "sustain pedal at the resolution",
+          ],
+          style_tips: ["ppp at the phrase end", "let the silence after the phrase breathe"],
+          teaching_notes: [
+            {
+              measure: 34,
+              note: "The same quiet resolution — consistent spaciousness throughout.",
+              technique: ["soft landing", "pedal for resonance", "hold the silence"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Fifth phrase antecedent — hypnotic meditation, accumulated depth",
+          key_moments: [
+            "m35 fifth phrase begins",
+            "m37 familiar melodic character",
+            "m38 open ending",
+          ],
+          teaching_goals: [
+            "by the fifth phrase, the listener is in the meditation — sustain it",
+            "same physical approach as always",
+          ],
+          style_tips: ["the repetition creates a trance — honor it", "no special gestures"],
+          teaching_notes: [
+            {
+              measure: 35,
+              note: "The piece is now deeply familiar — play with accumulated warmth, not habit.",
+              technique: ["fresh listening", "consistent unhurried touch"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Fifth phrase consequent — another quiet settling",
+          key_moments: [
+            "m39 melody descends",
+            "m41 near resolution",
+            "m42 quiet landing",
+          ],
+          teaching_goals: [
+            "feel the peace of the fifth repetition — the meditation is complete",
+            "same spaciousness at the end",
+          ],
+          style_tips: ["ppp", "allow the silence after the phrase"],
+          teaching_notes: [
+            {
+              measure: 42,
+              note: "Another peaceful arrival — Satie's genius is in the constancy.",
+              technique: ["same soft touch throughout", "unhurried"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Sixth phrase antecedent — late-section meditation, familiar and fresh",
+          key_moments: [
+            "m43 sixth phrase begins",
+            "m45 the familiar character",
+            "m46 open quality",
+          ],
+          teaching_goals: [
+            "intentional repetition is the piece's architecture — embrace it",
+            "play with depth of familiarity, not boredom",
+          ],
+          style_tips: ["no change from earlier phrases — the constancy is deliberate", "pp"],
+          teaching_notes: [
+            {
+              measure: 43,
+              note: "The sixth repetition carries the whole meditation — play with that awareness.",
+              technique: ["same gentle weight", "inner listening heightened by familiarity"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Sixth phrase consequent — completion, approaching the final section",
+          key_moments: [
+            "m47 completion of phrase",
+            "m49 resolving",
+            "m50 quiet",
+          ],
+          teaching_goals: [
+            "same peaceful resolution as always",
+            "prepare the listener for the approaching ending without telegraphing it",
+          ],
+          style_tips: ["ppp at the resolution", "the same spacious quality throughout"],
+          teaching_notes: [
+            {
+              measure: 50,
+              note: "The same quiet arrival — Satie offers no announcement of the ending.",
+              technique: ["soft landing", "let the chord ring"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Near-final phrase antecedent — final section, accumulated weight of the whole piece",
+          key_moments: [
+            "m51 near-final section begins",
+            "m53 familiar melody, now weighted",
+            "m54 open quality as always",
+          ],
+          teaching_goals: [
+            "the ending is approaching without announcement — sustain the same character",
+            "the accumulated weight of the piece is in these phrases",
+          ],
+          style_tips: ["same pp as throughout — never announce the ending", "the piece ends as it began"],
+          teaching_notes: [
+            {
+              measure: 53,
+              note: "The piece is nearly done — don't change a thing about the approach.",
+              technique: ["same touch", "same tempo", "same inner stillness"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Near-final phrase consequent — last statements, same quiet character",
+          key_moments: [
+            "m55 final melody statements",
+            "m57 approaching the very end",
+            "m58 quiet close",
+          ],
+          teaching_goals: [
+            "the melody makes its last statements in the same unhurried character",
+            "the piece ends without fanfare",
+          ],
+          style_tips: ["ppp — the quietest possible ending", "Satie ends as he begins: quietly"],
+          teaching_notes: [
+            {
+              measure: 58,
+              note: "The meditation ends — the same quiet it always had. Nothing changes at the end.",
+              technique: ["soft final notes", "let the last chord ring into silence"],
+            },
+          ],
+        },
+      },
     ],
   },
 
@@ -1657,6 +4570,70 @@ const SONG_SPECS: SongSpec[] = [
           "Measures 21–24 complete the recapitulation period with a peaceful consequent. The phrase settles warmly into F major. The dreaming is complete. Let me loop mm. 21–24.",
         contSummary:
           "Schumann Traumerei mm. 21–24: recapitulation consequent, warm F major resolution. Pairs with mm. 17–20.",
+      },
+      // ── Slice 9b new pairs ────────────────────────────────────────────────────
+      {
+        promptStart: 25,
+        promptEnd: 28,
+        contStart: 29,
+        contEnd: 32,
+        promptLabel: "coda approach — antecedent",
+        contLabel: "coda approach — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 25–28 of Traumerei — how does the piece move toward its close?",
+        contUserPrompt:
+          "Play measures 29–32 and describe the continuation.",
+        promptAnalysis:
+          "Measures 25–28 continue the piece's gentle winding-down after the recapitulation — the F major warmth persists and the texture remains intimate. The piece is approaching its final resting. Let me loop mm. 25–28.",
+        promptSummary:
+          "Schumann Traumerei mm. 25–28: post-recapitulation continuation, F major warmth, intimate texture.",
+        contAnalysis:
+          "Measures 29–32 continue the approach toward the coda — Schumann sustains the dreaming quality. The harmonic motion is gentle and resolving. Let me loop mm. 29–32.",
+        contSummary:
+          "Schumann Traumerei mm. 29–32: coda approach continuation, gentle harmonic resolution. Pairs with mm. 25–28.",
+      },
+      {
+        promptStart: 33,
+        promptEnd: 36,
+        contStart: 37,
+        contEnd: 40,
+        promptLabel: "final phrase — antecedent",
+        contLabel: "final phrase — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 33–36 of Traumerei — is this the final phrase of the piece?",
+        contUserPrompt:
+          "Play measures 37–40 and describe the completion.",
+        promptAnalysis:
+          "Measures 33–36 are in the final section of Traumerei — the dreaming is completing. The melody and harmony are moving toward the piece's final F major rest. Let me loop mm. 33–36.",
+        promptSummary:
+          "Schumann Traumerei mm. 33–36: final section, dreaming completing, approach to final resolution.",
+        contAnalysis:
+          "Measures 37–40 bring the completion of this phrase — Schumann's final expressive gestures settle the piece toward rest. The texture remains warm and intimate to the last note. Let me loop mm. 37–40.",
+        contSummary:
+          "Schumann Traumerei mm. 37–40: final phrase completion, warm intimate texture. Pairs with mm. 33–36.",
+      },
+      {
+        promptStart: 41,
+        promptEnd: 44,
+        contStart: 45,
+        contEnd: 48,
+        promptLabel: "closing — antecedent",
+        contLabel: "closing — consequent",
+        naturalBoundary: true,
+        promptUserPrompt:
+          "Show me measures 41–44 of Traumerei — the closing measures.",
+        contUserPrompt:
+          "Play measures 45–48 and describe the final close.",
+        promptAnalysis:
+          "Measures 41–44 are in the closing section of Traumerei — the F major home is fully established and the piece is resting. The character is the most tranquil of the whole piece. Let me loop mm. 41–44.",
+        promptSummary:
+          "Schumann Traumerei mm. 41–44: closing section, tranquil F major, deepest rest.",
+        contAnalysis:
+          "Measures 45–48 complete the Traumerei closing — the dreaming settles into its final stillness. Schumann's intimate portrait ends with the warmth it began with. Let me loop mm. 45–48.",
+        contSummary:
+          "Schumann Traumerei mm. 45–48: final close, warmth and stillness. Pairs with mm. 41–44.",
       },
     ],
     pairAnnotations: [
@@ -1805,6 +4782,133 @@ const SONG_SPECS: SongSpec[] = [
           ],
         },
       },
+      // ── Slice 9b Schumann annotations ────────────────────────────────────────
+      {
+        promptAnnotation: {
+          structure: "Post-recapitulation antecedent — F major warmth continues, intimate texture",
+          key_moments: [
+            "m25 continuation of F major warmth",
+            "m27 gentle harmonic motion",
+            "m28 phrase remains open",
+          ],
+          teaching_goals: [
+            "the warmth of the recapitulation continues without change",
+            "sustain the intimate quality — the piece is winding down",
+          ],
+          style_tips: ["mp — same warm character as the recapitulation", "breathe with the phrase"],
+          teaching_notes: [
+            {
+              measure: 25,
+              note: "The piece is gently winding down — sustain the warm intimacy.",
+              technique: ["arm weight for warmth", "follow the harmonic motion gently"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Post-recapitulation consequent — gentle harmonic resolution, approaching coda",
+          key_moments: [
+            "m29 harmonic motion settling",
+            "m31 F major reasserted",
+            "m32 phrase closes gently",
+          ],
+          teaching_goals: [
+            "feel the piece settling toward its final rest",
+            "each harmonic resolution is a step toward stillness",
+          ],
+          style_tips: ["slight decrescendo — the dreaming is fading", "soft, unhurried"],
+          teaching_notes: [
+            {
+              measure: 32,
+              note: "The harmonic resolution — let it settle without rushing.",
+              technique: ["gentle weight", "slight ritardando if felt naturally"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Final section antecedent — dreaming completing, approaching last resolution",
+          key_moments: [
+            "m33 final section of the piece",
+            "m35 moving toward ultimate resolution",
+            "m36 approach intensifies gently",
+          ],
+          teaching_goals: [
+            "sense the piece completing — play with awareness of the ending",
+            "the melody carries the same warmth as at the opening",
+          ],
+          style_tips: ["p — the dream is nearly over", "no abrupt changes — everything fades gently"],
+          teaching_notes: [
+            {
+              measure: 33,
+              note: "The final section — play with the quiet knowledge that the dream is ending.",
+              technique: ["p dynamic", "arm weight maintained for warmth despite softer dynamic"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Final section consequent — warm intimate texture to the last note",
+          key_moments: [
+            "m37 expressive final gestures",
+            "m39 harmonic settling",
+            "m40 warmth sustained",
+          ],
+          teaching_goals: [
+            "every note counts to the very end",
+            "the intimate texture never abandons its warmth",
+          ],
+          style_tips: ["p to pp", "let the phrase settle completely"],
+          teaching_notes: [
+            {
+              measure: 40,
+              note: "The warmth lasts to the final note — never let it go cold.",
+              technique: ["soft arm weight throughout", "tone remains rounded"],
+            },
+          ],
+        },
+      },
+      {
+        promptAnnotation: {
+          structure: "Closing antecedent — most tranquil section, F major home fully established",
+          key_moments: [
+            "m41 deepest tranquility",
+            "m43 harmonic rest",
+            "m44 stillness approached",
+          ],
+          teaching_goals: [
+            "this is the most tranquil passage — play with complete peace",
+            "the F major home is fully established — no more wandering",
+          ],
+          style_tips: ["pp — the quietest moment of the piece", "no forward drive — pure rest"],
+          teaching_notes: [
+            {
+              measure: 41,
+              note: "The deepest tranquility in the piece — let the music rest.",
+              technique: ["lightest possible touch", "arm relaxed completely"],
+            },
+          ],
+        },
+        contAnnotation: {
+          structure: "Closing consequent — final stillness, dream complete",
+          key_moments: [
+            "m45 final descent",
+            "m47 almost there",
+            "m48 warmth and stillness",
+          ],
+          teaching_goals: [
+            "the dreaming ends in warmth and stillness — not in silence or coldness",
+            "sustain the F major warmth through the very last note",
+          ],
+          style_tips: ["pp to ppp", "let the final chord ring with pedal"],
+          teaching_notes: [
+            {
+              measure: 48,
+              note: "The dream ends — warm, still, complete. Let the final F major chord ring.",
+              technique: ["soft final landing", "pedal for resonance", "lift hands gently after"],
+            },
+          ],
+        },
+      },
     ],
   },
 ];
@@ -1845,7 +4949,7 @@ main().catch((err) => {
 
 async function main(): Promise<void> {
   console.log("=".repeat(70));
-  console.log(" jam-actions-v0 Slice 5 Corpus Builder");
+  console.log(" jam-actions-v0 Slice 5 + 9b Corpus Builder");
   console.log("=".repeat(70));
 
   // Step 0: Smoke-test trace validator
@@ -2091,8 +5195,8 @@ async function main(): Promise<void> {
   console.log(`   Record roles: ${JSON.stringify(roleCount)}`);
   console.log(`   Total records on disk: ${allRecordsOnDisk.length}`);
 
-  if (allRecordsOnDisk.length < 45 || allRecordsOnDisk.length > 55) {
-    console.warn(`   WARNING: record count ${allRecordsOnDisk.length} outside 45-55 target range.`);
+  if (allRecordsOnDisk.length < 140 || allRecordsOnDisk.length > 160) {
+    console.warn(`   WARNING: record count ${allRecordsOnDisk.length} outside 140-160 target range (Slice 9b).`);
   }
 
   // Step 5: Write manifest

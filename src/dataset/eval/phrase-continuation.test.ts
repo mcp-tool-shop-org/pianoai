@@ -7,8 +7,8 @@
 //   2. not_computable state tests
 //   3. Shuffled-bars control tests (correctness + determinism)
 //   4. Paired-record integrity check tests (orphan detection, count mismatches)
-//   5. Corpus regression — 22 pairs from Slice 5 corpus:
-//      a. Integrity check passes (22 pairs, 0 orphans)
+//   5. Corpus regression — 72 pairs from Slice 9b corpus (expanded from 22 in Slice 5):
+//      a. Integrity check passes (72 pairs, 0 orphans)
 //      b. Gold vs shuffled diverges on rhythm/groove for ≥3 pairs
 //      c. Pitch-class OA gold vs shuffled ≈ 1.0 (sanity baseline)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -647,29 +647,29 @@ beforeAll(() => {
   });
 });
 
-describe("corpus integrity (22 pairs, 0 orphans)", () => {
-  it("loads 45 records total", () => {
-    expect(allCorpusRecords.length).toBe(45);
+describe("corpus integrity (72 pairs, 0 orphans)", () => {
+  it("loads 145 records total", () => {
+    expect(allCorpusRecords.length).toBe(145);
   });
 
-  it("has exactly 22 prompt records", () => {
+  it("has exactly 72 prompt records", () => {
     const prompts = allCorpusRecords.filter(
       (r) => r.scope.window_role === "prompt",
     );
-    expect(prompts.length).toBe(22);
+    expect(prompts.length).toBe(72);
   });
 
-  it("has exactly 22 continuation_target records", () => {
+  it("has exactly 72 continuation_target records", () => {
     const targets = allCorpusRecords.filter(
       (r) => r.scope.window_role === "continuation_target",
     );
-    expect(targets.length).toBe(22);
+    expect(targets.length).toBe(72);
   });
 
-  it("paired integrity check passes (22 pairs, 0 orphans)", () => {
-    const result = checkPairedIntegrity(allCorpusRecords, 22);
+  it("paired integrity check passes (72 pairs, 0 orphans)", () => {
+    const result = checkPairedIntegrity(allCorpusRecords, 72);
     expect(result.passed).toBe(true);
-    expect(result.pairCount).toBe(22);
+    expect(result.pairCount).toBe(72);
     expect(result.orphanCount).toBe(0);
     expect(result.missingPairedIds.length).toBe(0);
   });
@@ -732,29 +732,29 @@ describe("corpus regression — gold vs shuffled diverges on rhythm/groove", () 
 });
 
 describe("runFullE2Eval on full corpus", () => {
-  it("runs without errors and returns 22 pair results", () => {
-    const run = runFullE2Eval(allCorpusRecords, 22);
+  it("runs without errors and returns 72 pair results", () => {
+    const run = runFullE2Eval(allCorpusRecords, 72);
     expect(run.integrityCheck.passed).toBe(true);
-    expect(run.pairResults.length).toBe(22);
+    expect(run.pairResults.length).toBe(72);
   });
 
   it("integrity gate passes", () => {
-    const run = runFullE2Eval(allCorpusRecords, 22);
+    const run = runFullE2Eval(allCorpusRecords, 72);
     expect(run.hardGates.integrityPassed).toBe(true);
   });
 
   it("rhythm gate: ≥3 pairs where gold ≠ shuffled (rhythm diverges)", () => {
-    const run = runFullE2Eval(allCorpusRecords, 22);
+    const run = runFullE2Eval(allCorpusRecords, 72);
     expect(run.hardGates.rhythmGoldBeatShuffledPairCount).toBeGreaterThanOrEqual(3);
   });
 
   it("groove gate: ≥3 pairs where gold ≠ shuffled (groove diverges)", () => {
-    const run = runFullE2Eval(allCorpusRecords, 22);
+    const run = runFullE2Eval(allCorpusRecords, 72);
     expect(run.hardGates.grooveGoldBeatShuffledPairCount).toBeGreaterThanOrEqual(3);
   });
 
   it("grooveOAMeanDelta is defined (≥0 expected for shuffled control baseline)", () => {
-    const run = runFullE2Eval(allCorpusRecords, 22);
+    const run = runFullE2Eval(allCorpusRecords, 72);
     // grooveOAMeanDelta = 1.0 - mean(grooveSim_goldVsShuffled).
     // This is the "distance" the shuffled baseline is from gold.
     // Locked future-model target: model's groove OA must beat this delta by ≥0.15.
@@ -770,7 +770,7 @@ describe("runFullE2Eval on full corpus", () => {
 
 describe("not_computable audit", () => {
   it("all not_computable entries have non-empty reason strings", () => {
-    const run = runFullE2Eval(allCorpusRecords, 22);
+    const run = runFullE2Eval(allCorpusRecords, 72);
     for (const entry of run.hardGates.notComputableAudit) {
       expect(entry.reason.length).toBeGreaterThan(0);
       expect(entry.pairId.length).toBeGreaterThan(0);

@@ -1,7 +1,7 @@
 {
   "dataset_name": "jam-actions-v0",
   "version": "0.1.0",
-  "built_at": "2026-05-16",
+  "built_at": "2026-05-17",
   "tool_schemas_derived_at": "2026-05-16",
   "instrument_surfaces": {
     "ai_jam_sessions": {
@@ -24,8 +24,8 @@
       ]
     }
   },
-  "record_count": 45,
-  "pair_count": 22,
+  "record_count": 145,
+  "pair_count": 72,
   "standalone_count": 1,
   "pair_completeness": true,
   "songs_included": [
