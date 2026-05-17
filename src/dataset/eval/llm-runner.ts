@@ -45,6 +45,11 @@ import {
   type QuestionType,
 } from "./annotation-grounding.js";
 import type { TargetTrace, TimedEvent } from "../schema.js";
+import {
+  parseRemiOutput,
+  type ParseResult,
+  type ParseStatus,
+} from "./remi-output-parser.js";
 
 // ─── Backend interface ────────────────────────────────────────────────────────
 
@@ -125,6 +130,9 @@ export interface RunMeta {
   latencyMs: number;
   parseOk: boolean;
   parseError: string | null;
+  // Slice 9a: tolerant parser fields (E2 only; null for E1/E3)
+  parseStatus?: ParseStatus | null;
+  recoverySteps?: string[] | null;
 }
 
 // ─── Locked thresholds ────────────────────────────────────────────────────────
@@ -289,13 +297,48 @@ export function checkE1Pass(runs: E1RunResult[]): boolean {
 
 // ─── E2: Phrase continuation prompt builder ───────────────────────────────────
 
+// ─── Slice 9a: Hardened E2 system prompt ─────────────────────────────────────
+//
+// Changes from Slice 7.5 (addressing Slice 8.5 dominant failure modes):
+//
+//   FM-1 (token-as-string-in-array): Added explicit "each token = one element"
+//   FM-2 (thinking-block bleed): Added "No thinking blocks"
+//   FM-3/FM-4 (empty/invalid REMI): Added explicit vocab + example
+//   FM-5 (markdown fences): Added "No markdown code fences"
+//   FM-6 (prose before/after): Added "No explanation text"
+//
+// One-shot example of valid output format is included to demonstrate the
+// expected JSON shape. Uses a simple 2-note sequence for clarity.
+//
+// Ollama format:"json" is still used (set in callStructured). This prompt
+// adds guardrails for cases where format:"json" is not strict enough.
+// ─────────────────────────────────────────────────────────────────────────────
+
 const E2_SYSTEM_TEXT =
-  "You are predicting musical phrase continuations for piano music. " +
+  "You are predicting musical phrase continuations for piano music.\n\n" +
   "Given the REMI token sequence and metadata for a prompt phrase, " +
-  "output the continuation phrase as REMI tokens and ABC notation. " +
-  "The continuation should match the musical style, key, tempo, and " +
-  "rhythmic patterns established in the prompt. " +
-  "Output ONLY via the predict_continuation tool — no prose.";
+  "output the continuation phrase as valid JSON with this exact schema:\n\n" +
+  "{\n" +
+  '  "tokens_remi": ["Bar_1", "Position_0", "Pitch_60", "Velocity_64", "Duration_4"],\n' +
+  '  "tokens_abc": "X:1\\nT:test\\nM:4/4\\nL:1/8\\nK:C\\n|CDEF|"\n' +
+  "}\n\n" +
+  "REMI token vocabulary (the ONLY valid token formats):\n" +
+  "  Bar_N       — bar marker (e.g. Bar_1, Bar_2, ...)\n" +
+  "  Position_N  — position within bar (e.g. Position_0, Position_24, ...)\n" +
+  "  Pitch_N     — MIDI pitch 0-127 (e.g. Pitch_60 for middle C)\n" +
+  "  Velocity_N  — velocity 0-124 in steps of 4 (e.g. Velocity_64)\n" +
+  "  Duration_N  — duration in 1/16th note units (e.g. Duration_4 = quarter note)\n\n" +
+  "CRITICAL RULES:\n" +
+  "- Output ONLY valid JSON. Nothing else.\n" +
+  "- No markdown code fences (no ```json or ```).\n" +
+  "- No explanation text before or after the JSON.\n" +
+  "- No thinking blocks or reasoning text (<think>, <thinking>, etc.).\n" +
+  "- tokens_remi MUST be a JSON array where each element is a SINGLE token string.\n" +
+  "  WRONG: {\"tokens_remi\": [\"Bar_1 Position_0 Pitch_60\"]}\n" +
+  "  RIGHT: {\"tokens_remi\": [\"Bar_1\", \"Position_0\", \"Pitch_60\"]}\n" +
+  "- Each token must use ONLY the 5 valid prefixes above. No Note_On_, Note_Off_, BPM_, etc.\n" +
+  "- Include multiple measures (at least 4 bars of tokens) matching the specified window.\n" +
+  "- The continuation must match the musical style, key, tempo, and rhythmic patterns of the prompt.";
 
 /** JSON schema for E2 structured output (backend-agnostic). */
 export const E2_OUTPUT_SCHEMA: Record<string, unknown> = {
@@ -305,7 +348,10 @@ export const E2_OUTPUT_SCHEMA: Record<string, unknown> = {
       type: "array",
       items: { type: "string" },
       description:
-        "REMI token sequence for the continuation phrase (Bar_N, Position_N, Pitch_N, Velocity_N, Duration_N tokens)",
+        "REMI token sequence for the continuation phrase. " +
+        "Each element must be a single token string: Bar_N, Position_N, Pitch_N, Velocity_N, or Duration_N. " +
+        "Do NOT put multiple tokens in one array element.",
+      minItems: 1,
     },
     tokens_abc: {
       type: "string",
@@ -313,6 +359,7 @@ export const E2_OUTPUT_SCHEMA: Record<string, unknown> = {
     },
   },
   required: ["tokens_remi", "tokens_abc"],
+  additionalProperties: false,
 };
 
 export function buildE2UserPrompt(promptRecord: PairRecord): string {
@@ -374,6 +421,17 @@ export interface E2RunResult {
   pairResult: PairE2Result | null;
   grooveOA: number | null;
   passed: boolean;
+  // Slice 9a: tolerant parser result (always present for E2 runs from Slice 9a+)
+  parseResult?: ParseResult;
+}
+
+/** Type guard: backend with lastRawText() capability (OllamaBackend, OllamaInternBackend). */
+interface BackendWithRawText extends LlmBackend {
+  lastRawText(): string | null;
+}
+
+function hasLastRawText(b: LlmBackend): b is BackendWithRawText {
+  return typeof (b as BackendWithRawText).lastRawText === "function";
 }
 
 export async function runE2ForPair(
@@ -385,37 +443,99 @@ export async function runE2ForPair(
   const runId = `${promptRecord.id}:E2:run${runIndex + 1}`;
   const userMessage = buildE2UserPrompt(promptRecord as unknown as PairRecord);
 
-  let rawOutput: unknown;
+  // Slice 9a: use callStructured with format:"json" hint for best chance of
+  // valid JSON from the backend. Capture raw text for tolerant parser fallback.
+  let structuredParseError: string | null = null;
+  let structuredOutput: unknown = null;
   try {
-    rawOutput = await backend.callStructured<unknown>({
+    structuredOutput = await backend.callStructured<unknown>({
       systemPrompt: E2_SYSTEM_TEXT,
       userMessage,
       outputSchema: E2_OUTPUT_SCHEMA,
     });
   } catch (err) {
-    const meta = backend.lastCallMetadata();
+    structuredParseError = String(err);
+  }
+
+  const callMeta = backend.lastCallMetadata();
+
+  // Attempt to get the raw text for tolerant parsing.
+  // Backends with lastRawText() (OllamaBackend, OllamaInternBackend) expose
+  // the raw model text. Other backends (Anthropic, mocks) use structured output.
+  let rawTextForParser: string | null = null;
+  if (hasLastRawText(backend)) {
+    rawTextForParser = backend.lastRawText();
+  } else if (structuredParseError !== null) {
+    // Try to extract raw text from the error message pattern
+    const rawSnippetMatch = /Raw response \(first \d+ chars\): ([\s\S]+)$/.exec(
+      structuredParseError,
+    );
+    rawTextForParser = rawSnippetMatch ? rawSnippetMatch[1] : null;
+  }
+
+  // Hard failure: backend threw AND we have no raw text AND no response tokens
+  if (structuredParseError !== null && rawTextForParser === null && callMeta.completionTokens === 0) {
     return {
       run: runIndex + 1,
       meta: {
         runId,
         backend: backend.name,
         modelId: backend.model,
-        promptTokens: meta.promptTokens,
-        completionTokens: meta.completionTokens,
-        costUsd: meta.costEstimate,
-        latencyMs: meta.latencyMs,
+        promptTokens: callMeta.promptTokens,
+        completionTokens: callMeta.completionTokens,
+        costUsd: callMeta.costEstimate,
+        latencyMs: callMeta.latencyMs,
         parseOk: false,
-        parseError: String(err),
+        parseError: structuredParseError,
+        parseStatus: "unrecoverable",
+        recoverySteps: null,
       },
       parsedOutput: null,
       pairResult: null,
       grooveOA: null,
       passed: false,
+      parseResult: {
+        status: "unrecoverable",
+        tokens_remi: [],
+        tokens_abc: "",
+        reason: structuredParseError,
+      },
     };
   }
 
-  const callMeta = backend.lastCallMetadata();
-  const meta: RunMeta = {
+  // Determine parse result: prefer raw text → tolerant parser; fall back to
+  // direct schema check on structuredOutput (for Anthropic/mock backends).
+  let parseResult: ParseResult;
+  if (rawTextForParser !== null) {
+    // Primary path: tolerant parser on raw text (handles FM-1 through FM-7)
+    parseResult = parseRemiOutput(rawTextForParser);
+  } else if (structuredOutput !== null) {
+    // Fallback path: backend already parsed the JSON; check schema directly
+    const legacyParsed = parseE2Output(structuredOutput);
+    if (legacyParsed) {
+      parseResult = {
+        status: "clean",
+        tokens_remi: legacyParsed.tokens_remi,
+        tokens_abc: legacyParsed.tokens_abc,
+      };
+    } else {
+      parseResult = {
+        status: "unrecoverable",
+        tokens_remi: [],
+        tokens_abc: "",
+        reason: `structured output missing tokens_remi or tokens_abc. Got: ${JSON.stringify(structuredOutput).slice(0, 200)}`,
+      };
+    }
+  } else {
+    parseResult = {
+      status: "unrecoverable",
+      tokens_remi: [],
+      tokens_abc: "",
+      reason: structuredParseError ?? "no output from backend",
+    };
+  }
+
+  const baseMeta: RunMeta = {
     runId,
     backend: backend.name,
     modelId: backend.model,
@@ -423,25 +543,29 @@ export async function runE2ForPair(
     completionTokens: callMeta.completionTokens,
     costUsd: callMeta.costEstimate,
     latencyMs: callMeta.latencyMs,
-    parseOk: true,
-    parseError: null,
+    parseOk: parseResult.status !== "unrecoverable",
+    parseError: parseResult.status === "unrecoverable" ? (parseResult.reason ?? "unrecoverable") : null,
+    parseStatus: parseResult.status,
+    recoverySteps: parseResult.recoverySteps ?? null,
   };
 
-  const parsed = parseE2Output(rawOutput);
-  if (!parsed) {
+  if (parseResult.status === "unrecoverable") {
     return {
       run: runIndex + 1,
-      meta: {
-        ...meta,
-        parseOk: false,
-        parseError: "structured output missing tokens_remi or tokens_abc fields",
-      },
+      meta: baseMeta,
       parsedOutput: null,
       pairResult: null,
       grooveOA: null,
       passed: false,
+      parseResult,
     };
   }
+
+  // Parser succeeded (clean or recovered) — score the music
+  const parsed: E2ParsedOutput = {
+    tokens_remi: parseResult.tokens_remi,
+    tokens_abc: parseResult.tokens_abc,
+  };
 
   const modelTimed = synthTimedEventsFromRemi(
     parsed.tokens_remi,
@@ -473,11 +597,12 @@ export async function runE2ForPair(
 
   return {
     run: runIndex + 1,
-    meta,
+    meta: baseMeta,
     parsedOutput: parsed,
     pairResult,
     grooveOA,
     passed: grooveOA !== null && grooveOA >= E2_GROOVE_THRESHOLD,
+    parseResult,
   };
 }
 

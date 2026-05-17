@@ -1,0 +1,4008 @@
+{
+  "schema_version": "llm-in-the-loop/1.0.0",
+  "slice": "9a",
+  "slice_description": "E2 Parse Reliability Fix — tolerant parser + hardened prompt",
+  "generated_at": "2026-05-17T03:35:31.974Z",
+  "backend": "ollama",
+  "model": "qwen2.5:7b",
+  "n_runs": 3,
+  "test_set": [
+    "clair-de-lune:m001-004:piano:mcp-session:v1",
+    "clair-de-lune:m005-008:piano:mcp-session:v1",
+    "clair-de-lune:m015-018:piano:mcp-session:v1",
+    "clair-de-lune:m019-022:piano:mcp-session:v1"
+  ],
+  "parameters": {
+    "failure_mode": "majority-pass",
+    "e1_threshold": 0.7,
+    "e2_groove_threshold": 0.797,
+    "e3_margin_threshold": 0.1,
+    "e3_question_types": [
+      "pitch_class_count",
+      "hand_register",
+      "rhythm_onset",
+      "annotation_grounding"
+    ]
+  },
+  "results": {
+    "e1": {
+      "records": [
+        {
+          "recordId": "clair-de-lune:m001-004:piano:mcp-session:v1",
+          "majorityPass": true,
+          "passedCount": 3,
+          "totalRuns": 3,
+          "runs": [
+            {
+              "run": 1,
+              "passed": true,
+              "meta": {
+                "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E1:run1",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 4096,
+                "completionTokens": 419,
+                "costUsd": 0,
+                "latencyMs": 7057,
+                "parseOk": true,
+                "parseError": null
+              },
+              "toolCallCount": 6,
+              "toolCalls": [
+                {
+                  "tool": "view_piano_roll",
+                  "arguments": {
+                    "startMeasure": 1,
+                    "endMeasure": 4,
+                    "songId": "clair-de-lune-mvt1"
+                  }
+                },
+                {
+                  "tool": "sing_along",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt1",
+                    "startMeasure": 1,
+                    "endMeasure": 4,
+                    "hand": "right",
+                    "mode": "note-names"
+                  }
+                },
+                {
+                  "tool": "teaching_note",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt1",
+                    "measure": 1
+                  }
+                },
+                {
+                  "tool": "view_piano_roll",
+                  "arguments": {
+                    "songId": "clair-de-lune-mvt1",
+                    "startMeasure": 1,
+                    "endMeasure": 4
+                  }
+                },
+                {
+                  "tool": "sing_along",
+                  "arguments": {
+                    "endMeasure": 4,
+                    "hand": "right",
+                    "mode": "note-names",
+                    "id": "clair-de-lune-mvt1",
+                    "startMeasure": 1
+                  }
+                },
+                {
+                  "tool": "teaching_note",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt1",
+                    "measure": 1
+                  }
+                }
+              ],
+              "evaluation": {
+                "overallScore": 1,
+                "trajectoryValid": true,
+                "multiTurnDependencyValid": true,
+                "toolCallCount": 6
+              }
+            },
+            {
+              "run": 2,
+              "passed": true,
+              "meta": {
+                "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E1:run2",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 4096,
+                "completionTokens": 315,
+                "costUsd": 0,
+                "latencyMs": 5610,
+                "parseOk": true,
+                "parseError": null
+              },
+              "toolCallCount": 7,
+              "toolCalls": [
+                {
+                  "tool": "song_info",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt1"
+                  }
+                },
+                {
+                  "tool": "view_piano_roll",
+                  "arguments": {
+                    "songId": "clair-de-lune-mvt1",
+                    "startMeasure": 1,
+                    "endMeasure": 4
+                  }
+                },
+                {
+                  "tool": "sing_along",
+                  "arguments": {
+                    "startMeasure": 1,
+                    "endMeasure": 4,
+                    "id": "clair-de-lune-mvt1"
+                  }
+                },
+                {
+                  "tool": "teaching_note",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt1",
+                    "measure": 1
+                  }
+                },
+                {
+                  "tool": "validate_song_entry",
+                  "arguments": {
+                    "song": "{JSON string of Clair de Lune mm. 1-4 song entry}"
+                  }
+                },
+                {
+                  "tool": "transpose_song",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt1",
+                    "semitones": -12
+                  }
+                },
+                {
+                  "tool": "suggest_song",
+                  "arguments": {
+                    "genre": "classical",
+                    "difficulty": "intermediate"
+                  }
+                }
+              ],
+              "evaluation": {
+                "overallScore": 1,
+                "trajectoryValid": true,
+                "multiTurnDependencyValid": true,
+                "toolCallCount": 7
+              }
+            },
+            {
+              "run": 3,
+              "passed": true,
+              "meta": {
+                "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E1:run3",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 4096,
+                "completionTokens": 367,
+                "costUsd": 0,
+                "latencyMs": 6252,
+                "parseOk": true,
+                "parseError": null
+              },
+              "toolCallCount": 10,
+              "toolCalls": [
+                {
+                  "tool": "song_info",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt1"
+                  }
+                },
+                {
+                  "tool": "view_piano_roll",
+                  "arguments": {
+                    "songId": "clair-de-lune-mvt1",
+                    "startMeasure": 1,
+                    "endMeasure": 4
+                  }
+                },
+                {
+                  "tool": "sing_along",
+                  "arguments": {
+                    "endMeasure": 4,
+                    "mode": "note-names",
+                    "id": "clair-de-lune-mvt1",
+                    "startMeasure": 1
+                  }
+                },
+                {
+                  "tool": "suggest_song",
+                  "arguments": {
+                    "genre": "classical",
+                    "difficulty": "intermediate"
+                  }
+                },
+                {
+                  "tool": "transpose_song",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt1",
+                    "semitones": -2
+                  }
+                },
+                {
+                  "tool": "validate_song_entry",
+                  "arguments": {
+                    "song": "{\"id\": \"clair-de-lune-transposed\", ...}"
+                  }
+                },
+                {
+                  "tool": "add_song",
+                  "arguments": {
+                    "song": "{\"id\": \"clair-de-lune-transposed\", ...}"
+                  }
+                },
+                {
+                  "tool": "teaching_note",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt1",
+                    "measure": 4
+                  }
+                },
+                {
+                  "tool": "stop_playback",
+                  "arguments": {}
+                },
+                {
+                  "tool": "view_guitar_tab",
+                  "arguments": {
+                    "songId": "clair-de-lune-mvt1"
+                  }
+                }
+              ],
+              "evaluation": {
+                "overallScore": 1,
+                "trajectoryValid": true,
+                "multiTurnDependencyValid": true,
+                "toolCallCount": 10
+              }
+            }
+          ]
+        },
+        {
+          "recordId": "clair-de-lune:m005-008:piano:mcp-session:v1",
+          "majorityPass": true,
+          "passedCount": 2,
+          "totalRuns": 3,
+          "runs": [
+            {
+              "run": 1,
+              "passed": true,
+              "meta": {
+                "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E1:run1",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 4096,
+                "completionTokens": 220,
+                "costUsd": 0,
+                "latencyMs": 4419,
+                "parseOk": true,
+                "parseError": null
+              },
+              "toolCallCount": 5,
+              "toolCalls": [
+                {
+                  "tool": "song_info",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt1"
+                  }
+                },
+                {
+                  "tool": "suggest_song",
+                  "arguments": {
+                    "difficulty": "intermediate",
+                    "genre": "classical"
+                  }
+                },
+                {
+                  "tool": "teaching_note",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt1",
+                    "measure": 5
+                  }
+                },
+                {
+                  "tool": "view_piano_roll",
+                  "arguments": {
+                    "songId": "clair-de-lune-mvt1",
+                    "startMeasure": 5,
+                    "endMeasure": 8
+                  }
+                },
+                {
+                  "tool": "sing_along",
+                  "arguments": {
+                    "startMeasure": 5,
+                    "endMeasure": 8,
+                    "hand": "right",
+                    "id": "clair-de-lune-mvt1"
+                  }
+                }
+              ],
+              "evaluation": {
+                "overallScore": 1,
+                "trajectoryValid": true,
+                "multiTurnDependencyValid": true,
+                "toolCallCount": 5
+              }
+            },
+            {
+              "run": 2,
+              "passed": false,
+              "meta": {
+                "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E1:run2",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 4096,
+                "completionTokens": 274,
+                "costUsd": 0,
+                "latencyMs": 5060,
+                "parseOk": true,
+                "parseError": null
+              },
+              "toolCallCount": 8,
+              "toolCalls": [
+                {
+                  "tool": "view_piano_roll",
+                  "arguments": {
+                    "startMeasure": 5,
+                    "endMeasure": 8,
+                    "songId": "clair-de-lune-mvt3"
+                  }
+                },
+                {
+                  "tool": "teaching_note",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt3",
+                    "measure": 5
+                  }
+                },
+                {
+                  "tool": "suggest_song",
+                  "arguments": {
+                    "genre": "classical",
+                    "difficulty": "intermediate"
+                  }
+                },
+                {
+                  "tool": "validate_song_entry",
+                  "arguments": {
+                    "song": "{\"songId\": \"clair-de-lune-mvt3\", ...}"
+                  }
+                },
+                {
+                  "tool": "transpose_song",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt3",
+                    "semitones": -5
+                  }
+                },
+                {
+                  "tool": "validate_song_entry",
+                  "arguments": {
+                    "song": "{\"songId\": \"clair-de-lune-mvt3-transposed\", ...}"
+                  }
+                },
+                {
+                  "tool": "stop_playback",
+                  "arguments": {}
+                },
+                {
+                  "tool": "play_song",
+                  "arguments": {
+                    "startMeasure": 5,
+                    "endMeasure": 8
+                  }
+                }
+              ],
+              "evaluation": {
+                "overallScore": 0,
+                "trajectoryValid": true,
+                "multiTurnDependencyValid": true,
+                "toolCallCount": 8
+              }
+            },
+            {
+              "run": 3,
+              "passed": true,
+              "meta": {
+                "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E1:run3",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 4096,
+                "completionTokens": 297,
+                "costUsd": 0,
+                "latencyMs": 5429,
+                "parseOk": true,
+                "parseError": null
+              },
+              "toolCallCount": 7,
+              "toolCalls": [
+                {
+                  "tool": "view_piano_roll",
+                  "arguments": {
+                    "songId": "clair-de-lune-mvt3",
+                    "startMeasure": 5,
+                    "endMeasure": 8
+                  }
+                },
+                {
+                  "tool": "sing_along",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt3",
+                    "startMeasure": 5,
+                    "endMeasure": 8,
+                    "mode": "note-names",
+                    "withPiano": true
+                  }
+                },
+                {
+                  "tool": "suggest_song",
+                  "arguments": {
+                    "genre": "classical",
+                    "difficulty": "intermediate"
+                  }
+                },
+                {
+                  "tool": "validate_song_entry",
+                  "arguments": {
+                    "song": "{\"songId\": \"clair-de-lune-mvt3\", ...}"
+                  }
+                },
+                {
+                  "tool": "transpose_song",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt3",
+                    "semitones": -2
+                  }
+                },
+                {
+                  "tool": "teaching_note",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt3",
+                    "measure": 7
+                  }
+                },
+                {
+                  "tool": "stop_playback",
+                  "arguments": {}
+                }
+              ],
+              "evaluation": {
+                "overallScore": 1,
+                "trajectoryValid": true,
+                "multiTurnDependencyValid": true,
+                "toolCallCount": 7
+              }
+            }
+          ]
+        },
+        {
+          "recordId": "clair-de-lune:m015-018:piano:mcp-session:v1",
+          "majorityPass": false,
+          "passedCount": 1,
+          "totalRuns": 3,
+          "runs": [
+            {
+              "run": 1,
+              "passed": false,
+              "meta": {
+                "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E1:run1",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 4096,
+                "completionTokens": 412,
+                "costUsd": 0,
+                "latencyMs": 6873,
+                "parseOk": true,
+                "parseError": null
+              },
+              "toolCallCount": 9,
+              "toolCalls": [
+                {
+                  "tool": "teaching_note",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt1",
+                    "measure": 15
+                  }
+                },
+                {
+                  "tool": "view_piano_roll",
+                  "arguments": {
+                    "songId": "clair-de-lune-mvt1",
+                    "startMeasure": 15,
+                    "endMeasure": 18,
+                    "color_mode": "pitch-class"
+                  }
+                },
+                {
+                  "tool": "sing_along",
+                  "arguments": {
+                    "mode": "note-names",
+                    "withPiano": true,
+                    "id": "clair-de-lune-mvt1",
+                    "startMeasure": 15,
+                    "endMeasure": 18
+                  }
+                },
+                {
+                  "tool": "suggest_song",
+                  "arguments": {}
+                },
+                {
+                  "tool": "transpose_song",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt1",
+                    "semitones": -2
+                  }
+                },
+                {
+                  "tool": "validate_song_entry",
+                  "arguments": {}
+                },
+                {
+                  "tool": "view_guitar_tab",
+                  "arguments": {
+                    "tuning": "standard",
+                    "songId": "clair-de-lune-mvt1",
+                    "startMeasure": 15,
+                    "endMeasure": 18
+                  }
+                },
+                {
+                  "tool": "stop_playback",
+                  "arguments": {}
+                },
+                {
+                  "tool": "stop_playback",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt1",
+                    "startMeasure": 15,
+                    "endMeasure": 18
+                  }
+                }
+              ],
+              "evaluation": {
+                "overallScore": 0,
+                "trajectoryValid": true,
+                "multiTurnDependencyValid": true,
+                "toolCallCount": 9
+              }
+            },
+            {
+              "run": 2,
+              "passed": true,
+              "meta": {
+                "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E1:run2",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 4096,
+                "completionTokens": 689,
+                "costUsd": 0,
+                "latencyMs": 10489,
+                "parseOk": true,
+                "parseError": null
+              },
+              "toolCallCount": 16,
+              "toolCalls": [
+                {
+                  "tool": "view_piano_roll",
+                  "arguments": {
+                    "songId": "clair-de-lune-suite-bergamasque-iii",
+                    "startMeasure": 15,
+                    "endMeasure": 18
+                  }
+                },
+                {
+                  "tool": "teaching_note",
+                  "arguments": {
+                    "id": "clair-de-lune-suite-bergamasque-iii",
+                    "measure": 16
+                  }
+                },
+                {
+                  "tool": "song_info",
+                  "arguments": {
+                    "id": "clair-de-lune-suite-bergamasque-iii"
+                  }
+                },
+                {
+                  "tool": "suggest_song",
+                  "arguments": {
+                    "genre": "classical",
+                    "difficulty": "intermediate"
+                  }
+                },
+                {
+                  "tool": "validate_song_entry",
+                  "arguments": {
+                    "song": "{\"songId\": \"clair-de-lune-suite-bergamasque-iii\", \"measures\": [15, 16, 17, 18]}"
+                  }
+                },
+                {
+                  "tool": "transpose_song",
+                  "arguments": {
+                    "semitones": -2,
+                    "id": "clair-de-lune-suite-bergamasque-iii"
+                  }
+                },
+                {
+                  "tool": "view_guitar_tab",
+                  "arguments": {
+                    "songId": "clair-de-lune-suite-bergamasque-iii",
+                    "startMeasure": 15,
+                    "endMeasure": 18,
+                    "tuning": "standard"
+                  }
+                },
+                {
+                  "tool": "sing_along",
+                  "arguments": {
+                    "mode": "note-names",
+                    "startMeasure": 15,
+                    "endMeasure": 18,
+                    "id": "clair-de-lune-suite-bergamasque-iii"
+                  }
+                },
+                {
+                  "tool": "stop_playback",
+                  "arguments": {}
+                },
+                {
+                  "tool": "suggest_song",
+                  "arguments": {
+                    "genre": "classical",
+                    "difficulty": "intermediate"
+                  }
+                },
+                {
+                  "tool": "transpose_song",
+                  "arguments": {
+                    "id": "clair-de-lune-suite-bergamasque-iii",
+                    "semitones": 2
+                  }
+                },
+                {
+                  "tool": "validate_song_entry",
+                  "arguments": {
+                    "song": "{\"songId\": \"clair-de-lune-suite-bergamasque-iii\", \"measures\": [15, 16, 17, 18]}"
+                  }
+                },
+                {
+                  "tool": "view_piano_roll",
+                  "arguments": {
+                    "songId": "clair-de-lune-suite-bergamasque-iii",
+                    "startMeasure": 15,
+                    "endMeasure": 18,
+                    "color_mode": "hand"
+                  }
+                },
+                {
+                  "tool": "stop_playback",
+                  "arguments": {}
+                },
+                {
+                  "tool": "validate_song_entry",
+                  "arguments": {
+                    "song": "{\"songId\": \"clair-de-lune-suite-bergamasque-iii\", \"measures\": [15, 16, 17, 18]}"
+                  }
+                },
+                {
+                  "tool": "view_piano_roll",
+                  "arguments": {
+                    "startMeasure": 15,
+                    "endMeasure": 18,
+                    "color_mode": "pitch-class",
+                    "songId": "clair-de-lune-suite-bergamasque-iii"
+                  }
+                }
+              ],
+              "evaluation": {
+                "overallScore": 1,
+                "trajectoryValid": true,
+                "multiTurnDependencyValid": true,
+                "toolCallCount": 16
+              }
+            },
+            {
+              "run": 3,
+              "passed": false,
+              "meta": {
+                "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E1:run3",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 4096,
+                "completionTokens": 336,
+                "costUsd": 0,
+                "latencyMs": 5889,
+                "parseOk": true,
+                "parseError": null
+              },
+              "toolCallCount": 6,
+              "toolCalls": [
+                {
+                  "tool": "view_piano_roll",
+                  "arguments": {
+                    "songId": "clair-de-lune-suite-bergamasque-mvt3",
+                    "startMeasure": 15,
+                    "endMeasure": 18,
+                    "color_mode": "hand"
+                  }
+                },
+                {
+                  "tool": "teaching_note",
+                  "arguments": {
+                    "id": "clair-de-lune-suite-bergamasque-mvt3",
+                    "measure": 16
+                  }
+                },
+                {
+                  "tool": "suggest_song",
+                  "arguments": {
+                    "genre": "classical",
+                    "difficulty": "intermediate"
+                  }
+                },
+                {
+                  "tool": "transpose_song",
+                  "arguments": {
+                    "id": "clair-de-lune-suite-bergamasque-mvt3",
+                    "semitones": -12
+                  }
+                },
+                {
+                  "tool": "sing_along",
+                  "arguments": {
+                    "id": "clair-de-lune-suite-bergamasque-mvt3",
+                    "startMeasure": 15,
+                    "endMeasure": 18,
+                    "mode": "note-names",
+                    "withPiano": true
+                  }
+                },
+                {
+                  "tool": "stop_playback",
+                  "arguments": {
+                    "startMeasure": 15,
+                    "endMeasure": 18,
+                    "songId": "clair-de-lune-suite-bergamasque-mvt3"
+                  }
+                }
+              ],
+              "evaluation": {
+                "overallScore": 0,
+                "trajectoryValid": true,
+                "multiTurnDependencyValid": true,
+                "toolCallCount": 6
+              }
+            }
+          ]
+        },
+        {
+          "recordId": "clair-de-lune:m019-022:piano:mcp-session:v1",
+          "majorityPass": true,
+          "passedCount": 2,
+          "totalRuns": 3,
+          "runs": [
+            {
+              "run": 1,
+              "passed": true,
+              "meta": {
+                "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E1:run1",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 4096,
+                "completionTokens": 341,
+                "costUsd": 0,
+                "latencyMs": 5991,
+                "parseOk": true,
+                "parseError": null
+              },
+              "toolCallCount": 6,
+              "toolCalls": [
+                {
+                  "tool": "view_piano_roll",
+                  "arguments": {
+                    "songId": "clair-de-lune-mvt3",
+                    "startMeasure": 19,
+                    "endMeasure": 22
+                  }
+                },
+                {
+                  "tool": "sing_along",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt3",
+                    "startMeasure": 19,
+                    "endMeasure": 22,
+                    "mode": "note-names",
+                    "syncMode": "concurrent",
+                    "withPiano": true
+                  }
+                },
+                {
+                  "tool": "suggest_song",
+                  "arguments": {
+                    "genre": "classical",
+                    "difficulty": "intermediate"
+                  }
+                },
+                {
+                  "tool": "transpose_song",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt3",
+                    "semitones": -2
+                  }
+                },
+                {
+                  "tool": "validate_song_entry",
+                  "arguments": {
+                    "song": "{\"id\": \"clair-de-lune-transposed\", ...}"
+                  }
+                },
+                {
+                  "tool": "add_song",
+                  "arguments": {
+                    "song": "{\"id\": \"clair-de-lune-transposed\", ...}"
+                  }
+                }
+              ],
+              "evaluation": {
+                "overallScore": 1,
+                "trajectoryValid": true,
+                "multiTurnDependencyValid": true,
+                "toolCallCount": 6
+              }
+            },
+            {
+              "run": 2,
+              "passed": true,
+              "meta": {
+                "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E1:run2",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 4096,
+                "completionTokens": 731,
+                "costUsd": 0,
+                "latencyMs": 13439,
+                "parseOk": true,
+                "parseError": null
+              },
+              "toolCallCount": 8,
+              "toolCalls": [
+                {
+                  "tool": "song_info",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt3"
+                  }
+                },
+                {
+                  "tool": "sing_along",
+                  "arguments": {
+                    "endMeasure": 22,
+                    "mode": "note-names",
+                    "withPiano": true,
+                    "id": "clair-de-lune-mvt3",
+                    "startMeasure": 19
+                  }
+                },
+                {
+                  "tool": "suggest_song",
+                  "arguments": {
+                    "genre": "classical",
+                    "difficulty": "intermediate"
+                  }
+                },
+                {
+                  "tool": "teaching_note",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt3",
+                    "measure": 19
+                  }
+                },
+                {
+                  "tool": "song_info",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt3"
+                  }
+                },
+                {
+                  "tool": "sing_along",
+                  "arguments": {
+                    "endMeasure": 22,
+                    "mode": "note-names",
+                    "withPiano": true,
+                    "id": "clair-de-lune-mvt3",
+                    "startMeasure": 19
+                  }
+                },
+                {
+                  "tool": "teaching_note",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt3",
+                    "measure": 19
+                  }
+                },
+                {
+                  "tool": "sing_along",
+                  "arguments": {
+                    "endMeasure": 22,
+                    "mode": "note-names",
+                    "withPiano": true,
+                    "id": "clair-de-lune-mvt3",
+                    "startMeasure": 19
+                  }
+                }
+              ],
+              "evaluation": {
+                "overallScore": 1,
+                "trajectoryValid": true,
+                "multiTurnDependencyValid": true,
+                "toolCallCount": 8
+              }
+            },
+            {
+              "run": 3,
+              "passed": false,
+              "meta": {
+                "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E1:run3",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 4096,
+                "completionTokens": 393,
+                "costUsd": 0,
+                "latencyMs": 6923,
+                "parseOk": true,
+                "parseError": null
+              },
+              "toolCallCount": 8,
+              "toolCalls": [
+                {
+                  "tool": "view_piano_roll",
+                  "arguments": {
+                    "songId": "clair-de-lune-mvt3",
+                    "startMeasure": 19,
+                    "endMeasure": 22,
+                    "color_mode": "hand"
+                  }
+                },
+                {
+                  "tool": "suggest_song",
+                  "arguments": {
+                    "genre": "classical",
+                    "difficulty": "intermediate"
+                  }
+                },
+                {
+                  "tool": "validate_song_entry",
+                  "arguments": {
+                    "song": "{\"songId\": \"clair-de-lune-mvt3\", \"startMeasure\": 19, \"endMeasure\": 22, \"color_mode\": \"hand\"}"
+                  }
+                },
+                {
+                  "tool": "transpose_song",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt3",
+                    "semitones": -5
+                  }
+                },
+                {
+                  "tool": "sing_along",
+                  "arguments": {
+                    "mode": "note-names",
+                    "syncMode": "concurrent",
+                    "id": "clair-de-lune-mvt3",
+                    "startMeasure": 19,
+                    "endMeasure": 22
+                  }
+                },
+                {
+                  "tool": "teaching_note",
+                  "arguments": {
+                    "id": "clair-de-lune-mvt3",
+                    "measure": 19
+                  }
+                },
+                {
+                  "tool": "stop_playback",
+                  "arguments": {}
+                },
+                {
+                  "tool": "view_piano_roll",
+                  "arguments": {
+                    "startMeasure": 19,
+                    "endMeasure": 22
+                  }
+                }
+              ],
+              "evaluation": {
+                "overallScore": 0,
+                "trajectoryValid": true,
+                "multiTurnDependencyValid": true,
+                "toolCallCount": 8
+              }
+            }
+          ]
+        }
+      ],
+      "aggregate": {
+        "passRate": 0.75,
+        "recordsPass": 3,
+        "recordsTotal": 4,
+        "thresholdMet": true,
+        "threshold": 0.7
+      }
+    },
+    "e2": {
+      "pairs": [
+        {
+          "promptId": "clair-de-lune:m001-004:piano:mcp-session:v1",
+          "targetId": "clair-de-lune:m005-008:piano:mcp-session:v1",
+          "passedCount": 1,
+          "totalRuns": 3,
+          "meanGrooveOA": 0.9411764705882354,
+          "grooveOAs": [
+            null,
+            null,
+            0.9411764705882354
+          ],
+          "clean_parse_count": 3,
+          "recovered_parse_count": 0,
+          "unrecoverable_count": 0,
+          "clean_parse_rate": 1,
+          "recovered_parse_rate": 0,
+          "unrecoverable_rate": 0,
+          "groove_oa_parseable_only": 0.9411764705882354,
+          "runs": [
+            {
+              "run": 1,
+              "passed": false,
+              "grooveOA": null,
+              "meta": {
+                "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E2:run1",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 1107,
+                "completionTokens": 305,
+                "costUsd": 0,
+                "latencyMs": 10706,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 37,
+                "hasAbc": true
+              },
+              "parse_status": "clean",
+              "recovery_steps": null
+            },
+            {
+              "run": 2,
+              "passed": false,
+              "grooveOA": null,
+              "meta": {
+                "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E2:run2",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 1107,
+                "completionTokens": 231,
+                "costUsd": 0,
+                "latencyMs": 8084,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 29,
+                "hasAbc": true
+              },
+              "parse_status": "clean",
+              "recovery_steps": null
+            },
+            {
+              "run": 3,
+              "passed": true,
+              "grooveOA": 0.9411764705882354,
+              "meta": {
+                "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E2:run3",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 1107,
+                "completionTokens": 619,
+                "costUsd": 0,
+                "latencyMs": 24243,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 62,
+                "hasAbc": true
+              },
+              "parse_status": "clean",
+              "recovery_steps": null
+            }
+          ]
+        },
+        {
+          "promptId": "clair-de-lune:m015-018:piano:mcp-session:v1",
+          "targetId": "clair-de-lune:m019-022:piano:mcp-session:v1",
+          "passedCount": 2,
+          "totalRuns": 3,
+          "meanGrooveOA": 0.9642857142857143,
+          "grooveOAs": [
+            0.9285714285714286,
+            1,
+            null
+          ],
+          "clean_parse_count": 3,
+          "recovered_parse_count": 0,
+          "unrecoverable_count": 0,
+          "clean_parse_rate": 1,
+          "recovered_parse_rate": 0,
+          "unrecoverable_rate": 0,
+          "groove_oa_parseable_only": 0.9642857142857143,
+          "runs": [
+            {
+              "run": 1,
+              "passed": true,
+              "grooveOA": 0.9285714285714286,
+              "meta": {
+                "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E2:run1",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 2475,
+                "completionTokens": 366,
+                "costUsd": 0,
+                "latencyMs": 14186,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 48,
+                "hasAbc": true
+              },
+              "parse_status": "clean",
+              "recovery_steps": null
+            },
+            {
+              "run": 2,
+              "passed": true,
+              "grooveOA": 1,
+              "meta": {
+                "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E2:run2",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 2475,
+                "completionTokens": 443,
+                "costUsd": 0,
+                "latencyMs": 15040,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 60,
+                "hasAbc": true
+              },
+              "parse_status": "clean",
+              "recovery_steps": null
+            },
+            {
+              "run": 3,
+              "passed": false,
+              "grooveOA": null,
+              "meta": {
+                "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E2:run3",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 2475,
+                "completionTokens": 945,
+                "costUsd": 0,
+                "latencyMs": 33353,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 56,
+                "hasAbc": true
+              },
+              "parse_status": "clean",
+              "recovery_steps": null
+            }
+          ]
+        }
+      ],
+      "aggregate": {
+        "pairsPass": 0,
+        "pairsTotal": 2,
+        "allPairsPass": false,
+        "threshold": 0.797,
+        "total_runs": 6,
+        "clean_parse_rate": 1,
+        "recovered_parse_rate": 0,
+        "unrecoverable_rate": 0,
+        "groove_oa_parseable_only": 0.9565826330532213
+      }
+    },
+    "e3": {
+      "records": [
+        {
+          "recordId": "clair-de-lune:m001-004:piano:mcp-session:v1",
+          "randomMidiPartnerId": "clair-de-lune:m001-004:piano:mcp-session:v1",
+          "aggregate": {
+            "full": 0,
+            "text_only": 0.25,
+            "random_midi": 0.25
+          },
+          "totalCostUsd": 0,
+          "questions": [
+            {
+              "questionType": "pitch_class_count",
+              "questionText": "How many notes with pitch class C# appear in this phrase?",
+              "correctOptionIndex": 0,
+              "options": [
+                "6",
+                "3",
+                "4",
+                "8"
+              ],
+              "majorityScore": {
+                "full": 0,
+                "text_only": 0,
+                "random_midi": 0
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:full:pitch_class_count:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 749,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 286,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:full:pitch_class_count:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 749,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 94,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:full:pitch_class_count:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 749,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 97,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:text_only:pitch_class_count:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 236,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 141,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:text_only:pitch_class_count:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 236,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 94,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:text_only:pitch_class_count:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 236,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 94,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:random_midi:pitch_class_count:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 728,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 263,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:random_midi:pitch_class_count:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 728,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 100,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:random_midi:pitch_class_count:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 728,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 101,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "questionType": "hand_register",
+              "questionText": "Which hand plays more notes in this phrase?",
+              "correctOptionIndex": 3,
+              "options": [
+                "Left hand (36 notes)",
+                "Equal (16 notes each)",
+                "Right hand (31 notes)",
+                "Right hand (32 notes)"
+              ],
+              "majorityScore": {
+                "full": 0,
+                "text_only": 0,
+                "random_midi": 1
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:full:hand_register:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 761,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 275,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:full:hand_register:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 761,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 96,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:full:hand_register:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 761,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 97,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:text_only:hand_register:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 248,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 145,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:text_only:hand_register:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 248,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 97,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:text_only:hand_register:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 248,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 102,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 1,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:random_midi:hand_register:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 740,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 269,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:random_midi:hand_register:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 740,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 101,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 1,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:random_midi:hand_register:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 740,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 100,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "questionType": "rhythm_onset",
+              "questionText": "How many notes start on beat 1 (downbeat) across all bars in this phrase?",
+              "correctOptionIndex": 2,
+              "options": [
+                "4",
+                "5",
+                "6",
+                "8"
+              ],
+              "majorityScore": {
+                "full": 0,
+                "text_only": 0,
+                "random_midi": 0
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 1,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:full:rhythm_onset:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 755,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 273,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:full:rhythm_onset:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 755,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 109,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:full:rhythm_onset:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 755,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 98,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:text_only:rhythm_onset:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 242,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 149,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:text_only:rhythm_onset:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 242,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 106,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:text_only:rhythm_onset:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 242,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 104,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:random_midi:rhythm_onset:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 734,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 268,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:random_midi:rhythm_onset:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 734,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 101,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:random_midi:rhythm_onset:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 734,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 97,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "questionType": "annotation_grounding",
+              "questionText": "In measure 3, which pitch does the right hand play on beat 3.25?",
+              "correctOptionIndex": 0,
+              "options": [
+                "F5",
+                "F#5",
+                "E5",
+                "G5"
+              ],
+              "majorityScore": {
+                "full": 0,
+                "text_only": 1,
+                "random_midi": 0
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 1,
+                    "selectedOptionIndex": 0,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:full:annotation_grounding:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 757,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 294,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:full:annotation_grounding:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 757,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 129,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:full:annotation_grounding:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 757,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 118,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:text_only:annotation_grounding:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 244,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 152,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 1,
+                    "selectedOptionIndex": 0,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:text_only:annotation_grounding:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 244,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 101,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 1,
+                    "selectedOptionIndex": 0,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:text_only:annotation_grounding:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 244,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 96,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:random_midi:annotation_grounding:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 736,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 260,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:random_midi:annotation_grounding:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 736,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 115,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m001-004:piano:mcp-session:v1:E3:random_midi:annotation_grounding:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 736,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 101,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "recordId": "clair-de-lune:m005-008:piano:mcp-session:v1",
+          "randomMidiPartnerId": "clair-de-lune:m005-008:piano:mcp-session:v1",
+          "aggregate": {
+            "full": 0.25,
+            "text_only": 0.25,
+            "random_midi": 0.25
+          },
+          "totalCostUsd": 0,
+          "questions": [
+            {
+              "questionType": "pitch_class_count",
+              "questionText": "How many notes with pitch class D# appear in this phrase?",
+              "correctOptionIndex": 0,
+              "options": [
+                "9",
+                "6",
+                "7",
+                "11"
+              ],
+              "majorityScore": {
+                "full": 0,
+                "text_only": 0,
+                "random_midi": 0
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:full:pitch_class_count:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 933,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 312,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:full:pitch_class_count:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 933,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 97,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:full:pitch_class_count:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 933,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 102,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:text_only:pitch_class_count:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 213,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 157,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 1,
+                    "selectedOptionIndex": 0,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:text_only:pitch_class_count:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 213,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 115,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:text_only:pitch_class_count:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 213,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 96,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:random_midi:pitch_class_count:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 912,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 310,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:random_midi:pitch_class_count:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 912,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 93,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:random_midi:pitch_class_count:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 912,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 100,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "questionType": "hand_register",
+              "questionText": "Which hand plays more notes in this phrase?",
+              "correctOptionIndex": 1,
+              "options": [
+                "Left hand (41 notes)",
+                "Right hand (35 notes)",
+                "Equal (24 notes each)",
+                "Right hand (32 notes)"
+              ],
+              "majorityScore": {
+                "full": 1,
+                "text_only": 1,
+                "random_midi": 1
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 1,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:full:hand_register:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 944,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 314,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 1,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:full:hand_register:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 944,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 97,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 0,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:full:hand_register:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 944,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 98,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 1,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:text_only:hand_register:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 224,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 137,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 1,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:text_only:hand_register:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 224,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 94,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 1,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:text_only:hand_register:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 224,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 93,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 1,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:random_midi:hand_register:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 923,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 313,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 0,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:random_midi:hand_register:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 923,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 101,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 1,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:random_midi:hand_register:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 923,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 109,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "questionType": "rhythm_onset",
+              "questionText": "How many notes start on beat 1 (downbeat) across all bars in this phrase?",
+              "correctOptionIndex": 0,
+              "options": [
+                "12",
+                "10",
+                "11",
+                "14"
+              ],
+              "majorityScore": {
+                "full": 0,
+                "text_only": 0,
+                "random_midi": 0
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:full:rhythm_onset:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 942,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 314,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:full:rhythm_onset:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 942,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 94,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:full:rhythm_onset:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 942,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 97,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:text_only:rhythm_onset:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 222,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 135,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:text_only:rhythm_onset:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 222,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 103,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:text_only:rhythm_onset:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 222,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 95,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:random_midi:rhythm_onset:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 921,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 317,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:random_midi:rhythm_onset:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 921,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 95,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:random_midi:rhythm_onset:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 921,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 98,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "questionType": "annotation_grounding",
+              "questionText": "In measure 5, which pitch does the right hand play on beat 3.5?",
+              "correctOptionIndex": 3,
+              "options": [
+                "B4",
+                "A4",
+                "C5",
+                "A#4"
+              ],
+              "majorityScore": {
+                "full": 0,
+                "text_only": 0,
+                "random_midi": 0
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:full:annotation_grounding:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 939,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 313,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:full:annotation_grounding:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 939,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 102,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:full:annotation_grounding:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 939,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 102,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:text_only:annotation_grounding:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 219,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 136,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:text_only:annotation_grounding:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 219,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 98,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 0,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:text_only:annotation_grounding:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 219,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 98,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:random_midi:annotation_grounding:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 918,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 309,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:random_midi:annotation_grounding:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 918,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 99,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m005-008:piano:mcp-session:v1:E3:random_midi:annotation_grounding:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 918,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 99,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "recordId": "clair-de-lune:m015-018:piano:mcp-session:v1",
+          "randomMidiPartnerId": "clair-de-lune:m015-018:piano:mcp-session:v1",
+          "aggregate": {
+            "full": 0.25,
+            "text_only": 0.25,
+            "random_midi": 0.5
+          },
+          "totalCostUsd": 0,
+          "questions": [
+            {
+              "questionType": "pitch_class_count",
+              "questionText": "How many notes with pitch class A# appear in this phrase?",
+              "correctOptionIndex": 2,
+              "options": [
+                "48",
+                "49",
+                "51",
+                "53"
+              ],
+              "majorityScore": {
+                "full": 0,
+                "text_only": 0,
+                "random_midi": 0
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:full:pitch_class_count:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 2122,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 644,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:full:pitch_class_count:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 2122,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 105,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:full:pitch_class_count:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 2122,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 104,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:text_only:pitch_class_count:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 241,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 142,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:text_only:pitch_class_count:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 241,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 100,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:text_only:pitch_class_count:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 241,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 100,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:random_midi:pitch_class_count:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 2099,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 627,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:random_midi:pitch_class_count:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 2099,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 115,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:random_midi:pitch_class_count:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 2099,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 119,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "questionType": "hand_register",
+              "questionText": "Which hand plays more notes in this phrase?",
+              "correctOptionIndex": 0,
+              "options": [
+                "Right hand (146 notes)",
+                "Left hand (149 notes)",
+                "Equal (77 notes each)",
+                "Right hand (144 notes)"
+              ],
+              "majorityScore": {
+                "full": 0,
+                "text_only": 0,
+                "random_midi": 0
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:full:hand_register:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 2133,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 641,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:full:hand_register:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 2133,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 123,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:full:hand_register:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 2133,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 120,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:text_only:hand_register:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 252,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 153,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 1,
+                    "selectedOptionIndex": 0,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:text_only:hand_register:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 252,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 108,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:text_only:hand_register:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 252,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 116,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:random_midi:hand_register:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 2110,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 619,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:random_midi:hand_register:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 2110,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 123,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:random_midi:hand_register:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 2110,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 120,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "questionType": "rhythm_onset",
+              "questionText": "How many notes start on beat 1 (downbeat) across all bars in this phrase?",
+              "correctOptionIndex": 3,
+              "options": [
+                "15",
+                "16",
+                "19",
+                "17"
+              ],
+              "majorityScore": {
+                "full": 1,
+                "text_only": 1,
+                "random_midi": 1
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:full:rhythm_onset:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 2128,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 641,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 1,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:full:rhythm_onset:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 2128,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 124,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 1,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:full:rhythm_onset:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 2128,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 118,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 1,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:text_only:rhythm_onset:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 247,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 151,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 1,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:text_only:rhythm_onset:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 247,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 108,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 1,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:text_only:rhythm_onset:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 247,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 115,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 1,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:random_midi:rhythm_onset:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 2105,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 632,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 1,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:random_midi:rhythm_onset:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 2105,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 134,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 1,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:random_midi:rhythm_onset:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 2105,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 134,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "questionType": "annotation_grounding",
+              "questionText": "In measure 18, which pitch does the right hand play on beat 3.1875?",
+              "correctOptionIndex": 1,
+              "options": [
+                "E6",
+                "D#6",
+                "D6",
+                "F6"
+              ],
+              "majorityScore": {
+                "full": 0,
+                "text_only": 0,
+                "random_midi": 1
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:full:annotation_grounding:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 2129,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 668,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 0,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:full:annotation_grounding:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 2129,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 126,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:full:annotation_grounding:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 2129,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 128,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 0,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:text_only:annotation_grounding:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 248,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 167,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 0,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:text_only:annotation_grounding:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 248,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 113,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 1,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:text_only:annotation_grounding:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 248,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 118,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 1,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:random_midi:annotation_grounding:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 2106,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 632,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 1,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:random_midi:annotation_grounding:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 2106,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 122,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m015-018:piano:mcp-session:v1:E3:random_midi:annotation_grounding:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 2106,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 124,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "recordId": "clair-de-lune:m019-022:piano:mcp-session:v1",
+          "randomMidiPartnerId": "clair-de-lune:m019-022:piano:mcp-session:v1",
+          "aggregate": {
+            "full": 0,
+            "text_only": 0.25,
+            "random_midi": 0.25
+          },
+          "totalCostUsd": 0,
+          "questions": [
+            {
+              "questionType": "pitch_class_count",
+              "questionText": "How many notes with pitch class F# appear in this phrase?",
+              "correctOptionIndex": 1,
+              "options": [
+                "43",
+                "46",
+                "44",
+                "48"
+              ],
+              "majorityScore": {
+                "full": 0,
+                "text_only": 0,
+                "random_midi": 0
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:full:pitch_class_count:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1898,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 593,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:full:pitch_class_count:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1898,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 123,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:full:pitch_class_count:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1898,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 124,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:text_only:pitch_class_count:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 230,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 164,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:text_only:pitch_class_count:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 230,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 118,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:text_only:pitch_class_count:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 230,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 130,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:random_midi:pitch_class_count:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1875,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 575,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 1,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:random_midi:pitch_class_count:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1875,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 118,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:random_midi:pitch_class_count:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1875,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 116,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "questionType": "hand_register",
+              "questionText": "Which hand plays more notes in this phrase?",
+              "correctOptionIndex": 1,
+              "options": [
+                "Left hand (104 notes)",
+                "Right hand (100 notes)",
+                "Equal (67 notes each)",
+                "Right hand (99 notes)"
+              ],
+              "majorityScore": {
+                "full": 0,
+                "text_only": 1,
+                "random_midi": 1
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 1,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:full:hand_register:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1908,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 582,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 0,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:full:hand_register:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1908,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 129,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 0,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:full:hand_register:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1908,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 125,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 1,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:text_only:hand_register:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 240,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 167,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 1,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:text_only:hand_register:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 240,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 127,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 0,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:text_only:hand_register:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 240,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 120,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 1,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:random_midi:hand_register:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1885,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 584,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 1,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:random_midi:hand_register:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1885,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 172,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 0,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:random_midi:hand_register:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1885,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 176,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "questionType": "rhythm_onset",
+              "questionText": "How many notes start on beat 1 (downbeat) across all bars in this phrase?",
+              "correctOptionIndex": 1,
+              "options": [
+                "6",
+                "8",
+                "7",
+                "10"
+              ],
+              "majorityScore": {
+                "full": 0,
+                "text_only": 0,
+                "random_midi": 0
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:full:rhythm_onset:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1901,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 712,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:full:rhythm_onset:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1901,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 699,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 1,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:full:rhythm_onset:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1901,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 812,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:text_only:rhythm_onset:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 233,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 235,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:text_only:rhythm_onset:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 233,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 353,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:text_only:rhythm_onset:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 233,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 207,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:random_midi:rhythm_onset:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1878,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 676,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:random_midi:rhythm_onset:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1878,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 180,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:random_midi:rhythm_onset:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1878,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 166,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "questionType": "annotation_grounding",
+              "questionText": "In measure 20, which pitch does the left hand play on beat 3.5?",
+              "correctOptionIndex": 1,
+              "options": [
+                "A3",
+                "G#3",
+                "G3",
+                "A#3"
+              ],
+              "majorityScore": {
+                "full": 0,
+                "text_only": 0,
+                "random_midi": 0
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:full:annotation_grounding:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1903,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 639,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:full:annotation_grounding:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1903,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 171,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:full:annotation_grounding:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1903,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 162,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:text_only:annotation_grounding:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 235,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 185,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:text_only:annotation_grounding:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 235,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 143,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 1,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:text_only:annotation_grounding:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 235,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 141,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 0,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:random_midi:annotation_grounding:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1880,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 612,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 2,
+                    "score": 1,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:random_midi:annotation_grounding:run2",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1880,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 146,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  },
+                  {
+                    "run": 3,
+                    "score": 0,
+                    "selectedOptionIndex": 0,
+                    "meta": {
+                      "runId": "clair-de-lune:m019-022:piano:mcp-session:v1:E3:random_midi:annotation_grounding:run3",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1880,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 152,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "aggregate": {
+        "full": 0.125,
+        "text_only": 0.25,
+        "random_midi": 0.3125,
+        "marginVsTextOnly": -0.125,
+        "marginVsRandomMidi": -0.1875,
+        "thresholdMet": false,
+        "threshold": 0.1
+      }
+    }
+  },
+  "cost": {
+    "totalUsd": 0,
+    "isLocal": true,
+    "byEval": {
+      "e1": 0,
+      "e2": 0,
+      "e3": 0
+    }
+  }
+}

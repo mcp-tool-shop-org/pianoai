@@ -322,6 +322,10 @@ interface PairE2RunResult {
   majorityPass: boolean;
   grooveOAs: (number | null)[];
   meanGrooveOA: number | null;
+  // Slice 9a: parse stats
+  cleanParseCount: number;
+  recoveredParseCount: number;
+  unrecoverableCount: number;
 }
 
 // ─── Run E1 ───────────────────────────────────────────────────────────────────
@@ -388,11 +392,15 @@ for (const pair of testPairs) {
     const status = result.passed ? "PASS" : "FAIL";
     const grooveStr = result.grooveOA !== null ? result.grooveOA.toFixed(3) : "n/a";
     const costStr = result.meta.costUsd > 0 ? ` $${result.meta.costUsd.toFixed(5)}` : " $0 (local)";
+    const parseStr = result.meta.parseStatus ?? "n/a";
     console.log(
-      ` ${status} | grooveOA: ${grooveStr} (≥${E2_GROOVE_THRESHOLD}) |${costStr} | ${result.meta.latencyMs}ms`,
+      ` ${status} | grooveOA: ${grooveStr} (≥${E2_GROOVE_THRESHOLD}) | parse: ${parseStr} |${costStr} | ${result.meta.latencyMs}ms`,
     );
     if (!result.meta.parseOk) {
       console.log(`      parseError: ${result.meta.parseError}`);
+    }
+    if (result.meta.recoverySteps && result.meta.recoverySteps.length > 0) {
+      console.log(`      recoverySteps: ${result.meta.recoverySteps.join(", ")}`);
     }
   }
 
@@ -403,9 +411,15 @@ for (const pair of testPairs) {
   const meanGrooveOA =
     validOAs.length > 0 ? validOAs.reduce((s, v) => s + v, 0) / validOAs.length : null;
 
-  e2Results.push({ promptId: pair.promptId, targetId: pair.targetId, runs, passedCount, majority, grooveOAs, meanGrooveOA } as PairE2RunResult & { majority: boolean });
+  // Slice 9a: parse stats
+  const cleanParseCount = runs.filter((r) => r.meta.parseStatus === "clean").length;
+  const recoveredParseCount = runs.filter((r) => r.meta.parseStatus === "recovered").length;
+  const unrecoverableCount = runs.filter((r) => r.meta.parseStatus === "unrecoverable").length;
+
+  e2Results.push({ promptId: pair.promptId, targetId: pair.targetId, runs, passedCount, majority, grooveOAs, meanGrooveOA, cleanParseCount, recoveredParseCount, unrecoverableCount } as PairE2RunResult & { majority: boolean });
+  const parseRateStr = `clean:${cleanParseCount}/${N_RUNS} recovered:${recoveredParseCount}/${N_RUNS} unrecoverable:${unrecoverableCount}/${N_RUNS}`;
   console.log(
-    `  → majority: ${majority ? "PASS" : "FAIL"} (${passedCount}/${N_RUNS}) | mean grooveOA: ${meanGrooveOA?.toFixed(3) ?? "n/a"}`,
+    `  → majority: ${majority ? "PASS" : "FAIL"} (${passedCount}/${N_RUNS}) | mean grooveOA: ${meanGrooveOA?.toFixed(3) ?? "n/a"} | ${parseRateStr}`,
   );
 }
 
@@ -556,6 +570,21 @@ const machineOutput = {
         totalRuns: N_RUNS,
         meanGrooveOA: r.meanGrooveOA,
         grooveOAs: r.grooveOAs,
+        // Slice 9a: parse stats per pair
+        clean_parse_count: r.cleanParseCount,
+        recovered_parse_count: r.recoveredParseCount,
+        unrecoverable_count: r.unrecoverableCount,
+        clean_parse_rate: r.cleanParseCount / N_RUNS,
+        recovered_parse_rate: r.recoveredParseCount / N_RUNS,
+        unrecoverable_rate: r.unrecoverableCount / N_RUNS,
+        // grooveOA on parseable runs only (music quality signal)
+        groove_oa_parseable_only: (() => {
+          const parseable = r.runs.filter(
+            (run) => run.meta.parseStatus !== "unrecoverable" && run.grooveOA !== null
+          );
+          if (parseable.length === 0) return null;
+          return parseable.reduce((s, run) => s + (run.grooveOA ?? 0), 0) / parseable.length;
+        })(),
         runs: r.runs.map((run) => ({
           run: run.run,
           passed: run.passed,
@@ -564,6 +593,9 @@ const machineOutput = {
           parsedOutput: run.parsedOutput
             ? { tokenCount: run.parsedOutput.tokens_remi.length, hasAbc: run.parsedOutput.tokens_abc.length > 0 }
             : null,
+          // Slice 9a: parse result details
+          parse_status: run.meta.parseStatus ?? null,
+          recovery_steps: run.meta.recoverySteps ?? null,
         })),
       })),
       aggregate: {
@@ -571,6 +603,21 @@ const machineOutput = {
         pairsTotal: e2Results.length,
         allPairsPass: e2Passed,
         threshold: E2_GROOVE_THRESHOLD,
+        // Slice 9a: aggregate parse stats
+        total_runs: e2Results.length * N_RUNS,
+        clean_parse_rate: e2Results.reduce((s, r) => s + r.cleanParseCount, 0) / (e2Results.length * N_RUNS),
+        recovered_parse_rate: e2Results.reduce((s, r) => s + r.recoveredParseCount, 0) / (e2Results.length * N_RUNS),
+        unrecoverable_rate: e2Results.reduce((s, r) => s + r.unrecoverableCount, 0) / (e2Results.length * N_RUNS),
+        // mean grooveOA on parseable runs only (model's music quality signal)
+        groove_oa_parseable_only: (() => {
+          const parseableOAs = e2Results.flatMap((r) =>
+            r.runs
+              .filter((run) => run.meta.parseStatus !== "unrecoverable" && run.grooveOA !== null)
+              .map((run) => run.grooveOA as number)
+          );
+          if (parseableOAs.length === 0) return null;
+          return parseableOAs.reduce((s, v) => s + v, 0) / parseableOAs.length;
+        })(),
       },
     },
     e3: {
@@ -699,18 +746,50 @@ ${e1Results.map((r) =>
 ## E2 — Phrase Continuation
 
 Threshold: groove OA ≥ ${E2_GROOVE_THRESHOLD} for majority of runs per pair.
+Parse status: clean (strict JSON) | recovered (transforms applied) | unrecoverable (parser failed).
+Fail types: (parse failure) = unrecoverable parse; (music failure) = parseable but grooveOA < ${E2_GROOVE_THRESHOLD}.
 
-${e2Results.map((r) =>
-  `**${r.promptId} → ${r.targetId}** — ${fmtPass(r.majorityPass)} (${r.passedCount}/${N_RUNS})\n` +
-  `Mean groove OA: ${fmtOA(r.meanGrooveOA)} (threshold: ${E2_GROOVE_THRESHOLD})\n` +
-  r.runs.map((run) =>
-    `- Run ${run.run}: ${run.passed ? "PASS" : "FAIL"} | grooveOA: ${fmtOA(run.grooveOA)} | ` +
-    `cost: ${fmtCost(run.meta.costUsd)} | ${run.meta.latencyMs}ms` +
-    (!run.meta.parseOk ? ` | parseError: ${run.meta.parseError}` : "")
-  ).join("\n")
-).join("\n\n")}
+${e2Results.map((r) => {
+  const parseableOAs = r.runs.filter(
+    (run) => run.meta.parseStatus !== "unrecoverable" && run.grooveOA !== null
+  ).map((run) => run.grooveOA as number);
+  const grooveOnParseable = parseableOAs.length > 0
+    ? parseableOAs.reduce((s, v) => s + v, 0) / parseableOAs.length
+    : null;
+  return (
+    `**${r.promptId} → ${r.targetId}** — ${fmtPass(r.majorityPass)} (${r.passedCount}/${N_RUNS})\n` +
+    `Mean groove OA (all runs): ${fmtOA(r.meanGrooveOA)} | ` +
+    `Mean groove OA (parseable only): ${fmtOA(grooveOnParseable)}\n` +
+    `Parse: clean=${r.cleanParseCount}/${N_RUNS} recovered=${r.recoveredParseCount}/${N_RUNS} unrecoverable=${r.unrecoverableCount}/${N_RUNS}\n` +
+    r.runs.map((run) => {
+      const failType = !run.passed
+        ? (run.meta.parseStatus === "unrecoverable" ? " (parse failure)" : " (music failure)")
+        : "";
+      const parseStr = run.meta.parseStatus ? ` parse:${run.meta.parseStatus}` : "";
+      const recoveryStr = (run.meta.recoverySteps && run.meta.recoverySteps.length > 0)
+        ? ` [${run.meta.recoverySteps.join(",")}]` : "";
+      return `- Run ${run.run}: ${run.passed ? "PASS" : "FAIL"}${failType} | grooveOA: ${fmtOA(run.grooveOA)}${parseStr}${recoveryStr} | ` +
+        `cost: ${fmtCost(run.meta.costUsd)} | ${run.meta.latencyMs}ms`;
+    }).join("\n")
+  );
+}).join("\n\n")}
 
 **Aggregate:** ${e2Results.filter((r) => r.majorityPass).length}/${e2Results.length} pairs → **${fmtPass(e2Passed)}**
+
+### Parse Stats (Slice 9a)
+
+| Metric | Value |
+|--------|-------|
+| Total E2 runs | ${e2Results.length * N_RUNS} |
+| Clean parse rate | ${fmtPct(e2Results.reduce((s, r) => s + r.cleanParseCount, 0) / (e2Results.length * N_RUNS))} |
+| Recovered parse rate | ${fmtPct(e2Results.reduce((s, r) => s + r.recoveredParseCount, 0) / (e2Results.length * N_RUNS))} |
+| Unrecoverable rate | ${fmtPct(e2Results.reduce((s, r) => s + r.unrecoverableCount, 0) / (e2Results.length * N_RUNS))} |
+| Mean grooveOA (parseable runs only) | ${fmtOA((() => {
+    const oas = e2Results.flatMap((r) => r.runs
+      .filter((run) => run.meta.parseStatus !== "unrecoverable" && run.grooveOA !== null)
+      .map((run) => run.grooveOA as number));
+    return oas.length > 0 ? oas.reduce((s, v) => s + v, 0) / oas.length : null;
+  })())} |
 
 ---
 

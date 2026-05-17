@@ -87,6 +87,11 @@ export class OllamaInternBackend implements LlmBackend {
   lastCallMetadata(): CallMeta {
     return this._inner.lastCallMetadata();
   }
+
+  /** Raw text from the most recent callStructured call. Used by tolerant E2 parser. */
+  lastRawText(): string | null {
+    return this._inner.lastRawText();
+  }
 }
 
 /**

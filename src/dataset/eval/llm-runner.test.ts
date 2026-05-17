@@ -558,7 +558,8 @@ describe("runE2ForPair (mocked backend)", () => {
     expect(result.passed).toBe(false);
     expect(result.parsedOutput).toBeNull();
     expect(result.meta.parseOk).toBe(false);
-    expect(result.meta.parseError).toContain("tokens_remi");
+    // Slice 9a: error now comes from the tolerant parser or schema check
+    expect(result.meta.parseError).toBeTruthy();
   });
 });
 

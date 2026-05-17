@@ -62,6 +62,8 @@ export class OllamaBackend implements LlmBackend {
     latencyMs: 0,
     costEstimate: 0,
   };
+  /** Raw text from the most recent callStructured call (for tolerant parsing). */
+  private _lastRawText: string | null = null;
 
   constructor(model: string, baseUrl?: string) {
     this.model = model;
@@ -192,6 +194,7 @@ export class OllamaBackend implements LlmBackend {
     })) as OllamaChatResponse;
 
     const text = data.message.content ?? "";
+    this._lastRawText = text;
     try {
       return JSON.parse(text) as T;
     } catch {
@@ -200,6 +203,11 @@ export class OllamaBackend implements LlmBackend {
           `Raw response (first 500 chars): ${text.slice(0, 500)}`,
       );
     }
+  }
+
+  /** Raw text from the most recent callStructured call. Used by tolerant E2 parser. */
+  lastRawText(): string | null {
+    return this._lastRawText;
   }
 
   async callPlain(args: {
