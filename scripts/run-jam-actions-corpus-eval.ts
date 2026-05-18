@@ -24,10 +24,11 @@
 //   --n <K>                 (Slice 14) number of runs per record/pair. Default 1.
 //                           K>1 writes corpus-eval-results/2.0.0 schema with
 //                           per-record runs:[K] + aggregate stats.
-//   --sample-filter <name>  (Slice 14) restrict the sample plan to a named
+//   --sample-filter <name>  (Slice 14/16) restrict the sample plan to a named
 //                           subset. Filters:
 //                             all              (default — full plan, no filter)
 //                             enriched-only    — 6 enriched records / 4 enriched pairs only
+//                             slice16-cohort   — Slice 16 3-record cohort (E3 only)
 //
 // Output (default):
 //   datasets/jam-actions-v0-public/evals/corpus-scale-qwen2.5-7b-results.json
@@ -85,9 +86,26 @@ const PUBLIC_EVALS_DIR = join(PUBLIC_DIR, "evals");
 // ─── Args ──────────────────────────────────────────────────────────────────────
 
 type EvalName = "e1" | "e2" | "e3";
-type SampleFilter = "all" | "enriched-only";
+type SampleFilter = "all" | "enriched-only" | "slice16-cohort";
 
-const SAMPLE_FILTERS: readonly SampleFilter[] = ["all", "enriched-only"] as const;
+const SAMPLE_FILTERS: readonly SampleFilter[] = [
+  "all",
+  "enriched-only",
+  "slice16-cohort",
+] as const;
+
+/**
+ * Slice 16: the 3-record cohort selected for rubric-guided enrichment. The
+ * filter hardcodes these 3 ids; the sample plan itself is NOT modified (the
+ * sampler's 6-enriched-record assertions still hold, since they appear in
+ * the full plan), only the iteration list is replaced. E1/E2 iteration lists
+ * become empty when this filter is set — Slice 16 only runs E3.
+ */
+const SLICE_16_COHORT_RECORD_IDS: readonly string[] = [
+  "pathetique-mvt2:m001-004:piano:mcp-session:v1",
+  "schumann-traumerei:m001-004:piano:mcp-session:v1",
+  "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1",
+];
 
 interface CliOpts {
   scope: "public" | "source";
@@ -211,9 +229,10 @@ Options:
                           K>1 enables multi-run aggregation: per-record
                           runs:[K] array + AggregateStats; corpus-eval-results
                           schema bumps from 1.0.0 to 2.0.0.
-  --sample-filter <name>  (Slice 14) restrict sample plan to a subset:
-                            all            — full plan (default)
-                            enriched-only  — 6 enriched records / 4 enriched pairs
+  --sample-filter <name>  (Slice 14/16) restrict sample plan to a subset:
+                            all              — full plan (default)
+                            enriched-only    — 6 enriched records / 4 enriched pairs
+                            slice16-cohort   — 3-record Slice 16 cohort (E3 only)
   --help                  Show this help
 
 Sample plan (locked by kickoff):
@@ -390,23 +409,44 @@ if (plan.e2.enrichedPairsIncluded.length !== 4) {
 // — readers can reconstruct what was run from the per-record results.
 //
 // Defined filters:
-//   - "all"           : no narrowing (default).
-//   - "enriched-only" : keep only the 6 Slice 11 enriched records (E1, E3)
-//                       and the 4 enriched pairs (E2).
+//   - "all"             : no narrowing (default).
+//   - "enriched-only"   : keep only the 6 Slice 11 enriched records (E1, E3)
+//                         and the 4 enriched pairs (E2).
+//   - "slice16-cohort"  : (Slice 16) replace iteration lists with the 3-record
+//                         rubric-guided enrichment cohort. E1 + E2 lists become
+//                         empty (Slice 16 only runs E3). The full sample plan
+//                         remains intact for the sampler's required-inclusion
+//                         assertions; only the per-eval iteration is restricted.
 
 const enrichedRecordSet = new Set<string>(SLICE_11_ENRICHED_RECORD_IDS);
-const filteredE1Ids: string[] =
-  opts.sampleFilter === "enriched-only"
-    ? plan.e1.recordIds.filter((id) => enrichedRecordSet.has(id))
-    : [...plan.e1.recordIds];
-const filteredE2Pairs =
-  opts.sampleFilter === "enriched-only"
-    ? plan.e2.pairs.filter((p) => p.containsEnriched)
-    : [...plan.e2.pairs];
-const filteredE3Ids: string[] =
-  opts.sampleFilter === "enriched-only"
-    ? plan.e3.recordIds.filter((id) => enrichedRecordSet.has(id))
-    : [...plan.e3.recordIds];
+const slice16CohortSet = new Set<string>(SLICE_16_COHORT_RECORD_IDS);
+
+function filterByCohort(ids: string[]): string[] {
+  return ids.filter((id) => slice16CohortSet.has(id));
+}
+
+let filteredE1Ids: string[];
+let filteredE2Pairs: typeof plan.e2.pairs;
+let filteredE3Ids: string[];
+if (opts.sampleFilter === "enriched-only") {
+  filteredE1Ids = plan.e1.recordIds.filter((id) => enrichedRecordSet.has(id));
+  filteredE2Pairs = plan.e2.pairs.filter((p) => p.containsEnriched);
+  filteredE3Ids = plan.e3.recordIds.filter((id) => enrichedRecordSet.has(id));
+} else if (opts.sampleFilter === "slice16-cohort") {
+  // Sample plan unchanged; iteration lists replaced with the 3-record cohort.
+  // E3: explicit cohort ids (sample plan already contains Pathétique m001-004,
+  // and we materialize Schumann m001-004 + Chopin Nocturne m009-012 from the
+  // loaded public records regardless of whether the sampler picked them).
+  filteredE1Ids = filterByCohort(plan.e1.recordIds);
+  filteredE2Pairs = plan.e2.pairs.filter(
+    (p) => slice16CohortSet.has(p.promptId) || slice16CohortSet.has(p.targetId),
+  );
+  filteredE3Ids = [...SLICE_16_COHORT_RECORD_IDS];
+} else {
+  filteredE1Ids = [...plan.e1.recordIds];
+  filteredE2Pairs = [...plan.e2.pairs];
+  filteredE3Ids = [...plan.e3.recordIds];
+}
 
 if (opts.sampleFilter !== "all") {
   console.log(
