@@ -1,0 +1,1946 @@
+{
+  "schema_version": "corpus-eval-results/2.0.0",
+  "generated_at": "2026-05-18T21:43:34.598Z",
+  "scope": "public",
+  "backend": "ollama",
+  "model": "qwen2.5:7b",
+  "seed": "slice12-2026-05-17",
+  "n_runs": 3,
+  "eval_runs_n": 3,
+  "sample_filter": "slice19-fresh",
+  "evals_run": [
+    "e3-tool"
+  ],
+  "sample_summary": {
+    "e1_total": 0,
+    "e2_total": 0,
+    "e3_total": 3,
+    "e1_total_unfiltered": 24,
+    "e2_total_unfiltered": 12,
+    "e3_total_unfiltered": 24,
+    "enriched_in_e1": 6,
+    "enriched_in_e3": 6,
+    "enriched_pairs_in_e2": 4
+  },
+  "results": {
+    "e1": {
+      "records": [],
+      "aggregate": {
+        "passRate": 0,
+        "threshold": 0.7,
+        "thresholdMet": false,
+        "enrichedPassRate": 0,
+        "nonEnrichedPassRate": 0,
+        "enrichedPassedCount": 0,
+        "enrichedTotal": 0,
+        "nonEnrichedPassedCount": 0,
+        "nonEnrichedTotal": 0
+      }
+    },
+    "e2": {
+      "pairs": [],
+      "aggregate": {
+        "passRate": 0,
+        "threshold": 0.797,
+        "meanGrooveOA": null,
+        "meanGrooveOAEnriched": null,
+        "meanGrooveOANonEnriched": null,
+        "enrichedPairsCount": 0,
+        "nonEnrichedPairsCount": 0,
+        "enrichedPassedCount": 0,
+        "nonEnrichedPassedCount": 0
+      }
+    },
+    "e3": {
+      "records": [],
+      "aggregate": {
+        "full": null,
+        "text_only": null,
+        "random_midi": null,
+        "marginVsTextOnly": null,
+        "marginVsRandomMidi": null,
+        "threshold": 0.1,
+        "thresholdMetTextOnly": false,
+        "thresholdMetRandomMidi": false,
+        "enrichedSubset": {
+          "n": 0,
+          "full": null,
+          "text_only": null,
+          "random_midi": null,
+          "marginVsTextOnly": null,
+          "marginVsRandomMidi": null
+        },
+        "nonEnrichedSubset": {
+          "n": 0,
+          "full": null,
+          "text_only": null,
+          "random_midi": null,
+          "marginVsTextOnly": null
+        }
+      }
+    },
+    "e3-tool": {
+      "records": [
+        {
+          "recordId": "pathetique-mvt2:m029-032:piano:mcp-session:v1",
+          "enriched": true,
+          "tool_inspected_mean": 0.3333333333333333,
+          "tool_inspected_stddev": 0,
+          "tool_inspected_min": 0.3333333333333333,
+          "tool_inspected_max": 0.3333333333333333,
+          "aggregate": {
+            "n": 3,
+            "pass_rate": 1,
+            "majority_pass": true,
+            "metric_mean": 0.3333333333333333,
+            "metric_stddev": 0,
+            "metric_min": 0.3333333333333333,
+            "metric_max": 0.3333333333333333,
+            "not_computable_count": 0
+          },
+          "tool_use_stats": {
+            "total_tool_calls": 0,
+            "mean_calls_per_question": 0,
+            "questions_with_zero_calls": 9,
+            "questions_with_one_call": 0,
+            "questions_with_2_calls": 0,
+            "questions_with_3plus_calls": 0,
+            "tool_histogram": {},
+            "iteration_cap_hit_count": 0,
+            "backend_error_count": 0,
+            "model_silent_count": 0,
+            "model_answered_count": 9
+          },
+          "per_run_results": [
+            {
+              "run_index": 0,
+              "aggregate": {
+                "tool_inspected": 0.3333333333333333
+              },
+              "random_midi_partner_id": "chopin-prelude-e-minor:m009-012:piano:mcp-session:v1",
+              "tool_use_stats": {
+                "total_tool_calls": 0,
+                "mean_calls_per_question": 0,
+                "questions_with_zero_calls": 3,
+                "questions_with_one_call": 0,
+                "questions_with_2_calls": 0,
+                "questions_with_3plus_calls": 0,
+                "tool_histogram": {},
+                "iteration_cap_hit_count": 0,
+                "backend_error_count": 0,
+                "model_silent_count": 0,
+                "model_answered_count": 3
+              },
+              "questions": [
+                {
+                  "questionType": "pitch_class_count",
+                  "questionText": "How many notes with pitch class C# appear in this phrase?",
+                  "correctOptionIndex": 2,
+                  "options": [
+                    "8",
+                    "9",
+                    "11",
+                    "13"
+                  ],
+                  "majorityScore": 0,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 0,
+                      "selectedOptionIndex": 1,
+                      "meta": {
+                        "runId": "pathetique-mvt2:m029-032:piano:mcp-session:v1:E3:tool_inspected:pitch_class_count:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 2146,
+                        "completionTokens": 2,
+                        "costUsd": 0,
+                        "latencyMs": 832,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 0,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {},
+                        "calls": [],
+                        "final_text": "B"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "questionType": "hand_register",
+                  "questionText": "Which hand plays more notes in this phrase?",
+                  "correctOptionIndex": 0,
+                  "options": [
+                    "Right hand (21 notes)",
+                    "Left hand (24 notes)",
+                    "Equal (19 notes each)",
+                    "Right hand (18 notes)"
+                  ],
+                  "majorityScore": 0,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 0,
+                      "selectedOptionIndex": 1,
+                      "meta": {
+                        "runId": "pathetique-mvt2:m029-032:piano:mcp-session:v1:E3:tool_inspected:hand_register:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 2156,
+                        "completionTokens": 2,
+                        "costUsd": 0,
+                        "latencyMs": 124,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 0,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {},
+                        "calls": [],
+                        "final_text": "B"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "questionType": "annotation_grounding",
+                  "questionText": "In measure 31, which pitch does the right hand play on beat 2.7104?",
+                  "correctOptionIndex": 2,
+                  "options": [
+                    "D4",
+                    "C4",
+                    "C#4",
+                    "D#4"
+                  ],
+                  "majorityScore": 1,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 1,
+                      "selectedOptionIndex": 2,
+                      "meta": {
+                        "runId": "pathetique-mvt2:m029-032:piano:mcp-session:v1:E3:tool_inspected:annotation_grounding:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 2156,
+                        "completionTokens": 2,
+                        "costUsd": 0,
+                        "latencyMs": 128,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 0,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {},
+                        "calls": [],
+                        "final_text": "C"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "run_index": 1,
+              "aggregate": {
+                "tool_inspected": 0.3333333333333333
+              },
+              "random_midi_partner_id": "chopin-prelude-e-minor:m009-012:piano:mcp-session:v1",
+              "tool_use_stats": {
+                "total_tool_calls": 0,
+                "mean_calls_per_question": 0,
+                "questions_with_zero_calls": 3,
+                "questions_with_one_call": 0,
+                "questions_with_2_calls": 0,
+                "questions_with_3plus_calls": 0,
+                "tool_histogram": {},
+                "iteration_cap_hit_count": 0,
+                "backend_error_count": 0,
+                "model_silent_count": 0,
+                "model_answered_count": 3
+              },
+              "questions": [
+                {
+                  "questionType": "pitch_class_count",
+                  "questionText": "How many notes with pitch class C# appear in this phrase?",
+                  "correctOptionIndex": 2,
+                  "options": [
+                    "8",
+                    "9",
+                    "11",
+                    "13"
+                  ],
+                  "majorityScore": 0,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 0,
+                      "selectedOptionIndex": 1,
+                      "meta": {
+                        "runId": "pathetique-mvt2:m029-032:piano:mcp-session:v1:E3:tool_inspected:pitch_class_count:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 2146,
+                        "completionTokens": 2,
+                        "costUsd": 0,
+                        "latencyMs": 125,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 0,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {},
+                        "calls": [],
+                        "final_text": "B"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "questionType": "hand_register",
+                  "questionText": "Which hand plays more notes in this phrase?",
+                  "correctOptionIndex": 0,
+                  "options": [
+                    "Right hand (21 notes)",
+                    "Left hand (24 notes)",
+                    "Equal (19 notes each)",
+                    "Right hand (18 notes)"
+                  ],
+                  "majorityScore": 0,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 0,
+                      "selectedOptionIndex": 1,
+                      "meta": {
+                        "runId": "pathetique-mvt2:m029-032:piano:mcp-session:v1:E3:tool_inspected:hand_register:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 2156,
+                        "completionTokens": 2,
+                        "costUsd": 0,
+                        "latencyMs": 123,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 0,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {},
+                        "calls": [],
+                        "final_text": "B"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "questionType": "annotation_grounding",
+                  "questionText": "In measure 31, which pitch does the right hand play on beat 2.7104?",
+                  "correctOptionIndex": 2,
+                  "options": [
+                    "D4",
+                    "C4",
+                    "C#4",
+                    "D#4"
+                  ],
+                  "majorityScore": 1,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 1,
+                      "selectedOptionIndex": 2,
+                      "meta": {
+                        "runId": "pathetique-mvt2:m029-032:piano:mcp-session:v1:E3:tool_inspected:annotation_grounding:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 2156,
+                        "completionTokens": 2,
+                        "costUsd": 0,
+                        "latencyMs": 124,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 0,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {},
+                        "calls": [],
+                        "final_text": "C"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "run_index": 2,
+              "aggregate": {
+                "tool_inspected": 0.3333333333333333
+              },
+              "random_midi_partner_id": "chopin-prelude-e-minor:m009-012:piano:mcp-session:v1",
+              "tool_use_stats": {
+                "total_tool_calls": 0,
+                "mean_calls_per_question": 0,
+                "questions_with_zero_calls": 3,
+                "questions_with_one_call": 0,
+                "questions_with_2_calls": 0,
+                "questions_with_3plus_calls": 0,
+                "tool_histogram": {},
+                "iteration_cap_hit_count": 0,
+                "backend_error_count": 0,
+                "model_silent_count": 0,
+                "model_answered_count": 3
+              },
+              "questions": [
+                {
+                  "questionType": "pitch_class_count",
+                  "questionText": "How many notes with pitch class C# appear in this phrase?",
+                  "correctOptionIndex": 2,
+                  "options": [
+                    "8",
+                    "9",
+                    "11",
+                    "13"
+                  ],
+                  "majorityScore": 0,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 0,
+                      "selectedOptionIndex": 1,
+                      "meta": {
+                        "runId": "pathetique-mvt2:m029-032:piano:mcp-session:v1:E3:tool_inspected:pitch_class_count:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 2146,
+                        "completionTokens": 2,
+                        "costUsd": 0,
+                        "latencyMs": 122,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 0,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {},
+                        "calls": [],
+                        "final_text": "B"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "questionType": "hand_register",
+                  "questionText": "Which hand plays more notes in this phrase?",
+                  "correctOptionIndex": 0,
+                  "options": [
+                    "Right hand (21 notes)",
+                    "Left hand (24 notes)",
+                    "Equal (19 notes each)",
+                    "Right hand (18 notes)"
+                  ],
+                  "majorityScore": 0,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 0,
+                      "selectedOptionIndex": 1,
+                      "meta": {
+                        "runId": "pathetique-mvt2:m029-032:piano:mcp-session:v1:E3:tool_inspected:hand_register:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 2156,
+                        "completionTokens": 2,
+                        "costUsd": 0,
+                        "latencyMs": 119,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 0,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {},
+                        "calls": [],
+                        "final_text": "B"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "questionType": "annotation_grounding",
+                  "questionText": "In measure 31, which pitch does the right hand play on beat 2.7104?",
+                  "correctOptionIndex": 2,
+                  "options": [
+                    "D4",
+                    "C4",
+                    "C#4",
+                    "D#4"
+                  ],
+                  "majorityScore": 1,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 1,
+                      "selectedOptionIndex": 2,
+                      "meta": {
+                        "runId": "pathetique-mvt2:m029-032:piano:mcp-session:v1:E3:tool_inspected:annotation_grounding:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 2156,
+                        "completionTokens": 2,
+                        "costUsd": 0,
+                        "latencyMs": 120,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 0,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {},
+                        "calls": [],
+                        "final_text": "C"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "recordId": "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1",
+          "enriched": true,
+          "tool_inspected_mean": 0.6666666666666666,
+          "tool_inspected_stddev": 0.14433756729740646,
+          "tool_inspected_min": 0.5,
+          "tool_inspected_max": 0.75,
+          "aggregate": {
+            "n": 3,
+            "pass_rate": 1,
+            "majority_pass": true,
+            "metric_mean": 0.6666666666666666,
+            "metric_stddev": 0.14433756729740646,
+            "metric_min": 0.5,
+            "metric_max": 0.75,
+            "not_computable_count": 0
+          },
+          "tool_use_stats": {
+            "total_tool_calls": 3,
+            "mean_calls_per_question": 0.25,
+            "questions_with_zero_calls": 9,
+            "questions_with_one_call": 3,
+            "questions_with_2_calls": 0,
+            "questions_with_3plus_calls": 0,
+            "tool_histogram": {
+              "get_pitch_at": 3
+            },
+            "iteration_cap_hit_count": 0,
+            "backend_error_count": 0,
+            "model_silent_count": 0,
+            "model_answered_count": 12
+          },
+          "per_run_results": [
+            {
+              "run_index": 0,
+              "aggregate": {
+                "tool_inspected": 0.5
+              },
+              "random_midi_partner_id": "fur-elise:m057-060:piano:mcp-session:v1",
+              "tool_use_stats": {
+                "total_tool_calls": 1,
+                "mean_calls_per_question": 0.25,
+                "questions_with_zero_calls": 3,
+                "questions_with_one_call": 1,
+                "questions_with_2_calls": 0,
+                "questions_with_3plus_calls": 0,
+                "tool_histogram": {
+                  "get_pitch_at": 1
+                },
+                "iteration_cap_hit_count": 0,
+                "backend_error_count": 0,
+                "model_silent_count": 0,
+                "model_answered_count": 4
+              },
+              "questions": [
+                {
+                  "questionType": "pitch_class_count",
+                  "questionText": "How many notes with pitch class A appear in this phrase?",
+                  "correctOptionIndex": 2,
+                  "options": [
+                    "17",
+                    "18",
+                    "20",
+                    "22"
+                  ],
+                  "majorityScore": 0,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 0,
+                      "selectedOptionIndex": 0,
+                      "meta": {
+                        "runId": "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1:E3:tool_inspected:pitch_class_count:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 2040,
+                        "completionTokens": 2,
+                        "costUsd": 0,
+                        "latencyMs": 299,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 0,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {},
+                        "calls": [],
+                        "final_text": "A"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "questionType": "hand_register",
+                  "questionText": "Which hand plays more notes in this phrase?",
+                  "correctOptionIndex": 2,
+                  "options": [
+                    "Left hand (76 notes)",
+                    "Equal (53 notes each)",
+                    "Right hand (71 notes)",
+                    "Right hand (69 notes)"
+                  ],
+                  "majorityScore": 0,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 0,
+                      "selectedOptionIndex": 0,
+                      "meta": {
+                        "runId": "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1:E3:tool_inspected:hand_register:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 2049,
+                        "completionTokens": 2,
+                        "costUsd": 0,
+                        "latencyMs": 119,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 0,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {},
+                        "calls": [],
+                        "final_text": "A"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "questionType": "rhythm_onset",
+                  "questionText": "How many notes start on beat 1 (downbeat) across all bars in this phrase?",
+                  "correctOptionIndex": 1,
+                  "options": [
+                    "9",
+                    "11",
+                    "10",
+                    "13"
+                  ],
+                  "majorityScore": 1,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 1,
+                      "selectedOptionIndex": 1,
+                      "meta": {
+                        "runId": "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1:E3:tool_inspected:rhythm_onset:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 2046,
+                        "completionTokens": 2,
+                        "costUsd": 0,
+                        "latencyMs": 120,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 0,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {},
+                        "calls": [],
+                        "final_text": "B"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "questionType": "annotation_grounding",
+                  "questionText": "In measure 50, which pitch does the right hand play on beat 1.75?",
+                  "correctOptionIndex": 3,
+                  "options": [
+                    "F#4",
+                    "E4",
+                    "G4",
+                    "F4"
+                  ],
+                  "majorityScore": 1,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 1,
+                      "selectedOptionIndex": 3,
+                      "meta": {
+                        "runId": "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1:E3:tool_inspected:annotation_grounding:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 4149,
+                        "completionTokens": 33,
+                        "costUsd": 0,
+                        "latencyMs": 569,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 1,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {
+                          "get_pitch_at": 1
+                        },
+                        "calls": [
+                          {
+                            "iteration": 1,
+                            "tool": "get_pitch_at",
+                            "arguments": {
+                              "measure": 50,
+                              "beat": 1.75
+                            },
+                            "result": {
+                              "hand": "right",
+                              "measure": 50,
+                              "beat": 1.75,
+                              "pitch": 65,
+                              "name": "F4"
+                            },
+                            "is_error": false,
+                            "error_reason": null
+                          }
+                        ],
+                        "final_text": "D"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "run_index": 1,
+              "aggregate": {
+                "tool_inspected": 0.75
+              },
+              "random_midi_partner_id": "fur-elise:m057-060:piano:mcp-session:v1",
+              "tool_use_stats": {
+                "total_tool_calls": 1,
+                "mean_calls_per_question": 0.25,
+                "questions_with_zero_calls": 3,
+                "questions_with_one_call": 1,
+                "questions_with_2_calls": 0,
+                "questions_with_3plus_calls": 0,
+                "tool_histogram": {
+                  "get_pitch_at": 1
+                },
+                "iteration_cap_hit_count": 0,
+                "backend_error_count": 0,
+                "model_silent_count": 0,
+                "model_answered_count": 4
+              },
+              "questions": [
+                {
+                  "questionType": "pitch_class_count",
+                  "questionText": "How many notes with pitch class A appear in this phrase?",
+                  "correctOptionIndex": 2,
+                  "options": [
+                    "17",
+                    "18",
+                    "20",
+                    "22"
+                  ],
+                  "majorityScore": 0,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 0,
+                      "selectedOptionIndex": 0,
+                      "meta": {
+                        "runId": "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1:E3:tool_inspected:pitch_class_count:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 2040,
+                        "completionTokens": 2,
+                        "costUsd": 0,
+                        "latencyMs": 118,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 0,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {},
+                        "calls": [],
+                        "final_text": "A"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "questionType": "hand_register",
+                  "questionText": "Which hand plays more notes in this phrase?",
+                  "correctOptionIndex": 2,
+                  "options": [
+                    "Left hand (76 notes)",
+                    "Equal (53 notes each)",
+                    "Right hand (71 notes)",
+                    "Right hand (69 notes)"
+                  ],
+                  "majorityScore": 1,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 1,
+                      "selectedOptionIndex": 2,
+                      "meta": {
+                        "runId": "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1:E3:tool_inspected:hand_register:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 2049,
+                        "completionTokens": 2,
+                        "costUsd": 0,
+                        "latencyMs": 120,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 0,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {},
+                        "calls": [],
+                        "final_text": "C"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "questionType": "rhythm_onset",
+                  "questionText": "How many notes start on beat 1 (downbeat) across all bars in this phrase?",
+                  "correctOptionIndex": 1,
+                  "options": [
+                    "9",
+                    "11",
+                    "10",
+                    "13"
+                  ],
+                  "majorityScore": 1,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 1,
+                      "selectedOptionIndex": 1,
+                      "meta": {
+                        "runId": "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1:E3:tool_inspected:rhythm_onset:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 2046,
+                        "completionTokens": 2,
+                        "costUsd": 0,
+                        "latencyMs": 121,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 0,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {},
+                        "calls": [],
+                        "final_text": "B"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "questionType": "annotation_grounding",
+                  "questionText": "In measure 50, which pitch does the right hand play on beat 1.75?",
+                  "correctOptionIndex": 3,
+                  "options": [
+                    "F#4",
+                    "E4",
+                    "G4",
+                    "F4"
+                  ],
+                  "majorityScore": 1,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 1,
+                      "selectedOptionIndex": 3,
+                      "meta": {
+                        "runId": "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1:E3:tool_inspected:annotation_grounding:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 4149,
+                        "completionTokens": 33,
+                        "costUsd": 0,
+                        "latencyMs": 564,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 1,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {
+                          "get_pitch_at": 1
+                        },
+                        "calls": [
+                          {
+                            "iteration": 1,
+                            "tool": "get_pitch_at",
+                            "arguments": {
+                              "beat": 1.75,
+                              "measure": 50
+                            },
+                            "result": {
+                              "hand": "right",
+                              "measure": 50,
+                              "beat": 1.75,
+                              "pitch": 65,
+                              "name": "F4"
+                            },
+                            "is_error": false,
+                            "error_reason": null
+                          }
+                        ],
+                        "final_text": "D"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "run_index": 2,
+              "aggregate": {
+                "tool_inspected": 0.75
+              },
+              "random_midi_partner_id": "fur-elise:m057-060:piano:mcp-session:v1",
+              "tool_use_stats": {
+                "total_tool_calls": 1,
+                "mean_calls_per_question": 0.25,
+                "questions_with_zero_calls": 3,
+                "questions_with_one_call": 1,
+                "questions_with_2_calls": 0,
+                "questions_with_3plus_calls": 0,
+                "tool_histogram": {
+                  "get_pitch_at": 1
+                },
+                "iteration_cap_hit_count": 0,
+                "backend_error_count": 0,
+                "model_silent_count": 0,
+                "model_answered_count": 4
+              },
+              "questions": [
+                {
+                  "questionType": "pitch_class_count",
+                  "questionText": "How many notes with pitch class A appear in this phrase?",
+                  "correctOptionIndex": 2,
+                  "options": [
+                    "17",
+                    "18",
+                    "20",
+                    "22"
+                  ],
+                  "majorityScore": 0,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 0,
+                      "selectedOptionIndex": 1,
+                      "meta": {
+                        "runId": "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1:E3:tool_inspected:pitch_class_count:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 2040,
+                        "completionTokens": 2,
+                        "costUsd": 0,
+                        "latencyMs": 117,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 0,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {},
+                        "calls": [],
+                        "final_text": "B"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "questionType": "hand_register",
+                  "questionText": "Which hand plays more notes in this phrase?",
+                  "correctOptionIndex": 2,
+                  "options": [
+                    "Left hand (76 notes)",
+                    "Equal (53 notes each)",
+                    "Right hand (71 notes)",
+                    "Right hand (69 notes)"
+                  ],
+                  "majorityScore": 1,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 1,
+                      "selectedOptionIndex": 2,
+                      "meta": {
+                        "runId": "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1:E3:tool_inspected:hand_register:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 2049,
+                        "completionTokens": 2,
+                        "costUsd": 0,
+                        "latencyMs": 119,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 0,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {},
+                        "calls": [],
+                        "final_text": "C"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "questionType": "rhythm_onset",
+                  "questionText": "How many notes start on beat 1 (downbeat) across all bars in this phrase?",
+                  "correctOptionIndex": 1,
+                  "options": [
+                    "9",
+                    "11",
+                    "10",
+                    "13"
+                  ],
+                  "majorityScore": 1,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 1,
+                      "selectedOptionIndex": 1,
+                      "meta": {
+                        "runId": "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1:E3:tool_inspected:rhythm_onset:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 2046,
+                        "completionTokens": 2,
+                        "costUsd": 0,
+                        "latencyMs": 117,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 0,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {},
+                        "calls": [],
+                        "final_text": "B"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "questionType": "annotation_grounding",
+                  "questionText": "In measure 50, which pitch does the right hand play on beat 1.75?",
+                  "correctOptionIndex": 3,
+                  "options": [
+                    "F#4",
+                    "E4",
+                    "G4",
+                    "F4"
+                  ],
+                  "majorityScore": 1,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 1,
+                      "selectedOptionIndex": 3,
+                      "meta": {
+                        "runId": "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1:E3:tool_inspected:annotation_grounding:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 4149,
+                        "completionTokens": 33,
+                        "costUsd": 0,
+                        "latencyMs": 563,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 1,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {
+                          "get_pitch_at": 1
+                        },
+                        "calls": [
+                          {
+                            "iteration": 1,
+                            "tool": "get_pitch_at",
+                            "arguments": {
+                              "measure": 50,
+                              "beat": 1.75
+                            },
+                            "result": {
+                              "hand": "right",
+                              "measure": 50,
+                              "beat": 1.75,
+                              "pitch": 65,
+                              "name": "F4"
+                            },
+                            "is_error": false,
+                            "error_reason": null
+                          }
+                        ],
+                        "final_text": "D"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "recordId": "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1",
+          "enriched": true,
+          "tool_inspected_mean": 0.5,
+          "tool_inspected_stddev": 0.25,
+          "tool_inspected_min": 0.25,
+          "tool_inspected_max": 0.75,
+          "aggregate": {
+            "n": 3,
+            "pass_rate": 1,
+            "majority_pass": true,
+            "metric_mean": 0.5,
+            "metric_stddev": 0.25,
+            "metric_min": 0.25,
+            "metric_max": 0.75,
+            "not_computable_count": 0
+          },
+          "tool_use_stats": {
+            "total_tool_calls": 5,
+            "mean_calls_per_question": 0.4166666666666667,
+            "questions_with_zero_calls": 7,
+            "questions_with_one_call": 5,
+            "questions_with_2_calls": 0,
+            "questions_with_3plus_calls": 0,
+            "tool_histogram": {
+              "get_hand_balance": 1,
+              "get_pitch_at": 3,
+              "count_beat_1_onsets": 1
+            },
+            "iteration_cap_hit_count": 0,
+            "backend_error_count": 0,
+            "model_silent_count": 0,
+            "model_answered_count": 12
+          },
+          "per_run_results": [
+            {
+              "run_index": 0,
+              "aggregate": {
+                "tool_inspected": 0.25
+              },
+              "random_midi_partner_id": "fur-elise:m061-064:piano:mcp-session:v1",
+              "tool_use_stats": {
+                "total_tool_calls": 2,
+                "mean_calls_per_question": 0.5,
+                "questions_with_zero_calls": 2,
+                "questions_with_one_call": 2,
+                "questions_with_2_calls": 0,
+                "questions_with_3plus_calls": 0,
+                "tool_histogram": {
+                  "get_hand_balance": 1,
+                  "get_pitch_at": 1
+                },
+                "iteration_cap_hit_count": 0,
+                "backend_error_count": 0,
+                "model_silent_count": 0,
+                "model_answered_count": 4
+              },
+              "questions": [
+                {
+                  "questionType": "pitch_class_count",
+                  "questionText": "How many notes with pitch class G appear in this phrase?",
+                  "correctOptionIndex": 1,
+                  "options": [
+                    "22",
+                    "25",
+                    "23",
+                    "27"
+                  ],
+                  "majorityScore": 0,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 0,
+                      "selectedOptionIndex": 0,
+                      "meta": {
+                        "runId": "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1:E3:tool_inspected:pitch_class_count:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 1861,
+                        "completionTokens": 2,
+                        "costUsd": 0,
+                        "latencyMs": 258,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 0,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {},
+                        "calls": [],
+                        "final_text": "A"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "questionType": "hand_register",
+                  "questionText": "Which hand plays more notes in this phrase?",
+                  "correctOptionIndex": 3,
+                  "options": [
+                    "Left hand (96 notes)",
+                    "Equal (67 notes each)",
+                    "Right hand (87 notes)",
+                    "Right hand (90 notes)"
+                  ],
+                  "majorityScore": 0,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 0,
+                      "selectedOptionIndex": 2,
+                      "meta": {
+                        "runId": "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1:E3:tool_inspected:hand_register:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 3804,
+                        "completionTokens": 19,
+                        "costUsd": 0,
+                        "latencyMs": 399,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 1,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {
+                          "get_hand_balance": 1
+                        },
+                        "calls": [
+                          {
+                            "iteration": 1,
+                            "tool": "get_hand_balance",
+                            "arguments": {},
+                            "result": {
+                              "right_count": 90,
+                              "left_count": 44,
+                              "ratio": 0.6716417910447762
+                            },
+                            "is_error": false,
+                            "error_reason": null
+                          }
+                        ],
+                        "final_text": "C"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "questionType": "rhythm_onset",
+                  "questionText": "How many notes start on beat 1 (downbeat) across all bars in this phrase?",
+                  "correctOptionIndex": 3,
+                  "options": [
+                    "13",
+                    "14",
+                    "17",
+                    "15"
+                  ],
+                  "majorityScore": 0,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 0,
+                      "selectedOptionIndex": 0,
+                      "meta": {
+                        "runId": "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1:E3:tool_inspected:rhythm_onset:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 1868,
+                        "completionTokens": 2,
+                        "costUsd": 0,
+                        "latencyMs": 122,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 0,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {},
+                        "calls": [],
+                        "final_text": "A"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "questionType": "annotation_grounding",
+                  "questionText": "In measure 56, which pitch does the right hand play on beat 2.75?",
+                  "correctOptionIndex": 0,
+                  "options": [
+                    "F4",
+                    "F#4",
+                    "E4",
+                    "G4"
+                  ],
+                  "majorityScore": 1,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 1,
+                      "selectedOptionIndex": 0,
+                      "meta": {
+                        "runId": "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1:E3:tool_inspected:annotation_grounding:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 3791,
+                        "completionTokens": 33,
+                        "costUsd": 0,
+                        "latencyMs": 547,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 1,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {
+                          "get_pitch_at": 1
+                        },
+                        "calls": [
+                          {
+                            "iteration": 1,
+                            "tool": "get_pitch_at",
+                            "arguments": {
+                              "measure": 56,
+                              "beat": 2.75
+                            },
+                            "result": {
+                              "hand": "right",
+                              "measure": 56,
+                              "beat": 2.75,
+                              "pitch": 65,
+                              "name": "F4"
+                            },
+                            "is_error": false,
+                            "error_reason": null
+                          }
+                        ],
+                        "final_text": "A"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "run_index": 1,
+              "aggregate": {
+                "tool_inspected": 0.5
+              },
+              "random_midi_partner_id": "fur-elise:m061-064:piano:mcp-session:v1",
+              "tool_use_stats": {
+                "total_tool_calls": 1,
+                "mean_calls_per_question": 0.25,
+                "questions_with_zero_calls": 3,
+                "questions_with_one_call": 1,
+                "questions_with_2_calls": 0,
+                "questions_with_3plus_calls": 0,
+                "tool_histogram": {
+                  "get_pitch_at": 1
+                },
+                "iteration_cap_hit_count": 0,
+                "backend_error_count": 0,
+                "model_silent_count": 0,
+                "model_answered_count": 4
+              },
+              "questions": [
+                {
+                  "questionType": "pitch_class_count",
+                  "questionText": "How many notes with pitch class G appear in this phrase?",
+                  "correctOptionIndex": 1,
+                  "options": [
+                    "22",
+                    "25",
+                    "23",
+                    "27"
+                  ],
+                  "majorityScore": 1,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 1,
+                      "selectedOptionIndex": 1,
+                      "meta": {
+                        "runId": "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1:E3:tool_inspected:pitch_class_count:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 1861,
+                        "completionTokens": 2,
+                        "costUsd": 0,
+                        "latencyMs": 111,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 0,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {},
+                        "calls": [],
+                        "final_text": "B"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "questionType": "hand_register",
+                  "questionText": "Which hand plays more notes in this phrase?",
+                  "correctOptionIndex": 3,
+                  "options": [
+                    "Left hand (96 notes)",
+                    "Equal (67 notes each)",
+                    "Right hand (87 notes)",
+                    "Right hand (90 notes)"
+                  ],
+                  "majorityScore": 0,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 0,
+                      "selectedOptionIndex": 2,
+                      "meta": {
+                        "runId": "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1:E3:tool_inspected:hand_register:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 1870,
+                        "completionTokens": 2,
+                        "costUsd": 0,
+                        "latencyMs": 114,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 0,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {},
+                        "calls": [],
+                        "final_text": "C"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "questionType": "rhythm_onset",
+                  "questionText": "How many notes start on beat 1 (downbeat) across all bars in this phrase?",
+                  "correctOptionIndex": 3,
+                  "options": [
+                    "13",
+                    "14",
+                    "17",
+                    "15"
+                  ],
+                  "majorityScore": 0,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 0,
+                      "selectedOptionIndex": 0,
+                      "meta": {
+                        "runId": "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1:E3:tool_inspected:rhythm_onset:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 1868,
+                        "completionTokens": 2,
+                        "costUsd": 0,
+                        "latencyMs": 113,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 0,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {},
+                        "calls": [],
+                        "final_text": "A"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "questionType": "annotation_grounding",
+                  "questionText": "In measure 56, which pitch does the right hand play on beat 2.75?",
+                  "correctOptionIndex": 0,
+                  "options": [
+                    "F4",
+                    "F#4",
+                    "E4",
+                    "G4"
+                  ],
+                  "majorityScore": 1,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 1,
+                      "selectedOptionIndex": 0,
+                      "meta": {
+                        "runId": "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1:E3:tool_inspected:annotation_grounding:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 3791,
+                        "completionTokens": 33,
+                        "costUsd": 0,
+                        "latencyMs": 532,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 1,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {
+                          "get_pitch_at": 1
+                        },
+                        "calls": [
+                          {
+                            "iteration": 1,
+                            "tool": "get_pitch_at",
+                            "arguments": {
+                              "measure": 56,
+                              "beat": 2.75
+                            },
+                            "result": {
+                              "hand": "right",
+                              "measure": 56,
+                              "beat": 2.75,
+                              "pitch": 65,
+                              "name": "F4"
+                            },
+                            "is_error": false,
+                            "error_reason": null
+                          }
+                        ],
+                        "final_text": "A"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "run_index": 2,
+              "aggregate": {
+                "tool_inspected": 0.75
+              },
+              "random_midi_partner_id": "fur-elise:m061-064:piano:mcp-session:v1",
+              "tool_use_stats": {
+                "total_tool_calls": 2,
+                "mean_calls_per_question": 0.5,
+                "questions_with_zero_calls": 2,
+                "questions_with_one_call": 2,
+                "questions_with_2_calls": 0,
+                "questions_with_3plus_calls": 0,
+                "tool_histogram": {
+                  "count_beat_1_onsets": 1,
+                  "get_pitch_at": 1
+                },
+                "iteration_cap_hit_count": 0,
+                "backend_error_count": 0,
+                "model_silent_count": 0,
+                "model_answered_count": 4
+              },
+              "questions": [
+                {
+                  "questionType": "pitch_class_count",
+                  "questionText": "How many notes with pitch class G appear in this phrase?",
+                  "correctOptionIndex": 1,
+                  "options": [
+                    "22",
+                    "25",
+                    "23",
+                    "27"
+                  ],
+                  "majorityScore": 1,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 1,
+                      "selectedOptionIndex": 1,
+                      "meta": {
+                        "runId": "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1:E3:tool_inspected:pitch_class_count:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 1861,
+                        "completionTokens": 2,
+                        "costUsd": 0,
+                        "latencyMs": 105,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 0,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {},
+                        "calls": [],
+                        "final_text": "B"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "questionType": "hand_register",
+                  "questionText": "Which hand plays more notes in this phrase?",
+                  "correctOptionIndex": 3,
+                  "options": [
+                    "Left hand (96 notes)",
+                    "Equal (67 notes each)",
+                    "Right hand (87 notes)",
+                    "Right hand (90 notes)"
+                  ],
+                  "majorityScore": 0,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 0,
+                      "selectedOptionIndex": 2,
+                      "meta": {
+                        "runId": "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1:E3:tool_inspected:hand_register:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 1870,
+                        "completionTokens": 2,
+                        "costUsd": 0,
+                        "latencyMs": 113,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 0,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {},
+                        "calls": [],
+                        "final_text": "C"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "questionType": "rhythm_onset",
+                  "questionText": "How many notes start on beat 1 (downbeat) across all bars in this phrase?",
+                  "correctOptionIndex": 3,
+                  "options": [
+                    "13",
+                    "14",
+                    "17",
+                    "15"
+                  ],
+                  "majorityScore": 1,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 1,
+                      "selectedOptionIndex": 3,
+                      "meta": {
+                        "runId": "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1:E3:tool_inspected:rhythm_onset:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 4133,
+                        "completionTokens": 23,
+                        "costUsd": 0,
+                        "latencyMs": 512,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 1,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {
+                          "count_beat_1_onsets": 1
+                        },
+                        "calls": [
+                          {
+                            "iteration": 1,
+                            "tool": "count_beat_1_onsets",
+                            "arguments": {},
+                            "result": {
+                              "count": 15,
+                              "events": [
+                                {
+                                  "hand": "right",
+                                  "measure": 53,
+                                  "beat": 0,
+                                  "pitch": 71,
+                                  "name": "B4"
+                                },
+                                {
+                                  "hand": "right",
+                                  "measure": 53,
+                                  "beat": 0,
+                                  "pitch": 74,
+                                  "name": "D5"
+                                },
+                                {
+                                  "hand": "left",
+                                  "measure": 53,
+                                  "beat": 0,
+                                  "pitch": 55,
+                                  "name": "G3"
+                                },
+                                {
+                                  "hand": "left",
+                                  "measure": 53,
+                                  "beat": 0,
+                                  "pitch": 59,
+                                  "name": "B3"
+                                },
+                                {
+                                  "hand": "right",
+                                  "measure": 54,
+                                  "beat": 0,
+                                  "pitch": 69,
+                                  "name": "A4"
+                                },
+                                {
+                                  "hand": "right",
+                                  "measure": 54,
+                                  "beat": 0,
+                                  "pitch": 81,
+                                  "name": "A5"
+                                },
+                                {
+                                  "hand": "right",
+                                  "measure": 54,
+                                  "beat": 0.25,
+                                  "pitch": 73,
+                                  "name": "C#5"
+                                },
+                                {
+                                  "hand": "left",
+                                  "measure": 54,
+                                  "beat": 0,
+                                  "pitch": 53,
+                                  "name": "F3"
+                                },
+                                {
+                                  "hand": "left",
+                                  "measure": 54,
+                                  "beat": 0.25,
+                                  "pitch": 52,
+                                  "name": "E3"
+                                },
+                                {
+                                  "hand": "right",
+                                  "measure": 55,
+                                  "beat": 0,
+                                  "pitch": 67,
+                                  "name": "G4"
+                                },
+                                {
+                                  "hand": "left",
+                                  "measure": 55,
+                                  "beat": 0,
+                                  "pitch": 59,
+                                  "name": "B3"
+                                },
+                                {
+                                  "hand": "left",
+                                  "measure": 55,
+                                  "beat": 0.25,
+                                  "pitch": 52,
+                                  "name": "E3"
+                                },
+                                {
+                                  "hand": "right",
+                                  "measure": 56,
+                                  "beat": 0,
+                                  "pitch": 64,
+                                  "name": "E4"
+                                },
+                                {
+                                  "hand": "right",
+                                  "measure": 56,
+                                  "beat": 0,
+                                  "pitch": 69,
+                                  "name": "A4"
+                                },
+                                {
+                                  "hand": "right",
+                                  "measure": 56,
+                                  "beat": 0.25,
+                                  "pitch": 62,
+                                  "name": "D4"
+                                }
+                              ]
+                            },
+                            "is_error": false,
+                            "error_reason": null
+                          }
+                        ],
+                        "final_text": "D"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "questionType": "annotation_grounding",
+                  "questionText": "In measure 56, which pitch does the right hand play on beat 2.75?",
+                  "correctOptionIndex": 0,
+                  "options": [
+                    "F4",
+                    "F#4",
+                    "E4",
+                    "G4"
+                  ],
+                  "majorityScore": 1,
+                  "runs": [
+                    {
+                      "run": 1,
+                      "score": 1,
+                      "selectedOptionIndex": 0,
+                      "meta": {
+                        "runId": "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1:E3:tool_inspected:annotation_grounding:run1",
+                        "backend": "ollama",
+                        "modelId": "qwen2.5:7b",
+                        "promptTokens": 3791,
+                        "completionTokens": 33,
+                        "costUsd": 0,
+                        "latencyMs": 560,
+                        "parseOk": true,
+                        "parseError": null
+                      },
+                      "trace": {
+                        "tool_call_count": 1,
+                        "iteration_cap_hit": false,
+                        "termination_reason": "model_answered",
+                        "tool_histogram": {
+                          "get_pitch_at": 1
+                        },
+                        "calls": [
+                          {
+                            "iteration": 1,
+                            "tool": "get_pitch_at",
+                            "arguments": {
+                              "measure": 56,
+                              "beat": 2.75
+                            },
+                            "result": {
+                              "hand": "right",
+                              "measure": 56,
+                              "beat": 2.75,
+                              "pitch": 65,
+                              "name": "F4"
+                            },
+                            "is_error": false,
+                            "error_reason": null
+                          }
+                        ],
+                        "final_text": "A"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "aggregate": {
+        "n_records": 3,
+        "tool_inspected": {
+          "n": 3,
+          "pass_rate": 1,
+          "majority_pass": true,
+          "metric_mean": 0.5,
+          "metric_stddev": 0.16666666666666666,
+          "metric_min": 0.3333333333333333,
+          "metric_max": 0.6666666666666666,
+          "not_computable_count": 0
+        },
+        "total_tool_calls": 8,
+        "tool_histogram": {
+          "get_pitch_at": 6,
+          "get_hand_balance": 1,
+          "count_beat_1_onsets": 1
+        }
+      }
+    }
+  },
+  "prior_baseline_reference": {
+    "artifact": "datasets/jam-actions-v0/evals/llm-in-the-loop-qwen2.5-7b-hardened.json",
+    "test_set": [
+      "clair-de-lune:m001-004",
+      "clair-de-lune:m005-008",
+      "clair-de-lune:m015-018",
+      "clair-de-lune:m019-022"
+    ],
+    "n_runs": 3,
+    "e1_pass_rate": 0.75,
+    "e2_groove_oa_aggregate": null,
+    "e3_margin_vs_text_only": -0.125,
+    "e3_margin_vs_random_midi": -0.0625
+  }
+}

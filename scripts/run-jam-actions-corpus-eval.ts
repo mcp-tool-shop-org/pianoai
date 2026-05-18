@@ -96,7 +96,9 @@ type SampleFilter =
   | "enriched-only"
   | "slice16-cohort"
   | "slice17-cohort"
-  | "slice18-cohort";
+  | "slice18-cohort"
+  | "slice19-fresh"
+  | "slice19-cohort";
 
 const SAMPLE_FILTERS: readonly SampleFilter[] = [
   "all",
@@ -104,6 +106,8 @@ const SAMPLE_FILTERS: readonly SampleFilter[] = [
   "slice16-cohort",
   "slice17-cohort",
   "slice18-cohort",
+  "slice19-fresh",
+  "slice19-cohort",
 ] as const;
 
 /**
@@ -168,6 +172,37 @@ const SLICE_18_COHORT_RECORD_IDS: readonly string[] = [
   "chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1",
   // Stratum E — Test holdout
   "clair-de-lune:m031-034:piano:mcp-session:v1",
+];
+
+/**
+ * Slice 19: the 3 records NEW to fair-eval baseline coverage. These are the
+ * Slice 11 enriched records that have never run under post-repair MCQs:
+ *  - pathetique-mvt2:m029-032 — anacrusis pair-mate to m025-028
+ *  - bach-prelude-c-major-bwv846:m049-052 — texture-repetition enriched
+ *  - bach-prelude-c-major-bwv846:m053-056 — texture-repetition enriched
+ *
+ * Used with --sample-filter slice19-fresh to produce fresh n=3 data for the
+ * 4-condition baseline (e3 + e3-tool). The slice19-cohort filter combines
+ * these with the 13 Slice 18 cohort records for the unified 16-record baseline.
+ */
+const SLICE_19_FRESH_RECORD_IDS: readonly string[] = [
+  "pathetique-mvt2:m029-032:piano:mcp-session:v1",
+  "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1",
+  "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1",
+];
+
+/**
+ * Slice 19: the unified 16-record cohort (13 Slice 18 records + 3 NEW). Used
+ * by --sample-filter slice19-cohort when the user wants to rerun the full
+ * cohort fresh under fair gold. Slice 19's default mode is slice19-fresh
+ * (rerun only the 3 new records and reuse Slice 18.5's tool_inspected data
+ * for the other 13). slice19-cohort is provided for completeness when a
+ * tighter comparison is wanted (e.g. re-running text_only/full/random_midi
+ * across all 16 under post-repair MCQs).
+ */
+const SLICE_19_COHORT_RECORD_IDS: readonly string[] = [
+  ...SLICE_18_COHORT_RECORD_IDS,
+  ...SLICE_19_FRESH_RECORD_IDS,
 ];
 
 interface CliOpts {
@@ -298,7 +333,7 @@ Options:
                           K>1 enables multi-run aggregation: per-record
                           runs:[K] array + AggregateStats; corpus-eval-results
                           schema bumps from 1.0.0 to 2.0.0.
-  --sample-filter <name>  (Slice 14/16/17/18) restrict sample plan to a subset:
+  --sample-filter <name>  (Slice 14/16/17/18/19) restrict sample plan to a subset:
                             all              — full plan (default)
                             enriched-only    — 6 enriched records / 4 enriched pairs
                             slice16-cohort   — 3-record Slice 16 cohort (E3 only)
@@ -306,6 +341,11 @@ Options:
                             slice18-cohort   — 13-record Slice 18 stratified cohort
                                                 (e3-tool only; Bach/Pathétique/
                                                 Schumann/Chopin/clair-de-lune)
+                            slice19-fresh    — 3 NEW Slice 19 records (E3-only):
+                                                pathetique m029-032,
+                                                bach m049-052, bach m053-056
+                            slice19-cohort   — 16-record unified Slice 19 cohort
+                                                (13 Slice 18 + 3 fresh; E3-only)
   --help                  Show this help
 
 Sample plan (locked by kickoff):
@@ -361,7 +401,7 @@ const SAMPLE_PATH =
     ? resolveOutputPath(opts.sampleOutputPath, DEFAULT_SAMPLE_PATH)
     : DEFAULT_SAMPLE_PATH;
 
-const evalsLabel = ["e1", "e2", "e3"].filter((e) => opts.evals.has(e as EvalName)).join(",");
+const evalsLabel = ["e1", "e2", "e3", "e3-tool"].filter((e) => opts.evals.has(e as EvalName)).join(",");
 
 console.log("=".repeat(72));
 console.log(" jam-actions-v0 Corpus-Scale Eval Runner");
@@ -495,6 +535,8 @@ const enrichedRecordSet = new Set<string>(SLICE_11_ENRICHED_RECORD_IDS);
 const slice16CohortSet = new Set<string>(SLICE_16_COHORT_RECORD_IDS);
 const slice17CohortSet = new Set<string>(SLICE_17_COHORT_RECORD_IDS);
 const slice18CohortSet = new Set<string>(SLICE_18_COHORT_RECORD_IDS);
+const slice19FreshSet = new Set<string>(SLICE_19_FRESH_RECORD_IDS);
+const slice19CohortSet = new Set<string>(SLICE_19_COHORT_RECORD_IDS);
 
 function filterByCohort(ids: string[]): string[] {
   return ids.filter((id) => slice16CohortSet.has(id));
@@ -559,6 +601,32 @@ if (opts.sampleFilter === "enriched-only") {
   );
   filteredE3Ids = filterBySlice18Cohort(plan.e3.recordIds);
   filteredE3ToolIds = [...SLICE_18_COHORT_RECORD_IDS];
+} else if (opts.sampleFilter === "slice19-fresh") {
+  // Slice 19 (fresh-only mode): the 3 NEW records — pathetique m029-032,
+  // bach m049-052, bach m053-056 — that never ran under post-repair MCQs.
+  // Slice 18.5 produced tool_inspected for the other 13; for those, the
+  // unified Slice 19 artifact reuses Slice 18.5 byte-identical. This filter
+  // produces fresh data for the 3 new records ONLY, across whichever evals
+  // are passed via --evals (e3 produces text_only/full/random_midi; e3-tool
+  // produces tool_inspected). E1/E2 iteration lists empty — Slice 19 is an
+  // E3-only measurement slice. Iteration list REPLACES the plan since these
+  // records may not all be in the sampler's E3 picks.
+  filteredE1Ids = [];
+  filteredE2Pairs = [];
+  filteredE3Ids = [...SLICE_19_FRESH_RECORD_IDS];
+  filteredE3ToolIds = [...SLICE_19_FRESH_RECORD_IDS];
+} else if (opts.sampleFilter === "slice19-cohort") {
+  // Slice 19 (full-cohort mode): the unified 16-record cohort (13 Slice 18
+  // + 3 NEW). Used when the user wants to rerun the full cohort fresh under
+  // fair gold (e.g. for a tighter text_only/full/random_midi comparison
+  // against the post-repair MCQ text). E1/E2 iteration lists empty — Slice
+  // 19 is an E3-only measurement slice. Iteration list REPLACES the plan
+  // since several cohort ids — clair-de-lune:m031-034, Schumann m001-004,
+  // chopin m009-012 — are not in the sampler's E3 plan.
+  filteredE1Ids = [];
+  filteredE2Pairs = [];
+  filteredE3Ids = [...SLICE_19_COHORT_RECORD_IDS];
+  filteredE3ToolIds = [...SLICE_19_COHORT_RECORD_IDS];
 } else {
   filteredE1Ids = [...plan.e1.recordIds];
   filteredE2Pairs = [...plan.e2.pairs];
@@ -579,7 +647,11 @@ if (opts.sampleFilter !== "all") {
           ? " (Slice 17 demo cohort)"
           : opts.sampleFilter === "slice18-cohort"
             ? " (Slice 18 stratified cohort)"
-            : ""),
+            : opts.sampleFilter === "slice19-fresh"
+              ? " (Slice 19 fresh-3 records: pathetique m029, bach m049, bach m053)"
+              : opts.sampleFilter === "slice19-cohort"
+                ? " (Slice 19 unified 16-record cohort: 13 Slice 18 + 3 fresh)"
+                : ""),
   );
 }
 

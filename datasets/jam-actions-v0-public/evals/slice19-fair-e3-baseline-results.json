@@ -1,0 +1,1333 @@
+{
+  "schema_version": "slice19-fair-e3-baseline/1.0.0",
+  "generated_at": "2026-05-18T21:45:59.497Z",
+  "generator": "scripts/build-slice19-unified-baseline.mjs",
+  "cohort_description": "Unified post-repair E3 baseline across 16 records — 13 Slice 18 cohort records reused byte-identical from Slice 18.5 (tool_inspected only; text_only/full/random_midi fresh in Slice 19) + 3 NEW Slice 19 records (pathetique m029-032, bach m049-052, bach m053-056) run fresh across all 4 conditions",
+  "cohort_size": 16,
+  "n_runs_per_condition": 3,
+  "model": "qwen2.5:7b",
+  "backend": "ollama",
+  "seed": "slice12-2026-05-17",
+  "evaluator_state": "post-Slice-18.5 (count_notes_with_pitch_class added; annotation-grounding off-by-one fixed)",
+  "source_artifacts": {
+    "tool_inspected for 13 records (reuse)": "evals/slice18-5-e3-post-repair-results.json",
+    "text_only / full / random_midi for 16 records (fresh)": "evals/slice19-e3-fresh-cohort-results.json",
+    "tool_inspected for 3 records (fresh)": "evals/slice19-e3-tool-fresh-results.json"
+  },
+  "reuse_invariance": {
+    "description": "SHA-256 hash of each Slice 18.5 record-block, captured at unified-artifact build time. Future slices reusing this baseline can compare against these hashes to verify the Slice 18.5 source hasn't drifted.",
+    "hashes": {
+      "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1": "1108e9d77b0b1f2d06d2b9192ec2a6f9f45dcd4c0a2bef455cade7b7bf3fbf8c",
+      "bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1": "455cd5cacf4a0fd41ddb1b6f4b7fd17fdc23a554a86820994d1fedc43c4fa133",
+      "bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1": "b447de3d54eebb07219b5cac9c55061d1951db63852a2651a0b98e958b4ddba9",
+      "bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1": "499578617bf5077f0f435d3301f5690a6a4f915819afb5ff15546dfa079f9481",
+      "pathetique-mvt2:m001-004:piano:mcp-session:v1": "77393116a0f4d810fcffde3727e88aa5b163093148438dd562f9a01554943e80",
+      "pathetique-mvt2:m009-012:piano:mcp-session:v1": "518d46b320cb21b5982e8756fb7d4d731ed2c2896170bf0089281960c5593cc4",
+      "pathetique-mvt2:m017-020:piano:mcp-session:v1": "75c163895ba3bc5feafd59bb1a3b78591812bd7d2362a5ccadb775606d56f9ac",
+      "pathetique-mvt2:m025-028:piano:mcp-session:v1": "82d10f91b1fe0b0ffd04e98156fa56780ca337efdf61f7d5d7e0b133a44218e9",
+      "schumann-traumerei:m001-004:piano:mcp-session:v1": "6b1b7a99e296aaea44473c557e3e068c38db736dfa6a634a49077a221fb00e69",
+      "schumann-traumerei:m045-048:piano:mcp-session:v1": "ef9eb3c1fd9b6aac8c511508495122fc935bdaf2da574f8db8ae1fdcc365e920",
+      "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1": "2a2ca82f984151bd6e9489c1998b7d9e0989f84b78dde813d57a50ecd44f87a5",
+      "chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1": "c82210d26b2c0b09fb5f1aa04aeebc5b71bf9acdebceee31217805f618fda235",
+      "clair-de-lune:m031-034:piano:mcp-session:v1": "d35c99ad8e2bdc1ddbba6388e1e50118c2e27dff849091726cefded644d94c96"
+    }
+  },
+  "records": [
+    {
+      "recordId": "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1",
+      "enriched": false,
+      "stratum": "bach",
+      "source": "slice18.5-reuse",
+      "full_mean": 0.3333333333333333,
+      "full_stddev": 0.14433756729740643,
+      "text_only_mean": 0.5,
+      "text_only_stddev": 0,
+      "random_midi_mean": 0.5833333333333334,
+      "random_midi_stddev": 0.14433756729740646,
+      "tool_inspected_mean": 0.5,
+      "tool_inspected_stddev": 0.25,
+      "margin_full_minus_text_only": -0.16666666666666669,
+      "margin_full_minus_random_midi": -0.25000000000000006,
+      "margin_tool_inspected_minus_text_only": 0,
+      "margin_tool_inspected_minus_full": 0.16666666666666669,
+      "margin_tool_inspected_minus_random_midi": -0.08333333333333337,
+      "full_clears_text_only": false,
+      "tool_inspected_clears_text_only": false,
+      "tool_use_stats": {
+        "total_tool_calls": 7,
+        "mean_calls_per_question": 0.5833333333333334,
+        "questions_with_zero_calls": 5,
+        "questions_with_one_call": 7,
+        "questions_with_2_calls": 0,
+        "questions_with_3plus_calls": 0,
+        "tool_histogram": {
+          "count_beat_1_onsets": 3,
+          "get_pitch_at": 3,
+          "get_hand_balance": 1
+        },
+        "iteration_cap_hit_count": 0,
+        "backend_error_count": 0,
+        "model_silent_count": 0,
+        "model_answered_count": 12
+      },
+      "tool_inspected_source_sha256": "1108e9d77b0b1f2d06d2b9192ec2a6f9f45dcd4c0a2bef455cade7b7bf3fbf8c"
+    },
+    {
+      "recordId": "bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1",
+      "enriched": false,
+      "stratum": "bach",
+      "source": "slice18.5-reuse",
+      "full_mean": 0.3333333333333333,
+      "full_stddev": 0.14433756729740643,
+      "text_only_mean": 0,
+      "text_only_stddev": 0,
+      "random_midi_mean": 0,
+      "random_midi_stddev": 0,
+      "tool_inspected_mean": 0.4166666666666667,
+      "tool_inspected_stddev": 0.2886751345948129,
+      "margin_full_minus_text_only": 0.3333333333333333,
+      "margin_full_minus_random_midi": 0.3333333333333333,
+      "margin_tool_inspected_minus_text_only": 0.4166666666666667,
+      "margin_tool_inspected_minus_full": 0.08333333333333337,
+      "margin_tool_inspected_minus_random_midi": 0.4166666666666667,
+      "full_clears_text_only": true,
+      "tool_inspected_clears_text_only": true,
+      "tool_use_stats": {
+        "total_tool_calls": 6,
+        "mean_calls_per_question": 0.5,
+        "questions_with_zero_calls": 6,
+        "questions_with_one_call": 6,
+        "questions_with_2_calls": 0,
+        "questions_with_3plus_calls": 0,
+        "tool_histogram": {
+          "count_beat_1_onsets": 3,
+          "get_pitch_at": 2,
+          "count_notes_with_pitch_class": 1
+        },
+        "iteration_cap_hit_count": 0,
+        "backend_error_count": 0,
+        "model_silent_count": 1,
+        "model_answered_count": 11
+      },
+      "tool_inspected_source_sha256": "455cd5cacf4a0fd41ddb1b6f4b7fd17fdc23a554a86820994d1fedc43c4fa133"
+    },
+    {
+      "recordId": "bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1",
+      "enriched": false,
+      "stratum": "bach",
+      "source": "slice18.5-reuse",
+      "full_mean": 0.3333333333333333,
+      "full_stddev": 0.14433756729740643,
+      "text_only_mean": 0.25,
+      "text_only_stddev": 0.25,
+      "random_midi_mean": 0.08333333333333333,
+      "random_midi_stddev": 0.14433756729740646,
+      "tool_inspected_mean": 0.6666666666666666,
+      "tool_inspected_stddev": 0.14433756729740646,
+      "margin_full_minus_text_only": 0.08333333333333331,
+      "margin_full_minus_random_midi": 0.25,
+      "margin_tool_inspected_minus_text_only": 0.41666666666666663,
+      "margin_tool_inspected_minus_full": 0.3333333333333333,
+      "margin_tool_inspected_minus_random_midi": 0.5833333333333333,
+      "full_clears_text_only": false,
+      "tool_inspected_clears_text_only": true,
+      "tool_use_stats": {
+        "total_tool_calls": 5,
+        "mean_calls_per_question": 0.4166666666666667,
+        "questions_with_zero_calls": 7,
+        "questions_with_one_call": 5,
+        "questions_with_2_calls": 0,
+        "questions_with_3plus_calls": 0,
+        "tool_histogram": {
+          "count_beat_1_onsets": 2,
+          "get_pitch_at": 3
+        },
+        "iteration_cap_hit_count": 0,
+        "backend_error_count": 0,
+        "model_silent_count": 0,
+        "model_answered_count": 12
+      },
+      "tool_inspected_source_sha256": "b447de3d54eebb07219b5cac9c55061d1951db63852a2651a0b98e958b4ddba9"
+    },
+    {
+      "recordId": "bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1",
+      "enriched": true,
+      "stratum": "bach",
+      "source": "slice18.5-reuse",
+      "full_mean": 0.5,
+      "full_stddev": 0,
+      "text_only_mean": 0.5,
+      "text_only_stddev": 0,
+      "random_midi_mean": 0.5,
+      "random_midi_stddev": 0,
+      "tool_inspected_mean": 0.75,
+      "tool_inspected_stddev": 0.25,
+      "margin_full_minus_text_only": 0,
+      "margin_full_minus_random_midi": 0,
+      "margin_tool_inspected_minus_text_only": 0.25,
+      "margin_tool_inspected_minus_full": 0.25,
+      "margin_tool_inspected_minus_random_midi": 0.25,
+      "full_clears_text_only": false,
+      "tool_inspected_clears_text_only": true,
+      "tool_use_stats": {
+        "total_tool_calls": 3,
+        "mean_calls_per_question": 0.25,
+        "questions_with_zero_calls": 9,
+        "questions_with_one_call": 3,
+        "questions_with_2_calls": 0,
+        "questions_with_3plus_calls": 0,
+        "tool_histogram": {
+          "get_pitch_at": 1,
+          "count_beat_1_onsets": 2
+        },
+        "iteration_cap_hit_count": 0,
+        "backend_error_count": 0,
+        "model_silent_count": 0,
+        "model_answered_count": 12
+      },
+      "tool_inspected_source_sha256": "499578617bf5077f0f435d3301f5690a6a4f915819afb5ff15546dfa079f9481"
+    },
+    {
+      "recordId": "pathetique-mvt2:m001-004:piano:mcp-session:v1",
+      "enriched": true,
+      "stratum": "pathetique",
+      "source": "slice18.5-reuse",
+      "full_mean": 0.5,
+      "full_stddev": 0,
+      "text_only_mean": 0.75,
+      "text_only_stddev": 0,
+      "random_midi_mean": 0.6666666666666666,
+      "random_midi_stddev": 0.14433756729740646,
+      "tool_inspected_mean": 0.9166666666666666,
+      "tool_inspected_stddev": 0.14433756729740646,
+      "margin_full_minus_text_only": -0.25,
+      "margin_full_minus_random_midi": -0.16666666666666663,
+      "margin_tool_inspected_minus_text_only": 0.16666666666666663,
+      "margin_tool_inspected_minus_full": 0.41666666666666663,
+      "margin_tool_inspected_minus_random_midi": 0.25,
+      "full_clears_text_only": false,
+      "tool_inspected_clears_text_only": true,
+      "tool_use_stats": {
+        "total_tool_calls": 2,
+        "mean_calls_per_question": 0.16666666666666666,
+        "questions_with_zero_calls": 10,
+        "questions_with_one_call": 2,
+        "questions_with_2_calls": 0,
+        "questions_with_3plus_calls": 0,
+        "tool_histogram": {
+          "count_beat_1_onsets": 2
+        },
+        "iteration_cap_hit_count": 0,
+        "backend_error_count": 0,
+        "model_silent_count": 0,
+        "model_answered_count": 12
+      },
+      "tool_inspected_source_sha256": "77393116a0f4d810fcffde3727e88aa5b163093148438dd562f9a01554943e80"
+    },
+    {
+      "recordId": "pathetique-mvt2:m009-012:piano:mcp-session:v1",
+      "enriched": false,
+      "stratum": "pathetique",
+      "source": "slice18.5-reuse",
+      "full_mean": 0,
+      "full_stddev": 0,
+      "text_only_mean": 0.3333333333333333,
+      "text_only_stddev": 0.14433756729740643,
+      "random_midi_mean": 0.08333333333333333,
+      "random_midi_stddev": 0.14433756729740646,
+      "tool_inspected_mean": 0.3333333333333333,
+      "tool_inspected_stddev": 0.14433756729740643,
+      "margin_full_minus_text_only": -0.3333333333333333,
+      "margin_full_minus_random_midi": -0.08333333333333333,
+      "margin_tool_inspected_minus_text_only": 0,
+      "margin_tool_inspected_minus_full": 0.3333333333333333,
+      "margin_tool_inspected_minus_random_midi": 0.25,
+      "full_clears_text_only": false,
+      "tool_inspected_clears_text_only": false,
+      "tool_use_stats": {
+        "total_tool_calls": 5,
+        "mean_calls_per_question": 0.4166666666666667,
+        "questions_with_zero_calls": 7,
+        "questions_with_one_call": 5,
+        "questions_with_2_calls": 0,
+        "questions_with_3plus_calls": 0,
+        "tool_histogram": {
+          "count_beat_1_onsets": 2,
+          "get_pitch_at": 3
+        },
+        "iteration_cap_hit_count": 0,
+        "backend_error_count": 0,
+        "model_silent_count": 0,
+        "model_answered_count": 12
+      },
+      "tool_inspected_source_sha256": "518d46b320cb21b5982e8756fb7d4d731ed2c2896170bf0089281960c5593cc4"
+    },
+    {
+      "recordId": "pathetique-mvt2:m017-020:piano:mcp-session:v1",
+      "enriched": false,
+      "stratum": "pathetique",
+      "source": "slice18.5-reuse",
+      "full_mean": 0.25,
+      "full_stddev": 0,
+      "text_only_mean": 0.5833333333333334,
+      "text_only_stddev": 0.14433756729740646,
+      "random_midi_mean": 0.5,
+      "random_midi_stddev": 0,
+      "tool_inspected_mean": 0.6666666666666666,
+      "tool_inspected_stddev": 0.14433756729740646,
+      "margin_full_minus_text_only": -0.33333333333333337,
+      "margin_full_minus_random_midi": -0.25,
+      "margin_tool_inspected_minus_text_only": 0.08333333333333326,
+      "margin_tool_inspected_minus_full": 0.41666666666666663,
+      "margin_tool_inspected_minus_random_midi": 0.16666666666666663,
+      "full_clears_text_only": false,
+      "tool_inspected_clears_text_only": false,
+      "tool_use_stats": {
+        "total_tool_calls": 12,
+        "mean_calls_per_question": 1,
+        "questions_with_zero_calls": 2,
+        "questions_with_one_call": 8,
+        "questions_with_2_calls": 2,
+        "questions_with_3plus_calls": 0,
+        "tool_histogram": {
+          "count_notes_with_pitch_class": 2,
+          "get_events_in_hand": 4,
+          "count_beat_1_onsets": 3,
+          "get_pitch_at": 3
+        },
+        "iteration_cap_hit_count": 0,
+        "backend_error_count": 0,
+        "model_silent_count": 0,
+        "model_answered_count": 12
+      },
+      "tool_inspected_source_sha256": "75c163895ba3bc5feafd59bb1a3b78591812bd7d2362a5ccadb775606d56f9ac"
+    },
+    {
+      "recordId": "pathetique-mvt2:m025-028:piano:mcp-session:v1",
+      "enriched": true,
+      "stratum": "pathetique",
+      "source": "slice18.5-reuse",
+      "full_mean": 0.5833333333333334,
+      "full_stddev": 0.14433756729740646,
+      "text_only_mean": 0.6666666666666666,
+      "text_only_stddev": 0.14433756729740646,
+      "random_midi_mean": 0.3333333333333333,
+      "random_midi_stddev": 0.14433756729740643,
+      "tool_inspected_mean": 0.5833333333333334,
+      "tool_inspected_stddev": 0.38188130791298663,
+      "margin_full_minus_text_only": -0.08333333333333326,
+      "margin_full_minus_random_midi": 0.25000000000000006,
+      "margin_tool_inspected_minus_text_only": -0.08333333333333326,
+      "margin_tool_inspected_minus_full": 0,
+      "margin_tool_inspected_minus_random_midi": 0.25000000000000006,
+      "full_clears_text_only": false,
+      "tool_inspected_clears_text_only": false,
+      "tool_use_stats": {
+        "total_tool_calls": 0,
+        "mean_calls_per_question": 0,
+        "questions_with_zero_calls": 12,
+        "questions_with_one_call": 0,
+        "questions_with_2_calls": 0,
+        "questions_with_3plus_calls": 0,
+        "tool_histogram": {},
+        "iteration_cap_hit_count": 0,
+        "backend_error_count": 0,
+        "model_silent_count": 0,
+        "model_answered_count": 12
+      },
+      "tool_inspected_source_sha256": "82d10f91b1fe0b0ffd04e98156fa56780ca337efdf61f7d5d7e0b133a44218e9"
+    },
+    {
+      "recordId": "schumann-traumerei:m001-004:piano:mcp-session:v1",
+      "enriched": true,
+      "stratum": "schumann",
+      "source": "slice18.5-reuse",
+      "full_mean": 1,
+      "full_stddev": 0,
+      "text_only_mean": 1,
+      "text_only_stddev": 0,
+      "random_midi_mean": 0.75,
+      "random_midi_stddev": 0,
+      "tool_inspected_mean": 1,
+      "tool_inspected_stddev": 0,
+      "margin_full_minus_text_only": 0,
+      "margin_full_minus_random_midi": 0.25,
+      "margin_tool_inspected_minus_text_only": 0,
+      "margin_tool_inspected_minus_full": 0,
+      "margin_tool_inspected_minus_random_midi": 0.25,
+      "full_clears_text_only": false,
+      "tool_inspected_clears_text_only": false,
+      "tool_use_stats": {
+        "total_tool_calls": 0,
+        "mean_calls_per_question": 0,
+        "questions_with_zero_calls": 12,
+        "questions_with_one_call": 0,
+        "questions_with_2_calls": 0,
+        "questions_with_3plus_calls": 0,
+        "tool_histogram": {},
+        "iteration_cap_hit_count": 0,
+        "backend_error_count": 0,
+        "model_silent_count": 0,
+        "model_answered_count": 12
+      },
+      "tool_inspected_source_sha256": "6b1b7a99e296aaea44473c557e3e068c38db736dfa6a634a49077a221fb00e69"
+    },
+    {
+      "recordId": "schumann-traumerei:m045-048:piano:mcp-session:v1",
+      "enriched": true,
+      "stratum": "schumann",
+      "source": "slice18.5-reuse",
+      "full_mean": 0.3333333333333333,
+      "full_stddev": 0,
+      "text_only_mean": 0.6666666666666666,
+      "text_only_stddev": 0,
+      "random_midi_mean": 0.6666666666666666,
+      "random_midi_stddev": 0,
+      "tool_inspected_mean": 0.1111111111111111,
+      "tool_inspected_stddev": 0.19245008972987526,
+      "margin_full_minus_text_only": -0.3333333333333333,
+      "margin_full_minus_random_midi": -0.3333333333333333,
+      "margin_tool_inspected_minus_text_only": -0.5555555555555556,
+      "margin_tool_inspected_minus_full": -0.2222222222222222,
+      "margin_tool_inspected_minus_random_midi": -0.5555555555555556,
+      "full_clears_text_only": false,
+      "tool_inspected_clears_text_only": false,
+      "tool_use_stats": {
+        "total_tool_calls": 0,
+        "mean_calls_per_question": 0,
+        "questions_with_zero_calls": 9,
+        "questions_with_one_call": 0,
+        "questions_with_2_calls": 0,
+        "questions_with_3plus_calls": 0,
+        "tool_histogram": {},
+        "iteration_cap_hit_count": 0,
+        "backend_error_count": 0,
+        "model_silent_count": 0,
+        "model_answered_count": 9
+      },
+      "tool_inspected_source_sha256": "ef9eb3c1fd9b6aac8c511508495122fc935bdaf2da574f8db8ae1fdcc365e920"
+    },
+    {
+      "recordId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1",
+      "enriched": true,
+      "stratum": "chopin",
+      "source": "slice18.5-reuse",
+      "full_mean": 0.5833333333333334,
+      "full_stddev": 0.14433756729740646,
+      "text_only_mean": 0.75,
+      "text_only_stddev": 0,
+      "random_midi_mean": 0.5833333333333334,
+      "random_midi_stddev": 0.14433756729740646,
+      "tool_inspected_mean": 1,
+      "tool_inspected_stddev": 0,
+      "margin_full_minus_text_only": -0.16666666666666663,
+      "margin_full_minus_random_midi": 0,
+      "margin_tool_inspected_minus_text_only": 0.25,
+      "margin_tool_inspected_minus_full": 0.41666666666666663,
+      "margin_tool_inspected_minus_random_midi": 0.41666666666666663,
+      "full_clears_text_only": false,
+      "tool_inspected_clears_text_only": true,
+      "tool_use_stats": {
+        "total_tool_calls": 0,
+        "mean_calls_per_question": 0,
+        "questions_with_zero_calls": 12,
+        "questions_with_one_call": 0,
+        "questions_with_2_calls": 0,
+        "questions_with_3plus_calls": 0,
+        "tool_histogram": {},
+        "iteration_cap_hit_count": 0,
+        "backend_error_count": 0,
+        "model_silent_count": 0,
+        "model_answered_count": 12
+      },
+      "tool_inspected_source_sha256": "2a2ca82f984151bd6e9489c1998b7d9e0989f84b78dde813d57a50ecd44f87a5"
+    },
+    {
+      "recordId": "chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1",
+      "enriched": false,
+      "stratum": "chopin",
+      "source": "slice18.5-reuse",
+      "full_mean": 0.5,
+      "full_stddev": 0,
+      "text_only_mean": 0.5,
+      "text_only_stddev": 0.25,
+      "random_midi_mean": 0.5,
+      "random_midi_stddev": 0,
+      "tool_inspected_mean": 0.75,
+      "tool_inspected_stddev": 0,
+      "margin_full_minus_text_only": 0,
+      "margin_full_minus_random_midi": 0,
+      "margin_tool_inspected_minus_text_only": 0.25,
+      "margin_tool_inspected_minus_full": 0.25,
+      "margin_tool_inspected_minus_random_midi": 0.25,
+      "full_clears_text_only": false,
+      "tool_inspected_clears_text_only": true,
+      "tool_use_stats": {
+        "total_tool_calls": 7,
+        "mean_calls_per_question": 0.5833333333333334,
+        "questions_with_zero_calls": 5,
+        "questions_with_one_call": 7,
+        "questions_with_2_calls": 0,
+        "questions_with_3plus_calls": 0,
+        "tool_histogram": {
+          "count_beat_1_onsets": 3,
+          "get_pitch_at": 3,
+          "count_notes_with_pitch_class": 1
+        },
+        "iteration_cap_hit_count": 0,
+        "backend_error_count": 0,
+        "model_silent_count": 0,
+        "model_answered_count": 12
+      },
+      "tool_inspected_source_sha256": "c82210d26b2c0b09fb5f1aa04aeebc5b71bf9acdebceee31217805f618fda235"
+    },
+    {
+      "recordId": "clair-de-lune:m031-034:piano:mcp-session:v1",
+      "enriched": false,
+      "stratum": "clair-de-lune",
+      "source": "slice18.5-reuse",
+      "full_mean": 0.3333333333333333,
+      "full_stddev": 0.14433756729740643,
+      "text_only_mean": 0.3333333333333333,
+      "text_only_stddev": 0.14433756729740643,
+      "random_midi_mean": 0.16666666666666666,
+      "random_midi_stddev": 0.14433756729740646,
+      "tool_inspected_mean": 0.5,
+      "tool_inspected_stddev": 0,
+      "margin_full_minus_text_only": 0,
+      "margin_full_minus_random_midi": 0.16666666666666666,
+      "margin_tool_inspected_minus_text_only": 0.16666666666666669,
+      "margin_tool_inspected_minus_full": 0.16666666666666669,
+      "margin_tool_inspected_minus_random_midi": 0.33333333333333337,
+      "full_clears_text_only": false,
+      "tool_inspected_clears_text_only": true,
+      "tool_use_stats": {
+        "total_tool_calls": 8,
+        "mean_calls_per_question": 0.6666666666666666,
+        "questions_with_zero_calls": 4,
+        "questions_with_one_call": 8,
+        "questions_with_2_calls": 0,
+        "questions_with_3plus_calls": 0,
+        "tool_histogram": {
+          "count_notes_with_pitch_class": 2,
+          "count_beat_1_onsets": 3,
+          "get_pitch_at": 3
+        },
+        "iteration_cap_hit_count": 0,
+        "backend_error_count": 0,
+        "model_silent_count": 0,
+        "model_answered_count": 12
+      },
+      "tool_inspected_source_sha256": "d35c99ad8e2bdc1ddbba6388e1e50118c2e27dff849091726cefded644d94c96"
+    },
+    {
+      "recordId": "pathetique-mvt2:m029-032:piano:mcp-session:v1",
+      "enriched": true,
+      "stratum": "pathetique",
+      "source": "slice19-fresh",
+      "full_mean": 0.3333333333333333,
+      "full_stddev": 0.3333333333333333,
+      "text_only_mean": 0.3333333333333333,
+      "text_only_stddev": 0,
+      "random_midi_mean": 0.3333333333333333,
+      "random_midi_stddev": 0,
+      "tool_inspected_mean": 0.3333333333333333,
+      "tool_inspected_stddev": 0,
+      "margin_full_minus_text_only": 0,
+      "margin_full_minus_random_midi": 0,
+      "margin_tool_inspected_minus_text_only": 0,
+      "margin_tool_inspected_minus_full": 0,
+      "margin_tool_inspected_minus_random_midi": 0,
+      "full_clears_text_only": false,
+      "tool_inspected_clears_text_only": false,
+      "tool_use_stats": {
+        "total_tool_calls": 0,
+        "mean_calls_per_question": 0,
+        "questions_with_zero_calls": 9,
+        "questions_with_one_call": 0,
+        "questions_with_2_calls": 0,
+        "questions_with_3plus_calls": 0,
+        "tool_histogram": {},
+        "iteration_cap_hit_count": 0,
+        "backend_error_count": 0,
+        "model_silent_count": 0,
+        "model_answered_count": 9
+      },
+      "tool_inspected_source_sha256": null
+    },
+    {
+      "recordId": "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1",
+      "enriched": true,
+      "stratum": "bach",
+      "source": "slice19-fresh",
+      "full_mean": 0.16666666666666666,
+      "full_stddev": 0.14433756729740646,
+      "text_only_mean": 0.16666666666666666,
+      "text_only_stddev": 0.14433756729740646,
+      "random_midi_mean": 0.16666666666666666,
+      "random_midi_stddev": 0.14433756729740646,
+      "tool_inspected_mean": 0.6666666666666666,
+      "tool_inspected_stddev": 0.14433756729740646,
+      "margin_full_minus_text_only": 0,
+      "margin_full_minus_random_midi": 0,
+      "margin_tool_inspected_minus_text_only": 0.5,
+      "margin_tool_inspected_minus_full": 0.5,
+      "margin_tool_inspected_minus_random_midi": 0.5,
+      "full_clears_text_only": false,
+      "tool_inspected_clears_text_only": true,
+      "tool_use_stats": {
+        "total_tool_calls": 3,
+        "mean_calls_per_question": 0.25,
+        "questions_with_zero_calls": 9,
+        "questions_with_one_call": 3,
+        "questions_with_2_calls": 0,
+        "questions_with_3plus_calls": 0,
+        "tool_histogram": {
+          "get_pitch_at": 3
+        },
+        "iteration_cap_hit_count": 0,
+        "backend_error_count": 0,
+        "model_silent_count": 0,
+        "model_answered_count": 12
+      },
+      "tool_inspected_source_sha256": null
+    },
+    {
+      "recordId": "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1",
+      "enriched": true,
+      "stratum": "bach",
+      "source": "slice19-fresh",
+      "full_mean": 0.16666666666666666,
+      "full_stddev": 0.14433756729740646,
+      "text_only_mean": 0.3333333333333333,
+      "text_only_stddev": 0.14433756729740643,
+      "random_midi_mean": 0.4166666666666667,
+      "random_midi_stddev": 0.2886751345948129,
+      "tool_inspected_mean": 0.5,
+      "tool_inspected_stddev": 0.25,
+      "margin_full_minus_text_only": -0.16666666666666666,
+      "margin_full_minus_random_midi": -0.25,
+      "margin_tool_inspected_minus_text_only": 0.16666666666666669,
+      "margin_tool_inspected_minus_full": 0.33333333333333337,
+      "margin_tool_inspected_minus_random_midi": 0.08333333333333331,
+      "full_clears_text_only": false,
+      "tool_inspected_clears_text_only": true,
+      "tool_use_stats": {
+        "total_tool_calls": 5,
+        "mean_calls_per_question": 0.4166666666666667,
+        "questions_with_zero_calls": 7,
+        "questions_with_one_call": 5,
+        "questions_with_2_calls": 0,
+        "questions_with_3plus_calls": 0,
+        "tool_histogram": {
+          "get_hand_balance": 1,
+          "get_pitch_at": 3,
+          "count_beat_1_onsets": 1
+        },
+        "iteration_cap_hit_count": 0,
+        "backend_error_count": 0,
+        "model_silent_count": 0,
+        "model_answered_count": 12
+      },
+      "tool_inspected_source_sha256": null
+    }
+  ],
+  "aggregate": {
+    "cohort": {
+      "n_records": 16,
+      "n_enriched": 9,
+      "n_non_enriched": 7,
+      "full": {
+        "n": 16,
+        "metric_mean": 0.390625,
+        "metric_stddev": 0.2199249201116397,
+        "metric_min": 0,
+        "metric_max": 1
+      },
+      "text_only": {
+        "n": 16,
+        "metric_mean": 0.4791666666666667,
+        "metric_stddev": 0.24562137755315827,
+        "metric_min": 0,
+        "metric_max": 1
+      },
+      "random_midi": {
+        "n": 16,
+        "metric_mean": 0.39583333333333337,
+        "metric_stddev": 0.22916666666666669,
+        "metric_min": 0,
+        "metric_max": 0.75
+      },
+      "tool_inspected": {
+        "n": 16,
+        "metric_mean": 0.6059027777777777,
+        "metric_stddev": 0.24020526161667094,
+        "metric_min": 0.1111111111111111,
+        "metric_max": 1
+      },
+      "margin_full_minus_text_only": {
+        "n": 16,
+        "metric_mean": -0.08854166666666667,
+        "metric_stddev": 0.17297626984807932,
+        "metric_min": -0.33333333333333337,
+        "metric_max": 0.3333333333333333
+      },
+      "margin_full_minus_random_midi": {
+        "n": 16,
+        "metric_mean": -0.0052083333333333304,
+        "metric_stddev": 0.20299140906151122,
+        "metric_min": -0.3333333333333333,
+        "metric_max": 0.3333333333333333
+      },
+      "margin_tool_inspected_minus_text_only": {
+        "n": 16,
+        "metric_mean": 0.1267361111111111,
+        "metric_stddev": 0.2415566380271923,
+        "metric_min": -0.5555555555555556,
+        "metric_max": 0.5
+      },
+      "margin_tool_inspected_minus_full": {
+        "n": 16,
+        "metric_mean": 0.21527777777777776,
+        "metric_stddev": 0.19357444256619935,
+        "metric_min": -0.2222222222222222,
+        "metric_max": 0.5
+      },
+      "margin_tool_inspected_minus_random_midi": {
+        "n": 16,
+        "metric_mean": 0.21006944444444445,
+        "metric_stddev": 0.25834243375547833,
+        "metric_min": -0.5555555555555556,
+        "metric_max": 0.5833333333333333
+      },
+      "records_clearing_full_minus_text": 1,
+      "records_clearing_tool_minus_text": 9
+    },
+    "enriched": {
+      "n_records": 9,
+      "n_enriched": 9,
+      "n_non_enriched": 0,
+      "full": {
+        "n": 9,
+        "metric_mean": 0.4629629629629631,
+        "metric_stddev": 0.24251483062423695,
+        "metric_min": 0.16666666666666666,
+        "metric_max": 1
+      },
+      "text_only": {
+        "n": 9,
+        "metric_mean": 0.574074074074074,
+        "metric_stddev": 0.2467206036013746,
+        "metric_min": 0.16666666666666666,
+        "metric_max": 1
+      },
+      "random_midi": {
+        "n": 9,
+        "metric_mean": 0.49074074074074076,
+        "metric_stddev": 0.1819155805961898,
+        "metric_min": 0.16666666666666666,
+        "metric_max": 0.75
+      },
+      "tool_inspected": {
+        "n": 9,
+        "metric_mean": 0.6512345679012346,
+        "metric_stddev": 0.2875178503169436,
+        "metric_min": 0.1111111111111111,
+        "metric_max": 1
+      },
+      "margin_full_minus_text_only": {
+        "n": 9,
+        "metric_mean": -0.11111111111111109,
+        "metric_stddev": 0.11785113019775792,
+        "metric_min": -0.3333333333333333,
+        "metric_max": 0
+      },
+      "margin_full_minus_random_midi": {
+        "n": 9,
+        "metric_mean": -0.027777777777777766,
+        "metric_stddev": 0.188398055086813,
+        "metric_min": -0.3333333333333333,
+        "metric_max": 0.25000000000000006
+      },
+      "margin_tool_inspected_minus_text_only": {
+        "n": 9,
+        "metric_mean": 0.07716049382716049,
+        "metric_stddev": 0.2774002922052015,
+        "metric_min": -0.5555555555555556,
+        "metric_max": 0.5
+      },
+      "margin_tool_inspected_minus_full": {
+        "n": 9,
+        "metric_mean": 0.18827160493827164,
+        "metric_stddev": 0.2359849981927812,
+        "metric_min": -0.2222222222222222,
+        "metric_max": 0.5
+      },
+      "margin_tool_inspected_minus_random_midi": {
+        "n": 9,
+        "metric_mean": 0.16049382716049382,
+        "metric_stddev": 0.2900906206792391,
+        "metric_min": -0.5555555555555556,
+        "metric_max": 0.5
+      },
+      "records_clearing_full_minus_text": 0,
+      "records_clearing_tool_minus_text": 5
+    },
+    "non_enriched": {
+      "n_records": 7,
+      "n_enriched": 0,
+      "n_non_enriched": 7,
+      "full": {
+        "n": 7,
+        "metric_mean": 0.2976190476190476,
+        "metric_stddev": 0.1398492871960801,
+        "metric_min": 0,
+        "metric_max": 0.5
+      },
+      "text_only": {
+        "n": 7,
+        "metric_mean": 0.35714285714285715,
+        "metric_stddev": 0.1821078397711709,
+        "metric_min": 0,
+        "metric_max": 0.5833333333333334
+      },
+      "random_midi": {
+        "n": 7,
+        "metric_mean": 0.27380952380952384,
+        "metric_stddev": 0.22587697572631282,
+        "metric_min": 0,
+        "metric_max": 0.5833333333333334
+      },
+      "tool_inspected": {
+        "n": 7,
+        "metric_mean": 0.5476190476190477,
+        "metric_stddev": 0.1398492871960801,
+        "metric_min": 0.3333333333333333,
+        "metric_max": 0.75
+      },
+      "margin_full_minus_text_only": {
+        "n": 7,
+        "metric_mean": -0.059523809523809534,
+        "metric_stddev": 0.2214413718778366,
+        "metric_min": -0.33333333333333337,
+        "metric_max": 0.3333333333333333
+      },
+      "margin_full_minus_random_midi": {
+        "n": 7,
+        "metric_mean": 0.0238095238095238,
+        "metric_stddev": 0.2169150852177214,
+        "metric_min": -0.25000000000000006,
+        "metric_max": 0.3333333333333333
+      },
+      "margin_tool_inspected_minus_text_only": {
+        "n": 7,
+        "metric_mean": 0.19047619047619047,
+        "metric_stddev": 0.1649572197684645,
+        "metric_min": 0,
+        "metric_max": 0.4166666666666667
+      },
+      "margin_tool_inspected_minus_full": {
+        "n": 7,
+        "metric_mean": 0.25000000000000006,
+        "metric_stddev": 0.10910894511799617,
+        "metric_min": 0.08333333333333337,
+        "metric_max": 0.41666666666666663
+      },
+      "margin_tool_inspected_minus_random_midi": {
+        "n": 7,
+        "metric_mean": 0.2738095238095238,
+        "metric_stddev": 0.19269540543141245,
+        "metric_min": -0.08333333333333337,
+        "metric_max": 0.5833333333333333
+      },
+      "records_clearing_full_minus_text": 1,
+      "records_clearing_tool_minus_text": 4
+    },
+    "per_stratum": {
+      "bach": {
+        "n_records": 6,
+        "n_enriched": 3,
+        "n_non_enriched": 3,
+        "full": {
+          "n": 6,
+          "metric_mean": 0.3055555555555556,
+          "metric_stddev": 0.1145307118227128,
+          "metric_min": 0.16666666666666666,
+          "metric_max": 0.5
+        },
+        "text_only": {
+          "n": 6,
+          "metric_mean": 0.2916666666666667,
+          "metric_stddev": 0.17840600803701567,
+          "metric_min": 0,
+          "metric_max": 0.5
+        },
+        "random_midi": {
+          "n": 6,
+          "metric_mean": 0.2916666666666667,
+          "metric_stddev": 0.21916296997304863,
+          "metric_min": 0,
+          "metric_max": 0.5833333333333334
+        },
+        "tool_inspected": {
+          "n": 6,
+          "metric_mean": 0.5833333333333334,
+          "metric_stddev": 0.1178511301977579,
+          "metric_min": 0.4166666666666667,
+          "metric_max": 0.75
+        },
+        "margin_full_minus_text_only": {
+          "n": 6,
+          "metric_mean": 0.013888888888888881,
+          "metric_stddev": 0.16953549466296808,
+          "metric_min": -0.16666666666666669,
+          "metric_max": 0.3333333333333333
+        },
+        "margin_full_minus_random_midi": {
+          "n": 6,
+          "metric_mean": 0.013888888888888876,
+          "metric_stddev": 0.22265582697057498,
+          "metric_min": -0.25000000000000006,
+          "metric_max": 0.3333333333333333
+        },
+        "margin_tool_inspected_minus_text_only": {
+          "n": 6,
+          "metric_mean": 0.2916666666666667,
+          "metric_stddev": 0.1717960677340692,
+          "metric_min": 0,
+          "metric_max": 0.5
+        },
+        "margin_tool_inspected_minus_full": {
+          "n": 6,
+          "metric_mean": 0.27777777777777785,
+          "metric_stddev": 0.1332175423142422,
+          "metric_min": 0.08333333333333337,
+          "metric_max": 0.5
+        },
+        "margin_tool_inspected_minus_random_midi": {
+          "n": 6,
+          "metric_mean": 0.29166666666666663,
+          "metric_stddev": 0.23447143077964072,
+          "metric_min": -0.08333333333333337,
+          "metric_max": 0.5833333333333333
+        },
+        "records_clearing_full_minus_text": 1,
+        "records_clearing_tool_minus_text": 5
+      },
+      "pathetique": {
+        "n_records": 5,
+        "n_enriched": 3,
+        "n_non_enriched": 2,
+        "full": {
+          "n": 5,
+          "metric_mean": 0.33333333333333337,
+          "metric_stddev": 0.2041241452319315,
+          "metric_min": 0,
+          "metric_max": 0.5833333333333334
+        },
+        "text_only": {
+          "n": 5,
+          "metric_mean": 0.5333333333333333,
+          "metric_stddev": 0.1715938356831167,
+          "metric_min": 0.3333333333333333,
+          "metric_max": 0.75
+        },
+        "random_midi": {
+          "n": 5,
+          "metric_mean": 0.3833333333333333,
+          "metric_stddev": 0.19436506316151,
+          "metric_min": 0.08333333333333333,
+          "metric_max": 0.6666666666666666
+        },
+        "tool_inspected": {
+          "n": 5,
+          "metric_mean": 0.5666666666666667,
+          "metric_stddev": 0.21984843263788198,
+          "metric_min": 0.3333333333333333,
+          "metric_max": 0.9166666666666666
+        },
+        "margin_full_minus_text_only": {
+          "n": 5,
+          "metric_mean": -0.19999999999999998,
+          "metric_stddev": 0.13540064007726602,
+          "metric_min": -0.33333333333333337,
+          "metric_max": 0
+        },
+        "margin_full_minus_random_midi": {
+          "n": 5,
+          "metric_mean": -0.049999999999999975,
+          "metric_stddev": 0.1715938356831167,
+          "metric_min": -0.25,
+          "metric_max": 0.25000000000000006
+        },
+        "margin_tool_inspected_minus_text_only": {
+          "n": 5,
+          "metric_mean": 0.033333333333333326,
+          "metric_stddev": 0.08498365855987972,
+          "metric_min": -0.08333333333333326,
+          "metric_max": 0.16666666666666663
+        },
+        "margin_tool_inspected_minus_full": {
+          "n": 5,
+          "metric_mean": 0.2333333333333333,
+          "metric_stddev": 0.19293061504650375,
+          "metric_min": 0,
+          "metric_max": 0.41666666666666663
+        },
+        "margin_tool_inspected_minus_random_midi": {
+          "n": 5,
+          "metric_mean": 0.18333333333333335,
+          "metric_stddev": 0.09718253158075502,
+          "metric_min": 0,
+          "metric_max": 0.25000000000000006
+        },
+        "records_clearing_full_minus_text": 0,
+        "records_clearing_tool_minus_text": 1
+      },
+      "schumann": {
+        "n_records": 2,
+        "n_enriched": 2,
+        "n_non_enriched": 0,
+        "full": {
+          "n": 2,
+          "metric_mean": 0.6666666666666666,
+          "metric_stddev": 0.33333333333333337,
+          "metric_min": 0.3333333333333333,
+          "metric_max": 1
+        },
+        "text_only": {
+          "n": 2,
+          "metric_mean": 0.8333333333333333,
+          "metric_stddev": 0.16666666666666669,
+          "metric_min": 0.6666666666666666,
+          "metric_max": 1
+        },
+        "random_midi": {
+          "n": 2,
+          "metric_mean": 0.7083333333333333,
+          "metric_stddev": 0.041666666666666685,
+          "metric_min": 0.6666666666666666,
+          "metric_max": 0.75
+        },
+        "tool_inspected": {
+          "n": 2,
+          "metric_mean": 0.5555555555555556,
+          "metric_stddev": 0.4444444444444444,
+          "metric_min": 0.1111111111111111,
+          "metric_max": 1
+        },
+        "margin_full_minus_text_only": {
+          "n": 2,
+          "metric_mean": -0.16666666666666666,
+          "metric_stddev": 0.16666666666666666,
+          "metric_min": -0.3333333333333333,
+          "metric_max": 0
+        },
+        "margin_full_minus_random_midi": {
+          "n": 2,
+          "metric_mean": -0.04166666666666666,
+          "metric_stddev": 0.29166666666666663,
+          "metric_min": -0.3333333333333333,
+          "metric_max": 0.25
+        },
+        "margin_tool_inspected_minus_text_only": {
+          "n": 2,
+          "metric_mean": -0.2777777777777778,
+          "metric_stddev": 0.2777777777777778,
+          "metric_min": -0.5555555555555556,
+          "metric_max": 0
+        },
+        "margin_tool_inspected_minus_full": {
+          "n": 2,
+          "metric_mean": -0.1111111111111111,
+          "metric_stddev": 0.1111111111111111,
+          "metric_min": -0.2222222222222222,
+          "metric_max": 0
+        },
+        "margin_tool_inspected_minus_random_midi": {
+          "n": 2,
+          "metric_mean": -0.1527777777777778,
+          "metric_stddev": 0.4027777777777778,
+          "metric_min": -0.5555555555555556,
+          "metric_max": 0.25
+        },
+        "records_clearing_full_minus_text": 0,
+        "records_clearing_tool_minus_text": 0
+      },
+      "chopin": {
+        "n_records": 2,
+        "n_enriched": 1,
+        "n_non_enriched": 1,
+        "full": {
+          "n": 2,
+          "metric_mean": 0.5416666666666667,
+          "metric_stddev": 0.041666666666666685,
+          "metric_min": 0.5,
+          "metric_max": 0.5833333333333334
+        },
+        "text_only": {
+          "n": 2,
+          "metric_mean": 0.625,
+          "metric_stddev": 0.125,
+          "metric_min": 0.5,
+          "metric_max": 0.75
+        },
+        "random_midi": {
+          "n": 2,
+          "metric_mean": 0.5416666666666667,
+          "metric_stddev": 0.041666666666666685,
+          "metric_min": 0.5,
+          "metric_max": 0.5833333333333334
+        },
+        "tool_inspected": {
+          "n": 2,
+          "metric_mean": 0.875,
+          "metric_stddev": 0.125,
+          "metric_min": 0.75,
+          "metric_max": 1
+        },
+        "margin_full_minus_text_only": {
+          "n": 2,
+          "metric_mean": -0.08333333333333331,
+          "metric_stddev": 0.08333333333333331,
+          "metric_min": -0.16666666666666663,
+          "metric_max": 0
+        },
+        "margin_full_minus_random_midi": {
+          "n": 2,
+          "metric_mean": 0,
+          "metric_stddev": 0,
+          "metric_min": 0,
+          "metric_max": 0
+        },
+        "margin_tool_inspected_minus_text_only": {
+          "n": 2,
+          "metric_mean": 0.25,
+          "metric_stddev": 0,
+          "metric_min": 0.25,
+          "metric_max": 0.25
+        },
+        "margin_tool_inspected_minus_full": {
+          "n": 2,
+          "metric_mean": 0.3333333333333333,
+          "metric_stddev": 0.08333333333333331,
+          "metric_min": 0.25,
+          "metric_max": 0.41666666666666663
+        },
+        "margin_tool_inspected_minus_random_midi": {
+          "n": 2,
+          "metric_mean": 0.3333333333333333,
+          "metric_stddev": 0.08333333333333331,
+          "metric_min": 0.25,
+          "metric_max": 0.41666666666666663
+        },
+        "records_clearing_full_minus_text": 0,
+        "records_clearing_tool_minus_text": 2
+      },
+      "clair-de-lune": {
+        "n_records": 1,
+        "n_enriched": 0,
+        "n_non_enriched": 1,
+        "full": {
+          "n": 1,
+          "metric_mean": 0.3333333333333333,
+          "metric_stddev": 0,
+          "metric_min": 0.3333333333333333,
+          "metric_max": 0.3333333333333333
+        },
+        "text_only": {
+          "n": 1,
+          "metric_mean": 0.3333333333333333,
+          "metric_stddev": 0,
+          "metric_min": 0.3333333333333333,
+          "metric_max": 0.3333333333333333
+        },
+        "random_midi": {
+          "n": 1,
+          "metric_mean": 0.16666666666666666,
+          "metric_stddev": 0,
+          "metric_min": 0.16666666666666666,
+          "metric_max": 0.16666666666666666
+        },
+        "tool_inspected": {
+          "n": 1,
+          "metric_mean": 0.5,
+          "metric_stddev": 0,
+          "metric_min": 0.5,
+          "metric_max": 0.5
+        },
+        "margin_full_minus_text_only": {
+          "n": 1,
+          "metric_mean": 0,
+          "metric_stddev": 0,
+          "metric_min": 0,
+          "metric_max": 0
+        },
+        "margin_full_minus_random_midi": {
+          "n": 1,
+          "metric_mean": 0.16666666666666666,
+          "metric_stddev": 0,
+          "metric_min": 0.16666666666666666,
+          "metric_max": 0.16666666666666666
+        },
+        "margin_tool_inspected_minus_text_only": {
+          "n": 1,
+          "metric_mean": 0.16666666666666669,
+          "metric_stddev": 0,
+          "metric_min": 0.16666666666666669,
+          "metric_max": 0.16666666666666669
+        },
+        "margin_tool_inspected_minus_full": {
+          "n": 1,
+          "metric_mean": 0.16666666666666669,
+          "metric_stddev": 0,
+          "metric_min": 0.16666666666666669,
+          "metric_max": 0.16666666666666669
+        },
+        "margin_tool_inspected_minus_random_midi": {
+          "n": 1,
+          "metric_mean": 0.33333333333333337,
+          "metric_stddev": 0,
+          "metric_min": 0.33333333333333337,
+          "metric_max": 0.33333333333333337
+        },
+        "records_clearing_full_minus_text": 0,
+        "records_clearing_tool_minus_text": 1
+      }
+    }
+  },
+  "tool_use_profile": {
+    "cohort": {
+      "total_tool_calls": 63,
+      "questions_with_tool_calls": 61,
+      "questions_total": 186,
+      "questions_with_zero_calls": 125,
+      "tool_call_rate": 0.3279569892473118,
+      "iteration_cap_hit_count": 0,
+      "backend_error_count": 0,
+      "model_silent_count": 1,
+      "model_answered_count": 185,
+      "tool_histogram": {
+        "count_beat_1_onsets": 24,
+        "get_pitch_at": 27,
+        "get_hand_balance": 2,
+        "count_notes_with_pitch_class": 6,
+        "get_events_in_hand": 4
+      }
+    },
+    "enriched": {
+      "total_tool_calls": 13,
+      "questions_with_tool_calls": 13,
+      "questions_total": 102,
+      "questions_with_zero_calls": 89,
+      "tool_call_rate": 0.12745098039215685,
+      "iteration_cap_hit_count": 0,
+      "backend_error_count": 0,
+      "model_silent_count": 0,
+      "model_answered_count": 102,
+      "tool_histogram": {
+        "get_pitch_at": 7,
+        "count_beat_1_onsets": 5,
+        "get_hand_balance": 1
+      }
+    },
+    "non_enriched": {
+      "total_tool_calls": 50,
+      "questions_with_tool_calls": 48,
+      "questions_total": 84,
+      "questions_with_zero_calls": 36,
+      "tool_call_rate": 0.5714285714285714,
+      "iteration_cap_hit_count": 0,
+      "backend_error_count": 0,
+      "model_silent_count": 1,
+      "model_answered_count": 83,
+      "tool_histogram": {
+        "count_beat_1_onsets": 19,
+        "get_pitch_at": 20,
+        "get_hand_balance": 1,
+        "count_notes_with_pitch_class": 6,
+        "get_events_in_hand": 4
+      }
+    },
+    "per_stratum": {
+      "bach": {
+        "total_tool_calls": 29,
+        "questions_with_tool_calls": 29,
+        "questions_total": 72,
+        "questions_with_zero_calls": 43,
+        "tool_call_rate": 0.4027777777777778,
+        "iteration_cap_hit_count": 0,
+        "backend_error_count": 0,
+        "model_silent_count": 1,
+        "model_answered_count": 71,
+        "tool_histogram": {
+          "count_beat_1_onsets": 11,
+          "get_pitch_at": 15,
+          "get_hand_balance": 2,
+          "count_notes_with_pitch_class": 1
+        }
+      },
+      "pathetique": {
+        "total_tool_calls": 19,
+        "questions_with_tool_calls": 17,
+        "questions_total": 57,
+        "questions_with_zero_calls": 40,
+        "tool_call_rate": 0.2982456140350877,
+        "iteration_cap_hit_count": 0,
+        "backend_error_count": 0,
+        "model_silent_count": 0,
+        "model_answered_count": 57,
+        "tool_histogram": {
+          "count_beat_1_onsets": 7,
+          "get_pitch_at": 6,
+          "count_notes_with_pitch_class": 2,
+          "get_events_in_hand": 4
+        }
+      },
+      "schumann": {
+        "total_tool_calls": 0,
+        "questions_with_tool_calls": 0,
+        "questions_total": 21,
+        "questions_with_zero_calls": 21,
+        "tool_call_rate": 0,
+        "iteration_cap_hit_count": 0,
+        "backend_error_count": 0,
+        "model_silent_count": 0,
+        "model_answered_count": 21,
+        "tool_histogram": {}
+      },
+      "chopin": {
+        "total_tool_calls": 7,
+        "questions_with_tool_calls": 7,
+        "questions_total": 24,
+        "questions_with_zero_calls": 17,
+        "tool_call_rate": 0.2916666666666667,
+        "iteration_cap_hit_count": 0,
+        "backend_error_count": 0,
+        "model_silent_count": 0,
+        "model_answered_count": 24,
+        "tool_histogram": {
+          "count_beat_1_onsets": 3,
+          "get_pitch_at": 3,
+          "count_notes_with_pitch_class": 1
+        }
+      },
+      "clair-de-lune": {
+        "total_tool_calls": 8,
+        "questions_with_tool_calls": 8,
+        "questions_total": 12,
+        "questions_with_zero_calls": 4,
+        "tool_call_rate": 0.6666666666666666,
+        "iteration_cap_hit_count": 0,
+        "backend_error_count": 0,
+        "model_silent_count": 0,
+        "model_answered_count": 12,
+        "tool_histogram": {
+          "count_notes_with_pitch_class": 2,
+          "count_beat_1_onsets": 3,
+          "get_pitch_at": 3
+        }
+      }
+    }
+  }
+}
