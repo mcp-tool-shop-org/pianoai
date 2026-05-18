@@ -18,7 +18,9 @@
     "evals/slice17-e3-tool-inspected-results.json",
     "evals/slice17-e3-tool-inspected-sample.json",
     "evals/slice18-e3-tool-corpus-validation-results.json",
-    "evals/slice18-e3-tool-corpus-validation-sample.json"
+    "evals/slice18-e3-tool-corpus-validation-sample.json",
+    "evals/slice18-5-e3-post-repair-results.json",
+    "evals/slice18-5-e3-post-repair-sample.json"
   ],
   "generated_files": [
     "manifest.json",

@@ -525,6 +525,26 @@ describe("generateAnnotationGroundingQuestion", () => {
     expect(q.questionText).toMatch(/beat/);
   });
 
+  // Slice 18.5 regression: the beat shown in the question text MUST equal
+  // the beat stored on midiClaim (the actual event's beat). Pre-Slice-18.5
+  // the generator added +1 for "1-indexed readability", but the inspector
+  // tool `get_pitch_at` consumes the same 0-indexed convention as midiClaim,
+  // so adding +1 caused the tool-inspected model to query a beat one whole
+  // beat past the actual event. See pathetique-mvt2:m017-020 case: A#4 lives
+  // at beat 0.6604, but the question previously said "beat 1.6604" and the
+  // model received D#4 (closest event at 1.6729) — neither in the options.
+  it("question text beat equals midiClaim.beat (Slice 18.5 off-by-one fix)", () => {
+    const record = makeMinimalRecord();
+    const q = generateAnnotationGroundingQuestion(record) as MCQuestion;
+    const expectedBeat = q.midiClaim!.beat;
+    // The number appearing after "beat " in the question text MUST be the
+    // exact same beat value stored on midiClaim — no +1 shift, no rounding.
+    const m = /beat\s+(-?\d+(?:\.\d+)?)/.exec(q.questionText);
+    expect(m).not.toBeNull();
+    const displayedBeat = Number(m![1]);
+    expect(displayedBeat).toBe(expectedBeat);
+  });
+
   it("question text varies across different records (not a fixed template)", () => {
     const record1 = makeMinimalRecord();
     const record2 = makeAlternateRecord();
@@ -651,6 +671,101 @@ describe("generateAnnotationGroundingQuestion", () => {
     expect(result.answerer).toBe(ANSWERERS.RANDOM_MIDI);
     expect(result.selectedOptionIndex).toBeGreaterThanOrEqual(0);
     expect(result.selectedOptionIndex).toBeLessThanOrEqual(3);
+  });
+});
+
+// ─── Slice 18.5 regression test for off-by-one in annotation_grounding ────────
+//
+// The Pathétique m017-020 record exposed a class of bug where the question text
+// displayed `anchor.beat + 1` ("1-indexed" display), but the inspector tool
+// `get_pitch_at` consumes the same 0-indexed beat as stored in timed_events
+// and on `midiClaim`. The +1 shift caused the tool-inspected model to query a
+// beat one whole beat past the actual event, returning a different event whose
+// pitch was usually NOT in the MCQ options. This regression test pins the case
+// closed by asserting:
+//   1. The gold pitch A#4 lives at beat 0.6604 in m.19 right-hand (not 1.6604).
+//   2. The question text displays "beat 0.6604" (matching the actual event).
+//   3. A#4 is the gold answer in the generated options.
+//   4. midiClaim.beat equals the displayed beat — single source of truth.
+//
+// Slice 18.5 fix in `generateAnnotationGroundingQuestion` removed the +1.
+describe("Slice 18.5 regression — pathetique-mvt2:m017-020 off-by-one", () => {
+  it("A#4 is at beat 0.6604 in m.19 right-hand and the question text matches", () => {
+    const PATHETIQUE_M017 = "pathetique-mvt2-m017-020.json";
+    // Load the actual public record (canonical fixture).
+    const recordsDir = join(
+      new URL(".", import.meta.url).pathname.replace(/^\/([A-Z]:)/, "$1"),
+      "../../../datasets/jam-actions-v0-public/records",
+    );
+    const recordPath = join(recordsDir, PATHETIQUE_M017);
+    const record = JSON.parse(readFileSync(recordPath, "utf-8")) as E3Record;
+
+    // (1) Sanity-check the event the original bug centered on: A#4 (MIDI 70)
+    //     lives at beat 0.6604 in measure 19 right-hand. NOT at beat 1.6604.
+    const events = record.observation.midi_sidecar.timed_events;
+    const m19RH = events.filter((e) => e.measure === 19 && e.hand === "right");
+    const aSharp4 = m19RH.find((e) => e.note === 70);
+    expect(aSharp4).toBeDefined();
+    expect(aSharp4!.beat).toBeCloseTo(0.6604, 4);
+    // No A#4 event lives at the previously-displayed beat 1.6604.
+    const aSharp4At1p6604 = m19RH.find(
+      (e) => e.note === 70 && Math.abs(e.beat - 1.6604) < 0.01,
+    );
+    expect(aSharp4At1p6604).toBeUndefined();
+
+    // (2) Run the actual MCQ generator and verify question text + gold +
+    //     midiClaim ALL agree on beat 0.6604 (not 1.6604). The anchor LCG
+    //     for pathetique-mvt2:m017-020 may pick a different event entirely;
+    //     what we actually pin is the load-bearing invariant: question-text
+    //     beat == midiClaim.beat == real event beat (no +1 shift).
+    const q = generateAnnotationGroundingQuestion(record) as MCQuestion;
+    expect(isNotComputable(q)).toBe(false);
+    expect(q.midiClaim).toBeDefined();
+
+    const claim = q.midiClaim!;
+    // The midiClaim.beat must equal the real event's beat (sanity).
+    const claimedEvent = events.find(
+      (e) =>
+        e.hand === claim.hand &&
+        e.measure === claim.measure &&
+        Math.abs(e.beat - claim.beat) < 1e-6 &&
+        e.note === claim.note,
+    );
+    expect(claimedEvent).toBeDefined();
+
+    // (3) The displayed beat in the question text must match midiClaim.beat
+    //     EXACTLY — this is the load-bearing assertion that closes the Slice 18.5 bug.
+    const m = /beat\s+(-?\d+(?:\.\d+)?)/.exec(q.questionText);
+    expect(m).not.toBeNull();
+    const displayedBeat = Number(m![1]);
+    expect(displayedBeat).toBe(claim.beat);
+
+    // (4) Gold option index points at the note name of midiClaim.note.
+    expect(q.options[q.correctOptionIndex]).toBe(noteName(claim.note));
+  });
+
+  // Defense-in-depth: across EVERY public record, the displayed beat in the
+  // annotation_grounding question text matches midiClaim.beat. This catches
+  // any future regression where the displayed beat drifts away from the
+  // stored claim.
+  it("displayed beat == midiClaim.beat for every public record (no +1 drift)", () => {
+    const recordsDir = join(
+      new URL(".", import.meta.url).pathname.replace(/^\/([A-Z]:)/, "$1"),
+      "../../../datasets/jam-actions-v0-public/records",
+    );
+    const files = readdirSync(recordsDir).filter((f) => f.endsWith(".json"));
+    let computable = 0;
+    for (const f of files) {
+      const record = JSON.parse(readFileSync(join(recordsDir, f), "utf-8")) as E3Record;
+      const q = generateAnnotationGroundingQuestion(record);
+      if (isNotComputable(q)) continue;
+      const mcq = q as MCQuestion;
+      computable++;
+      const m = /beat\s+(-?\d+(?:\.\d+)?)/.exec(mcq.questionText);
+      expect(m).not.toBeNull();
+      expect(Number(m![1])).toBe(mcq.midiClaim!.beat);
+    }
+    expect(computable).toBeGreaterThan(0);
   });
 });
 

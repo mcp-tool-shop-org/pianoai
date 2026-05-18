@@ -25,6 +25,7 @@
 //   6. get_hand_balance            (record)
 //   7. find_highest_pitch          (record, hand?)
 //   8. find_lowest_pitch           (record, hand?)
+//   9. count_notes_with_pitch_class(record, pitch_class)   ← Slice 18.5
 //
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -201,6 +202,152 @@ export const COUNT_DISTINCT_PITCH_CLASSES_SCHEMA = {
       },
     },
     required: [],
+    additionalProperties: false,
+  },
+} as const;
+
+// ─── Tool 9: count_notes_with_pitch_class (Slice 18.5) ───────────────────────
+
+/**
+ * Pitch class names recognized by `count_notes_with_pitch_class`.
+ * Sharp form is canonical; flat aliases are normalized via PITCH_CLASS_ALIASES
+ * so the model can pass either notation ("Bb", "B♭", "A#", "Bb4" stripped).
+ */
+const PITCH_CLASS_CANONICAL = [
+  "C",
+  "C#",
+  "D",
+  "D#",
+  "E",
+  "F",
+  "F#",
+  "G",
+  "G#",
+  "A",
+  "A#",
+  "B",
+] as const;
+
+/** Common flat-to-sharp aliases the model might emit. */
+const PITCH_CLASS_ALIASES: Record<string, string> = {
+  DB: "C#",
+  EB: "D#",
+  FB: "E",
+  GB: "F#",
+  AB: "G#",
+  BB: "A#",
+  CB: "B",
+  // unicode flats
+  "C♭": "B",
+  "D♭": "C#",
+  "E♭": "D#",
+  "F♭": "E",
+  "G♭": "F#",
+  "A♭": "G#",
+  "B♭": "A#",
+};
+
+/**
+ * Normalize a pitch-class string to one of the 12 canonical sharp names.
+ * Accepts:
+ *   - canonical sharp names: "C", "C#", "D" … "B"
+ *   - flat names: "Db", "Eb", "Bb" (case-insensitive)
+ *   - unicode flats: "C♭", "B♭"
+ *   - integer 0-11 as a string ("0" → C, "1" → C#, …)
+ * Returns null on unrecognized input.
+ */
+function normalizePitchClass(input: unknown): string | null {
+  if (typeof input === "number" && Number.isInteger(input)) {
+    if (input < 0 || input > 11) return null;
+    return PITCH_CLASS_CANONICAL[input];
+  }
+  if (typeof input !== "string") return null;
+  const trimmed = input.trim();
+  if (trimmed.length === 0) return null;
+
+  // Pure integer (e.g., "5") → indexed lookup.
+  if (/^\d+$/.test(trimmed)) {
+    const n = Number(trimmed);
+    if (n >= 0 && n <= 11) return PITCH_CLASS_CANONICAL[n];
+    return null;
+  }
+
+  // Strip an optional trailing octave digit (e.g., "C4" → "C", "Bb3" → "Bb").
+  const m = /^([A-Ga-g][#b♭♯]?)(?:-?\d+)?$/.exec(trimmed);
+  if (!m) return null;
+  const head = m[1];
+
+  // Convert lowercase to uppercase letter, keep accidental separate.
+  const letter = head[0].toUpperCase();
+  const accidental = head.slice(1).replace("♯", "#");
+
+  // Canonical sharps and naturals.
+  const candidate = `${letter}${accidental}`;
+  if ((PITCH_CLASS_CANONICAL as readonly string[]).includes(candidate)) {
+    return candidate;
+  }
+
+  // Flat alias lookup (uppercase to be case-insensitive).
+  const aliasKey = candidate.toUpperCase();
+  if (PITCH_CLASS_ALIASES[aliasKey]) return PITCH_CLASS_ALIASES[aliasKey];
+  if (PITCH_CLASS_ALIASES[candidate]) return PITCH_CLASS_ALIASES[candidate];
+
+  return null;
+}
+
+/**
+ * Count MIDI events whose pitch class equals the requested pitch class.
+ * Pure deterministic count; the inverse of "how many DISTINCT pitch classes".
+ *
+ * Returns { pitch_class, count, error? } where `pitch_class` is the canonical
+ * form (sharp notation). On unrecognized input, returns
+ * `{ pitch_class: null, count: 0, error: "..." }` rather than throwing.
+ *
+ * This tool closes the wrong-tool gap identified in Slice 18: the MCQ
+ * "How many notes with pitch class X appear?" had no direct tool answer in
+ * the Slice 17 toolset, forcing the model to call `count_distinct_pitch_classes`
+ * (a structurally similar but wrong-typed answer) on every pitch_class_count
+ * question.
+ */
+export function count_notes_with_pitch_class(
+  recordOrEvents: E3Record | TimedEvent[],
+  pitchClass: unknown,
+): { pitch_class: string | null; count: number; error?: string } {
+  const canonical = normalizePitchClass(pitchClass);
+  if (canonical === null) {
+    return {
+      pitch_class: null,
+      count: 0,
+      error: `unrecognized pitch class: ${JSON.stringify(pitchClass)}`,
+    };
+  }
+  const events = eventsOf(recordOrEvents);
+  let count = 0;
+  for (const e of events) {
+    if (pitchClassName(e.note) === canonical) count++;
+  }
+  return { pitch_class: canonical, count };
+}
+
+export const COUNT_NOTES_WITH_PITCH_CLASS_SCHEMA = {
+  name: "count_notes_with_pitch_class",
+  description:
+    "Count the total number of MIDI events (notes) in the phrase whose pitch class equals " +
+    "the given pitch class. Use this to answer 'how many notes with pitch class X' questions. " +
+    "Pitch class accepts canonical sharp names (e.g. 'C', 'C#', 'G'), flat names (e.g. 'Bb', 'Db'), " +
+    "or octave-prefixed notes (the octave is stripped: 'C4' → 'C'). " +
+    "Returns the canonical pitch class plus the count. " +
+    "Distinct from `count_distinct_pitch_classes`, which counts how many UNIQUE pitch classes appear.",
+  inputSchema: {
+    type: "object",
+    properties: {
+      pitch_class: {
+        type: "string",
+        description:
+          "Pitch class name (e.g. 'C', 'C#', 'G', 'Bb'). Case-insensitive; octave digits ignored.",
+      },
+    },
+    required: ["pitch_class"],
     additionalProperties: false,
   },
 } as const;
@@ -535,6 +682,12 @@ export const INSPECTOR_TOOLS: InspectorTool[] = [
       const mr = asMeasureRange(args.measure_range);
       return count_distinct_pitch_classes(record, mr);
     },
+  },
+  {
+    // Slice 18.5: closes the wrong-tool gap on pitch_class_count MCQs.
+    name: "count_notes_with_pitch_class",
+    schema: COUNT_NOTES_WITH_PITCH_CLASS_SCHEMA as unknown as typeof GET_EVENTS_IN_MEASURE_SCHEMA,
+    run: (record, args) => count_notes_with_pitch_class(record, args.pitch_class),
   },
   {
     name: "count_beat_1_onsets",

@@ -28,6 +28,7 @@ import {
   get_hand_balance,
   find_highest_pitch,
   find_lowest_pitch,
+  count_notes_with_pitch_class,
   INSPECTOR_TOOLS,
   inspectorToolSchemas,
   findInspectorTool,
@@ -358,11 +359,110 @@ describe("find_lowest_pitch", () => {
   });
 });
 
+// ─── Tool 9: count_notes_with_pitch_class (Slice 18.5) ───────────────────────
+
+describe("count_notes_with_pitch_class", () => {
+  it("counts G notes in bach m1-4 (hand-computed against the same fixture used elsewhere)", () => {
+    // Bach Prelude m1-4 fixture — count notes whose name starts with 'G' and is natural.
+    // Hand-verified by summing pitchClassName(note)==='G' events.
+    const result = count_notes_with_pitch_class(bach, "G");
+    expect(result.pitch_class).toBe("G");
+    expect(result.count).toBeGreaterThan(0);
+    // Cross-check: counting G must equal direct event filter.
+    const events = bach.observation.midi_sidecar.timed_events;
+    const expected = events.filter((e) => e.note % 12 === 7).length;
+    expect(result.count).toBe(expected);
+  });
+
+  it("counts D# (sharp form) in pathetique", () => {
+    const result = count_notes_with_pitch_class(pathetique, "D#");
+    expect(result.pitch_class).toBe("D#");
+    // Should be non-negative integer; cross-check against direct filter.
+    const events = pathetique.observation.midi_sidecar.timed_events;
+    const expected = events.filter((e) => e.note % 12 === 3).length;
+    expect(result.count).toBe(expected);
+  });
+
+  it("accepts flat-name input and normalizes to canonical sharp", () => {
+    // Eb is canonical D#.
+    const a = count_notes_with_pitch_class(pathetique, "Eb");
+    const b = count_notes_with_pitch_class(pathetique, "D#");
+    expect(a.pitch_class).toBe("D#");
+    expect(a.count).toBe(b.count);
+  });
+
+  it("accepts unicode-flat input (B♭ → A#)", () => {
+    const a = count_notes_with_pitch_class(bach, "B♭");
+    const b = count_notes_with_pitch_class(bach, "A#");
+    expect(a.pitch_class).toBe("A#");
+    expect(a.count).toBe(b.count);
+  });
+
+  it("strips trailing octave digit ('C4' → 'C')", () => {
+    const a = count_notes_with_pitch_class(bach, "C4");
+    const b = count_notes_with_pitch_class(bach, "C");
+    expect(a.pitch_class).toBe("C");
+    expect(a.count).toBe(b.count);
+  });
+
+  it("accepts integer 0-11 strings ('7' → 'G')", () => {
+    const a = count_notes_with_pitch_class(bach, "7");
+    const b = count_notes_with_pitch_class(bach, "G");
+    expect(a.pitch_class).toBe("G");
+    expect(a.count).toBe(b.count);
+  });
+
+  it("returns count=0 with error on unrecognized input", () => {
+    const a = count_notes_with_pitch_class(bach, "Q#");
+    expect(a.pitch_class).toBeNull();
+    expect(a.count).toBe(0);
+    expect(typeof a.error).toBe("string");
+  });
+
+  it("is case-insensitive on letter", () => {
+    const a = count_notes_with_pitch_class(bach, "g");
+    const b = count_notes_with_pitch_class(bach, "G");
+    expect(a.count).toBe(b.count);
+  });
+
+  it("returns count=0 with empty events", () => {
+    const empty = makeSyntheticRecord([]);
+    const r = count_notes_with_pitch_class(empty, "C");
+    expect(r.count).toBe(0);
+    expect(r.pitch_class).toBe("C");
+  });
+
+  it("is deterministic: same input → same count across calls", () => {
+    const a = count_notes_with_pitch_class(bach, "G");
+    const b = count_notes_with_pitch_class(bach, "G");
+    const c = count_notes_with_pitch_class(bach, "G");
+    expect(a).toEqual(b);
+    expect(b).toEqual(c);
+  });
+
+  it("routes via tool registry with pitch_class arg", () => {
+    const tool = findInspectorTool("count_notes_with_pitch_class");
+    expect(tool).not.toBeNull();
+    const r = tool!.run(bach, { pitch_class: "G" });
+    const direct = count_notes_with_pitch_class(bach, "G");
+    expect(r).toEqual(direct);
+  });
+
+  it("registry surface handles malformed args (no throw)", () => {
+    const tool = findInspectorTool("count_notes_with_pitch_class")!;
+    expect(() => tool.run(bach, {})).not.toThrow();
+    expect(() => tool.run(bach, { pitch_class: 9999 })).not.toThrow();
+    expect(() => tool.run(bach, { pitch_class: null as unknown as string })).not.toThrow();
+  });
+});
+
 // ─── Tool registry ───────────────────────────────────────────────────────────
 
 describe("INSPECTOR_TOOLS registry", () => {
-  it("exposes 8 tools", () => {
-    expect(INSPECTOR_TOOLS.length).toBe(8);
+  // Slice 18.5: count was 8 pre-Slice-18.5; Slice 18.5 added
+  // count_notes_with_pitch_class to close the pitch_class_count wrong-tool gap.
+  it("exposes 9 tools", () => {
+    expect(INSPECTOR_TOOLS.length).toBe(9);
   });
 
   it("all tools have unique names", () => {
@@ -382,9 +482,10 @@ describe("INSPECTOR_TOOLS registry", () => {
     }
   });
 
-  it("inspectorToolSchemas() returns 8 tool descriptors", () => {
+  // Slice 18.5: count_notes_with_pitch_class joined the registry.
+  it("inspectorToolSchemas() returns 9 tool descriptors", () => {
     const schemas = inspectorToolSchemas();
-    expect(schemas.length).toBe(8);
+    expect(schemas.length).toBe(9);
     for (const s of schemas) {
       expect(typeof s.name).toBe("string");
       expect(typeof s.description).toBe("string");

@@ -752,10 +752,15 @@ export function generateAnnotationGroundingQuestion(record: E3Record): MCQuestio
   const [options, correctIndex] = buildOptions(correctNoteName, wrongNotes, lcg);
 
   // ── Question text: includes specific measure, beat, hand ── per-record! ──
-  // beat is stored 0-indexed in the sidecar; display as 1-indexed for readability.
-  const beatDisplay = anchor.beat + 1;
-  const beatLabel =
-    beatDisplay % 1 === 0 ? `beat ${beatDisplay}` : `beat ${beatDisplay}`;
+  // SLICE 18.5 FIX: beat is stored 0-indexed in the sidecar and the inspector
+  // tool `get_pitch_at` consumes the same 0-indexed convention. Earlier the
+  // question text displayed `anchor.beat + 1` to read as "1-indexed", which
+  // caused the tool-inspected model to query a beat number 1.0 higher than the
+  // actual event, returning a wrong event (e.g. pathetique-mvt2:m017-020 m.19
+  // asked beat 1.6604 when A#4 lives at beat 0.6604). The displayed beat now
+  // matches the stored beat exactly so the model's tool query lands on the
+  // correct event. See annotation-grounding.test.ts regression coverage.
+  const beatLabel = `beat ${anchor.beat}`;
   const handLabel = anchor.hand === "right" ? "right hand" : "left hand";
   const questionText = `In measure ${anchor.measure}, which pitch does the ${handLabel} play on ${beatLabel}?`;
 
