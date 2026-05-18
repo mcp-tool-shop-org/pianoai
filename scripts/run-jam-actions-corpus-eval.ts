@@ -21,6 +21,13 @@
 //                           unless --sample-output is also given.
 //   --sample-output <path>  override sample manifest path (relative to PUBLIC_DIR
 //                           or absolute).
+//   --n <K>                 (Slice 14) number of runs per record/pair. Default 1.
+//                           K>1 writes corpus-eval-results/2.0.0 schema with
+//                           per-record runs:[K] + aggregate stats.
+//   --sample-filter <name>  (Slice 14) restrict the sample plan to a named
+//                           subset. Filters:
+//                             all              (default — full plan, no filter)
+//                             enriched-only    — 6 enriched records / 4 enriched pairs only
 //
 // Output (default):
 //   datasets/jam-actions-v0-public/evals/corpus-scale-qwen2.5-7b-results.json
@@ -28,7 +35,7 @@
 //
 // Hard rule: NEVER overwrites prior artifacts under datasets/jam-actions-v0/evals/.
 // The default result/sample paths refuse to overwrite; use --output to write
-// a new artifact path (e.g. focused rerun in Slice 13).
+// a new artifact path (e.g. focused rerun in Slice 13, multi-run in Slice 14).
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from "node:fs";
@@ -56,6 +63,12 @@ import {
   type E2RunResult,
   type E3RecordResult,
 } from "../src/dataset/eval/llm-runner.js";
+import {
+  aggregateRuns,
+  aggregateValues,
+  type AggregateStats,
+  type RunResult,
+} from "../src/dataset/eval/multi-run-aggregator.js";
 import { loadToolSchemaCatalog } from "../src/dataset/trace-validator.js";
 import type { ToolSchemaCatalog } from "../src/dataset/trace-validator.js";
 import type { PairRecord } from "../src/dataset/eval/phrase-continuation.js";
@@ -72,6 +85,9 @@ const PUBLIC_EVALS_DIR = join(PUBLIC_DIR, "evals");
 // ─── Args ──────────────────────────────────────────────────────────────────────
 
 type EvalName = "e1" | "e2" | "e3";
+type SampleFilter = "all" | "enriched-only";
+
+const SAMPLE_FILTERS: readonly SampleFilter[] = ["all", "enriched-only"] as const;
 
 interface CliOpts {
   scope: "public" | "source";
@@ -82,6 +98,10 @@ interface CliOpts {
   evals: ReadonlySet<EvalName>;
   outputPath: string | null;
   sampleOutputPath: string | null;
+  /** Slice 14: K runs per record/pair. Default 1 (backward-compat). */
+  n: number;
+  /** Slice 14: restrict the sample plan to a named subset. Default "all". */
+  sampleFilter: SampleFilter;
 }
 
 function parseEvalsList(raw: string): Set<EvalName> {
@@ -116,6 +136,8 @@ function parseArgs(): CliOpts {
     evals: new Set<EvalName>(["e1", "e2", "e3"]),
     outputPath: null,
     sampleOutputPath: null,
+    n: 1,
+    sampleFilter: "all",
   };
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
@@ -138,6 +160,23 @@ function parseArgs(): CliOpts {
       opts.outputPath = args[++i];
     } else if (a === "--sample-output" && i + 1 < args.length) {
       opts.sampleOutputPath = args[++i];
+    } else if (a === "--n" && i + 1 < args.length) {
+      const raw = args[++i];
+      const parsed = Number(raw);
+      if (!Number.isInteger(parsed) || parsed < 1) {
+        console.error(`ERROR: --n must be a positive integer, got '${raw}'.`);
+        process.exit(1);
+      }
+      opts.n = parsed;
+    } else if (a === "--sample-filter" && i + 1 < args.length) {
+      const v = args[++i].trim().toLowerCase() as SampleFilter;
+      if (!SAMPLE_FILTERS.includes(v)) {
+        console.error(
+          `ERROR: --sample-filter must be one of ${SAMPLE_FILTERS.join(", ")}, got '${v}'.`,
+        );
+        process.exit(1);
+      }
+      opts.sampleFilter = v;
     } else if (a === "--help" || a === "-h") {
       opts.help = true;
     }
@@ -168,6 +207,13 @@ Options:
                           without --sample-output, sample manifest stays at
                           default path.
   --dry-run               Build sample plan, skip model calls
+  --n <K>                 (Slice 14) K runs per record/pair (default 1).
+                          K>1 enables multi-run aggregation: per-record
+                          runs:[K] array + AggregateStats; corpus-eval-results
+                          schema bumps from 1.0.0 to 2.0.0.
+  --sample-filter <name>  (Slice 14) restrict sample plan to a subset:
+                            all            — full plan (default)
+                            enriched-only  — 6 enriched records / 4 enriched pairs
   --help                  Show this help
 
 Sample plan (locked by kickoff):
@@ -228,13 +274,15 @@ const evalsLabel = ["e1", "e2", "e3"].filter((e) => opts.evals.has(e as EvalName
 console.log("=".repeat(72));
 console.log(" jam-actions-v0 Corpus-Scale Eval Runner");
 console.log("=".repeat(72));
-console.log(`  scope:   ${opts.scope}`);
-console.log(`  model:   ${opts.model}`);
-console.log(`  seed:    ${opts.seed}`);
-console.log(`  evals:   ${evalsLabel}`);
-console.log(`  dry-run: ${opts.dryRun}`);
-console.log(`  result:  ${RESULT_PATH}`);
-console.log(`  sample:  ${SAMPLE_PATH}`);
+console.log(`  scope:         ${opts.scope}`);
+console.log(`  model:         ${opts.model}`);
+console.log(`  seed:          ${opts.seed}`);
+console.log(`  evals:         ${evalsLabel}`);
+console.log(`  n (runs/rec):  ${opts.n}${opts.n === 1 ? " (n=1 backward-compat schema)" : ` (Slice 14 multi-run; schema 2.0.0)`}`);
+console.log(`  sample-filter: ${opts.sampleFilter}`);
+console.log(`  dry-run:       ${opts.dryRun}`);
+console.log(`  result:        ${RESULT_PATH}`);
+console.log(`  sample:        ${SAMPLE_PATH}`);
 console.log();
 
 // Refuse to overwrite the canonical Slice 12 artifact unless --output was
@@ -334,6 +382,41 @@ if (plan.e2.enrichedPairsIncluded.length !== 4) {
   process.exit(1);
 }
 
+// ─── Slice 14: sample-filter post-pass ─────────────────────────────────────────
+// Filters narrow which records/pairs from the sample plan get fed to the eval
+// loops. The plan ITSELF is unchanged (still seeded + validated above); only
+// the iteration lists are restricted. The sample manifest written below is
+// also unfiltered (the seed-determined plan, not the filtered iteration list)
+// — readers can reconstruct what was run from the per-record results.
+//
+// Defined filters:
+//   - "all"           : no narrowing (default).
+//   - "enriched-only" : keep only the 6 Slice 11 enriched records (E1, E3)
+//                       and the 4 enriched pairs (E2).
+
+const enrichedRecordSet = new Set<string>(SLICE_11_ENRICHED_RECORD_IDS);
+const filteredE1Ids: string[] =
+  opts.sampleFilter === "enriched-only"
+    ? plan.e1.recordIds.filter((id) => enrichedRecordSet.has(id))
+    : [...plan.e1.recordIds];
+const filteredE2Pairs =
+  opts.sampleFilter === "enriched-only"
+    ? plan.e2.pairs.filter((p) => p.containsEnriched)
+    : [...plan.e2.pairs];
+const filteredE3Ids: string[] =
+  opts.sampleFilter === "enriched-only"
+    ? plan.e3.recordIds.filter((id) => enrichedRecordSet.has(id))
+    : [...plan.e3.recordIds];
+
+if (opts.sampleFilter !== "all") {
+  console.log(
+    `\nSample filter '${opts.sampleFilter}' applied:` +
+      `\n  E1 records: ${plan.e1.recordIds.length} -> ${filteredE1Ids.length}` +
+      `\n  E2 pairs:   ${plan.e2.pairs.length} -> ${filteredE2Pairs.length}` +
+      `\n  E3 records: ${plan.e3.recordIds.length} -> ${filteredE3Ids.length}`,
+  );
+}
+
 // ─── Probe ollama before any model calls (Slice 12 lock #1) ────────────────────
 
 async function probeOllama(model: string): Promise<void> {
@@ -408,16 +491,18 @@ console.log(`Tool catalog: ${catalog.tool_count} tools from ${catalog.derived_fr
 
 const recordsById = new Map(publicRecords.map((r) => [r.id, r] as const));
 
-// ─── E1 (tool-use): n=1 corpus-scale (vs n=3 in run-llm-eval) ─────────────────
+// ─── E1 (tool-use): K runs per record (default K=1; Slice 14 K>1) ─────────────
 
-const N_RUNS = 1; // Single pass per record/pair/question — corpus-scale economy.
+const K_RUNS = opts.n;
+const N_RUNS = 1; // Inner: each call to runE3ForRecord uses n=1 internal runs (the K iterations wrap at the outer record level).
 
 interface RecordE1Result {
   recordId: string;
   enriched: boolean;
-  passed: boolean;
+  passed: boolean; // n=1: result of the single run; K>1: majority_pass
   runs: E1RunResult[];
   rawOutputs: string[];
+  aggregate?: AggregateStats; // present when K>1
 }
 
 const e1Results: RecordE1Result[] = [];
@@ -426,45 +511,91 @@ let e1EnrichedPassRate = 0;
 let e1NonEnrichedPassRate = 0;
 
 if (opts.evals.has("e1")) {
-  console.log("\n━━━ E1: Tool-Use Correctness (24 records, n=1) ━━━");
+  const e1Total = filteredE1Ids.length;
+  console.log(
+    `\n━━━ E1: Tool-Use Correctness (${e1Total} records, K=${K_RUNS} run${K_RUNS === 1 ? "" : "s"}/record) ━━━`,
+  );
   let e1Index = 0;
-  for (const recId of plan.e1.recordIds) {
+  for (const recId of filteredE1Ids) {
     e1Index++;
     const raw = recordsById.get(recId);
     if (!raw) {
-      console.error(`  [${e1Index}/${plan.e1.recordIds.length}] ${recId}: NOT FOUND in records`);
+      console.error(`  [${e1Index}/${e1Total}] ${recId}: NOT FOUND in records`);
       continue;
     }
     const isEnriched = SLICE_11_ENRICHED_RECORD_IDS.includes(recId);
     const tag = isEnriched ? "[ENR]" : "     ";
-    process.stdout.write(
-      `  [${String(e1Index).padStart(2)}/${plan.e1.recordIds.length}] ${tag} ${recId} ... `,
-    );
-    const t0 = Date.now();
-    let result: E1RunResult;
-    try {
-      result = await runE1ForRecord(
-        raw as unknown as Parameters<typeof runE1ForRecord>[0],
-        catalog,
-        backend,
-        0,
+
+    const runs: E1RunResult[] = [];
+    const rawOutputs: string[] = [];
+
+    for (let k = 0; k < K_RUNS; k++) {
+      const runLabel =
+        K_RUNS === 1
+          ? `  [${String(e1Index).padStart(2)}/${e1Total}] ${tag} ${recId}`
+          : `  [${String(e1Index).padStart(2)}/${e1Total} run ${k + 1}/${K_RUNS}] ${tag} ${recId}`;
+      process.stdout.write(`${runLabel} ... `);
+      const t0 = Date.now();
+      let result: E1RunResult;
+      try {
+        result = await runE1ForRecord(
+          raw as unknown as Parameters<typeof runE1ForRecord>[0],
+          catalog,
+          backend,
+          k,
+        );
+      } catch (err) {
+        console.log(`ERROR (${Date.now() - t0}ms): ${(err as Error).message}`);
+        continue;
+      }
+      const elapsed = Date.now() - t0;
+      const status = result.passed ? "PASS" : "FAIL";
+      console.log(
+        `${status} | tcalls=${result.toolCalls.length} parse=${result.meta.parseOk ? "ok" : "fail"} | ${elapsed}ms`,
       );
-    } catch (err) {
-      console.log(`ERROR (${Date.now() - t0}ms): ${(err as Error).message}`);
+      const rawText = (backend as { lastRawText?: () => string | null }).lastRawText?.() ?? null;
+      runs.push(result);
+      rawOutputs.push(rawText ?? "(no raw text captured)");
+    }
+
+    if (runs.length === 0) {
+      // All K iterations errored — record as zero-run failure (rare; usually a backend outage)
+      console.error(
+        `  [${e1Index}/${e1Total}] ${tag} ${recId}: ALL ${K_RUNS} runs errored; skipping aggregate`,
+      );
       continue;
     }
-    const elapsed = Date.now() - t0;
-    const status = result.passed ? "PASS" : "FAIL";
-    console.log(
-      `${status} | tcalls=${result.toolCalls.length} parse=${result.meta.parseOk ? "ok" : "fail"} | ${elapsed}ms`,
-    );
-    const rawText = (backend as { lastRawText?: () => string | null }).lastRawText?.() ?? null;
+
+    // K=1 (backward-compat): passed = single run's passed
+    // K>1: passed = majority_pass (per Slice 14 doctrine)
+    let aggregate: AggregateStats | undefined;
+    let recordPassed: boolean;
+    if (K_RUNS === 1) {
+      recordPassed = runs[0].passed;
+    } else {
+      const runResults: RunResult<E1RunResult>[] = runs.map((r, i) => ({
+        run_index: i,
+        metric: r,
+        passed: r.passed,
+        durationMs: r.meta.latencyMs,
+        raw_output: rawOutputs[i] ?? null,
+      }));
+      // E1 has no continuous metric — only pass/fail. Extract null to keep
+      // metric_mean=null while still computing pass_rate.
+      aggregate = aggregateRuns(runResults, () => null);
+      recordPassed = aggregate.majority_pass;
+      console.log(
+        `      ↳ aggregate: pass_rate=${aggregate.pass_rate.toFixed(3)} majority_pass=${aggregate.majority_pass}`,
+      );
+    }
+
     e1Results.push({
       recordId: recId,
       enriched: isEnriched,
-      passed: result.passed,
-      runs: [result],
-      rawOutputs: [rawText ?? "(no raw text captured)"],
+      passed: recordPassed,
+      runs,
+      rawOutputs,
+      aggregate,
     });
   }
 
@@ -479,8 +610,9 @@ if (opts.evals.has("e1")) {
       ? e1Results.filter((r) => !r.enriched && r.passed).length /
         e1Results.filter((r) => !r.enriched).length
       : 0;
+  const e1PassLabel = K_RUNS === 1 ? "pass rate" : "majority-pass rate";
   console.log(
-    `\nE1 aggregate: ${(e1PassRate * 100).toFixed(1)}% (${e1Results.filter((r) => r.passed).length}/${e1Results.length})`,
+    `\nE1 aggregate ${e1PassLabel}: ${(e1PassRate * 100).toFixed(1)}% (${e1Results.filter((r) => r.passed).length}/${e1Results.length})`,
   );
   console.log(`     enriched: ${(e1EnrichedPassRate * 100).toFixed(1)}% (${e1Results.filter((r) => r.enriched && r.passed).length}/${e1Results.filter((r) => r.enriched).length})`);
   console.log(`  non-enriched: ${(e1NonEnrichedPassRate * 100).toFixed(1)}% (${e1Results.filter((r) => !r.enriched && r.passed).length}/${e1Results.filter((r) => !r.enriched).length})`);
@@ -495,11 +627,12 @@ interface PairE2RunResultBundle {
   targetId: string;
   containsEnriched: boolean;
   enrichedHalves: string[];
-  passed: boolean;
-  grooveOA: number | null;
-  parseStatus: string | null;
+  passed: boolean; // n=1: single run pass; K>1: majority_pass
+  grooveOA: number | null; // n=1: single grooveOA; K>1: mean (or null if all not_computable)
+  parseStatus: string | null; // first-run parseStatus (or null)
   runs: E2RunResult[];
   rawOutputs: string[];
+  aggregate?: AggregateStats; // present when K>1
 }
 
 function mean(values: Array<number | null | undefined>): number | null {
@@ -517,51 +650,100 @@ let e2EnrichedPairs: PairE2RunResultBundle[] = [];
 let e2NonEnrichedPairs: PairE2RunResultBundle[] = [];
 
 if (opts.evals.has("e2")) {
-  console.log("\n━━━ E2: Phrase Continuation (12 pairs, n=1) ━━━");
+  const e2Total = filteredE2Pairs.length;
+  console.log(
+    `\n━━━ E2: Phrase Continuation (${e2Total} pairs, K=${K_RUNS} run${K_RUNS === 1 ? "" : "s"}/pair) ━━━`,
+  );
   let e2Index = 0;
-  for (const pair of plan.e2.pairs) {
+  for (const pair of filteredE2Pairs) {
     e2Index++;
     const promptRaw = recordsById.get(pair.promptId);
     const targetRaw = recordsById.get(pair.targetId);
     if (!promptRaw || !targetRaw) {
-      console.error(`  [${e2Index}/${plan.e2.pairs.length}] ${pair.promptId} -> ${pair.targetId}: NOT FOUND`);
+      console.error(`  [${e2Index}/${e2Total}] ${pair.promptId} -> ${pair.targetId}: NOT FOUND`);
       continue;
     }
     const tag = pair.containsEnriched ? "[ENR]" : "     ";
-    process.stdout.write(
-      `  [${String(e2Index).padStart(2)}/${plan.e2.pairs.length}] ${tag} ${pair.promptId} -> ${pair.targetId} ... `,
-    );
-    const t0 = Date.now();
-    let result: E2RunResult;
-    try {
-      result = await runE2ForPair(
-        promptRaw as unknown as Parameters<typeof runE2ForPair>[0],
-        targetRaw as unknown as PairRecord,
-        backend,
-        0,
+
+    const runs: E2RunResult[] = [];
+    const rawOutputs: string[] = [];
+
+    for (let k = 0; k < K_RUNS; k++) {
+      const runLabel =
+        K_RUNS === 1
+          ? `  [${String(e2Index).padStart(2)}/${e2Total}] ${tag} ${pair.promptId} -> ${pair.targetId}`
+          : `  [${String(e2Index).padStart(2)}/${e2Total} run ${k + 1}/${K_RUNS}] ${tag} ${pair.promptId} -> ${pair.targetId}`;
+      process.stdout.write(`${runLabel} ... `);
+      const t0 = Date.now();
+      let result: E2RunResult;
+      try {
+        result = await runE2ForPair(
+          promptRaw as unknown as Parameters<typeof runE2ForPair>[0],
+          targetRaw as unknown as PairRecord,
+          backend,
+          k,
+        );
+      } catch (err) {
+        console.log(`ERROR (${Date.now() - t0}ms): ${(err as Error).message}`);
+        continue;
+      }
+      const elapsed = Date.now() - t0;
+      const status = result.passed ? "PASS" : "FAIL";
+      const groove = result.grooveOA !== null ? result.grooveOA.toFixed(3) : "n/a";
+      const parse = result.meta.parseStatus ?? "n/a";
+      console.log(
+        `${status} | grooveOA=${groove} | parse=${parse} | ${elapsed}ms`,
       );
-    } catch (err) {
-      console.log(`ERROR (${Date.now() - t0}ms): ${(err as Error).message}`);
+      const rawText = (backend as { lastRawText?: () => string | null }).lastRawText?.() ?? null;
+      runs.push(result);
+      rawOutputs.push(rawText ?? "(no raw text captured)");
+    }
+
+    if (runs.length === 0) {
+      console.error(
+        `  [${e2Index}/${e2Total}] ${tag} ${pair.promptId} -> ${pair.targetId}: ALL ${K_RUNS} runs errored; skipping aggregate`,
+      );
       continue;
     }
-    const elapsed = Date.now() - t0;
-    const status = result.passed ? "PASS" : "FAIL";
-    const groove = result.grooveOA !== null ? result.grooveOA.toFixed(3) : "n/a";
-    const parse = result.meta.parseStatus ?? "n/a";
-    console.log(
-      `${status} | grooveOA=${groove} | parse=${parse} | ${elapsed}ms`,
-    );
-    const rawText = (backend as { lastRawText?: () => string | null }).lastRawText?.() ?? null;
+
+    // K=1 (backward-compat): top-level passed/grooveOA = single run's values
+    // K>1: top-level passed = majority_pass; grooveOA = mean (numeric metric)
+    let aggregate: AggregateStats | undefined;
+    let pairPassed: boolean;
+    let pairGroove: number | null;
+    if (K_RUNS === 1) {
+      pairPassed = runs[0].passed;
+      pairGroove = runs[0].grooveOA;
+    } else {
+      const runResults: RunResult<E2RunResult>[] = runs.map((r, i) => ({
+        run_index: i,
+        metric: r,
+        passed: r.passed,
+        durationMs: r.meta.latencyMs,
+        raw_output: rawOutputs[i] ?? null,
+      }));
+      aggregate = aggregateRuns(runResults, (r) => r.grooveOA);
+      pairPassed = aggregate.majority_pass;
+      pairGroove = aggregate.metric_mean;
+      console.log(
+        `      ↳ aggregate: pass_rate=${aggregate.pass_rate.toFixed(3)} majority_pass=${aggregate.majority_pass} ` +
+          `grooveOA_mean=${aggregate.metric_mean?.toFixed(3) ?? "n/a"} stddev=${aggregate.metric_stddev?.toFixed(3) ?? "n/a"} ` +
+          `min=${aggregate.metric_min?.toFixed(3) ?? "n/a"} max=${aggregate.metric_max?.toFixed(3) ?? "n/a"} ` +
+          `not_computable=${aggregate.not_computable_count}`,
+      );
+    }
+
     e2Results.push({
       promptId: pair.promptId,
       targetId: pair.targetId,
       containsEnriched: pair.containsEnriched,
       enrichedHalves: pair.enrichedHalves,
-      passed: result.passed,
-      grooveOA: result.grooveOA,
-      parseStatus: result.meta.parseStatus ?? null,
-      runs: [result],
-      rawOutputs: [rawText ?? "(no raw text captured)"],
+      passed: pairPassed,
+      grooveOA: pairGroove,
+      parseStatus: runs[0].meta.parseStatus ?? null,
+      runs,
+      rawOutputs,
+      aggregate,
     });
   }
 
@@ -572,7 +754,10 @@ if (opts.evals.has("e2")) {
   e2GrooveMeanNonEnriched = mean(e2NonEnrichedPairs.map((r) => r.grooveOA));
   e2PassRate = e2Results.length > 0 ? e2Results.filter((r) => r.passed).length / e2Results.length : 0;
 
-  console.log(`\nE2 aggregate: ${e2Results.filter((r) => r.passed).length}/${e2Results.length} pass`);
+  const e2PassLabel = K_RUNS === 1 ? "pass" : "majority-pass";
+  console.log(
+    `\nE2 aggregate: ${e2Results.filter((r) => r.passed).length}/${e2Results.length} ${e2PassLabel}`,
+  );
   console.log(`  mean grooveOA (all pairs):       ${e2GrooveMean?.toFixed(3) ?? "n/a"}`);
   console.log(`  mean grooveOA (enriched only):   ${e2GrooveMeanEnriched?.toFixed(3) ?? "n/a"}`);
   console.log(`  mean grooveOA (non-enriched):    ${e2GrooveMeanNonEnriched?.toFixed(3) ?? "n/a"}`);
@@ -585,8 +770,19 @@ if (opts.evals.has("e2")) {
 interface RecordE3ResultBundle {
   recordId: string;
   enriched: boolean;
+  // K=1: single run's E3RecordResult (existing behavior)
+  // K>1: first run's result (the canonical reference) + perRunResults[K]
   result: E3RecordResult;
+  // K>1: full K-run sequence (each entry is an outer record-level run)
+  perRunResults?: E3RecordResult[];
   margins: { fullVsTextOnly: number | null; fullVsRandomMidi: number | null };
+  // K>1: per-context aggregate stats (full / text_only / random_midi) over K outer runs
+  aggregateFull?: AggregateStats;
+  aggregateTextOnly?: AggregateStats;
+  aggregateRandomMidi?: AggregateStats;
+  // K>1: aggregate stats over per-run margins (full - text_only, full - random_midi)
+  aggregateMarginText?: AggregateStats;
+  aggregateMarginRandomMidi?: AggregateStats;
 }
 
 const e3Results: RecordE3ResultBundle[] = [];
@@ -608,48 +804,159 @@ let e3NonEnrRandMean: number | null = null;
 let e3NonEnrMarginText: number | null = null;
 
 if (opts.evals.has("e3")) {
-  console.log("\n━━━ E3: Annotation Grounding MCQ (24 records, n=1) ━━━");
+  const e3Total = filteredE3Ids.length;
+  console.log(
+    `\n━━━ E3: Annotation Grounding MCQ (${e3Total} records, K=${K_RUNS} run${K_RUNS === 1 ? "" : "s"}/record) ━━━`,
+  );
   const e3RecordsForRandomMidi = publicRecords as unknown as E3Record[];
   let e3Index = 0;
-  for (const recId of plan.e3.recordIds) {
+  for (const recId of filteredE3Ids) {
     e3Index++;
     const raw = recordsById.get(recId);
     if (!raw) {
-      console.error(`  [${e3Index}/${plan.e3.recordIds.length}] ${recId}: NOT FOUND`);
+      console.error(`  [${e3Index}/${e3Total}] ${recId}: NOT FOUND`);
       continue;
     }
     const isEnriched = SLICE_11_ENRICHED_RECORD_IDS.includes(recId);
     const tag = isEnriched ? "[ENR]" : "     ";
-    process.stdout.write(
-      `  [${String(e3Index).padStart(2)}/${plan.e3.recordIds.length}] ${tag} ${recId} ... `,
-    );
-    const t0 = Date.now();
-    let result: E3RecordResult;
-    try {
-      result = await runE3ForRecord(
-        raw as unknown as E3Record,
-        e3RecordsForRandomMidi,
-        backend,
-        N_RUNS,
+
+    const runOuter: E3RecordResult[] = [];
+
+    for (let k = 0; k < K_RUNS; k++) {
+      const runLabel =
+        K_RUNS === 1
+          ? `  [${String(e3Index).padStart(2)}/${e3Total}] ${tag} ${recId}`
+          : `  [${String(e3Index).padStart(2)}/${e3Total} run ${k + 1}/${K_RUNS}] ${tag} ${recId}`;
+      process.stdout.write(`${runLabel} ... `);
+      const t0 = Date.now();
+      let result: E3RecordResult;
+      try {
+        result = await runE3ForRecord(
+          raw as unknown as E3Record,
+          e3RecordsForRandomMidi,
+          backend,
+          N_RUNS, // inner per-question n stays at 1; K wraps at the outer record level
+        );
+      } catch (err) {
+        console.log(`ERROR (${Date.now() - t0}ms): ${(err as Error).message}`);
+        continue;
+      }
+      const elapsed = Date.now() - t0;
+      const full = result.aggregate.full;
+      const textOnly = result.aggregate.text_only;
+      const randomMidi = result.aggregate.random_midi;
+      const mTextOnly = full !== null && textOnly !== null ? full - textOnly : null;
+      const mRandomMidi = full !== null && randomMidi !== null ? full - randomMidi : null;
+      console.log(
+        `full=${full?.toFixed(3) ?? "n/a"} text=${textOnly?.toFixed(3) ?? "n/a"} rmidi=${randomMidi?.toFixed(3) ?? "n/a"} | mT=${mTextOnly?.toFixed(3) ?? "n/a"} mR=${mRandomMidi?.toFixed(3) ?? "n/a"} | ${elapsed}ms`,
       );
-    } catch (err) {
-      console.log(`ERROR (${Date.now() - t0}ms): ${(err as Error).message}`);
+      runOuter.push(result);
+    }
+
+    if (runOuter.length === 0) {
+      console.error(
+        `  [${e3Index}/${e3Total}] ${tag} ${recId}: ALL ${K_RUNS} runs errored; skipping aggregate`,
+      );
       continue;
     }
-    const elapsed = Date.now() - t0;
-    const full = result.aggregate.full;
-    const textOnly = result.aggregate.text_only;
-    const randomMidi = result.aggregate.random_midi;
-    const mTextOnly = full !== null && textOnly !== null ? full - textOnly : null;
-    const mRandomMidi = full !== null && randomMidi !== null ? full - randomMidi : null;
-    console.log(
-      `full=${full?.toFixed(3) ?? "n/a"} text=${textOnly?.toFixed(3) ?? "n/a"} rmidi=${randomMidi?.toFixed(3) ?? "n/a"} | mT=${mTextOnly?.toFixed(3) ?? "n/a"} mR=${mRandomMidi?.toFixed(3) ?? "n/a"} | ${elapsed}ms`,
-    );
+
+    const firstResult = runOuter[0];
+    let bundleMarginText: number | null;
+    let bundleMarginRandomMidi: number | null;
+    let aggregateFull: AggregateStats | undefined;
+    let aggregateTextOnly: AggregateStats | undefined;
+    let aggregateRandomMidi: AggregateStats | undefined;
+    let aggregateMarginText: AggregateStats | undefined;
+    let aggregateMarginRandomMidi: AggregateStats | undefined;
+    let perRunResults: E3RecordResult[] | undefined;
+
+    if (K_RUNS === 1) {
+      const full = firstResult.aggregate.full;
+      const textOnly = firstResult.aggregate.text_only;
+      const randomMidi = firstResult.aggregate.random_midi;
+      bundleMarginText = full !== null && textOnly !== null ? full - textOnly : null;
+      bundleMarginRandomMidi = full !== null && randomMidi !== null ? full - randomMidi : null;
+    } else {
+      perRunResults = runOuter;
+      // Aggregate per-context scores across K outer runs
+      const fullRuns: RunResult<{ v: number | null }>[] = runOuter.map(
+        (r, i): RunResult<{ v: number | null }> => ({
+          run_index: i,
+          metric: { v: r.aggregate.full },
+          passed: r.aggregate.full !== null,
+          durationMs: 0,
+        }),
+      );
+      const textOnlyRuns: RunResult<{ v: number | null }>[] = runOuter.map(
+        (r, i): RunResult<{ v: number | null }> => ({
+          run_index: i,
+          metric: { v: r.aggregate.text_only },
+          passed: r.aggregate.text_only !== null,
+          durationMs: 0,
+        }),
+      );
+      const randomMidiRuns: RunResult<{ v: number | null }>[] = runOuter.map(
+        (r, i): RunResult<{ v: number | null }> => ({
+          run_index: i,
+          metric: { v: r.aggregate.random_midi },
+          passed: r.aggregate.random_midi !== null,
+          durationMs: 0,
+        }),
+      );
+      aggregateFull = aggregateRuns(fullRuns, (m) => m.v);
+      aggregateTextOnly = aggregateRuns(textOnlyRuns, (m) => m.v);
+      aggregateRandomMidi = aggregateRuns(randomMidiRuns, (m) => m.v);
+
+      // Per-run margins (one value per outer run)
+      const marginTextValues: Array<number | null> = runOuter.map((r) =>
+        r.aggregate.full !== null && r.aggregate.text_only !== null
+          ? r.aggregate.full - r.aggregate.text_only
+          : null,
+      );
+      const marginRandomMidiValues: Array<number | null> = runOuter.map((r) =>
+        r.aggregate.full !== null && r.aggregate.random_midi !== null
+          ? r.aggregate.full - r.aggregate.random_midi
+          : null,
+      );
+      aggregateMarginText = aggregateValues(
+        marginTextValues,
+        (v) => v !== null && v >= E3_MARGIN_THRESHOLD,
+      );
+      aggregateMarginRandomMidi = aggregateValues(
+        marginRandomMidiValues,
+        (v) => v !== null && v >= E3_MARGIN_THRESHOLD,
+      );
+
+      bundleMarginText = aggregateMarginText.metric_mean;
+      bundleMarginRandomMidi = aggregateMarginRandomMidi.metric_mean;
+
+      console.log(
+        `      ↳ aggregate: full_mean=${aggregateFull.metric_mean?.toFixed(3) ?? "n/a"}±${aggregateFull.metric_stddev?.toFixed(3) ?? "n/a"} ` +
+          `text_mean=${aggregateTextOnly.metric_mean?.toFixed(3) ?? "n/a"}±${aggregateTextOnly.metric_stddev?.toFixed(3) ?? "n/a"} ` +
+          `rmidi_mean=${aggregateRandomMidi.metric_mean?.toFixed(3) ?? "n/a"}±${aggregateRandomMidi.metric_stddev?.toFixed(3) ?? "n/a"}`,
+      );
+      console.log(
+        `      ↳ margins:   mT_mean=${aggregateMarginText.metric_mean?.toFixed(3) ?? "n/a"}±${aggregateMarginText.metric_stddev?.toFixed(3) ?? "n/a"} (pass_rate=${aggregateMarginText.pass_rate.toFixed(3)}) ` +
+          `mR_mean=${aggregateMarginRandomMidi.metric_mean?.toFixed(3) ?? "n/a"}±${aggregateMarginRandomMidi.metric_stddev?.toFixed(3) ?? "n/a"} (pass_rate=${aggregateMarginRandomMidi.pass_rate.toFixed(3)})`,
+      );
+    }
+
+    // For K>1 the bundle's `result` field is the first run (the canonical
+    // reference for shape-compatibility); aggregates carry the K-run stats.
     e3Results.push({
       recordId: recId,
       enriched: isEnriched,
-      result,
-      margins: { fullVsTextOnly: mTextOnly, fullVsRandomMidi: mRandomMidi },
+      result: firstResult,
+      perRunResults,
+      margins: {
+        fullVsTextOnly: bundleMarginText,
+        fullVsRandomMidi: bundleMarginRandomMidi,
+      },
+      aggregateFull,
+      aggregateTextOnly,
+      aggregateRandomMidi,
+      aggregateMarginText,
+      aggregateMarginRandomMidi,
     });
   }
 
@@ -696,19 +1003,173 @@ if (opts.evals.has("e3")) {
 
 // ─── Write result artifact ────────────────────────────────────────────────────
 
+// ─── Corpus-level multi-run aggregates (Slice 14, K>1 only) ───────────────────
+
+let e2CorpusAggregate: Record<string, unknown> | null = null;
+let e3CorpusAggregate: Record<string, unknown> | null = null;
+if (K_RUNS > 1) {
+  if (opts.evals.has("e2") && e2Results.length > 0) {
+    // Per-pair mean grooveOA → aggregate across pairs
+    const perPairMeans: Array<number | null> = e2Results.map(
+      (r) => r.aggregate?.metric_mean ?? null,
+    );
+    const perPairStddevs: Array<number | null> = e2Results.map(
+      (r) => r.aggregate?.metric_stddev ?? null,
+    );
+    const corpusGrooveAcrossPairs = aggregateValues(perPairMeans);
+    const enrichedPairMeans = e2Results
+      .filter((r) => r.containsEnriched)
+      .map((r) => r.aggregate?.metric_mean ?? null);
+    const nonEnrichedPairMeans = e2Results
+      .filter((r) => !r.containsEnriched)
+      .map((r) => r.aggregate?.metric_mean ?? null);
+    const pairMajorityPassRate =
+      e2Results.length > 0
+        ? e2Results.filter((r) => r.aggregate?.majority_pass === true).length /
+          e2Results.length
+        : 0;
+    const enrichedSubsetMajPass =
+      e2EnrichedPairs.length > 0
+        ? e2EnrichedPairs.filter((r) => r.aggregate?.majority_pass === true).length /
+          e2EnrichedPairs.length
+        : 0;
+    const nonEnrichedSubsetMajPass =
+      e2NonEnrichedPairs.length > 0
+        ? e2NonEnrichedPairs.filter((r) => r.aggregate?.majority_pass === true).length /
+          e2NonEnrichedPairs.length
+        : 0;
+    e2CorpusAggregate = {
+      n_pairs: e2Results.length,
+      n_runs_per_pair: K_RUNS,
+      pair_majority_pass_rate: pairMajorityPassRate,
+      mean_grooveOA_across_runs: corpusGrooveAcrossPairs.metric_mean,
+      stddev_grooveOA_across_pairs: corpusGrooveAcrossPairs.metric_stddev,
+      min_grooveOA_across_pairs: corpusGrooveAcrossPairs.metric_min,
+      max_grooveOA_across_pairs: corpusGrooveAcrossPairs.metric_max,
+      mean_per_pair_stddev: aggregateValues(perPairStddevs).metric_mean,
+      max_per_pair_stddev: aggregateValues(perPairStddevs).metric_max,
+      enriched_subset: {
+        n_pairs: e2EnrichedPairs.length,
+        pair_majority_pass_rate: enrichedSubsetMajPass,
+        mean_grooveOA_across_runs: aggregateValues(enrichedPairMeans).metric_mean,
+      },
+      non_enriched_subset: {
+        n_pairs: e2NonEnrichedPairs.length,
+        pair_majority_pass_rate: nonEnrichedSubsetMajPass,
+        mean_grooveOA_across_runs: aggregateValues(nonEnrichedPairMeans).metric_mean,
+      },
+    };
+  }
+  if (opts.evals.has("e3") && e3Results.length > 0) {
+    // Aggregate per-record full/text_only/random_midi means → across records
+    const perRecFull: Array<number | null> = e3Results.map(
+      (r) => r.aggregateFull?.metric_mean ?? null,
+    );
+    const perRecText: Array<number | null> = e3Results.map(
+      (r) => r.aggregateTextOnly?.metric_mean ?? null,
+    );
+    const perRecRand: Array<number | null> = e3Results.map(
+      (r) => r.aggregateRandomMidi?.metric_mean ?? null,
+    );
+    const perRecMarginText: Array<number | null> = e3Results.map(
+      (r) => r.aggregateMarginText?.metric_mean ?? null,
+    );
+    const perRecMarginRand: Array<number | null> = e3Results.map(
+      (r) => r.aggregateMarginRandomMidi?.metric_mean ?? null,
+    );
+    e3CorpusAggregate = {
+      n_records: e3Results.length,
+      n_runs_per_record: K_RUNS,
+      full: aggregateValues(perRecFull),
+      text_only: aggregateValues(perRecText),
+      random_midi: aggregateValues(perRecRand),
+      margin_vs_text_only: aggregateValues(
+        perRecMarginText,
+        (v) => v !== null && v >= E3_MARGIN_THRESHOLD,
+      ),
+      margin_vs_random_midi: aggregateValues(
+        perRecMarginRand,
+        (v) => v !== null && v >= E3_MARGIN_THRESHOLD,
+      ),
+      enriched_subset: {
+        n: e3Enriched.length,
+        full: aggregateValues(
+          e3Enriched.map((r) => r.aggregateFull?.metric_mean ?? null),
+        ),
+        text_only: aggregateValues(
+          e3Enriched.map((r) => r.aggregateTextOnly?.metric_mean ?? null),
+        ),
+        random_midi: aggregateValues(
+          e3Enriched.map((r) => r.aggregateRandomMidi?.metric_mean ?? null),
+        ),
+        margin_vs_text_only: aggregateValues(
+          e3Enriched.map((r) => r.aggregateMarginText?.metric_mean ?? null),
+          (v) => v !== null && v >= E3_MARGIN_THRESHOLD,
+        ),
+        margin_vs_random_midi: aggregateValues(
+          e3Enriched.map((r) => r.aggregateMarginRandomMidi?.metric_mean ?? null),
+          (v) => v !== null && v >= E3_MARGIN_THRESHOLD,
+        ),
+      },
+      non_enriched_subset: {
+        n: e3NonEnriched.length,
+        full: aggregateValues(
+          e3NonEnriched.map((r) => r.aggregateFull?.metric_mean ?? null),
+        ),
+        text_only: aggregateValues(
+          e3NonEnriched.map((r) => r.aggregateTextOnly?.metric_mean ?? null),
+        ),
+        random_midi: aggregateValues(
+          e3NonEnriched.map((r) => r.aggregateRandomMidi?.metric_mean ?? null),
+        ),
+        margin_vs_text_only: aggregateValues(
+          e3NonEnriched.map((r) => r.aggregateMarginText?.metric_mean ?? null),
+          (v) => v !== null && v >= E3_MARGIN_THRESHOLD,
+        ),
+        margin_vs_random_midi: aggregateValues(
+          e3NonEnriched.map((r) => r.aggregateMarginRandomMidi?.metric_mean ?? null),
+          (v) => v !== null && v >= E3_MARGIN_THRESHOLD,
+        ),
+      },
+    };
+  }
+}
+
+// ─── Result artifact (schema chosen by K_RUNS) ────────────────────────────────
+//
+// K_RUNS === 1: schema "corpus-scale-eval/1.0.0" — backward-compat with Slice
+//   12/13 result artifacts. Per-record `runs:[1]` array preserved; no new
+//   `aggregate` fields. Existing consumers read unchanged.
+//
+// K_RUNS  >  1: schema "corpus-eval-results/2.0.0" — Slice 14 multi-run
+//   extension. Per-record adds `aggregate: AggregateStats`. Top-level adds
+//   `corpus_aggregate` for E2/E3 (E1 still pass/fail, aggregate present but
+//   metric_* are null). Includes `eval_runs_n` (alias of n_runs) and
+//   `sample_filter` (the CLI filter that was applied).
+// ─────────────────────────────────────────────────────────────────────────────
+
+const SCHEMA_VERSION =
+  K_RUNS === 1 ? "corpus-scale-eval/1.0.0" : "corpus-eval-results/2.0.0";
+
 const resultArtifact = {
-  schema_version: "corpus-scale-eval/1.0.0",
+  schema_version: SCHEMA_VERSION,
   generated_at: new Date().toISOString(),
   scope: opts.scope,
   backend: "ollama",
   model: opts.model,
   seed: opts.seed,
-  n_runs: N_RUNS,
+  n_runs: K_RUNS,
+  ...(K_RUNS > 1
+    ? { eval_runs_n: K_RUNS, sample_filter: opts.sampleFilter }
+    : {}),
   evals_run: ["e1", "e2", "e3"].filter((e) => opts.evals.has(e as EvalName)),
   sample_summary: {
-    e1_total: plan.e1.recordIds.length,
-    e2_total: plan.e2.pairs.length,
-    e3_total: plan.e3.recordIds.length,
+    e1_total: filteredE1Ids.length,
+    e2_total: filteredE2Pairs.length,
+    e3_total: filteredE3Ids.length,
+    e1_total_unfiltered: plan.e1.recordIds.length,
+    e2_total_unfiltered: plan.e2.pairs.length,
+    e3_total_unfiltered: plan.e3.recordIds.length,
     enriched_in_e1: plan.e1.enrichedIncluded.length,
     enriched_in_e3: plan.e3.enrichedIncluded.length,
     enriched_pairs_in_e2: plan.e2.enrichedPairsIncluded.length,
@@ -719,6 +1180,7 @@ const resultArtifact = {
         recordId: r.recordId,
         enriched: r.enriched,
         passed: r.passed,
+        ...(r.aggregate ? { aggregate: r.aggregate } : {}),
         runs: r.runs.map((run, i) => ({
           run: run.run,
           passed: run.passed,
@@ -759,6 +1221,7 @@ const resultArtifact = {
         passed: r.passed,
         grooveOA: r.grooveOA,
         parseStatus: r.parseStatus,
+        ...(r.aggregate ? { aggregate: r.aggregate } : {}),
         runs: r.runs.map((run, i) => ({
           run: run.run,
           passed: run.passed,
@@ -785,6 +1248,7 @@ const resultArtifact = {
         nonEnrichedPairsCount: e2NonEnrichedPairs.length,
         enrichedPassedCount: e2EnrichedPairs.filter((r) => r.passed).length,
         nonEnrichedPassedCount: e2NonEnrichedPairs.filter((r) => r.passed).length,
+        ...(e2CorpusAggregate ? { corpus_multirun_aggregate: e2CorpusAggregate } : {}),
       },
     },
     e3: {
@@ -797,6 +1261,53 @@ const resultArtifact = {
         marginVsTextOnly: r.margins.fullVsTextOnly,
         marginVsRandomMidi: r.margins.fullVsRandomMidi,
         randomMidiPartnerId: r.result.randomMidiPartnerId,
+        ...(r.aggregateFull
+          ? {
+              aggregate: {
+                full: r.aggregateFull,
+                text_only: r.aggregateTextOnly,
+                random_midi: r.aggregateRandomMidi,
+                margin_vs_text_only: r.aggregateMarginText,
+                margin_vs_random_midi: r.aggregateMarginRandomMidi,
+              },
+            }
+          : {}),
+        ...(r.perRunResults
+          ? {
+              per_run_results: r.perRunResults.map((rr, runIdx) => ({
+                run_index: runIdx,
+                aggregate: rr.aggregate,
+                random_midi_partner_id: rr.randomMidiPartnerId,
+                questions: rr.questions.map((q) => ({
+                  questionType: q.questionType,
+                  questionText: q.questionText,
+                  correctOptionIndex: q.correctOptionIndex,
+                  options: q.options,
+                  majorityScore: q.majorityScore,
+                  runs: {
+                    full: q.runs.full.map((rn) => ({
+                      run: rn.run,
+                      score: rn.score,
+                      selectedOptionIndex: rn.selectedOptionIndex,
+                      meta: rn.meta,
+                    })),
+                    text_only: q.runs.text_only.map((rn) => ({
+                      run: rn.run,
+                      score: rn.score,
+                      selectedOptionIndex: rn.selectedOptionIndex,
+                      meta: rn.meta,
+                    })),
+                    random_midi: q.runs.random_midi.map((rn) => ({
+                      run: rn.run,
+                      score: rn.score,
+                      selectedOptionIndex: rn.selectedOptionIndex,
+                      meta: rn.meta,
+                    })),
+                  },
+                })),
+              })),
+            }
+          : {}),
         questions: r.result.questions.map((q) => ({
           questionType: q.questionType,
           questionText: q.questionText,
@@ -834,6 +1345,7 @@ const resultArtifact = {
           random_midi: e3NonEnrRandMean,
           marginVsTextOnly: e3NonEnrMarginText,
         },
+        ...(e3CorpusAggregate ? { corpus_multirun_aggregate: e3CorpusAggregate } : {}),
       },
     },
   },

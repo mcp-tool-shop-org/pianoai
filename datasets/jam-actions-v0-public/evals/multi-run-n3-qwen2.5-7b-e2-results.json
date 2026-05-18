@@ -1,0 +1,1389 @@
+{
+  "schema_version": "corpus-eval-results/2.0.0",
+  "generated_at": "2026-05-18T06:30:10.471Z",
+  "scope": "public",
+  "backend": "ollama",
+  "model": "qwen2.5:7b",
+  "seed": "slice12-2026-05-17",
+  "n_runs": 3,
+  "eval_runs_n": 3,
+  "sample_filter": "all",
+  "evals_run": [
+    "e2"
+  ],
+  "sample_summary": {
+    "e1_total": 24,
+    "e2_total": 12,
+    "e3_total": 24,
+    "e1_total_unfiltered": 24,
+    "e2_total_unfiltered": 12,
+    "e3_total_unfiltered": 24,
+    "enriched_in_e1": 6,
+    "enriched_in_e3": 6,
+    "enriched_pairs_in_e2": 4
+  },
+  "results": {
+    "e1": {
+      "records": [],
+      "aggregate": {
+        "passRate": 0,
+        "threshold": 0.7,
+        "thresholdMet": false,
+        "enrichedPassRate": 0,
+        "nonEnrichedPassRate": 0,
+        "enrichedPassedCount": 0,
+        "enrichedTotal": 0,
+        "nonEnrichedPassedCount": 0,
+        "nonEnrichedTotal": 0
+      }
+    },
+    "e2": {
+      "pairs": [
+        {
+          "promptId": "bach-prelude-c-major-bwv846:m041-044:piano:mcp-session:v1",
+          "targetId": "bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1",
+          "containsEnriched": true,
+          "enrichedHalves": [
+            "bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1"
+          ],
+          "passed": false,
+          "grooveOA": 0.7039473684210525,
+          "parseStatus": "clean",
+          "aggregate": {
+            "n": 3,
+            "pass_rate": 0.3333333333333333,
+            "majority_pass": false,
+            "metric_mean": 0.7039473684210525,
+            "metric_stddev": 0.31379578993978474,
+            "metric_min": 0.375,
+            "metric_max": 1,
+            "not_computable_count": 0
+          },
+          "runs": [
+            {
+              "run": 1,
+              "passed": false,
+              "grooveOA": 0.375,
+              "meta": {
+                "runId": "bach-prelude-c-major-bwv846:m041-044:piano:mcp-session:v1:E2:run1",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 2585,
+                "completionTokens": 325,
+                "costUsd": 0,
+                "latencyMs": 102743,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 35,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_45\", \"Position_0\", \"Pitch_62\", \"Velocity_56\", \"Duration_8\",\n    \"Position_12\", \"Pitch_67\", \"Velocity_56\", \"Duration_4\",\n    \"Position_24\", \"Pitch_60\", \"Velocity_60\", \"Duration_3\",\n    \"Position_30\", \"Pitch_62\", \"Velocity_56\", \"Duration_1\",\n    \"Bar_46\", \"Position_0\", \"Pitch_72\", \"Velocity_56\", \"Duration_2\",\n    \"Position_8\", \"Pitch_69\", \"Velocity_52\", \"Duration_2\",\n    \"Position_16\", \"Pitch_67\", \"Velocity_56\", \"Duration_4\",\n    \"Bar_47\", \"Position_0\", \"Pitch_62\", \"Velocity_56\", \"Duration_8\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Bach Prelude C Major BWV846\\nM:4/4\\nL:1/8\\nK:C\\n|d2 e2|f2 g2|a2 b2|c'2 d2|\\n|e2 f2|g2 a2|b2 c'2|d2 e2|\\n|f2 g2|a2 b2|c'2 d2|e2 f2|\"\n}"
+            },
+            {
+              "run": 2,
+              "passed": false,
+              "grooveOA": 0.7368421052631577,
+              "meta": {
+                "runId": "bach-prelude-c-major-bwv846:m041-044:piano:mcp-session:v1:E2:run2",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 2585,
+                "completionTokens": 589,
+                "costUsd": 0,
+                "latencyMs": 63702,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 80,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_45\", \"Position_0\", \"Pitch_72\", \"Velocity_60\", \"Duration_2\",\n    \"Position_12\", \"Pitch_69\", \"Velocity_52\", \"Duration_2\",\n    \"Position_24\", \"Pitch_67\", \"Velocity_56\", \"Duration_2\",\n    \"Position_36\", \"Pitch_65\", \"Velocity_60\", \"Duration_2\",\n    \"Bar_46\", \"Position_0\", \"Pitch_63\", \"Velocity_56\", \"Duration_1\",\n    \"Position_6\", \"Pitch_67\", \"Velocity_56\", \"Duration_1\",\n    \"Position_12\", \"Pitch_65\", \"Velocity_60\", \"Duration_1\",\n    \"Position_18\", \"Pitch_64\", \"Velocity_56\", \"Duration_1\",\n    \"Position_24\", \"Pitch_62\", \"Velocity_60\", \"Duration_1\",\n    \"Position_30\", \"Pitch_59\", \"Velocity_56\", \"Duration_1\",\n    \"Bar_47\", \"Position_0\", \"Pitch_57\", \"Velocity_56\", \"Duration_2\",\n    \"Position_6\", \"Pitch_62\", \"Velocity_60\", \"Duration_1\",\n    \"Position_12\", \"Pitch_60\", \"Velocity_60\", \"Duration_1\",\n    \"Position_18\", \"Pitch_59\", \"Velocity_56\", \"Duration_1\",\n    \"Position_24\", \"Pitch_57\", \"Velocity_56\", \"Duration_1\",\n    \"Position_30\", \"Pitch_55\", \"Velocity_56\", \"Duration_1\",\n    \"Bar_48\", \"Position_0\", \"Pitch_53\", \"Velocity_56\", \"Duration_2\",\n    \"Position_6\", \"Pitch_57\", \"Velocity_56\", \"Duration_1\",\n    \"Position_12\", \"Pitch_55\", \"Velocity_56\", \"Duration_1\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Bach Prelude C Major BWV846\\nM:4/4\\nL:1/8\\nK:C\\n|7269|6765|6367|6564|\\n|6259|5762|6059|5755|\\n|5357|5755|5355|5351|\"\n}"
+            },
+            {
+              "run": 3,
+              "passed": true,
+              "grooveOA": 1,
+              "meta": {
+                "runId": "bach-prelude-c-major-bwv846:m041-044:piano:mcp-session:v1:E2:run3",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 2585,
+                "completionTokens": 387,
+                "costUsd": 0,
+                "latencyMs": 38389,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 56,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_45\", \"Position_0\", \"Pitch_53\", \"Velocity_60\", \"Duration_2\", \"Pitch_57\", \"Velocity_56\", \"Duration_1\", \"Pitch_60\", \"Velocity_60\", \"Duration_2\", \"Pitch_65\", \"Velocity_60\", \"Duration_2\", \"Bar_46\", \"Position_0\", \"Pitch_62\", \"Velocity_60\", \"Duration_2\", \"Pitch_67\", \"Velocity_60\", \"Duration_1\", \"Pitch_64\", \"Velocity_56\", \"Duration_3\", \"Pitch_69\", \"Velocity_56\", \"Duration_1\", \"Bar_47\", \"Position_0\", \"Pitch_71\", \"Velocity_56\", \"Duration_2\", \"Pitch_67\", \"Velocity_60\", \"Duration_1\", \"Pitch_62\", \"Velocity_60\", \"Duration_2\", \"Pitch_69\", \"Velocity_56\", \"Duration_1\", \"Bar_48\", \"Position_0\", \"Pitch_67\", \"Velocity_60\", \"Duration_3\", \"Pitch_64\", \"Velocity_56\", \"Duration_1\", \"Pitch_62\", \"Velocity_60\", \"Duration_2\", \"Pitch_69\", \"Velocity_56\", \"Duration_1\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Bach Prelude C Major BWV846\\nM:4/4\\nL:1/8\\nK:C\\n|E7 |F7 A7 |D7 G7 |C7 F7 |\"\n}"
+            }
+          ]
+        },
+        {
+          "promptId": "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1",
+          "targetId": "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1",
+          "containsEnriched": true,
+          "enrichedHalves": [
+            "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1",
+            "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1"
+          ],
+          "passed": false,
+          "grooveOA": 0.7664109121909632,
+          "parseStatus": "clean",
+          "aggregate": {
+            "n": 3,
+            "pass_rate": 0.3333333333333333,
+            "majority_pass": false,
+            "metric_mean": 0.7664109121909632,
+            "metric_stddev": 0.20231025058750146,
+            "metric_min": 0.6470588235294118,
+            "metric_max": 1,
+            "not_computable_count": 0
+          },
+          "runs": [
+            {
+              "run": 1,
+              "passed": false,
+              "grooveOA": 0.6470588235294118,
+              "meta": {
+                "runId": "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1:E2:run1",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 2438,
+                "completionTokens": 506,
+                "costUsd": 0,
+                "latencyMs": 46238,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 67,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_53\", \"Position_0\", \"Pitch_60\", \"Velocity_56\", \"Duration_2\", \"Pitch_72\", \"Velocity_60\", \"Duration_3\", \"Bar_54\", \"Position_0\", \"Pitch_69\", \"Velocity_60\", \"Duration_2\", \"Pitch_67\", \"Velocity_56\", \"Duration_2\", \"Position_12\", \"Pitch_74\", \"Velocity_56\", \"Duration_1\", \"Position_21\", \"Pitch_72\", \"Velocity_56\", \"Duration_1\", \"Bar_55\", \"Position_0\", \"Pitch_59\", \"Velocity_56\", \"Duration_2\", \"Pitch_62\", \"Velocity_56\", \"Duration_2\", \"Position_18\", \"Pitch_74\", \"Velocity_56\", \"Duration_1\", \"Position_21\", \"Pitch_72\", \"Velocity_56\", \"Duration_1\", \"Bar_56\", \"Position_0\", \"Pitch_54\", \"Velocity_60\", \"Duration_2\", \"Pitch_57\", \"Velocity_48\", \"Duration_2\", \"Pitch_81\", \"Velocity_68\", \"Duration_2\", \"Bar_53\", \"Position_12\", \"Pitch_59\", \"Velocity_56\", \"Duration_2\", \"Pitch_62\", \"Velocity_56\", \"Duration_2\", \"Position_18\", \"Pitch_74\", \"Velocity_56\", \"Duration_1\", \"Position_21\", \"Pitch_72\", \"Velocity_56\", \"Duration_1\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Bach Prelude C Major BWV846\\nM:4/4\\nL:1/8\\nK:C\\n|D4 F4 A4 B4|d4 f4 a4 b4||G2 B2 c2 d2|g2 b2 c2 d2||e2 g2 b2 c2|e2 g2 b2 c2||f4 a4 c4 e4|f4 a4 c4 e4||\"\n}"
+            },
+            {
+              "run": 2,
+              "passed": true,
+              "grooveOA": 1,
+              "meta": {
+                "runId": "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1:E2:run2",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 2438,
+                "completionTokens": 629,
+                "costUsd": 0,
+                "latencyMs": 56122,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 75,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_53\", \"Position_0\", \"Pitch_60\", \"Velocity_56\", \"Duration_2\", \n    \"Position_12\", \"Pitch_62\", \"Velocity_56\", \"Duration_2\", \n    \"Position_24\", \"Pitch_57\", \"Velocity_56\", \"Duration_2\", \n    \"Bar_53\", \"Position_0\", \"Pitch_64\", \"Velocity_56\", \"Duration_4\", \n    \"Bar_53\", \"Position_0\", \"Pitch_69\", \"Velocity_60\", \"Duration_2\", \n    \"Position_18\", \"Pitch_72\", \"Velocity_56\", \"Duration_2\", \n    \"Position_21\", \"Pitch_64\", \"Velocity_60\", \"Duration_2\", \n    \"Bar_54\", \"Position_0\", \"Pitch_62\", \"Velocity_56\", \"Duration_2\", \n    \"Position_12\", \"Pitch_74\", \"Velocity_56\", \"Duration_2\", \n    \"Position_18\", \"Pitch_72\", \"Velocity_56\", \"Duration_2\", \n    \"Bar_54\", \"Position_0\", \"Pitch_64\", \"Velocity_56\", \"Duration_4\", \n    \"Bar_54\", \"Position_0\", \"Pitch_69\", \"Velocity_60\", \"Duration_2\", \n    \"Position_18\", \"Pitch_72\", \"Velocity_56\", \"Duration_2\", \n    \"Position_24\", \"Pitch_64\", \"Velocity_60\", \"Duration_2\", \n    \"Bar_55\", \"Position_0\", \"Pitch_62\", \"Velocity_56\", \"Duration_2\", \n    \"Position_12\", \"Pitch_74\", \"Velocity_56\", \"Duration_2\", \n    \"Position_18\", \"Pitch_72\", \"Velocity_56\", \"Duration_2\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Bach Prelude C Major BWV846\\nM:4/4\\nL:1/8\\nK:C\\n|d2e2f2|g2a2b2|c2d2e2|f2g2a2|\\n|d2e2f2|g2a2b2|c2d2e2|f2g2a2|\\n|d2e2f2|g2a2b2|c2d2e2|f2g2a2|\\n|d2e2f2|g2a2b2|c2d2e2|f2g2a2|\"\n}"
+            },
+            {
+              "run": 3,
+              "passed": false,
+              "grooveOA": 0.652173913043478,
+              "meta": {
+                "runId": "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1:E2:run3",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 2438,
+                "completionTokens": 654,
+                "costUsd": 0,
+                "latencyMs": 56094,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 97,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_53\", \"Position_0\", \"Pitch_60\", \"Velocity_60\", \"Duration_2\",\n    \"Position_12\", \"Pitch_62\", \"Velocity_56\", \"Duration_2\",\n    \"Position_24\", \"Pitch_57\", \"Velocity_56\", \"Duration_2\",\n    \"Position_36\", \"Pitch_64\", \"Velocity_56\", \"Duration_2\",\n    \"Bar_54\", \"Position_0\", \"Pitch_59\", \"Velocity_56\", \"Duration_2\",\n    \"Position_12\", \"Pitch_67\", \"Velocity_56\", \"Duration_2\",\n    \"Position_24\", \"Pitch_62\", \"Velocity_56\", \"Duration_2\",\n    \"Position_30\", \"Pitch_69\", \"Velocity_60\", \"Duration_1\",\n    \"Position_36\", \"Pitch_65\", \"Velocity_56\", \"Duration_2\",\n    \"Position_48\", \"Pitch_64\", \"Velocity_56\", \"Duration_2\",\n    \"Position_54\", \"Pitch_72\", \"Velocity_60\", \"Duration_1\",\n    \"Bar_55\", \"Position_0\", \"Pitch_59\", \"Velocity_56\", \"Duration_2\",\n    \"Position_12\", \"Pitch_62\", \"Velocity_56\", \"Duration_2\",\n    \"Position_24\", \"Pitch_74\", \"Velocity_56\", \"Duration_1\",\n    \"Position_30\", \"Pitch_72\", \"Velocity_56\", \"Duration_1\",\n    \"Position_36\", \"Pitch_64\", \"Velocity_60\", \"Duration_2\",\n    \"Position_48\", \"Pitch_69\", \"Velocity_60\", \"Duration_2\",\n    \"Bar_56\", \"Position_0\", \"Pitch_57\", \"Velocity_56\", \"Duration_1\",\n    \"Position_6\", \"Pitch_59\", \"Velocity_56\", \"Duration_3\",\n    \"Bar_57\", \"Position_0\", \"Pitch_64\", \"Velocity_56\", \"Duration_2\",\n    \"Position_18\", \"Pitch_62\", \"Velocity_56\", \"Duration_2\",\n    \"Position_24\", \"Pitch_69\", \"Velocity_60\", \"Duration_2\",\n    \"Position_30\", \"Pitch_72\", \"Velocity_60\", \"Duration_1\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Bach Prelude C Major BWV846\\nM:4/4\\nL:1/8\\nK:C\\n|C4 e' g'|f' a' c''|d' f' b'|a' c'' e''|\"\n}"
+            }
+          ]
+        },
+        {
+          "promptId": "pathetique-mvt2:m025-028:piano:mcp-session:v1",
+          "targetId": "pathetique-mvt2:m029-032:piano:mcp-session:v1",
+          "containsEnriched": true,
+          "enrichedHalves": [
+            "pathetique-mvt2:m025-028:piano:mcp-session:v1",
+            "pathetique-mvt2:m029-032:piano:mcp-session:v1"
+          ],
+          "passed": false,
+          "grooveOA": 0.6031746031746031,
+          "parseStatus": "clean",
+          "aggregate": {
+            "n": 3,
+            "pass_rate": 0.3333333333333333,
+            "majority_pass": false,
+            "metric_mean": 0.6031746031746031,
+            "metric_stddev": 0.43208436789892696,
+            "metric_min": 0.14285714285714285,
+            "metric_max": 1,
+            "not_computable_count": 0
+          },
+          "runs": [
+            {
+              "run": 1,
+              "passed": false,
+              "grooveOA": 0.6666666666666666,
+              "meta": {
+                "runId": "pathetique-mvt2:m025-028:piano:mcp-session:v1:E2:run1",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 1640,
+                "completionTokens": 503,
+                "costUsd": 0,
+                "latencyMs": 41540,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 51,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_29\", \"Position_0\", \"Pitch_67\", \"Velocity_28\", \"Duration_3\",\n    \"Position_15\", \"Pitch_64\", \"Velocity_40\", \"Duration_4\",\n    \"Position_29\", \"Pitch_62\", \"Velocity_32\", \"Duration_3\",\n    \"Position_43\", \"Pitch_58\", \"Velocity_28\", \"Duration_3\",\n    \"Bar_30\", \"Position_0\", \"Pitch_67\", \"Velocity_24\", \"Duration_4\",\n    \"Position_19\", \"Pitch_55\", \"Velocity_32\", \"Duration_3\",\n    \"Position_33\", \"Pitch_60\", \"Velocity_28\", \"Duration_3\",\n    \"Position_47\", \"Pitch_58\", \"Velocity_24\", \"Duration_3\",\n    \"Bar_31\", \"Position_0\", \"Pitch_64\", \"Velocity_28\", \"Duration_4\",\n    \"Position_19\", \"Pitch_55\", \"Velocity_32\", \"Duration_3\",\n    \"Position_33\", \"Pitch_58\", \"Velocity_28\", \"Duration_3\",\n    \"Position_47\", \"Pitch_62\", \"Velocity_24\", \"Duration_3\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Continuation\\nM:4/4\\nL:1/8\\nK:Ab\\n|G2 E4 D2 Bb4 A4 G2 F4 E2 D4 C4 Bb4 A4 G2 F4 E2 D4 C4|\\n|G2 E4 D2 Bb4 A4 G2 F4 E2 D4 C4 Bb4 A4 G2 F4 E2 D4 C4|\\n|G2 E4 D2 Bb4 A4 G2 F4 E2 D4 C4 Bb4 A4 G2 F4 E2 D4 C4|\\n|G2 E4 D2 Bb4 A4 G2 F4 E2 D4 C4 Bb4 A4 G2 F4 E2 D4 C4|\"\n}"
+            },
+            {
+              "run": 2,
+              "passed": true,
+              "grooveOA": 1,
+              "meta": {
+                "runId": "pathetique-mvt2:m025-028:piano:mcp-session:v1:E2:run2",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 1640,
+                "completionTokens": 417,
+                "costUsd": 0,
+                "latencyMs": 42979,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 52,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_29\", \"Position_0\", \"Pitch_67\", \"Velocity_32\", \"Duration_16\",\n    \"Position_18\", \"Pitch_48\", \"Velocity_28\", \"Duration_8\",\n    \"Position_24\", \"Pitch_53\", \"Velocity_28\", \"Duration_8\",\n    \"Bar_30\", \"Position_0\", \"Pitch_69\", \"Velocity_36\", \"Duration_16\",\n    \"Position_18\", \"Pitch_41\", \"Velocity_40\", \"Duration_16\",\n    \"Position_24\", \"Pitch_63\", \"Velocity_24\", \"Duration_8\",\n    \"Bar_31\", \"Position_0\", \"Pitch_69\", \"Velocity_36\", \"Duration_16\",\n    \"Position_18\", \"Pitch_41\", \"Velocity_40\", \"Duration_8\",\n    \"Position_24\", \"Pitch_63\", \"Velocity_24\", \"Duration_8\",\n    \"Bar_32\", \"Position_0\", \"Pitch_75\", \"Velocity_64\", \"Duration_16\",\n    \"Position_18\", \"Pitch_68\", \"Velocity_16\", \"Duration_12\",\n    \"Position_32\", \"Pitch_68\", \"Velocity_16\", \"Duration_4\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Continuation\\nM:4/4\\nL:1/8\\nK:Ab\\n|D4. D4. D4. D4.|\\nE4 E4 C4 C4 |\\nD4. D4. D4. D4.|\\nB4 B4 A4 A4 |\\nG4 G4 F4 F4 |\"\n}"
+            },
+            {
+              "run": 3,
+              "passed": false,
+              "grooveOA": 0.14285714285714285,
+              "meta": {
+                "runId": "pathetique-mvt2:m025-028:piano:mcp-session:v1:E2:run3",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 1640,
+                "completionTokens": 469,
+                "costUsd": 0,
+                "latencyMs": 44401,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 61,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_29\", \"Position_0\", \"Pitch_67\", \"Velocity_32\", \"Duration_3\",\n    \"Position_18\", \"Pitch_55\", \"Velocity_48\", \"Duration_2\",\n    \"Position_39\", \"Pitch_70\", \"Velocity_32\", \"Duration_3\",\n    \"Bar_30\", \"Position_0\", \"Pitch_66\", \"Velocity_44\", \"Duration_4\",\n    \"Position_15\", \"Pitch_48\", \"Velocity_36\", \"Duration_3\",\n    \"Position_34\", \"Pitch_52\", \"Velocity_48\", \"Duration_6\",\n    \"Bar_31\", \"Position_9\", \"Pitch_55\", \"Velocity_32\", \"Duration_3\",\n    \"Position_11\", \"Pitch_70\", \"Velocity_60\", \"Duration_4\",\n    \"Position_32\", \"Pitch_68\", \"Velocity_28\", \"Duration_5\",\n    \"Bar_32\", \"Position_9\", \"Pitch_63\", \"Velocity_40\", \"Duration_3\",\n    \"Position_11\", \"Pitch_72\", \"Velocity_60\", \"Duration_4\",\n    \"Position_34\", \"Pitch_58\", \"Velocity_48\", \"Duration_3\",\n    \"Bar_33\", \"Position_9\", \"Pitch_60\", \"Velocity_40\", \"Duration_3\",\n    \"Position_11\", \"Pitch_67\", \"Velocity_28\", \"Duration_5\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Continuation\\nM:4/4\\nL:1/8\\nK:Ab\\n|D3C|Bm A|G F|E D|\\n|D3C|Bm A|G F|E D|\\n|D3C|Bm A|G F|E D|\\n|D3C|Bm A|G F|E D|\"\n}"
+            }
+          ]
+        },
+        {
+          "promptId": "schumann-traumerei:m041-044:piano:mcp-session:v1",
+          "targetId": "schumann-traumerei:m045-048:piano:mcp-session:v1",
+          "containsEnriched": true,
+          "enrichedHalves": [
+            "schumann-traumerei:m045-048:piano:mcp-session:v1"
+          ],
+          "passed": false,
+          "grooveOA": 0.6515151515151515,
+          "parseStatus": "clean",
+          "aggregate": {
+            "n": 3,
+            "pass_rate": 0.3333333333333333,
+            "majority_pass": false,
+            "metric_mean": 0.6515151515151515,
+            "metric_stddev": 0.30265127811269965,
+            "metric_min": 0.4545454545454546,
+            "metric_max": 1,
+            "not_computable_count": 0
+          },
+          "runs": [
+            {
+              "run": 1,
+              "passed": false,
+              "grooveOA": 0.5,
+              "meta": {
+                "runId": "schumann-traumerei:m041-044:piano:mcp-session:v1:E2:run1",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 1635,
+                "completionTokens": 525,
+                "costUsd": 0,
+                "latencyMs": 52903,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 67,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_45\", \"Position_0\", \"Pitch_76\", \"Velocity_80\", \"Duration_2\",\n    \"Position_12\", \"Pitch_67\", \"Velocity_44\", \"Duration_3\",\n    \"Position_13\", \"Pitch_58\", \"Velocity_28\", \"Duration_3\",\n    \"Position_14\", \"Pitch_62\", \"Velocity_32\", \"Duration_7\",\n    \"Bar_46\", \"Position_0\", \"Pitch_74\", \"Velocity_64\", \"Duration_3\",\n    \"Position_18\", \"Pitch_65\", \"Velocity_52\", \"Duration_1\",\n    \"Position_28\", \"Pitch_76\", \"Velocity_80\", \"Duration_2\",\n    \"Position_29\", \"Pitch_67\", \"Velocity_44\", \"Duration_3\",\n    \"Position_30\", \"Pitch_58\", \"Velocity_28\", \"Duration_3\",\n    \"Position_31\", \"Pitch_62\", \"Velocity_32\", \"Duration_7\",\n    \"Bar_47\", \"Position_0\", \"Pitch_74\", \"Velocity_64\", \"Duration_3\",\n    \"Position_18\", \"Pitch_65\", \"Velocity_52\", \"Duration_1\",\n    \"Position_28\", \"Pitch_76\", \"Velocity_80\", \"Duration_2\",\n    \"Position_29\", \"Pitch_67\", \"Velocity_44\", \"Duration_3\",\n    \"Position_30\", \"Pitch_58\", \"Velocity_28\", \"Duration_3\",\n    \"Position_31\", \"Pitch_62\", \"Velocity_32\", \"Duration_7\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Schumann-Traumerei\\nM:4/4\\nL:1/8\\nK:F\\n|EFGA|B2 C4|D2 E4|F2 G4||EFGA|B2 C4|D2 E4|F2 G4||EFGA|B2 C4|D2 E4|F2 G4||EFGA|B2 C4|D2 E4|F2 G4|\"\n}"
+            },
+            {
+              "run": 2,
+              "passed": true,
+              "grooveOA": 1,
+              "meta": {
+                "runId": "schumann-traumerei:m041-044:piano:mcp-session:v1:E2:run2",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 1635,
+                "completionTokens": 891,
+                "costUsd": 0,
+                "latencyMs": 77418,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 68,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_45\", \"Position_0\", \"Pitch_73\", \"Velocity_80\", \"Duration_1\",\n    \"Position_23\", \"Pitch_69\", \"Velocity_68\", \"Duration_1\",\n    \"Position_46\", \"Pitch_62\", \"Velocity_48\", \"Duration_1\",\n    \"Position_70\", \"Pitch_57\", \"Velocity_52\", \"Duration_1\",\n    \"Bar_46\", \"Position_0\", \"Pitch_71\", \"Velocity_76\", \"Duration_2\",\n    \"Position_34\", \"Pitch_69\", \"Velocity_68\", \"Duration_1\",\n    \"Position_57\", \"Pitch_62\", \"Velocity_40\", \"Duration_1\",\n    \"Position_77\", \"Pitch_57\", \"Velocity_32\", \"Duration_1\",\n    \"Bar_47\", \"Position_0\", \"Pitch_69\", \"Velocity_68\", \"Duration_2\",\n    \"Position_34\", \"Pitch_67\", \"Velocity_56\", \"Duration_1\",\n    \"Position_57\", \"Pitch_62\", \"Velocity_36\", \"Duration_1\",\n    \"Position_77\", \"Pitch_57\", \"Velocity_32\", \"Duration_1\",\n    \"Bar_48\", \"Position_0\", \"Pitch_67\", \"Velocity_60\", \"Duration_2\",\n    \"Position_34\", \"Pitch_65\", \"Velocity_52\", \"Duration_1\",\n    \"Position_57\", \"Pitch_62\", \"Velocity_36\", \"Duration_1\",\n    \"Position_77\", \"Pitch_57\", \"Velocity_32\", \"Duration_1\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Schumann Traumerei\\nM:4/4\\nL:1/8\\nK:F\\n|G2 F|E D|C B|A G|\\nD2 C|B A|G F|E D|\\nF2 E|D C|B A|G F|\\nE2 D|C B|2 F|E D|C B|\\nA2 G|F E|D C|B A|\\nG2 F|E D|C B|A G|\\nD2 C|B A|G F|E D|\\nC2 B|A G|F E|D C|\\nB2 A|G F|E D|C B|\\nA2 G|F E|D C|B A|\\nG2 F|E D|C B|A G|\\nD2 C|B A|G F|E D|\\nF2 E|D C|B A|G F|\\nE2 D|C B|A G|F E|\\nD2 C|B A|G F|E D|\\nC2 B|A G|F E|D C|\\nB2 A|G F|E D|C B|\\nA2 G|F E|D C|B A|\\nG2 F|E D|C B|A G|\\nD2 C|B A|G F|E D|\\nC2 B|A G|F E|D C|\\nB2 A|G F|E D|C B|\\nA2 G|F E|D C|B A|\\nG2 F|E D|C B|A G|\\nD2 C|B A|G F|E D|\\nF2 E|D C|B A|G F|\\nE2 D|C B|A G|F E|\\nD2 C|B A|G F|E D|\\nC2 B|A G|F E|D C|\\nB2 A|G F|E D|C B|\\nA2 G|F E|D C|B A|G2\"\n}"
+            },
+            {
+              "run": 3,
+              "passed": false,
+              "grooveOA": 0.4545454545454546,
+              "meta": {
+                "runId": "schumann-traumerei:m041-044:piano:mcp-session:v1:E2:run3",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 1635,
+                "completionTokens": 404,
+                "costUsd": 0,
+                "latencyMs": 37163,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 48,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_45\", \"Position_0\", \"Pitch_71\", \"Velocity_68\", \"Duration_3\",\n    \"Position_29\", \"Pitch_66\", \"Velocity_52\", \"Duration_3\",\n    \"Position_30\", \"Pitch_64\", \"Velocity_44\", \"Duration_2\",\n    \"Bar_46\", \"Position_0\", \"Pitch_70\", \"Velocity_80\", \"Duration_2\",\n    \"Position_15\", \"Pitch_69\", \"Velocity_48\", \"Duration_3\",\n    \"Position_18\", \"Pitch_62\", \"Velocity_32\", \"Duration_7\",\n    \"Position_36\", \"Pitch_70\", \"Velocity_64\", \"Duration_5\",\n    \"Bar_47\", \"Position_0\", \"Pitch_69\", \"Velocity_68\", \"Duration_10\",\n    \"Position_25\", \"Pitch_67\", \"Velocity_32\", \"Duration_8\",\n    \"Position_27\", \"Pitch_66\", \"Velocity_44\", \"Duration_3\",\n    \"Bar_48\", \"Position_0\", \"Pitch_69\", \"Velocity_52\", \"Duration_1\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Continuation\\nM:4/4\\nL:1/8\\nK:F\\n|G4 E4 C4 A4 G4 E4 C4 A2|\\n|F4 D4 B4 G4 F4 D4 B4 G2|\\n|E4 C4 A4 F4 E4 C4 A4 F4|\\n|D4 B4 G4 E4 D4 B4 G4 E2|\"\n}"
+            }
+          ]
+        },
+        {
+          "promptId": "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1",
+          "targetId": "bach-prelude-c-major-bwv846:m013-016:piano:mcp-session:v1",
+          "containsEnriched": false,
+          "enrichedHalves": [],
+          "passed": true,
+          "grooveOA": 0.9696969696969696,
+          "parseStatus": "clean",
+          "aggregate": {
+            "n": 3,
+            "pass_rate": 1,
+            "majority_pass": true,
+            "metric_mean": 0.9696969696969696,
+            "metric_stddev": 0.052486388108147944,
+            "metric_min": 0.9090909090909088,
+            "metric_max": 1,
+            "not_computable_count": 0
+          },
+          "runs": [
+            {
+              "run": 1,
+              "passed": true,
+              "grooveOA": 1,
+              "meta": {
+                "runId": "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1:E2:run1",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 2014,
+                "completionTokens": 919,
+                "costUsd": 0,
+                "latencyMs": 74021,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 132,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_13\", \"Position_0\", \"Pitch_52\", \"Velocity_60\", \"Duration_8\",\n    \"Position_6\", \"Pitch_57\", \"Velocity_56\", \"Duration_7\",\n    \"Position_12\", \"Pitch_60\", \"Velocity_56\", \"Duration_1\",\n    \"Position_18\", \"Pitch_64\", \"Velocity_60\", \"Duration_1\",\n    \"Position_24\", \"Pitch_69\", \"Velocity_60\", \"Duration_1\",\n    \"Position_30\", \"Pitch_60\", \"Velocity_48\", \"Duration_1\",\n    \"Position_36\", \"Pitch_64\", \"Velocity_44\", \"Duration_1\",\n    \"Position_42\", \"Pitch_69\", \"Velocity_44\", \"Duration_1\",\n    \"Bar_14\", \"Position_0\", \"Pitch_54\", \"Velocity_60\", \"Duration_8\",\n    \"Position_6\", \"Pitch_57\", \"Velocity_56\", \"Duration_7\",\n    \"Position_12\", \"Pitch_62\", \"Velocity_56\", \"Duration_1\",\n    \"Position_18\", \"Pitch_66\", \"Velocity_60\", \"Duration_1\",\n    \"Position_24\", \"Pitch_73\", \"Velocity_60\", \"Duration_1\",\n    \"Position_30\", \"Pitch_62\", \"Velocity_44\", \"Duration_1\",\n    \"Position_36\", \"Pitch_66\", \"Velocity_44\", \"Duration_1\",\n    \"Position_42\", \"Pitch_73\", \"Velocity_44\", \"Duration_1\",\n    \"Bar_15\", \"Position_0\", \"Pitch_58\", \"Velocity_56\", \"Duration_8\",\n    \"Position_6\", \"Pitch_59\", \"Velocity_52\", \"Duration_7\",\n    \"Position_12\", \"Pitch_64\", \"Velocity_52\", \"Duration_1\",\n    \"Position_18\", \"Pitch_68\", \"Velocity_56\", \"Duration_1\",\n    \"Position_24\", \"Pitch_75\", \"Velocity_60\", \"Duration_1\",\n    \"Position_30\", \"Pitch_64\", \"Velocity_44\", \"Duration_1\",\n    \"Position_36\", \"Pitch_68\", \"Velocity_44\", \"Duration_1\",\n    \"Position_42\", \"Pitch_75\", \"Velocity_44\", \"Duration_1\",\n    \"Bar_16\", \"Position_0\", \"Pitch_60\", \"Velocity_56\", \"Duration_8\",\n    \"Position_6\", \"Pitch_59\", \"Velocity_52\", \"Duration_7\",\n    \"Position_12\", \"Pitch_64\", \"Velocity_52\", \"Duration_1\",\n    \"Position_18\", \"Pitch_68\", \"Velocity_56\", \"Duration_1\",\n    \"Position_24\", \"Pitch_75\", \"Velocity_60\", \"Duration_1\",\n    \"Position_30\", \"Pitch_64\", \"Velocity_44\", \"Duration_1\",\n    \"Position_36\", \"Pitch_68\", \"Velocity_44\", \"Duration_1\",\n    \"Position_42\", \"Pitch_75\", \"Velocity_44\", \"Duration_1\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Bach Prelude C Major BWV846\\nM:4/4\\nL:1/8\\nK:C\\n|G2 F E|D2 C A|B B G3|F4 E D|\\nC2 B A|G2 F E|D2 C A|B B G3|\\nE2 D C|B2 A G|F2 E D|B B G3|\\nA2 G F|E2 D C|B2 A G|F2 E D|\"\n}"
+            },
+            {
+              "run": 2,
+              "passed": true,
+              "grooveOA": 1,
+              "meta": {
+                "runId": "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1:E2:run2",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 2014,
+                "completionTokens": 983,
+                "costUsd": 0,
+                "latencyMs": 92266,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 132,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_13\", \"Position_0\", \"Pitch_57\", \"Velocity_60\", \"Duration_8\",\n    \"Position_6\", \"Pitch_60\", \"Velocity_56\", \"Duration_7\",\n    \"Position_12\", \"Pitch_64\", \"Velocity_56\", \"Duration_1\",\n    \"Position_18\", \"Pitch_67\", \"Velocity_60\", \"Duration_1\",\n    \"Position_24\", \"Pitch_72\", \"Velocity_60\", \"Duration_1\",\n    \"Position_30\", \"Pitch_64\", \"Velocity_48\", \"Duration_1\",\n    \"Position_36\", \"Pitch_67\", \"Velocity_44\", \"Duration_1\",\n    \"Position_42\", \"Pitch_72\", \"Velocity_44\", \"Duration_1\",\n    \"Bar_14\", \"Position_0\", \"Pitch_50\", \"Velocity_60\", \"Duration_8\",\n    \"Position_6\", \"Pitch_57\", \"Velocity_56\", \"Duration_7\",\n    \"Position_12\", \"Pitch_62\", \"Velocity_56\", \"Duration_1\",\n    \"Position_18\", \"Pitch_66\", \"Velocity_60\", \"Duration_1\",\n    \"Position_24\", \"Pitch_72\", \"Velocity_60\", \"Duration_1\",\n    \"Position_30\", \"Pitch_62\", \"Velocity_48\", \"Duration_1\",\n    \"Position_36\", \"Pitch_66\", \"Velocity_44\", \"Duration_1\",\n    \"Position_42\", \"Pitch_72\", \"Velocity_44\", \"Duration_1\",\n    \"Bar_15\", \"Position_0\", \"Pitch_55\", \"Velocity_56\", \"Duration_8\",\n    \"Position_6\", \"Pitch_59\", \"Velocity_52\", \"Duration_7\",\n    \"Position_12\", \"Pitch_62\", \"Velocity_52\", \"Duration_1\",\n    \"Position_18\", \"Pitch_67\", \"Velocity_56\", \"Duration_1\",\n    \"Position_24\", \"Pitch_71\", \"Velocity_60\", \"Duration_1\",\n    \"Position_30\", \"Pitch_62\", \"Velocity_44\", \"Duration_1\",\n    \"Position_36\", \"Pitch_67\", \"Velocity_44\", \"Duration_1\",\n    \"Position_42\", \"Pitch_71\", \"Velocity_44\", \"Duration_1\",\n    \"Bar_16\", \"Position_0\", \"Pitch_55\", \"Velocity_56\", \"Duration_8\",\n    \"Position_6\", \"Pitch_58\", \"Velocity_52\", \"Duration_7\",\n    \"Position_12\", \"Pitch_64\", \"Velocity_52\", \"Duration_1\",\n    \"Position_18\", \"Pitch_67\", \"Velocity_56\", \"Duration_1\",\n    \"Position_24\", \"Pitch_73\", \"Velocity_60\", \"Duration_1\",\n    \"Position_30\", \"Pitch_64\", \"Velocity_44\", \"Duration_1\",\n    \"Position_36\", \"Pitch_67\", \"Velocity_44\", \"Duration_1\",\n    \"Position_42\", \"Pitch_73\", \"Velocity_44\", \"Duration_1\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Bach Prelude C Major BWV846\\nM:4/4\\nL:1/8\\nK:C\\n|G4 C4 E4 G4|B4 D4 F4 B4|E4 G4 B4 E4|G4 B4 D4 F4|\\nC4 E4 G4 C4|D4 F4 B4 D4|G4 B4 D4 F4|B4 D4 F4 B4|\\nE4 G4 B4 E4|G4 B4 D4 F4|B4 D4 F4 B4|E4 G4 B4 E4|\\nC4 E4 G4 C4|D4 F4 B4 D4|G4 B4 D4 F4|B4 D4 F4 B4|\"\n}"
+            },
+            {
+              "run": 3,
+              "passed": true,
+              "grooveOA": 0.9090909090909088,
+              "meta": {
+                "runId": "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1:E2:run3",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 2014,
+                "completionTokens": 748,
+                "costUsd": 0,
+                "latencyMs": 67326,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 91,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_13\", \"Position_0\", \"Pitch_62\", \"Velocity_56\", \"Duration_8\",\n    \"Position_6\", \"Pitch_67\", \"Velocity_56\", \"Duration_7\",\n    \"Position_12\", \"Pitch_72\", \"Velocity_60\", \"Duration_1\",\n    \"Position_18\", \"Pitch_64\", \"Velocity_48\", \"Duration_1\",\n    \"Position_24\", \"Pitch_67\", \"Velocity_44\", \"Duration_1\",\n    \"Position_30\", \"Pitch_72\", \"Velocity_44\", \"Duration_1\",\n    \"Bar_14\", \"Position_0\", \"Pitch_50\", \"Velocity_60\", \"Duration_8\",\n    \"Position_6\", \"Pitch_57\", \"Velocity_56\", \"Duration_7\",\n    \"Position_12\", \"Pitch_62\", \"Velocity_56\", \"Duration_1\",\n    \"Position_18\", \"Pitch_66\", \"Velocity_60\", \"Duration_1\",\n    \"Position_24\", \"Pitch_72\", \"Velocity_60\", \"Duration_1\",\n    \"Position_30\", \"Pitch_62\", \"Velocity_48\", \"Duration_1\",\n    \"Position_36\", \"Pitch_66\", \"Velocity_44\", \"Duration_1\",\n    \"Position_42\", \"Pitch_72\", \"Velocity_44\", \"Duration_1\",\n    \"Bar_15\", \"Position_0\", \"Pitch_55\", \"Velocity_56\", \"Duration_8\",\n    \"Position_6\", \"Pitch_59\", \"Velocity_52\", \"Duration_7\",\n    \"Position_12\", \"Pitch_62\", \"Velocity_52\", \"Duration_1\",\n    \"Position_18\", \"Pitch_67\", \"Velocity_56\", \"Duration_1\",\n    \"Position_24\", \"Pitch_71\", \"Velocity_60\", \"Duration_1\",\n    \"Position_30\", \"Pitch_62\", \"Velocity_44\", \"Duration_1\",\n    \"Position_36\", \"Pitch_67\", \"Velocity_44\", \"Duration_1\",\n    \"Position_42\", \"Pitch_71\", \"Velocity_44\", \"Duration_1\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Bach Prelude C Major BWV846\\nM:4/4\\nL:1/8\\nK:C\\n|50^57|59^52|62^52|66^56|\\n67^56|72^60|62^48|66^44|\\n72^44|50^56|59^52|62^52|\\n67^56|72^60|62^48|66^44|\\n71^44||55^56|59^52|62^52|\\n67^56|71^60|62^44|67^44|\\n71^44|\"\n}"
+            }
+          ]
+        },
+        {
+          "promptId": "chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1",
+          "targetId": "chopin-nocturne-op9-no2:m005-008:piano:mcp-session:v1",
+          "containsEnriched": false,
+          "enrichedHalves": [],
+          "passed": false,
+          "grooveOA": 0.24806763285024155,
+          "parseStatus": "clean",
+          "aggregate": {
+            "n": 3,
+            "pass_rate": 0,
+            "majority_pass": false,
+            "metric_mean": 0.24806763285024155,
+            "metric_stddev": 0.09233468948357157,
+            "metric_min": 0.15000000000000002,
+            "metric_max": 0.3333333333333333,
+            "not_computable_count": 0
+          },
+          "runs": [
+            {
+              "run": 1,
+              "passed": false,
+              "grooveOA": 0.2608695652173913,
+              "meta": {
+                "runId": "chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1:E2:run1",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 1531,
+                "completionTokens": 667,
+                "costUsd": 0,
+                "latencyMs": 62567,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 96,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_5\", \"Position_0\", \"Pitch_75\", \"Velocity_44\", \"Duration_16\", \n    \"Position_28\", \"Pitch_38\", \"Velocity_48\", \"Duration_2\", \n    \"Position_49\", \"Pitch_58\", \"Velocity_20\", \"Duration_1\", \n    \"Position_50\", \"Pitch_67\", \"Velocity_32\", \"Duration_1\", \n    \"Position_51\", \"Pitch_63\", \"Velocity_36\", \"Duration_1\", \n    \"Position_74\", \"Pitch_36\", \"Velocity_56\", \"Duration_2\", \n    \"Bar_6\", \"Position_0\", \"Pitch_79\", \"Velocity_84\", \"Duration_8\", \n    \"Position_37\", \"Pitch_77\", \"Velocity_76\", \"Duration_15\", \n    \"Position_39\", \"Pitch_39\", \"Velocity_36\", \"Duration_2\", \n    \"Position_69\", \"Pitch_63\", \"Velocity_32\", \"Duration_1\", \n    \"Position_70\", \"Pitch_55\", \"Velocity_20\", \"Duration_2\", \n    \"Position_71\", \"Pitch_67\", \"Velocity_28\", \"Duration_1\", \n    \"Position_71\", \"Pitch_63\", \"Velocity_24\", \"Duration_1\", \n    \"Bar_7\", \"Position_0\", \"Pitch_77\", \"Velocity_76\", \"Duration_5\", \n    \"Position_1\", \"Pitch_58\", \"Velocity_20\", \"Duration_3\", \n    \"Position_28\", \"Pitch_67\", \"Velocity_28\", \"Duration_1\", \n    \"Position_29\", \"Pitch_63\", \"Velocity_32\", \"Duration_1\", \n    \"Bar_8\", \"Position_0\", \"Pitch_55\", \"Velocity_28\", \"Duration_7\", \n    \"Position_38\", \"Pitch_63\", \"Velocity_36\", \"Duration_1\", \n    \"Position_39\", \"Pitch_70\", \"Velocity_64\", \"Duration_5\", \n    \"Position_40\", \"Pitch_58\", \"Velocity_20\", \"Duration_1\", \n    \"Position_41\", \"Pitch_67\", \"Velocity_32\", \"Duration_1\", \n    \"Position_42\", \"Pitch_63\", \"Velocity_36\", \"Duration_1\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Chopin Nocturne Op9 No2\\nM:4/4\\nL:1/8\\nK:Eb\\n|G7 B7 |D7 F7 |Cm7 E7 |Am7 C7 |\"\n}"
+            },
+            {
+              "run": 2,
+              "passed": false,
+              "grooveOA": 0.3333333333333333,
+              "meta": {
+                "runId": "chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1:E2:run2",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 1531,
+                "completionTokens": 765,
+                "costUsd": 0,
+                "latencyMs": 60873,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 101,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_4\", \"Position_0\", \"Pitch_77\", \"Velocity_76\", \"Duration_15\", \n    \"Position_13\", \"Pitch_39\", \"Velocity_36\", \"Duration_2\", \n    \"Position_43\", \"Pitch_63\", \"Velocity_32\", \"Duration_1\", \n    \"Position_44\", \"Pitch_55\", \"Velocity_20\", \"Duration_1\", \n    \"Position_68\", \"Pitch_58\", \"Velocity_20\", \"Duration_2\", \n    \"Position_69\", \"Pitch_67\", \"Velocity_28\", \"Duration_1\", \n    \"Position_69\", \"Pitch_63\", \"Velocity_24\", \"Duration_1\", \n    \"Position_91\", \"Pitch_75\", \"Velocity_40\", \"Duration_6\", \n    \"Bar_5\", \"Position_0\", \"Pitch_77\", \"Velocity_76\", \"Duration_8\", \n    \"Position_8\", \"Pitch_63\", \"Velocity_28\", \"Duration_1\", \n    \"Position_9\", \"Pitch_58\", \"Velocity_44\", \"Duration_1\", \n    \"Bar_6\", \"Position_0\", \"Pitch_70\", \"Velocity_44\", \"Duration_7\", \n    \"Position_37\", \"Pitch_79\", \"Velocity_80\", \"Duration_20\", \n    \"Position_38\", \"Pitch_39\", \"Velocity_24\", \"Duration_2\", \n    \"Position_72\", \"Pitch_55\", \"Velocity_28\", \"Duration_1\", \n    \"Bar_7\", \"Position_0\", \"Pitch_63\", \"Velocity_32\", \"Duration_1\", \n    \"Position_24\", \"Pitch_55\", \"Velocity_28\", \"Duration_2\", \n    \"Position_25\", \"Pitch_63\", \"Velocity_32\", \"Duration_1\", \n    \"Position_48\", \"Pitch_70\", \"Velocity_64\", \"Duration_5\", \n    \"Position_49\", \"Pitch_58\", \"Velocity_20\", \"Duration_1\", \n    \"Position_50\", \"Pitch_67\", \"Velocity_32\", \"Duration_1\", \n    \"Position_51\", \"Pitch_63\", \"Velocity_36\", \"Duration_1\", \n    \"Position_74\", \"Pitch_36\", \"Velocity_56\", \"Duration_2\", \n    \"Bar_8\", \"Position_0\", \"Pitch_79\", \"Velocity_84\", \"Duration_8\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Chopin-Nocturne-Op9-No2\\nM:4/4\\nL:1/8\\nK:Eb\\n|G8 G G4 B4 C4 B4 A4 G8 F4 E4 D4 C4 |E8 E E4 D4 C4 B4 A4 G4 F4 E4 D4 C4 |D8 D D4 C4 B4 A4 G8 F4 E4 D4 C4 |B8 B B4 A4 G4 F4 E4 D4 C4 B4 |\"\n}"
+            },
+            {
+              "run": 3,
+              "passed": false,
+              "grooveOA": 0.15000000000000002,
+              "meta": {
+                "runId": "chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1:E2:run3",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 1531,
+                "completionTokens": 613,
+                "costUsd": 0,
+                "latencyMs": 58276,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 85,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_4\", \"Position_0\", \"Pitch_75\", \"Velocity_40\", \"Duration_4\", \n    \"Position_24\", \"Pitch_63\", \"Velocity_36\", \"Duration_1\", \n    \"Position_25\", \"Pitch_67\", \"Velocity_32\", \"Duration_1\", \n    \"Position_26\", \"Pitch_63\", \"Velocity_32\", \"Duration_1\", \n    \"Position_49\", \"Pitch_70\", \"Velocity_64\", \"Duration_5\", \n    \"Position_50\", \"Pitch_58\", \"Velocity_20\", \"Duration_1\", \n    \"Position_51\", \"Pitch_67\", \"Velocity_32\", \"Duration_1\", \n    \"Bar_5\", \"Position_0\", \"Pitch_70\", \"Velocity_44\", \"Duration_8\", \n    \"Position_48\", \"Pitch_79\", \"Velocity_92\", \"Duration_6\", \n    \"Position_49\", \"Pitch_68\", \"Velocity_32\", \"Duration_1\", \n    \"Position_50\", \"Pitch_59\", \"Velocity_24\", \"Duration_1\", \n    \"Bar_6\", \"Position_11\", \"Pitch_77\", \"Velocity_76\", \"Duration_15\", \n    \"Position_13\", \"Pitch_39\", \"Velocity_36\", \"Duration_2\", \n    \"Position_43\", \"Pitch_63\", \"Velocity_32\", \"Duration_1\", \n    \"Position_44\", \"Pitch_55\", \"Velocity_20\", \"Duration_1\", \n    \"Bar_7\", \"Position_68\", \"Pitch_58\", \"Velocity_20\", \"Duration_2\", \n    \"Position_69\", \"Pitch_67\", \"Velocity_28\", \"Duration_1\", \n    \"Position_69\", \"Pitch_63\", \"Velocity_24\", \"Duration_1\", \n    \"Bar_8\", \"Position_91\", \"Pitch_75\", \"Velocity_40\", \"Duration_6\", \n    \"Position_92\", \"Pitch_38\", \"Velocity_48\", \"Duration_2\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Nocturne Op.9 No.2\\nM:4/4\\nL:1/8\\nK:Eb\\n|G4 G4 A4 B4||C4 C4 D4 E4||F4 F4 G4 A4||B4 B4 C4 D4||\"\n}"
+            }
+          ]
+        },
+        {
+          "promptId": "chopin-prelude-e-minor:m009-012:piano:mcp-session:v1",
+          "targetId": "chopin-prelude-e-minor:m013-016:piano:mcp-session:v1",
+          "containsEnriched": false,
+          "enrichedHalves": [],
+          "passed": false,
+          "grooveOA": 0.4920454545454545,
+          "parseStatus": "clean",
+          "aggregate": {
+            "n": 3,
+            "pass_rate": 0.3333333333333333,
+            "majority_pass": false,
+            "metric_mean": 0.4920454545454545,
+            "metric_stddev": 0.26791926670374855,
+            "metric_min": 0.3125,
+            "metric_max": 0.7999999999999999,
+            "not_computable_count": 0
+          },
+          "runs": [
+            {
+              "run": 1,
+              "passed": false,
+              "grooveOA": 0.36363636363636365,
+              "meta": {
+                "runId": "chopin-prelude-e-minor:m009-012:piano:mcp-session:v1:E2:run1",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 1629,
+                "completionTokens": 415,
+                "costUsd": 0,
+                "latencyMs": 39927,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 48,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_13\", \"Position_0\", \"Pitch_60\", \"Velocity_64\", \"Duration_2\",\n    \"Position_24\", \"Pitch_58\", \"Velocity_52\", \"Duration_2\",\n    \"Position_48\", \"Pitch_53\", \"Velocity_48\", \"Duration_2\",\n    \"Position_72\", \"Pitch_61\", \"Velocity_60\", \"Duration_4\",\n    \"Bar_14\", \"Position_0\", \"Pitch_62\", \"Velocity_64\", \"Duration_4\",\n    \"Bar_15\", \"Position_0\", \"Pitch_63\", \"Velocity_72\", \"Duration_8\",\n    \"Position_84\", \"Pitch_62\", \"Velocity_64\", \"Duration_4\",\n    \"Position_86\", \"Pitch_58\", \"Velocity_52\", \"Duration_4\",\n    \"Bar_16\", \"Position_0\", \"Pitch_60\", \"Velocity_64\", \"Duration_4\",\n    \"Position_24\", \"Pitch_57\", \"Velocity_56\", \"Duration_4\",\n    \"Position_48\", \"Pitch_53\", \"Velocity_48\", \"Duration_4\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Continuation\\nM:4/4\\nL:1/8\\nK:E\\n|d2 c2|b2 g2|e2 d2|c4 c4|\\n|e2 c2|b2 g2|e2 d2|c4 c4|\\n|d2 b2|g2 e2|d2 c2|b4 b4|\\n|d2 b2|g2 e2|d2 c2|b4 b4|\"\n}"
+            },
+            {
+              "run": 2,
+              "passed": true,
+              "grooveOA": 0.7999999999999999,
+              "meta": {
+                "runId": "chopin-prelude-e-minor:m009-012:piano:mcp-session:v1:E2:run2",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 1629,
+                "completionTokens": 348,
+                "costUsd": 0,
+                "latencyMs": 32562,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 44,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_13\", \"Position_0\", \"Pitch_61\", \"Velocity_20\", \"Duration_2\",\n    \"Position_3\", \"Pitch_55\", \"Velocity_20\", \"Duration_1\",\n    \"Position_4\", \"Pitch_52\", \"Velocity_20\", \"Duration_1\",\n    \"Position_39\", \"Pitch_69\", \"Velocity_52\", \"Duration_30\",\n    \"Bar_14\", \"Position_0\", \"Pitch_60\", \"Velocity_40\", \"Duration_2\",\n    \"Position_24\", \"Pitch_55\", \"Velocity_20\", \"Duration_2\",\n    \"Position_28\", \"Pitch_52\", \"Velocity_28\", \"Duration_3\",\n    \"Bar_15\", \"Position_0\", \"Pitch_62\", \"Velocity_32\", \"Duration_4\",\n    \"Position_19\", \"Pitch_62\", \"Velocity_28\", \"Duration_4\",\n    \"Bar_16\", \"Position_0\", \"Pitch_71\", \"Velocity_60\", \"Duration_30\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Chopin Prelude E Minor\\nM:4/4\\nL:1/8\\nK:Emin\\n|d'2 c2 e2 f2|g2 f2 e2 d2|c2 b2 a2 g2|f2 e2 d2 c2|\\n\"\n}"
+            },
+            {
+              "run": 3,
+              "passed": false,
+              "grooveOA": 0.3125,
+              "meta": {
+                "runId": "chopin-prelude-e-minor:m009-012:piano:mcp-session:v1:E2:run3",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 1629,
+                "completionTokens": 542,
+                "costUsd": 0,
+                "latencyMs": 46139,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 69,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_13\", \"Position_0\", \"Pitch_61\", \"Velocity_20\", \"Duration_2\", \n    \"Position_24\", \"Pitch_55\", \"Velocity_20\", \"Duration_1\", \n    \"Position_28\", \"Pitch_52\", \"Velocity_20\", \"Duration_1\", \n    \"Position_39\", \"Pitch_69\", \"Velocity_52\", \"Duration_30\", \n    \"Bar_14\", \"Position_0\", \"Pitch_60\", \"Velocity_20\", \"Duration_3\", \n    \"Position_48\", \"Pitch_52\", \"Velocity_28\", \"Duration_3\", \n    \"Position_50\", \"Pitch_55\", \"Velocity_20\", \"Duration_3\", \n    \"Bar_15\", \"Position_0\", \"Pitch_69\", \"Velocity_48\", \"Duration_2\", \n    \"Position_24\", \"Pitch_52\", \"Velocity_36\", \"Duration_2\", \n    \"Position_26\", \"Pitch_55\", \"Velocity_24\", \"Duration_1\", \n    \"Position_27\", \"Pitch_52\", \"Velocity_28\", \"Duration_1\", \n    \"Bar_16\", \"Position_0\", \"Pitch_60\", \"Velocity_32\", \"Duration_1\", \n    \"Position_12\", \"Pitch_55\", \"Velocity_20\", \"Duration_1\", \n    \"Position_14\", \"Pitch_52\", \"Velocity_20\", \"Duration_1\", \n    \"Bar_17\", \"Position_0\", \"Pitch_69\", \"Velocity_48\", \"Duration_3\", \n    \"Position_16\", \"Pitch_52\", \"Velocity_36\", \"Duration_3\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Chopin Prelude E Minor\\nM:4/4\\nL:1/8\\nK:Emin\\n|61B|55A|52A|69G32|60F|52E|55D|69C4|60B|52A|55G|69F2|60F2|52E2|69D4|\"\n}"
+            }
+          ]
+        },
+        {
+          "promptId": "clair-de-lune:m031-034:piano:mcp-session:v1",
+          "targetId": "clair-de-lune:m035-038:piano:mcp-session:v1",
+          "containsEnriched": false,
+          "enrichedHalves": [],
+          "passed": true,
+          "grooveOA": 0.8769841269841269,
+          "parseStatus": "clean",
+          "aggregate": {
+            "n": 3,
+            "pass_rate": 0.6666666666666666,
+            "majority_pass": true,
+            "metric_mean": 0.8769841269841269,
+            "metric_stddev": 0.14693260779026698,
+            "metric_min": 0.7142857142857141,
+            "metric_max": 1.0000000000000002,
+            "not_computable_count": 0
+          },
+          "runs": [
+            {
+              "run": 1,
+              "passed": true,
+              "grooveOA": 0.9166666666666663,
+              "meta": {
+                "runId": "clair-de-lune:m031-034:piano:mcp-session:v1:E2:run1",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 2306,
+                "completionTokens": 714,
+                "costUsd": 0,
+                "latencyMs": 65173,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 100,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_35\", \"Position_0\", \"Pitch_67\", \"Velocity_40\", \"Duration_3\",\n    \"Position_5\", \"Pitch_71\", \"Velocity_48\", \"Duration_1\",\n    \"Position_11\", \"Pitch_72\", \"Velocity_44\", \"Duration_1\",\n    \"Position_16\", \"Pitch_76\", \"Velocity_40\", \"Duration_1\",\n    \"Position_21\", \"Pitch_80\", \"Velocity_36\", \"Duration_1\",\n    \"Position_27\", \"Pitch_84\", \"Velocity_44\", \"Duration_5\",\n    \"Bar_36\", \"Position_0\", \"Pitch_79\", \"Velocity_48\", \"Duration_3\",\n    \"Position_5\", \"Pitch_81\", \"Velocity_44\", \"Duration_1\",\n    \"Position_11\", \"Pitch_83\", \"Velocity_40\", \"Duration_1\",\n    \"Position_16\", \"Pitch_87\", \"Velocity_36\", \"Duration_1\",\n    \"Position_21\", \"Pitch_91\", \"Velocity_32\", \"Duration_1\",\n    \"Position_27\", \"Pitch_95\", \"Velocity_40\", \"Duration_9\",\n    \"Bar_37\", \"Position_0\", \"Pitch_88\", \"Velocity_44\", \"Duration_3\",\n    \"Position_5\", \"Pitch_91\", \"Velocity_40\", \"Duration_1\",\n    \"Position_11\", \"Pitch_93\", \"Velocity_36\", \"Duration_1\",\n    \"Position_17\", \"Pitch_96\", \"Velocity_32\", \"Duration_1\",\n    \"Position_22\", \"Pitch_100\", \"Velocity_40\", \"Duration_1\",\n    \"Position_28\", \"Pitch_104\", \"Velocity_44\", \"Duration_5\",\n    \"Bar_38\", \"Position_0\", \"Pitch_97\", \"Velocity_48\", \"Duration_3\",\n    \"Position_5\", \"Pitch_99\", \"Velocity_44\", \"Duration_1\",\n    \"Position_12\", \"Pitch_102\", \"Velocity_40\", \"Duration_1\",\n    \"Position_17\", \"Pitch_106\", \"Velocity_36\", \"Duration_1\",\n    \"Position_23\", \"Pitch_110\", \"Velocity_32\", \"Duration_1\",\n    \"Position_29\", \"Pitch_114\", \"Velocity_40\", \"Duration_5\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:clair-de-lune\\nM:9/8\\nL:1/8\\nK:Db\\n|e3 f3 g3 a3 b3 c4 d4 e4 |f3 g3 a3 b3 c4 d4 e4 f4 |g3 a3 b3 c4 d4 e4 f4 g4 |a3 b3 c4 d4 e4 f4 g4 a4 |\"\n}"
+            },
+            {
+              "run": 2,
+              "passed": false,
+              "grooveOA": 0.7142857142857141,
+              "meta": {
+                "runId": "clair-de-lune:m031-034:piano:mcp-session:v1:E2:run2",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 2306,
+                "completionTokens": 994,
+                "costUsd": 0,
+                "latencyMs": 89928,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 112,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_35\", \"Position_0\", \"Pitch_67\", \"Velocity_52\", \"Duration_6\", \"Pitch_89\", \"Velocity_72\", \"Duration_12\", \"Position_6\", \"Pitch_74\", \"Velocity_52\", \"Duration_1\", \"Position_11\", \"Pitch_78\", \"Velocity_52\", \"Duration_1\", \"Position_17\", \"Pitch_82\", \"Velocity_52\", \"Duration_1\", \"Position_23\", \"Pitch_86\", \"Velocity_52\", \"Duration_1\", \"Position_29\", \"Pitch_90\", \"Velocity_56\", \"Duration_1\", \"Position_34\", \"Pitch_73\", \"Velocity_52\", \"Duration_6\", \"Bar_36\", \"Position_1\", \"Pitch_67\", \"Velocity_52\", \"Duration_6\", \"Pitch_89\", \"Velocity_72\", \"Duration_12\", \"Position_6\", \"Pitch_74\", \"Velocity_52\", \"Duration_1\", \"Position_12\", \"Pitch_78\", \"Velocity_52\", \"Duration_1\", \"Position_18\", \"Pitch_82\", \"Velocity_52\", \"Duration_1\", \"Position_24\", \"Pitch_86\", \"Velocity_52\", \"Duration_1\", \"Position_30\", \"Pitch_90\", \"Velocity_56\", \"Duration_1\", \"Bar_37\", \"Position_0\", \"Pitch_71\", \"Velocity_52\", \"Duration_6\", \"Pitch_84\", \"Velocity_64\", \"Duration_9\", \"Position_5\", \"Pitch_78\", \"Velocity_52\", \"Duration_1\", \"Position_11\", \"Pitch_82\", \"Velocity_52\", \"Duration_1\", \"Position_16\", \"Pitch_86\", \"Velocity_52\", \"Duration_1\", \"Position_22\", \"Pitch_90\", \"Velocity_56\", \"Duration_1\", \"Position_27\", \"Pitch_73\", \"Velocity_52\", \"Duration_6\", \"Bar_38\", \"Position_1\", \"Pitch_71\", \"Velocity_52\", \"Duration_6\", \"Pitch_84\", \"Velocity_64\", \"Duration_9\", \"Position_5\", \"Pitch_78\", \"Velocity_52\", \"Duration_1\", \"Position_12\", \"Pitch_82\", \"Velocity_52\", \"Duration_1\", \"Position_18\", \"Pitch_86\", \"Velocity_52\", \"Duration_1\", \"Position_24\", \"Pitch_90\", \"Velocity_56\", \"Duration_1\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:clair-de-lune\\nM:9/8\\nL:1/8\\nK:D\\\\b\\n|G4(4)b4(4)c'4(4)d'4(4)e'2(2)f'4(4)g2(2)\\\\\\nB4(4)a4(4)b'4(4)c''4(4)d''4(4)e''2(2)f''4(4)g2(2)|\\nD4(4)b4(4)c'4(4)d'4(4)e'2(2)f'4(4)g2(2)\\\\\\nB4(4)a4(4)b'4(4)c''4(4)d''4(4)e''2(2)f''4(4)g2(2)|\\nA4(4)b4(4)c'4(4)d'4(4)e'2(2)f'4(4)g2(2)\\\\\\nB4(4)a4(4)b'4(4)c''4(4)d''4(4)e''2(2)f''4(4)g2(2)|\\nE4(4)b4(4)c'4(4)d'4(4)e'2(2)f'4(4)g2(2)\\\\\\nB4(4)a4(4)b'4(4)c''4(4)d''4(4)e''2(2)f''4(4)g2(2)|\"\n}"
+            },
+            {
+              "run": 3,
+              "passed": true,
+              "grooveOA": 1.0000000000000002,
+              "meta": {
+                "runId": "clair-de-lune:m031-034:piano:mcp-session:v1:E2:run3",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 2306,
+                "completionTokens": 620,
+                "costUsd": 0,
+                "latencyMs": 60715,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 84,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_35\", \"Position_0\", \"Pitch_62\", \"Velocity_52\", \"Duration_3\",\n    \"Position_5\", \"Pitch_71\", \"Velocity_56\", \"Duration_4\",\n    \"Position_9\", \"Pitch_65\", \"Velocity_48\", \"Duration_1\",\n    \"Position_14\", \"Pitch_68\", \"Velocity_40\", \"Duration_1\",\n    \"Position_23\", \"Pitch_72\", \"Velocity_44\", \"Duration_3\",\n    \"Bar_36\", \"Position_0\", \"Pitch_59\", \"Velocity_48\", \"Duration_3\",\n    \"Position_4\", \"Pitch_61\", \"Velocity_40\", \"Duration_4\",\n    \"Position_8\", \"Pitch_65\", \"Velocity_44\", \"Duration_1\",\n    \"Position_12\", \"Pitch_68\", \"Velocity_40\", \"Duration_1\",\n    \"Position_17\", \"Pitch_72\", \"Velocity_44\", \"Duration_3\",\n    \"Bar_37\", \"Position_0\", \"Pitch_58\", \"Velocity_48\", \"Duration_3\",\n    \"Position_4\", \"Pitch_62\", \"Velocity_40\", \"Duration_4\",\n    \"Position_8\", \"Pitch_65\", \"Velocity_44\", \"Duration_1\",\n    \"Position_12\", \"Pitch_69\", \"Velocity_40\", \"Duration_1\",\n    \"Position_17\", \"Pitch_72\", \"Velocity_44\", \"Duration_3\",\n    \"Bar_38\", \"Position_0\", \"Pitch_57\", \"Velocity_48\", \"Duration_3\",\n    \"Position_4\", \"Pitch_61\", \"Velocity_40\", \"Duration_4\",\n    \"Position_8\", \"Pitch_65\", \"Velocity_44\", \"Duration_1\",\n    \"Position_12\", \"Pitch_69\", \"Velocity_40\", \"Duration_1\",\n    \"Position_17\", \"Pitch_72\", \"Velocity_44\", \"Duration_3\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Clair-de-lune\\nM:9/8\\nL:1/8\\nK:Db\\n|cdef|g2fe|d2c4|b2a4|\\n|g2ef|d2c4|b2a4|g2ef|\\n|d2c4|b2a4|g2ef|d2c4|\\n|b2a4|g2ef|d2c4|b2a4|\"\n}"
+            }
+          ]
+        },
+        {
+          "promptId": "mozart-k545-mvt1:m057-060:piano:mcp-session:v1",
+          "targetId": "mozart-k545-mvt1:m061-064:piano:mcp-session:v1",
+          "containsEnriched": false,
+          "enrichedHalves": [],
+          "passed": false,
+          "grooveOA": 0.8333333333333335,
+          "parseStatus": "clean",
+          "aggregate": {
+            "n": 3,
+            "pass_rate": 0.3333333333333333,
+            "majority_pass": false,
+            "metric_mean": 0.8333333333333335,
+            "metric_stddev": 0.23570226039551573,
+            "metric_min": 0.6666666666666669,
+            "metric_max": 1,
+            "not_computable_count": 1
+          },
+          "runs": [
+            {
+              "run": 1,
+              "passed": false,
+              "grooveOA": null,
+              "meta": {
+                "runId": "mozart-k545-mvt1:m057-060:piano:mcp-session:v1:E2:run1",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 2037,
+                "completionTokens": 460,
+                "costUsd": 0,
+                "latencyMs": 41771,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 65,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_61\", \"Position_0\", \"Pitch_73\", \"Velocity_68\", \"Duration_4\",\n    \"Position_6\", \"Pitch_45\", \"Velocity_52\", \"Duration_1\",\n    \"Position_12\", \"Pitch_47\", \"Velocity_52\", \"Duration_1\",\n    \"Position_18\", \"Pitch_49\", \"Velocity_56\", \"Duration_1\",\n    \"Position_24\", \"Pitch_50\", \"Velocity_60\", \"Duration_1\",\n    \"Position_30\", \"Pitch_52\", \"Velocity_60\", \"Duration_1\",\n    \"Position_36\", \"Pitch_54\", \"Velocity_64\", \"Duration_1\",\n    \"Position_42\", \"Pitch_56\", \"Velocity_64\", \"Duration_1\",\n    \"Position_48\", \"Pitch_57\", \"Velocity_68\", \"Duration_4\",\n    \"Position_54\", \"Pitch_85\", \"Velocity_72\", \"Duration_1\",\n    \"Position_60\", \"Pitch_88\", \"Velocity_76\", \"Duration_1\",\n    \"Position_66\", \"Pitch_86\", \"Velocity_76\", \"Duration_1\",\n    \"Position_72\", \"Pitch_85\", \"Velocity_72\", \"Duration_1\",\n    \"Position_78\", \"Pitch_82\", \"Velocity_72\", \"Duration_1\",\n    \"Position_84\", \"Pitch_81\", \"Velocity_68\", \"Duration_1\",\n    \"Position_90\", \"Pitch_79\", \"Velocity_72\", \"Duration_1\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Mozart K545 Movement 1\\nM:4/4\\nL:1/8\\nK:C\\n|EFGA|GBF2 E3|D2 C4|B2 A3|\"\n}"
+            },
+            {
+              "run": 2,
+              "passed": true,
+              "grooveOA": 1,
+              "meta": {
+                "runId": "mozart-k545-mvt1:m057-060:piano:mcp-session:v1:E2:run2",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 2037,
+                "completionTokens": 530,
+                "costUsd": 0,
+                "latencyMs": 54384,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 68,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_61\", \"Position_0\", \"Pitch_63\", \"Velocity_68\", \"Duration_4\",\n    \"Position_24\", \"Pitch_65\", \"Velocity_72\", \"Duration_4\",\n    \"Position_48\", \"Pitch_67\", \"Velocity_76\", \"Duration_4\",\n    \"Position_72\", \"Pitch_69\", \"Velocity_80\", \"Duration_4\",\n    \"Bar_62\", \"Position_0\", \"Pitch_71\", \"Velocity_68\", \"Duration_4\",\n    \"Position_24\", \"Pitch_73\", \"Velocity_72\", \"Duration_4\",\n    \"Position_48\", \"Pitch_75\", \"Velocity_76\", \"Duration_4\",\n    \"Position_72\", \"Pitch_77\", \"Velocity_80\", \"Duration_4\",\n    \"Bar_63\", \"Position_0\", \"Pitch_79\", \"Velocity_68\", \"Duration_4\",\n    \"Position_24\", \"Pitch_81\", \"Velocity_72\", \"Duration_4\",\n    \"Position_48\", \"Pitch_83\", \"Velocity_76\", \"Duration_4\",\n    \"Position_72\", \"Pitch_85\", \"Velocity_80\", \"Duration_4\",\n    \"Bar_64\", \"Position_0\", \"Pitch_79\", \"Velocity_68\", \"Duration_4\",\n    \"Position_24\", \"Pitch_81\", \"Velocity_72\", \"Duration_4\",\n    \"Position_48\", \"Pitch_83\", \"Velocity_76\", \"Duration_4\",\n    \"Position_72\", \"Pitch_85\", \"Velocity_80\", \"Duration_4\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Mozart K545 Movement 1\\nM:4/4\\nL:1/8\\nK:C\\n|EFGA|B2 C3|D2 EF|G2 AB|\\n|CDEF|G2 FE|D2 C4|B2 A3|\\n|EFGA|B2 C3|D2 EF|G2 AB|\\n|CDEF|G2 FE|D2 C4|B2 A3|\"\n}"
+            },
+            {
+              "run": 3,
+              "passed": false,
+              "grooveOA": 0.6666666666666669,
+              "meta": {
+                "runId": "mozart-k545-mvt1:m057-060:piano:mcp-session:v1:E2:run3",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 2037,
+                "completionTokens": 1095,
+                "costUsd": 0,
+                "latencyMs": 98660,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 147,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_61\", \"Position_0\", \"Pitch_58\", \"Velocity_64\", \"Duration_4\",\n    \"Position_24\", \"Pitch_70\", \"Velocity_68\", \"Duration_4\",\n    \"Position_48\", \"Pitch_73\", \"Velocity_72\", \"Duration_4\",\n    \"Position_72\", \"Pitch_69\", \"Velocity_68\", \"Duration_1\",\n    \"Bar_62\", \"Position_0\", \"Pitch_65\", \"Velocity_64\", \"Duration_4\",\n    \"Position_6\", \"Pitch_43\", \"Velocity_48\", \"Duration_1\",\n    \"Position_12\", \"Pitch_45\", \"Velocity_48\", \"Duration_1\",\n    \"Position_18\", \"Pitch_47\", \"Velocity_52\", \"Duration_1\",\n    \"Position_24\", \"Pitch_49\", \"Velocity_56\", \"Duration_1\",\n    \"Position_30\", \"Pitch_50\", \"Velocity_60\", \"Duration_1\",\n    \"Position_36\", \"Pitch_52\", \"Velocity_60\", \"Duration_1\",\n    \"Position_42\", \"Pitch_54\", \"Velocity_64\", \"Duration_1\",\n    \"Position_48\", \"Pitch_55\", \"Velocity_60\", \"Duration_4\",\n    \"Position_54\", \"Pitch_79\", \"Velocity_68\", \"Duration_1\",\n    \"Position_60\", \"Pitch_82\", \"Velocity_72\", \"Duration_1\",\n    \"Position_66\", \"Pitch_81\", \"Velocity_68\", \"Duration_1\",\n    \"Position_72\", \"Pitch_79\", \"Velocity_68\", \"Duration_1\",\n    \"Position_78\", \"Pitch_77\", \"Velocity_64\", \"Duration_1\",\n    \"Position_84\", \"Pitch_76\", \"Velocity_64\", \"Duration_1\",\n    \"Position_90\", \"Pitch_74\", \"Velocity_64\", \"Duration_1\",\n    \"Bar_63\", \"Position_0\", \"Pitch_73\", \"Velocity_68\", \"Duration_4\",\n    \"Position_6\", \"Pitch_45\", \"Velocity_52\", \"Duration_1\",\n    \"Position_12\", \"Pitch_47\", \"Velocity_52\", \"Duration_1\",\n    \"Position_18\", \"Pitch_49\", \"Velocity_56\", \"Duration_1\",\n    \"Position_24\", \"Pitch_50\", \"Velocity_60\", \"Duration_1\",\n    \"Position_30\", \"Pitch_52\", \"Velocity_60\", \"Duration_1\",\n    \"Position_36\", \"Pitch_54\", \"Velocity_64\", \"Duration_1\",\n    \"Position_42\", \"Pitch_56\", \"Velocity_64\", \"Duration_1\",\n    \"Position_48\", \"Pitch_57\", \"Velocity_68\", \"Duration_4\",\n    \"Position_54\", \"Pitch_85\", \"Velocity_72\", \"Duration_1\",\n    \"Position_60\", \"Pitch_88\", \"Velocity_76\", \"Duration_1\",\n    \"Position_66\", \"Pitch_86\", \"Velocity_76\", \"Duration_1\",\n    \"Position_72\", \"Pitch_85\", \"Velocity_72\", \"Duration_1\",\n    \"Position_78\", \"Pitch_82\", \"Velocity_72\", \"Duration_1\",\n    \"Position_84\", \"Pitch_81\", \"Velocity_68\", \"Duration_1\",\n    \"Position_90\", \"Pitch_79\", \"Velocity_72\", \"Duration_1\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Mozart K545 Mvt1\\nM:4/4\\nL:1/8\\nK:C\\n|58707369|65454749|50525456|55578588|\\n|8685828179|7375777977|7674727068|6664626058|\\n|58707369|65454749|50525456|55578588|\\n|8685828179|7375777977|7674727068|6664626058|\"\n}"
+            }
+          ]
+        },
+        {
+          "promptId": "mozart-k545-mvt1:m073-076:piano:mcp-session:v1",
+          "targetId": "mozart-k545-mvt1:m077-080:piano:mcp-session:v1",
+          "containsEnriched": false,
+          "enrichedHalves": [],
+          "passed": false,
+          "grooveOA": 0.7955807633226987,
+          "parseStatus": "clean",
+          "aggregate": {
+            "n": 3,
+            "pass_rate": 0.3333333333333333,
+            "majority_pass": false,
+            "metric_mean": 0.7955807633226987,
+            "metric_stddev": 0.09718709404235738,
+            "metric_min": 0.7142857142857146,
+            "metric_max": 0.9032258064516123,
+            "not_computable_count": 0
+          },
+          "runs": [
+            {
+              "run": 1,
+              "passed": false,
+              "grooveOA": 0.7142857142857146,
+              "meta": {
+                "runId": "mozart-k545-mvt1:m073-076:piano:mcp-session:v1:E2:run1",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 2064,
+                "completionTokens": 1137,
+                "costUsd": 0,
+                "latencyMs": 110024,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 163,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_77\", \"Position_0\", \"Pitch_64\", \"Velocity_40\", \"Duration_2\", \"Pitch_84\", \"Velocity_64\", \"Duration_4\", \"Position_12\", \"Pitch_72\", \"Velocity_32\", \"Duration_2\", \"Position_24\", \"Pitch_67\", \"Velocity_32\", \"Duration_2\", \"Pitch_82\", \"Velocity_52\", \"Duration_1\", \"Position_28\", \"Pitch_84\", \"Velocity_52\", \"Duration_1\", \"Position_32\", \"Pitch_82\", \"Velocity_52\", \"Duration_1\", \"Position_36\", \"Pitch_72\", \"Velocity_32\", \"Duration_2\", \"Pitch_81\", \"Velocity_56\", \"Duration_1\", \"Position_42\", \"Pitch_82\", \"Velocity_52\", \"Duration_1\", \"Position_48\", \"Pitch_65\", \"Velocity_40\", \"Duration_2\", \"Pitch_81\", \"Velocity_60\", \"Duration_4\", \"Bar_78\", \"Position_0\", \"Pitch_70\", \"Velocity_40\", \"Duration_4\", \"Pitch_74\", \"Velocity_60\", \"Duration_2\", \"Position_12\", \"Pitch_76\", \"Velocity_52\", \"Duration_1\", \"Position_18\", \"Pitch_77\", \"Velocity_52\", \"Duration_1\", \"Position_24\", \"Pitch_79\", \"Velocity_52\", \"Duration_1\", \"Position_30\", \"Pitch_81\", \"Velocity_56\", \"Duration_1\", \"Position_36\", \"Pitch_82\", \"Velocity_56\", \"Duration_1\", \"Position_42\", \"Pitch_84\", \"Velocity_56\", \"Duration_1\", \"Position_48\", \"Pitch_86\", \"Velocity_60\", \"Duration_1\", \"Position_54\", \"Pitch_84\", \"Velocity_60\", \"Duration_1\", \"Position_60\", \"Pitch_82\", \"Velocity_60\", \"Duration_1\", \"Position_66\", \"Pitch_81\", \"Velocity_56\", \"Duration_1\", \"Position_72\", \"Pitch_58\", \"Velocity_40\", \"Duration_4\", \"Pitch_65\", \"Velocity_40\", \"Duration_4\", \"Bar_79\", \"Position_0\", \"Pitch_57\", \"Velocity_40\", \"Duration_4\", \"Pitch_65\", \"Velocity_40\", \"Duration_4\", \"Position_12\", \"Pitch_74\", \"Velocity_52\", \"Duration_1\", \"Position_18\", \"Pitch_76\", \"Velocity_52\", \"Duration_1\", \"Position_24\", \"Pitch_77\", \"Velocity_52\", \"Duration_1\", \"Position_30\", \"Pitch_79\", \"Velocity_56\", \"Duration_1\", \"Position_36\", \"Pitch_81\", \"Velocity_56\", \"Duration_1\", \"Position_42\", \"Pitch_82\", \"Velocity_56\", \"Duration_1\", \"Position_48\", \"Pitch_84\", \"Velocity_60\", \"Duration_1\", \"Position_54\", \"Pitch_82\", \"Velocity_60\", \"Duration_1\", \"Position_60\", \"Pitch_81\", \"Velocity_60\", \"Duration_1\", \"Position_66\", \"Pitch_79\", \"Velocity_56\", \"Duration_1\", \"Position_72\", \"Pitch_57\", \"Velocity_40\", \"Duration_4\", \"Pitch_65\", \"Velocity_40\", \"Duration_4\", \"Bar_80\", \"Position_0\", \"Pitch_64\", \"Velocity_40\", \"Duration_2\", \"Pitch_84\", \"Velocity_64\", \"Duration_4\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Mozart K545 Mvt. I\\nM:4/4\\nL:1/8\\nK:C\\n|d'8 c''8 d''8 c'8 e''8 d'8 g'8 f'8 e'8 d'8 c''8 b'8 a'8 |f''8 e''8 d''8 c'8 e'8 d'8 c''8 b'8 a'8 |g'8 f'8 e'8 d'8 c''8 b'8 a'8 g'8 f'8 e'8 d'8 c''8 b'8 a'8 |d''8 c''8 d''8 c'8 e''8 d'8 g'8 f'8 e'8 d'8 c''8 b'8 a'8 |\"\n}"
+            },
+            {
+              "run": 2,
+              "passed": false,
+              "grooveOA": 0.7692307692307692,
+              "meta": {
+                "runId": "mozart-k545-mvt1:m073-076:piano:mcp-session:v1:E2:run2",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 2064,
+                "completionTokens": 493,
+                "costUsd": 0,
+                "latencyMs": 59458,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 56,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_77\", \"Position_0\", \"Pitch_64\", \"Velocity_40\", \"Duration_4\", \n    \"Position_12\", \"Pitch_84\", \"Velocity_52\", \"Duration_1\", \n    \"Position_18\", \"Pitch_82\", \"Velocity_52\", \"Duration_1\", \n    \"Position_24\", \"Pitch_72\", \"Velocity_32\", \"Duration_2\", \n    \"Bar_78\", \"Position_0\", \"Pitch_70\", \"Velocity_40\", \"Duration_4\", \n    \"Position_12\", \"Pitch_76\", \"Velocity_52\", \"Duration_1\", \n    \"Position_18\", \"Pitch_77\", \"Velocity_52\", \"Duration_1\", \n    \"Position_24\", \"Pitch_79\", \"Velocity_52\", \"Duration_1\", \n    \"Bar_79\", \"Position_0\", \"Pitch_65\", \"Velocity_40\", \"Duration_4\", \n    \"Position_12\", \"Pitch_81\", \"Velocity_56\", \"Duration_1\", \n    \"Position_18\", \"Pitch_82\", \"Velocity_56\", \"Duration_1\", \n    \"Position_24\", \"Pitch_84\", \"Velocity_56\", \"Duration_1\", \n    \"Bar_80\", \"Position_0\", \"Pitch_72\", \"Velocity_32\", \"Duration_2\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Mozart K545 Mvt. I\\nM:4/4\\nL:1/8\\nK:C\\n|d4|e4 d8|c4 b8|a4 g8|f4 e8|\\ng2|f4 e4 d8|c4 b8|a4 g8|f4 e8|g4|f4 e4 d8|c4 b8|a4 g8|f4 e8|e4|d4 c4 b8|a4 g8|f4 e8|d2|\"\n}"
+            },
+            {
+              "run": 3,
+              "passed": true,
+              "grooveOA": 0.9032258064516123,
+              "meta": {
+                "runId": "mozart-k545-mvt1:m073-076:piano:mcp-session:v1:E2:run3",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 2064,
+                "completionTokens": 848,
+                "costUsd": 0,
+                "latencyMs": 70177,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 127,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_77\", \"Position_0\", \"Pitch_57\", \"Velocity_40\", \"Duration_4\",\n    \"Position_12\", \"Pitch_65\", \"Velocity_40\", \"Duration_4\",\n    \"Position_24\", \"Pitch_72\", \"Velocity_60\", \"Duration_2\",\n    \"Position_36\", \"Pitch_76\", \"Velocity_52\", \"Duration_1\",\n    \"Position_42\", \"Pitch_77\", \"Velocity_56\", \"Duration_1\",\n    \"Position_48\", \"Pitch_81\", \"Velocity_56\", \"Duration_1\",\n    \"Position_54\", \"Pitch_82\", \"Velocity_60\", \"Duration_1\",\n    \"Position_60\", \"Pitch_81\", \"Velocity_60\", \"Duration_1\",\n    \"Position_66\", \"Pitch_79\", \"Velocity_56\", \"Duration_1\",\n    \"Position_72\", \"Pitch_57\", \"Velocity_40\", \"Duration_4\",\n    \"Position_84\", \"Pitch_65\", \"Velocity_40\", \"Duration_4\",\n    \"Bar_78\", \"Position_0\", \"Pitch_70\", \"Velocity_40\", \"Duration_4\",\n    \"Position_12\", \"Pitch_74\", \"Velocity_52\", \"Duration_1\",\n    \"Position_18\", \"Pitch_76\", \"Velocity_52\", \"Duration_1\",\n    \"Position_24\", \"Pitch_77\", \"Velocity_52\", \"Duration_1\",\n    \"Position_30\", \"Pitch_79\", \"Velocity_56\", \"Duration_1\",\n    \"Position_36\", \"Pitch_81\", \"Velocity_56\", \"Duration_1\",\n    \"Position_42\", \"Pitch_82\", \"Velocity_56\", \"Duration_1\",\n    \"Position_48\", \"Pitch_84\", \"Velocity_60\", \"Duration_1\",\n    \"Position_54\", \"Pitch_82\", \"Velocity_60\", \"Duration_1\",\n    \"Position_60\", \"Pitch_81\", \"Velocity_60\", \"Duration_1\",\n    \"Position_66\", \"Pitch_79\", \"Velocity_56\", \"Duration_1\",\n    \"Position_72\", \"Pitch_57\", \"Velocity_40\", \"Duration_4\",\n    \"Bar_79\", \"Position_0\", \"Pitch_65\", \"Velocity_40\", \"Duration_4\",\n    \"Position_12\", \"Pitch_72\", \"Velocity_60\", \"Duration_2\",\n    \"Position_36\", \"Pitch_76\", \"Velocity_52\", \"Duration_1\",\n    \"Position_42\", \"Pitch_77\", \"Velocity_56\", \"Duration_1\",\n    \"Position_48\", \"Pitch_81\", \"Velocity_56\", \"Duration_1\",\n    \"Position_54\", \"Pitch_82\", \"Velocity_60\", \"Duration_1\",\n    \"Position_60\", \"Pitch_81\", \"Velocity_60\", \"Duration_1\",\n    \"Position_66\", \"Pitch_79\", \"Velocity_56\", \"Duration_1\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Mozart K545 Mvt1\\nM:4/4\\nL:1/8\\nK:C\\n|E2 F2 G2 E2|F2 E2 D2 C2|B2 A2 G2 F2|E2 D2 C2 B2|\\n\"\n}"
+            }
+          ]
+        },
+        {
+          "promptId": "pathetique-mvt2:m009-012:piano:mcp-session:v1",
+          "targetId": "pathetique-mvt2:m013-016:piano:mcp-session:v1",
+          "containsEnriched": false,
+          "enrichedHalves": [],
+          "passed": false,
+          "grooveOA": 0.43137254901960786,
+          "parseStatus": "clean",
+          "aggregate": {
+            "n": 3,
+            "pass_rate": 0.3333333333333333,
+            "majority_pass": false,
+            "metric_mean": 0.43137254901960786,
+            "metric_stddev": 0.5139349969443591,
+            "metric_min": 0,
+            "metric_max": 1,
+            "not_computable_count": 0
+          },
+          "runs": [
+            {
+              "run": 1,
+              "passed": false,
+              "grooveOA": 0.29411764705882354,
+              "meta": {
+                "runId": "pathetique-mvt2:m009-012:piano:mcp-session:v1:E2:run1",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 1467,
+                "completionTokens": 598,
+                "costUsd": 0,
+                "latencyMs": 57687,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 72,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_13\", \"Position_0\", \"Pitch_56\", \"Velocity_24\", \"Duration_3\",\n    \"Position_37\", \"Pitch_51\", \"Velocity_20\", \"Duration_3\",\n    \"Position_68\", \"Pitch_55\", \"Velocity_4\", \"Duration_3\",\n    \"Position_92\", \"Pitch_51\", \"Velocity_20\", \"Duration_3\",\n    \"Bar_14\", \"Position_17\", \"Pitch_56\", \"Velocity_24\", \"Duration_3\",\n    \"Position_40\", \"Pitch_51\", \"Velocity_20\", \"Duration_3\",\n    \"Position_64\", \"Pitch_57\", \"Velocity_40\", \"Duration_15\",\n    \"Position_66\", \"Pitch_41\", \"Velocity_32\", \"Duration_18\",\n    \"Position_66\", \"Pitch_51\", \"Velocity_4\", \"Duration_4\",\n    \"Bar_15\", \"Position_19\", \"Pitch_55\", \"Velocity_28\", \"Duration_4\",\n    \"Position_41\", \"Pitch_60\", \"Velocity_44\", \"Duration_2\",\n    \"Position_42\", \"Pitch_51\", \"Velocity_20\", \"Duration_5\",\n    \"Position_54\", \"Pitch_61\", \"Velocity_64\", \"Duration_3\",\n    \"Position_68\", \"Pitch_63\", \"Velocity_64\", \"Duration_12\",\n    \"Position_71\", \"Pitch_48\", \"Velocity_28\", \"Duration_16\",\n    \"Position_71\", \"Pitch_56\", \"Velocity_20\", \"Duration_3\",\n    \"Bar_16\", \"Position_19\", \"Pitch_55\", \"Velocity_28\", \"Duration_4\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Continuation\\nM:4/4\\nL:1/8\\nK:Ab\\n|d4|c4 e4 d4 c4 b4 a4 g4 f4 e4 d4 c4 B2|\\n|a4 g4 f4 e4 d4 c4 B4 A4 G4 F4 E4 D4 C4 B2|\\n|g4 f4 e4 d4 c4 B4 A4 G4 F4 E4 D4 C4 B2 A2|\\n|f4 e4 d4 c4 b4 a4 g4 f4 e4 d4 c4 B2 A2|\"\n}"
+            },
+            {
+              "run": 2,
+              "passed": false,
+              "grooveOA": 0,
+              "meta": {
+                "runId": "pathetique-mvt2:m009-012:piano:mcp-session:v1:E2:run2",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 1467,
+                "completionTokens": 626,
+                "costUsd": 0,
+                "latencyMs": 54353,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 80,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_13\", \"Position_0\", \"Pitch_56\", \"Velocity_24\", \"Duration_3\",\n    \"Position_32\", \"Pitch_57\", \"Velocity_40\", \"Duration_15\",\n    \"Position_34\", \"Pitch_41\", \"Velocity_32\", \"Duration_18\",\n    \"Position_34\", \"Pitch_51\", \"Velocity_4\", \"Duration_4\",\n    \"Position_56\", \"Pitch_48\", \"Velocity_24\", \"Duration_3\",\n    \"Bar_14\", \"Position_17\", \"Pitch_56\", \"Velocity_24\", \"Duration_3\",\n    \"Position_40\", \"Pitch_51\", \"Velocity_20\", \"Duration_3\",\n    \"Position_64\", \"Pitch_57\", \"Velocity_40\", \"Duration_15\",\n    \"Position_66\", \"Pitch_41\", \"Velocity_32\", \"Duration_18\",\n    \"Position_66\", \"Pitch_51\", \"Velocity_4\", \"Duration_4\",\n    \"Bar_15\", \"Position_0\", \"Pitch_56\", \"Velocity_24\", \"Duration_3\",\n    \"Position_32\", \"Pitch_57\", \"Velocity_40\", \"Duration_15\",\n    \"Position_34\", \"Pitch_41\", \"Velocity_32\", \"Duration_18\",\n    \"Position_34\", \"Pitch_51\", \"Velocity_4\", \"Duration_4\",\n    \"Bar_16\", \"Position_17\", \"Pitch_56\", \"Velocity_24\", \"Duration_3\",\n    \"Position_40\", \"Pitch_51\", \"Velocity_20\", \"Duration_3\",\n    \"Position_64\", \"Pitch_57\", \"Velocity_40\", \"Duration_15\",\n    \"Position_66\", \"Pitch_41\", \"Velocity_32\", \"Duration_18\",\n    \"Position_66\", \"Pitch_51\", \"Velocity_4\", \"Duration_4\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Continuation\\nM:4/4\\nL:1/8\\nK:Ab\\n|56c|57d16e|41f16g|51a8|\\n|56c|57d16e|41f16g|51a8|\\n|56c|57d16e|41f16g|51a8|\\n|56c|57d16e|41f16g|51a8|\"\n}"
+            },
+            {
+              "run": 3,
+              "passed": true,
+              "grooveOA": 1,
+              "meta": {
+                "runId": "pathetique-mvt2:m009-012:piano:mcp-session:v1:E2:run3",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 1467,
+                "completionTokens": 383,
+                "costUsd": 0,
+                "latencyMs": 60535,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 50,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_13\", \"Position_0\", \"Pitch_56\", \"Velocity_24\", \"Duration_3\",\n    \"Position_37\", \"Pitch_58\", \"Velocity_20\", \"Duration_2\",\n    \"Position_64\", \"Pitch_58\", \"Velocity_40\", \"Duration_13\",\n    \"Position_66\", \"Pitch_49\", \"Velocity_20\", \"Duration_17\",\n    \"Position_70\", \"Pitch_55\", \"Velocity_4\", \"Duration_3\",\n    \"Position_90\", \"Pitch_51\", \"Velocity_28\", \"Duration_4\",\n    \"Bar_14\", \"Position_14\", \"Pitch_55\", \"Velocity_28\", \"Duration_3\",\n    \"Position_37\", \"Pitch_58\", \"Velocity_20\", \"Duration_2\",\n    \"Position_64\", \"Pitch_58\", \"Velocity_40\", \"Duration_13\",\n    \"Position_66\", \"Pitch_49\", \"Velocity_20\", \"Duration_17\",\n    \"Position_70\", \"Pitch_55\", \"Velocity_4\", \"Duration_3\",\n    \"Position_90\", \"Pitch_51\", \"Velocity_28\", \"Duration_4\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Continuation\\nM:4/4\\nL:1/8\\nK:Ab\\n|D4 D4 D4 C4|D4 D4 D4 C4|D4 D4 D4 C4|D4 D4 D4 C4|\"\n}"
+            }
+          ]
+        },
+        {
+          "promptId": "pathetique-mvt2:m017-020:piano:mcp-session:v1",
+          "targetId": "pathetique-mvt2:m021-024:piano:mcp-session:v1",
+          "containsEnriched": false,
+          "enrichedHalves": [],
+          "passed": true,
+          "grooveOA": 0.9722222222222223,
+          "parseStatus": "clean",
+          "aggregate": {
+            "n": 3,
+            "pass_rate": 1,
+            "majority_pass": true,
+            "metric_mean": 0.9722222222222223,
+            "metric_stddev": 0.048112522432468774,
+            "metric_min": 0.9166666666666667,
+            "metric_max": 1,
+            "not_computable_count": 0
+          },
+          "runs": [
+            {
+              "run": 1,
+              "passed": true,
+              "grooveOA": 1,
+              "meta": {
+                "runId": "pathetique-mvt2:m017-020:piano:mcp-session:v1:E2:run1",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 1578,
+                "completionTokens": 174,
+                "costUsd": 0,
+                "latencyMs": 39105,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 18,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_21\", \"Position_0\", \"Pitch_67\", \"Velocity_64\", \"Duration_8\", \n    \"Position_39\", \"Pitch_65\", \"Velocity_60\", \"Duration_8\", \n    \"Position_73\", \"Pitch_62\", \"Velocity_58\", \"Duration_8\", \n    \"Bar_22\", \"Position_0\", \"Pitch_64\", \"Velocity_64\", \"Duration_16\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Continuation\\nM:4/4\\nL:1/8\\nK:Ab\\n|E7|D5 E7|B7 A7|G7 F7|\"\n}"
+            },
+            {
+              "run": 2,
+              "passed": true,
+              "grooveOA": 1,
+              "meta": {
+                "runId": "pathetique-mvt2:m017-020:piano:mcp-session:v1:E2:run2",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 1578,
+                "completionTokens": 494,
+                "costUsd": 0,
+                "latencyMs": 58054,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 68,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_21\", \"Position_0\", \"Pitch_67\", \"Velocity_64\", \"Duration_4\",\n    \"Position_24\", \"Pitch_70\", \"Velocity_52\", \"Duration_4\",\n    \"Position_48\", \"Pitch_63\", \"Velocity_48\", \"Duration_4\",\n    \"Position_72\", \"Pitch_60\", \"Velocity_36\", \"Duration_4\",\n    \"Bar_22\", \"Position_0\", \"Pitch_55\", \"Velocity_44\", \"Duration_4\",\n    \"Position_24\", \"Pitch_58\", \"Velocity_36\", \"Duration_4\",\n    \"Position_48\", \"Pitch_63\", \"Velocity_28\", \"Duration_4\",\n    \"Position_72\", \"Pitch_68\", \"Velocity_24\", \"Duration_4\",\n    \"Bar_23\", \"Position_0\", \"Pitch_67\", \"Velocity_64\", \"Duration_4\",\n    \"Position_24\", \"Pitch_70\", \"Velocity_52\", \"Duration_4\",\n    \"Position_48\", \"Pitch_63\", \"Velocity_48\", \"Duration_4\",\n    \"Position_72\", \"Pitch_60\", \"Velocity_36\", \"Duration_4\",\n    \"Bar_24\", \"Position_0\", \"Pitch_55\", \"Velocity_44\", \"Duration_4\",\n    \"Position_24\", \"Pitch_58\", \"Velocity_36\", \"Duration_4\",\n    \"Position_48\", \"Pitch_63\", \"Velocity_28\", \"Duration_4\",\n    \"Position_72\", \"Pitch_68\", \"Velocity_24\", \"Duration_4\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Continuation\\nM:4/4\\nL:1/8\\nK:Ab\\n|G2 B2 D3 E3|D2 C3 B2 A2|F2 G2 B2 C3|2 A2 F2 E2|C2 D2 F2 E2|\"\n}"
+            },
+            {
+              "run": 3,
+              "passed": true,
+              "grooveOA": 0.9166666666666667,
+              "meta": {
+                "runId": "pathetique-mvt2:m017-020:piano:mcp-session:v1:E2:run3",
+                "backend": "ollama",
+                "modelId": "qwen2.5:7b",
+                "promptTokens": 1578,
+                "completionTokens": 381,
+                "costUsd": 0,
+                "latencyMs": 49607,
+                "parseOk": true,
+                "parseError": null,
+                "parseStatus": "clean",
+                "recoverySteps": null
+              },
+              "parsedOutput": {
+                "tokenCount": 52,
+                "hasAbc": true
+              },
+              "parseStatus": "clean",
+              "recoverySteps": null,
+              "firstPassNoteEmpty": false,
+              "retryFired": false,
+              "retryPassNoteEmpty": false,
+              "raw_output": "{\n  \"tokens_remi\": [\n    \"Bar_21\", \"Position_0\", \"Pitch_63\", \"Velocity_32\", \"Duration_8\", \n    \"Position_27\", \"Pitch_56\", \"Velocity_24\", \"Duration_8\", \n    \"Position_54\", \"Pitch_51\", \"Velocity_28\", \"Duration_8\", \n    \"Position_81\", \"Pitch_49\", \"Velocity_36\", \"Duration_8\", \n    \"Bar_22\", \"Position_0\", \"Pitch_68\", \"Velocity_24\", \"Duration_16\", \n    \"Position_28\", \"Pitch_55\", \"Velocity_32\", \"Duration_16\", \n    \"Bar_23\", \"Position_0\", \"Pitch_63\", \"Velocity_32\", \"Duration_16\", \n    \"Position_27\", \"Pitch_56\", \"Velocity_24\", \"Duration_8\", \n    \"Position_54\", \"Pitch_51\", \"Velocity_28\", \"Duration_8\", \n    \"Bar_24\", \"Position_0\", \"Pitch_68\", \"Velocity_24\", \"Duration_8\", \n    \"Position_27\", \"Pitch_56\", \"Velocity_24\", \"Duration_8\", \n    \"Position_54\", \"Pitch_51\", \"Velocity_32\", \"Duration_8\"\n  ],\n  \"tokens_abc\": \"X:1\\nT:Continuation\\nM:4/4\\nL:1/8\\nK:Ab\\n|d' e'|f g'|a b'|c d'|\"\n}"
+            }
+          ]
+        }
+      ],
+      "aggregate": {
+        "passRate": 0.25,
+        "threshold": 0.797,
+        "meanGrooveOA": 0.6953625906063688,
+        "meanGrooveOAEnriched": 0.6812620088254426,
+        "meanGrooveOANonEnriched": 0.7024128814968319,
+        "enrichedPairsCount": 4,
+        "nonEnrichedPairsCount": 8,
+        "enrichedPassedCount": 0,
+        "nonEnrichedPassedCount": 3,
+        "corpus_multirun_aggregate": {
+          "n_pairs": 12,
+          "n_runs_per_pair": 3,
+          "pair_majority_pass_rate": 0.25,
+          "mean_grooveOA_across_runs": 0.6953625906063688,
+          "stddev_grooveOA_across_pairs": 0.2216919980709682,
+          "min_grooveOA_across_pairs": 0.24806763285024155,
+          "max_grooveOA_across_pairs": 0.9722222222222223,
+          "mean_per_pair_stddev": 0.22545429270327907,
+          "max_per_pair_stddev": 0.5139349969443591,
+          "enriched_subset": {
+            "n_pairs": 4,
+            "pair_majority_pass_rate": 0,
+            "mean_grooveOA_across_runs": 0.6812620088254426
+          },
+          "non_enriched_subset": {
+            "n_pairs": 8,
+            "pair_majority_pass_rate": 0.375,
+            "mean_grooveOA_across_runs": 0.7024128814968319
+          }
+        }
+      }
+    },
+    "e3": {
+      "records": [],
+      "aggregate": {
+        "full": null,
+        "text_only": null,
+        "random_midi": null,
+        "marginVsTextOnly": null,
+        "marginVsRandomMidi": null,
+        "threshold": 0.1,
+        "thresholdMetTextOnly": false,
+        "thresholdMetRandomMidi": false,
+        "enrichedSubset": {
+          "n": 0,
+          "full": null,
+          "text_only": null,
+          "random_midi": null,
+          "marginVsTextOnly": null,
+          "marginVsRandomMidi": null
+        },
+        "nonEnrichedSubset": {
+          "n": 0,
+          "full": null,
+          "text_only": null,
+          "random_midi": null,
+          "marginVsTextOnly": null
+        }
+      }
+    }
+  },
+  "prior_baseline_reference": {
+    "artifact": "datasets/jam-actions-v0/evals/llm-in-the-loop-qwen2.5-7b-hardened.json",
+    "test_set": [
+      "clair-de-lune:m001-004",
+      "clair-de-lune:m005-008",
+      "clair-de-lune:m015-018",
+      "clair-de-lune:m019-022"
+    ],
+    "n_runs": 3,
+    "e1_pass_rate": 0.75,
+    "e2_groove_oa_aggregate": null,
+    "e3_margin_vs_text_only": -0.125,
+    "e3_margin_vs_random_midi": -0.0625
+  }
+}
