@@ -1,0 +1,283 @@
+{
+  "slice": "jam-actions-v0/slice2.5",
+  "verified_at": "2026-05-17",
+  "politeness_defaults": {
+    "rate_limit_ms": 1000,
+    "user_agent": "jam-actions-v0-provenance-verifier/0.1",
+    "timeout_ms": 10000,
+    "retry_backoff_ms": 2000,
+    "retries": 1
+  },
+  "total_candidates": 8,
+  "songs": [
+    {
+      "song_id": "bach-prelude-c-major-bwv846",
+      "song_title": "Prelude in C Major, BWV 846 (Well-Tempered Clavier)",
+      "pre_verdict": "public_candidate",
+      "post_verdict": "public",
+      "license_detected": "CC-BY-SA",
+      "license_version_detected": "3.0",
+      "arrangement_creator_confirmed": true,
+      "song_title_confirmed": true,
+      "evidence_url_chosen": "http://piano-midi.de/bach.htm",
+      "failure_reasons": [],
+      "records_count": 16,
+      "verified_at": "2026-05-17",
+      "verification_attempts": [
+        {
+          "url": "http://piano-midi.de/",
+          "status": 200,
+          "fetched_at": "2026-05-18T00:58:39.994Z",
+          "response_size_bytes": 11151,
+          "retried": false,
+          "license_text_excerpt": ""
+        },
+        {
+          "url": "http://piano-midi.de/bach.htm",
+          "status": 200,
+          "fetched_at": "2026-05-18T00:58:41.353Z",
+          "response_size_bytes": 9058,
+          "retried": false,
+          "license_text_excerpt": ""
+        }
+      ]
+    },
+    {
+      "song_id": "chopin-nocturne-op9-no2",
+      "song_title": "Nocturne in Eb Major, Op. 9 No. 2",
+      "pre_verdict": "public_candidate",
+      "post_verdict": "public",
+      "license_detected": "CC-BY-SA",
+      "license_version_detected": "3.0",
+      "arrangement_creator_confirmed": true,
+      "song_title_confirmed": true,
+      "evidence_url_chosen": "http://piano-midi.de/chopin.htm",
+      "failure_reasons": [],
+      "records_count": 18,
+      "verified_at": "2026-05-17",
+      "verification_attempts": [
+        {
+          "url": "http://piano-midi.de/",
+          "status": 200,
+          "fetched_at": "2026-05-18T00:58:42.707Z",
+          "response_size_bytes": 11151,
+          "retried": false,
+          "license_text_excerpt": ""
+        },
+        {
+          "url": "http://piano-midi.de/chopin.htm",
+          "status": 200,
+          "fetched_at": "2026-05-18T00:58:44.180Z",
+          "response_size_bytes": 42922,
+          "retried": false,
+          "license_text_excerpt": ""
+        }
+      ]
+    },
+    {
+      "song_id": "chopin-prelude-e-minor",
+      "song_title": "Prelude in E Minor, Op. 28 No. 4",
+      "pre_verdict": "public_candidate",
+      "post_verdict": "public",
+      "license_detected": "CC-BY-SA",
+      "license_version_detected": "3.0",
+      "arrangement_creator_confirmed": true,
+      "song_title_confirmed": true,
+      "evidence_url_chosen": "http://piano-midi.de/chopin.htm",
+      "failure_reasons": [],
+      "records_count": 12,
+      "verified_at": "2026-05-17",
+      "verification_attempts": [
+        {
+          "url": "http://piano-midi.de/",
+          "status": 200,
+          "fetched_at": "2026-05-18T00:58:45.530Z",
+          "response_size_bytes": 11151,
+          "retried": false,
+          "license_text_excerpt": ""
+        },
+        {
+          "url": "http://piano-midi.de/chopin.htm",
+          "status": 200,
+          "fetched_at": "2026-05-18T00:58:47.011Z",
+          "response_size_bytes": 42922,
+          "retried": false,
+          "license_text_excerpt": ""
+        }
+      ]
+    },
+    {
+      "song_id": "clair-de-lune",
+      "song_title": "Clair de Lune (Suite bergamasque, III)",
+      "pre_verdict": "public_candidate",
+      "post_verdict": "public",
+      "license_detected": "CC-BY-SA",
+      "license_version_detected": "3.0",
+      "arrangement_creator_confirmed": true,
+      "song_title_confirmed": true,
+      "evidence_url_chosen": "http://piano-midi.de/debuss.htm",
+      "failure_reasons": [],
+      "records_count": 12,
+      "verified_at": "2026-05-17",
+      "verification_attempts": [
+        {
+          "url": "http://piano-midi.de/",
+          "status": 200,
+          "fetched_at": "2026-05-18T00:58:48.365Z",
+          "response_size_bytes": 11151,
+          "retried": false,
+          "license_text_excerpt": ""
+        },
+        {
+          "url": "http://piano-midi.de/debuss.htm",
+          "status": 200,
+          "fetched_at": "2026-05-18T00:58:49.720Z",
+          "response_size_bytes": 14492,
+          "retried": false,
+          "license_text_excerpt": ""
+        }
+      ]
+    },
+    {
+      "song_id": "fur-elise",
+      "song_title": "Fur Elise (Bagatelle No. 25 in A minor)",
+      "pre_verdict": "public_candidate",
+      "post_verdict": "public",
+      "license_detected": "CC-BY-SA",
+      "license_version_detected": "3.0",
+      "arrangement_creator_confirmed": true,
+      "song_title_confirmed": true,
+      "evidence_url_chosen": "http://piano-midi.de/beeth.htm",
+      "failure_reasons": [],
+      "records_count": 13,
+      "verified_at": "2026-05-17",
+      "verification_attempts": [
+        {
+          "url": "http://piano-midi.de/",
+          "status": 200,
+          "fetched_at": "2026-05-18T00:58:53.927Z",
+          "response_size_bytes": 11151,
+          "retried": false,
+          "license_text_excerpt": ""
+        },
+        {
+          "url": "http://piano-midi.de/beeth.htm",
+          "status": 200,
+          "fetched_at": "2026-05-18T00:58:55.404Z",
+          "response_size_bytes": 30419,
+          "retried": false,
+          "license_text_excerpt": ""
+        }
+      ]
+    },
+    {
+      "song_id": "mozart-k545-mvt1",
+      "song_title": "Piano Sonata No. 16 in C Major, K. 545, I. Allegro",
+      "pre_verdict": "public_candidate",
+      "post_verdict": "public",
+      "license_detected": "CC-BY-SA",
+      "license_version_detected": "3.0",
+      "arrangement_creator_confirmed": true,
+      "song_title_confirmed": true,
+      "evidence_url_chosen": "http://piano-midi.de/mozart.htm",
+      "failure_reasons": [],
+      "records_count": 16,
+      "verified_at": "2026-05-17",
+      "verification_attempts": [
+        {
+          "url": "http://piano-midi.de/",
+          "status": 200,
+          "fetched_at": "2026-05-18T00:58:56.839Z",
+          "response_size_bytes": 11150,
+          "retried": false,
+          "license_text_excerpt": ""
+        },
+        {
+          "url": "http://piano-midi.de/mozart.htm",
+          "status": 200,
+          "fetched_at": "2026-05-18T00:58:58.189Z",
+          "response_size_bytes": 22615,
+          "retried": false,
+          "license_text_excerpt": ""
+        }
+      ]
+    },
+    {
+      "song_id": "pathetique-mvt2",
+      "song_title": "Pathetique Sonata, 2nd Movement (Adagio cantabile)",
+      "pre_verdict": "public_candidate",
+      "post_verdict": "public",
+      "license_detected": "CC-BY-SA",
+      "license_version_detected": "3.0",
+      "arrangement_creator_confirmed": true,
+      "song_title_confirmed": true,
+      "evidence_url_chosen": "http://piano-midi.de/beeth.htm",
+      "failure_reasons": [],
+      "records_count": 16,
+      "verified_at": "2026-05-17",
+      "verification_attempts": [
+        {
+          "url": "http://piano-midi.de/",
+          "status": 200,
+          "fetched_at": "2026-05-18T00:58:59.541Z",
+          "response_size_bytes": 11150,
+          "retried": false,
+          "license_text_excerpt": ""
+        },
+        {
+          "url": "http://piano-midi.de/beeth.htm",
+          "status": 200,
+          "fetched_at": "2026-05-18T00:59:01.009Z",
+          "response_size_bytes": 30419,
+          "retried": false,
+          "license_text_excerpt": ""
+        }
+      ]
+    },
+    {
+      "song_id": "schumann-traumerei",
+      "song_title": "Traumerei (Dreaming) from Kinderszenen",
+      "pre_verdict": "public_candidate",
+      "post_verdict": "public",
+      "license_detected": "CC-BY-SA",
+      "license_version_detected": "3.0",
+      "arrangement_creator_confirmed": true,
+      "song_title_confirmed": true,
+      "evidence_url_chosen": "http://piano-midi.de/schum.htm",
+      "failure_reasons": [],
+      "records_count": 12,
+      "verified_at": "2026-05-17",
+      "verification_attempts": [
+        {
+          "url": "http://piano-midi.de/",
+          "status": 200,
+          "fetched_at": "2026-05-18T00:59:05.258Z",
+          "response_size_bytes": 11151,
+          "retried": false,
+          "license_text_excerpt": ""
+        },
+        {
+          "url": "http://piano-midi.de/schum.htm",
+          "status": 200,
+          "fetched_at": "2026-05-18T00:59:06.627Z",
+          "response_size_bytes": 23241,
+          "retried": false,
+          "license_text_excerpt": ""
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "promoted_to_public": 8,
+    "kept_public_candidate": 0,
+    "demoted_to_internal": 0,
+    "demoted_to_excluded": 0,
+    "summary_failures_by_reason": {},
+    "record_level_counts": {
+      "public": 115,
+      "public_candidate": 0,
+      "internal": 0,
+      "excluded": 0
+    }
+  }
+}

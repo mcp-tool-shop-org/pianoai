@@ -1,0 +1,40 @@
+{
+  "dataset_name": "jam-actions-v0-public",
+  "version": "0.1.0",
+  "built_at": "2026-05-17",
+  "source_dataset": "jam-actions-v0",
+  "source_commit": "e4631391c0ebe02682188b778b82c0501dd9a314",
+  "source_tag": "jam-actions-v0-public-2026-05-17",
+  "license": "CC-BY-SA-3.0-DE",
+  "license_url": "https://creativecommons.org/licenses/by-sa/3.0/de/",
+  "record_count": 115,
+  "pair_count": 57,
+  "standalone_count": 1,
+  "songs_count": 8,
+  "songs_included": [
+    "bach-prelude-c-major-bwv846",
+    "chopin-nocturne-op9-no2",
+    "chopin-prelude-e-minor",
+    "clair-de-lune",
+    "fur-elise",
+    "mozart-k545-mvt1",
+    "pathetique-mvt2",
+    "schumann-traumerei"
+  ],
+  "splits": {
+    "train": 103,
+    "test": 12
+  },
+  "test_song": "clair-de-lune",
+  "verdict_summary": {
+    "public": 115
+  },
+  "instrument_surfaces": {
+    "ai_jam_sessions": {
+      "repo": "mcp-tool-shop-org/ai-jam-sessions",
+      "status": "active",
+      "v0_usage": "primary"
+    }
+  },
+  "checksums_file": "checksums.sha256"
+}

@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+title: "jam-actions-v0 — AI Jam Sessions tool-use traces (public subset)"
+message: "If you use this dataset, please cite it as below."
+type: dataset
+authors:
+  - name: "mcp-tool-shop-org"
+version: "0.1.0"
+date-released: "2026-05-17"
+license: "CC-BY-SA-3.0-DE"
+repository-code: "https://github.com/mcp-tool-shop-org/ai-jam-sessions"
+keywords:
+  - music
+  - midi
+  - mcp
+  - tool-use
+  - symbolic-music
