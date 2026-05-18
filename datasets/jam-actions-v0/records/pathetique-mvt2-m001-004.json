@@ -28,7 +28,7 @@
     "tempo_bpm": 120,
     "time_signature": "4/4",
     "window_role": "prompt",
-    "musical_phrase_label": "Adagio cantabile — opening antecedent",
+    "musical_phrase_label": "Adagio cantabile opening antecedent — sparse RH theme over rocking LH arpeggio",
     "natural_phrase_boundary": true,
     "continuation_target_window": [
       5,
@@ -363,29 +363,60 @@
       1,
       4
     ],
-    "structure": "Adagio cantabile opening — singing Ab major melody over rocking LH arpeggios",
+    "structure": "Opening antecedent of the Adagio cantabile (paired continuation at m. 5–8). The right hand is exceptionally sparse — only two pitches sound across the four bars (C4 at m. 1 b3.9979 and D#4 at m. 3 b3.9354, both at the very end of their measures as upbeat-pickup leads into the next bar). The harmonic and rhythmic engine lives in the left hand: 16 LH events forming a slow rocking arpeggio that outlines the A♭ major tonic and its V (E♭, MIDI-spelled D#) across mm. 2–4. The LH pattern alternates A♭ (G#2, G#3, MIDI naming) with E♭ (D#3) and brief chromatic-color tones (A#3, C#3, G3, C3). The dominant pitch class throughout is D# (E♭) — it is the V of A♭ major and recurs 7 times across the phrase, anchoring the harmonic field.",
     "key_moments": [
-      "m1 Ab major cantabile theme entrance",
-      "m3 melody peak before descent",
-      "m4 dominant Eb — open ending"
+      "m. 1 b3.9979 — C4 entrance in the right hand (MIDI velocity 63, sustained 2.35 seconds across the bar line into m. 2). This is the only right-hand event in measure 1; the entire bar otherwise rests. The C4 pickup leads into the LH arpeggio that begins at m. 2 b0.0188 with G#2 (A♭2) on the bass downbeat",
+      "m. 2 — LH rocking arpeggio entry: G#2 (A♭2) bass at b0.0188, G#3 (A♭3) inner voice at b0.1271, then D#3 (E♭3) at b1.2979 marks the first dominant-tone arrival, G#3 again at b2.2979, D#3 again at b3.1896; the surface is six LH attacks across the bar (the densest LH measure of the phrase)",
+      "m. 3 — chromatic-color cluster: LH attacks A#3 (B♭3, the seventh) at b0.0771, C#3 (D♭3, lowered ♮IV color) at b0.1438, G3 (the leading tone of A♭) at b0.2146, then D#3 at b1.0438, G3 at b2.0229, D#3 at b2.9771. The right hand re-enters with D#4 (E♭4) at b3.9354 — the second and final RH pickup, sustained 3.01 seconds (longest RH duration of the phrase)",
+      "m. 4 — closing LH arpeggio: G#3 at b0.0229, C3 (low tonic) at b0.0604 (sustained 2.04 seconds — the longest single LH bass note), D#3 at b1.0729, G#3 at b2.0271, D#3 at b3.0854. The phrase ends with the LH still rocking, the RH silent — the opening sound is suspension, not arrival",
+      "hand balance: the left hand plays 16 notes across the phrase; the right hand plays 2. The LH dominates this opening texture by a wide margin — the cantabile melody is implied by the C4 / D#4 pickup pair, not stated in full"
     ],
     "teaching_goals": [
-      "singing RH tone — imagine a cello",
-      "LH rocking arpeggios: even, quiet, never louder than RH",
-      "Adagio: very slow, breathe between phrases"
+      "treat the LH rocking arpeggio as the main musical content of this phrase — it carries the harmony, the rhythm, and the registral motion while the RH is sparse",
+      "voice each RH pickup (C4 at m. 1 b3.9979 and D#4 at m. 3 b3.9354) as a singing upbeat that bridges into the next bar — sustain its tone through the LH activity below",
+      "feel the recurring D#3 (E♭3) attacks as the dominant pole of A♭ major; the bar-by-bar rocking returns to E♭ as the gravitational center",
+      "release the LH C3 in m. 4 b0.0604 only when its 2.04-second sustain naturally ends — it is the harmonic floor for the entire closing bar"
     ],
     "style_tips": [
-      "pp to mp — gentle, intimate",
-      "pedal on each beat for legato",
-      "no rush — this is contemplative music"
+      "pp to mp throughout — extremely soft, contemplative; never loud enough to break the dreamlike opening",
+      "pedal each LH chord change (m. 2, m. 3, m. 4) — half-pedal through the inner-voice activity to keep the rocking arpeggio clear without smearing the chromatic-color tones",
+      "Adagio means very slow — the RH C4 should ring 2+ seconds before the LH bass arrives at m. 2; do not rush the pickup"
     ],
     "teaching_notes": [
       {
         "measure": 1,
-        "note": "The Adagio marking means very slow — don't rush even in the opening.",
+        "note": "The right-hand C4 at b3.9979 (display: beat 4 of m. 1) is the phrase's signature opening pickup. It enters alone — no LH event sounds in m. 1 — and sustains 2.35 seconds across the bar line into m. 2. Voice it as the cantabile entry; the entire phrase grows out of this single soft tone.",
         "technique": [
-          "arm weight for sustained tone",
-          "breathe between phrases"
+          "voice the C4 entrance as a singing pickup",
+          "sustain through the bar line",
+          "arm weight, not finger strike"
+        ]
+      },
+      {
+        "measure": 2,
+        "note": "Six LH attacks: G#2 (A♭2) at b0.0188, G#3 (A♭3) at b0.1271, D#3 (E♭3) at b1.2979, G#3 at b2.2979, D#3 at b3.1896. The pattern outlines A♭ major's I–V rocking — A♭ bass with G3-G#3 inner-voice motion and D#3 (E♭3) as the V tone. The surface rhythm is even and quiet; the inner motion is the musical content.",
+        "technique": [
+          "even LH attack pattern",
+          "quiet inner voices",
+          "let the D#3 (E♭3) speak as the dominant tone"
+        ]
+      },
+      {
+        "measure": 3,
+        "note": "Chromatic-color cluster at the start of the bar: A#3 (B♭3) at b0.0771, C#3 (D♭3) at b0.1438, G3 at b0.2146 — three attacks within the first quarter-beat. The right hand re-enters with D#4 (E♭4) at b3.9354, the longest RH pitch of the phrase (3.01 seconds). Voice D#4 as the answering pickup to C4 — together they sketch the cantabile melody.",
+        "technique": [
+          "voice the chromatic LH cluster lightly",
+          "sustain D#4 (E♭4) pickup",
+          "feel the C4/D#4 pair as the implied melody"
+        ]
+      },
+      {
+        "measure": 4,
+        "note": "The LH C3 at b0.0604 sustains 2.04 seconds — the lowest and longest LH bass note of the phrase. Above it, the rocking arpeggio continues with G#3, D#3, G#3, D#3. The phrase ends with the LH still active, the RH silent. There is no resolution — it is an open suspension that the continuation (m. 5–8) will answer.",
+        "technique": [
+          "sustain the low C3 floor",
+          "keep the rocking arpeggio even",
+          "leave the phrase open"
         ]
       }
     ]

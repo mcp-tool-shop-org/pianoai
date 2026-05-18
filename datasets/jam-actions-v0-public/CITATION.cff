@@ -4,8 +4,8 @@ message: "If you use this dataset, please cite it as below."
 type: dataset
 authors:
   - name: "mcp-tool-shop-org"
-version: "0.2.0"
-date-released: "2026-05-17"
+version: "0.3.0"
+date-released: "2026-05-18"
 license: "CC-BY-SA-3.0-DE"
 repository-code: "https://github.com/mcp-tool-shop-org/ai-jam-sessions"
 keywords:

@@ -1,0 +1,4011 @@
+{
+  "schema_version": "corpus-eval-results/2.0.0",
+  "generated_at": "2026-05-18T08:24:29.536Z",
+  "scope": "public",
+  "backend": "ollama",
+  "model": "qwen2.5:7b",
+  "seed": "slice12-2026-05-17",
+  "n_runs": 3,
+  "eval_runs_n": 3,
+  "sample_filter": "slice16-cohort",
+  "evals_run": [
+    "e3"
+  ],
+  "sample_summary": {
+    "e1_total": 1,
+    "e2_total": 0,
+    "e3_total": 3,
+    "e1_total_unfiltered": 24,
+    "e2_total_unfiltered": 12,
+    "e3_total_unfiltered": 24,
+    "enriched_in_e1": 6,
+    "enriched_in_e3": 6,
+    "enriched_pairs_in_e2": 4
+  },
+  "results": {
+    "e1": {
+      "records": [],
+      "aggregate": {
+        "passRate": 0,
+        "threshold": 0.7,
+        "thresholdMet": false,
+        "enrichedPassRate": 0,
+        "nonEnrichedPassRate": 0,
+        "enrichedPassedCount": 0,
+        "enrichedTotal": 0,
+        "nonEnrichedPassedCount": 0,
+        "nonEnrichedTotal": 0
+      }
+    },
+    "e2": {
+      "pairs": [],
+      "aggregate": {
+        "passRate": 0,
+        "threshold": 0.797,
+        "meanGrooveOA": null,
+        "meanGrooveOAEnriched": null,
+        "meanGrooveOANonEnriched": null,
+        "enrichedPairsCount": 0,
+        "nonEnrichedPairsCount": 0,
+        "enrichedPassedCount": 0,
+        "nonEnrichedPassedCount": 0
+      }
+    },
+    "e3": {
+      "records": [
+        {
+          "recordId": "pathetique-mvt2:m001-004:piano:mcp-session:v1",
+          "enriched": false,
+          "full": 0.25,
+          "text_only": 0.25,
+          "random_midi": 0,
+          "marginVsTextOnly": 0,
+          "marginVsRandomMidi": 0.16666666666666666,
+          "randomMidiPartnerId": "chopin-nocturne-op9-no2:m061-064:piano:mcp-session:v1",
+          "aggregate": {
+            "full": {
+              "n": 3,
+              "pass_rate": 1,
+              "majority_pass": true,
+              "metric_mean": 0.25,
+              "metric_stddev": 0,
+              "metric_min": 0.25,
+              "metric_max": 0.25,
+              "not_computable_count": 0
+            },
+            "text_only": {
+              "n": 3,
+              "pass_rate": 1,
+              "majority_pass": true,
+              "metric_mean": 0.25,
+              "metric_stddev": 0,
+              "metric_min": 0.25,
+              "metric_max": 0.25,
+              "not_computable_count": 0
+            },
+            "random_midi": {
+              "n": 3,
+              "pass_rate": 1,
+              "majority_pass": true,
+              "metric_mean": 0.08333333333333333,
+              "metric_stddev": 0.14433756729740646,
+              "metric_min": 0,
+              "metric_max": 0.25,
+              "not_computable_count": 0
+            },
+            "margin_vs_text_only": {
+              "n": 3,
+              "pass_rate": 0,
+              "majority_pass": false,
+              "metric_mean": 0,
+              "metric_stddev": 0,
+              "metric_min": 0,
+              "metric_max": 0,
+              "not_computable_count": 0
+            },
+            "margin_vs_random_midi": {
+              "n": 3,
+              "pass_rate": 0.6666666666666666,
+              "majority_pass": true,
+              "metric_mean": 0.16666666666666666,
+              "metric_stddev": 0.14433756729740646,
+              "metric_min": 0,
+              "metric_max": 0.25,
+              "not_computable_count": 0
+            }
+          },
+          "per_run_results": [
+            {
+              "run_index": 0,
+              "aggregate": {
+                "full": 0.25,
+                "text_only": 0.25,
+                "random_midi": 0
+              },
+              "random_midi_partner_id": "chopin-nocturne-op9-no2:m061-064:piano:mcp-session:v1",
+              "questions": [
+                {
+                  "questionType": "pitch_class_count",
+                  "questionText": "How many notes with pitch class D# appear in this phrase?",
+                  "correctOptionIndex": 1,
+                  "options": [
+                    "4",
+                    "7",
+                    "5",
+                    "9"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 0,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:full:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 591,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 6685,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:text_only:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 237,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 431,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:random_midi:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 873,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 16855,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "hand_register",
+                  "questionText": "Which hand plays more notes in this phrase?",
+                  "correctOptionIndex": 2,
+                  "options": [
+                    "Right hand (22 notes)",
+                    "Equal (9 notes each)",
+                    "Left hand (16 notes)",
+                    "Left hand (13 notes)"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 0,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 0,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:full:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 602,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 811,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 0,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:text_only:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 248,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 15692,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 0,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:random_midi:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 884,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 418,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "rhythm_onset",
+                  "questionText": "How many notes start on beat 1 (downbeat) across all bars in this phrase?",
+                  "correctOptionIndex": 2,
+                  "options": [
+                    "5",
+                    "6",
+                    "7",
+                    "9"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 0,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 1,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:full:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 597,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 672,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 1,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:text_only:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 243,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 14515,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 1,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:random_midi:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 879,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 395,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "annotation_grounding",
+                  "questionText": "In measure 1, which pitch does the right hand play on beat 4.9979?",
+                  "correctOptionIndex": 3,
+                  "options": [
+                    "C#4",
+                    "B3",
+                    "D4",
+                    "C4"
+                  ],
+                  "majorityScore": {
+                    "full": 1,
+                    "text_only": 1,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 1,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:full:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 601,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 587,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 1,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:text_only:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 247,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 15213,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 0,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:random_midi:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 883,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 384,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "run_index": 1,
+              "aggregate": {
+                "full": 0.25,
+                "text_only": 0.25,
+                "random_midi": 0
+              },
+              "random_midi_partner_id": "chopin-nocturne-op9-no2:m061-064:piano:mcp-session:v1",
+              "questions": [
+                {
+                  "questionType": "pitch_class_count",
+                  "questionText": "How many notes with pitch class D# appear in this phrase?",
+                  "correctOptionIndex": 1,
+                  "options": [
+                    "4",
+                    "7",
+                    "5",
+                    "9"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 0,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:full:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 591,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 456,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:text_only:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 237,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 14788,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:random_midi:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 873,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 426,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "hand_register",
+                  "questionText": "Which hand plays more notes in this phrase?",
+                  "correctOptionIndex": 2,
+                  "options": [
+                    "Right hand (22 notes)",
+                    "Equal (9 notes each)",
+                    "Left hand (16 notes)",
+                    "Left hand (13 notes)"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 0,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 0,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:full:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 602,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 14544,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 0,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:text_only:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 248,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 216,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 0,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:random_midi:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 884,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 14493,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "rhythm_onset",
+                  "questionText": "How many notes start on beat 1 (downbeat) across all bars in this phrase?",
+                  "correctOptionIndex": 2,
+                  "options": [
+                    "5",
+                    "6",
+                    "7",
+                    "9"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 0,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:full:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 597,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 15219,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 0,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:text_only:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 243,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 207,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 1,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:random_midi:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 879,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 519,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "annotation_grounding",
+                  "questionText": "In measure 1, which pitch does the right hand play on beat 4.9979?",
+                  "correctOptionIndex": 3,
+                  "options": [
+                    "C#4",
+                    "B3",
+                    "D4",
+                    "C4"
+                  ],
+                  "majorityScore": {
+                    "full": 1,
+                    "text_only": 1,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 1,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:full:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 601,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 16389,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 1,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:text_only:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 247,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 15901,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 1,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:random_midi:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 883,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 395,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "run_index": 2,
+              "aggregate": {
+                "full": 0.25,
+                "text_only": 0.25,
+                "random_midi": 0.25
+              },
+              "random_midi_partner_id": "chopin-nocturne-op9-no2:m061-064:piano:mcp-session:v1",
+              "questions": [
+                {
+                  "questionType": "pitch_class_count",
+                  "questionText": "How many notes with pitch class D# appear in this phrase?",
+                  "correctOptionIndex": 1,
+                  "options": [
+                    "4",
+                    "7",
+                    "5",
+                    "9"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 0,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:full:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 591,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 469,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:text_only:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 237,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 15915,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:random_midi:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 873,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 415,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "hand_register",
+                  "questionText": "Which hand plays more notes in this phrase?",
+                  "correctOptionIndex": 2,
+                  "options": [
+                    "Right hand (22 notes)",
+                    "Equal (9 notes each)",
+                    "Left hand (16 notes)",
+                    "Left hand (13 notes)"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 0,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 0,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:full:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 602,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 15103,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 0,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:text_only:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 248,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 232,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 0,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:random_midi:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 884,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 473,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "rhythm_onset",
+                  "questionText": "How many notes start on beat 1 (downbeat) across all bars in this phrase?",
+                  "correctOptionIndex": 2,
+                  "options": [
+                    "5",
+                    "6",
+                    "7",
+                    "9"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 0,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:full:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 597,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 14307,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:text_only:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 243,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 480,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 1,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:random_midi:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 879,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 14538,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "annotation_grounding",
+                  "questionText": "In measure 1, which pitch does the right hand play on beat 4.9979?",
+                  "correctOptionIndex": 3,
+                  "options": [
+                    "C#4",
+                    "B3",
+                    "D4",
+                    "C4"
+                  ],
+                  "majorityScore": {
+                    "full": 1,
+                    "text_only": 1,
+                    "random_midi": 1
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 1,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:full:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 601,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 15019,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 1,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:text_only:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 247,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 216,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 1,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:random_midi:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 883,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 14663,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "questionType": "pitch_class_count",
+              "questionText": "How many notes with pitch class D# appear in this phrase?",
+              "correctOptionIndex": 1,
+              "options": [
+                "4",
+                "7",
+                "5",
+                "9"
+              ],
+              "majorityScore": {
+                "full": 0,
+                "text_only": 0,
+                "random_midi": 0
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:full:pitch_class_count:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 591,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 6685,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:text_only:pitch_class_count:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 237,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 431,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:random_midi:pitch_class_count:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 873,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 16855,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "questionType": "hand_register",
+              "questionText": "Which hand plays more notes in this phrase?",
+              "correctOptionIndex": 2,
+              "options": [
+                "Right hand (22 notes)",
+                "Equal (9 notes each)",
+                "Left hand (16 notes)",
+                "Left hand (13 notes)"
+              ],
+              "majorityScore": {
+                "full": 0,
+                "text_only": 0,
+                "random_midi": 0
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 0,
+                    "meta": {
+                      "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:full:hand_register:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 602,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 811,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 0,
+                    "meta": {
+                      "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:text_only:hand_register:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 248,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 15692,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 0,
+                    "meta": {
+                      "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:random_midi:hand_register:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 884,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 418,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "questionType": "rhythm_onset",
+              "questionText": "How many notes start on beat 1 (downbeat) across all bars in this phrase?",
+              "correctOptionIndex": 2,
+              "options": [
+                "5",
+                "6",
+                "7",
+                "9"
+              ],
+              "majorityScore": {
+                "full": 0,
+                "text_only": 0,
+                "random_midi": 0
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:full:rhythm_onset:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 597,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 672,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:text_only:rhythm_onset:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 243,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 14515,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:random_midi:rhythm_onset:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 879,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 395,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "questionType": "annotation_grounding",
+              "questionText": "In measure 1, which pitch does the right hand play on beat 4.9979?",
+              "correctOptionIndex": 3,
+              "options": [
+                "C#4",
+                "B3",
+                "D4",
+                "C4"
+              ],
+              "majorityScore": {
+                "full": 1,
+                "text_only": 1,
+                "random_midi": 0
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 1,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:full:annotation_grounding:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 601,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 587,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 1,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:text_only:annotation_grounding:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 247,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 15213,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 0,
+                    "meta": {
+                      "runId": "pathetique-mvt2:m001-004:piano:mcp-session:v1:E3:random_midi:annotation_grounding:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 883,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 384,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "recordId": "schumann-traumerei:m001-004:piano:mcp-session:v1",
+          "enriched": false,
+          "full": 0.25,
+          "text_only": 0.5,
+          "random_midi": 0,
+          "marginVsTextOnly": 0,
+          "marginVsRandomMidi": 0.25,
+          "randomMidiPartnerId": "chopin-prelude-e-minor:m045-048:piano:mcp-session:v1",
+          "aggregate": {
+            "full": {
+              "n": 3,
+              "pass_rate": 1,
+              "majority_pass": true,
+              "metric_mean": 0.4166666666666667,
+              "metric_stddev": 0.14433756729740643,
+              "metric_min": 0.25,
+              "metric_max": 0.5,
+              "not_computable_count": 0
+            },
+            "text_only": {
+              "n": 3,
+              "pass_rate": 1,
+              "majority_pass": true,
+              "metric_mean": 0.4166666666666667,
+              "metric_stddev": 0.14433756729740643,
+              "metric_min": 0.25,
+              "metric_max": 0.5,
+              "not_computable_count": 0
+            },
+            "random_midi": {
+              "n": 3,
+              "pass_rate": 1,
+              "majority_pass": true,
+              "metric_mean": 0.16666666666666666,
+              "metric_stddev": 0.14433756729740646,
+              "metric_min": 0,
+              "metric_max": 0.25,
+              "not_computable_count": 0
+            },
+            "margin_vs_text_only": {
+              "n": 3,
+              "pass_rate": 0.3333333333333333,
+              "majority_pass": false,
+              "metric_mean": 0,
+              "metric_stddev": 0.25,
+              "metric_min": -0.25,
+              "metric_max": 0.25,
+              "not_computable_count": 0
+            },
+            "margin_vs_random_midi": {
+              "n": 3,
+              "pass_rate": 1,
+              "majority_pass": true,
+              "metric_mean": 0.25,
+              "metric_stddev": 0,
+              "metric_min": 0.25,
+              "metric_max": 0.25,
+              "not_computable_count": 0
+            }
+          },
+          "per_run_results": [
+            {
+              "run_index": 0,
+              "aggregate": {
+                "full": 0.25,
+                "text_only": 0.5,
+                "random_midi": 0
+              },
+              "random_midi_partner_id": "chopin-prelude-e-minor:m045-048:piano:mcp-session:v1",
+              "questions": [
+                {
+                  "questionType": "pitch_class_count",
+                  "questionText": "How many notes with pitch class F appear in this phrase?",
+                  "correctOptionIndex": 0,
+                  "options": [
+                    "8",
+                    "5",
+                    "6",
+                    "10"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 1,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:full:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 596,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 610,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 1,
+                        "selectedOptionIndex": 0,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:text_only:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 251,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 11488,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:random_midi:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 967,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 447,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "hand_register",
+                  "questionText": "Which hand plays more notes in this phrase?",
+                  "correctOptionIndex": 1,
+                  "options": [
+                    "Left hand (13 notes)",
+                    "Right hand (11 notes)",
+                    "Equal (9 notes each)",
+                    "Right hand (8 notes)"
+                  ],
+                  "majorityScore": {
+                    "full": 1,
+                    "text_only": 0,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 1,
+                        "selectedOptionIndex": 1,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:full:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 606,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 16090,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 0,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:text_only:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 261,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 202,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 0,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:random_midi:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 977,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 474,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "rhythm_onset",
+                  "questionText": "How many notes start on beat 1 (downbeat) across all bars in this phrase?",
+                  "correctOptionIndex": 2,
+                  "options": [
+                    "0",
+                    "3",
+                    "1",
+                    "4"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 1,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:full:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 602,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 15126,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 1,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:text_only:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 257,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 196,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:random_midi:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 973,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 483,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "annotation_grounding",
+                  "questionText": "In measure 1, which pitch does the right hand play on beat 3.25?",
+                  "correctOptionIndex": 3,
+                  "options": [
+                    "C#4",
+                    "B3",
+                    "D4",
+                    "C4"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 0,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:full:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 604,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 15535,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 0,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:text_only:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 259,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 401,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:random_midi:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 975,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 16762,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "run_index": 1,
+              "aggregate": {
+                "full": 0.5,
+                "text_only": 0.5,
+                "random_midi": 0.25
+              },
+              "random_midi_partner_id": "chopin-prelude-e-minor:m045-048:piano:mcp-session:v1",
+              "questions": [
+                {
+                  "questionType": "pitch_class_count",
+                  "questionText": "How many notes with pitch class F appear in this phrase?",
+                  "correctOptionIndex": 0,
+                  "options": [
+                    "8",
+                    "5",
+                    "6",
+                    "10"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 1,
+                    "random_midi": 1
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:full:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 596,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 582,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 1,
+                        "selectedOptionIndex": 0,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:text_only:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 251,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 13056,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 1,
+                        "selectedOptionIndex": 0,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:random_midi:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 967,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 438,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "hand_register",
+                  "questionText": "Which hand plays more notes in this phrase?",
+                  "correctOptionIndex": 1,
+                  "options": [
+                    "Left hand (13 notes)",
+                    "Right hand (11 notes)",
+                    "Equal (9 notes each)",
+                    "Right hand (8 notes)"
+                  ],
+                  "majorityScore": {
+                    "full": 1,
+                    "text_only": 0,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 1,
+                        "selectedOptionIndex": 1,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:full:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 606,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 14834,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 0,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:text_only:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 261,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 236,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 0,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:random_midi:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 977,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 544,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "rhythm_onset",
+                  "questionText": "How many notes start on beat 1 (downbeat) across all bars in this phrase?",
+                  "correctOptionIndex": 2,
+                  "options": [
+                    "0",
+                    "3",
+                    "1",
+                    "4"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 1,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:full:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 602,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 15438,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 1,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:text_only:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 257,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 223,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:random_midi:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 973,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 461,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "annotation_grounding",
+                  "questionText": "In measure 1, which pitch does the right hand play on beat 3.25?",
+                  "correctOptionIndex": 3,
+                  "options": [
+                    "C#4",
+                    "B3",
+                    "D4",
+                    "C4"
+                  ],
+                  "majorityScore": {
+                    "full": 1,
+                    "text_only": 0,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 1,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:full:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 604,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 14878,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:text_only:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 259,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 15895,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:random_midi:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 975,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 440,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "run_index": 2,
+              "aggregate": {
+                "full": 0.5,
+                "text_only": 0.25,
+                "random_midi": 0.25
+              },
+              "random_midi_partner_id": "chopin-prelude-e-minor:m045-048:piano:mcp-session:v1",
+              "questions": [
+                {
+                  "questionType": "pitch_class_count",
+                  "questionText": "How many notes with pitch class F appear in this phrase?",
+                  "correctOptionIndex": 0,
+                  "options": [
+                    "8",
+                    "5",
+                    "6",
+                    "10"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 0,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:full:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 596,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 14805,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:text_only:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 251,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 233,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 1,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:random_midi:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 967,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 576,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "hand_register",
+                  "questionText": "Which hand plays more notes in this phrase?",
+                  "correctOptionIndex": 1,
+                  "options": [
+                    "Left hand (13 notes)",
+                    "Right hand (11 notes)",
+                    "Equal (9 notes each)",
+                    "Right hand (8 notes)"
+                  ],
+                  "majorityScore": {
+                    "full": 1,
+                    "text_only": 0,
+                    "random_midi": 1
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 1,
+                        "selectedOptionIndex": 1,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:full:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 606,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 15343,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 0,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:text_only:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 261,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 510,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 1,
+                        "selectedOptionIndex": 1,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:random_midi:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 977,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 16598,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "rhythm_onset",
+                  "questionText": "How many notes start on beat 1 (downbeat) across all bars in this phrase?",
+                  "correctOptionIndex": 2,
+                  "options": [
+                    "0",
+                    "3",
+                    "1",
+                    "4"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 1,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:full:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 602,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 633,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 1,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:text_only:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 257,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 16945,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:random_midi:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 973,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 416,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "annotation_grounding",
+                  "questionText": "In measure 1, which pitch does the right hand play on beat 3.25?",
+                  "correctOptionIndex": 3,
+                  "options": [
+                    "C#4",
+                    "B3",
+                    "D4",
+                    "C4"
+                  ],
+                  "majorityScore": {
+                    "full": 1,
+                    "text_only": 0,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 1,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:full:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 604,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 16233,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:text_only:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 259,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 219,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:random_midi:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 975,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 15258,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "questionType": "pitch_class_count",
+              "questionText": "How many notes with pitch class F appear in this phrase?",
+              "correctOptionIndex": 0,
+              "options": [
+                "8",
+                "5",
+                "6",
+                "10"
+              ],
+              "majorityScore": {
+                "full": 0,
+                "text_only": 1,
+                "random_midi": 0
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:full:pitch_class_count:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 596,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 610,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 1,
+                    "selectedOptionIndex": 0,
+                    "meta": {
+                      "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:text_only:pitch_class_count:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 251,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 11488,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:random_midi:pitch_class_count:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 967,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 447,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "questionType": "hand_register",
+              "questionText": "Which hand plays more notes in this phrase?",
+              "correctOptionIndex": 1,
+              "options": [
+                "Left hand (13 notes)",
+                "Right hand (11 notes)",
+                "Equal (9 notes each)",
+                "Right hand (8 notes)"
+              ],
+              "majorityScore": {
+                "full": 1,
+                "text_only": 0,
+                "random_midi": 0
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 1,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:full:hand_register:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 606,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 16090,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 0,
+                    "meta": {
+                      "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:text_only:hand_register:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 261,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 202,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 0,
+                    "meta": {
+                      "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:random_midi:hand_register:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 977,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 474,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "questionType": "rhythm_onset",
+              "questionText": "How many notes start on beat 1 (downbeat) across all bars in this phrase?",
+              "correctOptionIndex": 2,
+              "options": [
+                "0",
+                "3",
+                "1",
+                "4"
+              ],
+              "majorityScore": {
+                "full": 0,
+                "text_only": 1,
+                "random_midi": 0
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:full:rhythm_onset:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 602,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 15126,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 1,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:text_only:rhythm_onset:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 257,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 196,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:random_midi:rhythm_onset:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 973,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 483,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "questionType": "annotation_grounding",
+              "questionText": "In measure 1, which pitch does the right hand play on beat 3.25?",
+              "correctOptionIndex": 3,
+              "options": [
+                "C#4",
+                "B3",
+                "D4",
+                "C4"
+              ],
+              "majorityScore": {
+                "full": 0,
+                "text_only": 0,
+                "random_midi": 0
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:full:annotation_grounding:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 604,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 15535,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 0,
+                    "meta": {
+                      "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:text_only:annotation_grounding:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 259,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 401,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "schumann-traumerei:m001-004:piano:mcp-session:v1:E3:random_midi:annotation_grounding:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 975,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 16762,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "recordId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1",
+          "enriched": false,
+          "full": 0,
+          "text_only": 0.25,
+          "random_midi": 0,
+          "marginVsTextOnly": -0.25,
+          "marginVsRandomMidi": 0,
+          "randomMidiPartnerId": "mozart-k545-mvt1:m017-020:piano:mcp-session:v1",
+          "aggregate": {
+            "full": {
+              "n": 3,
+              "pass_rate": 1,
+              "majority_pass": true,
+              "metric_mean": 0,
+              "metric_stddev": 0,
+              "metric_min": 0,
+              "metric_max": 0,
+              "not_computable_count": 0
+            },
+            "text_only": {
+              "n": 3,
+              "pass_rate": 1,
+              "majority_pass": true,
+              "metric_mean": 0.25,
+              "metric_stddev": 0,
+              "metric_min": 0.25,
+              "metric_max": 0.25,
+              "not_computable_count": 0
+            },
+            "random_midi": {
+              "n": 3,
+              "pass_rate": 1,
+              "majority_pass": true,
+              "metric_mean": 0,
+              "metric_stddev": 0,
+              "metric_min": 0,
+              "metric_max": 0,
+              "not_computable_count": 0
+            },
+            "margin_vs_text_only": {
+              "n": 3,
+              "pass_rate": 0,
+              "majority_pass": false,
+              "metric_mean": -0.25,
+              "metric_stddev": 0,
+              "metric_min": -0.25,
+              "metric_max": -0.25,
+              "not_computable_count": 0
+            },
+            "margin_vs_random_midi": {
+              "n": 3,
+              "pass_rate": 0,
+              "majority_pass": false,
+              "metric_mean": 0,
+              "metric_stddev": 0,
+              "metric_min": 0,
+              "metric_max": 0,
+              "not_computable_count": 0
+            }
+          },
+          "per_run_results": [
+            {
+              "run_index": 0,
+              "aggregate": {
+                "full": 0,
+                "text_only": 0.25,
+                "random_midi": 0
+              },
+              "random_midi_partner_id": "mozart-k545-mvt1:m017-020:piano:mcp-session:v1",
+              "questions": [
+                {
+                  "questionType": "pitch_class_count",
+                  "questionText": "How many notes with pitch class D# appear in this phrase?",
+                  "correctOptionIndex": 1,
+                  "options": [
+                    "4",
+                    "7",
+                    "5",
+                    "9"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 0,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:full:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 848,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 499,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:text_only:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 193,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 13889,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:random_midi:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 1289,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 556,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "hand_register",
+                  "questionText": "Which hand plays more notes in this phrase?",
+                  "correctOptionIndex": 2,
+                  "options": [
+                    "Left hand (33 notes)",
+                    "Equal (20 notes each)",
+                    "Right hand (28 notes)",
+                    "Right hand (27 notes)"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 1,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:full:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 860,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 14756,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 1,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:text_only:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 205,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 16023,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:random_midi:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 1301,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 556,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "rhythm_onset",
+                  "questionText": "How many notes start on beat 1 (downbeat) across all bars in this phrase?",
+                  "correctOptionIndex": 0,
+                  "options": [
+                    "1",
+                    "0",
+                    "3",
+                    "4"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 0,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:full:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 854,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 14416,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:text_only:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 199,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 359,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:random_midi:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 1295,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 16521,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "annotation_grounding",
+                  "questionText": "In measure 11, which pitch does the right hand play on beat 1.6583?",
+                  "correctOptionIndex": 0,
+                  "options": [
+                    "A#4",
+                    "B4",
+                    "A4",
+                    "C5"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 0,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 1,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:full:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 859,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 494,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 1,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:text_only:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 204,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 15767,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 1,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:random_midi:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 1300,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 537,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "run_index": 1,
+              "aggregate": {
+                "full": 0,
+                "text_only": 0.25,
+                "random_midi": 0
+              },
+              "random_midi_partner_id": "mozart-k545-mvt1:m017-020:piano:mcp-session:v1",
+              "questions": [
+                {
+                  "questionType": "pitch_class_count",
+                  "questionText": "How many notes with pitch class D# appear in this phrase?",
+                  "correctOptionIndex": 1,
+                  "options": [
+                    "4",
+                    "7",
+                    "5",
+                    "9"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 0,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:full:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 848,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 16322,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:text_only:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 193,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 352,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:random_midi:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 1289,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 15546,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "hand_register",
+                  "questionText": "Which hand plays more notes in this phrase?",
+                  "correctOptionIndex": 2,
+                  "options": [
+                    "Left hand (33 notes)",
+                    "Equal (20 notes each)",
+                    "Right hand (28 notes)",
+                    "Right hand (27 notes)"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 1,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:full:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 860,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 421,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 1,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:text_only:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 205,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 15644,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:random_midi:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 1301,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 533,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "rhythm_onset",
+                  "questionText": "How many notes start on beat 1 (downbeat) across all bars in this phrase?",
+                  "correctOptionIndex": 0,
+                  "options": [
+                    "1",
+                    "0",
+                    "3",
+                    "4"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 0,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:full:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 854,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 15144,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:text_only:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 199,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 377,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:random_midi:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 1295,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 15852,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "annotation_grounding",
+                  "questionText": "In measure 11, which pitch does the right hand play on beat 1.6583?",
+                  "correctOptionIndex": 0,
+                  "options": [
+                    "A#4",
+                    "B4",
+                    "A4",
+                    "C5"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 0,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 1,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:full:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 859,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 522,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 1,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:text_only:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 204,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 15689,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 1,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:random_midi:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 1300,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 563,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "run_index": 2,
+              "aggregate": {
+                "full": 0,
+                "text_only": 0.25,
+                "random_midi": 0
+              },
+              "random_midi_partner_id": "mozart-k545-mvt1:m017-020:piano:mcp-session:v1",
+              "questions": [
+                {
+                  "questionType": "pitch_class_count",
+                  "questionText": "How many notes with pitch class D# appear in this phrase?",
+                  "correctOptionIndex": 1,
+                  "options": [
+                    "4",
+                    "7",
+                    "5",
+                    "9"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 0,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:full:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 848,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 15615,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:text_only:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 193,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 452,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:random_midi:pitch_class_count:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 1289,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 16003,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "hand_register",
+                  "questionText": "Which hand plays more notes in this phrase?",
+                  "correctOptionIndex": 2,
+                  "options": [
+                    "Left hand (33 notes)",
+                    "Equal (20 notes each)",
+                    "Right hand (28 notes)",
+                    "Right hand (27 notes)"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 1,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:full:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 860,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 513,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 1,
+                        "selectedOptionIndex": 2,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:text_only:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 205,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 16447,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:random_midi:hand_register:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 1301,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 539,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "rhythm_onset",
+                  "questionText": "How many notes start on beat 1 (downbeat) across all bars in this phrase?",
+                  "correctOptionIndex": 0,
+                  "options": [
+                    "1",
+                    "0",
+                    "3",
+                    "4"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 0,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:full:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 854,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 16454,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:text_only:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 199,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 385,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 3,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:random_midi:rhythm_onset:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 1295,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 15903,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "questionType": "annotation_grounding",
+                  "questionText": "In measure 11, which pitch does the right hand play on beat 1.6583?",
+                  "correctOptionIndex": 0,
+                  "options": [
+                    "A#4",
+                    "B4",
+                    "A4",
+                    "C5"
+                  ],
+                  "majorityScore": {
+                    "full": 0,
+                    "text_only": 0,
+                    "random_midi": 0
+                  },
+                  "runs": {
+                    "full": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 1,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:full:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 859,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 447,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "text_only": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 1,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:text_only:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 204,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 15245,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ],
+                    "random_midi": [
+                      {
+                        "run": 1,
+                        "score": 0,
+                        "selectedOptionIndex": 1,
+                        "meta": {
+                          "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:random_midi:annotation_grounding:run1",
+                          "backend": "ollama",
+                          "modelId": "qwen2.5:7b",
+                          "promptTokens": 1300,
+                          "completionTokens": 2,
+                          "costUsd": 0,
+                          "latencyMs": 547,
+                          "parseOk": true,
+                          "parseError": null
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "questions": [
+            {
+              "questionType": "pitch_class_count",
+              "questionText": "How many notes with pitch class D# appear in this phrase?",
+              "correctOptionIndex": 1,
+              "options": [
+                "4",
+                "7",
+                "5",
+                "9"
+              ],
+              "majorityScore": {
+                "full": 0,
+                "text_only": 0,
+                "random_midi": 0
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:full:pitch_class_count:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 848,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 499,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:text_only:pitch_class_count:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 193,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 13889,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:random_midi:pitch_class_count:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1289,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 556,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "questionType": "hand_register",
+              "questionText": "Which hand plays more notes in this phrase?",
+              "correctOptionIndex": 2,
+              "options": [
+                "Left hand (33 notes)",
+                "Equal (20 notes each)",
+                "Right hand (28 notes)",
+                "Right hand (27 notes)"
+              ],
+              "majorityScore": {
+                "full": 0,
+                "text_only": 1,
+                "random_midi": 0
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:full:hand_register:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 860,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 14756,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 1,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:text_only:hand_register:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 205,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 16023,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:random_midi:hand_register:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1301,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 556,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "questionType": "rhythm_onset",
+              "questionText": "How many notes start on beat 1 (downbeat) across all bars in this phrase?",
+              "correctOptionIndex": 0,
+              "options": [
+                "1",
+                "0",
+                "3",
+                "4"
+              ],
+              "majorityScore": {
+                "full": 0,
+                "text_only": 0,
+                "random_midi": 0
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:full:rhythm_onset:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 854,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 14416,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 3,
+                    "meta": {
+                      "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:text_only:rhythm_onset:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 199,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 359,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 2,
+                    "meta": {
+                      "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:random_midi:rhythm_onset:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1295,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 16521,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "questionType": "annotation_grounding",
+              "questionText": "In measure 11, which pitch does the right hand play on beat 1.6583?",
+              "correctOptionIndex": 0,
+              "options": [
+                "A#4",
+                "B4",
+                "A4",
+                "C5"
+              ],
+              "majorityScore": {
+                "full": 0,
+                "text_only": 0,
+                "random_midi": 0
+              },
+              "runs": {
+                "full": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:full:annotation_grounding:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 859,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 494,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "text_only": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:text_only:annotation_grounding:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 204,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 15767,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ],
+                "random_midi": [
+                  {
+                    "run": 1,
+                    "score": 0,
+                    "selectedOptionIndex": 1,
+                    "meta": {
+                      "runId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1:E3:random_midi:annotation_grounding:run1",
+                      "backend": "ollama",
+                      "modelId": "qwen2.5:7b",
+                      "promptTokens": 1300,
+                      "completionTokens": 2,
+                      "costUsd": 0,
+                      "latencyMs": 537,
+                      "parseOk": true,
+                      "parseError": null
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "aggregate": {
+        "full": 0.16666666666666666,
+        "text_only": 0.3333333333333333,
+        "random_midi": 0,
+        "marginVsTextOnly": -0.16666666666666666,
+        "marginVsRandomMidi": 0.16666666666666666,
+        "threshold": 0.1,
+        "thresholdMetTextOnly": false,
+        "thresholdMetRandomMidi": true,
+        "enrichedSubset": {
+          "n": 0,
+          "full": null,
+          "text_only": null,
+          "random_midi": null,
+          "marginVsTextOnly": null,
+          "marginVsRandomMidi": null
+        },
+        "nonEnrichedSubset": {
+          "n": 3,
+          "full": 0.16666666666666666,
+          "text_only": 0.3333333333333333,
+          "random_midi": 0,
+          "marginVsTextOnly": -0.16666666666666666
+        },
+        "corpus_multirun_aggregate": {
+          "n_records": 3,
+          "n_runs_per_record": 3,
+          "full": {
+            "n": 3,
+            "pass_rate": 1,
+            "majority_pass": true,
+            "metric_mean": 0.22222222222222224,
+            "metric_stddev": 0.20971762320196527,
+            "metric_min": 0,
+            "metric_max": 0.4166666666666667,
+            "not_computable_count": 0
+          },
+          "text_only": {
+            "n": 3,
+            "pass_rate": 1,
+            "majority_pass": true,
+            "metric_mean": 0.3055555555555556,
+            "metric_stddev": 0.09622504486493764,
+            "metric_min": 0.25,
+            "metric_max": 0.4166666666666667,
+            "not_computable_count": 0
+          },
+          "random_midi": {
+            "n": 3,
+            "pass_rate": 1,
+            "majority_pass": true,
+            "metric_mean": 0.08333333333333333,
+            "metric_stddev": 0.08333333333333333,
+            "metric_min": 0,
+            "metric_max": 0.16666666666666666,
+            "not_computable_count": 0
+          },
+          "margin_vs_text_only": {
+            "n": 3,
+            "pass_rate": 0,
+            "majority_pass": false,
+            "metric_mean": -0.08333333333333333,
+            "metric_stddev": 0.14433756729740646,
+            "metric_min": -0.25,
+            "metric_max": 0,
+            "not_computable_count": 0
+          },
+          "margin_vs_random_midi": {
+            "n": 3,
+            "pass_rate": 0.6666666666666666,
+            "majority_pass": true,
+            "metric_mean": 0.13888888888888887,
+            "metric_stddev": 0.1272937693043289,
+            "metric_min": 0,
+            "metric_max": 0.25,
+            "not_computable_count": 0
+          },
+          "enriched_subset": {
+            "n": 0,
+            "full": {
+              "n": 0,
+              "pass_rate": 0,
+              "majority_pass": false,
+              "metric_mean": null,
+              "metric_stddev": null,
+              "metric_min": null,
+              "metric_max": null,
+              "not_computable_count": 0
+            },
+            "text_only": {
+              "n": 0,
+              "pass_rate": 0,
+              "majority_pass": false,
+              "metric_mean": null,
+              "metric_stddev": null,
+              "metric_min": null,
+              "metric_max": null,
+              "not_computable_count": 0
+            },
+            "random_midi": {
+              "n": 0,
+              "pass_rate": 0,
+              "majority_pass": false,
+              "metric_mean": null,
+              "metric_stddev": null,
+              "metric_min": null,
+              "metric_max": null,
+              "not_computable_count": 0
+            },
+            "margin_vs_text_only": {
+              "n": 0,
+              "pass_rate": 0,
+              "majority_pass": false,
+              "metric_mean": null,
+              "metric_stddev": null,
+              "metric_min": null,
+              "metric_max": null,
+              "not_computable_count": 0
+            },
+            "margin_vs_random_midi": {
+              "n": 0,
+              "pass_rate": 0,
+              "majority_pass": false,
+              "metric_mean": null,
+              "metric_stddev": null,
+              "metric_min": null,
+              "metric_max": null,
+              "not_computable_count": 0
+            }
+          },
+          "non_enriched_subset": {
+            "n": 3,
+            "full": {
+              "n": 3,
+              "pass_rate": 1,
+              "majority_pass": true,
+              "metric_mean": 0.22222222222222224,
+              "metric_stddev": 0.20971762320196527,
+              "metric_min": 0,
+              "metric_max": 0.4166666666666667,
+              "not_computable_count": 0
+            },
+            "text_only": {
+              "n": 3,
+              "pass_rate": 1,
+              "majority_pass": true,
+              "metric_mean": 0.3055555555555556,
+              "metric_stddev": 0.09622504486493764,
+              "metric_min": 0.25,
+              "metric_max": 0.4166666666666667,
+              "not_computable_count": 0
+            },
+            "random_midi": {
+              "n": 3,
+              "pass_rate": 1,
+              "majority_pass": true,
+              "metric_mean": 0.08333333333333333,
+              "metric_stddev": 0.08333333333333333,
+              "metric_min": 0,
+              "metric_max": 0.16666666666666666,
+              "not_computable_count": 0
+            },
+            "margin_vs_text_only": {
+              "n": 3,
+              "pass_rate": 0,
+              "majority_pass": false,
+              "metric_mean": -0.08333333333333333,
+              "metric_stddev": 0.14433756729740646,
+              "metric_min": -0.25,
+              "metric_max": 0,
+              "not_computable_count": 0
+            },
+            "margin_vs_random_midi": {
+              "n": 3,
+              "pass_rate": 0.6666666666666666,
+              "majority_pass": true,
+              "metric_mean": 0.13888888888888887,
+              "metric_stddev": 0.1272937693043289,
+              "metric_min": 0,
+              "metric_max": 0.25,
+              "not_computable_count": 0
+            }
+          }
+        }
+      }
+    }
+  },
+  "prior_baseline_reference": {
+    "artifact": "datasets/jam-actions-v0/evals/llm-in-the-loop-qwen2.5-7b-hardened.json",
+    "test_set": [
+      "clair-de-lune:m001-004",
+      "clair-de-lune:m005-008",
+      "clair-de-lune:m015-018",
+      "clair-de-lune:m019-022"
+    ],
+    "n_runs": 3,
+    "e1_pass_rate": 0.75,
+    "e2_groove_oa_aggregate": null,
+    "e3_margin_vs_text_only": -0.125,
+    "e3_margin_vs_random_midi": -0.0625
+  }
+}

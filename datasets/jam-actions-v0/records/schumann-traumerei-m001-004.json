@@ -28,7 +28,7 @@
     "tempo_bpm": 120,
     "time_signature": "4/4",
     "window_role": "prompt",
-    "musical_phrase_label": "opening period — antecedent",
+    "musical_phrase_label": "Träumerei opening antecedent — pickup C4 into F major dreaming theme",
     "natural_phrase_boundary": true,
     "continuation_target_window": [
       5,
@@ -345,36 +345,61 @@
       1,
       4
     ],
-    "structure": "Opening antecedent — F major singing melody over full chord texture",
+    "structure": "Opening antecedent of Träumerei (paired continuation at m. 5–8). The phrase begins with a single right-hand C4 pickup at m. 1 b2.25 — the only event in measure 1, the dominant tone of F major sounded as a soft anacrusis. From m. 2 onward, the texture fills out: F4 enters in the right hand on the downbeat (m. 2 b0, the only event in the entire phrase that lands exactly on beat 1), supported by an F2 bass on b0.0521 and a C3+A3+F3 LH chord at b1.95-2.02. The melody rises through m. 3 (E4, F4, A4, C5) and climaxes at F5 in m. 4 b0.6979 — the highest right-hand pitch of the phrase, the famous opening sigh. The window stays in F major throughout with only one chromatic touch (A#2 / B♭2 at m. 4 b1.1042 — the lowered seventh, the subdominant-color tone). Pitch class F dominates the phrase, sounding 8 times across the four bars in alternating registers.",
     "key_moments": [
-      "m1 F major theme entrance",
-      "m2 harmonic wandering begins",
-      "m4 dominant C — expectant ending"
+      "m. 1 b2.25 — C4 right-hand pickup (the only event in measure 1, MIDI velocity 48, sustained 0.36 seconds). This is the dominant tone of F major sounded as the soft anacrusis that gives Träumerei its dreamlike opening character. The entire bar is otherwise silent — no LH, no other RH event",
+      "m. 2 b0 — F4 right-hand downbeat (the only event in the phrase whose beat field equals exactly 0). The F4 is sustained 1.83 seconds (longest RH event in m. 2) over a stacked LH chord: F2 at b0.0521, then a three-note inner cluster C3 / A3 / F3 entering at b1.95-2.02 with the second RH C4 at b1.9479",
+      "m. 3 — ascending melodic line: E4 at b1.0417, F4 at b2.2083, A4 at b3.0833, C5 at b3.8646 (sustained only 0.21 seconds — the shortest RH note). Each step rises in velocity (56 → 63 → 73 → 82) preparing the F5 climax in m. 4",
+      "m. 4 b0.6979 — F5 climax (the highest right-hand pitch of the phrase, MIDI velocity 83, sustained 0.28 seconds). Below it, A#2 (B♭2) appears at b1.1042 — the only chromatic non-F-major pitch in the window, the subdominant-color seventh. A second F5 follows at b2.0729 (the closing F that holds 1.52 seconds, the longest RH event in m. 4) with D4 + F4 stacking below it for the final F-major chord that suspends through the phrase end",
+      "hand balance: the right hand plays 11 notes — including both Fs in m. 4 (the climax pair) — and the left hand plays 6, mostly inner-voice cluster support. The melody lives in the RH; the LH provides harmonic anchor"
     ],
     "teaching_goals": [
-      "warm, rounded tone throughout",
-      "full chord voicing — both LH and RH inner voices",
-      "Romantic style: gentle rubato is appropriate"
+      "voice the C4 pickup at m. 1 b2.25 as the dreaming entrance — the whole piece flows out of this single soft tone",
+      "shape the m. 3 ascent E4 → F4 → A4 → C5 as one rising breath, not four notes; each step grows in velocity (the MIDI velocities go 56 → 63 → 73 → 82) and prepares the F5 climax",
+      "voice the F5 climax at m. 4 b0.6979 as the phrase's high point — the sigh; do not strike it, let it bloom out of the rising line",
+      "respect the long F5 sustain at m. 4 b2.0729 (1.52 seconds) as the suspended close — the phrase ends still hanging on F, not resolved",
+      "the single chromatic tone A#2 (B♭2) at m. 4 b1.1042 is the only color note in the window; voice it as the subdominant-touch under the F5 climax"
     ],
     "style_tips": [
-      "mp with warmth — never bright or edgy",
-      "the inner voices of the chords are important — let them sing too",
-      "slight rubato — breathe with the phrase"
+      "pp throughout — the entire phrase lives at the dynamic floor; the F5 climax only rises to mp at most",
+      "pedal generously through the rising line in m. 3 — the legato connection is the dream's character",
+      "no rush on the C4 pickup; let it hang a full beat before the F4 downbeat enters at m. 2 b0"
     ],
     "teaching_notes": [
       {
         "measure": 1,
-        "note": "The dreaming character: warm, unhurried, intimate. Imagine a lullaby.",
+        "note": "The C4 right-hand pickup at b2.25 is the only sound in measure 1. It is the dominant tone of F major — the V — sounded as a soft anacrusis that opens the entire piece. Voice it gently; the whole phrase grows from this seed. The bar is otherwise empty.",
         "technique": [
-          "arm weight for warm tone",
-          "listen to all four voices"
+          "singing C4 entrance",
+          "arm weight for the pickup",
+          "let it ring into m. 2"
         ]
       },
       {
         "measure": 2,
-        "note": "The harmony moves away from home — follow it without rushing.",
+        "note": "The F4 at beat 0 (data-beat 0) is the only event in the phrase landing precisely on a downbeat. Voice it as the tonic-arrival after the C4 dominant pickup. Below, the LH F2 (b0.0521) plus the inner C3 + A3 + F3 cluster at b1.95-2.02 forms the F-major tonic chord; the RH C4 at b1.9479 doubles the LH C3 to enrich the inner voicing.",
         "technique": [
-          "slight tenuto on the wandering chords"
+          "voice F4 as tonic arrival",
+          "support with quiet LH chord",
+          "let the inner C4 enrich the texture"
+        ]
+      },
+      {
+        "measure": 3,
+        "note": "The ascending melodic line E4 → F4 → A4 → C5 (b1.04, b2.21, b3.08, b3.86) outlines the F-major triad rising. MIDI velocities climb 56 → 63 → 73 → 82 — Schumann's signature rising sigh. Voice the four notes as one breath, the crescendo built into the line itself; do not pedal harshly between them.",
+        "technique": [
+          "unified ascending phrase",
+          "velocity matches direction",
+          "legato pedal through the climb"
+        ]
+      },
+      {
+        "measure": 4,
+        "note": "The F5 climax at b0.6979 (MIDI velocity 83) is the high point of the phrase — the famous opening sigh. The A#2 (B♭2) at b1.1042 is the only chromatic note in the window; voice it as a brief subdominant-color touch beneath the F5. The second F5 at b2.0729 (sustained 1.52 seconds) is the closing-suspension F that ends the phrase still hanging on the tonic — the resolution belongs to m. 5–8.",
+        "technique": [
+          "bloom the F5 climax",
+          "respect the long suspension",
+          "let the dream stay unresolved"
         ]
       }
     ]

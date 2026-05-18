@@ -12,7 +12,9 @@
     "evals/post-isolation-qwen2.5-7b-results.json",
     "evals/multi-run-n3-qwen2.5-7b-e2-results.json",
     "evals/multi-run-n3-qwen2.5-7b-e2-sample.json",
-    "evals/multi-run-n3-qwen2.5-7b-e3-enriched-results.json"
+    "evals/multi-run-n3-qwen2.5-7b-e3-enriched-results.json",
+    "evals/slice16-e3-baseline-pre-enrichment-results.json",
+    "evals/slice16-e3-rubric-cohort-results.json"
   ],
   "generated_files": [
     "manifest.json",

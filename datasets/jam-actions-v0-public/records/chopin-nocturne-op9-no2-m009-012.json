@@ -28,7 +28,7 @@
     "tempo_bpm": 120,
     "time_signature": "4/4",
     "window_role": "prompt",
-    "musical_phrase_label": "second phrase — variant antecedent",
+    "musical_phrase_label": "variant antecedent — ornamental coloratura over LH waltz figure",
     "natural_phrase_boundary": true,
     "continuation_target_window": [
       13,
@@ -717,24 +717,50 @@
       9,
       12
     ],
-    "structure": "Variant antecedent — richer harmony, same structural function as mm. 1–4",
+    "structure": "Variant antecedent of the second period (paired with the consequent at m. 13–16). The right hand carries the ornamented melodic line — a re-elaborated version of the m. 1–4 theme with more figural detail — while the left hand sets a 12/8-style accompaniment whose strong notes hit G3 (m. 9), C3 (m. 9), A2 (m. 10), F#3 (m. 10), and A#2 (m. 11) before the cadential approach in m. 12. Chromatic non-diatonic pitches (F#3, F#4, A#4 in m. 11) signal the modulating pull toward the dominant of the relative minor before the consequent resolves. The phrase climaxes at the D6 melodic peak in m. 11 b2.075 — the highest right-hand pitch of the pair.",
     "key_moments": [
-      "m9 theme restatement",
-      "m11-12 heightened harmonic color",
-      "m12 dominant again"
+      "m. 9 b1.0 — D5 (1-indexed beat 2 in display terms; data beat 1.0) right-hand melody entry, sustained 0.61 seconds over the LH G3 anchor (b0.0375); this is the load-bearing downbeat onset for this phrase — the only event whose beat field equals exactly 1.0 in the entire window",
+      "m. 9 b2.0375 — D#5 (E♭5) sustained 1.66 seconds over LH C3 (b2.1); this is the longest single right-hand pitch in the phrase and the chord-center of the m. 9 harmony",
+      "m. 11 b2.075 — D6 (high, velocity 89) is the right-hand peak — a leap up two octaves from the m. 11 b0.6583 A#4 (B♭4) entrance; the figure C6 (b3.4333) → D#4 ornamental turn at b3.4708 → A#3 LH support continues the descent",
+      "m. 12 b3.5125 — D5 closes the right-hand line with a sustained note (0.41 seconds), preparing the half-cadence into the consequent at m. 13",
+      "left-hand surface: 11 attack points across the four bars — G3 / C3 / G3 in m. 9, A2 / F#3 in m. 10, A#2 / F3 / A#3 in m. 11, A#1 / F3 / A#3 in m. 12 (the contrabass A#1 at m. 12 b0.525 is the lowest pitch of the entire phrase)"
     ],
     "teaching_goals": [
-      "hear the variation from mm. 1–4 while maintaining phrase function"
+      "voice the right-hand ornamental line — keep the long D#5 in m. 9 singing through the LH activity",
+      "shape the D6 climax in m. 11 b2.075 as the apex of the phrase; don't accent it harshly — it's a long high note (0.84 seconds), not a strike",
+      "feel the left-hand pattern as the 12/8 waltz it is; the strong bass notes G3 / C3 / A2 / A#2 / A#1 outline the harmonic skeleton, the inner notes ornament it",
+      "let the m. 12 cadential measure breathe before the consequent — the D5 close at b3.5125 wants to hand off, not arrive"
     ],
     "style_tips": [
-      "slightly more expressive on the variation peaks"
+      "pp to mf with a clear crescendo into the D6 peak — Chopin's characteristic ornamental coloratura wants the high register to bloom",
+      "use the sustain pedal generously across the LH waltz figure; release on each chord change (m. 9 → m. 10 → m. 11 → m. 12) to keep the inner-voice motion clear",
+      "the chromatic non-diatonic pitches (F#3 in m. 10, A#4 in m. 11) are the harmonic-color agents; voice them so their tension is heard but not forced"
     ],
     "teaching_notes": [
       {
         "measure": 9,
-        "note": "The theme feels familiar — the variation is in the details.",
+        "note": "The D5 at beat 1.0 (data-beat) opens the right-hand melody on the downbeat. Keep it sustained for its full 0.61 seconds. The D#5 (E♭5) follow-up at b2.0375 is the longest pitch in this measure — let it speak over the LH C3 chord.",
         "technique": [
-          "notice the altered inner voices"
+          "sustain the D5 downbeat",
+          "voice the long D#5 over inner LH motion"
+        ]
+      },
+      {
+        "measure": 11,
+        "note": "The A#4 (B♭4) at beat 0.6583 is the phrase's mid-register pivot toward the climax. From here the line leaps to D6 at b2.075 — voice the leap as one gesture, not two separate notes. The ornamental C6 → G#4 → D#4 figure that follows at b3.43–3.49 is a turn around the high pitch; play it lightly.",
+        "technique": [
+          "voice the A#4 pivot at b0.6583",
+          "leap to D6 as one gesture",
+          "light turn into m. 12"
+        ]
+      },
+      {
+        "measure": 12,
+        "note": "The cadential approach: A#5 (B♭5) at b0.4979 over A#1 (B♭1) contrabass — the lowest bass note of the phrase. The right hand descends through G#5 → G5 → G#5 → C5 → G#4 → D5, ending on the sustained D5 at b3.5125. Voice this descent so the listener hears the half-cadence intent, not just notes.",
+        "technique": [
+          "voice the descending RH line",
+          "ground the A#1 contrabass",
+          "hand off to the consequent at m. 13"
         ]
       }
     ]
