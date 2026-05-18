@@ -1,0 +1,22 @@
+{
+  "version_file": "VERSION",
+  "curated_files": [
+    "README.md",
+    "DATASET_SCHEMA.md",
+    "KNOWN_LIMITATIONS.md",
+    "ATTRIBUTION.md",
+    "LICENSE-DATASET.md",
+    "CITATION.cff"
+  ],
+  "generated_files": [
+    "manifest.json",
+    "records.jsonl",
+    "splits.json",
+    "provenance-verification.json",
+    "checksums.sha256"
+  ],
+  "generated_dirs": [
+    "records",
+    "pianoroll"
+  ]
+}

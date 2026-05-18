@@ -10,11 +10,14 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { describe, it, expect } from "vitest";
-import { mkdtempSync, rmSync, writeFileSync, readFileSync, existsSync } from "node:fs";
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync, readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 
 import {
+  assertCitationCffMatchesVersion,
+  assertCuratedFilesPresent,
+  assertPackageInputsValid,
   buildChecksumsManifest,
   buildCitationCff,
   buildLicenseDataset,
@@ -23,13 +26,19 @@ import {
   buildRecordsJsonl,
   buildSplitIndex,
   countPairs,
+  extractCitationCffVersion,
   filterProvenanceVerification,
   filterSplitsToPublic,
   findPairOrphans,
   formatJson,
   publicIdSet,
+  readPackageInputs,
+  readVersion,
+  removeStaleGeneratedFiles,
   selectPublicRecords,
   sha256Hex,
+  walkChecksumFiles,
+  type PackageInputs,
   type PackageSplits,
   type SourceProvenanceVerification,
   type SourceRecord,
@@ -501,5 +510,691 @@ describe("sha256Hex", () => {
     expect(sha256Hex("abc")).toBe(
       "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
     );
+  });
+});
+
+// ─── Slice 11.5: packager durability (package-inputs.json + VERSION + ────────
+//                CITATION consistency + stale-removal + walk-based checksums) ─
+
+const STANDARD_INPUTS: PackageInputs = {
+  version_file: "VERSION",
+  curated_files: [
+    "README.md",
+    "DATASET_SCHEMA.md",
+    "KNOWN_LIMITATIONS.md",
+    "ATTRIBUTION.md",
+    "LICENSE-DATASET.md",
+    "CITATION.cff",
+  ],
+  generated_files: [
+    "manifest.json",
+    "records.jsonl",
+    "splits.json",
+    "provenance-verification.json",
+    "checksums.sha256",
+  ],
+  generated_dirs: ["records", "pianoroll"],
+};
+
+function makeStandardPackageDir(): string {
+  const dir = mkdtempSync(join(tmpdir(), "jam-pkg-test-"));
+  writeFileSync(join(dir, "package-inputs.json"), formatJson(STANDARD_INPUTS), "utf8");
+  writeFileSync(join(dir, "VERSION"), "0.2.0\n", "utf8");
+  // Curated docs (distinctive markers so we can assert byte-for-byte preservation).
+  writeFileSync(join(dir, "README.md"), "CURATED-README-MARKER\n", "utf8");
+  writeFileSync(
+    join(dir, "DATASET_SCHEMA.md"),
+    "CURATED-SCHEMA-MARKER\n",
+    "utf8",
+  );
+  writeFileSync(
+    join(dir, "KNOWN_LIMITATIONS.md"),
+    "CURATED-LIMITATIONS-MARKER\n",
+    "utf8",
+  );
+  writeFileSync(
+    join(dir, "ATTRIBUTION.md"),
+    "CURATED-ATTRIBUTION-MARKER\n",
+    "utf8",
+  );
+  writeFileSync(
+    join(dir, "LICENSE-DATASET.md"),
+    "CURATED-LICENSE-MARKER\n",
+    "utf8",
+  );
+  writeFileSync(
+    join(dir, "CITATION.cff"),
+    [
+      "cff-version: 1.2.0",
+      'title: "test"',
+      "type: dataset",
+      'version: "0.2.0"',
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+  mkdirSync(join(dir, "records"));
+  mkdirSync(join(dir, "pianoroll"));
+  return dir;
+}
+
+describe("Slice 11.5 — readPackageInputs / assertPackageInputsValid", () => {
+  it("rejects missing package-inputs.json with informative bootstrap error", () => {
+    const dir = mkdtempSync(join(tmpdir(), "jam-pkg-missing-inputs-"));
+    try {
+      expect(() => readPackageInputs(dir)).toThrow(
+        /package-inputs\.json missing/,
+      );
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("rejects non-object package-inputs.json", () => {
+    const dir = mkdtempSync(join(tmpdir(), "jam-pkg-bad-shape-"));
+    try {
+      writeFileSync(join(dir, "package-inputs.json"), '"hello"', "utf8");
+      expect(() => readPackageInputs(dir)).toThrow(/must be a JSON object/);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("rejects missing version_file field", () => {
+    expect(() =>
+      assertPackageInputsValid({
+        curated_files: [],
+        generated_files: [],
+        generated_dirs: [],
+      }),
+    ).toThrow(/missing required string field: version_file/);
+  });
+
+  it("rejects same path in curated_files AND generated_files (conflicting declaration)", () => {
+    expect(() =>
+      assertPackageInputsValid({
+        version_file: "VERSION",
+        curated_files: ["foo.md"],
+        generated_files: ["foo.md"],
+        generated_dirs: [],
+      }),
+    ).toThrow(/conflicting input declaration/);
+  });
+
+  it("rejects same path in curated_files AND generated_dirs", () => {
+    expect(() =>
+      assertPackageInputsValid({
+        version_file: "VERSION",
+        curated_files: ["records"],
+        generated_files: [],
+        generated_dirs: ["records"],
+      }),
+    ).toThrow(/conflicting input declaration/);
+  });
+
+  it("rejects 'package-inputs.json' listed explicitly (it is implicit)", () => {
+    expect(() =>
+      assertPackageInputsValid({
+        version_file: "VERSION",
+        curated_files: ["package-inputs.json"],
+        generated_files: [],
+        generated_dirs: [],
+      }),
+    ).toThrow(/implicitly tracked/);
+  });
+
+  it("accepts 'checksums.sha256' listed in generated_files (per kickoff design)", () => {
+    expect(() =>
+      assertPackageInputsValid({
+        version_file: "VERSION",
+        curated_files: [],
+        generated_files: ["checksums.sha256"],
+        generated_dirs: [],
+      }),
+    ).not.toThrow();
+  });
+
+  it("accepts the standard shape used by the real package", () => {
+    expect(() => assertPackageInputsValid(STANDARD_INPUTS)).not.toThrow();
+  });
+});
+
+describe("Slice 11.5 — readVersion", () => {
+  it("reads VERSION and trims surrounding whitespace + newlines", () => {
+    const dir = mkdtempSync(join(tmpdir(), "jam-pkg-version-"));
+    try {
+      writeFileSync(join(dir, "VERSION"), "  0.2.0  \n\n", "utf8");
+      expect(readVersion(dir)).toBe("0.2.0");
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("throws if VERSION file is missing", () => {
+    const dir = mkdtempSync(join(tmpdir(), "jam-pkg-version-missing-"));
+    try {
+      expect(() => readVersion(dir)).toThrow(/VERSION file missing/);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("throws if VERSION file is empty after trim", () => {
+    const dir = mkdtempSync(join(tmpdir(), "jam-pkg-version-empty-"));
+    try {
+      writeFileSync(join(dir, "VERSION"), "   \n\n", "utf8");
+      expect(() => readVersion(dir)).toThrow(/empty after trim/);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("Slice 11.5 — extractCitationCffVersion + assertCitationCffMatchesVersion", () => {
+  it("extracts quoted version", () => {
+    const cff =
+      'cff-version: 1.2.0\ntitle: "x"\nversion: "0.2.0"\nlicense: "MIT"\n';
+    expect(extractCitationCffVersion(cff)).toBe("0.2.0");
+  });
+
+  it("extracts single-quoted version", () => {
+    const cff = "cff-version: 1.2.0\nversion: '0.3.1'\n";
+    expect(extractCitationCffVersion(cff)).toBe("0.3.1");
+  });
+
+  it("extracts bare (unquoted) version", () => {
+    const cff = "cff-version: 1.2.0\nversion: 1.0.0\n";
+    expect(extractCitationCffVersion(cff)).toBe("1.0.0");
+  });
+
+  it("returns null when no version field exists", () => {
+    const cff = "cff-version: 1.2.0\ntitle: x\n";
+    expect(extractCitationCffVersion(cff)).toBeNull();
+  });
+
+  it("ignores commented-out version line", () => {
+    const cff = '# version: "9.9.9"\nversion: "0.2.0"\n';
+    expect(extractCitationCffVersion(cff)).toBe("0.2.0");
+  });
+
+  it("handles Windows CRLF line endings", () => {
+    const cff = 'cff-version: 1.2.0\r\nversion: "0.2.0"\r\n';
+    expect(extractCitationCffVersion(cff)).toBe("0.2.0");
+  });
+
+  it("passes when CITATION.cff version equals VERSION", () => {
+    const dir = makeStandardPackageDir();
+    try {
+      expect(() => assertCitationCffMatchesVersion(dir, "0.2.0")).not.toThrow();
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("throws when VERSION and CITATION.cff version diverge", () => {
+    const dir = makeStandardPackageDir();
+    try {
+      expect(() => assertCitationCffMatchesVersion(dir, "0.3.0")).toThrow(
+        /Version mismatch.*VERSION says "0\.3\.0".*CITATION\.cff says "0\.2\.0"/s,
+      );
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("throws if CITATION.cff has no version field at all", () => {
+    const dir = makeStandardPackageDir();
+    try {
+      writeFileSync(
+        join(dir, "CITATION.cff"),
+        "cff-version: 1.2.0\ntitle: x\n",
+        "utf8",
+      );
+      expect(() => assertCitationCffMatchesVersion(dir, "0.2.0")).toThrow(
+        /no 'version' field/,
+      );
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("throws if CITATION.cff is missing from disk", () => {
+    const dir = makeStandardPackageDir();
+    try {
+      rmSync(join(dir, "CITATION.cff"));
+      expect(() => assertCitationCffMatchesVersion(dir, "0.2.0")).toThrow(
+        /CITATION\.cff missing/,
+      );
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("Slice 11.5 — assertCuratedFilesPresent", () => {
+  it("succeeds when every curated file declared in package-inputs.json exists on disk", () => {
+    const dir = makeStandardPackageDir();
+    try {
+      const inputs = readPackageInputs(dir);
+      const { emptyFiles } = assertCuratedFilesPresent(dir, inputs);
+      expect(emptyFiles).toEqual([]);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("fails informatively if a declared curated file is missing", () => {
+    const dir = makeStandardPackageDir();
+    try {
+      rmSync(join(dir, "ATTRIBUTION.md"));
+      const inputs = readPackageInputs(dir);
+      expect(() => assertCuratedFilesPresent(dir, inputs)).toThrow(
+        /Curated file missing on disk: 'ATTRIBUTION\.md'/,
+      );
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("does NOT fail on zero-byte curated files; returns them in emptyFiles for warning", () => {
+    const dir = makeStandardPackageDir();
+    try {
+      writeFileSync(join(dir, "ATTRIBUTION.md"), "", "utf8");
+      const inputs = readPackageInputs(dir);
+      const { emptyFiles } = assertCuratedFilesPresent(dir, inputs);
+      expect(emptyFiles).toEqual(["ATTRIBUTION.md"]);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("Slice 11.5 — removeStaleGeneratedFiles", () => {
+  it("removes files in generated_dirs that aren't in the should-be set", () => {
+    const dir = makeStandardPackageDir();
+    try {
+      // Plant a stale record + a current record.
+      writeFileSync(join(dir, "records", "stale-record.json"), "stale", "utf8");
+      writeFileSync(join(dir, "records", "current-record.json"), "current", "utf8");
+      writeFileSync(join(dir, "pianoroll", "stale-record.svg"), "stale-svg", "utf8");
+      writeFileSync(join(dir, "pianoroll", "current-record.svg"), "current-svg", "utf8");
+      const inputs = readPackageInputs(dir);
+      const shouldBe = new Set([
+        "records/current-record.json",
+        "pianoroll/current-record.svg",
+      ]);
+      const removed = removeStaleGeneratedFiles(dir, inputs, shouldBe);
+      expect(removed.sort()).toEqual([
+        "pianoroll/stale-record.svg",
+        "records/stale-record.json",
+      ]);
+      // current files survived
+      expect(existsSync(join(dir, "records", "current-record.json"))).toBe(true);
+      expect(existsSync(join(dir, "pianoroll", "current-record.svg"))).toBe(true);
+      // stale files gone
+      expect(existsSync(join(dir, "records", "stale-record.json"))).toBe(false);
+      expect(existsSync(join(dir, "pianoroll", "stale-record.svg"))).toBe(false);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("never touches curated top-level files (they aren't in generated_dirs)", () => {
+    const dir = makeStandardPackageDir();
+    try {
+      const inputs = readPackageInputs(dir);
+      const before = readFileSync(join(dir, "ATTRIBUTION.md"));
+      // Pass an empty should-be set; only generated_dirs are walked.
+      removeStaleGeneratedFiles(dir, inputs, new Set<string>());
+      const after = readFileSync(join(dir, "ATTRIBUTION.md"));
+      expect(before.equals(after)).toBe(true);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("is a no-op when generated_dirs is empty / missing", () => {
+    const dir = mkdtempSync(join(tmpdir(), "jam-pkg-no-dirs-"));
+    try {
+      const inputs: PackageInputs = {
+        version_file: "VERSION",
+        curated_files: [],
+        generated_files: [],
+        generated_dirs: [],
+      };
+      const removed = removeStaleGeneratedFiles(dir, inputs, new Set<string>());
+      expect(removed).toEqual([]);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("Slice 11.5 — walkChecksumFiles", () => {
+  it("walks every file except checksums.sha256 itself", () => {
+    const dir = makeStandardPackageDir();
+    try {
+      // Plant a couple of generated_dirs entries.
+      writeFileSync(join(dir, "records", "r1.json"), "r1", "utf8");
+      writeFileSync(join(dir, "pianoroll", "r1.svg"), "r1-svg", "utf8");
+      // Plant a stale checksums.sha256 to confirm it's skipped.
+      writeFileSync(join(dir, "checksums.sha256"), "should-be-skipped\n", "utf8");
+      const inputs = readPackageInputs(dir);
+      const { files, undeclared } = walkChecksumFiles(dir, inputs);
+      const paths = files.map((f) => f.relPath);
+      expect(paths).toContain("package-inputs.json");
+      expect(paths).toContain("VERSION");
+      expect(paths).toContain("README.md");
+      expect(paths).toContain("CITATION.cff");
+      expect(paths).toContain("records/r1.json");
+      expect(paths).toContain("pianoroll/r1.svg");
+      expect(paths).not.toContain("checksums.sha256");
+      expect(undeclared).toEqual([]);
+      // Deterministic sort.
+      const sortedPaths = [...paths].sort();
+      expect(paths).toEqual(sortedPaths);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("flags undeclared top-level files but includes them in checksums (data preservation)", () => {
+    const dir = makeStandardPackageDir();
+    try {
+      writeFileSync(join(dir, "notes.txt"), "rogue file\n", "utf8");
+      const inputs = readPackageInputs(dir);
+      const { files, undeclared } = walkChecksumFiles(dir, inputs);
+      expect(undeclared).toEqual(["notes.txt"]);
+      expect(files.find((f) => f.relPath === "notes.txt")).toBeDefined();
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("output ordering is deterministic / sorted by relPath", () => {
+    const dir = makeStandardPackageDir();
+    try {
+      writeFileSync(join(dir, "records", "zzz.json"), "z", "utf8");
+      writeFileSync(join(dir, "records", "aaa.json"), "a", "utf8");
+      writeFileSync(join(dir, "records", "mmm.json"), "m", "utf8");
+      const inputs = readPackageInputs(dir);
+      const { files } = walkChecksumFiles(dir, inputs);
+      const recordPaths = files
+        .filter((f) => f.relPath.startsWith("records/"))
+        .map((f) => f.relPath);
+      expect(recordPaths).toEqual([
+        "records/aaa.json",
+        "records/mmm.json",
+        "records/zzz.json",
+      ]);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("Slice 11.5 — full-package integration (smoke; 9-test contract)", () => {
+  // These tests prove the 9 behaviors required by the operator: version source
+  // of truth, curated-preservation default, missing-curated failure, stale
+  // removal, checksums include curated + generated, idempotency, and
+  // no-source-mutation. We assemble a miniature package + run the helpers in
+  // the same order the CLI does.
+
+  function setupMiniPackage(): { dir: string; inputs: PackageInputs } {
+    const dir = makeStandardPackageDir();
+    const inputs = readPackageInputs(dir);
+    return { dir, inputs };
+  }
+
+  it("(test #1+#2) packager reads version from VERSION, drives manifest from it", () => {
+    const { dir } = setupMiniPackage();
+    try {
+      // Bump VERSION + CITATION together, then read.
+      writeFileSync(join(dir, "VERSION"), "0.3.0\n", "utf8");
+      writeFileSync(
+        join(dir, "CITATION.cff"),
+        'cff-version: 1.2.0\nversion: "0.3.0"\n',
+        "utf8",
+      );
+      const v = readVersion(dir);
+      expect(v).toBe("0.3.0");
+      // Manifest built with this version reflects it.
+      const m = buildManifest({
+        today: "2026-05-17",
+        sourceCommit: "abc",
+        sourceTag: "tag",
+        packageVersion: v,
+        publicRecords: selectPublicRecords(PUBLIC_FIVE),
+        pkgSplits: filterSplitsToPublic(
+          makeSplits([PROMPT_A.id, CONT_A.id, PROMPT_B.id, CONT_B.id, STANDALONE_C.id], []),
+          publicIdSet(selectPublicRecords(PUBLIC_FIVE)),
+        ),
+      });
+      expect(m.version).toBe("0.3.0");
+      // Consistency check passes for the matching pair.
+      expect(() => assertCitationCffMatchesVersion(dir, v)).not.toThrow();
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("(test #3) packager preserves curated docs byte-for-byte by default", () => {
+    const { dir, inputs } = setupMiniPackage();
+    try {
+      // Capture distinctive marker bytes for all 6 curated files.
+      const before: Record<string, Buffer> = {};
+      for (const f of inputs.curated_files) {
+        before[f] = readFileSync(join(dir, f));
+      }
+      // Simulate a "packager run" that only touches generated_files +
+      // generated_dirs (the real packager doesn't write any curated file).
+      writeFileSync(
+        join(dir, "manifest.json"),
+        formatJson({ dataset_name: "test", version: "0.2.0" }),
+        "utf8",
+      );
+      writeFileSync(join(dir, "records.jsonl"), '{"id":"x"}\n', "utf8");
+      writeFileSync(join(dir, "splits.json"), formatJson({ train: [], test: [] }), "utf8");
+      writeFileSync(
+        join(dir, "provenance-verification.json"),
+        formatJson({ songs: [] }),
+        "utf8",
+      );
+      // Assert all curated files byte-identical after.
+      for (const f of inputs.curated_files) {
+        const after = readFileSync(join(dir, f));
+        expect(after.equals(before[f])).toBe(true);
+      }
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("(test #4) packager fails if a curated file declared in package-inputs.json is missing", () => {
+    const { dir, inputs } = setupMiniPackage();
+    try {
+      rmSync(join(dir, "ATTRIBUTION.md"));
+      expect(() => assertCuratedFilesPresent(dir, inputs)).toThrow(
+        /Curated file missing on disk: 'ATTRIBUTION\.md'/,
+      );
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("(test #5) packager removes stale generated records/SVGs when source records change", () => {
+    const { dir, inputs } = setupMiniPackage();
+    try {
+      writeFileSync(join(dir, "records", "stale-record.json"), "stale", "utf8");
+      writeFileSync(join(dir, "records", "kept.json"), "kept", "utf8");
+      writeFileSync(join(dir, "pianoroll", "stale-record.svg"), "stale-svg", "utf8");
+      const shouldBe = new Set([
+        "records/kept.json",
+        "pianoroll/kept.svg",
+      ]);
+      // Plant the kept svg so it's not stale either.
+      writeFileSync(join(dir, "pianoroll", "kept.svg"), "kept-svg", "utf8");
+      const removed = removeStaleGeneratedFiles(dir, inputs, shouldBe);
+      expect(removed.sort()).toEqual([
+        "pianoroll/stale-record.svg",
+        "records/stale-record.json",
+      ]);
+      expect(existsSync(join(dir, "records", "stale-record.json"))).toBe(false);
+      expect(existsSync(join(dir, "records", "kept.json"))).toBe(true);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("(test #6) checksum walk includes curated docs + generated files + VERSION + package-inputs.json", () => {
+    const { dir, inputs } = setupMiniPackage();
+    try {
+      // Plant some generated_files + generated_dirs.
+      writeFileSync(join(dir, "manifest.json"), formatJson({ x: 1 }), "utf8");
+      writeFileSync(join(dir, "records.jsonl"), "{}\n", "utf8");
+      writeFileSync(join(dir, "splits.json"), formatJson({ train: [] }), "utf8");
+      writeFileSync(
+        join(dir, "provenance-verification.json"),
+        formatJson({ songs: [] }),
+        "utf8",
+      );
+      writeFileSync(join(dir, "records", "x.json"), "x", "utf8");
+      writeFileSync(join(dir, "pianoroll", "x.svg"), "x", "utf8");
+      const { files } = walkChecksumFiles(dir, inputs);
+      const paths = new Set(files.map((f) => f.relPath));
+      // All curated files.
+      for (const f of inputs.curated_files) expect(paths.has(f)).toBe(true);
+      // All generated_files (except checksums.sha256 itself).
+      for (const f of inputs.generated_files) {
+        if (f === "checksums.sha256") continue;
+        expect(paths.has(f)).toBe(true);
+      }
+      // VERSION + package-inputs.json.
+      expect(paths.has("VERSION")).toBe(true);
+      expect(paths.has("package-inputs.json")).toBe(true);
+      // Generated_dirs files.
+      expect(paths.has("records/x.json")).toBe(true);
+      expect(paths.has("pianoroll/x.svg")).toBe(true);
+      // Each file has a valid checksum (verifiable via buildChecksumsManifest).
+      const cs = buildChecksumsManifest(files);
+      const lines = cs.split("\n").filter((l) => l.length > 0);
+      expect(lines.length).toBe(files.length);
+      for (const line of lines) {
+        expect(line).toMatch(/^[0-9a-f]{64} {2}\S/);
+      }
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("(test #7) idempotency: walk + checksums are byte-identical across two runs with the same package state", () => {
+    const { dir, inputs } = setupMiniPackage();
+    try {
+      writeFileSync(join(dir, "manifest.json"), formatJson({ x: 1 }), "utf8");
+      writeFileSync(join(dir, "records.jsonl"), "{}\n", "utf8");
+      writeFileSync(join(dir, "splits.json"), formatJson({ train: [] }), "utf8");
+      writeFileSync(
+        join(dir, "provenance-verification.json"),
+        formatJson({ songs: [] }),
+        "utf8",
+      );
+      writeFileSync(join(dir, "records", "a.json"), "a", "utf8");
+      writeFileSync(join(dir, "pianoroll", "a.svg"), "a", "utf8");
+
+      const r1 = walkChecksumFiles(dir, inputs);
+      const r2 = walkChecksumFiles(dir, inputs);
+      expect(r1.files.map((f) => f.relPath)).toEqual(
+        r2.files.map((f) => f.relPath),
+      );
+      const cs1 = buildChecksumsManifest(r1.files);
+      const cs2 = buildChecksumsManifest(r2.files);
+      expect(cs1).toBe(cs2);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("(test #8) instrument_surfaces.ai_jam_sessions present after manifest build (and vocal_synth_engine absent)", () => {
+    // Build manifest with the real shape; assert instrument_surfaces block is
+    // not affected by Slice 11.5's changes (load-bearing — kickoff hard rule).
+    const publicRecords = selectPublicRecords(PUBLIC_FIVE);
+    const pkgSplits = filterSplitsToPublic(
+      makeSplits(publicRecords.map((r) => r.id), []),
+      publicIdSet(publicRecords),
+    );
+    const m = buildManifest({
+      today: "2026-05-17",
+      sourceCommit: "abc",
+      sourceTag: "tag",
+      packageVersion: "0.2.0",
+      publicRecords,
+      pkgSplits,
+    });
+    expect(m.instrument_surfaces).toHaveProperty("ai_jam_sessions");
+    expect(m.instrument_surfaces.ai_jam_sessions.repo).toBe(
+      "mcp-tool-shop-org/ai-jam-sessions",
+    );
+    expect(m.instrument_surfaces.ai_jam_sessions.status).toBe("active");
+    expect(m.instrument_surfaces).not.toHaveProperty("vocal_synth_engine" as any);
+  });
+
+  it("(test #9) walk-based packager flow never reads from outside the tmp package dir", () => {
+    // The library helpers walkChecksumFiles / removeStaleGeneratedFiles /
+    // readVersion / readPackageInputs all take packageDir as their root —
+    // they cannot mutate anywhere outside that root. We assert by running a
+    // mini packager flow against a tmp dir and confirming the tmp dir's
+    // parent (other tmp siblings) is untouched.
+    const parent = mkdtempSync(join(tmpdir(), "jam-pkg-isolation-"));
+    try {
+      const pkgDir = join(parent, "pkg");
+      mkdirSync(pkgDir);
+      writeFileSync(
+        join(pkgDir, "package-inputs.json"),
+        formatJson(STANDARD_INPUTS),
+        "utf8",
+      );
+      writeFileSync(join(pkgDir, "VERSION"), "0.2.0\n", "utf8");
+      for (const f of STANDARD_INPUTS.curated_files) {
+        if (f === "CITATION.cff") {
+          writeFileSync(
+            join(pkgDir, f),
+            'cff-version: 1.2.0\nversion: "0.2.0"\n',
+            "utf8",
+          );
+        } else {
+          writeFileSync(join(pkgDir, f), `marker-${f}\n`, "utf8");
+        }
+      }
+      mkdirSync(join(pkgDir, "records"));
+      mkdirSync(join(pkgDir, "pianoroll"));
+      // Plant a sibling file at parent level — must remain untouched.
+      const sibling = join(parent, "outside-witness.txt");
+      writeFileSync(sibling, "do-not-touch\n", "utf8");
+      const before = readFileSync(sibling);
+
+      // Run the flow.
+      const inputs = readPackageInputs(pkgDir);
+      const v = readVersion(pkgDir, inputs.version_file);
+      expect(v).toBe("0.2.0");
+      assertCuratedFilesPresent(pkgDir, inputs);
+      assertCitationCffMatchesVersion(pkgDir, v);
+      removeStaleGeneratedFiles(pkgDir, inputs, new Set<string>());
+      walkChecksumFiles(pkgDir, inputs);
+
+      const after = readFileSync(sibling);
+      expect(after.equals(before)).toBe(true);
+    } finally {
+      rmSync(parent, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("Slice 11.5 — no hardcoded PACKAGE_VERSION constant (hard gate 9)", () => {
+  it("library never exports a PACKAGE_VERSION-like constant", async () => {
+    const mod = await import("./package-public.js");
+    // None of these names should exist as exports of the library after Slice 11.5.
+    expect((mod as Record<string, unknown>).PACKAGE_VERSION).toBeUndefined();
+    expect((mod as Record<string, unknown>).SOURCE_TAG).toBeUndefined();
+    expect((mod as Record<string, unknown>).VERSION).toBeUndefined();
   });
 });

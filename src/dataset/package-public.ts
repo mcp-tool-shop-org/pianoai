@@ -5,8 +5,17 @@
 // `datasets/jam-actions-v0-public/` for Zenodo primary release + HuggingFace
 // mirror.
 //
+// Slice 11.5 — packager durability fix. The package directory now declares its
+// own input shape in `package-inputs.json` (curated_files vs generated_files
+// vs generated_dirs). Library helpers (readPackageInputs, readVersion,
+// assertVersionConsistency, removeStaleGeneratedFiles, walkChecksumFiles)
+// drive the packager off that declaration so curated docs are preserved by
+// default and version is sourced from VERSION (single source of truth).
+//
 // This module contains the pure-data logic (filter, serialize, manifest build,
-// checksum manifest). All filesystem I/O lives in `scripts/package-jam-actions-public.ts`.
+// checksum manifest) PLUS the lightweight filesystem helpers needed for the
+// package-inputs.json contract. The CLI script at
+// `scripts/package-jam-actions-public.ts` is the orchestrator.
 //
 // Contract:
 //   - Filters by `provenance.record_verdict === "public"` (115 records expected)
@@ -17,11 +26,25 @@
 //     `split` field per line
 //   - checksums.sha256 lists every other package file, sorted by path, format:
 //       <64-char-hex>  <relative-path>
+//   - VERSION is the single source of truth for package version; CITATION.cff
+//     version must match (consistency-checked; never auto-edited)
+//   - Curated files listed in package-inputs.json are preserved byte-for-byte
+//     across packager runs; generated_files / generated_dirs are overwritten;
+//     stale files in generated_dirs that fall out of the source filter are
+//     removed before the current set is written.
 //
 // Reproducibility: pure functions, no `new Date()`, no Math.random.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { createHash } from "node:crypto";
+import {
+  existsSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  statSync,
+} from "node:fs";
+import { join, relative, sep } from "node:path";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -602,4 +625,429 @@ export function buildChecksumsManifest(
 /** Stable JSON formatter — 2-space indent + trailing newline, matching source. */
 export function formatJson(obj: unknown): string {
   return JSON.stringify(obj, null, 2) + "\n";
+}
+
+// ─── package-inputs.json + VERSION + CITATION.cff (Slice 11.5) ───────────────
+
+/**
+ * Shape of `<packageDir>/package-inputs.json`. This file is the contract that
+ * tells the packager which files in the package directory are curated (read-
+ * only, preserved byte-for-byte) vs generated (regenerated every run).
+ *
+ * `version_file` (relative path to a file containing the package version)
+ *   - Single source of truth for package version
+ *   - Required field
+ *
+ * `curated_files` (array of relative paths)
+ *   - These files are READ ONLY by the packager
+ *   - Missing-on-disk: packager FAILS with informative error
+ *   - Empty-on-disk: packager WARNS, continues
+ *
+ * `generated_files` (array of relative paths)
+ *   - Top-level files the packager regenerates each run
+ *
+ * `generated_dirs` (array of relative directory paths)
+ *   - Directories whose contents the packager fully regenerates each run.
+ *   - Files in this directory that are NOT in the current source filter set
+ *     are DELETED (stale-removal) before the current set is written.
+ *
+ * `package-inputs.json` itself is implicitly tracked (always checksummed; not
+ * listed in any of the above arrays). `checksums.sha256` is implicit too (it
+ * cannot checksum itself).
+ *
+ * Invariant: no file path may appear in more than one of the three arrays
+ * (curated_files / generated_files / generated_dirs). The
+ * `assertPackageInputsValid` helper enforces this.
+ */
+export interface PackageInputs {
+  version_file: string;
+  curated_files: string[];
+  generated_files: string[];
+  generated_dirs: string[];
+}
+
+/**
+ * Read and validate `<packageDir>/package-inputs.json`.
+ *
+ * Throws if:
+ *   - file missing (bootstrap error — Slice 11.5 is the first to create it)
+ *   - JSON parse failure
+ *   - shape failure (missing required field or wrong type)
+ *   - same path appears in more than one of curated_files / generated_files /
+ *     generated_dirs (conflicting input declaration)
+ */
+export function readPackageInputs(packageDir: string): PackageInputs {
+  const inputsPath = join(packageDir, "package-inputs.json");
+  if (!existsSync(inputsPath)) {
+    throw new Error(
+      `package-inputs.json missing at ${inputsPath}. ` +
+        `The packager requires this file to know which files are curated vs generated. ` +
+        `See Slice 11.5 documentation for the required shape.`,
+    );
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(readFileSync(inputsPath, "utf8"));
+  } catch (err) {
+    throw new Error(
+      `package-inputs.json parse error at ${inputsPath}: ${(err as Error).message}`,
+    );
+  }
+  assertPackageInputsValid(parsed);
+  return parsed;
+}
+
+/**
+ * Validate the shape of a parsed package-inputs.json and check for conflicting
+ * declarations (same path in more than one array, or version_file overlapping
+ * curated/generated).
+ *
+ * Throws on any validation failure with an actionable message.
+ */
+export function assertPackageInputsValid(
+  parsed: unknown,
+): asserts parsed is PackageInputs {
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw new Error(
+      "package-inputs.json must be a JSON object (got " +
+        (Array.isArray(parsed) ? "array" : typeof parsed) +
+        ").",
+    );
+  }
+  const p = parsed as Record<string, unknown>;
+  if (typeof p.version_file !== "string" || p.version_file.length === 0) {
+    throw new Error(
+      "package-inputs.json missing required string field: version_file",
+    );
+  }
+  for (const key of ["curated_files", "generated_files", "generated_dirs"]) {
+    if (!Array.isArray(p[key])) {
+      throw new Error(
+        `package-inputs.json field '${key}' must be an array of strings`,
+      );
+    }
+    for (const v of p[key] as unknown[]) {
+      if (typeof v !== "string" || v.length === 0) {
+        throw new Error(
+          `package-inputs.json field '${key}' contains a non-string or empty entry`,
+        );
+      }
+    }
+  }
+  const curated = new Set(p.curated_files as string[]);
+  const generated = new Set(p.generated_files as string[]);
+  const dirs = new Set(p.generated_dirs as string[]);
+  const versionFile = p.version_file as string;
+
+  // No overlap between any two of the three arrays.
+  for (const v of curated) {
+    if (generated.has(v)) {
+      throw new Error(
+        `package-inputs.json: '${v}' appears in BOTH curated_files and generated_files (conflicting input declaration)`,
+      );
+    }
+    if (dirs.has(v)) {
+      throw new Error(
+        `package-inputs.json: '${v}' appears in BOTH curated_files and generated_dirs (conflicting input declaration)`,
+      );
+    }
+    if (v === versionFile) {
+      throw new Error(
+        `package-inputs.json: '${v}' is listed in curated_files AND is the version_file (it is implicitly tracked as version_file; do not list it explicitly)`,
+      );
+    }
+  }
+  for (const v of generated) {
+    if (dirs.has(v)) {
+      throw new Error(
+        `package-inputs.json: '${v}' appears in BOTH generated_files and generated_dirs (conflicting input declaration)`,
+      );
+    }
+    if (v === versionFile) {
+      throw new Error(
+        `package-inputs.json: '${v}' is listed in generated_files AND is the version_file (conflicting input declaration)`,
+      );
+    }
+  }
+  for (const v of dirs) {
+    if (v === versionFile) {
+      throw new Error(
+        `package-inputs.json: '${v}' is listed in generated_dirs AND is the version_file (conflicting input declaration)`,
+      );
+    }
+  }
+  // package-inputs.json must NOT list itself (it is implicitly tracked).
+  // checksums.sha256, by kickoff design, IS listed in generated_files so
+  // operators can see at a glance what the packager regenerates. The
+  // packager treats it specially: it never includes checksums.sha256 in its
+  // own listing (you can't checksum a file with its own checksum inside).
+  if (
+    curated.has("package-inputs.json") ||
+    generated.has("package-inputs.json") ||
+    dirs.has("package-inputs.json")
+  ) {
+    throw new Error(
+      `package-inputs.json: 'package-inputs.json' must not be listed (it is implicitly tracked by the packager)`,
+    );
+  }
+}
+
+/**
+ * Read the VERSION file from the package directory. Trims surrounding
+ * whitespace (including a trailing newline). Throws if the file is missing or
+ * empty after trim.
+ *
+ * The package version is the SINGLE SOURCE OF TRUTH; manifest.json.version is
+ * derived from it, and CITATION.cff.version is consistency-checked against it.
+ */
+export function readVersion(
+  packageDir: string,
+  versionFileName = "VERSION",
+): string {
+  const versionPath = join(packageDir, versionFileName);
+  if (!existsSync(versionPath)) {
+    throw new Error(
+      `VERSION file missing at ${versionPath}. ` +
+        `The packager requires this file as the single source of truth for the package version.`,
+    );
+  }
+  const raw = readFileSync(versionPath, "utf8");
+  const trimmed = raw.trim();
+  if (trimmed.length === 0) {
+    throw new Error(
+      `VERSION file at ${versionPath} is empty after trim. The packager requires a non-empty version string.`,
+    );
+  }
+  return trimmed;
+}
+
+/**
+ * Find the `version: "X.Y.Z"` line in a CITATION.cff document and return the
+ * declared version string. Returns null if the field is absent.
+ *
+ * CFF version syntax (per cff-version 1.2.0): `version: "0.2.0"` or
+ * `version: 0.2.0` (quoted or bare). This helper handles both. Multi-line
+ * version values are not part of the CFF spec; this helper returns null on
+ * malformed input rather than guessing.
+ */
+export function extractCitationCffVersion(cffText: string): string | null {
+  // Split on universal newlines so Windows / Unix file endings both work.
+  const lines = cffText.split(/\r?\n/);
+  for (const rawLine of lines) {
+    // CFF is YAML; `version:` is a top-level key. We look for lines that start
+    // with `version:` (no indent, no '#' comment prefix). Trailing comments
+    // after the value are allowed but rare in shipped CFF.
+    const m = /^version:\s*(.+?)\s*$/.exec(rawLine);
+    if (!m) continue;
+    if (rawLine.startsWith("#")) continue;
+    let value = m[1].trim();
+    // Strip trailing inline comment.
+    const hashIdx = value.indexOf(" #");
+    if (hashIdx >= 0) value = value.substring(0, hashIdx).trim();
+    // Strip surrounding double or single quotes.
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.substring(1, value.length - 1);
+    }
+    if (value.length === 0) return null;
+    return value;
+  }
+  return null;
+}
+
+/**
+ * Consistency check: assert that CITATION.cff's `version` field matches the
+ * package version (from VERSION). This treats CITATION.cff as truly curated —
+ * the packager READS it but never WRITES to it.
+ *
+ * Behavior:
+ *   - CITATION.cff missing from disk: throws (curated-file-missing error in
+ *     readPackageInputs handles this earlier; this helper assumes it exists)
+ *   - CITATION.cff has no version field: throws ("missing version field")
+ *   - CITATION.cff version != versionString: throws (mismatch error;
+ *     instructs operator to edit CITATION.cff manually)
+ *   - Match: returns void (no-op)
+ *
+ * Manual bump procedure for a future version:
+ *   1. Edit VERSION
+ *   2. Edit CITATION.cff version field
+ *   3. Run the packager — it picks up VERSION, regenerates manifest.json,
+ *      asserts CITATION.cff matches, succeeds.
+ */
+export function assertCitationCffMatchesVersion(
+  packageDir: string,
+  versionString: string,
+  citationFileName = "CITATION.cff",
+): void {
+  const cffPath = join(packageDir, citationFileName);
+  if (!existsSync(cffPath)) {
+    throw new Error(
+      `CITATION.cff missing at ${cffPath}. ` +
+        `The packager requires this curated file to consistency-check its version field.`,
+    );
+  }
+  const cffText = readFileSync(cffPath, "utf8");
+  const cffVersion = extractCitationCffVersion(cffText);
+  if (cffVersion === null) {
+    throw new Error(
+      `CITATION.cff at ${cffPath} has no 'version' field. ` +
+        `Add a 'version: "${versionString}"' line to CITATION.cff (matching VERSION).`,
+    );
+  }
+  if (cffVersion !== versionString) {
+    throw new Error(
+      `Version mismatch: VERSION says "${versionString}" but CITATION.cff says "${cffVersion}". ` +
+        `Update CITATION.cff manually to match VERSION before packaging. ` +
+        `The packager treats CITATION.cff as curated content and never auto-edits it.`,
+    );
+  }
+}
+
+/**
+ * Assert that every curated file listed in package-inputs.json exists on disk.
+ * Throws on the first missing file with an actionable message.
+ *
+ * Empty (zero-byte) curated files are NOT fatal — caller may choose to warn
+ * via the returned `emptyFiles` array.
+ */
+export function assertCuratedFilesPresent(
+  packageDir: string,
+  inputs: PackageInputs,
+): { emptyFiles: string[] } {
+  const emptyFiles: string[] = [];
+  for (const rel of inputs.curated_files) {
+    const full = join(packageDir, rel);
+    if (!existsSync(full)) {
+      throw new Error(
+        `Curated file missing on disk: '${rel}' (declared in package-inputs.json.curated_files). ` +
+          `The packager will not silently regenerate hand-curated content. ` +
+          `Restore '${rel}' from git, or remove it from package-inputs.json if it is no longer curated.`,
+      );
+    }
+    const sz = statSync(full).size;
+    if (sz === 0) emptyFiles.push(rel);
+  }
+  return { emptyFiles };
+}
+
+/**
+ * Remove stale entries from `generated_dirs`. Given the package directory,
+ * the package-inputs.json, and the canonical set of relative paths that
+ * SHOULD be present (e.g., `records/songA-m001-004.json`, ...),
+ * delete any file currently in `generated_dirs` whose relative path is NOT
+ * in the should-be set.
+ *
+ * Returns the list of removed relative paths (for logging).
+ *
+ * This function does NOT write the current set — that is the caller's job
+ * after stale removal completes.
+ */
+export function removeStaleGeneratedFiles(
+  packageDir: string,
+  inputs: PackageInputs,
+  shouldBePresent: Set<string>,
+): string[] {
+  const removed: string[] = [];
+  for (const dir of inputs.generated_dirs) {
+    const dirAbs = join(packageDir, dir);
+    if (!existsSync(dirAbs)) continue;
+    const stack: string[] = [dirAbs];
+    while (stack.length > 0) {
+      const cur = stack.pop()!;
+      for (const entry of readdirSync(cur)) {
+        const full = join(cur, entry);
+        const st = statSync(full);
+        if (st.isDirectory()) {
+          stack.push(full);
+          continue;
+        }
+        const relPath = relToPosix(packageDir, full);
+        if (!shouldBePresent.has(relPath)) {
+          rmSync(full);
+          removed.push(relPath);
+        }
+      }
+    }
+  }
+  return removed;
+}
+
+/** Helper: relative path from packageDir to fileAbs in POSIX form. */
+function relToPosix(packageDir: string, fileAbs: string): string {
+  let rel = relative(packageDir, fileAbs);
+  if (sep !== "/") rel = rel.split(sep).join("/");
+  return rel;
+}
+
+/**
+ * Walk the package directory and collect every file that should appear in
+ * `checksums.sha256` — i.e., every file under `packageDir` EXCEPT
+ * `checksums.sha256` itself. The walk includes:
+ *   - package-inputs.json
+ *   - VERSION file
+ *   - all curated_files
+ *   - all generated_files
+ *   - everything under generated_dirs
+ *   - any UNDECLARED files (warn-and-include per Slice 11.5 spec: preserve
+ *     data; flag the unknown for human review)
+ *
+ * Returns:
+ *   { files: [{ relPath, content }], undeclared: [...rel] }
+ *
+ * The caller is responsible for printing the warning lines for undeclared
+ * files (this library function returns data, not side effects).
+ */
+export function walkChecksumFiles(
+  packageDir: string,
+  inputs: PackageInputs,
+): {
+  files: Array<{ relPath: string; content: Buffer }>;
+  undeclared: string[];
+} {
+  if (!existsSync(packageDir)) {
+    throw new Error(`walkChecksumFiles: packageDir does not exist: ${packageDir}`);
+  }
+  const files: Array<{ relPath: string; content: Buffer }> = [];
+  const undeclared: string[] = [];
+
+  // Declared set: every path that the package-inputs.json contract explicitly
+  // accounts for, including version_file and (implicitly) package-inputs.json.
+  const declaredAtTopLevel = new Set<string>([
+    "package-inputs.json",
+    inputs.version_file,
+    ...inputs.curated_files,
+    ...inputs.generated_files,
+  ]);
+  const declaredDirPrefixes = inputs.generated_dirs.map((d) => `${d}/`);
+
+  const stack: string[] = [packageDir];
+  while (stack.length > 0) {
+    const cur = stack.pop()!;
+    for (const entry of readdirSync(cur)) {
+      const full = join(cur, entry);
+      const st = statSync(full);
+      if (st.isDirectory()) {
+        stack.push(full);
+        continue;
+      }
+      const relPath = relToPosix(packageDir, full);
+      if (relPath === "checksums.sha256") continue;
+
+      const isDeclaredTop = declaredAtTopLevel.has(relPath);
+      const isInDeclaredDir = declaredDirPrefixes.some((pfx) =>
+        relPath.startsWith(pfx),
+      );
+      if (!isDeclaredTop && !isInDeclaredDir) {
+        undeclared.push(relPath);
+      }
+      files.push({ relPath, content: readFileSync(full) });
+    }
+  }
+  // Deterministic ordering — sort by path so buildChecksumsManifest's sorted
+  // output is stable across runs.
+  files.sort((a, b) => (a.relPath < b.relPath ? -1 : a.relPath > b.relPath ? 1 : 0));
+  undeclared.sort();
+  return { files, undeclared };
 }
