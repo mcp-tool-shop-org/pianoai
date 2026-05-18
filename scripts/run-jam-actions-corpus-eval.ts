@@ -24,11 +24,16 @@
 //   --n <K>                 (Slice 14) number of runs per record/pair. Default 1.
 //                           K>1 writes corpus-eval-results/2.0.0 schema with
 //                           per-record runs:[K] + aggregate stats.
-//   --sample-filter <name>  (Slice 14/16) restrict the sample plan to a named
-//                           subset. Filters:
+//   --sample-filter <name>  (Slice 14/16/17/18) restrict the sample plan to a
+//                           named subset. Filters:
 //                             all              (default — full plan, no filter)
 //                             enriched-only    — 6 enriched records / 4 enriched pairs only
 //                             slice16-cohort   — Slice 16 3-record cohort (E3 only)
+//                             slice17-cohort   — Slice 17 3-record demo cohort (e3-tool only)
+//                             slice18-cohort   — Slice 18 13-record stratified cohort
+//                                                (e3-tool only; legacy E1/E2/E3 empty;
+//                                                clair-de-lune included for test-holdout
+//                                                integrity check)
 //
 // Output (default):
 //   datasets/jam-actions-v0-public/evals/corpus-scale-qwen2.5-7b-results.json
@@ -86,13 +91,19 @@ const PUBLIC_EVALS_DIR = join(PUBLIC_DIR, "evals");
 // ─── Args ──────────────────────────────────────────────────────────────────────
 
 type EvalName = "e1" | "e2" | "e3" | "e3-tool";
-type SampleFilter = "all" | "enriched-only" | "slice16-cohort" | "slice17-cohort";
+type SampleFilter =
+  | "all"
+  | "enriched-only"
+  | "slice16-cohort"
+  | "slice17-cohort"
+  | "slice18-cohort";
 
 const SAMPLE_FILTERS: readonly SampleFilter[] = [
   "all",
   "enriched-only",
   "slice16-cohort",
   "slice17-cohort",
+  "slice18-cohort",
 ] as const;
 
 /**
@@ -122,6 +133,41 @@ const SLICE_17_COHORT_RECORD_IDS: readonly string[] = [
   "pathetique-mvt2:m025-028:piano:mcp-session:v1",
   "pathetique-mvt2:m001-004:piano:mcp-session:v1",
   "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1",
+];
+
+/**
+ * Slice 18: the 13-record stratified cohort for tool-inspected corpus
+ * validation. Tests whether Slice 17's Pathétique result generalizes:
+ *  - Stratum A — Dense Bach controls (4 records): tests Bach regression
+ *  - Stratum B — Pathétique (4 records): tests Pathétique pattern
+ *  - Stratum C — Schumann (2 records): sparse-melody pattern
+ *  - Stratum D — Chopin Nocturne (2 records): variety
+ *  - Stratum E — Test holdout (1 record): clair-de-lune integrity check
+ *
+ * When this filter is set, only the e3-tool evaluator runs against this
+ * iteration list; legacy E1/E2/E3 iteration lists become empty (legacy
+ * n=3 data is REUSED from Slice 14/16/17 artifacts where available, n=1
+ * corpus-scale data otherwise, with caveats documented in the slice doc).
+ */
+const SLICE_18_COHORT_RECORD_IDS: readonly string[] = [
+  // Stratum A — Dense Bach controls
+  "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1",
+  "bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1",
+  "bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1",
+  "bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1",
+  // Stratum B — Pathétique
+  "pathetique-mvt2:m001-004:piano:mcp-session:v1",
+  "pathetique-mvt2:m009-012:piano:mcp-session:v1",
+  "pathetique-mvt2:m017-020:piano:mcp-session:v1",
+  "pathetique-mvt2:m025-028:piano:mcp-session:v1",
+  // Stratum C — Schumann
+  "schumann-traumerei:m001-004:piano:mcp-session:v1",
+  "schumann-traumerei:m045-048:piano:mcp-session:v1",
+  // Stratum D — Chopin Nocturne
+  "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1",
+  "chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1",
+  // Stratum E — Test holdout
+  "clair-de-lune:m031-034:piano:mcp-session:v1",
 ];
 
 interface CliOpts {
@@ -252,11 +298,14 @@ Options:
                           K>1 enables multi-run aggregation: per-record
                           runs:[K] array + AggregateStats; corpus-eval-results
                           schema bumps from 1.0.0 to 2.0.0.
-  --sample-filter <name>  (Slice 14/16/17) restrict sample plan to a subset:
+  --sample-filter <name>  (Slice 14/16/17/18) restrict sample plan to a subset:
                             all              — full plan (default)
                             enriched-only    — 6 enriched records / 4 enriched pairs
                             slice16-cohort   — 3-record Slice 16 cohort (E3 only)
                             slice17-cohort   — 3-record Slice 17 demo (e3-tool only)
+                            slice18-cohort   — 13-record Slice 18 stratified cohort
+                                                (e3-tool only; Bach/Pathétique/
+                                                Schumann/Chopin/clair-de-lune)
   --help                  Show this help
 
 Sample plan (locked by kickoff):
@@ -445,6 +494,7 @@ if (plan.e2.enrichedPairsIncluded.length !== 4) {
 const enrichedRecordSet = new Set<string>(SLICE_11_ENRICHED_RECORD_IDS);
 const slice16CohortSet = new Set<string>(SLICE_16_COHORT_RECORD_IDS);
 const slice17CohortSet = new Set<string>(SLICE_17_COHORT_RECORD_IDS);
+const slice18CohortSet = new Set<string>(SLICE_18_COHORT_RECORD_IDS);
 
 function filterByCohort(ids: string[]): string[] {
   return ids.filter((id) => slice16CohortSet.has(id));
@@ -452,6 +502,10 @@ function filterByCohort(ids: string[]): string[] {
 
 function filterBySlice17Cohort(ids: string[]): string[] {
   return ids.filter((id) => slice17CohortSet.has(id));
+}
+
+function filterBySlice18Cohort(ids: string[]): string[] {
+  return ids.filter((id) => slice18CohortSet.has(id));
 }
 
 let filteredE1Ids: string[];
@@ -489,6 +543,22 @@ if (opts.sampleFilter === "enriched-only") {
   );
   filteredE3Ids = filterBySlice17Cohort(plan.e3.recordIds);
   filteredE3ToolIds = [...SLICE_17_COHORT_RECORD_IDS];
+} else if (opts.sampleFilter === "slice18-cohort") {
+  // Slice 18: corpus-validation cohort for the tool-inspected variant on
+  // 13 stratified records (Bach controls, Pathétique, Schumann, Chopin,
+  // clair-de-lune). Legacy E1/E2/E3 iteration lists are empty by design —
+  // legacy n=3 data is REUSED from Slice 14/16/17 artifacts and n=1
+  // corpus-scale data is consulted where n=3 doesn't exist, with caveats
+  // documented in the slice doc. The E3-tool iteration replaces the plan
+  // (some cohort ids — clair-de-lune:m031-034, Schumann m001-004, Chopin
+  // m009-012 — are not in the sampler's E3 plan, identical to the Slice 16
+  // cohort-replace pattern).
+  filteredE1Ids = filterBySlice18Cohort(plan.e1.recordIds);
+  filteredE2Pairs = plan.e2.pairs.filter(
+    (p) => slice18CohortSet.has(p.promptId) || slice18CohortSet.has(p.targetId),
+  );
+  filteredE3Ids = filterBySlice18Cohort(plan.e3.recordIds);
+  filteredE3ToolIds = [...SLICE_18_COHORT_RECORD_IDS];
 } else {
   filteredE1Ids = [...plan.e1.recordIds];
   filteredE2Pairs = [...plan.e2.pairs];
@@ -504,7 +574,12 @@ if (opts.sampleFilter !== "all") {
       `\n  E1 records: ${plan.e1.recordIds.length} -> ${filteredE1Ids.length}` +
       `\n  E2 pairs:   ${plan.e2.pairs.length} -> ${filteredE2Pairs.length}` +
       `\n  E3 records: ${plan.e3.recordIds.length} -> ${filteredE3Ids.length}` +
-      `\n  E3-tool records: ${filteredE3ToolIds.length} (Slice 17 demo cohort)`,
+      `\n  E3-tool records: ${filteredE3ToolIds.length}` +
+        (opts.sampleFilter === "slice17-cohort"
+          ? " (Slice 17 demo cohort)"
+          : opts.sampleFilter === "slice18-cohort"
+            ? " (Slice 18 stratified cohort)"
+            : ""),
   );
 }
 

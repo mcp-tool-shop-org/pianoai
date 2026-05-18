@@ -16,7 +16,9 @@
     "evals/slice16-e3-baseline-pre-enrichment-results.json",
     "evals/slice16-e3-rubric-cohort-results.json",
     "evals/slice17-e3-tool-inspected-results.json",
-    "evals/slice17-e3-tool-inspected-sample.json"
+    "evals/slice17-e3-tool-inspected-sample.json",
+    "evals/slice18-e3-tool-corpus-validation-results.json",
+    "evals/slice18-e3-tool-corpus-validation-sample.json"
   ],
   "generated_files": [
     "manifest.json",
