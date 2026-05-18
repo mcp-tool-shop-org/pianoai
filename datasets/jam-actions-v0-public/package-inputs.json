@@ -8,7 +8,8 @@
     "LICENSE-DATASET.md",
     "CITATION.cff",
     "evals/corpus-scale-qwen2.5-7b-results.json",
-    "evals/corpus-scale-qwen2.5-7b-sample.json"
+    "evals/corpus-scale-qwen2.5-7b-sample.json",
+    "evals/post-isolation-qwen2.5-7b-results.json"
   ],
   "generated_files": [
     "manifest.json",
