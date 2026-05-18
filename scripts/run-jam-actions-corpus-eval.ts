@@ -85,13 +85,14 @@ const PUBLIC_EVALS_DIR = join(PUBLIC_DIR, "evals");
 
 // ─── Args ──────────────────────────────────────────────────────────────────────
 
-type EvalName = "e1" | "e2" | "e3";
-type SampleFilter = "all" | "enriched-only" | "slice16-cohort";
+type EvalName = "e1" | "e2" | "e3" | "e3-tool";
+type SampleFilter = "all" | "enriched-only" | "slice16-cohort" | "slice17-cohort";
 
 const SAMPLE_FILTERS: readonly SampleFilter[] = [
   "all",
   "enriched-only",
   "slice16-cohort",
+  "slice17-cohort",
 ] as const;
 
 /**
@@ -105,6 +106,22 @@ const SLICE_16_COHORT_RECORD_IDS: readonly string[] = [
   "pathetique-mvt2:m001-004:piano:mcp-session:v1",
   "schumann-traumerei:m001-004:piano:mcp-session:v1",
   "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1",
+];
+
+/**
+ * Slice 17: the 3-record demo cohort for the tool-scaffolded E3 variant.
+ * - pathetique-mvt2:m025-028 — Slice 11/14 +0.417 margin "hero" record
+ * - pathetique-mvt2:m001-004 — Slice 16 cohort (0 margin via prose)
+ * - bach-prelude-c-major-bwv846:m009-012 — non-enriched control
+ *
+ * When this filter is set, only the new e3-tool evaluator runs; legacy E1/E2/E3
+ * iteration lists become empty (legacy n=3 data is REUSED from Slice 14/16
+ * artifacts, not regenerated here).
+ */
+const SLICE_17_COHORT_RECORD_IDS: readonly string[] = [
+  "pathetique-mvt2:m025-028:piano:mcp-session:v1",
+  "pathetique-mvt2:m001-004:piano:mcp-session:v1",
+  "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1",
 ];
 
 interface CliOpts {
@@ -123,21 +140,26 @@ interface CliOpts {
 }
 
 function parseEvalsList(raw: string): Set<EvalName> {
-  const allowed: ReadonlySet<EvalName> = new Set(["e1", "e2", "e3"] as const);
+  const allowed: ReadonlySet<EvalName> = new Set([
+    "e1",
+    "e2",
+    "e3",
+    "e3-tool",
+  ] as const);
   const out = new Set<EvalName>();
   for (const part of raw.split(",")) {
     const v = part.trim().toLowerCase();
     if (v === "") continue;
     if (!allowed.has(v as EvalName)) {
       console.error(
-        `ERROR: --evals contains unknown evaluator '${v}'. Allowed: e1, e2, e3.`,
+        `ERROR: --evals contains unknown evaluator '${v}'. Allowed: e1, e2, e3, e3-tool.`,
       );
       process.exit(1);
     }
     out.add(v as EvalName);
   }
   if (out.size === 0) {
-    console.error("ERROR: --evals must list at least one of e1, e2, e3.");
+    console.error("ERROR: --evals must list at least one of e1, e2, e3, e3-tool.");
     process.exit(1);
   }
   return out;
@@ -217,7 +239,8 @@ Options:
   --scope public|source   Sample pool (default: public — Slice 12 lock #2)
   --model <name>          Ollama model id (default: qwen2.5:7b — Slice 12 lock #1)
   --seed <string>         Sampler seed (default: slice12-2026-05-17)
-  --evals e1,e2,e3        Subset to run (default: e1,e2,e3 = all)
+  --evals e1,e2,e3        Subset to run (default: e1,e2,e3 = legacy three).
+                          Add 'e3-tool' for the Slice 17 tool-scaffolded variant.
   --output <path>         Override result artifact path (relative to PUBLIC_DIR
                           or absolute). Use to write focused-rerun results
                           without overwriting the canonical Slice 12 artifact.
@@ -229,10 +252,11 @@ Options:
                           K>1 enables multi-run aggregation: per-record
                           runs:[K] array + AggregateStats; corpus-eval-results
                           schema bumps from 1.0.0 to 2.0.0.
-  --sample-filter <name>  (Slice 14/16) restrict sample plan to a subset:
+  --sample-filter <name>  (Slice 14/16/17) restrict sample plan to a subset:
                             all              — full plan (default)
                             enriched-only    — 6 enriched records / 4 enriched pairs
                             slice16-cohort   — 3-record Slice 16 cohort (E3 only)
+                            slice17-cohort   — 3-record Slice 17 demo (e3-tool only)
   --help                  Show this help
 
 Sample plan (locked by kickoff):
@@ -420,18 +444,29 @@ if (plan.e2.enrichedPairsIncluded.length !== 4) {
 
 const enrichedRecordSet = new Set<string>(SLICE_11_ENRICHED_RECORD_IDS);
 const slice16CohortSet = new Set<string>(SLICE_16_COHORT_RECORD_IDS);
+const slice17CohortSet = new Set<string>(SLICE_17_COHORT_RECORD_IDS);
 
 function filterByCohort(ids: string[]): string[] {
   return ids.filter((id) => slice16CohortSet.has(id));
 }
 
+function filterBySlice17Cohort(ids: string[]): string[] {
+  return ids.filter((id) => slice17CohortSet.has(id));
+}
+
 let filteredE1Ids: string[];
 let filteredE2Pairs: typeof plan.e2.pairs;
 let filteredE3Ids: string[];
+/**
+ * Slice 17: the new e3-tool evaluator runs against this iteration list (the 3
+ * demo cohort records). Empty for non-slice17 filters.
+ */
+let filteredE3ToolIds: string[];
 if (opts.sampleFilter === "enriched-only") {
   filteredE1Ids = plan.e1.recordIds.filter((id) => enrichedRecordSet.has(id));
   filteredE2Pairs = plan.e2.pairs.filter((p) => p.containsEnriched);
   filteredE3Ids = plan.e3.recordIds.filter((id) => enrichedRecordSet.has(id));
+  filteredE3ToolIds = [];
 } else if (opts.sampleFilter === "slice16-cohort") {
   // Sample plan unchanged; iteration lists replaced with the 3-record cohort.
   // E3: explicit cohort ids (sample plan already contains Pathétique m001-004,
@@ -442,10 +477,25 @@ if (opts.sampleFilter === "enriched-only") {
     (p) => slice16CohortSet.has(p.promptId) || slice16CohortSet.has(p.targetId),
   );
   filteredE3Ids = [...SLICE_16_COHORT_RECORD_IDS];
+  filteredE3ToolIds = [];
+} else if (opts.sampleFilter === "slice17-cohort") {
+  // Slice 17: pure demo for the new tool-inspected variant. Legacy E1/E2/E3
+  // iteration lists are empty by design — legacy n=3 data is REUSED from
+  // Slice 14/16 artifacts when the slice doc reports the 4-condition table.
+  // Only --evals e3-tool produces fresh output under this filter.
+  filteredE1Ids = filterBySlice17Cohort(plan.e1.recordIds);
+  filteredE2Pairs = plan.e2.pairs.filter(
+    (p) => slice17CohortSet.has(p.promptId) || slice17CohortSet.has(p.targetId),
+  );
+  filteredE3Ids = filterBySlice17Cohort(plan.e3.recordIds);
+  filteredE3ToolIds = [...SLICE_17_COHORT_RECORD_IDS];
 } else {
   filteredE1Ids = [...plan.e1.recordIds];
   filteredE2Pairs = [...plan.e2.pairs];
   filteredE3Ids = [...plan.e3.recordIds];
+  filteredE3ToolIds = opts.evals.has("e3-tool")
+    ? [...plan.e3.recordIds]
+    : [];
 }
 
 if (opts.sampleFilter !== "all") {
@@ -453,7 +503,8 @@ if (opts.sampleFilter !== "all") {
     `\nSample filter '${opts.sampleFilter}' applied:` +
       `\n  E1 records: ${plan.e1.recordIds.length} -> ${filteredE1Ids.length}` +
       `\n  E2 pairs:   ${plan.e2.pairs.length} -> ${filteredE2Pairs.length}` +
-      `\n  E3 records: ${plan.e3.recordIds.length} -> ${filteredE3Ids.length}`,
+      `\n  E3 records: ${plan.e3.recordIds.length} -> ${filteredE3Ids.length}` +
+      `\n  E3-tool records: ${filteredE3ToolIds.length} (Slice 17 demo cohort)`,
   );
 }
 
@@ -1041,6 +1092,167 @@ if (opts.evals.has("e3")) {
   console.log("\n━━━ E3 SKIPPED (--evals subset excludes e3) ━━━");
 }
 
+// ─── E3-tool (Slice 17 tool-scaffolded variant): demo cohort × K runs ────────
+
+interface ToolInspectedRecordBundle {
+  recordId: string;
+  enriched: boolean;
+  perRunResults: import("../src/dataset/eval/annotation-grounding-tool.js").ToolInspectedRecordResult[];
+  aggregate: import("../src/dataset/eval/multi-run-aggregator.js").AggregateStats;
+  toolUseStatsAggregate: {
+    total_tool_calls: number;
+    mean_calls_per_question: number;
+    questions_with_zero_calls: number;
+    questions_with_one_call: number;
+    questions_with_2_calls: number;
+    questions_with_3plus_calls: number;
+    tool_histogram: Record<string, number>;
+    iteration_cap_hit_count: number;
+    backend_error_count: number;
+    model_silent_count: number;
+    model_answered_count: number;
+  };
+}
+
+const e3ToolResults: ToolInspectedRecordBundle[] = [];
+
+if (opts.evals.has("e3-tool")) {
+  const { createOllamaMultiTurnBackend, runToolInspectedForRecord } =
+    await import("../src/dataset/eval/annotation-grounding-tool.js");
+
+  const toolBackend = createOllamaMultiTurnBackend(opts.model);
+  const totalToolRecords = filteredE3ToolIds.length;
+  console.log(
+    `\n━━━ E3-TOOL: Tool-Scaffolded Annotation Grounding (${totalToolRecords} records, K=${K_RUNS} run${K_RUNS === 1 ? "" : "s"}/record) ━━━`,
+  );
+  const e3ToolRecordsForRandomMidi = publicRecords as unknown as E3Record[];
+  let e3tIndex = 0;
+
+  for (const recId of filteredE3ToolIds) {
+    e3tIndex++;
+    const raw = recordsById.get(recId);
+    if (!raw) {
+      console.error(
+        `  [${e3tIndex}/${totalToolRecords}] ${recId}: NOT FOUND`,
+      );
+      continue;
+    }
+    const isEnriched = SLICE_11_ENRICHED_RECORD_IDS.includes(recId);
+    const tag = isEnriched ? "[ENR]" : "     ";
+
+    const runOuter: import("../src/dataset/eval/annotation-grounding-tool.js").ToolInspectedRecordResult[] = [];
+
+    for (let k = 0; k < K_RUNS; k++) {
+      const runLabel =
+        K_RUNS === 1
+          ? `  [${String(e3tIndex).padStart(2)}/${totalToolRecords}] ${tag} ${recId}`
+          : `  [${String(e3tIndex).padStart(2)}/${totalToolRecords} run ${k + 1}/${K_RUNS}] ${tag} ${recId}`;
+      process.stdout.write(`${runLabel} ... `);
+      const t0 = Date.now();
+      let result;
+      try {
+        result = await runToolInspectedForRecord(
+          raw as unknown as E3Record,
+          e3ToolRecordsForRandomMidi,
+          toolBackend,
+          1, // inner n=1: each call to runToolInspectedForRecord runs questions once;
+             // outer K wraps at record-level (matches the existing E3 pattern)
+        );
+      } catch (err) {
+        console.log(`ERROR (${Date.now() - t0}ms): ${(err as Error).message}`);
+        continue;
+      }
+      const elapsed = Date.now() - t0;
+      const tool = result.aggregate.tool_inspected;
+      const meanCalls = result.toolUseStats.mean_calls_per_question;
+      console.log(
+        `tool_inspected=${tool?.toFixed(3) ?? "n/a"} mean_calls=${meanCalls.toFixed(2)} total_calls=${result.toolUseStats.total_tool_calls} | ${elapsed}ms`,
+      );
+      runOuter.push(result);
+    }
+
+    if (runOuter.length === 0) {
+      console.error(
+        `  [${e3tIndex}/${totalToolRecords}] ${tag} ${recId}: ALL ${K_RUNS} runs errored; skipping aggregate`,
+      );
+      continue;
+    }
+
+    // Aggregate over K outer runs (tool_inspected scalar score per run).
+    const perRunValues: Array<number | null> = runOuter.map(
+      (r) => r.aggregate.tool_inspected,
+    );
+    const aggregate = aggregateValues(perRunValues);
+
+    // Tool-use stats aggregated across K runs.
+    const tally = {
+      total_tool_calls: 0,
+      mean_calls_per_question: 0,
+      questions_with_zero_calls: 0,
+      questions_with_one_call: 0,
+      questions_with_2_calls: 0,
+      questions_with_3plus_calls: 0,
+      tool_histogram: {} as Record<string, number>,
+      iteration_cap_hit_count: 0,
+      backend_error_count: 0,
+      model_silent_count: 0,
+      model_answered_count: 0,
+    };
+    let totalQuestionsAcrossRuns = 0;
+    for (const r of runOuter) {
+      tally.total_tool_calls += r.toolUseStats.total_tool_calls;
+      tally.questions_with_zero_calls += r.toolUseStats.questions_with_zero_calls;
+      tally.questions_with_one_call += r.toolUseStats.questions_with_one_call;
+      tally.questions_with_2_calls += r.toolUseStats.questions_with_2_calls;
+      tally.questions_with_3plus_calls += r.toolUseStats.questions_with_3plus_calls;
+      tally.iteration_cap_hit_count += r.toolUseStats.iteration_cap_hit_count;
+      tally.backend_error_count += r.toolUseStats.backend_error_count;
+      tally.model_silent_count += r.toolUseStats.model_silent_count;
+      tally.model_answered_count += r.toolUseStats.model_answered_count;
+      for (const [tool, c] of Object.entries(r.toolUseStats.tool_histogram)) {
+        tally.tool_histogram[tool] = (tally.tool_histogram[tool] ?? 0) + c;
+      }
+      totalQuestionsAcrossRuns += r.questions.length;
+    }
+    tally.mean_calls_per_question =
+      totalQuestionsAcrossRuns > 0
+        ? tally.total_tool_calls / totalQuestionsAcrossRuns
+        : 0;
+
+    e3ToolResults.push({
+      recordId: recId,
+      enriched: isEnriched,
+      perRunResults: runOuter,
+      aggregate,
+      toolUseStatsAggregate: tally,
+    });
+
+    if (K_RUNS > 1) {
+      console.log(
+        `      ↳ aggregate: tool_inspected_mean=${aggregate.metric_mean?.toFixed(3) ?? "n/a"}±${aggregate.metric_stddev?.toFixed(3) ?? "n/a"} ` +
+          `min=${aggregate.metric_min?.toFixed(3) ?? "n/a"} max=${aggregate.metric_max?.toFixed(3) ?? "n/a"} ` +
+          `total_calls=${tally.total_tool_calls} mean_calls/q=${tally.mean_calls_per_question.toFixed(2)} ` +
+          `silent=${tally.model_silent_count} cap=${tally.iteration_cap_hit_count}`,
+      );
+    }
+  }
+
+  // Corpus-level summary
+  const allToolMeans: Array<number | null> = e3ToolResults.map(
+    (r) => r.aggregate.metric_mean ?? null,
+  );
+  const corpusToolAgg = aggregateValues(allToolMeans);
+  console.log(`\nE3-tool aggregate (n=${e3ToolResults.length}):`);
+  console.log(
+    `  tool_inspected mean: ${corpusToolAgg.metric_mean?.toFixed(3) ?? "n/a"} (±${corpusToolAgg.metric_stddev?.toFixed(3) ?? "n/a"})`,
+  );
+  let totalAllCalls = 0;
+  for (const r of e3ToolResults) totalAllCalls += r.toolUseStatsAggregate.total_tool_calls;
+  console.log(`  total tool calls (across all records × runs): ${totalAllCalls}`);
+} else if (filteredE3ToolIds.length > 0) {
+  console.log("\n━━━ E3-TOOL SKIPPED (--evals subset excludes e3-tool) ━━━");
+}
+
 // ─── Write result artifact ────────────────────────────────────────────────────
 
 // ─── Corpus-level multi-run aggregates (Slice 14, K>1 only) ───────────────────
@@ -1202,7 +1414,7 @@ const resultArtifact = {
   ...(K_RUNS > 1
     ? { eval_runs_n: K_RUNS, sample_filter: opts.sampleFilter }
     : {}),
-  evals_run: ["e1", "e2", "e3"].filter((e) => opts.evals.has(e as EvalName)),
+  evals_run: ["e1", "e2", "e3", "e3-tool"].filter((e) => opts.evals.has(e as EvalName)),
   sample_summary: {
     e1_total: filteredE1Ids.length,
     e2_total: filteredE2Pairs.length,
@@ -1388,6 +1600,61 @@ const resultArtifact = {
         ...(e3CorpusAggregate ? { corpus_multirun_aggregate: e3CorpusAggregate } : {}),
       },
     },
+    "e3-tool": {
+      records: e3ToolResults.map((r) => ({
+        recordId: r.recordId,
+        enriched: r.enriched,
+        tool_inspected_mean: r.aggregate.metric_mean,
+        tool_inspected_stddev: r.aggregate.metric_stddev,
+        tool_inspected_min: r.aggregate.metric_min,
+        tool_inspected_max: r.aggregate.metric_max,
+        aggregate: r.aggregate,
+        tool_use_stats: r.toolUseStatsAggregate,
+        per_run_results: r.perRunResults.map((rr, runIdx) => ({
+          run_index: runIdx,
+          aggregate: rr.aggregate,
+          random_midi_partner_id: rr.randomMidiPartnerId,
+          tool_use_stats: rr.toolUseStats,
+          questions: rr.questions.map((q) => ({
+            questionType: q.questionType,
+            questionText: q.questionText,
+            correctOptionIndex: q.correctOptionIndex,
+            options: q.options,
+            majorityScore: q.majorityScore,
+            runs: q.runs.map((rn) => ({
+              run: rn.run,
+              score: rn.score,
+              selectedOptionIndex: rn.selectedOptionIndex,
+              meta: rn.meta,
+              trace: {
+                tool_call_count: rn.trace.tool_call_count,
+                iteration_cap_hit: rn.trace.iteration_cap_hit,
+                termination_reason: rn.trace.termination_reason,
+                tool_histogram: rn.trace.tool_histogram,
+                calls: rn.trace.calls,
+                final_text: rn.trace.final_text,
+              },
+            })),
+          })),
+        })),
+      })),
+      aggregate: {
+        n_records: e3ToolResults.length,
+        tool_inspected: e3ToolResults.length > 0
+          ? aggregateValues(e3ToolResults.map((r) => r.aggregate.metric_mean ?? null))
+          : null,
+        total_tool_calls: e3ToolResults.reduce(
+          (s, r) => s + r.toolUseStatsAggregate.total_tool_calls,
+          0,
+        ),
+        tool_histogram: e3ToolResults.reduce<Record<string, number>>((acc, r) => {
+          for (const [tool, c] of Object.entries(r.toolUseStatsAggregate.tool_histogram)) {
+            acc[tool] = (acc[tool] ?? 0) + c;
+          }
+          return acc;
+        }, {}),
+      },
+    },
   },
   prior_baseline_reference: {
     artifact: "datasets/jam-actions-v0/evals/llm-in-the-loop-qwen2.5-7b-hardened.json",
@@ -1414,4 +1681,10 @@ if (opts.evals.has("e2")) {
 if (opts.evals.has("e3")) {
   console.log(`E3 corpus margin vs text:  ${e3MarginTextOnly?.toFixed(3) ?? "n/a"} (threshold +${E3_MARGIN_THRESHOLD})`);
   console.log(`E3 enriched margin vs text:${e3EnrMarginText?.toFixed(3) ?? "n/a"} (threshold +${E3_MARGIN_THRESHOLD})`);
+}
+if (opts.evals.has("e3-tool")) {
+  const meanTool = aggregateValues(
+    e3ToolResults.map((r) => r.aggregate.metric_mean ?? null),
+  ).metric_mean;
+  console.log(`E3-tool corpus tool_inspected mean: ${meanTool?.toFixed(3) ?? "n/a"} (n_records=${e3ToolResults.length})`);
 }

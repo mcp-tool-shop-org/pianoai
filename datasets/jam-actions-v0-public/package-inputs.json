@@ -14,7 +14,9 @@
     "evals/multi-run-n3-qwen2.5-7b-e2-sample.json",
     "evals/multi-run-n3-qwen2.5-7b-e3-enriched-results.json",
     "evals/slice16-e3-baseline-pre-enrichment-results.json",
-    "evals/slice16-e3-rubric-cohort-results.json"
+    "evals/slice16-e3-rubric-cohort-results.json",
+    "evals/slice17-e3-tool-inspected-results.json",
+    "evals/slice17-e3-tool-inspected-sample.json"
   ],
   "generated_files": [
     "manifest.json",
