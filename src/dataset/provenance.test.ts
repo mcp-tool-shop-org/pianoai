@@ -27,7 +27,7 @@ describe("parseSourceString", () => {
     );
     expect(extracted.arrangement_creator).toBe("Bernd Krueger");
     expect(extracted.arrangement_license).toBe("CC-BY-SA");
-    expect(extracted.arrangement_evidence_url).toBe("https://piano-midi.de/");
+    expect(extracted.arrangement_evidence_url).toBe("http://piano-midi.de/");
     expect(extracted.source_pattern_recognized).toBe(true);
     expect(openQuestions).toHaveLength(0);
   });
@@ -38,7 +38,7 @@ describe("parseSourceString", () => {
     );
     expect(extracted.arrangement_creator).toBe("Some Creator");
     expect(extracted.arrangement_license).toBe("CC-BY");
-    expect(extracted.arrangement_evidence_url).toBe("https://piano-midi.de/");
+    expect(extracted.arrangement_evidence_url).toBe("http://piano-midi.de/");
     expect(extracted.source_pattern_recognized).toBe(true);
   });
 
@@ -248,7 +248,7 @@ describe("classifyProvenance", () => {
       expect(result.composition_pd_status_eu).toBe("public_domain");
       expect(result.extracted.arrangement_creator).toBe("Bernd Krueger");
       expect(result.extracted.arrangement_license).toBe("CC-BY-SA");
-      expect(result.extracted.arrangement_evidence_url).toBe("https://piano-midi.de/");
+      expect(result.extracted.arrangement_evidence_url).toBe("http://piano-midi.de/");
     });
 
     // ── REGRESSION: Für Elise must produce public_candidate ────────────────────
@@ -273,7 +273,7 @@ describe("classifyProvenance", () => {
       expect(result.composition_pd_status_eu).toBe("public_domain");
       expect(result.extracted.arrangement_creator).toBe("Bernd Krueger");
       expect(result.extracted.arrangement_license).toBe("CC-BY-SA");
-      expect(result.extracted.arrangement_evidence_url).toBe("https://piano-midi.de/");
+      expect(result.extracted.arrangement_evidence_url).toBe("http://piano-midi.de/");
       // No open questions on a clean classification
       expect(result.open_questions).toHaveLength(0);
     });

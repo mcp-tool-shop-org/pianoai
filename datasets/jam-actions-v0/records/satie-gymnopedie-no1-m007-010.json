@@ -2,7 +2,7 @@
   "id": "satie-gymnopedie-no1:m007-010:piano:mcp-session:v1",
   "schema_version": "jam-actions-v0/1.0.0",
   "provenance": {
-    "source_url": "https://piano-midi.de/",
+    "source_url": "http://piano-midi.de/",
     "source_collected_at": "2026-05-16",
     "source_type": "transcribed-by-author",
     "composition_title": "Gymnopedie No. 1",
@@ -13,11 +13,11 @@
     "arrangement_creator": "Bernd Krueger",
     "arrangement_license": "CC-BY-SA",
     "arrangement_license_version": null,
-    "arrangement_evidence_url": "https://piano-midi.de/",
-    "record_verdict": "public_candidate",
-    "verdict_reason": "Gymnopedie No. 1 (1888) by Erik Satie. Composition: US=public_domain, EU=public_domain. Arrangement by Bernd Krueger. License: CC-BY-SA. Evidence: https://piano-midi.de/. All initial public_candidate rules met. Awaiting Slice 2.5 verification: source URL resolves, license text preserved at source, license version confirmed. Until verified, treat as internal for distribution.",
-    "verifier": "auto-rule-engine",
-    "verified_at": "2026-05-16",
+    "arrangement_evidence_url": "http://piano-midi.de/",
+    "record_verdict": "internal",
+    "verdict_reason": "Gymnopedie No. 1. Slice 2.5 URL verification. License not detected on verified pages. Evidence URL: http://piano-midi.de/. Verdict: internal — verification revealed hard failure (page gone or claim mismatch). Failure reasons: composer page hard failure: HTTP 418 (page gone or upstream rejected our request).",
+    "verifier": "auto-rule-engine+slice2.5-url-verifier",
+    "verified_at": "2026-05-17",
     "training_use_permitted": true
   },
   "scope": {

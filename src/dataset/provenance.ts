@@ -5,11 +5,16 @@
 // Input:  a SongProvenance input bag (parsed source string + composition facts)
 // Output: VerdictResult { verdict, verdict_reason, extracted }
 //
-// Verdict enum (per synthesis Section 5, amended Slice 1):
+// Verdict enum (per synthesis Section 5, amended Slice 1, widened Slice 2.5):
 //   public_candidate — meets initial rules; awaits Slice 2.5 verification
 //   internal         — legally usable but doesn't meet public_candidate bar
 //   excluded         — known copyrighted without license, or rights-incompatible
-//   public           — NOT assignable in Slice 2; promotion is Slice 2.5
+//   public           — Slice 2.5 URL verification confirmed source URL resolves,
+//                      license text preserved at source, license version confirmed,
+//                      arrangement creator confirmed on per-song / composer page.
+//                      This rule engine still CANNOT emit `"public"` — promotion
+//                      to public is performed exclusively by the URL verifier in
+//                      `provenance-url-verifier.ts` after external HTTP checks.
 //
 // Defensive-parsing principle: ambiguous source → lower-tier verdict.
 // Better to under-classify (internal) than to over-classify (public_candidate).
@@ -30,8 +35,20 @@
 
 // ─── Public types ────────────────────────────────────────────────────────────
 
-/** Verdicts assignable in Slice 2. `public` is excluded — that's Slice 2.5. */
-export type Verdict = "public_candidate" | "internal" | "excluded";
+/**
+ * The four valid record verdicts in the dataset.
+ *
+ * The rule engine in this module emits only the first three:
+ *   - `public_candidate`, `internal`, `excluded`
+ *
+ * `public` is widened into the type as of Slice 2.5 so consumers (records,
+ * schema, validator, verifier) can represent the promoted state, but it is
+ * never produced by `classifyProvenance()`. Only the Slice 2.5 URL verifier
+ * (`provenance-url-verifier.ts`) may assign `public` after a successful
+ * external verification chain (site root → composer page → song confirmation
+ * with creator + license + license version).
+ */
+export type Verdict = "public_candidate" | "internal" | "excluded" | "public";
 
 /** Raw composition-level facts the caller supplies. */
 export interface CompositionFacts {
@@ -151,8 +168,13 @@ const NON_REDISTRIBUTION_LICENSES: string[] = [
 /**
  * piano-midi.de URL normalization.
  * The source string "Source: piano-midi.de" maps to this canonical URL.
+ *
+ * Slice 2.5 correction: piano-midi.de does NOT serve HTTPS — port 443 returns
+ * plain HTTP bytes, not a TLS handshake. The site's only canonical scheme is
+ * `http://`. Earlier slices incorrectly stamped records with `https://`; the
+ * Slice 2.5 URL verifier corrects this on all promoted/verified records.
  */
-const PIANO_MIDI_DE_URL = "https://piano-midi.de/";
+const PIANO_MIDI_DE_URL = "http://piano-midi.de/";
 
 // ─── Source-string parser ─────────────────────────────────────────────────────
 

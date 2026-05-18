@@ -2,7 +2,7 @@
   "id": "mozart-k545-mvt1:m001-004:piano:mcp-session:v1",
   "schema_version": "jam-actions-v0/1.0.0",
   "provenance": {
-    "source_url": "https://piano-midi.de/",
+    "source_url": "http://piano-midi.de/",
     "source_collected_at": "2026-05-16",
     "source_type": "transcribed-by-author",
     "composition_title": "Piano Sonata No. 16 in C Major, K. 545, I. Allegro",
@@ -12,12 +12,12 @@
     "composition_pd_status_eu": "public_domain",
     "arrangement_creator": "Bernd Krueger",
     "arrangement_license": "CC-BY-SA",
-    "arrangement_license_version": null,
-    "arrangement_evidence_url": "https://piano-midi.de/",
-    "record_verdict": "public_candidate",
-    "verdict_reason": "Piano Sonata No. 16 in C Major, K. 545, I. Allegro (1788) by Wolfgang Amadeus Mozart. Composition: US=public_domain, EU=public_domain. Arrangement by Bernd Krueger. License: CC-BY-SA. Evidence: https://piano-midi.de/. All initial public_candidate rules met. Awaiting Slice 2.5 verification: source URL resolves, license text preserved at source, license version confirmed. Until verified, treat as internal for distribution.",
-    "verifier": "auto-rule-engine",
-    "verified_at": "2026-05-16",
+    "arrangement_license_version": "3.0",
+    "arrangement_evidence_url": "http://piano-midi.de/mozart.htm",
+    "record_verdict": "public",
+    "verdict_reason": "Piano Sonata No. 16 in C Major, K. 545, I. Allegro. Slice 2.5 URL verification. License confirmed: CC-BY-SA-3.0. Evidence URL: http://piano-midi.de/mozart.htm. Verdict: public — all site-level + per-song verification conditions passed.",
+    "verifier": "auto-rule-engine+slice2.5-url-verifier",
+    "verified_at": "2026-05-17",
     "training_use_permitted": true
   },
   "scope": {
