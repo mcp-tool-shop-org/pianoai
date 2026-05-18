@@ -28,7 +28,7 @@
     "tempo_bpm": 74,
     "time_signature": "4/4",
     "window_role": "continuation_target",
-    "musical_phrase_label": "penultimate section — consequent",
+    "musical_phrase_label": "coda extension consequent — chromatic dominant prep continues toward cadence",
     "natural_phrase_boundary": true,
     "paired_prompt_record_id": "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1"
   },
@@ -2267,26 +2267,37 @@
       53,
       56
     ],
-    "structure": "Penultimate consequent — final approach to cadence",
+    "structure": "Consequent of the coda extension (paired with m. 49–52). The Krueger arrangement maintains the dense multi-voice coda texture into the final-cadence preparation zone. The right hand carries layered voices; the left-hand structural bass operates with multiple attacks per measure (a sharp departure from the opening's one-note-per-measure pedal design). Chromatic upper-voice color (F# / G# / A# / C#) continues throughout, signaling that the prelude is still in dominant-preparation mode — the resolution to the final tonic does not arrive in this window.",
     "key_moments": [
-      "m53 continuing toward cadence",
-      "m55 cadential approach",
-      "m56 final dominant"
+      "m. 53–54 — coda-texture continuation: layered RH voices over the dense LH bass; the surface arpeggio shape remains recognizable, but harmonic content is chromatic, not diatonic-tonic",
+      "m. 55 — cadential-approach measure: bass and upper-voice motion converge toward the dominant; expect upper-line activity to slow as the dominant prepares to resolve",
+      "m. 56 — penultimate cadential measure: the final-dominant area; the next pair (m. 57–60 / m. 61–64) will complete the cadence and reach the C-major tonic conclusion"
     ],
     "teaching_goals": [
-      "feel the harmonic motion slowing toward the final cadence",
-      "the piece is completing its long arc from tonic through tension back to tonic"
+      "continue the cadential-preparation character — this window is NOT yet the resolution; the tension wants to remain",
+      "match the antecedent's chromatic density rather than collapsing back to opening-texture simplicity",
+      "voice the bass clearly; the structural-bass design of the coda is the engine driving toward the cadence"
     ],
     "style_tips": [
-      "slight anticipation of the final resolution",
-      "the ending is earned — not rushed"
+      "the dominant area persists — slight forward energy in the harmonic motion, no premature relaxation",
+      "no ritardando in this window unless the score explicitly marks one — the slowdown belongs to the final-cadence measures",
+      "the chromatic harmonies are the point: let them be heard, not smoothed over"
     ],
     "teaching_notes": [
       {
-        "measure": 56,
-        "note": "The final dominant — the resolution to C major is now inevitable.",
+        "measure": 55,
+        "note": "Cadential approach: the bass and upper-voice converge toward the final dominant. Maintain the dense texture; the simplification is in the harmonic direction (toward G), not in the surface rhythm.",
         "technique": [
-          "slight tenuto on the final dominant before resolution"
+          "preserve density",
+          "track harmonic motion"
+        ]
+      },
+      {
+        "measure": 56,
+        "note": "Penultimate cadential measure of this window — the final-dominant area. The next pair (m. 57–60 / m. 61–64) completes the resolution to C-major tonic.",
+        "technique": [
+          "voice the dominant",
+          "prepare the resolution but don't anticipate it"
         ]
       }
     ]

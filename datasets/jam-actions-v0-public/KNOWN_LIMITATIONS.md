@@ -51,13 +51,26 @@ Some annotations are richly detailed; others are skeletal. Concrete examples:
 - `chopin-nocturne-op9-no2:m001-004:...` — "cantabile RH touch", "LH-RH independence", "imagine the melody as a human voice".
 - `fur-elise:m001-008:...` (standalone) — full E-D# neighbor motion analysis with cadence and restatement.
 
-**Sparser annotations** (candidates for Slice 11 enrichment):
+**Sparser annotations** (historical — addressed in Slice 11):
 
-- `pathetique-mvt2:m029-032:...` — `key_moments` reduces to "episode continues", "return is imminent"; only 1 teaching_note. Recurring pattern: middle-of-piece records often have generic key_moments (episode/transition language) where opening / cadential records have specific harmonic language.
-- `schumann-traumerei:m045-048:...` — 3 short key_moments, 2 style_tips ("pp to ppp", "let the final chord ring"); 1 teaching_note. The musical content is genuinely "fade-and-resolve" so sparseness is partly faithful, but it's still thinner than the opening records.
-- `bach-prelude-c-major-bwv846:m045-048:...` (and similar late-Bach records) — drops to "play it with fresh ears, not like a routine"; 1 teaching_note. The prelude's identical-arpeggiation texture across measures is a real corpus property (it's what makes Bach E2 score 1.0 on rhythm/groove vs shuffled), but the annotation could still say more about the long-form tonic-return architecture.
+- `pathetique-mvt2:m029-032:...` — `key_moments` reduced to "episode continues", "return is imminent"; only 1 teaching_note. Recurring pattern: middle-of-piece records often had generic key_moments (episode/transition language) where opening / cadential records had specific harmonic language. **(Addressed in Slice 11; see enrichment-overrides.json. The Pathétique pair m. 25–28 + m. 29–32 was enriched together so the antecedent–consequent harmonic arc is named: A♭-minor middle episode with wandering bass G3→D♭→B♭2, climaxing on F5 at m. 25 b2.6, suspended over F2 pedal at m. 28, and resolving via the G#2/A♭2 dominant pedal at m. 31 into the cantabile theme's return at m. 33.)**
+- `schumann-traumerei:m045-048:...` — 3 short key_moments, 2 style_tips ("pp to ppp", "let the final chord ring"); 1 teaching_note. The musical content is genuinely "fade-and-resolve" so sparseness is partly faithful, but it was still thinner than the opening records. **(Addressed in Slice 11; see enrichment-overrides.json. The closing is now named in terms of its actual MIDI events: A4 descending offbeat figures over chromatic LH motion in m. 45, F2 tonic pedal entering at m. 46 b3.4 and sustaining ≈3.32 s, and the closing F-major arpeggio F4→A4→C5→F5 rising offbeat across m. 48. Honest-absence note preserved: this record has no downbeat onsets — rhythm_onset stays not_computable.)**
+- `bach-prelude-c-major-bwv846:m045-048:...` (and similar late-Bach records) — dropped to "play it with fresh ears, not like a routine"; 1 teaching_note. The prelude's identical-arpeggiation texture across measures is a real corpus property (it's what makes Bach E2 score 1.0 on rhythm/groove vs shuffled), but the annotation could still say more about the long-form architecture. **(Addressed in Slice 11; see enrichment-overrides.json. The late-Bach records m. 45–48 / m. 49–52 / m. 53–56 in the Krueger arrangement are NOT the opening texture — they are a coda extension with multi-voice writing over a structural lower-register bass (G2/A2 attacks, not the opening's single LH pedal), chromatic pitches outside C major (F#5 at m. 45 b1.0, A#2 in m. 51, G#4 in m. 52), and harmonic motion preparing the final cadence. The enrichment names this as cadential-preparation texture, not tonic-cycling.)**
 
-Slice 11 (annotation enrichment, future) is the right place to backfill these. Per-record content is locked across this slice (10.5); only docs are hardening.
+### 5b. Scope expansion in Slice 11
+
+The original §5 named `bach-prelude-c-major-bwv846:m045-048` as a representative late-Bach record. Slice 11 enriched the **two adjacent late-Bach records of the same coda-texture class** as well — `m049-052` and `m053-056` — because the same enrichment template applies and leaving them sparse would have produced a one-off enrichment surrounded by structurally identical thinner records. The decision is auditable: see `datasets/jam-actions-v0/enrichment-overrides.json` for the precise overlay content. The final two late-Bach records (`m057-060` and `m061-064`) remain at their existing annotation level — they describe the final-cadence and tonic-arrival sections, which already have more architectural framing than the coda-extension records did.
+
+Slice 11 also enriched the **prompt half** of the Pathétique middle-section pair (`pathetique-mvt2:m025-028`) — not flagged in §5's original list, but enriching only the continuation would have produced an asymmetric pair where the consequent's harmonic-arc framing implied a prompt-side framing that didn't exist on disk. The pair is enriched as a unit.
+
+Six records total were enriched in Slice 11:
+- `pathetique-mvt2:m025-028` (prompt) + `pathetique-mvt2:m029-032` (continuation_target)
+- `schumann-traumerei:m045-048` (continuation_target)
+- `bach-prelude-c-major-bwv846:m045-048` (continuation_target) + `m049-052` (prompt) + `m053-056` (continuation_target)
+
+All enrichment flows through the durable overlay file `datasets/jam-actions-v0/enrichment-overrides.json`; record JSONs are NEVER hand-edited as the source of truth. Re-running `scripts/apply-jam-actions-enrichment.ts` with the same overlay produces byte-identical output (idempotency confirmed; the runner ships a `--check` flag for CI gating).
+
+Other records in the corpus retain their existing annotation depth. Future enrichment slices may address adjacent sparseness (e.g., middle-piece transitions in other songs); §5's "honest absence > fabricated metric" doctrine still applies — if a record's MIDI doesn't ground rich enrichment, it stays at its current depth.
 
 ## 6. Three records (in source, not in this public subset) marked `rhythm_onset: not_computable`
 

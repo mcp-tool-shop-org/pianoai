@@ -1,0 +1,251 @@
+{
+  "version": "0.1.0",
+  "applied_for_dataset_version": "0.2.0",
+  "schema_version": "jam-actions-v0/1.0.0",
+  "applied_at": "2026-05-17",
+  "overrides": {
+    "pathetique-mvt2:m025-028:piano:mcp-session:v1": {
+      "scope": {
+        "musical_phrase_label": "Ab-minor middle episode antecedent — contrasting agitato over wandering bass"
+      },
+      "annotation_target": {
+        "measure_range": [25, 28],
+        "structure": "Contrasting middle episode (parallel A♭ minor) — antecedent of the 4-bar pair m. 25–32. Right-hand top voice peaks at F5 (m. 25 b2.6) over a wandering bass that moves G3 → C#2 (=D♭2) → G2 → A#2 (=B♭2). The texture is busier than the surrounding A♭-major cantabile and prepares the dominant pedal that will arrive in the consequent at m. 31.",
+        "key_moments": [
+          "m. 25 b0.7 — E5 entry in the right hand over G3, with G4 below; A#3 (B♭3) then A#4 (B♭4) at b1.6 colors the chord with the minor subdominant",
+          "m. 25 b2.6 — F5 climax (highest pitch of the antecedent) supported by C#2 (D♭2) bass — the only deep-bass attack in the measure, marking the start of the chromatic-bass descent",
+          "m. 26 — alternation between A#4 (B♭4) and G4 in the right hand over C#3 (D♭3) → A#2 (B♭2) bass; D#4 (E♭4) at b3.4 introduces the lowered third",
+          "m. 27 — chromatic right-hand ascent G4 → D#4 (E♭4) → C5 → C#5 (D♭5) → D#5 (E♭5) over a bass cycling D#3 (E♭3) ↔ C#3 (D♭3) ↔ C3",
+          "m. 28 b2.6 — A4 enters as the longest sustained right-hand pitch (over a 2.3-second F2 bass pedal at b2.7) — the antecedent ends suspended on this open voicing"
+        ],
+        "teaching_goals": [
+          "voice the right-hand top line so the F5 climax at m. 25 b2.6 is clearly heard over the inner B♭/G figures",
+          "feel the bass as a slow chromatic descent (G3 → D♭ → B♭2) underneath the busier surface rhythm",
+          "phrase the long A4 + F2 pedal in m. 28 as an unresolved breath that hands off to the consequent — not as a cadence"
+        ],
+        "style_tips": [
+          "mp to mf — louder and more rhythmically active than the surrounding A♭-major cantabile, but still legato and singing",
+          "the contrast is intentional: this is the parallel-minor character, not a dramatic outburst",
+          "let the F2 pedal at m. 28 b2.7 sustain through the bar — it's the harmonic floor for the entire consequent"
+        ],
+        "teaching_notes": [
+          {
+            "measure": 25,
+            "note": "Enter on the E5/G3 sonority as a held chord, then voice the F5 climax at b2.6 as the line's apex. The intervening A#4 (B♭4) at b1.6 is an inner-voice color, not a melodic event.",
+            "technique": ["voice the top line", "support inner voices lightly"]
+          },
+          {
+            "measure": 27,
+            "note": "The right hand climbs chromatically G4 → E♭4 → C5 → D♭5 → E♭5 (peaking at b2.8). Use a slight crescendo through the ascent; the line is reaching, not arriving.",
+            "technique": ["chromatic legato", "crescendo through the climb"]
+          },
+          {
+            "measure": 28,
+            "note": "The F2 left-hand pedal at b2.7 sustains for ~2.3 seconds — half the measure. Hold it under the long A4 right-hand suspension; this is the harmonic transition into m. 29.",
+            "technique": ["sustain the bass pedal", "let the A4 breathe"]
+          }
+        ]
+      }
+    },
+    "pathetique-mvt2:m029-032:piano:mcp-session:v1": {
+      "scope": {
+        "musical_phrase_label": "Ab-minor middle episode consequent — dominant pedal preparing the cantabile return"
+      },
+      "annotation_target": {
+        "measure_range": [29, 32],
+        "structure": "Consequent of the A♭-minor middle episode (paired continuation of m. 25–28). The right-hand line winds through D#4 (E♭4) → C4 → C#5 (D♭5) → C#4 (D♭4) → F4 → C5 → B♭4 → A♭4 (G#4) before settling on a long G#4 (A♭4) at m. 32 b3.3. Under the surface, the left hand descends through C3 → F3 → A#2 (B♭2) → A#2 again at m. 30, then plants a long G#2 (A♭2) pedal at m. 31 b2.7 (≈3.27 seconds) — the dominant of the parallel A♭ minor, which prepares the cantabile theme's return at m. 33.",
+        "key_moments": [
+          "m. 29 b2.6 — long C#5 (D♭5, 1.67-second sustain) over A#2/C#3 (B♭2/D♭3) bass; the right hand's longest pitch of the consequent so far",
+          "m. 30 b2.6 — C5 + C#4 (D♭4) doubled in the right hand while the left hand drops to D#2 (E♭2) for a brief 1.5-second contrabass note, the lowest pitch of the entire pair",
+          "m. 31 b2.7 — G#2 (A♭2) pedal enters in the left hand and sustains for ~3.27 seconds (longest single note of the consequent); above it the right hand suspends a long B♭4 — this is the dominant pedal that drives toward the return",
+          "m. 32 b3.3 — G#4 (A♭4) settles in the right hand with C4 + G#3 (A♭3) below, voicing the A♭ tonic just before the cantabile main theme returns at m. 33"
+        ],
+        "teaching_goals": [
+          "shape the descending right-hand line as one continuous arc, not four separate beats per measure",
+          "release the long G#2 (A♭2) pedal only when the cantabile theme physically arrives at m. 33 — it's a structural hinge, not a measure-31 event",
+          "let the B♭4 suspension at m. 31 hang over the A♭ pedal; the tension wants to resolve, but the resolution belongs to m. 33, not m. 32"
+        ],
+        "style_tips": [
+          "soften from m. 31 onward — the episode is winding down, not pushing forward",
+          "phrase the G#4-C4 voicing at m. 32 b3.3 as the moment the parallel minor finally yields back to the major",
+          "no ritardando before m. 33 unless the score marks one — the dominant pedal IS the slowdown"
+        ],
+        "teaching_notes": [
+          {
+            "measure": 30,
+            "note": "The contrabass D#2 (E♭2) at b2.7 is the lowest pitch of the pair. Voice it gently — the goal is depth, not weight.",
+            "technique": ["depth not weight in the bass"]
+          },
+          {
+            "measure": 31,
+            "note": "The G#2 (A♭2) pedal at b2.7 sustains ≈3.27 seconds across the bar. Keep it speaking under the B♭4 suspension above. This bar is the harmonic engine of the entire return.",
+            "technique": ["sustain pedal voicing", "preserve the bass through the suspension"]
+          },
+          {
+            "measure": 32,
+            "note": "The G#4 + C4 voicing at b3.3 settles the parallel minor back to A♭ major. Don't accent the arrival — let the cantabile theme at m. 33 do that work.",
+            "technique": ["release into the next theme", "no accent on the pivot"]
+          }
+        ]
+      }
+    },
+    "schumann-traumerei:m045-048:piano:mcp-session:v1": {
+      "scope": {
+        "musical_phrase_label": "closing plagal resolution — F major arpeggio rising over tonic pedal"
+      },
+      "annotation_target": {
+        "measure_range": [45, 48],
+        "structure": "Closing consequent of Träumerei (paired continuation of m. 41–44). The right hand descends through A4 → G4 → F4 → D4 chromatically across m. 45–46, then ascends a clear F-major arpeggio F4 → A4 → C5 → F5 across m. 48. The left hand plants an F2 tonic pedal at m. 46 b3.4 that sustains ≈3.32 seconds (longest single pitch in the entire pair) under the closing ascent. The piece's F-major home is reached not by a forceful cadence but by the tonic arpeggio rising through it.",
+        "key_moments": [
+          "m. 45 b0.5 — A4 right-hand entrance (the piece's signature soft offbeat attack) over an A3 left-hand support; this whole window is anacrustic and has no downbeat onsets (corpus property: rhythm_onset is not_computable for this record)",
+          "m. 45 b2.7 — A#3 (B♭3) long-hold in the left hand (~1.6 seconds) — the subdominant color before the tonic pedal arrives",
+          "m. 46 b3.4 — F2 left-hand pedal enters and sustains ≈3.32 seconds, the longest bass note of the closing; from here on, every right-hand event is heard over the F-major tonic floor",
+          "m. 48 b0.85 → b3.7 — the closing F-major arpeggio F4 → A4 → C5 → F5 rises through two octaves; each note enters offbeat, so the line floats above the pedal rather than landing on it",
+          "m. 48 b3.7 — F5 final pitch, velocity 73 (the loudest right-hand event in the closing) — the dream's quiet apex"
+        ],
+        "teaching_goals": [
+          "play the offbeat right-hand entrances as floating gestures, not as missed downbeats — the absence of strong-beat onsets is the closing's character",
+          "voice the F2 pedal at m. 46 b3.4 as the harmonic ground; the ascending arpeggio in m. 48 needs to hear it through the silence",
+          "shape the F4 → A4 → C5 → F5 ascent in m. 48 as one breath, not four notes — it's the resolution gesture of the entire piece"
+        ],
+        "style_tips": [
+          "pp to ppp throughout — the dynamic floor of the piece, with the F5 in m. 48 only just emerging above ppp",
+          "let the F2 pedal at m. 46 ring through the rest of the close — sustain pedal is essential here",
+          "no ritardando until m. 48; the F-major arpeggio itself is the slowdown, not the tempo"
+        ],
+        "teaching_notes": [
+          {
+            "measure": 45,
+            "note": "Every right-hand attack in this measure enters off the beat (beats 0.5, 0.54, 0.59, 1.5, 1.6, 2.7, 3.7). The phrase has no downbeats by design. Don't force one.",
+            "technique": ["offbeat phrasing", "release the metric pulse"]
+          },
+          {
+            "measure": 46,
+            "note": "The F2 pedal at b3.4 is the harmonic floor for the rest of the close. Take pedal here and hold through m. 48.",
+            "technique": ["depress sustain pedal at b3.4 m.46", "hold pedal through m.48"]
+          },
+          {
+            "measure": 48,
+            "note": "F4 (b0.85) → A4 (b1.75) → C5 (b2.6) → F5 (b3.7) is the closing F-major arpeggio. Each note offbeat. Voice the rising line; let the pedaled bass carry the harmony.",
+            "technique": ["voice the rising arpeggio", "even crescendo to F5"]
+          }
+        ]
+      }
+    },
+    "bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1": {
+      "scope": {
+        "musical_phrase_label": "coda transition — chromatic dominant prep with G2/A2 pedal bass"
+      },
+      "annotation_target": {
+        "measure_range": [45, 48],
+        "structure": "Continuation of the prelude's post-pedal coda area (Krueger's arrangement extends the WTC original past m. 35 with a chromatic-cadential coda). The texture is no longer the simple opening arpeggio (RH-only over LH whole-note pedal); the Krueger arrangement layers three right-hand voices on top of a structural left-hand bass that descends through G2 → A2 → G2 across m. 45–48. Chromatic pitches outside C major appear (F#5 at m. 45, F#3/F#4/G#4 in adjacent measures), marking this as pre-cadential dominant preparation rather than tonic statement.",
+        "key_moments": [
+          "m. 45 b1.0 — F#5 sustains 0.81 seconds in the upper voice (chromatic — not in C major); this is the leading-tone of G, marking the dominant-of-dominant area",
+          "m. 45 b2.0 — first deep-bass attack: G2 (left hand, channel 5) sustains 0.41 seconds; B4 and G5 align above for a clear G-major voicing",
+          "m. 45 b3.0 — A2 left-hand bass (low pedal-area shift); the bass moves G2 → A2 within the same measure, distinguishing this from the opening's static one-chord-per-measure design",
+          "m. 45 — RH note count: 82 across the four measures, vs. only 62 in m. 1–4 of the opening; LH note count: 43, vs. only 2 in m. 1–4 — quantitative evidence that this is a different texture, not a simple tonic restatement"
+        ],
+        "teaching_goals": [
+          "do NOT play this as the opening texture — the multi-voice writing and chromatic harmony make it a different musical event",
+          "voice the F#5 at m. 45 b1.0 distinctly; it's the chromatic color that signals the prelude is now in cadential preparation, not tonic-cycling mode",
+          "feel the G2 → A2 bass motion within m. 45 as the structural step that pulls toward the eventual cadence — the bass is no longer a one-note-per-measure pedal"
+        ],
+        "style_tips": [
+          "slightly more presence than the opening — the texture has thickened, even at the same nominal dynamic",
+          "let the chromatic non-diatonic pitches (F#, A#, G#) speak; they are the harmonic interest of this section, not accidents",
+          "the bass moves on at the half-bar in m. 45; don't pedal through this motion or the chromatic harmonies will smear together"
+        ],
+        "teaching_notes": [
+          {
+            "measure": 45,
+            "note": "F#5 at b1.0 is chromatic — outside C major. Voice it clearly; it announces this section is dominant-preparation, not tonic-cycling.",
+            "technique": ["voice the chromatic top line", "release pedal at half-bar"]
+          },
+          {
+            "measure": 45,
+            "note": "The bass moves G2 (b2.0) → A2 (b3.0) within the bar. Compare to m. 1–4 where each measure has at most one bass note. This is the structural-bass section, not the opening texture.",
+            "technique": ["clear bass articulation", "no over-pedaling"]
+          }
+        ]
+      }
+    },
+    "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1": {
+      "scope": {
+        "musical_phrase_label": "coda extension antecedent — chromatic upper-voice density continues"
+      },
+      "annotation_target": {
+        "measure_range": [49, 52],
+        "structure": "Antecedent of the coda extension (paired with m. 53–56). The Krueger arrangement continues the dense multi-voice coda texture: the right hand carries three layered voices while the left hand maintains the lower-register structural bass that entered at m. 45. Chromatic pitches outside C major are present (A#2, C#4, F#3, F#4, G#4 are all in this window), continuing the dominant-preparation harmonic field. This is NOT a return to the opening's one-chord-per-measure arpeggio; the surface rhythm is similar but the harmonic content is fundamentally different.",
+        "key_moments": [
+          "m. 49 — chromatic non-diatonic pitches active: F#3 and F#4 introduce raised-fourth color (leading-tone of G); the LH bass operates at multiple attacks per measure rather than the opening's single sustained tonic",
+          "m. 50 — the LH bass becomes especially active (10+ attacks across the bar based on event density), with bass figures at b0, b0.5, b1, b1.5, b2, b2.5, b2.75, b2.875, b3, b3.5",
+          "m. 51 — A#2 (B♭2) appears in the bass, the lowered-seventh of C major; combined with C#4 in the upper voice this creates a chromatic-mediant tension area before resolution",
+          "m. 52 — G#4 enters in the upper voice; combined with the bass motion, this marks the antecedent's harmonic-tension peak and hands off to the consequent at m. 53"
+        ],
+        "teaching_goals": [
+          "treat this as cadential-preparation texture, NOT opening-texture; the chromatic upper-voice activity is the musical content here",
+          "track the bass attack pattern within each measure — the bass is busier in m. 50 than in any opening measure, and that activity is structural",
+          "voice the chromatic pitches (F#, A#, G#) as the harmonic agents driving toward the consequent's tension peak"
+        ],
+        "style_tips": [
+          "the opening's serenity has been replaced by chromatic intensity — match the texture, not the affect",
+          "no temptation to over-pedal; the multi-voice writing wants clarity, not blur",
+          "the harmonic motion is goal-directed (toward the cadence at the end of the piece), so the tempo should remain steady — the goal-direction is in the pitch material, not in the speed"
+        ],
+        "teaching_notes": [
+          {
+            "measure": 50,
+            "note": "The left-hand bass has 10+ attack points across the bar — the densest LH measure of the coda extension. Articulate each bass event clearly; over-pedaling will lose the chromatic intervals.",
+            "technique": ["clear LH articulation", "avoid pedal smear"]
+          },
+          {
+            "measure": 51,
+            "note": "A#2 (B♭2) bass against C#4 upper voice creates the chromatic-mediant color of the dominant-preparation field. Voice both lines distinctly.",
+            "technique": ["voice top and bottom", "let the dissonance speak"]
+          },
+          {
+            "measure": 52,
+            "note": "G#4 marks the harmonic-tension peak of the antecedent. From here the consequent (m. 53–56) will continue the dominant preparation toward final cadence.",
+            "technique": ["voice the G#4 clearly"]
+          }
+        ]
+      }
+    },
+    "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1": {
+      "scope": {
+        "musical_phrase_label": "coda extension consequent — chromatic dominant prep continues toward cadence"
+      },
+      "annotation_target": {
+        "measure_range": [53, 56],
+        "structure": "Consequent of the coda extension (paired with m. 49–52). The Krueger arrangement maintains the dense multi-voice coda texture into the final-cadence preparation zone. The right hand carries layered voices; the left-hand structural bass operates with multiple attacks per measure (a sharp departure from the opening's one-note-per-measure pedal design). Chromatic upper-voice color (F# / G# / A# / C#) continues throughout, signaling that the prelude is still in dominant-preparation mode — the resolution to the final tonic does not arrive in this window.",
+        "key_moments": [
+          "m. 53–54 — coda-texture continuation: layered RH voices over the dense LH bass; the surface arpeggio shape remains recognizable, but harmonic content is chromatic, not diatonic-tonic",
+          "m. 55 — cadential-approach measure: bass and upper-voice motion converge toward the dominant; expect upper-line activity to slow as the dominant prepares to resolve",
+          "m. 56 — penultimate cadential measure: the final-dominant area; the next pair (m. 57–60 / m. 61–64) will complete the cadence and reach the C-major tonic conclusion"
+        ],
+        "teaching_goals": [
+          "continue the cadential-preparation character — this window is NOT yet the resolution; the tension wants to remain",
+          "match the antecedent's chromatic density rather than collapsing back to opening-texture simplicity",
+          "voice the bass clearly; the structural-bass design of the coda is the engine driving toward the cadence"
+        ],
+        "style_tips": [
+          "the dominant area persists — slight forward energy in the harmonic motion, no premature relaxation",
+          "no ritardando in this window unless the score explicitly marks one — the slowdown belongs to the final-cadence measures",
+          "the chromatic harmonies are the point: let them be heard, not smoothed over"
+        ],
+        "teaching_notes": [
+          {
+            "measure": 55,
+            "note": "Cadential approach: the bass and upper-voice converge toward the final dominant. Maintain the dense texture; the simplification is in the harmonic direction (toward G), not in the surface rhythm.",
+            "technique": ["preserve density", "track harmonic motion"]
+          },
+          {
+            "measure": 56,
+            "note": "Penultimate cadential measure of this window — the final-dominant area. The next pair (m. 57–60 / m. 61–64) completes the resolution to C-major tonic.",
+            "technique": ["voice the dominant", "prepare the resolution but don't anticipate it"]
+          }
+        ]
+      }
+    }
+  }
+}

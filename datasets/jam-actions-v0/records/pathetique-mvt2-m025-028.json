@@ -28,7 +28,7 @@
     "tempo_bpm": 120,
     "time_signature": "4/4",
     "window_role": "prompt",
-    "musical_phrase_label": "middle section — episode antecedent",
+    "musical_phrase_label": "Ab-minor middle episode antecedent — contrasting agitato over wandering bass",
     "natural_phrase_boundary": true,
     "continuation_target_window": [
       29,
@@ -731,27 +731,47 @@
       25,
       28
     ],
-    "structure": "Contrasting episode antecedent — more active texture, slight agitation",
+    "structure": "Contrasting middle episode (parallel A♭ minor) — antecedent of the 4-bar pair m. 25–32. Right-hand top voice peaks at F5 (m. 25 b2.6) over a wandering bass that moves G3 → C#2 (=D♭2) → G2 → A#2 (=B♭2). The texture is busier than the surrounding A♭-major cantabile and prepares the dominant pedal that will arrive in the consequent at m. 31.",
     "key_moments": [
-      "m25 episode texture begins",
-      "m27 LH becomes busier",
-      "m28 contrast with main theme"
+      "m. 25 b0.7 — E5 entry in the right hand over G3, with G4 below; A#3 (B♭3) then A#4 (B♭4) at b1.6 colors the chord with the minor subdominant",
+      "m. 25 b2.6 — F5 climax (highest pitch of the antecedent) supported by C#2 (D♭2) bass — the only deep-bass attack in the measure, marking the start of the chromatic-bass descent",
+      "m. 26 — alternation between A#4 (B♭4) and G4 in the right hand over C#3 (D♭3) → A#2 (B♭2) bass; D#4 (E♭4) at b3.4 introduces the lowered third",
+      "m. 27 — chromatic right-hand ascent G4 → D#4 (E♭4) → C5 → C#5 (D♭5) → D#5 (E♭5) over a bass cycling D#3 (E♭3) ↔ C#3 (D♭3) ↔ C3",
+      "m. 28 b2.6 — A4 enters as the longest sustained right-hand pitch (over a 2.3-second F2 bass pedal at b2.7) — the antecedent ends suspended on this open voicing"
     ],
     "teaching_goals": [
-      "feel the contrast — this episode is more active than the main theme",
-      "the LH texture requires more precision here"
+      "voice the right-hand top line so the F5 climax at m. 25 b2.6 is clearly heard over the inner B♭/G figures",
+      "feel the bass as a slow chromatic descent (G3 → D♭ → B♭2) underneath the busier surface rhythm",
+      "phrase the long A4 + F2 pedal in m. 28 as an unresolved breath that hands off to the consequent — not as a cadence"
     ],
     "style_tips": [
-      "mp to mf — more energy than the main theme",
-      "the contrast is intentional — don't smooth it out"
+      "mp to mf — louder and more rhythmically active than the surrounding A♭-major cantabile, but still legato and singing",
+      "the contrast is intentional: this is the parallel-minor character, not a dramatic outburst",
+      "let the F2 pedal at m. 28 b2.7 sustain through the bar — it's the harmonic floor for the entire consequent"
     ],
     "teaching_notes": [
       {
         "measure": 25,
-        "note": "The contrasting episode — more active, slightly urgent. A different character entirely.",
+        "note": "Enter on the E5/G3 sonority as a held chord, then voice the F5 climax at b2.6 as the line's apex. The intervening A#4 (B♭4) at b1.6 is an inner-voice color, not a melodic event.",
         "technique": [
-          "increased energy",
-          "LH texture needs clarity"
+          "voice the top line",
+          "support inner voices lightly"
+        ]
+      },
+      {
+        "measure": 27,
+        "note": "The right hand climbs chromatically G4 → E♭4 → C5 → D♭5 → E♭5 (peaking at b2.8). Use a slight crescendo through the ascent; the line is reaching, not arriving.",
+        "technique": [
+          "chromatic legato",
+          "crescendo through the climb"
+        ]
+      },
+      {
+        "measure": 28,
+        "note": "The F2 left-hand pedal at b2.7 sustains for ~2.3 seconds — half the measure. Hold it under the long A4 right-hand suspension; this is the harmonic transition into m. 29.",
+        "technique": [
+          "sustain the bass pedal",
+          "let the A4 breathe"
         ]
       }
     ]

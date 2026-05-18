@@ -28,7 +28,7 @@
     "tempo_bpm": 74,
     "time_signature": "4/4",
     "window_role": "prompt",
-    "musical_phrase_label": "penultimate section — antecedent",
+    "musical_phrase_label": "coda extension antecedent — chromatic upper-voice density continues",
     "natural_phrase_boundary": true,
     "continuation_target_window": [
       53,
@@ -1806,26 +1806,45 @@
       49,
       52
     ],
-    "structure": "Penultimate antecedent — final harmonic cycles before coda",
+    "structure": "Antecedent of the coda extension (paired with m. 53–56). The Krueger arrangement continues the dense multi-voice coda texture: the right hand carries three layered voices while the left hand maintains the lower-register structural bass that entered at m. 45. Chromatic pitches outside C major are present (A#2, C#4, F#3, F#4, G#4 are all in this window), continuing the dominant-preparation harmonic field. This is NOT a return to the opening's one-chord-per-measure arpeggio; the surface rhythm is similar but the harmonic content is fundamentally different.",
     "key_moments": [
-      "m49 harmonic motion continues",
-      "m51 approaching final stages",
-      "m52 penultimate phrase"
+      "m. 49 — chromatic non-diatonic pitches active: F#3 and F#4 introduce raised-fourth color (leading-tone of G); the LH bass operates at multiple attacks per measure rather than the opening's single sustained tonic",
+      "m. 50 — the LH bass becomes especially active (10+ attacks across the bar based on event density), with bass figures at b0, b0.5, b1, b1.5, b2, b2.5, b2.75, b2.875, b3, b3.5",
+      "m. 51 — A#2 (B♭2) appears in the bass, the lowered-seventh of C major; combined with C#4 in the upper voice this creates a chromatic-mediant tension area before resolution",
+      "m. 52 — G#4 enters in the upper voice; combined with the bass motion, this marks the antecedent's harmonic-tension peak and hands off to the consequent at m. 53"
     ],
     "teaching_goals": [
-      "sense the approaching end — the harmonic trajectory is goal-directed",
-      "same even texture all the way to the close"
+      "treat this as cadential-preparation texture, NOT opening-texture; the chromatic upper-voice activity is the musical content here",
+      "track the bass attack pattern within each measure — the bass is busier in m. 50 than in any opening measure, and that activity is structural",
+      "voice the chromatic pitches (F#, A#, G#) as the harmonic agents driving toward the consequent's tension peak"
     ],
     "style_tips": [
-      "no change in character — Bach ends without announcement",
-      "the serenity continues"
+      "the opening's serenity has been replaced by chromatic intensity — match the texture, not the affect",
+      "no temptation to over-pedal; the multi-voice writing wants clarity, not blur",
+      "the harmonic motion is goal-directed (toward the cadence at the end of the piece), so the tempo should remain steady — the goal-direction is in the pitch material, not in the speed"
     ],
     "teaching_notes": [
       {
-        "measure": 51,
-        "note": "The end approaches without drama — Bach's genius is the seamless arc.",
+        "measure": 50,
+        "note": "The left-hand bass has 10+ attack points across the bar — the densest LH measure of the coda extension. Articulate each bass event clearly; over-pedaling will lose the chromatic intervals.",
         "technique": [
-          "no ritardando until marked; maintain tempo"
+          "clear LH articulation",
+          "avoid pedal smear"
+        ]
+      },
+      {
+        "measure": 51,
+        "note": "A#2 (B♭2) bass against C#4 upper voice creates the chromatic-mediant color of the dominant-preparation field. Voice both lines distinctly.",
+        "technique": [
+          "voice top and bottom",
+          "let the dissonance speak"
+        ]
+      },
+      {
+        "measure": 52,
+        "note": "G#4 marks the harmonic-tension peak of the antecedent. From here the consequent (m. 53–56) will continue the dominant preparation toward final cadence.",
+        "technique": [
+          "voice the G#4 clearly"
         ]
       }
     ]

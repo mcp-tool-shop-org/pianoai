@@ -28,7 +28,7 @@
     "tempo_bpm": 120,
     "time_signature": "4/4",
     "window_role": "continuation_target",
-    "musical_phrase_label": "closing — consequent",
+    "musical_phrase_label": "closing plagal resolution — F major arpeggio rising over tonic pedal",
     "natural_phrase_boundary": true,
     "paired_prompt_record_id": "schumann-traumerei:m041-044:piano:mcp-session:v1"
   },
@@ -461,28 +461,47 @@
       45,
       48
     ],
-    "structure": "Closing consequent — final stillness, dream complete",
+    "structure": "Closing consequent of Träumerei (paired continuation of m. 41–44). The right hand descends through A4 → G4 → F4 → D4 chromatically across m. 45–46, then ascends a clear F-major arpeggio F4 → A4 → C5 → F5 across m. 48. The left hand plants an F2 tonic pedal at m. 46 b3.4 that sustains ≈3.32 seconds (longest single pitch in the entire pair) under the closing ascent. The piece's F-major home is reached not by a forceful cadence but by the tonic arpeggio rising through it.",
     "key_moments": [
-      "m45 final descent",
-      "m47 almost there",
-      "m48 warmth and stillness"
+      "m. 45 b0.5 — A4 right-hand entrance (the piece's signature soft offbeat attack) over an A3 left-hand support; this whole window is anacrustic and has no downbeat onsets (corpus property: rhythm_onset is not_computable for this record)",
+      "m. 45 b2.7 — A#3 (B♭3) long-hold in the left hand (~1.6 seconds) — the subdominant color before the tonic pedal arrives",
+      "m. 46 b3.4 — F2 left-hand pedal enters and sustains ≈3.32 seconds, the longest bass note of the closing; from here on, every right-hand event is heard over the F-major tonic floor",
+      "m. 48 b0.85 → b3.7 — the closing F-major arpeggio F4 → A4 → C5 → F5 rises through two octaves; each note enters offbeat, so the line floats above the pedal rather than landing on it",
+      "m. 48 b3.7 — F5 final pitch, velocity 73 (the loudest right-hand event in the closing) — the dream's quiet apex"
     ],
     "teaching_goals": [
-      "the dreaming ends in warmth and stillness — not in silence or coldness",
-      "sustain the F major warmth through the very last note"
+      "play the offbeat right-hand entrances as floating gestures, not as missed downbeats — the absence of strong-beat onsets is the closing's character",
+      "voice the F2 pedal at m. 46 b3.4 as the harmonic ground; the ascending arpeggio in m. 48 needs to hear it through the silence",
+      "shape the F4 → A4 → C5 → F5 ascent in m. 48 as one breath, not four notes — it's the resolution gesture of the entire piece"
     ],
     "style_tips": [
-      "pp to ppp",
-      "let the final chord ring with pedal"
+      "pp to ppp throughout — the dynamic floor of the piece, with the F5 in m. 48 only just emerging above ppp",
+      "let the F2 pedal at m. 46 ring through the rest of the close — sustain pedal is essential here",
+      "no ritardando until m. 48; the F-major arpeggio itself is the slowdown, not the tempo"
     ],
     "teaching_notes": [
       {
-        "measure": 48,
-        "note": "The dream ends — warm, still, complete. Let the final F major chord ring.",
+        "measure": 45,
+        "note": "Every right-hand attack in this measure enters off the beat (beats 0.5, 0.54, 0.59, 1.5, 1.6, 2.7, 3.7). The phrase has no downbeats by design. Don't force one.",
         "technique": [
-          "soft final landing",
-          "pedal for resonance",
-          "lift hands gently after"
+          "offbeat phrasing",
+          "release the metric pulse"
+        ]
+      },
+      {
+        "measure": 46,
+        "note": "The F2 pedal at b3.4 is the harmonic floor for the rest of the close. Take pedal here and hold through m. 48.",
+        "technique": [
+          "depress sustain pedal at b3.4 m.46",
+          "hold pedal through m.48"
+        ]
+      },
+      {
+        "measure": 48,
+        "note": "F4 (b0.85) → A4 (b1.75) → C5 (b2.6) → F5 (b3.7) is the closing F-major arpeggio. Each note offbeat. Voice the rising line; let the pedaled bass carry the harmony.",
+        "technique": [
+          "voice the rising arpeggio",
+          "even crescendo to F5"
         ]
       }
     ]

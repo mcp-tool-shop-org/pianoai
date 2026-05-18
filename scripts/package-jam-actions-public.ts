@@ -74,8 +74,8 @@ const SOURCE_PROVENANCE_VERIFICATION_PATH = join(
   "provenance-verification.json",
 );
 
-const PACKAGE_VERSION = "0.1.0";
-const SOURCE_TAG = "jam-actions-v0-public-2026-05-17";
+const PACKAGE_VERSION = "0.2.0";
+const SOURCE_TAG = "jam-actions-v0-enriched-2026-05-17";
 
 // ─── CLI args ────────────────────────────────────────────────────────────────
 

@@ -28,7 +28,7 @@
     "tempo_bpm": 120,
     "time_signature": "4/4",
     "window_role": "continuation_target",
-    "musical_phrase_label": "middle section — episode consequent",
+    "musical_phrase_label": "Ab-minor middle episode consequent — dominant pedal preparing the cantabile return",
     "natural_phrase_boundary": true,
     "paired_prompt_record_id": "pathetique-mvt2:m025-028:piano:mcp-session:v1"
   },
@@ -694,27 +694,45 @@
       29,
       32
     ],
-    "structure": "Contrasting episode consequent — active texture continues, return approaching",
+    "structure": "Consequent of the A♭-minor middle episode (paired continuation of m. 25–28). The right-hand line winds through D#4 (E♭4) → C4 → C#5 (D♭5) → C#4 (D♭4) → F4 → C5 → B♭4 → A♭4 (G#4) before settling on a long G#4 (A♭4) at m. 32 b3.3. Under the surface, the left hand descends through C3 → F3 → A#2 (B♭2) → A#2 again at m. 30, then plants a long G#2 (A♭2) pedal at m. 31 b2.7 (≈3.27 seconds) — the dominant of the parallel A♭ minor, which prepares the cantabile theme's return at m. 33.",
     "key_moments": [
-      "m29 episode continues",
-      "m31 harmonic approach to theme return",
-      "m32 return is imminent"
+      "m. 29 b2.6 — long C#5 (D♭5, 1.67-second sustain) over A#2/C#3 (B♭2/D♭3) bass; the right hand's longest pitch of the consequent so far",
+      "m. 30 b2.6 — C5 + C#4 (D♭4) doubled in the right hand while the left hand drops to D#2 (E♭2) for a brief 1.5-second contrabass note, the lowest pitch of the entire pair",
+      "m. 31 b2.7 — G#2 (A♭2) pedal enters in the left hand and sustains for ~3.27 seconds (longest single note of the consequent); above it the right hand suspends a long B♭4 — this is the dominant pedal that drives toward the return",
+      "m. 32 b3.3 — G#4 (A♭4) settles in the right hand with C4 + G#3 (A♭3) below, voicing the A♭ tonic just before the cantabile main theme returns at m. 33"
     ],
     "teaching_goals": [
-      "sustain the contrasting character",
-      "feel the approach of the main theme return"
+      "shape the descending right-hand line as one continuous arc, not four separate beats per measure",
+      "release the long G#2 (A♭2) pedal only when the cantabile theme physically arrives at m. 33 — it's a structural hinge, not a measure-31 event",
+      "let the B♭4 suspension at m. 31 hang over the A♭ pedal; the tension wants to resolve, but the resolution belongs to m. 33, not m. 32"
     ],
     "style_tips": [
-      "maintain the energy until the theme returns",
-      "slight preparation for the cantabile's return"
+      "soften from m. 31 onward — the episode is winding down, not pushing forward",
+      "phrase the G#4-C4 voicing at m. 32 b3.3 as the moment the parallel minor finally yields back to the major",
+      "no ritardando before m. 33 unless the score marks one — the dominant pedal IS the slowdown"
     ],
     "teaching_notes": [
       {
-        "measure": 32,
-        "note": "The theme return is approaching — slight preparation without losing the episode's energy.",
+        "measure": 30,
+        "note": "The contrabass D#2 (E♭2) at b2.7 is the lowest pitch of the pair. Voice it gently — the goal is depth, not weight.",
         "technique": [
-          "prepare the cantabile touch",
-          "ease into the return"
+          "depth not weight in the bass"
+        ]
+      },
+      {
+        "measure": 31,
+        "note": "The G#2 (A♭2) pedal at b2.7 sustains ≈3.27 seconds across the bar. Keep it speaking under the B♭4 suspension above. This bar is the harmonic engine of the entire return.",
+        "technique": [
+          "sustain pedal voicing",
+          "preserve the bass through the suspension"
+        ]
+      },
+      {
+        "measure": 32,
+        "note": "The G#4 + C4 voicing at b3.3 settles the parallel minor back to A♭ major. Don't accent the arrival — let the cantabile theme at m. 33 do that work.",
+        "technique": [
+          "release into the next theme",
+          "no accent on the pivot"
         ]
       }
     ]

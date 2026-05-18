@@ -1,10 +1,10 @@
 {
   "dataset_name": "jam-actions-v0-public",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "built_at": "2026-05-17",
   "source_dataset": "jam-actions-v0",
-  "source_commit": "e4631391c0ebe02682188b778b82c0501dd9a314",
-  "source_tag": "jam-actions-v0-public-2026-05-17",
+  "source_commit": "f133b631a85aba75d3efeaba427217d73d67e95c",
+  "source_tag": "jam-actions-v0-enriched-2026-05-17",
   "license": "CC-BY-SA-3.0-DE",
   "license_url": "https://creativecommons.org/licenses/by-sa/3.0/de/",
   "record_count": 115,
@@ -36,7 +36,5 @@
       "v0_usage": "primary"
     }
   },
-  "checksums_file": "checksums.sha256",
-  "slice_hardening_audit": "docs/jam-actions-v0-slice10-5-package-hardening-audit.md",
-  "hardening_note": "v0.1.1 hardens documentation only. Records (115/115), splits (103/12), provenance-verification, SVGs, and source_commit are byte-identical to v0.1.0. Only README.md is modified and DATASET_SCHEMA.md + KNOWN_LIMITATIONS.md + ATTRIBUTION.md are added. checksums.sha256 regenerated."
+  "checksums_file": "checksums.sha256"
 }
