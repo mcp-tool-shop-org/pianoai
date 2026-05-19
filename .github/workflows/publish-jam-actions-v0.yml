@@ -157,7 +157,7 @@ jobs:
           fi
 
           # Create empty deposit
-          DEPOSIT=$(curl -fsSL -X POST \
+          DEPOSIT=$(curl --fail-with-body -sSL -X POST \
             -H "Authorization: Bearer $ZEN_TOKEN" \
             -H "Content-Type: application/json" \
             -d '{}' \
@@ -181,7 +181,7 @@ jobs:
           for f in "${{ steps.archives.outputs.tar }}" "${{ steps.archives.outputs.zip }}"; do
             name=$(basename "$f")
             echo "Uploading $name..."
-            curl -fsSL -X PUT \
+            curl --fail-with-body -sSL -X PUT \
               -H "Authorization: Bearer $ZEN_TOKEN" \
               --upload-file "$f" \
               "$BUCKET/$name" > /tmp/upload-resp.json
@@ -199,11 +199,18 @@ jobs:
           # Wrap our metadata file in the API's required envelope: { "metadata": {...} }
           jq '{ metadata: . }' datasets/jam-actions-v0-public/zenodo-metadata.json > /tmp/meta-payload.json
 
-          curl -fsSL -X PUT \
+          HTTP_CODE=$(curl -sSL -w "%{http_code}" -o /tmp/meta-resp.json -X PUT \
             -H "Authorization: Bearer $ZEN_TOKEN" \
             -H "Content-Type: application/json" \
             -d @/tmp/meta-payload.json \
-            "https://zenodo.org/api/deposit/depositions/$DEPOSIT_ID" > /tmp/meta-resp.json
+            "https://zenodo.org/api/deposit/depositions/$DEPOSIT_ID")
+
+          echo "Metadata PUT HTTP code: $HTTP_CODE"
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "Metadata PUT FAILED. Response body:"
+            cat /tmp/meta-resp.json
+            exit 1
+          fi
 
           echo "Metadata set. Title:"
           jq -r '.metadata.title' /tmp/meta-resp.json
@@ -222,10 +229,23 @@ jobs:
           set -euo pipefail
           DEPOSIT_ID="${{ steps.zenodo_draft.outputs.deposit_id }}"
 
-          PUBLISH=$(curl -fsSL -X POST \
+          HTTP_CODE=$(curl -sSL -w "%{http_code}" -o /tmp/publish-resp.json -X POST \
             -H "Authorization: Bearer $ZEN_TOKEN" \
             "https://zenodo.org/api/deposit/depositions/$DEPOSIT_ID/actions/publish")
 
+          echo "Publish POST HTTP code: $HTTP_CODE"
+          if [ "$HTTP_CODE" != "202" ] && [ "$HTTP_CODE" != "200" ]; then
+            echo "Zenodo PUBLISH FAILED. Response body:"
+            cat /tmp/publish-resp.json | jq . 2>/dev/null || cat /tmp/publish-resp.json
+            echo ""
+            echo "Diagnostic: fetching current deposit state..."
+            curl -sSL -H "Authorization: Bearer $ZEN_TOKEN" \
+              "https://zenodo.org/api/deposit/depositions/$DEPOSIT_ID" \
+              | jq '{ state: .state, submitted: .submitted, files: (.files | length), metadata_keys: (.metadata | keys), license: .metadata.license, language: .metadata.language, related_identifiers: .metadata.related_identifiers, missing: .metadata.errors }'
+            exit 1
+          fi
+
+          PUBLISH=$(cat /tmp/publish-resp.json)
           DOI=$(echo "$PUBLISH" | jq -r '.doi // empty')
           DOI_URL=$(echo "$PUBLISH" | jq -r '.doi_url // empty')
           RECORD_URL=$(echo "$PUBLISH" | jq -r '.links.record_html // .links.record // empty')
