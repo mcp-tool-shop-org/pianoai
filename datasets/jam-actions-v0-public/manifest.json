@@ -1,10 +1,10 @@
 {
   "dataset_name": "jam-actions-v0-public",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "built_at": "2026-05-19",
   "source_dataset": "jam-actions-v0",
-  "source_commit": "ea68906265791a8deb9ec75be283074f4ae4259a",
-  "source_tag": "jam-actions-v0-reproducibility-cleared-2026-05-19",
+  "source_commit": "8f61136934db6710d8e7ea6562ba72219085ddf9",
+  "source_tag": "jam-actions-v0-publication-dry-run-2026-05-19",
   "license": "CC-BY-SA-3.0-DE",
   "license_url": "https://creativecommons.org/licenses/by-sa/3.0/de/",
   "record_count": 115,

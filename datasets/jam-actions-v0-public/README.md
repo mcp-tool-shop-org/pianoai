@@ -2,13 +2,23 @@
 license: cc-by-sa-3.0
 language:
   - en
+language_creators:
+  - expert-generated
+  - machine-generated
+annotations_creators:
+  - expert-generated
+  - machine-generated
+multilinguality:
+  - monolingual
+source_datasets:
+  - original
 pretty_name: "AI Jam Sessions — Tool-Use Traces v0 (Public Subset)"
+pretty_description: "Public subset of jam-actions-v0: 115 records across 8 classical-piano arrangements, pairing 4-measure phrase windows with annotated teaching targets and multi-turn MCP tool-use traces. Designed for grounded tool-use evaluation over symbolic music; released under CC-BY-SA-3.0-DE."
 size_categories:
   - n<1K
 task_categories:
   - text-generation
   - other
-task_ids: []
 tags:
   - music
   - midi
@@ -25,7 +35,7 @@ configs:
 ---
 # Dataset Card for jam-actions-v0 (public subset)
 
-**Version:** 0.4.1   **Built:** 2026-05-19   **Source commit:** `a5daec2`   **Source tag:** `jam-actions-v0-aloneness-audit-gaps-2026-05-19` (with Slice 23.5 reproducibility-cleanup patch applied; see `evals/slice22-release-gate-revised-assessment.json` for the canonical RC-gate PASS verdict at the Slice 22 baseline state)
+**Version:** 0.4.3   **Built:** 2026-05-19   **Source commit:** `a5daec2`   **Source tag:** `jam-actions-v0-aloneness-audit-gaps-2026-05-19` (with Slice 23.5 reproducibility-cleanup + Slice 24 publication-dry-run + Slice 24.5 HF dataset-card polish patches applied; see `evals/slice22-release-gate-revised-assessment.json` for the canonical RC-gate PASS verdict at the Slice 22 baseline state)
 
 ## Dataset Summary
 
@@ -56,7 +66,7 @@ Each record has these top-level fields: `id`, `schema_version`, `provenance`, `s
 
 Earned by Slice 23.5 (audit-driven cleanup): a fresh contributor cloning this repo on any platform (Windows native, macOS, Linux, WSL) should be able to verify the package's integrity and reproduce the canonical Slice 22 RC-gate PASS verdict without operator handholding.
 
-**Package version pinned by this reproducibility section:** `0.4.1` (built 2026-05-19). The release gate's canonical PASS state is at the Slice 22 baseline; Slice 23.5 is operational hardening only (no record content changes, no eval reruns).
+**Package version pinned by this reproducibility section:** `0.4.3` (built 2026-05-19). The release gate's canonical PASS state is at the Slice 22 baseline; Slice 23.5 / 24 / 24.5 are operational and metadata hardening only (no record content changes, no eval reruns).
 
 **Canonical tags:**
 
@@ -154,7 +164,7 @@ See `CITATION.cff` for machine-readable metadata. BibTeX equivalent:
 @dataset{jam_actions_v0_public_2026,
   author       = {mcp-tool-shop-org},
   title        = {jam-actions-v0 — AI Jam Sessions tool-use traces (public subset)},
-  version      = {0.4.1},
+  version      = {0.4.3},
   year         = {2026},
   license      = {CC-BY-SA-3.0-DE},
   url          = {https://github.com/mcp-tool-shop-org/ai-jam-sessions}

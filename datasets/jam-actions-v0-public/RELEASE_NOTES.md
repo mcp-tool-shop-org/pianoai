@@ -2,7 +2,13 @@
 
 This file is the human-readable history of the package's version arc. Each entry names the version, the date, the slice that produced it, and a one-paragraph summary of what changed. For machine-readable metadata, see `manifest.json` (current state) and `CITATION.cff` (citation entry).
 
-## Current version: 0.4.2 (2026-05-19)
+## Current version: 0.4.3 (2026-05-19)
+
+**Slice 24.5 — HuggingFace Dataset-Card Polish.** Addresses the 5 optional WARN-level gaps surfaced by Slice 24's `hf-dataset-card-check.md` validation. The README YAML frontmatter now declares `source_datasets`, `multilinguality`, `annotations_creators`, `language_creators`, and `pretty_description` with defensible honest values. `ATTRIBUTION.md` gains a new "Annotation provenance — who wrote what (human-in-the-loop)" section that surfaces the dual-population (operator + AI-agent under operator review) story behind the `annotations_creators` slug list. `task_ids` is intentionally absent because HF's enum is NLP-specific and doesn't fit MCP tool-use over symbolic music; the decision is documented. `configs` keeps the single-data-files + per-record `split` column declaration to honor the operator-locked "no record-content changes" rule. NO record content changes. NO eval reruns. The Slice 22 RC-gate PASS verdict at `evals/slice22-release-gate-revised-assessment.json` remains the canonical gate-cleared state.
+
+Patch bump from 0.4.2 is consistent with the Slice 10.5 / Slice 23.5 / Slice 24 precedent (docs-only / metadata-only patch with no record-content change). The 5 polished YAML fields are material metadata changes — the package now self-describes more accurately to HF consumers — which justifies the bump per the operator's locked rule "0.4.2 unless content metadata materially changes; if metadata files change, 0.4.3 is acceptable."
+
+## Previous version: 0.4.2 (2026-05-19)
 
 **Slice 24 — Publication Dry-Run.** Adds three new curated files to the package — `RELEASE_NOTES.md` (this file), `zenodo-metadata.json` (a schema-valid Zenodo deposition metadata payload), and `hf-dataset-card-check.md` (a field-by-field validation report against the HuggingFace dataset-card schema). These three files prepare the package for an eventual Slice 25 actual publish (Zenodo + HuggingFace) without executing any upload or DOI mint. NO record content changes. NO eval reruns. The Slice 22 RC-gate PASS verdict at `evals/slice22-release-gate-revised-assessment.json` remains the canonical gate-cleared state.
 
@@ -38,6 +44,7 @@ Patch bump from 0.4.1 is consistent with the Slice 10.5 / Slice 23.5 precedent (
 | 0.4.0 | 2026-05-19 | Slice 21 | Schumann m045-048 R6-aware rewrite — the catastrophic-stratum failure from the Slice 19 baseline was repaired via a rubric-6-aware annotation rewrite. This was a single-record content change but it's the most operationally important change in the v0 arc: it took the corpus from a FAIL-on-axis-1 state to a PASS-on-all-blocking-axes state. The Slice 21 fair-E3 baseline (`evals/slice21-fair-e3-baseline-results.json`) is the canonical post-repair eval artifact. |
 | 0.4.1 | 2026-05-19 | Slice 23.5 | Reproducibility hardening — cold-Windows-contributor audit (Slice 23) surfaced 3 blockers and 8 moderate gaps; Slice 23.5 closed them. Concrete changes: CRLF normalization for `*.sha256` via `.gitattributes` (Windows clones now verify cleanly), CRLF-tolerant verifier as defense in depth, CLI strict mode (release-gate validator now hard-fails on unknown axes / schema drift), Reproducibility section in README, and the Slice 23 audit doc shipped to the repo. No record-content changes. |
 | 0.4.2 | 2026-05-19 | Slice 24 | Publication dry-run — three new curated files: `RELEASE_NOTES.md` (this file), `zenodo-metadata.json` (Zenodo deposition payload, schema-valid, no DOI/auth), `hf-dataset-card-check.md` (HF dataset-card field-by-field validation, PASS with 5 optional WARN-level polish items). Patch bump per the Slice 10.5 / 23.5 docs-only precedent. No record-content changes. No eval reruns. |
+| 0.4.3 | 2026-05-19 | Slice 24.5 | HF dataset-card polish — closes the 5 WARN-level gaps from Slice 24 by adding `source_datasets: [original]`, `multilinguality: [monolingual]`, `annotations_creators: [expert-generated, machine-generated]`, `language_creators: [expert-generated, machine-generated]`, and a 1-sentence `pretty_description` to the README YAML frontmatter. `ATTRIBUTION.md` gains a "human-in-the-loop" provenance section that surfaces the operator + AI-agent dual-population story behind the slug-list choice. `task_ids` intentionally absent (HF's enum is NLP-specific; documented). `configs` unchanged (single records.jsonl + per-record `split` column honors the no-record-changes lock). `hf-dataset-card-check.md` re-validated: 0 FAIL, 0 unresolved WARN. Patch bump per the operator-locked threshold rule for metadata-content changes. No record-content changes. No eval reruns. |
 
 ## Decision history — version-bump precedent
 
@@ -46,14 +53,14 @@ The version-bump pattern across the arc:
 | Bump type | When applied | Examples |
 |---|---|---|
 | Minor (`0.x.0 → 0.(x+1).0`) | Record content changes (records enriched, rewritten, or added) | 0.1.1 → 0.2.0 (Slice 11), 0.2.0 → 0.3.0 (Slice 16), 0.3.0 → 0.4.0 (Slice 21) |
-| Patch (`0.x.y → 0.x.(y+1)`) | Docs-only / tooling-only changes; no record-content changes | 0.1.0 → 0.1.1 (Slice 10.5), 0.4.0 → 0.4.1 (Slice 23.5), 0.4.1 → 0.4.2 (Slice 24) |
+| Patch (`0.x.y → 0.x.(y+1)`) | Docs-only / tooling-only / metadata-only changes; no record-content changes | 0.1.0 → 0.1.1 (Slice 10.5), 0.4.0 → 0.4.1 (Slice 23.5), 0.4.1 → 0.4.2 (Slice 24), 0.4.2 → 0.4.3 (Slice 24.5) |
 | Major (`0.x → 1.0`) | Reserved for the actual public release; **not yet earned** per the operator-locked "gate clearance is not release approval" doctrine | (future) |
 
 ## What v1.0 would require (forward-looking, not promised)
 
 - An operator decision that the candidate RC gate-PASS state is sufficient for first public release
 - Successful execution of Slice 25's actual publish (Zenodo deposit + DOI mint + HuggingFace dataset upload)
-- The 5 WARN-level HF metadata polish items addressed (see `hf-dataset-card-check.md`)
+- The 5 WARN-level HF metadata polish items addressed (DONE — Slice 24.5 closed all 5; see `hf-dataset-card-check.md` for the re-validated 0-unresolved-WARN state)
 - Possibly: a v0.5.0 records-changed bump if any pre-release record polish is warranted
 
 v1.0 is **not** a decision this slice makes. This slice is dry-run only.

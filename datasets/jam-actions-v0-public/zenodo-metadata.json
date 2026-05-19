@@ -32,7 +32,7 @@
     "license": "CC-BY-SA-3.0",
     "access_right": "open",
     "language": "eng",
-    "version": "0.4.2",
+    "version": "0.4.3",
     "related_identifiers": [
       {
         "identifier": "https://github.com/mcp-tool-shop-org/ai-jam-sessions",
@@ -75,6 +75,6 @@
       "mcp-tool-shop-org (2026). jam-actions-v0 RC-gate PASS verdict. evals/slice22-release-gate-revised-assessment.json. release-gate-assessment/2.0.0 schema; all 6 blocking axes PASS at the Slice 22 revised state.",
       "Model Context Protocol specification. modelcontextprotocol.io."
     ],
-    "notes": "This dataset is a candidate release. A PASS verdict on the RC gate (release-gate-assessment/2.0.0) does NOT mean the dataset is approved for release; per the source-repo doctrine 'gate clearance is not release approval.' The Slice 22 PASS artifact at evals/slice22-release-gate-revised-assessment.json is the canonical reference for the current state. See KNOWN_LIMITATIONS.md for honest scope (8 songs, single-arranger, piano-only, English-only annotations). See RELEASE_NOTES.md for the full version arc 0.1.0 → 0.4.2."
+    "notes": "This dataset is a candidate release. A PASS verdict on the RC gate (release-gate-assessment/2.0.0) does NOT mean the dataset is approved for release; per the source-repo doctrine 'gate clearance is not release approval.' The Slice 22 PASS artifact at evals/slice22-release-gate-revised-assessment.json is the canonical reference for the current state. See KNOWN_LIMITATIONS.md for honest scope (8 songs, single-arranger, piano-only, English-only annotations). See RELEASE_NOTES.md for the full version arc 0.1.0 → 0.4.3."
   }
 }
