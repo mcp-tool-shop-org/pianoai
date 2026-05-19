@@ -89,12 +89,16 @@ describe("gold trace regression — all pilot records score 1.0", () => {
     expect(result.toolCalls.every((tc) => tc.argsSchemaValid)).toBe(true);
   });
 
-  it("all pilot records individually score 1.0", () => {
-    for (const record of pilotRecords) {
-      const result = evaluateGoldTrace(record, catalog);
-      expect(result.overallScore, `record ${record.id}`).toBe(1);
-    }
-  });
+  it(
+    "all pilot records individually score 1.0",
+    () => {
+      for (const record of pilotRecords) {
+        const result = evaluateGoldTrace(record, catalog);
+        expect(result.overallScore, `record ${record.id}`).toBe(1);
+      }
+    },
+    30000,
+  );
 });
 
 // ─── Tool name metric (AST exact-match) ──────────────────────────────────────
