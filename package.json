@@ -1,6 +1,6 @@
 {
-  "name": "ai-jam-sessions",
-  "version": "1.4.2",
+  "name": "@mcptoolshop/ai-jam-sessions",
+  "version": "1.4.3",
   "description": "Teach your AI to play piano and guitar — and sing. 41 MCP tools, 120 songs, 6 engines, browser cockpit. Also ships jam-actions-v0 — a public 115-record dataset of MCP tool-use traces over classical piano (CC-BY-SA-3.0-DE, 7-axis release gate).",
   "type": "module",
   "main": "dist/index.js",

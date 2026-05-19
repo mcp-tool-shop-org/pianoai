@@ -17,7 +17,7 @@ export const config: SiteConfig = {
     primaryCta: { href: '#quick-start', label: 'Get started' },
     secondaryCta: { href: 'handbook/', label: 'Read the Handbook' },
     previews: [
-      { label: 'Install', code: 'npm install -g ai-jam-sessions' },
+      { label: 'Install', code: 'npm install -g @mcptoolshop/ai-jam-sessions' },
       { label: 'Play', code: 'ai-jam-sessions play fur-elise --engine piano --speed 0.7' },
       { label: 'Sing', code: 'ai-jam-sessions sing imagine --with-piano' },
     ],
@@ -138,7 +138,7 @@ cat datasets/jam-actions-v0-public/CITATION.cff
       cards: [
         {
           title: 'Install globally',
-          code: `npm install -g ai-jam-sessions`,
+          code: `npm install -g @mcptoolshop/ai-jam-sessions`,
         },
         {
           title: 'Claude Desktop config',

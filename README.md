@@ -19,7 +19,7 @@
 <p align="center">
   <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml"><img src="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://codecov.io/gh/mcp-tool-shop-org/ai-jam-sessions"><img src="https://codecov.io/gh/mcp-tool-shop-org/ai-jam-sessions/branch/main/graph/badge.svg" alt="codecov"></a>
-  <a href="https://www.npmjs.com/package/ai-jam-sessions"><img src="https://img.shields.io/npm/v/ai-jam-sessions" alt="npm"></a>
+  <a href="https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions"><img src="https://img.shields.io/npm/v/@mcptoolshop/ai-jam-sessions" alt="npm"></a>
   <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/songs-120_across_12_genres-blue" alt="Songs"></a>
   <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/annotated-24-green" alt="Ready"></a>
   <a href="datasets/jam-actions-v0-public/README.md"><img src="https://img.shields.io/badge/dataset-jam--actions--v0%20(115_records)-8b5cf6" alt="Training dataset"></a>
@@ -208,7 +208,7 @@ pnpm exec tsx scripts/check-release-gate.ts \
 ## Install
 
 ```bash
-npm install -g ai-jam-sessions
+npm install -g @mcptoolshop/ai-jam-sessions
 ```
 
 Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external software.
@@ -220,7 +220,7 @@ Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external softwar
   "mcpServers": {
     "ai_jam_sessions": {
       "command": "npx",
-      "args": ["-y", "-p", "ai-jam-sessions", "ai-jam-sessions-mcp"]
+      "args": ["-y", "-p", "@mcptoolshop/ai-jam-sessions", "ai-jam-sessions-mcp"]
     }
   }
 }

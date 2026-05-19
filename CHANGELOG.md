@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.3] - 2026-05-19
+
+**npm-recovery release.** Restores the package to npm under the `@mcptoolshop/ai-jam-sessions` scope after the v1.4.0 unscoped publish was unpublished a month ago. The v1.4.2 publish attempt under the unscoped name hit npm's E409 packument-save race (the known "first-publish-of-recently-unpublished-name" failure mode); rather than wait out the cooldown, this release migrates to the scoped name that previously hosted v1.3.0 (per the v1.3.1 changelog entry). The scope is now fresh territory on npm (404 at lookup time), so this publish completes cleanly.
+
+### Changed
+- **Package renamed** from `ai-jam-sessions` (unscoped) back to `@mcptoolshop/ai-jam-sessions` (scoped). The bin entries (`ai-jam-sessions`, `ai-jam-sessions-mcp`) are unchanged — users install with `npm install -g @mcptoolshop/ai-jam-sessions` and run `ai-jam-sessions <command>`.
+
+### Notes
+- No functional changes vs v1.4.2. Same MCP server, same 41 tools, same dataset publication state (Zenodo DOI `10.5281/zenodo.20279919` published in v1.4.2).
+- v1.4.2 GH Release remains valid as the canonical record of the Zenodo publication event; its npm publish attempt is permanently failed and won't be retried. v1.4.3 is the canonical npm artifact.
+- HuggingFace mirror still deferred (token scope, see v1.4.2 entry).
+
 ## [1.4.2] - 2026-05-19
 
 **Publication event.** `jam-actions-v0` v0.4.3 is now publicly published on Zenodo with DOI [`10.5281/zenodo.20279919`](https://doi.org/10.5281/zenodo.20279919). This is the canonical citation handle going forward. The dataset content is unchanged from v1.4.1; this release captures the publication state.
