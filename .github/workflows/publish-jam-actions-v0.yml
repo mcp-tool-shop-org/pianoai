@@ -196,8 +196,14 @@ jobs:
           set -euo pipefail
           DEPOSIT_ID="${{ steps.zenodo_draft.outputs.deposit_id }}"
 
-          # Wrap our metadata file in the API's required envelope: { "metadata": {...} }
-          jq '{ metadata: . }' datasets/jam-actions-v0-public/zenodo-metadata.json > /tmp/meta-payload.json
+          # zenodo-metadata.json ALREADY has the { "metadata": {...} } envelope.
+          # We only need to strip the leading $schema_note (a documentation field) so
+          # Zenodo doesn't see an unknown top-level key. Do NOT re-wrap.
+          jq 'del(.["$schema_note"])' datasets/jam-actions-v0-public/zenodo-metadata.json > /tmp/meta-payload.json
+          echo "Metadata payload top-level keys:"
+          jq 'keys' /tmp/meta-payload.json
+          echo "Inner metadata keys:"
+          jq '.metadata | keys' /tmp/meta-payload.json
 
           HTTP_CODE=$(curl -sSL -w "%{http_code}" -o /tmp/meta-resp.json -X PUT \
             -H "Authorization: Bearer $ZEN_TOKEN" \
