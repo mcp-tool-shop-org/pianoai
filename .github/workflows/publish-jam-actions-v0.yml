@@ -1,0 +1,317 @@
+name: Publish jam-actions-v0
+
+# Operator-mediated publication workflow for the jam-actions-v0 dataset.
+#
+# This workflow NEVER runs on push or schedule. Manual trigger only.
+# Default inputs produce a Zenodo DRAFT (no DOI minted, no HF push).
+# DOI minting + HF push require explicit `confirm_irreversible=yes-mint-doi`.
+#
+# Tokens (ZEN_TOKEN, HF_TOKEN) come from GitHub Secrets. They are injected
+# as env vars only inside the steps that need them. Never echoed, never
+# written to files, never logged.
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Publication mode"
+        required: true
+        type: choice
+        default: "draft-only"
+        options:
+          - "draft-only"
+          - "publish-zenodo-only"
+          - "publish"
+      confirm_irreversible:
+        description: 'Type exactly "yes-mint-doi" to authorize DOI minting and/or HF push. Any other value aborts.'
+        required: false
+        default: "no"
+      ref:
+        description: "Git ref to publish from (tag or branch). Default = jam-actions-v0-feature-marketed-2026-05-19"
+        required: false
+        default: "jam-actions-v0-feature-marketed-2026-05-19"
+
+concurrency:
+  group: publish-jam-actions-v0
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      # ─── Input gate ──────────────────────────────────────────────────────────
+      - name: Validate inputs (irreversible-action gate)
+        run: |
+          set -euo pipefail
+          MODE="${{ github.event.inputs.mode }}"
+          CONFIRM="${{ github.event.inputs.confirm_irreversible }}"
+          echo "Mode: $MODE"
+          echo "Confirm token: <redacted>"
+          case "$MODE" in
+            draft-only)
+              echo "→ Will create a Zenodo DRAFT, upload archives, set metadata. No DOI mint. No HF push."
+              ;;
+            publish-zenodo-only)
+              if [ "$CONFIRM" != "yes-mint-doi" ]; then
+                echo "ERROR: mode=publish-zenodo-only requires confirm_irreversible=yes-mint-doi"
+                exit 1
+              fi
+              echo "→ Will create Zenodo draft + PUBLISH (mint DOI). No HF push."
+              ;;
+            publish)
+              if [ "$CONFIRM" != "yes-mint-doi" ]; then
+                echo "ERROR: mode=publish requires confirm_irreversible=yes-mint-doi"
+                exit 1
+              fi
+              echo "→ Will create Zenodo draft + PUBLISH (mint DOI) + push to HuggingFace."
+              ;;
+            *)
+              echo "ERROR: unknown mode: $MODE"
+              exit 1
+              ;;
+          esac
+
+      # ─── Checkout + tooling ──────────────────────────────────────────────────
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.inputs.ref }}
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v5
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pnpm install --frozen-lockfile
+
+      # ─── Pre-flight verifications (must pass or workflow aborts) ─────────────
+      - name: Verify package checksums
+        run: pnpm exec tsx scripts/verify-public-package-checksums.ts
+
+      - name: Verify release gate (Slice 21 canonical baseline)
+        run: |
+          pnpm exec tsx scripts/check-release-gate.ts \
+            datasets/jam-actions-v0-public/evals/slice21-fair-e3-baseline-results.json
+
+      - name: Read dataset version
+        id: version
+        run: |
+          set -euo pipefail
+          VER=$(cat datasets/jam-actions-v0-public/VERSION)
+          echo "version=$VER" >> $GITHUB_OUTPUT
+          echo "Dataset version: $VER"
+
+      # ─── Build publication archives ──────────────────────────────────────────
+      - name: Build .tar.gz and .zip archives
+        id: archives
+        run: |
+          set -euo pipefail
+          VER="${{ steps.version.outputs.version }}"
+          mkdir -p artifacts
+          (cd datasets/jam-actions-v0-public && tar -czf "../../artifacts/jam-actions-v0-public-${VER}.tar.gz" .)
+          (cd datasets && zip -qr "../artifacts/jam-actions-v0-public-${VER}.zip" jam-actions-v0-public)
+
+          TAR_SHA=$(sha256sum "artifacts/jam-actions-v0-public-${VER}.tar.gz" | cut -d' ' -f1)
+          ZIP_SHA=$(sha256sum "artifacts/jam-actions-v0-public-${VER}.zip" | cut -d' ' -f1)
+          echo "tar_sha=$TAR_SHA" >> $GITHUB_OUTPUT
+          echo "zip_sha=$ZIP_SHA" >> $GITHUB_OUTPUT
+          echo "tar=artifacts/jam-actions-v0-public-${VER}.tar.gz" >> $GITHUB_OUTPUT
+          echo "zip=artifacts/jam-actions-v0-public-${VER}.zip" >> $GITHUB_OUTPUT
+
+          echo "Archives:"
+          ls -la artifacts/
+          echo "tar.gz sha256: $TAR_SHA"
+          echo "zip    sha256: $ZIP_SHA"
+
+      - name: Upload archives as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jam-actions-v0-public-${{ steps.version.outputs.version }}-archives
+          path: artifacts/
+          if-no-files-found: error
+          retention-days: 14
+
+      # ─── Zenodo: create deposit (DRAFT) ──────────────────────────────────────
+      - name: Create Zenodo deposit (DRAFT)
+        id: zenodo_draft
+        env:
+          ZEN_TOKEN: ${{ secrets.ZEN_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${ZEN_TOKEN:-}" ]; then
+            echo "ERROR: ZEN_TOKEN secret is not set"
+            exit 1
+          fi
+
+          # Create empty deposit
+          DEPOSIT=$(curl -fsSL -X POST \
+            -H "Authorization: Bearer $ZEN_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{}' \
+            "https://zenodo.org/api/deposit/depositions")
+
+          DEPOSIT_ID=$(echo "$DEPOSIT" | jq -r '.id')
+          BUCKET_URL=$(echo "$DEPOSIT" | jq -r '.links.bucket')
+          DEPOSIT_HTML=$(echo "$DEPOSIT" | jq -r '.links.html')
+
+          echo "deposit_id=$DEPOSIT_ID" >> $GITHUB_OUTPUT
+          echo "deposit_html=$DEPOSIT_HTML" >> $GITHUB_OUTPUT
+          echo "bucket_url=$BUCKET_URL" >> $GITHUB_OUTPUT
+          echo "Zenodo draft created: $DEPOSIT_HTML (id=$DEPOSIT_ID)"
+
+      - name: Upload archives to Zenodo bucket
+        env:
+          ZEN_TOKEN: ${{ secrets.ZEN_TOKEN }}
+        run: |
+          set -euo pipefail
+          BUCKET="${{ steps.zenodo_draft.outputs.bucket_url }}"
+          for f in "${{ steps.archives.outputs.tar }}" "${{ steps.archives.outputs.zip }}"; do
+            name=$(basename "$f")
+            echo "Uploading $name..."
+            curl -fsSL -X PUT \
+              -H "Authorization: Bearer $ZEN_TOKEN" \
+              --upload-file "$f" \
+              "$BUCKET/$name" > /tmp/upload-resp.json
+            uploaded_sha=$(jq -r '.checksum' /tmp/upload-resp.json | sed 's/^md5://')
+            echo "  uploaded with checksum: $uploaded_sha"
+          done
+
+      - name: Set Zenodo deposit metadata
+        env:
+          ZEN_TOKEN: ${{ secrets.ZEN_TOKEN }}
+        run: |
+          set -euo pipefail
+          DEPOSIT_ID="${{ steps.zenodo_draft.outputs.deposit_id }}"
+
+          # Wrap our metadata file in the API's required envelope: { "metadata": {...} }
+          jq '{ metadata: . }' datasets/jam-actions-v0-public/zenodo-metadata.json > /tmp/meta-payload.json
+
+          curl -fsSL -X PUT \
+            -H "Authorization: Bearer $ZEN_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d @/tmp/meta-payload.json \
+            "https://zenodo.org/api/deposit/depositions/$DEPOSIT_ID" > /tmp/meta-resp.json
+
+          echo "Metadata set. Title:"
+          jq -r '.metadata.title' /tmp/meta-resp.json
+          echo "Reserved DOI:"
+          jq -r '.metadata.prereserve_doi.doi // "(none)"' /tmp/meta-resp.json
+
+      # ─── Zenodo: publish (mint DOI) — gated by mode + confirm ────────────────
+      - name: Publish Zenodo deposit (MINTS DOI)
+        id: zenodo_publish
+        if: |
+          (github.event.inputs.mode == 'publish' || github.event.inputs.mode == 'publish-zenodo-only')
+          && github.event.inputs.confirm_irreversible == 'yes-mint-doi'
+        env:
+          ZEN_TOKEN: ${{ secrets.ZEN_TOKEN }}
+        run: |
+          set -euo pipefail
+          DEPOSIT_ID="${{ steps.zenodo_draft.outputs.deposit_id }}"
+
+          PUBLISH=$(curl -fsSL -X POST \
+            -H "Authorization: Bearer $ZEN_TOKEN" \
+            "https://zenodo.org/api/deposit/depositions/$DEPOSIT_ID/actions/publish")
+
+          DOI=$(echo "$PUBLISH" | jq -r '.doi // empty')
+          DOI_URL=$(echo "$PUBLISH" | jq -r '.doi_url // empty')
+          RECORD_URL=$(echo "$PUBLISH" | jq -r '.links.record_html // .links.record // empty')
+
+          echo "doi=$DOI" >> $GITHUB_OUTPUT
+          echo "doi_url=$DOI_URL" >> $GITHUB_OUTPUT
+          echo "record_url=$RECORD_URL" >> $GITHUB_OUTPUT
+
+          echo "Zenodo PUBLISHED"
+          echo "DOI:       $DOI"
+          echo "DOI URL:   $DOI_URL"
+          echo "Record:    $RECORD_URL"
+
+      # ─── HuggingFace: push (gated by mode=publish + confirm) ─────────────────
+      - name: Install huggingface_hub
+        if: github.event.inputs.mode == 'publish' && github.event.inputs.confirm_irreversible == 'yes-mint-doi'
+        run: pip install --quiet huggingface_hub
+
+      - name: Push dataset to HuggingFace
+        id: hf_push
+        if: github.event.inputs.mode == 'publish' && github.event.inputs.confirm_irreversible == 'yes-mint-doi'
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_REPO_ID: mcp-tool-shop-org/jam-actions-v0
+        run: |
+          set -euo pipefail
+          if [ -z "${HF_TOKEN:-}" ]; then
+            echo "ERROR: HF_TOKEN secret is not set"
+            exit 1
+          fi
+          python3 << 'PY'
+          import os, sys
+          from huggingface_hub import HfApi
+          from huggingface_hub.utils import RepositoryNotFoundError
+
+          token = os.environ["HF_TOKEN"]
+          repo_id = os.environ["HF_REPO_ID"]
+          api = HfApi(token=token)
+
+          try:
+              api.repo_info(repo_id=repo_id, repo_type="dataset")
+              print(f"HF repo already exists: {repo_id}")
+          except RepositoryNotFoundError:
+              api.create_repo(repo_id=repo_id, repo_type="dataset", private=False)
+              print(f"Created HF dataset repo: {repo_id}")
+
+          version = open("datasets/jam-actions-v0-public/VERSION").read().strip()
+          commit = api.upload_folder(
+              folder_path="datasets/jam-actions-v0-public",
+              repo_id=repo_id,
+              repo_type="dataset",
+              commit_message=f"Publish jam-actions-v0 v{version}",
+          )
+          print(f"HF push commit: {commit}")
+          print(f"HF URL: https://huggingface.co/datasets/{repo_id}")
+
+          # Write URL to a file the next step can read
+          with open("/tmp/hf-url.txt", "w") as f:
+              f.write(f"https://huggingface.co/datasets/{repo_id}\n")
+          PY
+
+          HF_URL=$(cat /tmp/hf-url.txt | tr -d '\n')
+          echo "hf_url=$HF_URL" >> $GITHUB_OUTPUT
+
+      # ─── Final receipt summary ───────────────────────────────────────────────
+      - name: Print final receipt
+        if: always()
+        run: |
+          set -euo pipefail
+          echo "================================================================"
+          echo "  jam-actions-v0 publication receipt"
+          echo "================================================================"
+          echo "  Mode:                ${{ github.event.inputs.mode }}"
+          echo "  Confirmation:        ${{ github.event.inputs.confirm_irreversible == 'yes-mint-doi' && 'yes-mint-doi' || 'NO' }}"
+          echo "  Ref:                 ${{ github.event.inputs.ref }}"
+          echo "  Version:             ${{ steps.version.outputs.version }}"
+          echo "  Tar.gz sha256:       ${{ steps.archives.outputs.tar_sha }}"
+          echo "  Zip sha256:          ${{ steps.archives.outputs.zip_sha }}"
+          echo "  Zenodo draft URL:    ${{ steps.zenodo_draft.outputs.deposit_html }}"
+          echo "  Zenodo deposit ID:   ${{ steps.zenodo_draft.outputs.deposit_id }}"
+          echo "  Zenodo DOI:          ${{ steps.zenodo_publish.outputs.doi || '(not minted — draft only)' }}"
+          echo "  Zenodo DOI URL:      ${{ steps.zenodo_publish.outputs.doi_url || '(not minted)' }}"
+          echo "  Zenodo record:       ${{ steps.zenodo_publish.outputs.record_url || '(not minted)' }}"
+          echo "  HuggingFace URL:     ${{ steps.hf_push.outputs.hf_url || '(not pushed)' }}"
+          echo "================================================================"
+          echo ""
+          echo "Tokens are NOT in this log (they live in GitHub Secrets only)."
+          echo "Capture the URLs above into datasets/jam-actions-v0-public/publication-receipt.json"
+          echo "via a follow-up local commit (NOT inside this workflow)."
