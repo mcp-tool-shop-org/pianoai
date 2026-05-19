@@ -1,0 +1,210 @@
+{
+  "schema_version": "release-gate-assessment/1.0.0",
+  "generated_at": "2026-05-18T22:15:06.456Z",
+  "generator": "scripts/check-release-gate.ts",
+  "baseline_artifact": "datasets/jam-actions-v0-public/evals/slice19-fair-e3-baseline-results.json",
+  "trace_provenance": {
+    "tool_called": 61,
+    "tool_called_correct": 50,
+    "sources": [
+      "evals/slice18-5-e3-post-repair-results.json",
+      "evals/slice19-e3-tool-fresh-results.json"
+    ]
+  },
+  "gate_input": {
+    "n_records": 16,
+    "tool_inspected_mean": 0.6059027777777777,
+    "text_only_mean": 0.4791666666666667,
+    "margin_tool_minus_text_mean": 0.1267361111111111,
+    "records_clearing_margin": 9,
+    "tool_call_rate": 0.3279569892473118,
+    "correct_after_tool_rate": 0.819672131147541,
+    "misinterp_rate": 0.18032786885245902,
+    "per_stratum": [
+      {
+        "stratum": "bach",
+        "n_records": 6,
+        "margin_tool_minus_text_mean": 0.2916666666666667,
+        "records_clearing_margin": 5
+      },
+      {
+        "stratum": "pathetique",
+        "n_records": 5,
+        "margin_tool_minus_text_mean": 0.033333333333333326,
+        "records_clearing_margin": 1
+      },
+      {
+        "stratum": "schumann",
+        "n_records": 2,
+        "margin_tool_minus_text_mean": -0.2777777777777778,
+        "records_clearing_margin": 0
+      },
+      {
+        "stratum": "chopin",
+        "n_records": 2,
+        "margin_tool_minus_text_mean": 0.25,
+        "records_clearing_margin": 2
+      },
+      {
+        "stratum": "clair-de-lune",
+        "n_records": 1,
+        "margin_tool_minus_text_mean": 0.16666666666666669,
+        "records_clearing_margin": 1
+      }
+    ],
+    "enriched": {
+      "n_records": 9,
+      "tool_inspected_mean": 0.6512345679012346,
+      "text_only_mean": 0.574074074074074,
+      "margin_tool_minus_text_mean": 0.07716049382716049,
+      "records_clearing_margin": 5,
+      "tool_call_rate": 0.12745098039215685
+    },
+    "non_enriched": {
+      "n_records": 7,
+      "tool_inspected_mean": 0.5476190476190477,
+      "text_only_mean": 0.35714285714285715,
+      "margin_tool_minus_text_mean": 0.19047619047619047,
+      "records_clearing_margin": 4,
+      "tool_call_rate": 0.5714285714285714
+    },
+    "reports_enriched_vs_non_enriched": true
+  },
+  "gate_result": {
+    "passed": false,
+    "failing_axes": [
+      1,
+      2,
+      6
+    ],
+    "blocking_failures": [
+      1,
+      2,
+      6
+    ],
+    "axes": [
+      {
+        "axis": 1,
+        "name": "absolute_floor",
+        "passed": false,
+        "blocking": true,
+        "threshold": {
+          "floor": 0.65
+        },
+        "measured": {
+          "tool_inspected_mean": 0.6059027777777777
+        },
+        "note": "Corpus tool_inspected mean 0.606 < 0.650 — model with tools does not yet clear absolute-capability floor"
+      },
+      {
+        "axis": 2,
+        "name": "margin",
+        "passed": false,
+        "blocking": true,
+        "threshold": {
+          "corpus_margin_floor": 0.1,
+          "records_clearing_fraction_floor": 0.6,
+          "per_record_margin": 0.1
+        },
+        "measured": {
+          "corpus_margin_mean": 0.1267361111111111,
+          "records_clearing": 9,
+          "n_records": 16,
+          "clearing_fraction": 0.5625
+        },
+        "note": "Compound FAIL: corpus margin 0.127 ≥ 0.100; 9/16 (56.3%) clearing +0.10 < 60.0%"
+      },
+      {
+        "axis": 3,
+        "name": "tool_use_rate",
+        "passed": true,
+        "blocking": true,
+        "threshold": {
+          "floor": 0.25
+        },
+        "measured": {
+          "corpus_tool_call_rate": 0.3279569892473118,
+          "enriched_tool_call_rate": 0.12745098039215685,
+          "non_enriched_tool_call_rate": 0.5714285714285714
+        },
+        "note": "Corpus tool-call rate 32.8% ≥ 25.0% (enriched 12.7% / non-enriched 57.1%)"
+      },
+      {
+        "axis": 4,
+        "name": "correct_after_tool",
+        "passed": true,
+        "blocking": true,
+        "threshold": {
+          "floor": 0.75
+        },
+        "measured": {
+          "correct_after_tool_rate": 0.819672131147541
+        },
+        "note": "Correct-after-tool 82.0% ≥ 75.0%"
+      },
+      {
+        "axis": 5,
+        "name": "misinterp",
+        "passed": true,
+        "blocking": true,
+        "threshold": {
+          "ceiling": 0.2
+        },
+        "measured": {
+          "misinterp_rate": 0.18032786885245902
+        },
+        "note": "Misinterp rate 18.0% ≤ 20.0%"
+      },
+      {
+        "axis": 6,
+        "name": "stratum_floor",
+        "passed": false,
+        "blocking": true,
+        "threshold": {
+          "stratum_mean_margin_floor": 0,
+          "stratum_min_records_clearing": 1
+        },
+        "measured": {
+          "n_strata": 5,
+          "failing_strata": [
+            {
+              "stratum": "schumann",
+              "n_records": 2,
+              "margin_mean": -0.2777777777777778,
+              "records_clearing": 0
+            }
+          ]
+        },
+        "note": "1 stratum/strata fail: schumann(mean -0.278, 0/2 clearing) — catastrophic subgroup present"
+      },
+      {
+        "axis": 7,
+        "name": "enriched_split_reporting",
+        "passed": true,
+        "blocking": false,
+        "threshold": {
+          "reports_enriched_vs_non_enriched": true
+        },
+        "measured": {
+          "reports_enriched_vs_non_enriched": true,
+          "enriched_n": 9,
+          "non_enriched_n": 7
+        },
+        "note": "Release artifact declares it reports both enriched (n=9) and non-enriched (n=7) numbers across all 4 conditions"
+      }
+    ],
+    "thresholds_used": {
+      "axis1_absolute_floor": 0.65,
+      "axis2_corpus_margin_floor": 0.1,
+      "axis2_records_clearing_fraction_floor": 0.6,
+      "axis2_per_record_margin": 0.1,
+      "axis3_tool_use_rate_floor": 0.25,
+      "axis4_correct_after_tool_floor": 0.75,
+      "axis5_misinterp_ceiling": 0.2,
+      "axis6_stratum_mean_margin_floor": 0,
+      "axis6_stratum_min_records_clearing": 1
+    },
+    "summary": "RC gate FAIL — blocking failures: [1, 2, 6]"
+  },
+  "doctrine_note": "Slice 20 CANDIDATE RC gate. A PASS verdict does NOT mean the dataset is approved for release. Threshold rationale is documented in docs/jam-actions-v0-slice20-release-threshold-framework.md."
+}
