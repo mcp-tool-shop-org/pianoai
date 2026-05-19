@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.2] - 2026-05-19
+
+**Publication event.** `jam-actions-v0` v0.4.3 is now publicly published on Zenodo with DOI [`10.5281/zenodo.20279919`](https://doi.org/10.5281/zenodo.20279919). This is the canonical citation handle going forward. The dataset content is unchanged from v1.4.1; this release captures the publication state.
+
+### Added
+- **Zenodo DOI minted** — `10.5281/zenodo.20279919`. Record at https://zenodo.org/records/20279919. Two archive files attached (`.tar.gz` + `.zip`, both with SHA-256 sums recorded in `publication-receipt.json`).
+- **`.github/workflows/publish-jam-actions-v0.yml`** — operator-mediated publication workflow. Manual trigger only (`workflow_dispatch`). Three modes: `draft-only` (safe), `publish-zenodo-only`, `publish`. Irreversible actions gated by `confirm_irreversible=yes-mint-doi` input. Tokens (`ZEN_TOKEN`, `HF_TOKEN`) come from GitHub Secrets — never echoed, never written to files.
+- **`.github/workflows/push-jam-actions-v0-hf.yml`** — HF-only recovery workflow for partial publish runs. Used when Zenodo half succeeded but HF push needs re-trying.
+- **`datasets/jam-actions-v0-public/publication-receipt.json`** — machine-readable record of the publication state: Zenodo DOI, archive SHA-256s, HF status (deferred), provenance, doctrine compliance. NO tokens, NO secrets.
+- **DOI added to `CITATION.cff`** with Bernd Krueger as second author (matching the share-alike chain). Also adds `identifiers` and `url` fields per CFF 1.2.0 spec.
+- **DOI badge in main README hero** (Zenodo's standard SVG badge).
+- **Citation line in main README's Training Dataset section** plus DOI row in the dataset stats table.
+- **`RELEASE_NOTES.md` annotation** under v0.4.3 documenting the Slice 25 publication event.
+
+### Deferred
+- **HuggingFace push** to `mcp-tool-shop-org/jam-actions-v0` is deferred to a v1.4.x patch. The `HF_TOKEN` fine-grained token granted write access to the personal namespace only, not to the `mcp-tool-shop-org` org namespace on HuggingFace. Recovery is a 5-minute token re-scope + workflow re-trigger. See `publication-receipt.json` for the next-steps block.
+
+### Doctrine compliance
+- Publication was operator-mediated end-to-end. The Phase B 7-line gate format from the Slice 25 kickoff was presented before any irreversible action.
+- No tokens entered Claude's context, no tokens appeared in any log, file, or chat message — tokens lived in GitHub Secrets only.
+- Pre-flight verifiers (checksums + release-gate CLI) ran inside the workflow before any irreversible API call.
+
 ## [1.4.1] - 2026-05-19
 
 This is a publication-readiness release — no new MCP server functionality. It integrates the **jam-actions-v0** training dataset (built across 24 named slices) into the repo's marketed surface, ahead of public Zenodo + HuggingFace publication.

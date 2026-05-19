@@ -4,9 +4,21 @@ message: "If you use this dataset, please cite it as below."
 type: dataset
 authors:
   - name: "mcp-tool-shop-org"
+  - family-names: "Krueger"
+    given-names: "Bernd"
+    affiliation: "piano-midi.de (upstream MIDI arrangements; CC-BY-SA-3.0-DE)"
 version: "0.4.3"
 date-released: "2026-05-19"
 license: "CC-BY-SA-3.0-DE"
+doi: "10.5281/zenodo.20279919"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.20279919"
+    description: "Zenodo DOI for jam-actions-v0 (public subset) version 0.4.3"
+  - type: url
+    value: "https://zenodo.org/records/20279919"
+    description: "Zenodo record page"
+url: "https://doi.org/10.5281/zenodo.20279919"
 repository-code: "https://github.com/mcp-tool-shop-org/ai-jam-sessions"
 keywords:
   - music

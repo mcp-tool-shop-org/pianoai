@@ -23,6 +23,7 @@
   <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/songs-120_across_12_genres-blue" alt="Songs"></a>
   <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/annotated-24-green" alt="Ready"></a>
   <a href="datasets/jam-actions-v0-public/README.md"><img src="https://img.shields.io/badge/dataset-jam--actions--v0%20(115_records)-8b5cf6" alt="Training dataset"></a>
+  <a href="https://doi.org/10.5281/zenodo.20279919"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.20279919.svg" alt="DOI"></a>
 </p>
 
 ---
@@ -172,6 +173,7 @@ Each record pairs a 4-measure phrase window with an annotated teaching target an
 
 | | |
 |---|---|
+| **DOI** | [**`10.5281/zenodo.20279919`**](https://doi.org/10.5281/zenodo.20279919) — Zenodo, published 2026-05-19 |
 | Records | 115 (public subset) |
 | Canonical baseline | 16-record post-repair E3 |
 | Compositions | 8 classical piano works (Beethoven, Bach, Schubert, Schumann, Mozart, Mendelssohn, Tchaikovsky) |
@@ -195,7 +197,11 @@ pnpm exec tsx scripts/check-release-gate.ts \
 
 `.gitattributes` pins LF line endings for `*.sha256` and the public-dataset tree so the checksum verifier works on every platform. The release-gate CLI is strict-positional (rejects unknown / multiple positional args) so cold-start contributors can't silently mis-invoke it.
 
-**Where to find it.** The full dataset card is at [`datasets/jam-actions-v0-public/README.md`](datasets/jam-actions-v0-public/README.md). Zenodo deposition metadata is at [`zenodo-metadata.json`](datasets/jam-actions-v0-public/zenodo-metadata.json), citation metadata at [`CITATION.cff`](datasets/jam-actions-v0-public/CITATION.cff), and release notes at [`RELEASE_NOTES.md`](datasets/jam-actions-v0-public/RELEASE_NOTES.md). The 24-slice build arc — from initial corpus draft through the off-by-one repair, the Schumann remediation, the RC-gate revision, and the operator-aloneness audit — lives in [`docs/`](docs/).
+**Where to find it.** The published Zenodo record is at https://zenodo.org/records/20279919 (DOI: [`10.5281/zenodo.20279919`](https://doi.org/10.5281/zenodo.20279919)). The full dataset card is at [`datasets/jam-actions-v0-public/README.md`](datasets/jam-actions-v0-public/README.md). Zenodo deposition metadata is at [`zenodo-metadata.json`](datasets/jam-actions-v0-public/zenodo-metadata.json), citation metadata at [`CITATION.cff`](datasets/jam-actions-v0-public/CITATION.cff), the publication receipt at [`publication-receipt.json`](datasets/jam-actions-v0-public/publication-receipt.json), and release notes at [`RELEASE_NOTES.md`](datasets/jam-actions-v0-public/RELEASE_NOTES.md). The 25-slice build arc — from initial corpus draft through the off-by-one repair, the Schumann remediation, the RC-gate revision, the operator-aloneness audit, and the publication execution — lives in [`docs/`](docs/).
+
+**Cite it.** `mcp-tool-shop-org & Krueger, B. (2026). AI Jam Sessions — Tool-Use Traces v0 (Public Subset). Zenodo. https://doi.org/10.5281/zenodo.20279919`
+
+**HuggingFace mirror.** Coming in a v1.4.x patch — see [`datasets/jam-actions-v0-public/publication-receipt.json`](datasets/jam-actions-v0-public/publication-receipt.json) for the deferred-status block. The Zenodo DOI is the canonical citation handle; the HF mirror is for ML-ecosystem discovery only.
 
 > The MIDI arrangements are by Bernd Krueger (piano-midi.de), licensed CC-BY-SA-3.0-DE. The annotations, traces, and eval artifacts are by the AI Jam Sessions team, released under the same license so the share-alike chain is preserved end-to-end.
 

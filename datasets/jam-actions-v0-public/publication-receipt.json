@@ -1,0 +1,97 @@
+{
+  "$schema_note": "Slice 25 publication receipt. Machine-readable record of the public publication state. NO tokens, NO secrets, NO credentials. Conforms to the schema described in C:/Users/mikey/.claude/projects/F--AI/memory/jam-actions-v0-slice25-sonnet-kickoff.md.",
+  "version": "0.4.3",
+  "record_count": 115,
+  "license": "CC-BY-SA-3.0-DE",
+  "release_gate": "PASS",
+  "release_gate_artifact": "evals/slice22-release-gate-revised-assessment.json",
+  "source_commit": "178bdea (see git history for context; v1.4.2 commit captures the publication state)",
+  "source_tag": "jam-actions-v0-feature-marketed-2026-05-19",
+  "archives": {
+    "tar_gz": {
+      "name": "jam-actions-v0-public-0.4.3.tar.gz",
+      "sha256": "8148083bf51ed27285025f1461e6554151a0aae5e5a88a946f3955508a47814a"
+    },
+    "zip": {
+      "name": "jam-actions-v0-public-0.4.3.zip",
+      "sha256": "6219de596b2c1b9e51f276e3718ffb0b752ef7336a6d435cdccd2f250c3c60a9"
+    }
+  },
+  "zenodo": {
+    "status": "published",
+    "deposit_id": 20279919,
+    "doi": "10.5281/zenodo.20279919",
+    "doi_url": "https://doi.org/10.5281/zenodo.20279919",
+    "record_url": "https://zenodo.org/records/20279919",
+    "api_url": "https://zenodo.org/api/records/20279919",
+    "published_at": "2026-05-19",
+    "title": "jam-actions-v0 (public subset) — AI Jam Sessions tool-use traces",
+    "license_slug": "cc-by-sa-3.0",
+    "creators": [
+      "mcp-tool-shop-org",
+      "Krueger, Bernd"
+    ],
+    "workflow_run": "https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/runs/26077776827"
+  },
+  "huggingface": {
+    "status": "deferred",
+    "target_namespace": "mcp-tool-shop-org/jam-actions-v0",
+    "deferred_reason": "HF_TOKEN scope did not include write access to mcp-tool-shop-org organization namespace. Token was a fine-grained token with write rights to the personal namespace only. Recovery deferred to a v1.4.x patch once the token's Organizations section grants mcp-tool-shop-org write.",
+    "workflow": ".github/workflows/push-jam-actions-v0-hf.yml",
+    "workflow_run_failed": "https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/runs/26078174069",
+    "next_steps": [
+      "Grant fine-grained HF token write access to mcp-tool-shop-org under the Organizations section at https://huggingface.co/settings/tokens",
+      "Update the HF_TOKEN repository secret on GitHub",
+      "Re-trigger push-jam-actions-v0-hf.yml workflow",
+      "On success, update this receipt's huggingface.status to 'published' and add the published URL + pushed_at timestamp"
+    ]
+  },
+  "verification": {
+    "package_checksums": {
+      "verifier_script": "scripts/verify-public-package-checksums.ts",
+      "entries_count": 273,
+      "result": "PASS"
+    },
+    "release_gate_cli": {
+      "verifier_script": "scripts/check-release-gate.ts",
+      "input_baseline": "evals/slice21-fair-e3-baseline-results.json",
+      "blocking_axes_cleared": 6,
+      "reporting_declared": true,
+      "result": "PASS"
+    }
+  },
+  "provenance": {
+    "compositions_public_domain": [
+      "Beethoven — Für Elise",
+      "Beethoven — Sonata No. 8 'Pathétique' mvt. 2",
+      "Bach — Prelude in C major BWV 846 (WTC I)",
+      "Schubert — Impromptu D.899 No. 3",
+      "Schumann — Kinderszenen No. 7 'Träumerei'",
+      "Mozart — Variations on 'Ah vous dirai-je, Maman' K.265",
+      "Mendelssohn — Lieder ohne Worte Op. 19 No. 1",
+      "Tchaikovsky — Album for the Young 'Sweet Dreams'"
+    ],
+    "midi_arranger": "Bernd Krueger (piano-midi.de)",
+    "arrangement_license": "CC-BY-SA-3.0-DE",
+    "derivative_license": "CC-BY-SA-3.0-DE (share-alike preserved end-to-end)",
+    "compositions_excluded_from_public_subset": [
+      {
+        "title": "Gymnopédie No. 1",
+        "composer": "Satie",
+        "reason": "piano-midi.de URL provenance could not be verified during Slice 2.5 audit"
+      },
+      {
+        "title": "Arabesque No. 1",
+        "composer": "Debussy",
+        "reason": "piano-midi.de URL provenance could not be verified during Slice 2.5 audit"
+      }
+    ]
+  },
+  "doctrine_compliance": {
+    "operator_mediated_publication": true,
+    "tokens_in_files_logs_or_chat": false,
+    "irreversible_action_gated_by_explicit_input": true,
+    "release_gate_pass_before_publication": true,
+    "honest_about_partial_success": "Zenodo publication succeeded; HuggingFace push deferred and explicitly tracked in huggingface.status + next_steps"
+  }
+}

@@ -35,7 +35,9 @@ configs:
 ---
 # Dataset Card for jam-actions-v0 (public subset)
 
-**Version:** 0.4.3   **Built:** 2026-05-19   **Source commit:** `a5daec2`   **Source tag:** `jam-actions-v0-aloneness-audit-gaps-2026-05-19` (with Slice 23.5 reproducibility-cleanup + Slice 24 publication-dry-run + Slice 24.5 HF dataset-card polish patches applied; see `evals/slice22-release-gate-revised-assessment.json` for the canonical RC-gate PASS verdict at the Slice 22 baseline state)
+**Version:** 0.4.3   **Built:** 2026-05-19   **Source commit:** `a5daec2`   **Source tag:** `jam-actions-v0-feature-marketed-2026-05-19` (with Slice 23.5 reproducibility-cleanup + Slice 24 publication-dry-run + Slice 24.5 HF dataset-card polish + Slice 25 publication-execution patches applied; see `evals/slice22-release-gate-revised-assessment.json` for the canonical RC-gate PASS verdict at the Slice 22 baseline state)
+
+**DOI:** [`10.5281/zenodo.20279919`](https://doi.org/10.5281/zenodo.20279919) — published on Zenodo 2026-05-19. This is the canonical citation handle. The Zenodo record is at https://zenodo.org/records/20279919.
 
 ## Dataset Summary
 

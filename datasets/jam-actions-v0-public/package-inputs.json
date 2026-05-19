@@ -10,6 +10,7 @@
     "RELEASE_NOTES.md",
     "zenodo-metadata.json",
     "hf-dataset-card-check.md",
+    "publication-receipt.json",
     "evals/corpus-scale-qwen2.5-7b-results.json",
     "evals/corpus-scale-qwen2.5-7b-sample.json",
     "evals/post-isolation-qwen2.5-7b-results.json",

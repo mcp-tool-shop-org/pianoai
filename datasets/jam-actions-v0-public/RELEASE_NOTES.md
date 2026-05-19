@@ -4,7 +4,30 @@ This file is the human-readable history of the package's version arc. Each entry
 
 ## Current version: 0.4.3 (2026-05-19)
 
-**Slice 24.5 — HuggingFace Dataset-Card Polish.** Addresses the 5 optional WARN-level gaps surfaced by Slice 24's `hf-dataset-card-check.md` validation. The README YAML frontmatter now declares `source_datasets`, `multilinguality`, `annotations_creators`, `language_creators`, and `pretty_description` with defensible honest values. `ATTRIBUTION.md` gains a new "Annotation provenance — who wrote what (human-in-the-loop)" section that surfaces the dual-population (operator + AI-agent under operator review) story behind the `annotations_creators` slug list. `task_ids` is intentionally absent because HF's enum is NLP-specific and doesn't fit MCP tool-use over symbolic music; the decision is documented. `configs` keeps the single-data-files + per-record `split` column declaration to honor the operator-locked "no record-content changes" rule. NO record content changes. NO eval reruns. The Slice 22 RC-gate PASS verdict at `evals/slice22-release-gate-revised-assessment.json` remains the canonical gate-cleared state.
+### Slice 25 — Publication Execution (PUBLISHED 2026-05-19)
+
+**`jam-actions-v0` v0.4.3 is now publicly published on Zenodo with DOI [`10.5281/zenodo.20279919`](https://doi.org/10.5281/zenodo.20279919).** This is the canonical citation handle going forward.
+
+| | |
+|---|---|
+| **DOI** | `10.5281/zenodo.20279919` |
+| **DOI URL** | https://doi.org/10.5281/zenodo.20279919 |
+| **Zenodo record** | https://zenodo.org/records/20279919 |
+| **Published at** | 2026-05-19 |
+| **Files attached** | `jam-actions-v0-public-0.4.3.tar.gz`, `jam-actions-v0-public-0.4.3.zip` |
+| **Tar.gz sha256** | `8148083bf51ed27285025f1461e6554151a0aae5e5a88a946f3955508a47814a` |
+| **Zip sha256** | `6219de596b2c1b9e51f276e3718ffb0b752ef7336a6d435cdccd2f250c3c60a9` |
+| **License (Zenodo slug)** | `cc-by-sa-3.0` (substantively CC-BY-SA-3.0-DE; jurisdiction documented in `ATTRIBUTION.md`) |
+
+**HuggingFace mirror:** **deferred.** The HF push step in `.github/workflows/publish-jam-actions-v0.yml` was blocked by a token-scope issue — the `HF_TOKEN` granted write access to the personal namespace but not to `mcp-tool-shop-org` org. Recovery is scoped as a follow-up patch: re-scope the fine-grained token at https://huggingface.co/settings/tokens to include `mcp-tool-shop-org` org write, update the `HF_TOKEN` GitHub Actions secret, and re-trigger `.github/workflows/push-jam-actions-v0-hf.yml`. See `publication-receipt.json` for the machine-readable status.
+
+**Publication doctrine compliance:** the publication was operator-mediated. The Phase B gate format from the Slice 25 kickoff was presented explicitly before the irreversible action (DOI mint). No tokens entered Claude's context, no tokens appeared in any log, file, or chat message — tokens lived only in GitHub Secrets and were injected into workflow runners as env vars. The Slice 22 RC-gate PASS verdict at `evals/slice22-release-gate-revised-assessment.json` was re-verified by the publish workflow's pre-flight step before any irreversible API call.
+
+The `0.4.3` version number is unchanged — this is a publication event of the existing 0.4.3 package, not a new version. The new files in this commit (`publication-receipt.json`, DOI-added `CITATION.cff`, this annotation) RECORD the publication; they don't change what was published.
+
+### Slice 24.5 — HuggingFace Dataset-Card Polish
+
+Addresses the 5 optional WARN-level gaps surfaced by Slice 24's `hf-dataset-card-check.md` validation. The README YAML frontmatter now declares `source_datasets`, `multilinguality`, `annotations_creators`, `language_creators`, and `pretty_description` with defensible honest values. `ATTRIBUTION.md` gains a new "Annotation provenance — who wrote what (human-in-the-loop)" section that surfaces the dual-population (operator + AI-agent under operator review) story behind the `annotations_creators` slug list. `task_ids` is intentionally absent because HF's enum is NLP-specific and doesn't fit MCP tool-use over symbolic music; the decision is documented. `configs` keeps the single-data-files + per-record `split` column declaration to honor the operator-locked "no record-content changes" rule. NO record content changes. NO eval reruns. The Slice 22 RC-gate PASS verdict at `evals/slice22-release-gate-revised-assessment.json` remains the canonical gate-cleared state.
 
 Patch bump from 0.4.2 is consistent with the Slice 10.5 / Slice 23.5 / Slice 24 precedent (docs-only / metadata-only patch with no record-content change). The 5 polished YAML fields are material metadata changes — the package now self-describes more accurately to HF consumers — which justifies the bump per the operator's locked rule "0.4.2 unless content metadata materially changes; if metadata files change, 0.4.3 is acceptable."
 
