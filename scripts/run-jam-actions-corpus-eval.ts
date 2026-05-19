@@ -98,7 +98,8 @@ type SampleFilter =
   | "slice17-cohort"
   | "slice18-cohort"
   | "slice19-fresh"
-  | "slice19-cohort";
+  | "slice19-cohort"
+  | "slice21-schumann";
 
 const SAMPLE_FILTERS: readonly SampleFilter[] = [
   "all",
@@ -108,6 +109,7 @@ const SAMPLE_FILTERS: readonly SampleFilter[] = [
   "slice18-cohort",
   "slice19-fresh",
   "slice19-cohort",
+  "slice21-schumann",
 ] as const;
 
 /**
@@ -203,6 +205,18 @@ const SLICE_19_FRESH_RECORD_IDS: readonly string[] = [
 const SLICE_19_COHORT_RECORD_IDS: readonly string[] = [
   ...SLICE_18_COHORT_RECORD_IDS,
   ...SLICE_19_FRESH_RECORD_IDS,
+];
+
+/**
+ * Slice 21: schumann-traumerei:m045-048 single-record cohort. Used with
+ * --sample-filter slice21-schumann to rerun fresh E3 n=3 on the R6-aware
+ * enrichment rewrite of this one record. Slice 19 baseline data for the
+ * other 15 records is preserved byte-identically when the unified Slice 21
+ * baseline is built. E1/E2 iteration lists empty by design — Slice 21 is
+ * an E3-only single-record measurement slice.
+ */
+const SLICE_21_SCHUMANN_RECORD_IDS: readonly string[] = [
+  "schumann-traumerei:m045-048:piano:mcp-session:v1",
 ];
 
 interface CliOpts {
@@ -333,7 +347,7 @@ Options:
                           K>1 enables multi-run aggregation: per-record
                           runs:[K] array + AggregateStats; corpus-eval-results
                           schema bumps from 1.0.0 to 2.0.0.
-  --sample-filter <name>  (Slice 14/16/17/18/19) restrict sample plan to a subset:
+  --sample-filter <name>  (Slice 14/16/17/18/19/21) restrict sample plan to a subset:
                             all              — full plan (default)
                             enriched-only    — 6 enriched records / 4 enriched pairs
                             slice16-cohort   — 3-record Slice 16 cohort (E3 only)
@@ -346,6 +360,8 @@ Options:
                                                 bach m049-052, bach m053-056
                             slice19-cohort   — 16-record unified Slice 19 cohort
                                                 (13 Slice 18 + 3 fresh; E3-only)
+                            slice21-schumann — 1-record Slice 21 remediation
+                                                (schumann m045-048 only; E3-only)
   --help                  Show this help
 
 Sample plan (locked by kickoff):
@@ -627,6 +643,20 @@ if (opts.sampleFilter === "enriched-only") {
   filteredE2Pairs = [];
   filteredE3Ids = [...SLICE_19_COHORT_RECORD_IDS];
   filteredE3ToolIds = [...SLICE_19_COHORT_RECORD_IDS];
+} else if (opts.sampleFilter === "slice21-schumann") {
+  // Slice 21: schumann-traumerei:m045-048 R6-aware enrichment remediation.
+  // Reruns fresh E3 n=3 on this single record across all 4 conditions (full,
+  // text_only, random_midi via e3, plus tool_inspected via e3-tool). The
+  // other 15 records of the Slice 19 cohort are byte-identically reused
+  // from the Slice 19 baseline when building the unified Slice 21 baseline.
+  // E1/E2 iteration lists empty by design — Slice 21 is an E3-only
+  // single-record measurement slice. Iteration list REPLACES the plan
+  // since schumann m045-048 is in the sampler's E3 plan but we want to
+  // exclusively rerun it here.
+  filteredE1Ids = [];
+  filteredE2Pairs = [];
+  filteredE3Ids = [...SLICE_21_SCHUMANN_RECORD_IDS];
+  filteredE3ToolIds = [...SLICE_21_SCHUMANN_RECORD_IDS];
 } else {
   filteredE1Ids = [...plan.e1.recordIds];
   filteredE2Pairs = [...plan.e2.pairs];
@@ -651,7 +681,9 @@ if (opts.sampleFilter !== "all") {
               ? " (Slice 19 fresh-3 records: pathetique m029, bach m049, bach m053)"
               : opts.sampleFilter === "slice19-cohort"
                 ? " (Slice 19 unified 16-record cohort: 13 Slice 18 + 3 fresh)"
-                : ""),
+                : opts.sampleFilter === "slice21-schumann"
+                  ? " (Slice 21 schumann m045-048 R6-remediation single record)"
+                  : ""),
   );
 }
 

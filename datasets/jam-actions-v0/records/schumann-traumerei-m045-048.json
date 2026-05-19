@@ -461,18 +461,20 @@
       45,
       48
     ],
-    "structure": "Closing consequent of Träumerei (paired continuation of m. 41–44). The right hand descends through A4 → G4 → F4 → D4 chromatically across m. 45–46, then ascends a clear F-major arpeggio F4 → A4 → C5 → F5 across m. 48. The left hand plants an F2 tonic pedal at m. 46 b3.4 that sustains ≈3.32 seconds (longest single pitch in the entire pair) under the closing ascent. The piece's F-major home is reached not by a forceful cadence but by the tonic arpeggio rising through it.",
+    "structure": "Closing consequent of Träumerei (paired continuation of m. 41–44). The right hand sustains two soft A4 attacks in m. 45 — a brief A4 at b0.5 (0.33s) and the load-bearing A4 at b1.5313 (0.88s, the longest A4 of the closing) — over a quiet F-major harmonic field whose bass moves A3 → B♭3 (the subdominant color, m. 45 b2.6771) → F2 tonic pedal at m. 46 b3.3854. From the F2 pedal onward the right hand ascends a clear F-major arpeggio F4 → A4 → C5 → F5 across m. 48 (b0.85 → b1.75 → b2.64 → b3.72). The piece's F-major home is reached not by a forceful cadence but by the tonic arpeggio rising through it. Across the four bars the right hand plays 17 notes and the left hand plays 7. Pitch class C appears 6 times in the phrase (C4 at m. 45 b3.8021 RH; C3 at m. 46 b1.2917 LH; C4 at m. 46 b2.6771 RH; C4 at m. 47 b1.0104 RH; C3 at m. 47 b1.0521 LH; C5 at m. 48 b2.6354 RH) — the densest pitch class along with F, marking the I-chord saturation of the closing.",
     "key_moments": [
-      "m. 45 b0.5 — A4 right-hand entrance (the piece's signature soft offbeat attack) over an A3 left-hand support; this whole window is anacrustic and has no downbeat onsets (corpus property: rhythm_onset is not_computable for this record)",
-      "m. 45 b2.7 — A#3 (B♭3) long-hold in the left hand (~1.6 seconds) — the subdominant color before the tonic pedal arrives",
-      "m. 46 b3.4 — F2 left-hand pedal enters and sustains ≈3.32 seconds, the longest bass note of the closing; from here on, every right-hand event is heard over the F-major tonic floor",
-      "m. 48 b0.85 → b3.7 — the closing F-major arpeggio F4 → A4 → C5 → F5 rises through two octaves; each note enters offbeat, so the line floats above the pedal rather than landing on it",
-      "m. 48 b3.7 — F5 final pitch, velocity 73 (the loudest right-hand event in the closing) — the dream's quiet apex"
+      "m. 45 b1.5313 — A4 in the right hand sustained 0.88 seconds — the longest A4 of the closing and the load-bearing tone of m. 45's right hand. This is the singing apex of the measure; the surrounding offbeat right-hand events (b0.5, b0.5417, b0.5938, b1.5938, b1.6667, b3.7604, b3.8021, b3.8438) are anacrustic gestures around it, not melodic load-bearers",
+      "m. 45 b0.5 — a shorter A4 (0.33s) enters in the right hand; together with the A4 at b1.5313 it establishes the right hand's tone center on A4 across the measure",
+      "m. 45 b2.6771 — the left hand darkens to the subdominant-color B♭3 (the lowered seventh) sustained ≈1.6 seconds — the bass's only chromatic touch before the F2 tonic pedal arrives in m. 46",
+      "m. 46 b3.3854 — F2 left-hand pedal enters and sustains ≈3.32 seconds (longest single pitch in the entire pair); from here on, every right-hand event is heard over the F-major tonic floor. Within m. 46 the right hand sounds two C4s (b1.2917 area via LH C3, then C4 in RH at b2.6771) before settling into the long pedal",
+      "m. 47 — paired stack at b1.01-1.05: C4 in the right hand (b1.0104, sustained 0.61s) over LH A3 (b1.0313, 2.5s) + LH C3 (b1.0521, 2.53s) — three near-simultaneous attacks within 0.05s — voicing the I-chord under the held pedal; one E4 follows at b3.75",
+      "m. 48 b0.8542 → b3.7188 — the closing F-major arpeggio F4 (b0.8542, dur 1.22s) → A4 (b1.75, dur 0.35s) → C5 (b2.6354, dur 0.125s, brief) → F5 (b3.7188, dur 0.26s, velocity 73) rises through two octaves; each note enters offbeat, so the line floats above the F2 pedal rather than landing on it. The F5 at the end is the dream's quiet apex"
     ],
     "teaching_goals": [
-      "play the offbeat right-hand entrances as floating gestures, not as missed downbeats — the absence of strong-beat onsets is the closing's character",
-      "voice the F2 pedal at m. 46 b3.4 as the harmonic ground; the ascending arpeggio in m. 48 needs to hear it through the silence",
-      "shape the F4 → A4 → C5 → F5 ascent in m. 48 as one breath, not four notes — it's the resolution gesture of the entire piece"
+      "voice the A4 at m. 45 b1.5313 as the singing apex of the right hand — it is sustained 0.88 seconds and carries the measure; the shorter A4 at b0.5 is its anacrustic herald",
+      "treat the right-hand events surrounding the b1.5313 A4 — the brief offbeat attacks at b0.54, b0.59, b1.59, b1.67, and the m. 45 b3.76+ figure — as ornamental connective tissue around the A4 anchor, not as load-bearing line tones",
+      "voice the F2 tonic pedal at m. 46 b3.39 as the harmonic ground; the ascending arpeggio in m. 48 needs to hear it through the silence",
+      "shape the F4 → A4 → C5 → F5 ascent in m. 48 (b0.85 → b1.75 → b2.64 → b3.72) as one breath, not four notes — it is the resolution gesture of the entire piece"
     ],
     "style_tips": [
       "pp to ppp throughout — the dynamic floor of the piece, with the F5 in m. 48 only just emerging above ppp",
@@ -482,23 +484,31 @@
     "teaching_notes": [
       {
         "measure": 45,
-        "note": "Every right-hand attack in this measure enters off the beat (beats 0.5, 0.54, 0.59, 1.5, 1.6, 2.7, 3.7). The phrase has no downbeats by design. Don't force one.",
+        "note": "The right hand's gravitational center is the A4 at b1.5313 (sustained 0.88 seconds — the longest right-hand A4 of the closing). The A4 at b0.5 (0.33 seconds) is its short, soft anacrustic herald. Voice both A4s as the singing tone of the bar; the remaining right-hand offbeat attacks (b0.5417, b0.5938, b1.5938, b1.6667, b3.7604, b3.8021, b3.8438) are ornamental connective gestures that should not compete with the A4 anchor for the listener's ear.",
         "technique": [
-          "offbeat phrasing",
-          "release the metric pulse"
+          "voice the b1.5313 A4 as the apex",
+          "the surrounding offbeat events are ornamental, not melodic"
         ]
       },
       {
         "measure": 46,
-        "note": "The F2 pedal at b3.4 is the harmonic floor for the rest of the close. Take pedal here and hold through m. 48.",
+        "note": "The F2 pedal at b3.3854 is the harmonic floor for the rest of the close. Take pedal here and hold through m. 48. Above it, RH C4 at b2.6771 prepares the F-major I-chord saturation that will sound in m. 47.",
         "technique": [
-          "depress sustain pedal at b3.4 m.46",
+          "depress sustain pedal at b3.39 m.46",
           "hold pedal through m.48"
         ]
       },
       {
+        "measure": 47,
+        "note": "Three near-simultaneous attacks at b1.01–1.05: RH C4 (b1.0104), LH A3 (b1.0313), LH C3 (b1.0521) — voicing the F-major I-chord on top of the held F2 pedal. RH E4 follows at b3.75. The hand balance here is 2 RH : 4 LH — the only measure of the closing where the left hand outnumbers the right.",
+        "technique": [
+          "voice the I-chord stack",
+          "let the F2 pedal still speak underneath"
+        ]
+      },
+      {
         "measure": 48,
-        "note": "F4 (b0.85) → A4 (b1.75) → C5 (b2.6) → F5 (b3.7) is the closing F-major arpeggio. Each note offbeat. Voice the rising line; let the pedaled bass carry the harmony.",
+        "note": "F4 (b0.8542) → A4 (b1.75) → C5 (b2.6354) → F5 (b3.7188) is the closing F-major arpeggio. Each note offbeat. Voice the rising line; let the pedaled bass carry the harmony. The C5 at b2.64 is the briefest pitch of the arpeggio (0.125s) — a passing apex on the way to F5.",
         "technique": [
           "voice the rising arpeggio",
           "even crescendo to F5"

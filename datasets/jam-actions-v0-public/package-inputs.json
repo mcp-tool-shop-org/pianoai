@@ -27,7 +27,12 @@
     "evals/slice19-e3-tool-fresh-sample.json",
     "evals/slice19-fair-e3-baseline-results.json",
     "evals/slice19-fair-e3-baseline-sample.json",
-    "evals/slice20-release-gate-assessment.json"
+    "evals/slice20-release-gate-assessment.json",
+    "evals/slice21-schumann-m045-rerun-results.json",
+    "evals/slice21-schumann-m045-rerun-sample.json",
+    "evals/slice21-fair-e3-baseline-results.json",
+    "evals/slice21-fair-e3-baseline-sample.json",
+    "evals/slice21-release-gate-assessment.json"
   ],
   "generated_files": [
     "manifest.json",

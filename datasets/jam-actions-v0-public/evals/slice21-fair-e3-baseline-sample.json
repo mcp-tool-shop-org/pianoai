@@ -1,0 +1,173 @@
+{
+  "schema_version": "slice21-fair-e3-baseline-sample/1.0.0",
+  "generated_at": "2026-05-19T00:45:33.117Z",
+  "cohort": [
+    "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1",
+    "bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1",
+    "bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1",
+    "bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1",
+    "pathetique-mvt2:m001-004:piano:mcp-session:v1",
+    "pathetique-mvt2:m009-012:piano:mcp-session:v1",
+    "pathetique-mvt2:m017-020:piano:mcp-session:v1",
+    "pathetique-mvt2:m025-028:piano:mcp-session:v1",
+    "schumann-traumerei:m001-004:piano:mcp-session:v1",
+    "schumann-traumerei:m045-048:piano:mcp-session:v1",
+    "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1",
+    "chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1",
+    "clair-de-lune:m031-034:piano:mcp-session:v1",
+    "pathetique-mvt2:m029-032:piano:mcp-session:v1",
+    "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1",
+    "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1"
+  ],
+  "cohort_size": 16,
+  "records": [
+    {
+      "recordId": "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1",
+      "enriched": false,
+      "stratum": "bach",
+      "source": "slice19-fair-baseline-reuse"
+    },
+    {
+      "recordId": "bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1",
+      "enriched": false,
+      "stratum": "bach",
+      "source": "slice19-fair-baseline-reuse"
+    },
+    {
+      "recordId": "bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1",
+      "enriched": false,
+      "stratum": "bach",
+      "source": "slice19-fair-baseline-reuse"
+    },
+    {
+      "recordId": "bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1",
+      "enriched": true,
+      "stratum": "bach",
+      "source": "slice19-fair-baseline-reuse"
+    },
+    {
+      "recordId": "pathetique-mvt2:m001-004:piano:mcp-session:v1",
+      "enriched": true,
+      "stratum": "pathetique",
+      "source": "slice19-fair-baseline-reuse"
+    },
+    {
+      "recordId": "pathetique-mvt2:m009-012:piano:mcp-session:v1",
+      "enriched": false,
+      "stratum": "pathetique",
+      "source": "slice19-fair-baseline-reuse"
+    },
+    {
+      "recordId": "pathetique-mvt2:m017-020:piano:mcp-session:v1",
+      "enriched": false,
+      "stratum": "pathetique",
+      "source": "slice19-fair-baseline-reuse"
+    },
+    {
+      "recordId": "pathetique-mvt2:m025-028:piano:mcp-session:v1",
+      "enriched": true,
+      "stratum": "pathetique",
+      "source": "slice19-fair-baseline-reuse"
+    },
+    {
+      "recordId": "schumann-traumerei:m001-004:piano:mcp-session:v1",
+      "enriched": true,
+      "stratum": "schumann",
+      "source": "slice19-fair-baseline-reuse"
+    },
+    {
+      "recordId": "schumann-traumerei:m045-048:piano:mcp-session:v1",
+      "enriched": true,
+      "stratum": "schumann",
+      "source": "slice21-fresh"
+    },
+    {
+      "recordId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1",
+      "enriched": true,
+      "stratum": "chopin",
+      "source": "slice19-fair-baseline-reuse"
+    },
+    {
+      "recordId": "chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1",
+      "enriched": false,
+      "stratum": "chopin",
+      "source": "slice19-fair-baseline-reuse"
+    },
+    {
+      "recordId": "clair-de-lune:m031-034:piano:mcp-session:v1",
+      "enriched": false,
+      "stratum": "clair-de-lune",
+      "source": "slice19-fair-baseline-reuse"
+    },
+    {
+      "recordId": "pathetique-mvt2:m029-032:piano:mcp-session:v1",
+      "enriched": true,
+      "stratum": "pathetique",
+      "source": "slice19-fair-baseline-reuse"
+    },
+    {
+      "recordId": "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1",
+      "enriched": true,
+      "stratum": "bach",
+      "source": "slice19-fair-baseline-reuse"
+    },
+    {
+      "recordId": "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1",
+      "enriched": true,
+      "stratum": "bach",
+      "source": "slice19-fair-baseline-reuse"
+    }
+  ],
+  "enriched_count": 9,
+  "non_enriched_count": 7,
+  "strata": {
+    "bach": [
+      "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1",
+      "bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1",
+      "bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1",
+      "bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1",
+      "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1",
+      "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1"
+    ],
+    "pathetique": [
+      "pathetique-mvt2:m001-004:piano:mcp-session:v1",
+      "pathetique-mvt2:m009-012:piano:mcp-session:v1",
+      "pathetique-mvt2:m017-020:piano:mcp-session:v1",
+      "pathetique-mvt2:m025-028:piano:mcp-session:v1",
+      "pathetique-mvt2:m029-032:piano:mcp-session:v1"
+    ],
+    "schumann": [
+      "schumann-traumerei:m001-004:piano:mcp-session:v1",
+      "schumann-traumerei:m045-048:piano:mcp-session:v1"
+    ],
+    "chopin": [
+      "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1",
+      "chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1"
+    ],
+    "clair-de-lune": [
+      "clair-de-lune:m031-034:piano:mcp-session:v1"
+    ]
+  },
+  "provenance_by_source": {
+    "slice19-fair-baseline-reuse": [
+      "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1",
+      "bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1",
+      "bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1",
+      "bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1",
+      "pathetique-mvt2:m001-004:piano:mcp-session:v1",
+      "pathetique-mvt2:m009-012:piano:mcp-session:v1",
+      "pathetique-mvt2:m017-020:piano:mcp-session:v1",
+      "pathetique-mvt2:m025-028:piano:mcp-session:v1",
+      "schumann-traumerei:m001-004:piano:mcp-session:v1",
+      "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1",
+      "chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1",
+      "clair-de-lune:m031-034:piano:mcp-session:v1",
+      "pathetique-mvt2:m029-032:piano:mcp-session:v1",
+      "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1",
+      "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1"
+    ],
+    "slice21-fresh": [
+      "schumann-traumerei:m045-048:piano:mcp-session:v1"
+    ]
+  }
+}
