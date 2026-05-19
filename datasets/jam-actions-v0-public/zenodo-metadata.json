@@ -1,0 +1,80 @@
+{
+  "$schema_note": "Zenodo deposition metadata payload (dry-run, Slice 24, NOT yet deposited). Conforms to the Zenodo legacy REST API deposition schema at https://developers.zenodo.org/#representation. DOI is intentionally absent — Zenodo mints DOIs on actual deposit. No auth tokens, no account IDs, no credentials.",
+  "metadata": {
+    "title": "jam-actions-v0 (public subset) — AI Jam Sessions tool-use traces",
+    "upload_type": "dataset",
+    "description": "<p><strong>jam-actions-v0</strong> is a corpus of multi-turn MCP (Model Context Protocol) tool-use traces grounded in real classical-piano MIDI. Each record pairs a short phrase window (typically 4 measures) with an annotated teaching target and a target trace — a turn-by-turn session in which an assistant uses the <code>ai-jam-sessions</code> MCP tools to read, analyze, and discuss the phrase. The dataset teaches LLMs to do <em>grounded tool-use over symbolic music</em>, not just text generation.</p><p>This is the <strong>public subset</strong>: 115 records across 8 compositions (Bach, Mozart, Beethoven, Chopin, Schumann, Debussy). The held-out test set is <code>clair-de-lune</code> (12 records); the train split is 103 records. All records have verified provenance against piano-midi.de.</p><p>The package includes 270 files: per-record JSON, the consolidated <code>records.jsonl</code>, SVG piano-rolls, eval artifacts (n=3 multi-run baselines, per-stratum aggregates, release-gate assessments), curated docs (README dataset card, layered LICENSE, ATTRIBUTION with copy-pasteable strings, KNOWN_LIMITATIONS for honest scope, DATASET_SCHEMA, RELEASE_NOTES, CITATION.cff), a SHA-256 checksums file, and packaging metadata. A fresh contributor can clone the source repo, verify all 270 checksums in ~2 seconds, and reproduce the canonical Slice 22 RC-gate PASS verdict end-to-end without operator handholding.</p><p><strong>Licensing</strong>: three-layer stack. Compositions are public domain (US + EU). MIDI arrangements by Bernd Krueger / piano-midi.de under CC-BY-SA 3.0 (Germany jurisdiction). Derivative records under CC-BY-SA-3.0 (DE) via share-alike. Zenodo's enumerated license slug is <code>CC-BY-SA-3.0</code> (international form) — the substantive obligations are identical; the DE jurisdiction is documented in <code>ATTRIBUTION.md</code> and <code>LICENSE-DATASET.md</code>.</p><p><strong>Reproducibility</strong>: clone, <code>pnpm install</code>, run <code>verify-public-package-checksums.ts</code>, run <code>check-release-gate.ts</code> against <code>evals/slice21-fair-e3-baseline-results.json</code>. Expected: 270/270 checksums verify; release-gate exits 0 with PASS on all 6 blocking axes.</p>",
+    "creators": [
+      {
+        "name": "mcp-tool-shop-org",
+        "affiliation": "mcp-tool-shop-org GitHub organization"
+      },
+      {
+        "name": "Krueger, Bernd",
+        "affiliation": "piano-midi.de (upstream MIDI arrangements; CC-BY-SA-3.0-DE)"
+      }
+    ],
+    "keywords": [
+      "music",
+      "midi",
+      "dataset",
+      "mcp",
+      "model-context-protocol",
+      "llm",
+      "training-data",
+      "tool-use",
+      "classical-music",
+      "piano",
+      "symbolic-music",
+      "annotation",
+      "instruction-tuning"
+    ],
+    "license": "CC-BY-SA-3.0",
+    "access_right": "open",
+    "language": "eng",
+    "version": "0.4.2",
+    "related_identifiers": [
+      {
+        "identifier": "https://github.com/mcp-tool-shop-org/ai-jam-sessions",
+        "relation": "isSupplementTo",
+        "scheme": "url",
+        "resource_type": "software"
+      },
+      {
+        "identifier": "https://github.com/mcp-tool-shop-org/ai-jam-sessions/releases/tag/jam-actions-v0-reproducibility-cleared-2026-05-19",
+        "relation": "isDerivedFrom",
+        "scheme": "url",
+        "resource_type": "software"
+      },
+      {
+        "identifier": "https://piano-midi.de/",
+        "relation": "isDerivedFrom",
+        "scheme": "url",
+        "resource_type": "dataset"
+      }
+    ],
+    "subjects": [
+      {
+        "term": "Symbolic music",
+        "identifier": "https://en.wikipedia.org/wiki/Music_information_retrieval",
+        "scheme": "url"
+      },
+      {
+        "term": "Model Context Protocol",
+        "identifier": "https://modelcontextprotocol.io/",
+        "scheme": "url"
+      },
+      {
+        "term": "Instruction tuning",
+        "identifier": "https://arxiv.org/abs/2109.01652",
+        "scheme": "url"
+      }
+    ],
+    "references": [
+      "Krueger, B. (n.d.). Classical Piano MIDI Page. piano-midi.de. Licensed under CC-BY-SA 3.0 (Germany).",
+      "mcp-tool-shop-org (2026). jam-actions-v0 RC-gate PASS verdict. evals/slice22-release-gate-revised-assessment.json. release-gate-assessment/2.0.0 schema; all 6 blocking axes PASS at the Slice 22 revised state.",
+      "Model Context Protocol specification. modelcontextprotocol.io."
+    ],
+    "notes": "This dataset is a candidate release. A PASS verdict on the RC gate (release-gate-assessment/2.0.0) does NOT mean the dataset is approved for release; per the source-repo doctrine 'gate clearance is not release approval.' The Slice 22 PASS artifact at evals/slice22-release-gate-revised-assessment.json is the canonical reference for the current state. See KNOWN_LIMITATIONS.md for honest scope (8 songs, single-arranger, piano-only, English-only annotations). See RELEASE_NOTES.md for the full version arc 0.1.0 → 0.4.2."
+  }
+}
