@@ -33,8 +33,8 @@
 
 ## C. Operator Docs
 
-- [x] `[all]` README is current: what it does, install, usage, supported platforms + runtime versions (2026-02-27)
-- [x] `[all]` CHANGELOG.md (Keep a Changelog format) (2026-02-27)
+- [x] `[all]` README is current: what it does, install, usage, supported platforms + runtime versions (2026-05-19) — added Training Dataset section + hero badge + Status update for v1.4.1
+- [x] `[all]` CHANGELOG.md (Keep a Changelog format) (2026-05-19) — v1.4.1 entry added for jam-actions-v0 marketing integration
 - [x] `[all]` LICENSE file present and repo states support status (2026-02-27)
 - [x] `[cli]` `--help` output accurate for all commands and flags (2026-02-27)
 - [x] `[cli|mcp|desktop]` Logging levels defined: silent / normal / verbose / debug — secrets redacted at all levels (2026-02-27)
@@ -44,7 +44,7 @@
 ## D. Shipping Hygiene
 
 - [x] `[all]` `verify` script exists (test + build + smoke in one command) (2026-02-27)
-- [x] `[all]` Version in manifest matches git tag (2026-04-05) — package.json version = "1.4.0"
+- [x] `[all]` Version in manifest matches git tag (2026-05-19) — package.json version = "1.4.1"
 - [x] `[all]` Dependency scanning runs in CI (ecosystem-appropriate) (2026-02-27) — pnpm audit in CI
 - [x] `[all]` Automated dependency update mechanism exists (2026-02-27) — GitHub Dependabot
 - [x] `[npm]` `npm pack --dry-run` includes: dist/, README.md, CHANGELOG.md, LICENSE (2026-02-27)
@@ -57,8 +57,8 @@
 
 - [x] `[all]` Logo in README header (2026-02-27)
 - [x] `[all]` Translations (polyglot-mcp, 8 languages) (2026-02-27)
-- [x] `[org]` Landing page (@mcptoolshop/site-theme) (2026-02-27)
-- [x] `[all]` GitHub repo metadata: description, homepage, topics (2026-02-27)
+- [x] `[org]` Landing page (@mcptoolshop/site-theme) (2026-05-19) — added training-dataset features section + dataset-quick-start code-cards section + 7th feature card; hero + meta description updated for jam-actions-v0
+- [x] `[all]` GitHub repo metadata: description, homepage, topics (2026-05-19) — description surfaces the dataset; topics expanded to 16 with dataset / tool-use / huggingface-dataset / symbolic-music
 
 ---
 

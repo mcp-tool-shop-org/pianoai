@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.1] - 2026-05-19
+
+This is a publication-readiness release — no new MCP server functionality. It integrates the **jam-actions-v0** training dataset (built across 24 named slices) into the repo's marketed surface, ahead of public Zenodo + HuggingFace publication.
+
+### Added
+- **`jam-actions-v0` dataset (public subset)** — 115 records across 8 classical piano works (Beethoven, Bach, Schubert, Schumann, Mozart, Mendelssohn, Tchaikovsky), pairing 4-measure phrase windows with annotated teaching targets and multi-turn MCP tool-use traces. CC-BY-SA-3.0-DE. Version `0.4.3`. Lives at `datasets/jam-actions-v0-public/`.
+- **7-axis release gate** for the dataset (axes 1–6 blocking, axis 7 reporting). Axes 2 and 6 admit a `ceiling_saturated_pass` bucket so trivial-ceiling records do not dilute harder strata. Slice 22 baseline PASSES; Slice 19 baseline still FAILS (kept as a regression diagnostic).
+- **9-tool MIDI inspector surface** for grounded tool-use over symbolic music: `get_events_in_measure`, `get_events_in_hand`, `count_distinct_pitch_classes`, `count_notes_with_pitch_class`, `count_beat_1_onsets`, `get_pitch_at`, `get_hand_balance`, `find_highest_pitch`, `find_lowest_pitch`.
+- **Cold-start reproducibility** — `.gitattributes` pins LF for `*.sha256` and `datasets/jam-actions-v0-public/**` so Windows / macOS / Linux / WSL contributors get reproducible checksums. `parseChecksumsManifest` strips trailing `\r` as defense in depth. `scripts/check-release-gate.ts` rejects unknown / multiple positional args.
+- **Publication metadata** — `zenodo-metadata.json` (13 fields, ISO 639-3 language code), `CITATION.cff`, `RELEASE_NOTES.md`, `ATTRIBUTION.md` with HITL annotation provenance, `hf-dataset-card-check.md` (post-polish: 0 unresolved WARN), polished HF dataset card YAML frontmatter (`license`, `language`, `task_categories`, `tags`, `configs`, `pretty_name`, `pretty_description`, `multilinguality`, `source_datasets`, `annotations_creators`, `language_creators`).
+- **Archives** — `.tar.gz` and `.zip` publication archives (built by Slice 24).
+- **README marketing surface** — new `## Training Dataset` section, hero badge, "What is this?" teaser, Status section update.
+- **Landing-page integration** — new `training-dataset` features section + `dataset-quick-start` code-cards section on the public landing page; 7th feature card on the "What makes it tick" panel; meta-description and hero-description acknowledging the dataset.
+- **Handbook page** — `site/src/content/docs/handbook/training-dataset.md` (sidebar order 6) covering the 24-slice build arc, 7-axis release gate, 9-tool inspector surface, provenance audit, and cold-start reproducibility.
+- **GitHub topics** — `dataset`, `tool-use`, `huggingface-dataset`, `symbolic-music` (12 → 16 topics).
+- 1513 vitest tests covering the MCP server + dataset packagers + eval harnesses + release-gate validator (all passing).
+
+### Changed
+- **Repo description** updated to surface the dataset alongside the MCP server.
+- **`pretty_name`** in the HF dataset card now reads `"AI Jam Sessions — Tool-Use Traces v0 (Public Subset)"`.
+
+### Provenance and exclusions
+- Two compositions present in the full source corpus — Satie Gymnopédie No. 1 and Debussy Arabesque No. 1 — are NOT in the public subset because their piano-midi.de URL provenance could not be verified during Slice 2.5 audit. The honest call was to ship what could be defended.
+- The MIDI arrangements are by Bernd Krueger (piano-midi.de), licensed CC-BY-SA-3.0-DE. The annotations, traces, and eval artifacts are by the AI Jam Sessions team, released under the same license to preserve the share-alike chain end-to-end.
+
 ## [1.4.0] - 2026-04-05
 
 ### Added

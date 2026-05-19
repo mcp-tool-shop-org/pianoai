@@ -22,6 +22,7 @@
   <a href="https://www.npmjs.com/package/ai-jam-sessions"><img src="https://img.shields.io/npm/v/ai-jam-sessions" alt="npm"></a>
   <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/songs-120_across_12_genres-blue" alt="Songs"></a>
   <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/annotated-24-green" alt="Ready"></a>
+  <a href="datasets/jam-actions-v0-public/README.md"><img src="https://img.shields.io/badge/dataset-jam--actions--v0%20(115_records)-8b5cf6" alt="Training dataset"></a>
 </p>
 
 ---
@@ -39,6 +40,8 @@ An LLM can read and write text, but it can't experience music the way we do. No 
 - **Singing** — vocal tract synthesis with 20 voice presets, from operatic soprano to electronic choir. Sing-along mode with solfege, contour, and syllable narration.
 
 Each of the 12 genres has a richly annotated exemplar — a reference piece the AI studies first, with historical context, bar-by-bar structural analysis, key moments, teaching goals, and performance tips. The other 96 songs are raw MIDI, waiting for the AI to absorb the patterns, play the music, and write its own annotations.
+
+Out of this same work, we also publish **[jam-actions-v0](#training-dataset)** — a public dataset of 115 multi-turn MCP tool-use traces over real classical piano. It teaches LLMs to do *grounded tool-use over symbolic music*, not just text generation, and ships with a 7-axis release gate that distinguishes "passing on evidence" from "passing because the task is trivial." See [Training Dataset](#training-dataset) below for the full story.
 
 ## The Piano Roll
 
@@ -160,6 +163,41 @@ Next: try at full speed. Compare the Ipanema bridge modulation with this.
 ```
 
 One markdown file per day, stored in `~/.ai-jam-sessions/journal/`. Human-readable, append-only. Next session, the AI reads its journal and picks up where it left off.
+
+## Training Dataset
+
+**jam-actions-v0** — a public dataset of multi-turn MCP tool-use traces grounded in real classical-piano MIDI. Built from the same library this server teaches with, the dataset teaches LLMs to do **grounded tool-use over symbolic music** — not just text generation.
+
+Each record pairs a 4-measure phrase window with an annotated teaching target and a *target trace* — a turn-by-turn session in which an assistant uses the MCP tools above (`get_events_in_measure`, `get_events_in_hand`, `count_distinct_pitch_classes`, and the rest of the 9-tool MIDI inspector surface) to read, analyze, and discuss the phrase.
+
+| | |
+|---|---|
+| Records | 115 (public subset) |
+| Canonical baseline | 16-record post-repair E3 |
+| Compositions | 8 classical piano works (Beethoven, Bach, Schubert, Schumann, Mozart, Mendelssohn, Tchaikovsky) |
+| Source MIDI | piano-midi.de — Bernd Krueger arrangements |
+| License | CC-BY-SA-3.0-DE (arrangements) over public-domain compositions |
+| Version | 0.4.3 (2026-05-19) |
+| Schema | `release-gate-assessment/2.0.0` |
+
+**Quality story — the 7-axis release gate.** The dataset ships with a release gate that distinguishes evidence-grounded passing from ceiling-saturated passing. Axes 1–6 are blocking (absolute floor, margin compound, tool-use rate, correct-after-tool, misinterpretation count, stratum floor); axis 7 is enriched-vs-non reporting. Axes 2 and 6 admit a `ceiling_saturated_pass` bucket so records that score 1.000 across text-only / tool-inspected / random-MIDI conditions don't dilute the harder strata. The Slice 22 baseline **PASSES** the revised gate. The Slice 19 baseline still **FAILS** it — kept as a regression diagnostic so the gate has teeth.
+
+**Reproducibility.** A fresh contributor on any platform (Windows native, macOS, Linux, WSL) can verify the package and reproduce the canonical PASS verdict in under a minute:
+
+```bash
+git clone https://github.com/mcp-tool-shop-org/ai-jam-sessions.git
+cd ai-jam-sessions && pnpm install
+pnpm exec tsx scripts/verify-public-package-checksums.ts        # 273 entries, ~2s
+pnpm exec tsx scripts/check-release-gate.ts \
+  datasets/jam-actions-v0-public/evals/slice21-fair-e3-baseline-results.json
+# → "Verdict: PASS"
+```
+
+`.gitattributes` pins LF line endings for `*.sha256` and the public-dataset tree so the checksum verifier works on every platform. The release-gate CLI is strict-positional (rejects unknown / multiple positional args) so cold-start contributors can't silently mis-invoke it.
+
+**Where to find it.** The full dataset card is at [`datasets/jam-actions-v0-public/README.md`](datasets/jam-actions-v0-public/README.md). Zenodo deposition metadata is at [`zenodo-metadata.json`](datasets/jam-actions-v0-public/zenodo-metadata.json), citation metadata at [`CITATION.cff`](datasets/jam-actions-v0-public/CITATION.cff), and release notes at [`RELEASE_NOTES.md`](datasets/jam-actions-v0-public/RELEASE_NOTES.md). The 24-slice build arc — from initial corpus draft through the off-by-one repair, the Schumann remediation, the RC-gate revision, and the operator-aloneness audit — lives in [`docs/`](docs/).
+
+> The MIDI arrangements are by Bernd Krueger (piano-midi.de), licensed CC-BY-SA-3.0-DE. The annotations, traces, and eval artifacts are by the AI Jam Sessions team, released under the same license so the share-alike chain is preserved end-to-end.
 
 ## Install
 
@@ -284,7 +322,9 @@ ai-jam-sessions --version
 
 ## Status
 
-v1.4.0. Six sound engines, 41 MCP tools, 3 prompt templates, 120 songs across 12 genres with deeply annotated exemplars. Song transposition, section markers, per-hand mute/solo for focused practice. Interactive guitar tablature editor. Browser cockpit with 20 vocal presets, 10 instrument voices, 7 tuning systems, and an LLM-facing score API. Piano roll visualization in two color modes. Practice journal for persistent learning. Session state persistence across server restarts. MIDI play-along scoring, annotation quality assessment, and cross-genre pattern recognition. The MIDI is all there — the library grows as the AI learns.
+v1.4.1. Six sound engines, 41 MCP tools, 3 prompt templates, 120 songs across 12 genres with deeply annotated exemplars. Song transposition, section markers, per-hand mute/solo for focused practice. Interactive guitar tablature editor. Browser cockpit with 20 vocal presets, 10 instrument voices, 7 tuning systems, and an LLM-facing score API. Piano roll visualization in two color modes. Practice journal for persistent learning. Session state persistence across server restarts. MIDI play-along scoring, annotation quality assessment, and cross-genre pattern recognition.
+
+Also publishes **[jam-actions-v0](#training-dataset)** — a 115-record training dataset of multi-turn MCP tool-use traces over classical piano, with a 7-axis release gate, cold-start reproducibility, and full Zenodo + CITATION.cff metadata (CC-BY-SA-3.0-DE). 1513 tests passing across the MCP server + dataset packagers + eval harnesses + release-gate validator. The MIDI is all there — the library grows as the AI learns, and now there's a corpus of that learning shipped with it.
 
 ## Security & Privacy
 

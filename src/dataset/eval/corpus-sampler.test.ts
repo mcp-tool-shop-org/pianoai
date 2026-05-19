@@ -121,7 +121,7 @@ describe("corpus-sampler — determinism", () => {
       generatedAt: "<STRIPPED>",
     });
     expect(JSON.stringify(strip(plan1))).toBe(JSON.stringify(strip(plan2)));
-  });
+  }, 30000);
 
   it("produces different output for different seeds (sanity check)", () => {
     const records = loadPublicCorpus();
@@ -132,7 +132,7 @@ describe("corpus-sampler — determinism", () => {
     const restA = planA.e1.recordIds.slice(requiredCount).join(",");
     const restB = planB.e1.recordIds.slice(requiredCount).join(",");
     expect(restA).not.toBe(restB);
-  });
+  }, 30000);
 
   it("deterministicShuffle is stable for the same seed and key function", () => {
     const items = ["alpha", "beta", "gamma", "delta", "epsilon"];

@@ -2,7 +2,7 @@ import type { SiteConfig } from '@mcptoolshop/site-theme';
 
 export const config: SiteConfig = {
   title: 'AI Jam Sessions',
-  description: 'An MCP server that teaches AI to play piano and guitar — and sing. 120 songs across 12 genres, six sound engines, browser cockpit, and practice journal.',
+  description: 'An MCP server that teaches AI to play piano and guitar — and sing. 120 songs across 12 genres, six sound engines, browser cockpit, practice journal — and jam-actions-v0, a public 115-record tool-use dataset.',
   logoBadge: 'JS',
   brandName: 'AI Jam Sessions',
   repoUrl: 'https://github.com/mcp-tool-shop-org/ai-jam-sessions',
@@ -13,7 +13,7 @@ export const config: SiteConfig = {
     badge: 'MCP Server',
     headline: 'AI Jam Sessions.',
     headlineAccent: 'Machine learning the old fashioned way.',
-    description: 'An MCP server that teaches AI to play piano and guitar — and sing. 120 songs across 12 genres. Six sound engines. Interactive guitar tablature. A browser cockpit with vocal synthesizer. A practice journal that remembers everything.',
+    description: 'An MCP server that teaches AI to play piano and guitar — and sing. 120 songs across 12 genres. Six sound engines. Interactive guitar tablature. A browser cockpit with vocal synthesizer. A practice journal that remembers everything. Plus jam-actions-v0, a 115-record public dataset of multi-turn MCP tool-use traces over classical piano.',
     primaryCta: { href: '#quick-start', label: 'Get started' },
     secondaryCta: { href: 'handbook/', label: 'Read the Handbook' },
     previews: [
@@ -53,6 +53,81 @@ export const config: SiteConfig = {
         {
           title: '41 MCP Tools + 3 Prompts',
           desc: 'Learn, play, sing, build, score — browse songs, transpose keys, mute hands, preview teaching cues, render piano rolls, write annotations, and journal reflections.',
+        },
+        {
+          title: 'A Training Dataset to Match',
+          desc: 'jam-actions-v0 — a public corpus of 115 multi-turn MCP tool-use traces over classical piano, with a 7-axis release gate and cold-start reproducibility. CC-BY-SA-3.0-DE.',
+        },
+      ],
+    },
+    {
+      kind: 'features',
+      id: 'training-dataset',
+      title: 'jam-actions-v0 — a public training dataset',
+      subtitle: 'Multi-turn MCP tool-use traces over real classical piano. Grounded tool-use over symbolic music — not just text generation.',
+      features: [
+        {
+          title: '115 records · 8 piano pieces',
+          desc: 'Public subset of the full corpus: 8 classical-piano arrangements from piano-midi.de (Beethoven, Bach, Schubert, Schumann, Mozart, Mendelssohn, Tchaikovsky). 16-record canonical post-repair baseline.',
+        },
+        {
+          title: '7-axis release gate',
+          desc: 'Absolute floor, margin compound, tool-use rate, correct-after-tool, misinterpretation count, stratum floor (all blocking); enriched-vs-non reporting (informational). Admits a ceiling-saturated bucket so trivial wins do not dilute harder strata.',
+        },
+        {
+          title: 'Reproducible in under a minute',
+          desc: 'pnpm install, run the checksum verifier, run the release-gate CLI against the canonical baseline. .gitattributes pins LF for sha256 + dataset tree so it works on Windows native, macOS, Linux, and WSL.',
+        },
+        {
+          title: 'Slice 22 baseline PASSES',
+          desc: 'The revised gate (axes 2 + 6 with ceiling_saturated_pass) admits the canonical baseline cleanly. The Slice 19 baseline still FAILS — kept as a regression diagnostic so the gate has teeth.',
+        },
+        {
+          title: 'Cited and licensed end-to-end',
+          desc: 'CITATION.cff, Zenodo deposition metadata (13 fields, ISO 639-3 language code), CC-BY-SA-3.0-DE preserved across the MIDI arrangements (Krueger) and the annotations + traces + evals (mcp-tool-shop-org).',
+        },
+        {
+          title: 'Honest about provenance',
+          desc: 'Two songs in the source corpus (Satie, Debussy) are NOT in the public subset because their piano-midi.de provenance could not be verified during URL audit. Excluded rather than included on faith.',
+        },
+      ],
+    },
+    {
+      kind: 'code-cards',
+      id: 'dataset-quick-start',
+      title: 'Use the dataset',
+      cards: [
+        {
+          title: 'Verify the package',
+          code: `git clone https://github.com/mcp-tool-shop-org/ai-jam-sessions.git
+cd ai-jam-sessions && pnpm install
+
+# 273 checksum entries; ~2 seconds.
+pnpm exec tsx scripts/verify-public-package-checksums.ts`,
+        },
+        {
+          title: 'Reproduce the canonical PASS',
+          code: `pnpm exec tsx scripts/check-release-gate.ts \\
+  datasets/jam-actions-v0-public/evals/\\
+slice21-fair-e3-baseline-results.json
+# → "Verdict: PASS"`,
+        },
+        {
+          title: 'Read the dataset card',
+          code: `# Full HF-format dataset card + YAML frontmatter
+open datasets/jam-actions-v0-public/README.md
+
+# Zenodo deposition metadata (13 fields)
+cat datasets/jam-actions-v0-public/zenodo-metadata.json`,
+        },
+        {
+          title: 'Cite it',
+          code: `# Citation File Format (CFF)
+cat datasets/jam-actions-v0-public/CITATION.cff
+
+# Bernd Krueger (piano-midi.de) for the MIDI arrangements.
+# mcp-tool-shop-org for the annotations, traces, and evals.
+# Both under CC-BY-SA-3.0-DE.`,
         },
       ],
     },
