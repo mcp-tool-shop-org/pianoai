@@ -1,0 +1,123 @@
+name: Push jam-actions-v0 to HuggingFace
+
+# Single-purpose workflow: push the dataset to HuggingFace ONLY.
+# Use this for recovery when the main publish workflow's Zenodo half
+# succeeded but the HF push failed (or to update an existing HF dataset
+# without minting a new Zenodo deposit).
+#
+# Manual trigger only. Idempotent — if the HF repo already exists, this
+# uploads a new revision; if not, it creates the repo first.
+#
+# Token (HF_TOKEN) comes from GitHub Secrets. Never echoed, never written.
+
+on:
+  workflow_dispatch:
+    inputs:
+      hf_repo_id:
+        description: "HF dataset repo (namespace/name)"
+        required: true
+        default: "mcp-tool-shop-org/jam-actions-v0"
+      commit_message:
+        description: "HF commit message"
+        required: false
+        default: "Publish jam-actions-v0 v0.4.3"
+      ref:
+        description: "Git ref to push from"
+        required: false
+        default: "main"
+
+concurrency:
+  group: push-jam-actions-v0-hf
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.inputs.ref }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify dataset package is intact
+        run: |
+          set -euo pipefail
+          test -f datasets/jam-actions-v0-public/README.md
+          test -f datasets/jam-actions-v0-public/VERSION
+          test -f datasets/jam-actions-v0-public/records.jsonl
+          test -f datasets/jam-actions-v0-public/checksums.sha256
+          VER=$(cat datasets/jam-actions-v0-public/VERSION)
+          echo "Dataset version: $VER"
+          echo "Record count file presence:"
+          test -d datasets/jam-actions-v0-public/records && echo "  records/ ✓"
+          test -d datasets/jam-actions-v0-public/pianoroll && echo "  pianoroll/ ✓"
+          test -d datasets/jam-actions-v0-public/evals && echo "  evals/ ✓"
+
+      - name: Install huggingface_hub
+        run: pip install --quiet huggingface_hub
+
+      - name: Push dataset to HuggingFace
+        id: hf_push
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_REPO_ID: ${{ github.event.inputs.hf_repo_id }}
+          HF_COMMIT_MSG: ${{ github.event.inputs.commit_message }}
+        run: |
+          set -euo pipefail
+          if [ -z "${HF_TOKEN:-}" ]; then
+            echo "ERROR: HF_TOKEN secret is not set"
+            exit 1
+          fi
+          python3 << 'PY'
+          import os
+          from huggingface_hub import HfApi
+          from huggingface_hub.utils import RepositoryNotFoundError
+
+          token = os.environ["HF_TOKEN"]
+          repo_id = os.environ["HF_REPO_ID"]
+          commit_msg = os.environ["HF_COMMIT_MSG"]
+          api = HfApi(token=token)
+
+          try:
+              api.repo_info(repo_id=repo_id, repo_type="dataset")
+              print(f"HF repo already exists: {repo_id}")
+          except RepositoryNotFoundError:
+              api.create_repo(repo_id=repo_id, repo_type="dataset", private=False)
+              print(f"Created HF dataset repo: {repo_id}")
+
+          commit = api.upload_folder(
+              folder_path="datasets/jam-actions-v0-public",
+              repo_id=repo_id,
+              repo_type="dataset",
+              commit_message=commit_msg,
+          )
+          print(f"HF push commit: {commit}")
+          print(f"HF URL: https://huggingface.co/datasets/{repo_id}")
+
+          with open("/tmp/hf-url.txt", "w") as f:
+              f.write(f"https://huggingface.co/datasets/{repo_id}\n")
+          PY
+
+          HF_URL=$(cat /tmp/hf-url.txt | tr -d '\n')
+          echo "hf_url=$HF_URL" >> $GITHUB_OUTPUT
+
+      - name: Print final receipt
+        if: always()
+        run: |
+          echo "================================================================"
+          echo "  HuggingFace push receipt"
+          echo "================================================================"
+          echo "  HF repo:        ${{ github.event.inputs.hf_repo_id }}"
+          echo "  Commit message: ${{ github.event.inputs.commit_message }}"
+          echo "  Ref:            ${{ github.event.inputs.ref }}"
+          echo "  HF URL:         ${{ steps.hf_push.outputs.hf_url || '(push failed)' }}"
+          echo "================================================================"
