@@ -31,6 +31,7 @@ import {
   filterSplitsToPublic,
   findPairOrphans,
   formatJson,
+  parseChecksumsManifest,
   publicIdSet,
   readPackageInputs,
   readVersion,
@@ -353,6 +354,96 @@ describe("buildChecksumsManifest", () => {
     expect(() =>
       buildChecksumsManifest([{ relPath: "records\\foo.json", content: "x" }]),
     ).toThrow(/forward slashes/);
+  });
+});
+
+describe("parseChecksumsManifest (Slice 23.5 — CRLF tolerance)", () => {
+  // SHA-256 of "alpha\n" — deterministic, used as fixture content below.
+  const HASH_ALPHA = sha256Hex("alpha\n");
+  // SHA-256 of "zeta\n" — second fixture.
+  const HASH_ZETA = sha256Hex("zeta\n");
+
+  it("parses LF-terminated input (the packager's canonical format)", () => {
+    const manifest = `${HASH_ALPHA}  alpha.txt\n${HASH_ZETA}  zeta.txt\n`;
+    const parsed = parseChecksumsManifest(manifest);
+    expect(parsed.badLines).toEqual([]);
+    expect(parsed.totalLines).toBe(2);
+    expect(parsed.claimed.get("alpha.txt")).toBe(HASH_ALPHA);
+    expect(parsed.claimed.get("zeta.txt")).toBe(HASH_ZETA);
+  });
+
+  it("parses CRLF-terminated input (the Windows fresh-clone case)", () => {
+    // This is the case that broke the verifier on Windows in Slice 23 audit:
+    // core.autocrlf=true converted checksums.sha256 to CRLF on checkout, and
+    // the old regex `^...(.+)$` matched the trailing \r into capture group 2,
+    // producing a relpath ending in \r that never matched any on-disk file.
+    const manifest = `${HASH_ALPHA}  alpha.txt\r\n${HASH_ZETA}  zeta.txt\r\n`;
+    const parsed = parseChecksumsManifest(manifest);
+    expect(parsed.badLines).toEqual([]);
+    expect(parsed.totalLines).toBe(2);
+    // Critical: relpath has no trailing \r — the verifier maps by exact key
+    // equality against on-disk relpaths produced by walkChecksumFiles().
+    expect(parsed.claimed.get("alpha.txt")).toBe(HASH_ALPHA);
+    expect(parsed.claimed.get("zeta.txt")).toBe(HASH_ZETA);
+    expect(parsed.claimed.has("alpha.txt\r")).toBe(false);
+  });
+
+  it("parses mixed LF + CRLF (a checked-in LF file edited on a Windows editor)", () => {
+    const manifest = `${HASH_ALPHA}  alpha.txt\n${HASH_ZETA}  zeta.txt\r\n`;
+    const parsed = parseChecksumsManifest(manifest);
+    expect(parsed.badLines).toEqual([]);
+    expect(parsed.totalLines).toBe(2);
+    expect(parsed.claimed.get("alpha.txt")).toBe(HASH_ALPHA);
+    expect(parsed.claimed.get("zeta.txt")).toBe(HASH_ZETA);
+  });
+
+  it("collects bad lines without throwing", () => {
+    const manifest = `garbage line one\n${HASH_ALPHA}  alpha.txt\nnot a hash  zeta.txt\n`;
+    const parsed = parseChecksumsManifest(manifest);
+    expect(parsed.totalLines).toBe(3);
+    expect(parsed.badLines).toHaveLength(2);
+    expect(parsed.badLines).toContain("garbage line one");
+    expect(parsed.badLines).toContain("not a hash  zeta.txt");
+    expect(parsed.claimed.size).toBe(1);
+    expect(parsed.claimed.get("alpha.txt")).toBe(HASH_ALPHA);
+  });
+
+  it("ignores blank lines (trailing newline padding)", () => {
+    const manifest = `\n${HASH_ALPHA}  alpha.txt\n\n\n${HASH_ZETA}  zeta.txt\n\n`;
+    const parsed = parseChecksumsManifest(manifest);
+    expect(parsed.totalLines).toBe(2);
+    expect(parsed.badLines).toEqual([]);
+  });
+
+  it("round-trips with buildChecksumsManifest output (every entry parses)", () => {
+    const files = [
+      { relPath: "alpha.txt", content: "alpha\n" },
+      { relPath: "zeta.txt", content: "zeta\n" },
+      { relPath: "mid/file.json", content: '{"x":1}\n' },
+    ];
+    const manifest = buildChecksumsManifest(files);
+    const parsed = parseChecksumsManifest(manifest);
+    expect(parsed.badLines).toEqual([]);
+    expect(parsed.totalLines).toBe(3);
+    expect(parsed.claimed.size).toBe(3);
+    for (const f of files) {
+      expect(parsed.claimed.get(f.relPath)).toBe(sha256Hex(f.content));
+    }
+  });
+
+  it("round-trips with CRLF-corrupted buildChecksumsManifest output", () => {
+    const files = [
+      { relPath: "alpha.txt", content: "alpha\n" },
+      { relPath: "zeta.txt", content: "zeta\n" },
+    ];
+    const lfManifest = buildChecksumsManifest(files);
+    // Simulate autocrlf-style corruption on a Windows checkout.
+    const crlfManifest = lfManifest.replace(/\n/g, "\r\n");
+    const parsed = parseChecksumsManifest(crlfManifest);
+    expect(parsed.badLines).toEqual([]);
+    for (const f of files) {
+      expect(parsed.claimed.get(f.relPath)).toBe(sha256Hex(f.content));
+    }
   });
 });
 

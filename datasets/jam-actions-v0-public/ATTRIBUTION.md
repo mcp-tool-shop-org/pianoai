@@ -67,8 +67,8 @@ Each record in this dataset is derived from a CC-BY-SA-3.0-DE arrangement. The s
 - **Repository:** https://github.com/mcp-tool-shop-org/ai-jam-sessions
 - **License:** CC-BY-SA-3.0-DE
 - **Citation file:** [`CITATION.cff`](CITATION.cff)
-- **Version:** 0.1.1
-- **Source commit:** the records in this package were produced at source-corpus commit `e4631391c0ebe02682188b778b82c0501dd9a314` (tag `jam-actions-v0-public-2026-05-17`); only the documentation was hardened in version 0.1.1 (Slice 10.5).
+- **Version:** 0.4.1
+- **Source commit:** the records in this package were produced at source-corpus commit `4b0f181` (tag `jam-actions-v0-rc-gate-revised-2026-05-19` for the Slice 22 RC-gate revised state; Slice 23.5 reproducibility-cleanup tag carries the current operational hardening). The 6-record Slice 11 enrichment overlay is the most recent record-content change; Slice 21 added a 7th enrichment to the Schumann m045-048 record. Slices 22 and 23 / 23.5 modified no record content (release-gate revision + operator-aloneness audit + reproducibility cleanup respectively).
 
 ## Required redistribution attribution
 
@@ -90,7 +90,7 @@ No per-composition attribution is required, because the underlying compositions 
 @dataset{jam_actions_v0_public_2026,
   author       = {mcp-tool-shop-org},
   title        = {jam-actions-v0 — AI Jam Sessions tool-use traces (public subset)},
-  version      = {0.1.1},
+  version      = {0.4.1},
   year         = {2026},
   license      = {CC-BY-SA-3.0-DE},
   url          = {https://github.com/mcp-tool-shop-org/ai-jam-sessions},
@@ -100,7 +100,7 @@ No per-composition attribution is required, because the underlying compositions 
 
 ### Plain-text reference (paper / report)
 
-> jam-actions-v0 (public subset), version 0.1.1, mcp-tool-shop-org, 2026. Licensed under CC-BY-SA-3.0-DE. MIDI arrangements by Bernd Krueger, https://piano-midi.de/, CC-BY-SA-3.0-DE. https://github.com/mcp-tool-shop-org/ai-jam-sessions.
+> jam-actions-v0 (public subset), version 0.4.1, mcp-tool-shop-org, 2026. Licensed under CC-BY-SA-3.0-DE. MIDI arrangements by Bernd Krueger, https://piano-midi.de/, CC-BY-SA-3.0-DE. https://github.com/mcp-tool-shop-org/ai-jam-sessions.
 
 ### In-figure caption (single line)
 

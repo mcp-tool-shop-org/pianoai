@@ -1,0 +1,27 @@
+# jam-actions-v0 Slice 23.5 — Reproducibility Cleanup (dataset-package LF pin).
+#
+# Pins line endings to LF on disk on every platform for the dataset package's
+# text content AND for SHA-256 checksum manifests anywhere in the tree,
+# regardless of git's core.autocrlf setting. Without these rules, Windows
+# clones with autocrlf=true convert text files to CRLF on checkout; the
+# packager writes content with LF (matching how the SHA-256 hashes were
+# computed) so the on-disk bytes drift from the hashed content and the
+# verifier reports hash mismatches across the entire package.
+#
+# Scope rationale (Slice 23.5):
+#   - `*.sha256` covers the checksum manifest file class everywhere (catches
+#     the parse-time bug originally found by the Slice 23 audit).
+#   - `datasets/jam-actions-v0-public/**` covers all dataset-package text
+#     files (catches the hash-mismatch problem when the package is verified
+#     on a Windows fresh-clone). The package files are release artifacts
+#     whose checksums are computed against canonical LF content; on-disk
+#     LF is required for verification to pass.
+#   - Other repo files (source, tests, top-level docs) keep their default
+#     autocrlf behavior — narrow blast radius outside the dataset package.
+#   - The CRLF-tolerant verifier in scripts/verify-public-package-checksums.ts
+#     is defense in depth for the parse layer (file contents stripping
+#     trailing \r on read); the LF pin here defends the byte-equality layer.
+#
+# Earned by Slice 23 audit (Gap #1, #13 — Windows-only reproducibility blocker).
+*.sha256 text eol=lf
+datasets/jam-actions-v0-public/** text eol=lf

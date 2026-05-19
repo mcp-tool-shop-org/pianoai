@@ -9,16 +9,20 @@
 //
 // Usage:
 //
-//   # default thresholds; default Slice 19 baseline
+//   # default thresholds; default Slice 19 baseline (FAILs under revised gate)
 //   tsx scripts/check-release-gate.ts
 //
-//   # custom baseline artifact
+//   # custom baseline artifact (Slice 23.5: positional == --baseline)
 //   tsx scripts/check-release-gate.ts \
-//     --baseline datasets/jam-actions-v0-public/evals/slice19-fair-e3-baseline-results.json
+//     datasets/jam-actions-v0-public/evals/slice21-fair-e3-baseline-results.json
+//
+//   # explicit --baseline flag form (equivalent)
+//   tsx scripts/check-release-gate.ts \
+//     --baseline datasets/jam-actions-v0-public/evals/slice21-fair-e3-baseline-results.json
 //
 //   # write assessment to disk
 //   tsx scripts/check-release-gate.ts \
-//     --out datasets/jam-actions-v0-public/evals/slice20-release-gate-assessment.json
+//     --out datasets/jam-actions-v0-public/evals/slice22-release-gate-revised-assessment.json
 //
 //   # override individual thresholds for what-if analysis
 //   tsx scripts/check-release-gate.ts \
@@ -67,7 +71,33 @@ interface CliArgs {
   quiet: boolean;
 }
 
-function parseArgs(argv: string[]): CliArgs {
+/**
+ * CLI parse error — thrown when args are malformed. Carries `usage: true` for
+ * one-line errors that warrant printing the help text alongside. Slice 23.5
+ * adds strict positional-arg handling per audit Gap #2.
+ */
+export class CliArgsError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "CliArgsError";
+  }
+}
+
+/**
+ * Parse argv into CliArgs. Slice 23.5 strictness (audit Gap #2):
+ *   - Unknown --flag still errors (existing behavior).
+ *   - A single positional argument is now treated as the baseline path,
+ *     equivalent to `--baseline <path>`. The pre-Slice-23.5 CLI silently
+ *     dropped positionals and ran against DEFAULT_BASELINE — the Slice 23
+ *     audit caught a fresh contributor running
+ *       tsx check-release-gate.ts <slice21-baseline.json>
+ *     getting the DEFAULT_BASELINE's FAIL verdict instead of their intended
+ *     PASS, with no error indicating the wrong baseline was used.
+ *   - Two or more positionals raise an error (ambiguous).
+ *   - Mixing `--baseline <path>` AND a positional raises an error
+ *     (the user is contradicting themselves).
+ */
+export function parseArgs(argv: string[]): CliArgs {
   const args: CliArgs = {
     baseline: DEFAULT_BASELINE,
     out: null,
@@ -76,6 +106,8 @@ function parseArgs(argv: string[]): CliArgs {
     help: false,
     quiet: false,
   };
+  let baselineFromFlag = false;
+  const positionals: string[] = [];
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     const next = argv[i + 1];
@@ -89,6 +121,7 @@ function parseArgs(argv: string[]): CliArgs {
         break;
       case "--baseline":
         args.baseline = next;
+        baselineFromFlag = true;
         i++;
         break;
       case "--out":
@@ -136,21 +169,42 @@ function parseArgs(argv: string[]): CliArgs {
         break;
       default:
         if (arg.startsWith("--")) {
-          process.stderr.write(`unknown flag: ${arg}\n`);
-          process.exit(1);
+          throw new CliArgsError(`unknown flag: ${arg}`);
         }
+        positionals.push(arg);
     }
   }
+
+  // Slice 23.5: positional-arg strict mode (audit Gap #2).
+  if (positionals.length > 1) {
+    throw new CliArgsError(
+      `expected at most one positional baseline path; got ${positionals.length}: ${positionals.map((p) => `'${p}'`).join(", ")}`,
+    );
+  }
+  if (positionals.length === 1 && baselineFromFlag) {
+    throw new CliArgsError(
+      `cannot mix positional baseline path '${positionals[0]}' with --baseline '${args.baseline}'; specify exactly one`,
+    );
+  }
+  if (positionals.length === 1) {
+    args.baseline = positionals[0];
+  }
+
   return args;
 }
 
 function printHelp(): void {
   process.stdout.write(
     [
-      "Usage: check-release-gate.ts [options]",
+      "Usage: check-release-gate.ts [options] [<baseline-path>]",
       "",
-      "Evaluate the jam-actions-v0 Slice 20 candidate RC gate (7 axes) against a",
-      "Slice-19-shaped baseline artifact.",
+      "Evaluate the jam-actions-v0 RC release gate against a baseline artifact.",
+      "Slice 22 schema (revised axes 2 + 6) is emitted when per_record data is",
+      "supplied by the source artifact (always true via this CLI in Slice 22+).",
+      "",
+      "Positional argument (Slice 23.5):",
+      "  A single positional argument is treated as the baseline path,",
+      "  equivalent to --baseline <path>. Two or more positionals error.",
       "",
       "Options:",
       "  --baseline <path>                  Path to the unified baseline JSON",
@@ -535,45 +589,80 @@ function renderHuman(result: ReturnType<typeof evaluateReleaseGate>): string {
 
 // ─── main ────────────────────────────────────────────────────────────────────
 
-const args = parseArgs(process.argv.slice(2));
+function main(): void {
+  let args: CliArgs;
+  try {
+    args = parseArgs(process.argv.slice(2));
+  } catch (err) {
+    if (err instanceof CliArgsError) {
+      process.stderr.write(`${err.message}\n`);
+      process.stderr.write(`run with --help for usage.\n`);
+      process.exit(1);
+    }
+    throw err;
+  }
 
-if (args.help) {
-  printHelp();
-  process.exit(0);
+  if (args.help) {
+    printHelp();
+    process.exit(0);
+  }
+
+  // Slice 23.5: log explicitly when the default baseline is used. Pre-Slice-23.5
+  // the CLI silently used DEFAULT_BASELINE (which now FAILs under the revised
+  // Slice 22 gate); a fresh contributor seeing axes 1/2/6 FAIL had no signal
+  // that they were not running their intended baseline.
+  if (args.baseline === DEFAULT_BASELINE && !args.quiet) {
+    process.stdout.write(
+      `[info] no --baseline or positional path supplied; using default baseline ${DEFAULT_BASELINE}\n`,
+    );
+    process.stdout.write(
+      `[info] under the revised Slice 22 gate, this default baseline FAILs (regression-check baseline)\n`,
+    );
+  }
+
+  if (!existsSync(args.baseline)) {
+    process.stderr.write(`baseline artifact not found: ${args.baseline}\n`);
+    process.exit(1);
+  }
+
+  const baseline = JSON.parse(readFileSync(args.baseline, "utf8")) as UnifiedBaseline;
+  const built = buildGateInput(baseline, args.reportsEnrichedSplit);
+  const result = evaluateReleaseGate(built.input, args.thresholds);
+
+  if (!args.quiet) {
+    process.stdout.write(renderHuman(result) + "\n");
+  }
+
+  if (args.out) {
+    // Schema version comes from gate_result (which derives it from
+    // per_record presence). Slice 20 emitted 1.0.0; Slice 22 emits 2.0.0
+    // when per_record is supplied (always true via this CLI in Slice 22+).
+    const assessment: AssessmentOutput = {
+      schema_version: result.schema_version,
+      generated_at: new Date().toISOString(),
+      generator: "scripts/check-release-gate.ts",
+      baseline_artifact: args.baseline.replace(REPO_ROOT + "\\", "").replace(REPO_ROOT + "/", "").replace(/\\/g, "/"),
+      trace_provenance: built.trace_provenance,
+      gate_input: built.input,
+      gate_result: result,
+      doctrine_note:
+        "Slice 22 REVISED RC gate (axes 2 + 6). A PASS verdict does NOT mean the dataset is approved for release. " +
+        "Threshold rationale is documented in docs/jam-actions-v0-slice20-release-threshold-framework.md " +
+        "with the Slice 22 revision in docs/jam-actions-v0-slice22-rc-gate-revision.md.",
+    };
+    writeFileSync(args.out, JSON.stringify(assessment, null, 2) + "\n", "utf8");
+    if (!args.quiet) process.stdout.write(`\nwrote assessment to ${args.out}\n`);
+  }
+
+  process.exit(result.passed ? 0 : 1);
 }
 
-if (!existsSync(args.baseline)) {
-  process.stderr.write(`baseline artifact not found: ${args.baseline}\n`);
-  process.exit(1);
+// Slice 23.5: only run main() when invoked as a script (not when imported by
+// tests). The fileURLToPath comparison handles both `tsx scripts/...` and
+// node-direct execution paths.
+const isMain =
+  import.meta.url === `file://${process.argv[1]}` ||
+  fileURLToPath(import.meta.url) === process.argv[1];
+if (isMain) {
+  main();
 }
-
-const baseline = JSON.parse(readFileSync(args.baseline, "utf8")) as UnifiedBaseline;
-const built = buildGateInput(baseline, args.reportsEnrichedSplit);
-const result = evaluateReleaseGate(built.input, args.thresholds);
-
-if (!args.quiet) {
-  process.stdout.write(renderHuman(result) + "\n");
-}
-
-if (args.out) {
-  // Schema version comes from gate_result (which derives it from
-  // per_record presence). Slice 20 emitted 1.0.0; Slice 22 emits 2.0.0
-  // when per_record is supplied (always true via this CLI in Slice 22+).
-  const assessment: AssessmentOutput = {
-    schema_version: result.schema_version,
-    generated_at: new Date().toISOString(),
-    generator: "scripts/check-release-gate.ts",
-    baseline_artifact: args.baseline.replace(REPO_ROOT + "\\", "").replace(REPO_ROOT + "/", "").replace(/\\/g, "/"),
-    trace_provenance: built.trace_provenance,
-    gate_input: built.input,
-    gate_result: result,
-    doctrine_note:
-      "Slice 22 REVISED RC gate (axes 2 + 6). A PASS verdict does NOT mean the dataset is approved for release. " +
-      "Threshold rationale is documented in docs/jam-actions-v0-slice20-release-threshold-framework.md " +
-      "with the Slice 22 revision in docs/jam-actions-v0-slice22-rc-gate-revision.md.",
-  };
-  writeFileSync(args.out, JSON.stringify(assessment, null, 2) + "\n", "utf8");
-  if (!args.quiet) process.stdout.write(`\nwrote assessment to ${args.out}\n`);
-}
-
-process.exit(result.passed ? 0 : 1);

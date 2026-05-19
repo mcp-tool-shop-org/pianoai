@@ -1,10 +1,10 @@
 {
   "dataset_name": "jam-actions-v0-public",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "built_at": "2026-05-19",
   "source_dataset": "jam-actions-v0",
-  "source_commit": "4b0f181d5df06348b9aa450e506a03f3729c15be",
-  "source_tag": "4b0f181",
+  "source_commit": "a5daec2daa5ec31f466f690d1f08ff4b06f6c8b2",
+  "source_tag": "jam-actions-v0-aloneness-audit-gaps-2026-05-19",
   "license": "CC-BY-SA-3.0-DE",
   "license_url": "https://creativecommons.org/licenses/by-sa/3.0/de/",
   "record_count": 115,

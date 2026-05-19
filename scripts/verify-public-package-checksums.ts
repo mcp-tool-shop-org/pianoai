@@ -9,6 +9,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
+  parseChecksumsManifest,
   readPackageInputs,
   sha256Hex,
   walkChecksumFiles,
@@ -31,19 +32,17 @@ function main(): void {
   for (const { relPath, content } of files) onDisk.set(relPath, content);
 
   const manifestStr = readFileSync(join(PACKAGE_DIR, CHECKSUMS_FILE), "utf8");
-  const lines = manifestStr.split("\n").filter((l) => l.length > 0);
-
-  const claimed = new Map<string, string>();
-  let badLineCount = 0;
-  for (const line of lines) {
-    // Format: "<64-hex>  <relpath>"
-    const m = /^([0-9a-f]{64})  (.+)$/.exec(line);
-    if (!m) {
-      console.error(`[bad line] ${line}`);
-      badLineCount++;
-      continue;
-    }
-    claimed.set(m[2], m[1]);
+  // Slice 23.5: CRLF-tolerant parsing. The packager writes LF; .gitattributes
+  // pins LF on disk for *.sha256. If either is stripped by a downstream
+  // consumer (or a fresh-clone with stale autocrlf history), the parser
+  // strips trailing \r before regex match so the verifier still parses
+  // correctly. See src/dataset/package-public.ts → parseChecksumsManifest.
+  const parsed = parseChecksumsManifest(manifestStr);
+  const totalLines = parsed.totalLines;
+  const claimed = parsed.claimed;
+  const badLineCount = parsed.badLines.length;
+  for (const bad of parsed.badLines) {
+    console.error(`[bad line] ${bad}`);
   }
 
   let mismatches = 0;
@@ -73,7 +72,7 @@ function main(): void {
     }
   }
 
-  console.log(`Lines in checksums.sha256: ${lines.length}`);
+  console.log(`Lines in checksums.sha256: ${totalLines}`);
   console.log(`Files on disk (minus checksums.sha256): ${onDisk.size}`);
   console.log(`Bad lines: ${badLineCount}`);
   console.log(`Hash mismatches: ${mismatches}`);
@@ -84,7 +83,7 @@ function main(): void {
     mismatches === 0 &&
     missingInManifest === 0 &&
     missingOnDisk === 0 &&
-    lines.length === onDisk.size
+    totalLines === onDisk.size
   ) {
     console.log("[ok] All checksums verify, every file accounted for.");
   } else {

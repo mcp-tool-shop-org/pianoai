@@ -620,6 +620,47 @@ export function buildChecksumsManifest(
   return lines.join("\n") + "\n";
 }
 
+// ─── Parse checksums.sha256 (Slice 23.5 — CRLF-tolerant) ─────────────────────
+
+export interface ParsedChecksumsManifest {
+  /** Map of relpath → 64-char hex hash. */
+  claimed: Map<string, string>;
+  /** Lines that did not match the "<64hex>  <relpath>" format. */
+  badLines: string[];
+  /** Total non-empty lines seen (after CRLF stripping). */
+  totalLines: number;
+}
+
+/**
+ * Parse a checksums.sha256 manifest body. CRLF-tolerant per Slice 23.5: lines
+ * with a trailing `\r` are stripped before regex match. The packager writes LF
+ * and `.gitattributes` pins LF on disk for *.sha256, but this defense-in-depth
+ * tolerance handles any consumer that mis-normalizes the file post-clone.
+ *
+ * Earned by Slice 23 audit (Gap #1 — Windows-only "[bad line]" failure).
+ */
+export function parseChecksumsManifest(
+  manifestStr: string,
+): ParsedChecksumsManifest {
+  const lines = manifestStr
+    .split(/\r?\n/)
+    .map((l) => (l.endsWith("\r") ? l.slice(0, -1) : l))
+    .filter((l) => l.length > 0);
+
+  const claimed = new Map<string, string>();
+  const badLines: string[] = [];
+  for (const line of lines) {
+    // Format: "<64-hex>  <relpath>"
+    const m = /^([0-9a-f]{64})  (.+)$/.exec(line);
+    if (!m) {
+      badLines.push(line);
+      continue;
+    }
+    claimed.set(m[2], m[1]);
+  }
+  return { claimed, badLines, totalLines: lines.length };
+}
+
 // ─── JSON formatting ─────────────────────────────────────────────────────────
 
 /** Stable JSON formatter — 2-space indent + trailing newline, matching source. */

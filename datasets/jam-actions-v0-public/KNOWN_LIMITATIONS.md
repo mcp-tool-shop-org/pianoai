@@ -99,9 +99,13 @@ The 20-example SFT scaffold from Slice 9c Phase 1 is preserved in the source rep
 
 Do not claim "ready to fine-tune" without disclaiming the substrate need. The dataset is *fine-tuneable* in the sense that it has paired records, clean tokenizations, and held-out test discipline; it is not *fine-tuned*.
 
-## 9. E2 and E3 baselines fail the locked thresholds
+## 9. E2 and E3 baselines — layered current state
 
-This is the headline honest disclosure and the most important caveat in this file.
+This is the headline honest disclosure and the most important caveat in this file. The dataset's evolution is preserved here as a layered record. **Historical claims are kept as history (not deleted); the current state is named alongside with explicit slice references.**
+
+### 9a. Slice 7 baseline (historical, single-run, pre-enrichment, pre-MCQ-repair)
+
+The original v0 release showed:
 
 | Eval | qwen2.5:7b on test set | Locked threshold | Status |
 |---|---|---|---|
@@ -109,11 +113,38 @@ This is the headline honest disclosure and the most important caveat in this fil
 | E2 phrase continuation | 0/2 pairs majority-pass; pair 1 grooveOA 0.81 PASS, pair 2 grooveOA 0.98 mean on parseable runs but only 1/3 runs parseable so does not majority-pass | ≥ 0.797 + 2/2 pairs | **FAIL** |
 | E3 annotation grounding | full 0.188 vs text-only 0.313 vs random-MIDI 0.250; margin vs text-only = **−0.125**; margin vs random-MIDI = **−0.0625** | margins ≥ +0.10 over both controls | **FAIL** |
 
-**Read this carefully:** qwen2.5:7b is the **best** local 7-13B baseline. The E3 margin going negative does not mean the dataset is broken; it means that for a model at this capability level, the *text-only* signal in `annotation_target` prose carries more answer than the MIDI evidence does. The Slice 8 hardening already removed the structural / prior-leak vectors that inflated earlier scores. The remaining gap is a real **fine-tuning target**: a model that has learned to ground in MIDI should outperform a text-only baseline; a 7B that hasn't, doesn't.
+This was n=1 sampling on a 4-record cohort, with two pre-Slice-11 caveats: no annotation enrichment, and the Slice 18.5 MCQ off-by-one bug in `annotation-grounding.ts` deflated `pathetique-mvt2:m017-020` answers. The negative margin was real for that snapshot; the dataset was honest about failing its own gate.
 
-E2's failure mode at this scale is not music-quality (parseable continuations on the easier pair hit grooveOA 1.0 on multiple runs). It's **structural consistency** — pair 2 (clair-de-lune mm. 15-18 → mm. 19-22) is harmonically denser, has syncopated inner voices, and the model parses correctly on only 1 of 3 runs. FM-5 (groove mismatch on harder material despite notes present) is the fine-tuning target this dataset surfaces.
+### 9b. Slice 11 enrichment + Slice 18.5 MCQ repair (the recovery arc)
 
-**Doctrine:** "If local 8B fails thresholds, that is valid evidence — do not jump to paid APIs to rescue the eval." A negative result on the realistic capability target is the actionable evidence.
+Slice 11 enriched 6 records via the durable `enrichment-overrides.json` overlay (Pathétique m025-028 + m029-032 pair; Schumann m045-048; three late-Bach records). Slice 18.5 fixed the MCQ off-by-one bug in `annotation-grounding.ts` and added a `count_notes_with_pitch_class` inspector tool. Slice 19 ran a fair n=3 16-record E3 baseline against the post-repair harness:
+
+- E3 enriched margin (Slice 18.5 baseline, 6-record enriched subset, n=3): **+0.069**
+- E3 corpus margin (Slice 19 baseline, 16 records, n=3): **+0.127**; 9/16 records clear the +0.10 per-record margin
+
+The headline metric had recovered, but Slice 21 surfaced a final stratum-floor issue: Schumann m045-048 was a catastrophic outlier (mean −0.278, 0/2 clearing).
+
+### 9c. Slice 21 enrichment + Slice 22 revised RC gate (current state)
+
+Slice 21 enriched the Schumann m045-048 annotation against the actual MIDI events (R6-aware rewrite naming the A4 descending offbeat figures, F2 tonic pedal, and closing F-major arpeggio). The post-repair 16-record E3 baseline (`evals/slice21-fair-e3-baseline-results.json`) shows:
+
+- Cohort margin (tool_inspected vs text_only): **+0.161**
+- Records clearing +0.10 per-record margin: 10/16 (62.5%)
+- All 5 strata clear the revised per-stratum gate (bach / pathetique / schumann / chopin / clair-de-lune)
+
+Slice 22 then revised RC-gate axes 2 + 6 to distinguish *margin_pass* from *ceiling_saturated_pass* records (records that hit text_only=1.0 and tool_inspected=1.0 contribute to the gate without a margin penalty, since saturation is not informative about MIDI grounding). The revised gate emits assessments under `release-gate-assessment/2.0.0` schema. Slice 22 verdict against the Slice 21 baseline:
+
+**RC gate PASS** (all 6 blocking axes cleared + axis 7 reporting declared). See `evals/slice22-release-gate-revised-assessment.json` for the canonical PASS artifact.
+
+The regression check at `evals/slice22-release-gate-slice19-regression-check.json` shows the pre-Slice-21 Schumann state still FAIL under the revised gate (axes 1/2/6 blocking), confirming the gate's discrimination power.
+
+### 9d. What this means going forward
+
+The "E3 baselines fail the locked thresholds" headline from Slice 7 is no longer the current state. The current state (Slice 22 revised RC gate) is **PASS** for the dataset's release-readiness on this evaluation axis. **Future claims about E3 grounding must cite the Slice 22 assessment or a later one.** The historical record is preserved in this file for evolutionary honesty.
+
+E2 (phrase continuation) was not revisited in Slices 11-22; the Slice 7 disclosure above is still the most recent state for that axis. A future eval slice may revisit E2 with the post-Slice-18.5 harness; until then, treat E2 as an honest legacy disclosure: pair 1 passes, pair 2 fails on parsing consistency at the local-8B capability target.
+
+**Doctrine (preserved):** "If local 8B fails thresholds, that is valid evidence — do not jump to paid APIs to rescue the eval." The Slice 21 / Slice 22 recovery did not change the doctrine; it improved the dataset's annotation grounding through honest enrichment and surfaced the gate's blind spot through honest revision.
 
 ## 10. License jurisdiction: CC-BY-SA-3.0-**DE**, not 3.0 international
 
@@ -125,16 +156,40 @@ The arrangements (piano-midi.de) are licensed under the **German jurisdiction po
 
 HuggingFace's dataset-card YAML slug list does not carry `-de` jurisdictions. The README declares `license: cc-by-sa-3.0` to be compatible with HF's filter; the precise DE governing-law is documented in ATTRIBUTION.md, LICENSE-DATASET.md, and the README body. Both file groups are correct; the slug is the closest available label, the documentation is the precise statement.
 
-## 11. The package is a *checkpoint*, not a release candidate
+## 11. The package is a *checkpoint*, not a release candidate — layered current state
 
-The tag `jam-actions-v0-public-2026-05-17` (and any successor tag attached to a hardened version of this package) is a **reproducible checkpoint**, not a Zenodo/HuggingFace release candidate. The operator's posture explicitly: "treat the package/tag as a checkpoint, not a release candidate."
+### 11a. Slice 10.5 baseline (historical, original framing)
 
-Slice 13 (operator-driven publication) is where this package would actually be uploaded to Zenodo (primary, gets the DOI) and HuggingFace (mirror). That step is gated on:
-- This hardening pass (Slice 10.5) — IN PROGRESS / shipping in this version.
-- Operator decision to publish (no auto-publish).
-- README cross-link to the Zenodo DOI once it exists (which requires uploading first — so this README will get one more iteration post-DOI).
+The tag `jam-actions-v0-public-2026-05-17` was framed as a **reproducible checkpoint**, not a Zenodo/HuggingFace release candidate. The operator's posture at that time: "treat the package/tag as a checkpoint, not a release candidate." Slice 13 was the originally-named publication slice; it was gated on (a) the Slice 10.5 hardening pass landing, (b) operator decision to publish, and (c) post-DOI README iteration.
 
-Do not link to `huggingface.co/datasets/mcp-tool-shop-org/jam-actions-v0-public` or expect a Zenodo DOI from this checkpoint. Neither exists yet.
+### 11b. Current state (Slice 22 + Slice 23 + Slice 23.5)
+
+The project progressed past the Slice 10.5 checkpoint framing into a multi-slice readiness arc:
+
+- **Slice 11** (annotation enrichment, 6 records via overlay; v0.2.0).
+- **Slice 18.5** (MCQ off-by-one repair; new `count_notes_with_pitch_class` inspector tool).
+- **Slice 19** (fair n=3 16-record E3 baseline; v0.3.0).
+- **Slice 20** (release-gate framework — 7 axes, pure validator; CLI at `scripts/check-release-gate.ts`).
+- **Slice 21** (Schumann m045-048 enrichment + repackage; v0.4.0).
+- **Slice 22** (RC-gate axes 2 + 6 revision; `release-gate-assessment/2.0.0` schema; PASS verdict canonical at `evals/slice22-release-gate-revised-assessment.json`).
+- **Slice 23** (operator-aloneness / reproducibility audit; 13-gap inventory at `docs/jam-actions-v0-slice23-operator-aloneness-audit.md`; tag `jam-actions-v0-aloneness-audit-gaps-2026-05-19`).
+- **Slice 23.5** (reproducibility cleanup; v0.4.1; `.gitattributes` LF pin for `*.sha256`; CRLF-tolerant verifier; CLI positional-arg strict mode; this layered-limitations refresh).
+
+**The current state is "RC-gate PASS verified + reproducibility cleared."** The operator's locked doctrine remains: **gate clearance + reproducibility ≠ release approval**. The package is now ready for the operator to weigh against publication mechanics, but publication itself is a downstream slice (Slice 24+ candidate scope: Zenodo DOI mechanics + HuggingFace mirror).
+
+### 11c. What you can / cannot claim about this checkpoint
+
+You **can** cite:
+- The Slice 22 RC-gate PASS verdict (`evals/slice22-release-gate-revised-assessment.json`).
+- The Slice 23 operator-aloneness audit findings (3 blockers + 8 moderate gaps at the time of audit; resolved in Slice 23.5).
+- The current Slice 23.5 reproducibility state (Windows-safe checksum verification; CLI strictness; layered limitations honesty).
+
+You **cannot** cite:
+- A Zenodo DOI for this version (none exists yet; future Slice 24+ work).
+- A HuggingFace mirror URL at `huggingface.co/datasets/mcp-tool-shop-org/jam-actions-v0-public` (does not exist yet).
+- "Release-approved" status. Gate clearance + reproducibility is necessary but not sufficient; operator decision is the final gate.
+
+The Slice 13 publication plan from the Slice 10.5 era has been superseded by the Slice 22 + Slice 23 + Slice 23.5 arc above. The publication slice number is now Slice 24+; the README iteration to cross-link a Zenodo DOI still applies, but the DOI itself is a future deliverable.
 
 ## 12. The dataset card YAML lacks per-record splits configs
 

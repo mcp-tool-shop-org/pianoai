@@ -25,7 +25,7 @@ configs:
 ---
 # Dataset Card for jam-actions-v0 (public subset)
 
-**Version:** 0.2.0   **Built:** 2026-05-17   **Source commit:** `f133b631a85aba75d3efeaba427217d73d67e95c`   **Source tag:** `jam-actions-v0-enriched-2026-05-17`
+**Version:** 0.4.1   **Built:** 2026-05-19   **Source commit:** `a5daec2`   **Source tag:** `jam-actions-v0-aloneness-audit-gaps-2026-05-19` (with Slice 23.5 reproducibility-cleanup patch applied; see `evals/slice22-release-gate-revised-assessment.json` for the canonical RC-gate PASS verdict at the Slice 22 baseline state)
 
 ## Dataset Summary
 
@@ -40,6 +40,7 @@ Top-level files:
 - `records.jsonl` — one JSON object per line; the canonical training feed. Each line is a complete record with an additional `split` field (`"train"` or `"test"`) so consumers can use the file without consulting `splits.json`.
 - `records/` — the same records as individual JSON files (sorted by id), useful for spot-inspection or downstream tools that prefer one-record-per-file.
 - `pianoroll/` — one SVG per record, matched by basename (`<id>.svg` corresponds to `records/<id>.json`).
+- `evals/` — eval artifacts (n=3 multi-run baselines, per-stratum aggregates, release-gate assessments) produced by the source-repo eval harnesses. The two canonical entry-point artifacts are `slice21-fair-e3-baseline-results.json` (current 16-record post-repair E3 baseline) and `slice22-release-gate-revised-assessment.json` (the current RC-gate PASS verdict; revised axes 2 + 6 per Slice 22).
 - `splits.json` — train/test split with `held_out_song` pinned. Locked: `clair-de-lune` is the canonical held-out test set; it is NEVER used for training.
 - `provenance-verification.json` — per-song URL verification report from Slice 2.5 (filtered to the public songs).
 - `manifest.json` — package-scope manifest with `record_count`, `pair_count`, `songs_included`, `splits`, etc.
@@ -47,8 +48,61 @@ Top-level files:
 - `LICENSE-DATASET.md` — layered-licensing explainer (public-domain compositions + CC-BY-SA-3.0-DE arrangements).
 - `VERSION` — single-line package version.
 - `checksums.sha256` — SHA-256 sums of every other file in the package, sorted by path.
+- `package-inputs.json` — packager-internal contract declaring which files are curated (preserved byte-for-byte) vs generated (rebuilt by `scripts/package-jam-actions-public.ts` on every run). Not consumed by downstream users; included for packager reproducibility.
 
 Each record has these top-level fields: `id`, `schema_version`, `provenance`, `scope`, `observation`, `annotation_target`, `target_trace`, `eval_metadata`. See the source repo's `src/dataset/schema.ts` for the full Zod schema.
+
+## Reproducibility
+
+Earned by Slice 23.5 (audit-driven cleanup): a fresh contributor cloning this repo on any platform (Windows native, macOS, Linux, WSL) should be able to verify the package's integrity and reproduce the canonical Slice 22 RC-gate PASS verdict without operator handholding.
+
+**Package version pinned by this reproducibility section:** `0.4.1` (built 2026-05-19). The release gate's canonical PASS state is at the Slice 22 baseline; Slice 23.5 is operational hardening only (no record content changes, no eval reruns).
+
+**Canonical tags:**
+
+- `jam-actions-v0-rc-gate-revised-2026-05-19` — Slice 22 RC-gate revised state (axes 2 + 6 revised; PASS verdict canonical).
+- `jam-actions-v0-aloneness-audit-gaps-2026-05-19` — Slice 23 audit-findings tag (audit doc shipped; fixes NOT applied here).
+- Slice 23.5 reproducibility-cleanup tag (this version) — applies on top of the audit; see `evals/slice22-release-gate-revised-assessment.json` for the canonical PASS artifact.
+
+**Three-step verification:**
+
+```bash
+# 1. Clone and check out a tagged state.
+git clone https://github.com/mcp-tool-shop-org/ai-jam-sessions.git
+cd ai-jam-sessions
+git checkout jam-actions-v0-rc-gate-revised-2026-05-19   # or a later tag
+
+# 2. Install deps (pnpm 10+ recommended; npm/yarn also work via the lockfile).
+pnpm install
+
+# 3a. Verify package checksums (270 files, ~2 seconds).
+#     Exit 0 on success; exit 1 with `[bad line] / [hash mismatch] / [missing on disk]`
+#     lines on failure. Windows-safe since Slice 23.5: `.gitattributes` pins LF
+#     for *.sha256 files, and the verifier is CRLF-tolerant as defense in depth.
+pnpm exec tsx scripts/verify-public-package-checksums.ts
+
+# 3b. Reproduce the canonical Slice 22 RC-gate PASS verdict against the
+#     current 16-record post-repair E3 baseline.
+pnpm exec tsx scripts/check-release-gate.ts \
+  datasets/jam-actions-v0-public/evals/slice21-fair-e3-baseline-results.json
+```
+
+**Expected outputs:**
+
+The verifier ends with `[ok] All checksums verify, every file accounted for.` and exits 0.
+
+The release-gate CLI prints a per-axis summary with all 6 blocking axes PASS and aggregate `RC gate PASS`. The structural verdict is byte-identical to `evals/slice22-release-gate-revised-assessment.json` (the canonical Slice 22 PASS artifact). Exit code 0.
+
+**Regression-check (the Slice 19 baseline should still FAIL under the revised gate):**
+
+```bash
+pnpm exec tsx scripts/check-release-gate.ts \
+  datasets/jam-actions-v0-public/evals/slice19-fair-e3-baseline-results.json
+```
+
+Exit code 1, with axes 1/2/6 reported as FAIL (the Schumann m045-048 record's pre-Slice-21 annotation was the catastrophic-stratum failure that Slice 21 repaired). This artifact is referenced as `evals/slice22-release-gate-slice19-regression-check.json` for the canonical regression-check verdict.
+
+**No model runs are required for reproducibility.** The eval artifacts under `evals/` are the canonical n=3 baselines; the release-gate is a pure validator over them. To re-run the model, see the source repo's `scripts/eval-jam-actions-annotation-grounding.ts` (requires Ollama + the `qwen2.5:7b` model locally).
 
 ## Source Data
 
@@ -100,7 +154,7 @@ See `CITATION.cff` for machine-readable metadata. BibTeX equivalent:
 @dataset{jam_actions_v0_public_2026,
   author       = {mcp-tool-shop-org},
   title        = {jam-actions-v0 — AI Jam Sessions tool-use traces (public subset)},
-  version      = {0.2.0},
+  version      = {0.4.1},
   year         = {2026},
   license      = {CC-BY-SA-3.0-DE},
   url          = {https://github.com/mcp-tool-shop-org/ai-jam-sessions}
