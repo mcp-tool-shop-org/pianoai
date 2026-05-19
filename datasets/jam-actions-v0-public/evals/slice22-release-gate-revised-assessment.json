@@ -1,0 +1,611 @@
+{
+  "schema_version": "release-gate-assessment/2.0.0",
+  "generated_at": "2026-05-19T01:19:40.115Z",
+  "generator": "scripts/check-release-gate.ts",
+  "baseline_artifact": "datasets/jam-actions-v0-public/evals/slice21-fair-e3-baseline-results.json",
+  "trace_provenance": {
+    "tool_called": 61,
+    "tool_called_correct": 50,
+    "sources": [
+      "evals/slice21-schumann-m045-rerun-results.json",
+      "evals/slice19-e3-tool-fresh-results.json",
+      "evals/slice18-5-e3-post-repair-results.json"
+    ],
+    "per_record_sources": {
+      "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1": "evals/slice18-5-e3-post-repair-results.json",
+      "bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1": "evals/slice18-5-e3-post-repair-results.json",
+      "bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1": "evals/slice18-5-e3-post-repair-results.json",
+      "bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1": "evals/slice18-5-e3-post-repair-results.json",
+      "pathetique-mvt2:m001-004:piano:mcp-session:v1": "evals/slice18-5-e3-post-repair-results.json",
+      "pathetique-mvt2:m009-012:piano:mcp-session:v1": "evals/slice18-5-e3-post-repair-results.json",
+      "pathetique-mvt2:m017-020:piano:mcp-session:v1": "evals/slice18-5-e3-post-repair-results.json",
+      "pathetique-mvt2:m025-028:piano:mcp-session:v1": "evals/slice18-5-e3-post-repair-results.json",
+      "schumann-traumerei:m001-004:piano:mcp-session:v1": "evals/slice18-5-e3-post-repair-results.json",
+      "schumann-traumerei:m045-048:piano:mcp-session:v1": "evals/slice21-schumann-m045-rerun-results.json",
+      "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1": "evals/slice18-5-e3-post-repair-results.json",
+      "chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1": "evals/slice18-5-e3-post-repair-results.json",
+      "clair-de-lune:m031-034:piano:mcp-session:v1": "evals/slice18-5-e3-post-repair-results.json",
+      "pathetique-mvt2:m029-032:piano:mcp-session:v1": "evals/slice19-e3-tool-fresh-results.json",
+      "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1": "evals/slice19-e3-tool-fresh-results.json",
+      "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1": "evals/slice19-e3-tool-fresh-results.json"
+    }
+  },
+  "gate_input": {
+    "n_records": 16,
+    "tool_inspected_mean": 0.6614583333333333,
+    "text_only_mean": 0.5,
+    "margin_tool_minus_text_mean": 0.16145833333333334,
+    "records_clearing_margin": 9,
+    "tool_call_rate": 0.3279569892473118,
+    "correct_after_tool_rate": 0.819672131147541,
+    "misinterp_rate": 0.18032786885245902,
+    "per_stratum": [
+      {
+        "stratum": "bach",
+        "n_records": 6,
+        "margin_tool_minus_text_mean": 0.2916666666666667,
+        "records_clearing_margin": 5
+      },
+      {
+        "stratum": "pathetique",
+        "n_records": 5,
+        "margin_tool_minus_text_mean": 0.033333333333333326,
+        "records_clearing_margin": 1
+      },
+      {
+        "stratum": "schumann",
+        "n_records": 2,
+        "margin_tool_minus_text_mean": 0,
+        "records_clearing_margin": 0
+      },
+      {
+        "stratum": "chopin",
+        "n_records": 2,
+        "margin_tool_minus_text_mean": 0.25,
+        "records_clearing_margin": 2
+      },
+      {
+        "stratum": "clair-de-lune",
+        "n_records": 1,
+        "margin_tool_minus_text_mean": 0.16666666666666669,
+        "records_clearing_margin": 1
+      }
+    ],
+    "per_record": [
+      {
+        "recordId": "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1",
+        "stratum": "bach",
+        "tool_inspected_mean": 0.5,
+        "text_only_mean": 0.5,
+        "random_midi_mean": 0.5833333333333334,
+        "margin_vs_text_only": 0,
+        "misinterp_count": 1
+      },
+      {
+        "recordId": "bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1",
+        "stratum": "bach",
+        "tool_inspected_mean": 0.4166666666666667,
+        "text_only_mean": 0,
+        "random_midi_mean": 0,
+        "margin_vs_text_only": 0.4166666666666667,
+        "misinterp_count": 3
+      },
+      {
+        "recordId": "bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1",
+        "stratum": "bach",
+        "tool_inspected_mean": 0.6666666666666666,
+        "text_only_mean": 0.25,
+        "random_midi_mean": 0.08333333333333333,
+        "margin_vs_text_only": 0.41666666666666663,
+        "misinterp_count": 0
+      },
+      {
+        "recordId": "bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1",
+        "stratum": "bach",
+        "tool_inspected_mean": 0.75,
+        "text_only_mean": 0.5,
+        "random_midi_mean": 0.5,
+        "margin_vs_text_only": 0.25,
+        "misinterp_count": 1
+      },
+      {
+        "recordId": "pathetique-mvt2:m001-004:piano:mcp-session:v1",
+        "stratum": "pathetique",
+        "tool_inspected_mean": 0.9166666666666666,
+        "text_only_mean": 0.75,
+        "random_midi_mean": 0.6666666666666666,
+        "margin_vs_text_only": 0.16666666666666663,
+        "misinterp_count": 0
+      },
+      {
+        "recordId": "pathetique-mvt2:m009-012:piano:mcp-session:v1",
+        "stratum": "pathetique",
+        "tool_inspected_mean": 0.3333333333333333,
+        "text_only_mean": 0.3333333333333333,
+        "random_midi_mean": 0.08333333333333333,
+        "margin_vs_text_only": 0,
+        "misinterp_count": 1
+      },
+      {
+        "recordId": "pathetique-mvt2:m017-020:piano:mcp-session:v1",
+        "stratum": "pathetique",
+        "tool_inspected_mean": 0.6666666666666666,
+        "text_only_mean": 0.5833333333333334,
+        "random_midi_mean": 0.5,
+        "margin_vs_text_only": 0.08333333333333326,
+        "misinterp_count": 2
+      },
+      {
+        "recordId": "pathetique-mvt2:m025-028:piano:mcp-session:v1",
+        "stratum": "pathetique",
+        "tool_inspected_mean": 0.5833333333333334,
+        "text_only_mean": 0.6666666666666666,
+        "random_midi_mean": 0.3333333333333333,
+        "margin_vs_text_only": -0.08333333333333326,
+        "misinterp_count": 0
+      },
+      {
+        "recordId": "schumann-traumerei:m001-004:piano:mcp-session:v1",
+        "stratum": "schumann",
+        "tool_inspected_mean": 1,
+        "text_only_mean": 1,
+        "random_midi_mean": 0.75,
+        "margin_vs_text_only": 0,
+        "misinterp_count": 0
+      },
+      {
+        "recordId": "schumann-traumerei:m045-048:piano:mcp-session:v1",
+        "stratum": "schumann",
+        "tool_inspected_mean": 1,
+        "text_only_mean": 1,
+        "random_midi_mean": 1,
+        "margin_vs_text_only": 0,
+        "misinterp_count": 0
+      },
+      {
+        "recordId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1",
+        "stratum": "chopin",
+        "tool_inspected_mean": 1,
+        "text_only_mean": 0.75,
+        "random_midi_mean": 0.5833333333333334,
+        "margin_vs_text_only": 0.25,
+        "misinterp_count": 0
+      },
+      {
+        "recordId": "chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1",
+        "stratum": "chopin",
+        "tool_inspected_mean": 0.75,
+        "text_only_mean": 0.5,
+        "random_midi_mean": 0.5,
+        "margin_vs_text_only": 0.25,
+        "misinterp_count": 0
+      },
+      {
+        "recordId": "clair-de-lune:m031-034:piano:mcp-session:v1",
+        "stratum": "clair-de-lune",
+        "tool_inspected_mean": 0.5,
+        "text_only_mean": 0.3333333333333333,
+        "random_midi_mean": 0.16666666666666666,
+        "margin_vs_text_only": 0.16666666666666669,
+        "misinterp_count": 2
+      },
+      {
+        "recordId": "pathetique-mvt2:m029-032:piano:mcp-session:v1",
+        "stratum": "pathetique",
+        "tool_inspected_mean": 0.3333333333333333,
+        "text_only_mean": 0.3333333333333333,
+        "random_midi_mean": 0.3333333333333333,
+        "margin_vs_text_only": 0,
+        "misinterp_count": 0
+      },
+      {
+        "recordId": "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1",
+        "stratum": "bach",
+        "tool_inspected_mean": 0.6666666666666666,
+        "text_only_mean": 0.16666666666666666,
+        "random_midi_mean": 0.16666666666666666,
+        "margin_vs_text_only": 0.5,
+        "misinterp_count": 0
+      },
+      {
+        "recordId": "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1",
+        "stratum": "bach",
+        "tool_inspected_mean": 0.5,
+        "text_only_mean": 0.3333333333333333,
+        "random_midi_mean": 0.4166666666666667,
+        "margin_vs_text_only": 0.16666666666666669,
+        "misinterp_count": 1
+      }
+    ],
+    "enriched": {
+      "n_records": 9,
+      "tool_inspected_mean": 0.75,
+      "text_only_mean": 0.611111111111111,
+      "margin_tool_minus_text_mean": 0.13888888888888892,
+      "records_clearing_margin": 5,
+      "tool_call_rate": 0.12745098039215685
+    },
+    "non_enriched": {
+      "n_records": 7,
+      "tool_inspected_mean": 0.5476190476190477,
+      "text_only_mean": 0.35714285714285715,
+      "margin_tool_minus_text_mean": 0.19047619047619047,
+      "records_clearing_margin": 4,
+      "tool_call_rate": 0.5714285714285714
+    },
+    "reports_enriched_vs_non_enriched": true
+  },
+  "gate_result": {
+    "schema_version": "release-gate-assessment/2.0.0",
+    "passed": true,
+    "failing_axes": [],
+    "blocking_failures": [],
+    "axes": [
+      {
+        "axis": 1,
+        "name": "absolute_floor",
+        "passed": true,
+        "blocking": true,
+        "threshold": {
+          "floor": 0.65
+        },
+        "measured": {
+          "tool_inspected_mean": 0.6614583333333333
+        },
+        "note": "Corpus tool_inspected mean 0.661 ≥ 0.650"
+      },
+      {
+        "axis": 2,
+        "name": "margin",
+        "passed": true,
+        "blocking": true,
+        "threshold": {
+          "corpus_margin_floor": 0.1,
+          "records_clearing_fraction_floor": 0.6,
+          "per_record_margin": 0.1,
+          "ceiling_saturated_floor": 0.9,
+          "revised": true
+        },
+        "measured": {
+          "corpus_margin_mean": 0.16145833333333334,
+          "records_passing_axis2": 10,
+          "n_records": 16,
+          "passing_fraction": 0.625,
+          "records_clearing_margin_legacy": 9,
+          "bucket_counts": {
+            "margin_pass_only": 9,
+            "ceiling_saturated_only": 1,
+            "both": 0,
+            "neither": 6
+          },
+          "per_record_classifications": [
+            {
+              "recordId": "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1",
+              "stratum": "bach",
+              "margin_pass": false,
+              "ceiling_saturated_pass": false,
+              "passes_axis2": false,
+              "tool_inspected_mean": 0.5,
+              "text_only_mean": 0.5,
+              "random_midi_mean": 0.5833333333333334,
+              "margin_vs_text_only": 0,
+              "misinterp_count": 1
+            },
+            {
+              "recordId": "bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1",
+              "stratum": "bach",
+              "margin_pass": true,
+              "ceiling_saturated_pass": false,
+              "passes_axis2": true,
+              "tool_inspected_mean": 0.4166666666666667,
+              "text_only_mean": 0,
+              "random_midi_mean": 0,
+              "margin_vs_text_only": 0.4166666666666667,
+              "misinterp_count": 3
+            },
+            {
+              "recordId": "bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1",
+              "stratum": "bach",
+              "margin_pass": true,
+              "ceiling_saturated_pass": false,
+              "passes_axis2": true,
+              "tool_inspected_mean": 0.6666666666666666,
+              "text_only_mean": 0.25,
+              "random_midi_mean": 0.08333333333333333,
+              "margin_vs_text_only": 0.41666666666666663,
+              "misinterp_count": 0
+            },
+            {
+              "recordId": "bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1",
+              "stratum": "bach",
+              "margin_pass": true,
+              "ceiling_saturated_pass": false,
+              "passes_axis2": true,
+              "tool_inspected_mean": 0.75,
+              "text_only_mean": 0.5,
+              "random_midi_mean": 0.5,
+              "margin_vs_text_only": 0.25,
+              "misinterp_count": 1
+            },
+            {
+              "recordId": "pathetique-mvt2:m001-004:piano:mcp-session:v1",
+              "stratum": "pathetique",
+              "margin_pass": true,
+              "ceiling_saturated_pass": false,
+              "passes_axis2": true,
+              "tool_inspected_mean": 0.9166666666666666,
+              "text_only_mean": 0.75,
+              "random_midi_mean": 0.6666666666666666,
+              "margin_vs_text_only": 0.16666666666666663,
+              "misinterp_count": 0
+            },
+            {
+              "recordId": "pathetique-mvt2:m009-012:piano:mcp-session:v1",
+              "stratum": "pathetique",
+              "margin_pass": false,
+              "ceiling_saturated_pass": false,
+              "passes_axis2": false,
+              "tool_inspected_mean": 0.3333333333333333,
+              "text_only_mean": 0.3333333333333333,
+              "random_midi_mean": 0.08333333333333333,
+              "margin_vs_text_only": 0,
+              "misinterp_count": 1
+            },
+            {
+              "recordId": "pathetique-mvt2:m017-020:piano:mcp-session:v1",
+              "stratum": "pathetique",
+              "margin_pass": false,
+              "ceiling_saturated_pass": false,
+              "passes_axis2": false,
+              "tool_inspected_mean": 0.6666666666666666,
+              "text_only_mean": 0.5833333333333334,
+              "random_midi_mean": 0.5,
+              "margin_vs_text_only": 0.08333333333333326,
+              "misinterp_count": 2
+            },
+            {
+              "recordId": "pathetique-mvt2:m025-028:piano:mcp-session:v1",
+              "stratum": "pathetique",
+              "margin_pass": false,
+              "ceiling_saturated_pass": false,
+              "passes_axis2": false,
+              "tool_inspected_mean": 0.5833333333333334,
+              "text_only_mean": 0.6666666666666666,
+              "random_midi_mean": 0.3333333333333333,
+              "margin_vs_text_only": -0.08333333333333326,
+              "misinterp_count": 0
+            },
+            {
+              "recordId": "schumann-traumerei:m001-004:piano:mcp-session:v1",
+              "stratum": "schumann",
+              "margin_pass": false,
+              "ceiling_saturated_pass": false,
+              "passes_axis2": false,
+              "tool_inspected_mean": 1,
+              "text_only_mean": 1,
+              "random_midi_mean": 0.75,
+              "margin_vs_text_only": 0,
+              "misinterp_count": 0
+            },
+            {
+              "recordId": "schumann-traumerei:m045-048:piano:mcp-session:v1",
+              "stratum": "schumann",
+              "margin_pass": false,
+              "ceiling_saturated_pass": true,
+              "passes_axis2": true,
+              "tool_inspected_mean": 1,
+              "text_only_mean": 1,
+              "random_midi_mean": 1,
+              "margin_vs_text_only": 0,
+              "misinterp_count": 0
+            },
+            {
+              "recordId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1",
+              "stratum": "chopin",
+              "margin_pass": true,
+              "ceiling_saturated_pass": false,
+              "passes_axis2": true,
+              "tool_inspected_mean": 1,
+              "text_only_mean": 0.75,
+              "random_midi_mean": 0.5833333333333334,
+              "margin_vs_text_only": 0.25,
+              "misinterp_count": 0
+            },
+            {
+              "recordId": "chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1",
+              "stratum": "chopin",
+              "margin_pass": true,
+              "ceiling_saturated_pass": false,
+              "passes_axis2": true,
+              "tool_inspected_mean": 0.75,
+              "text_only_mean": 0.5,
+              "random_midi_mean": 0.5,
+              "margin_vs_text_only": 0.25,
+              "misinterp_count": 0
+            },
+            {
+              "recordId": "clair-de-lune:m031-034:piano:mcp-session:v1",
+              "stratum": "clair-de-lune",
+              "margin_pass": true,
+              "ceiling_saturated_pass": false,
+              "passes_axis2": true,
+              "tool_inspected_mean": 0.5,
+              "text_only_mean": 0.3333333333333333,
+              "random_midi_mean": 0.16666666666666666,
+              "margin_vs_text_only": 0.16666666666666669,
+              "misinterp_count": 2
+            },
+            {
+              "recordId": "pathetique-mvt2:m029-032:piano:mcp-session:v1",
+              "stratum": "pathetique",
+              "margin_pass": false,
+              "ceiling_saturated_pass": false,
+              "passes_axis2": false,
+              "tool_inspected_mean": 0.3333333333333333,
+              "text_only_mean": 0.3333333333333333,
+              "random_midi_mean": 0.3333333333333333,
+              "margin_vs_text_only": 0,
+              "misinterp_count": 0
+            },
+            {
+              "recordId": "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1",
+              "stratum": "bach",
+              "margin_pass": true,
+              "ceiling_saturated_pass": false,
+              "passes_axis2": true,
+              "tool_inspected_mean": 0.6666666666666666,
+              "text_only_mean": 0.16666666666666666,
+              "random_midi_mean": 0.16666666666666666,
+              "margin_vs_text_only": 0.5,
+              "misinterp_count": 0
+            },
+            {
+              "recordId": "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1",
+              "stratum": "bach",
+              "margin_pass": true,
+              "ceiling_saturated_pass": false,
+              "passes_axis2": true,
+              "tool_inspected_mean": 0.5,
+              "text_only_mean": 0.3333333333333333,
+              "random_midi_mean": 0.4166666666666667,
+              "margin_vs_text_only": 0.16666666666666669,
+              "misinterp_count": 1
+            }
+          ]
+        },
+        "note": "Compound PASS: corpus margin 0.161 ≥ 0.100; 10/16 (62.5%) passing (margin OR ceiling-saturated) ≥ 60.0%"
+      },
+      {
+        "axis": 3,
+        "name": "tool_use_rate",
+        "passed": true,
+        "blocking": true,
+        "threshold": {
+          "floor": 0.25
+        },
+        "measured": {
+          "corpus_tool_call_rate": 0.3279569892473118,
+          "enriched_tool_call_rate": 0.12745098039215685,
+          "non_enriched_tool_call_rate": 0.5714285714285714
+        },
+        "note": "Corpus tool-call rate 32.8% ≥ 25.0% (enriched 12.7% / non-enriched 57.1%)"
+      },
+      {
+        "axis": 4,
+        "name": "correct_after_tool",
+        "passed": true,
+        "blocking": true,
+        "threshold": {
+          "floor": 0.75
+        },
+        "measured": {
+          "correct_after_tool_rate": 0.819672131147541
+        },
+        "note": "Correct-after-tool 82.0% ≥ 75.0%"
+      },
+      {
+        "axis": 5,
+        "name": "misinterp",
+        "passed": true,
+        "blocking": true,
+        "threshold": {
+          "ceiling": 0.2
+        },
+        "measured": {
+          "misinterp_rate": 0.18032786885245902
+        },
+        "note": "Misinterp rate 18.0% ≤ 20.0%"
+      },
+      {
+        "axis": 6,
+        "name": "stratum_floor",
+        "passed": true,
+        "blocking": true,
+        "threshold": {
+          "stratum_mean_margin_floor": 0,
+          "stratum_min_records_clearing": 1,
+          "stratum_min_mean_margin_when_ceiling": -0.1,
+          "ceiling_saturated_floor": 0.9,
+          "revised": true
+        },
+        "measured": {
+          "n_strata": 5,
+          "failing_strata": [],
+          "stratum_qualifications": [
+            {
+              "stratum": "bach",
+              "n_records": 6,
+              "margin_mean": 0.2916666666666667,
+              "margin_pass_records": 5,
+              "ceiling_saturated_records": 0,
+              "qualified_via": "bucket_a"
+            },
+            {
+              "stratum": "pathetique",
+              "n_records": 5,
+              "margin_mean": 0.033333333333333326,
+              "margin_pass_records": 1,
+              "ceiling_saturated_records": 0,
+              "qualified_via": "bucket_a"
+            },
+            {
+              "stratum": "schumann",
+              "n_records": 2,
+              "margin_mean": 0,
+              "margin_pass_records": 0,
+              "ceiling_saturated_records": 1,
+              "qualified_via": "bucket_b"
+            },
+            {
+              "stratum": "chopin",
+              "n_records": 2,
+              "margin_mean": 0.25,
+              "margin_pass_records": 2,
+              "ceiling_saturated_records": 0,
+              "qualified_via": "bucket_a"
+            },
+            {
+              "stratum": "clair-de-lune",
+              "n_records": 1,
+              "margin_mean": 0.16666666666666669,
+              "margin_pass_records": 1,
+              "ceiling_saturated_records": 0,
+              "qualified_via": "bucket_a"
+            }
+          ]
+        },
+        "note": "All 5 strata qualify via bucket A (≥1 margin_pass) or bucket B (≥1 ceiling_saturated_pass AND mean margin ≥ -0.10)"
+      },
+      {
+        "axis": 7,
+        "name": "enriched_split_reporting",
+        "passed": true,
+        "blocking": false,
+        "threshold": {
+          "reports_enriched_vs_non_enriched": true
+        },
+        "measured": {
+          "reports_enriched_vs_non_enriched": true,
+          "enriched_n": 9,
+          "non_enriched_n": 7
+        },
+        "note": "Release artifact declares it reports both enriched (n=9) and non-enriched (n=7) numbers across all 4 conditions"
+      }
+    ],
+    "thresholds_used": {
+      "axis1_absolute_floor": 0.65,
+      "axis2_corpus_margin_floor": 0.1,
+      "axis2_records_clearing_fraction_floor": 0.6,
+      "axis2_per_record_margin": 0.1,
+      "axis3_tool_use_rate_floor": 0.25,
+      "axis4_correct_after_tool_floor": 0.75,
+      "axis5_misinterp_ceiling": 0.2,
+      "axis6_stratum_mean_margin_floor": 0,
+      "axis6_stratum_min_records_clearing": 1,
+      "ceiling_saturated_floor": 0.9,
+      "axis6_stratum_min_mean_margin_when_ceiling": -0.1
+    },
+    "summary": "RC gate PASS (all 6 blocking axes cleared; reporting declared)"
+  },
+  "doctrine_note": "Slice 22 REVISED RC gate (axes 2 + 6). A PASS verdict does NOT mean the dataset is approved for release. Threshold rationale is documented in docs/jam-actions-v0-slice20-release-threshold-framework.md with the Slice 22 revision in docs/jam-actions-v0-slice22-rc-gate-revision.md."
+}

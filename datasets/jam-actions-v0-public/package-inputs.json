@@ -32,7 +32,9 @@
     "evals/slice21-schumann-m045-rerun-sample.json",
     "evals/slice21-fair-e3-baseline-results.json",
     "evals/slice21-fair-e3-baseline-sample.json",
-    "evals/slice21-release-gate-assessment.json"
+    "evals/slice21-release-gate-assessment.json",
+    "evals/slice22-release-gate-revised-assessment.json",
+    "evals/slice22-release-gate-slice19-regression-check.json"
   ],
   "generated_files": [
     "manifest.json",

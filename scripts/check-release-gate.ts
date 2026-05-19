@@ -42,6 +42,7 @@ import {
   type ReleaseGateInput,
   type ReleaseGateThresholds,
   type StratumAssessment,
+  type PerRecordAssessment,
 } from "../src/dataset/release/release-gate.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -194,20 +195,24 @@ interface Question {
 }
 
 interface RunResultsRecord {
+  recordId?: string;
   per_run_results: { questions: Question[] }[];
 }
 
 /**
  * Walk a results artifact and tally tool-called question-runs vs
- * tool-called-correct.
+ * tool-called-correct across all records (corpus-level aggregate).
  */
 function tallyToolCalledFromArtifact(
-  resultsBlock: { records: Record<string, RunResultsRecord> },
+  resultsBlock: { records: Record<string, RunResultsRecord> | RunResultsRecord[] },
 ): { tool_called: number; tool_called_correct: number } {
   let toolCalled = 0;
   let toolCalledCorrect = 0;
-  for (const key of Object.keys(resultsBlock.records)) {
-    const rec = resultsBlock.records[key];
+  const recsRaw = resultsBlock.records as Record<string, RunResultsRecord> | RunResultsRecord[];
+  const recList: RunResultsRecord[] = Array.isArray(recsRaw)
+    ? recsRaw
+    : Object.keys(recsRaw).map(k => recsRaw[k]);
+  for (const rec of recList) {
     if (!rec.per_run_results) continue;
     for (const run of rec.per_run_results) {
       if (!run.questions) continue;
@@ -225,17 +230,67 @@ function tallyToolCalledFromArtifact(
   return { tool_called: toolCalled, tool_called_correct: toolCalledCorrect };
 }
 
+/**
+ * Walk a results artifact and tally per-record tool-called and misinterp
+ * counts. Returns a map of recordId → { tool_called, tool_called_correct,
+ * misinterp_count }. Used by Slice-22 axes 2 + 6 per-record classification.
+ */
+function tallyPerRecordFromArtifact(
+  resultsBlock: { records: Record<string, RunResultsRecord> | RunResultsRecord[] },
+): Map<string, { tool_called: number; tool_called_correct: number; misinterp_count: number }> {
+  const out = new Map<string, { tool_called: number; tool_called_correct: number; misinterp_count: number }>();
+  const recsRaw = resultsBlock.records as Record<string, RunResultsRecord> | RunResultsRecord[];
+  const recList: RunResultsRecord[] = Array.isArray(recsRaw)
+    ? recsRaw
+    : Object.keys(recsRaw).map(k => ({ ...recsRaw[k], recordId: k }));
+  for (const rec of recList) {
+    const rid = rec.recordId;
+    if (!rid) continue;
+    let toolCalled = 0;
+    let toolCalledCorrect = 0;
+    if (!rec.per_run_results) {
+      out.set(rid, { tool_called: 0, tool_called_correct: 0, misinterp_count: 0 });
+      continue;
+    }
+    for (const run of rec.per_run_results) {
+      if (!run.questions) continue;
+      for (const q of run.questions) {
+        if (!q.runs) continue;
+        for (const r of q.runs) {
+          if (r.trace && r.trace.tool_call_count > 0) {
+            toolCalled++;
+            if (r.score === 1) toolCalledCorrect++;
+          }
+        }
+      }
+    }
+    out.set(rid, {
+      tool_called: toolCalled,
+      tool_called_correct: toolCalledCorrect,
+      misinterp_count: toolCalled - toolCalledCorrect,
+    });
+  }
+  return out;
+}
+
 // ─── Build ReleaseGateInput from Slice-19-shaped artifact ────────────────────
+
+interface UnifiedBaselineRecord {
+  recordId: string;
+  enriched: boolean;
+  stratum: string;
+  source?: string;
+  tool_inspected_mean: number;
+  text_only_mean: number;
+  random_midi_mean: number;
+  margin_tool_inspected_minus_text_only: number;
+  tool_inspected_source_sha256?: string | null;
+}
 
 interface UnifiedBaseline {
   cohort_size: number;
   source_artifacts: Record<string, string>;
-  records: Array<{
-    recordId: string;
-    enriched: boolean;
-    stratum: string;
-    margin_tool_inspected_minus_text_only: number;
-  }>;
+  records: UnifiedBaselineRecord[];
   aggregate: {
     cohort: AggregateBlock;
     enriched: AggregateBlock;
@@ -257,22 +312,55 @@ interface AggregateBlock {
   records_clearing_tool_minus_text: number;
 }
 
-function buildGateInput(
+/**
+ * Slice 22: build a recordId → per-record-trace-tally map.
+ *
+ * Source priority order (highest first, last write wins via skip-if-present):
+ *   1. slice21-schumann-m045-rerun-results.json  (the rewritten m045 record)
+ *   2. slice19-e3-tool-fresh-results.json        (the 3 Slice-19 fresh records)
+ *   3. slice18-5-e3-post-repair-results.json     (the 13 Slice-18.5 cohort)
+ *
+ * The priority ensures that when a record appears in multiple source
+ * artifacts, the most-recent / canonical trace data wins. Slice 18.5's
+ * old schumann m045 entry is shadowed by the slice21-rerun version.
+ */
+function buildPerRecordMisinterpMap(
   baseline: UnifiedBaseline,
-  reportsEnrichedSplit: boolean,
-): { input: ReleaseGateInput; trace_provenance: { tool_called: number; tool_called_correct: number; sources: string[] } } {
-  // Resolve source artifacts and tally tool-called question-runs.
-  let totalToolCalled = 0;
-  let totalToolCalledCorrect = 0;
-  const sources: string[] = [];
+): {
+  byRecordId: Map<string, { source: string; tool_called: number; tool_called_correct: number; misinterp_count: number }>;
+  consultedSources: string[];
+} {
+  const priority: string[] = [];
+  // Build priority list by inspecting source_artifacts labels for the
+  // canonical slice tags. We hard-code the priority order rather than
+  // inferring from label text — explicit beats clever here.
+  const sourceMap = baseline.source_artifacts;
+  for (const [, relPath] of Object.entries(sourceMap)) {
+    if (relPath.includes("slice21-schumann")) priority.unshift(relPath);
+    else if (relPath.includes("slice19-e3-tool-fresh")) priority.push(relPath);
+    else if (relPath.includes("slice18-5-e3-post-repair")) priority.push(relPath);
+  }
+  // Stable secondary order: slice21 (head), slice19-tool-fresh, slice18-5.
+  // The list order is correct if we built it in the same order — but the
+  // `unshift` for slice21 above ensures slice21 leads. The other two
+  // appear in insertion order which depends on object key iteration; to
+  // make this fully deterministic, sort by precedence string.
+  const precedence: Record<string, number> = {
+    "slice21": 0,
+    "slice19-e3-tool-fresh": 1,
+    "slice18-5": 2,
+  };
+  function precOf(p: string): number {
+    if (p.includes("slice21-schumann")) return precedence["slice21"];
+    if (p.includes("slice19-e3-tool-fresh")) return precedence["slice19-e3-tool-fresh"];
+    if (p.includes("slice18-5")) return precedence["slice18-5"];
+    return 99;
+  }
+  priority.sort((a, b) => precOf(a) - precOf(b));
 
-  for (const [, relPath] of Object.entries(baseline.source_artifacts)) {
-    if (!relPath.includes("e3") || relPath.includes("fresh-cohort")) continue;
-    // We want only artifacts that contain `tool_inspected` traces:
-    //   - slice18-5-e3-post-repair-results.json
-    //   - slice19-e3-tool-fresh-results.json
-    // The third source (slice19-e3-fresh-cohort-results.json) contains
-    // text_only/full/random_midi only — skip via the include check above.
+  const byRecordId = new Map<string, { source: string; tool_called: number; tool_called_correct: number; misinterp_count: number }>();
+  const consulted: string[] = [];
+  for (const relPath of priority) {
     const abs = join(REPO_ROOT, "datasets", "jam-actions-v0-public", relPath);
     if (!existsSync(abs)) {
       process.stderr.write(`source artifact not found: ${abs}\n`);
@@ -281,10 +369,40 @@ function buildGateInput(
     const src = JSON.parse(readFileSync(abs, "utf8"));
     const e3tool = src.results?.["e3-tool"];
     if (!e3tool) continue;
-    const tally = tallyToolCalledFromArtifact(e3tool);
+    const perRecord = tallyPerRecordFromArtifact(e3tool);
+    for (const [rid, tally] of perRecord) {
+      if (byRecordId.has(rid)) continue; // higher-priority source already won
+      byRecordId.set(rid, { source: relPath, ...tally });
+    }
+    consulted.push(relPath);
+  }
+  return { byRecordId, consultedSources: consulted };
+}
+
+function buildGateInput(
+  baseline: UnifiedBaseline,
+  reportsEnrichedSplit: boolean,
+): {
+  input: ReleaseGateInput;
+  trace_provenance: {
+    tool_called: number;
+    tool_called_correct: number;
+    sources: string[];
+    per_record_sources?: Record<string, string>;
+  };
+} {
+  // Slice 22: build the per-record source-priority map for axes 2 + 6.
+  const perRecordTally = buildPerRecordMisinterpMap(baseline);
+
+  // Corpus-level tally — sum across the per-record map (consistent
+  // attribution; Slice 22 swaps in the slice21-schumann-rerun version of
+  // m045 over the slice18-5 version when both exist). The corpus numbers
+  // feed axes 4 + 5; axes 4 + 5 logic itself is unchanged.
+  let totalToolCalled = 0;
+  let totalToolCalledCorrect = 0;
+  for (const tally of perRecordTally.byRecordId.values()) {
     totalToolCalled += tally.tool_called;
     totalToolCalledCorrect += tally.tool_called_correct;
-    sources.push(relPath);
   }
 
   const correctAfterTool = totalToolCalled > 0 ? totalToolCalledCorrect / totalToolCalled : 0;
@@ -303,6 +421,31 @@ function buildGateInput(
     }),
   );
 
+  // Slice 22: build per_record array. Each entry pairs the unified
+  // baseline's per-record condition means (computed at unification time)
+  // with the per-record misinterp_count derived from the source tool_
+  // inspected traces.
+  const perRecord: PerRecordAssessment[] = [];
+  const perRecordSources: Record<string, string> = {};
+  for (const r of baseline.records) {
+    const tally = perRecordTally.byRecordId.get(r.recordId);
+    if (!tally) {
+      process.stderr.write(
+        `WARNING: no tool_inspected source trace for record ${r.recordId}; misinterp_count will be 0\n`,
+      );
+    }
+    perRecord.push({
+      recordId: r.recordId,
+      stratum: r.stratum,
+      tool_inspected_mean: r.tool_inspected_mean,
+      text_only_mean: r.text_only_mean,
+      random_midi_mean: r.random_midi_mean,
+      margin_vs_text_only: r.margin_tool_inspected_minus_text_only,
+      misinterp_count: tally?.misinterp_count ?? 0,
+    });
+    if (tally) perRecordSources[r.recordId] = tally.source;
+  }
+
   const input: ReleaseGateInput = {
     n_records: cohort.n_records,
     tool_inspected_mean: cohort.tool_inspected.metric_mean,
@@ -313,6 +456,7 @@ function buildGateInput(
     correct_after_tool_rate: correctAfterTool,
     misinterp_rate: misinterp,
     per_stratum: perStratum,
+    per_record: perRecord,
     enriched: {
       n_records: enriched.n_records,
       tool_inspected_mean: enriched.tool_inspected.metric_mean,
@@ -337,7 +481,8 @@ function buildGateInput(
     trace_provenance: {
       tool_called: totalToolCalled,
       tool_called_correct: totalToolCalledCorrect,
-      sources,
+      sources: perRecordTally.consultedSources,
+      per_record_sources: perRecordSources,
     },
   };
 }
@@ -349,7 +494,12 @@ interface AssessmentOutput {
   generated_at: string;
   generator: string;
   baseline_artifact: string;
-  trace_provenance: { tool_called: number; tool_called_correct: number; sources: string[] };
+  trace_provenance: {
+    tool_called: number;
+    tool_called_correct: number;
+    sources: string[];
+    per_record_sources?: Record<string, string>;
+  };
   gate_input: ReleaseGateInput;
   gate_result: ReturnType<typeof evaluateReleaseGate>;
   doctrine_note: string;
@@ -357,7 +507,10 @@ interface AssessmentOutput {
 
 function renderHuman(result: ReturnType<typeof evaluateReleaseGate>): string {
   const lines: string[] = [];
-  lines.push(`=== jam-actions-v0 Slice 20 RC Gate Assessment ===`);
+  const banner = result.schema_version === "release-gate-assessment/2.0.0"
+    ? `=== jam-actions-v0 RC Gate Assessment (Slice 22 revised axes 2 + 6; ${result.schema_version}) ===`
+    : `=== jam-actions-v0 Slice 20 RC Gate Assessment (${result.schema_version}) ===`;
+  lines.push(banner);
   lines.push(``);
   for (const a of result.axes) {
     const status = a.passed ? "PASS" : "FAIL";
@@ -403,8 +556,11 @@ if (!args.quiet) {
 }
 
 if (args.out) {
+  // Schema version comes from gate_result (which derives it from
+  // per_record presence). Slice 20 emitted 1.0.0; Slice 22 emits 2.0.0
+  // when per_record is supplied (always true via this CLI in Slice 22+).
   const assessment: AssessmentOutput = {
-    schema_version: "release-gate-assessment/1.0.0",
+    schema_version: result.schema_version,
     generated_at: new Date().toISOString(),
     generator: "scripts/check-release-gate.ts",
     baseline_artifact: args.baseline.replace(REPO_ROOT + "\\", "").replace(REPO_ROOT + "/", "").replace(/\\/g, "/"),
@@ -412,8 +568,9 @@ if (args.out) {
     gate_input: built.input,
     gate_result: result,
     doctrine_note:
-      "Slice 20 CANDIDATE RC gate. A PASS verdict does NOT mean the dataset is approved for release. " +
-      "Threshold rationale is documented in docs/jam-actions-v0-slice20-release-threshold-framework.md.",
+      "Slice 22 REVISED RC gate (axes 2 + 6). A PASS verdict does NOT mean the dataset is approved for release. " +
+      "Threshold rationale is documented in docs/jam-actions-v0-slice20-release-threshold-framework.md " +
+      "with the Slice 22 revision in docs/jam-actions-v0-slice22-rc-gate-revision.md.",
   };
   writeFileSync(args.out, JSON.stringify(assessment, null, 2) + "\n", "utf8");
   if (!args.quiet) process.stdout.write(`\nwrote assessment to ${args.out}\n`);
