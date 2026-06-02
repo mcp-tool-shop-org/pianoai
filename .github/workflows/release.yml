@@ -36,10 +36,14 @@ jobs:
       - name: Verify tarball contents
         run: pnpm pack && ls -la *.tgz
 
-      - name: Publish to npm
-        run: pnpm publish --no-git-checks --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # OIDC trusted publishing requires npm >= 11.5.1; Node 22 bundles
+      # npm 10.9.x, so upgrade the global npm before the publish call.
+      - name: Upgrade npm for OIDC trusted publishing (>= 11.5.1)
+        run: npm install -g npm@latest
+
+      - name: Publish to npm with Sigstore provenance
+        # Auth via npm Trusted Publishing (OIDC) - intentionally NO NODE_AUTH_TOKEN.
+        run: npm publish --provenance --access public
 
   publish-docker:
     runs-on: ubuntu-latest
