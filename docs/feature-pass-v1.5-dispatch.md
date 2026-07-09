@@ -183,3 +183,22 @@ Then **Phase 9** (full verify ×3 on flake-prone surfaces, CI green) → **Phase
 - Multi-source items: only the first source per finding is runner-verified (documented limitation); second sources are corroborative.
 
 **Receipts:** roleos `roleos-citation-receipt/v1` at `feature-pass-dispatch.citation-receipt.json` (citations_sha256 `202997a3…`, per-citation `retrieval_pins` with `source_sha256`); prism receipt **`prism-01kx3gd20ztptqjbqbw9tq8gtn`** → `prism replay` canonical export → `prism verify-receipt --public-key` → **`signature_valid: true`, exit 0** (Ed25519, kid `ed25519-82b62c2eae235b96`; keypair session-ephemeral in scratchpad — third-party verifiability, not anti-forgery, per prism's disclosed limit).
+
+---
+
+## Iteration-1 receipt (executed 2026-07-09)
+
+**Execution:** 4 parallel Sonnet waves (exclusive ownership held — zero cross-wave file touches, verified by Lens C's tree-hygiene audit). Base `ae5f959`, save-point `pre-feature-pass-v1.5`.
+
+| Wave | Scope shipped | Tests |
+|---|---|---|
+| C0 | main.ts monolith → state/time/transport modules; **beat time model** (BPM now retimes playback; grid fixed); lookahead scheduler (killed the latent never-worked vowel-timer bug); persistence v3 + saved-bpm migration; real pause; C4 centering; ci.yml apps/**+scripts/** paths + cockpit job | cockpit 19 → 112 |
+| S1 | MetronomeEngine (accent, count-in, injectable audio); Recording taps on session + midi paths; SessionOptions{metronome,countIn,clickOnlyDuringCountIn,record} | +43 → +64 after fixes |
+| S2 | `details.noteVerdicts` (%-of-beat windows, 50 ms floor); `renderScoredPianoRoll` (CUD triad + shape redundancy + focus strip); demo SVG coordinator-reviewed at full res — PASS | 26 → 57 → 70 after fixes |
+| X1 | Checksum completeness ×2 units fix (+ real-shape tests); pnpm-overrides groundwork (found the pnpm-9 frozen-install break; partial-reverted, landed atomically below) | +2 |
+
+**Adversarial verify (3 Fable lenses):** 1 CRITICAL — the new cockpit CI job resolved installs to the ROOT workspace (cockpit deps never installed; fixed structurally: apps/cockpit is its own single-package workspace + committed pnpm-lock.yaml + frozen install, proven from clean room). 3 HIGH — count-in ignored song tempo/time-sig/speed; Recording couldn't reconstruct nominal time (query-time speed + uncaptured tempoOverride); session pause/resume duplicated+shifted recorded measures (also existed unreported in hands mode — fixed both). 6 MEDIUM (migration-bpm clamp; panic-no-longer-silences regression; startedAtMs epoch; missing package exports + Session required-field break; scoredAtBpm pairing + INPUT_LIMIT blank render; tag-object SHA pin) + LOWs (loop-wrap hiccup — fixed exact-rebase; extras axis-widening — fixed). **All CONFIRMED findings fixed with tests by 2 Sonnet fix agents + coordinator; deferred: metronome accent-phase on resume (LOW), silent metronomeFactory rejection (LOW), title-clip + focus-strip prominence (C5 polish).**
+
+**Coordinator infra commit:** pnpm 10 across all 5 CI pins (ci ×3, release, publish — release.yml was the lens catch that saved the next release), action pins → peeled v6.0.9 commit `0ebf4713…`, package.json legacy `pnpm` field removed (overrides live in pnpm-workspace.yaml only).
+
+**Chips spawned (open):** `renderPianoRoll` missing from index.ts exports; loop-mode resume restarts whole range (S3-adjacent).
