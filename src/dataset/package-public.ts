@@ -1360,19 +1360,27 @@ export function checkManifestCompleteness(
     }
   }
 
-  // Internal composition consistency: pair + standalone records must sum to
-  // record_count, and songs_count must match the songs_included list length.
-  // A same-total-but-miscomposed corruption (e.g. a pair record misclassified
-  // as standalone, or a song dropped from the list without touching the count)
-  // passes every count check above but is caught here.
+  // Internal composition consistency: every pair is a prompt record PLUS its
+  // continuation_target record (2 records per pair — see countPairs() above,
+  // which counts window_role === 'prompt' records only, and buildManifest(),
+  // which writes pair_count straight from countPairs() without doubling it),
+  // while every standalone is exactly 1 record. So pair_count*2 +
+  // standalone_count must sum to record_count — NOT pair_count +
+  // standalone_count (that undercounts by one record per pair and flagged
+  // every real release as broken; e.g. the real jam-actions-v0-public
+  // manifest has pair_count 57, standalone_count 1, record_count 115:
+  // 57*2+1 = 115, not 57+1 = 58). songs_count must match the songs_included
+  // list length. A same-total-but-miscomposed corruption (e.g. a pair record
+  // misclassified as standalone, or a song dropped from the list without
+  // touching the count) passes every count check above but is caught here.
   if (
     manifest.pair_count !== undefined &&
     manifest.standalone_count !== undefined
   ) {
-    const composed = manifest.pair_count + manifest.standalone_count;
+    const composed = manifest.pair_count * 2 + manifest.standalone_count;
     if (composed !== manifest.record_count) {
       problems.push(
-        `manifest.json pair_count (${manifest.pair_count}) + standalone_count ` +
+        `manifest.json pair_count (${manifest.pair_count}) * 2 + standalone_count ` +
           `(${manifest.standalone_count}) = ${composed} does not sum to ` +
           `record_count (${manifest.record_count})`,
       );

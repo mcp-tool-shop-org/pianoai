@@ -97,6 +97,39 @@ describe("checkManifestCompleteness", () => {
     ).toBe(true);
   });
 
+  // ─── REAL-SHAPE regression: pair_count*2 + standalone_count units bug ────
+  //
+  // Pre-fix, this branch compared `pair_count + standalone_count` against
+  // `record_count`. But countPairs() (src/dataset/package-public.ts) counts
+  // PROMPTS as pair_count — a pair is a prompt + continuation_target = 2
+  // records — so the old formula undercounted by one record per pair and
+  // flagged every real release as broken. These fixtures use the actual
+  // numbers from datasets/jam-actions-v0-public/manifest.json (pair_count
+  // 57, standalone_count 1, record_count 115: 57*2+1 = 115) rather than
+  // baseInputs()'s synthetic record_count of 5, so this test would have
+  // caught the bug against production-shaped data.
+  it("REAL-SHAPE (jam-actions-v0-public manifest.json numbers): pair_count 57 * 2 + standalone_count 1 = 115 matches record_count 115 — no problem", () => {
+    const inputs: CompletenessCheckInputs = {
+      manifest: { record_count: 115, pair_count: 57, standalone_count: 1 },
+      generatedDirs: [],
+    };
+    expect(checkManifestCompleteness(inputs)).toEqual([]);
+  });
+
+  it("REAL-SHAPE: pair_count 57 * 2 + standalone_count 1 = 115 does NOT match a wrong record_count of 116 — flags exactly one problem showing the x2 math", () => {
+    const inputs: CompletenessCheckInputs = {
+      manifest: { record_count: 116, pair_count: 57, standalone_count: 1 },
+      generatedDirs: [],
+    };
+    const problems = checkManifestCompleteness(inputs);
+    expect(problems).toHaveLength(1);
+    expect(problems[0]).toContain("pair_count (57)");
+    expect(problems[0]).toContain("* 2");
+    expect(problems[0]).toContain("standalone_count (1)");
+    expect(problems[0]).toContain("= 115");
+    expect(problems[0]).toContain("record_count (116)");
+  });
+
   it("does not check splits when manifest.splits is absent (optional field)", () => {
     const inputs = baseInputs();
     delete inputs.manifest.splits;
