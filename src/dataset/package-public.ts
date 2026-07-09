@@ -192,34 +192,121 @@ export const EXCLUDED_SONG_IDS: readonly string[] = [
 ];
 
 /**
+ * Normalize a song identifier for exclusion-list comparison: Unicode NFKC
+ * (folds compatibility variants — full-width forms, ligatures, etc.),
+ * lowercased, and trimmed. Applied identically to `EXCLUDED_SONG_IDS`
+ * entries and every record-derived song id (FL2-001) so the comparison
+ * cannot be defeated by case variance or incidental whitespace.
+ */
+function normalizeSongId(raw: string): string {
+  return raw.normalize("NFKC").trim().toLowerCase();
+}
+
+/**
+ * Derive the song id segment from a record id: the substring before the
+ * first `:` (mirrors `recordFilenameFromId` in
+ * scripts/package-jam-actions-public.ts). Returns the id unchanged if it
+ * has no colon — a colon-less id will simply fail the consistency check
+ * below rather than throwing here.
+ */
+function songIdFromRecordId(id: string): string {
+  const colonIdx = id.indexOf(":");
+  return colonIdx === -1 ? id : id.slice(0, colonIdx);
+}
+
+/**
  * Regression guard: throws if any record in `publicRecords` belongs to a
  * deny-listed song (see `EXCLUDED_SONG_IDS`). Call this immediately after
  * `selectPublicRecords()` and before any package writes.
  *
+ * FL2-001 hardening (Fable adversarial finding, HIGH): the original
+ * implementation keyed exclusively on raw `record.scope.song_id` compared
+ * with strict `===` against `EXCLUDED_SONG_IDS`. Four bypasses followed:
+ * (a) a case-variant song_id, (b) a whitespace-padded song_id, (c) a
+ * homoglyph song_id, and (d) a record whose id is legitimately prefixed
+ * `satie-gymnopedie-no1:…` but whose `scope.song_id` was mutated to
+ * something clean — the old guard read only `scope.song_id`, while the
+ * shipped filename and checksums key off the record id, so the record
+ * shipped. The hardened check now:
+ *
+ *   1. Asserts `scope.song_id` and the record-id's pre-colon segment agree
+ *      after NFKC+lowercase+trim normalization, for EVERY public record —
+ *      not just ones matching the deny list. A mismatch is inherently
+ *      suspicious (exactly bypass (d)'s shape, and what a same-script-miss
+ *      like (c) leaves behind on scope.song_id alone) and fails closed on
+ *      its own: the gate cannot tell which field is lying, so it refuses to
+ *      guess and never ships the record.
+ *   2. Normalizes both sides of the deny-list comparison, closing (a)/(b).
+ *   3. Checks the deny list against BOTH the normalized `scope.song_id` AND
+ *      the normalized record-id-derived song id, closing (d) even when (1)
+ *      somehow doesn't fire first.
+ *
  * Fails closed (throws rather than silently filtering the offending
- * records out): a deny-listed record surviving the `record_verdict` filter
- * means the source corpus's provenance data has regressed, so the
- * packaging run as a whole is untrustworthy, not just the one record. The
- * operator needs to investigate the source corpus, not have the packager
- * quietly paper over it.
+ * records out): a deny-listed record surviving the `record_verdict` filter,
+ * or any id/song_id-mismatched record, means the source corpus's data has
+ * regressed, so the packaging run as a whole is untrustworthy, not just the
+ * one record. The operator needs to investigate the source corpus, not
+ * have the packager quietly paper over it.
  */
 export function assertNoExcludedWorksInPublicSet(
   publicRecords: SourceRecord[],
   excludedSongIds: readonly string[] = EXCLUDED_SONG_IDS,
 ): void {
-  const denySet = new Set(excludedSongIds);
-  const offending = publicRecords.filter((r) => denySet.has(r.scope.song_id));
+  const denySet = new Set(excludedSongIds.map(normalizeSongId));
+
+  // Check 1: id <-> song_id consistency. Fires for ANY normalized mismatch,
+  // independent of deny-list membership — see point 1 above.
+  const mismatched = publicRecords
+    .map((r) => ({
+      record: r,
+      normalizedScope: normalizeSongId(r.scope.song_id),
+      normalizedIdSong: normalizeSongId(songIdFromRecordId(r.id)),
+    }))
+    .filter((x) => x.normalizedScope !== x.normalizedIdSong);
+  if (mismatched.length > 0) {
+    const details = mismatched
+      .map(
+        (m) =>
+          `${m.record.id} (scope.song_id -> "${m.normalizedScope}", record-id prefix -> "${m.normalizedIdSong}")`,
+      )
+      .sort();
+    throw new Error(
+      `package-public: EXCLUSION REGRESSION — id/song_id CONSISTENCY check fired for ` +
+        `${mismatched.length} record(s): ${details.join("; ")}. scope.song_id must equal the ` +
+        `record id's pre-colon segment after NFKC+lowercase+trim normalization; a mismatch means ` +
+        `either field could be misrepresenting which song this record belongs to — exactly the ` +
+        `shape of a deny-list bypass. Refusing to package.`,
+    );
+  }
+
+  // Check 2 + 3: normalized scope.song_id OR normalized record-id-derived
+  // song id against the (normalized) deny list. Both are checked
+  // independently — not just for defense-in-depth, but because check 1
+  // having already passed means the two are provably equal by this point,
+  // so either one alone would suffice; checking both keeps this function
+  // correct even if check 1's invariant is ever relaxed.
+  const offendingByScope = publicRecords.filter((r) =>
+    denySet.has(normalizeSongId(r.scope.song_id)),
+  );
+  const offendingByIdPrefix = publicRecords.filter((r) =>
+    denySet.has(normalizeSongId(songIdFromRecordId(r.id))),
+  );
+  const offending = Array.from(new Set([...offendingByScope, ...offendingByIdPrefix]));
   if (offending.length > 0) {
-    const offendingSongs = Array.from(new Set(offending.map((r) => r.scope.song_id))).sort();
+    const offendingSongs = Array.from(
+      new Set(offending.map((r) => normalizeSongId(r.scope.song_id))),
+    ).sort();
     const offendingIds = offending.map((r) => r.id).sort();
     throw new Error(
       `package-public: EXCLUSION REGRESSION — ${offending.length} record(s) from deny-listed ` +
-        `song(s) [${offendingSongs.join(", ")}] are present in the public-subset selection: ` +
-        `${offendingIds.join(", ")}. These works' provenance could not be verified against ` +
-        `piano-midi.de (see datasets/jam-actions-v0-public/README.md "Limitations") and must ` +
-        `never enter the public package, regardless of their current provenance.record_verdict. ` +
-        `Refusing to package. If provenance has since been re-verified, remove the song from ` +
-        `EXCLUDED_SONG_IDS in src/dataset/package-public.ts as an explicit, reviewed change.`,
+        `song(s) [${offendingSongs.join(", ")}] are present in the public-subset selection ` +
+        `(matched on scope.song_id and the record-id song prefix, both normalized via ` +
+        `NFKC+lowercase+trim): ${offendingIds.join(", ")}. These works' provenance could not be ` +
+        `verified against piano-midi.de (see datasets/jam-actions-v0-public/README.md ` +
+        `"Limitations") and must never enter the public package, regardless of their current ` +
+        `provenance.record_verdict. Refusing to package. If provenance has since been ` +
+        `re-verified, remove the song from EXCLUDED_SONG_IDS in src/dataset/package-public.ts as ` +
+        `an explicit, reviewed change.`,
     );
   }
 }

@@ -627,8 +627,19 @@ export function evaluateReleaseGate(
   // absent, behavior is byte-for-byte unchanged from pre-fix (back-compat):
   // `undefined === 0` is false, so `noToolCalledQuestions` is false and the
   // original comparison runs exactly as before.
+  //
+  // FL2-003 fix: the original `=== 0` check let NaN, negative, and other
+  // non-finite counts fall through and vacuously PASS (reachable via an
+  // unvalidated JSON.parse baseline where a missing `tool_called` field
+  // sums to NaN in scripts/check-release-gate.ts). Any *present* count that
+  // isn't a positive finite number is just as undefined a denominator as an
+  // explicit 0, so it now fails closed the same way. The absent-field
+  // back-compat path is unchanged: `count !== undefined` is false when the
+  // field is omitted, so `noToolCalledQuestions` stays false and the
+  // original comparison runs exactly as before.
   {
-    const noToolCalledQuestions = input.axis5_tool_called_count === 0;
+    const count = input.axis5_tool_called_count;
+    const noToolCalledQuestions = count !== undefined && !(Number.isFinite(count) && count > 0);
     const passed = noToolCalledQuestions
       ? false
       : nearlyAtMost(input.misinterp_rate, thresholds.axis5_misinterp_ceiling);
@@ -643,7 +654,7 @@ export function evaluateReleaseGate(
         tool_called_count: input.axis5_tool_called_count,
       },
       note: noToolCalledQuestions
-        ? `Axis 5 FAIL: axis5_tool_called_count = 0 — no tool-called questions were run, so the misinterpretation rate is undefined and cannot be certified (misinterp_rate=${input.misinterp_rate.toFixed(3)} is a zero-denominator artifact, not a measured 0%)`
+        ? `Axis 5 FAIL: axis5_tool_called_count = ${String(count)} is not a positive finite count of tool-called questions, so the misinterpretation rate is undefined and cannot be certified (misinterp_rate=${input.misinterp_rate.toFixed(3)} is a zero-denominator or invalid-denominator artifact, not a measured rate)`
         : passed
           ? `Misinterp rate ${(input.misinterp_rate * 100).toFixed(1)}% ≤ ${(thresholds.axis5_misinterp_ceiling * 100).toFixed(1)}%`
           : `Misinterp rate ${(input.misinterp_rate * 100).toFixed(1)}% > ${(thresholds.axis5_misinterp_ceiling * 100).toFixed(1)}% — too many tool-called questions get wrong answers`,

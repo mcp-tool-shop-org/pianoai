@@ -171,6 +171,13 @@ function safeClearStorage(): void {
 
 let autosaveTimer: ReturnType<typeof setTimeout> | undefined;
 
+/** Set by Reset (btn-reset) — suppresses exactly one upcoming involuntary
+ *  flush (visibilitychange/pagehide calling saveStateNow directly, bypassing
+ *  the debounce) so a stray autosave can't silently resurrect the session
+ *  Reset just cleared. onStateChanged() clears it again on the next real
+ *  edit, so a genuine post-reset autosave is never skipped (F-A1-011). */
+let suppressNextAutosave = false;
+
 /** Debounced (~500ms) save — call after any score/settings mutation rather
  *  than saving synchronously, since drag/resize/nudge fire many times a
  *  second and every save is a full JSON.stringify + localStorage write. */
@@ -183,6 +190,11 @@ function scheduleAutosave() {
  *  where the tab may be gone before a pending debounce timer would fire. */
 function saveStateNow() {
   if (autosaveTimer !== undefined) { clearTimeout(autosaveTimer); autosaveTimer = undefined; }
+  // Reset (btn-reset) sets this to skip exactly one flush so an involuntary
+  // visibilitychange/pagehide save can't resurrect the session it just
+  // cleared (F-A1-011).
+  if (suppressNextAutosave) { suppressNextAutosave = false; return; }
+  const tuning = synth.getTuning();
   const json = serializeCockpitState({
     score: score.map(({ id: _id, ...rest }) => rest),
     bpm,
@@ -191,6 +203,10 @@ function saveStateNow() {
     tuning: ($("sel-tuning") as HTMLSelectElement).value,
     refPitch: synth.getRefPitch(),
     mode,
+    // Persist the actual cent offsets, not just the "custom" label — a
+    // reload otherwise re-labels the badge "Custom" but plays 12-TET
+    // (F-A1-004).
+    ...(tuning.id === "custom" ? { customCents: [...tuning.cents] } : {}),
   });
   safeSaveRaw(json);
 }
@@ -200,6 +216,7 @@ function saveStateNow() {
  *  for 500ms after the first note lands would just look broken) and
  *  schedules a debounced autosave. */
 function onStateChanged() {
+  suppressNextAutosave = false;
   updateFirstRunHint();
   scheduleAutosave();
 }
@@ -239,6 +256,26 @@ function restoreFromStorage(): boolean {
   } else {
     ($("sel-vocal-voice") as HTMLSelectElement).value = state.voice;
     vocalSynth.setVoice(state.voice as VocalVoiceId);
+  }
+
+  // Restore the actual custom cent offsets when the persisted tuning is
+  // "custom" — importScore() above only restores the tuning *id*, which
+  // resolves to the synth's built-in placeholder custom cents, not whatever
+  // the user actually dialed in (F-A1-004). Order matters: setCustomTuning()
+  // must run before vocalSynth.setTuning() so the vocal engine picks up the
+  // freshly-applied cents — same order "Apply Custom" already uses.
+  if (state.tuning === "custom" && state.customCents) {
+    synth.setCustomTuning(state.customCents);
+    vocalSynth.setTuning("custom");
+    for (let pc = 0; pc < 12; pc++) {
+      CUSTOM_CENTS[pc] = state.customCents[pc];
+      const slider = document.querySelector<HTMLInputElement>(`input[data-pc="${pc}"]`);
+      if (slider) slider.value = String(state.customCents[pc]);
+      const val = document.getElementById("cv-" + pc);
+      if (val) val.textContent = state.customCents[pc] + "¢";
+    }
+    updateTuningTable();
+    updateTelemetry();
   }
   return true;
 }
@@ -816,17 +853,42 @@ function buildKeyboard() {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
 
     const k = e.key.toLowerCase();
-    if (k === " ") { e.preventDefault(); togglePlay(); return; }
+    // Shortcuts overlay (F-A1-009) — the first-run hint has promised
+    // "press ? for shortcuts" since it was written; this makes it true.
+    if (k === "?") { e.preventDefault(); toggleShortcutsOverlay(); return; }
+    if (k === " ") {
+      // A focused button/link/[role=button] owns Space natively — only
+      // hijack it for play/pause when focus isn't on one of those
+      // (F-A1: keyboard-editing scope regression).
+      if (isActivatableControl(document.activeElement)) return;
+      e.preventDefault(); togglePlay(); return;
+    }
     if (k === "escape") { panic(); return; }
-    if (k === "delete" || k === "backspace") { e.preventDefault(); deleteSelectedNote(); return; }
+    if (k === "delete" || k === "backspace") {
+      // Only intercept when there's actually a note to delete — otherwise
+      // this stole Backspace/Delete from every other context on the page
+      // for nothing (F-A1: keyboard-editing scope regression).
+      if (selectedNote) { e.preventDefault(); deleteSelectedNote(); }
+      return;
+    }
     // Keyboard editing of the piano roll (F-B1-002) — selection, pitch/time
-    // nudge, and insert, so the roll is usable without a mouse.
-    if (k === "tab") { e.preventDefault(); cycleNoteSelection(e.shiftKey ? -1 : 1); return; }
-    if (k === "arrowup") { e.preventDefault(); nudgeSelectedNote(1, 0); return; }
-    if (k === "arrowdown") { e.preventDefault(); nudgeSelectedNote(-1, 0); return; }
-    if (k === "arrowleft") { e.preventDefault(); nudgeSelectedNote(0, -1); return; }
-    if (k === "arrowright") { e.preventDefault(); nudgeSelectedNote(0, 1); return; }
-    if (k === "enter" || k === "insert") { e.preventDefault(); insertNoteAtPlayhead(); return; }
+    // nudge, and insert, so the roll is usable without a mouse. Scoped to
+    // when the roll is actually the active editing surface (isRollEditContext)
+    // so it never hijacks Tab focus-nav or Enter/arrow-key behavior on the
+    // ARIA-labeled controls elsewhere on the page (F-A1: keyboard-editing
+    // scope regression).
+    if (k === "tab") {
+      if (isRollEditContext()) { e.preventDefault(); cycleNoteSelection(e.shiftKey ? -1 : 1); }
+      return;
+    }
+    if (k === "arrowup") { if (isRollEditContext()) { e.preventDefault(); nudgeSelectedNote(1, 0); } return; }
+    if (k === "arrowdown") { if (isRollEditContext()) { e.preventDefault(); nudgeSelectedNote(-1, 0); } return; }
+    if (k === "arrowleft") { if (isRollEditContext()) { e.preventDefault(); nudgeSelectedNote(0, -1); } return; }
+    if (k === "arrowright") { if (isRollEditContext()) { e.preventDefault(); nudgeSelectedNote(0, 1); } return; }
+    if (k === "enter" || k === "insert") {
+      if (isRollEditContext()) { e.preventDefault(); insertNoteAtPlayhead(); }
+      return;
+    }
 
     const code = e.code;
     if (QWERTY[code] !== undefined && !heldKeys.has(code)) {
@@ -874,6 +936,45 @@ function isTypingTarget(e: KeyboardEvent): boolean {
   const tag = el.tagName;
   if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
   return !!el.isContentEditable;
+}
+
+/** True for elements where native Space/Enter already means "activate" —
+ *  buttons, links, and ARIA role=button — so the global Space=play shortcut
+ *  must never steal the keystroke from them. Inputs/selects/textareas never
+ *  reach this check; they already exit earlier via isTypingTarget
+ *  (F-A1: keyboard-editing scope regression). */
+function isActivatableControl(el: Element | null): boolean {
+  if (!el) return false;
+  if (el.tagName === "BUTTON" || el.tagName === "A") return true;
+  return el.getAttribute("role") === "button";
+}
+
+/** True when the piano roll is the active keyboard-editing surface: DOM
+ *  focus is on the roll container (or inside it), or a note is currently
+ *  selected via an earlier mouse click. Gates Tab/Enter/Insert/arrow note-
+ *  editing so those keys never hijack native Tab focus-nav or button/link
+ *  activation elsewhere on the page — once focus has moved to a specific
+ *  control outside the roll, that control owns those keys, even if a note
+ *  is still selected (F-A1: keyboard-editing scope regression). */
+function isRollEditContext(): boolean {
+  const active = document.activeElement;
+  if (active && active !== document.body) {
+    const roll = document.getElementById("piano-roll-container");
+    if (roll && (active === roll || roll.contains(active))) return true;
+    return false;
+  }
+  return selectedNote != null;
+}
+
+/** Toggle the "?" keyboard-shortcuts overlay (F-A1-009) — the first-run
+ *  hint has promised "press ? for shortcuts" since it was written, but no
+ *  handler ever backed it up. */
+function toggleShortcutsOverlay() {
+  const el = document.getElementById("shortcuts-overlay");
+  if (!el) return;
+  const open = !el.classList.contains("open");
+  el.classList.toggle("open", open);
+  el.setAttribute("aria-hidden", String(!open));
 }
 
 function midiKeyDown(midi: number) {
@@ -1061,6 +1162,12 @@ function bindControls() {
     selectedNote = null;
     document.querySelectorAll(".pr-note").forEach((el) => el.remove());
     updateInspector();
+    // A lingering debounced timer (or an involuntary visibilitychange/
+    // pagehide flush firing right after this click) would otherwise
+    // silently re-write the session we're about to clear — cancel the
+    // timer and skip the next flush so Reset actually sticks (F-A1-011).
+    if (autosaveTimer !== undefined) { clearTimeout(autosaveTimer); autosaveTimer = undefined; }
+    suppressNextAutosave = true;
     safeClearStorage();
     updateFirstRunHint();
     setScoreStatus("Reset — starting a new session", "ok");
@@ -1315,6 +1422,10 @@ function bindAuditControls() {
     ($("sel-tuning") as HTMLSelectElement).value = "custom";
     updateTuningTable();
     updateTelemetry();
+    // Was missing entirely — a custom tuning applied here never reached
+    // autosave, so reloading after "Apply Custom" (with no other edit)
+    // silently reverted to whatever tuning was last persisted (F-A1-004).
+    onStateChanged();
   });
 
   $("btn-reset-custom").addEventListener("click", () => {
@@ -1356,6 +1467,9 @@ function bindAuditControls() {
       updateTuningTable();
       updateTelemetry();
       setTuningStatus("Tuning imported", "ok");
+      // Same gap as "Apply Custom" above — an imported tuning never reached
+      // autosave (F-A1-004).
+      onStateChanged();
     } catch (err) {
       // F-B1-008: alert() blocks the main thread — that also freezes the
       // Panic (Escape) path until dismissed. Inline status instead, same

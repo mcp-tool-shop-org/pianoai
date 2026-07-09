@@ -1,10 +1,52 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync, readFileSync, existsSync } from "node:fs";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync, readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { loadSongsFromDir, loadSongFile, saveSong } from "./loader.js";
 import { clearRegistry } from "./registry.js";
 import type { SongEntry } from "./types.js";
+
+// ─── node:fs mock (write/rename-interception scaffold for the saveSong ─────
+//    atomicity tests below) ───────────────────────────────────────────────
+//
+// Mirrors src/piano-voices.test.ts's D-B1-005 pattern (vi.mock's factory-
+// replacement approach — vi.spyOn does not work in this repo's vitest/ESM
+// setup; verified there directly before that file was written). Extended
+// here to intercept BOTH writeFileSync AND renameSync (one-shot each) so the
+// "write fails" and "rename fails" legs of saveSong's write-temp-then-rename
+// contract (./loader.ts) can each be exercised independently. Inert for
+// every test that never arms a flag — every other test in this file (and
+// every fs call that isn't the one armed call) passes straight through to
+// the real implementation.
+const mockState = { failWriteOnce: false, failRenameOnce: false };
+
+vi.mock("node:fs", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("node:fs")>();
+  return {
+    ...actual,
+    writeFileSync: (...args: Parameters<typeof actual.writeFileSync>) => {
+      if (mockState.failWriteOnce) {
+        mockState.failWriteOnce = false;
+        const [path, data, options] = args as [string, string, unknown];
+        // Real but truncated write, then throw — simulates a crash partway
+        // through the write (same technique as piano-voices.test.ts).
+        actual.writeFileSync(path, String(data).slice(0, 8), options as Parameters<typeof actual.writeFileSync>[2]);
+        throw new Error("simulated write failure");
+      }
+      return actual.writeFileSync(...args);
+    },
+    renameSync: (...args: Parameters<typeof actual.renameSync>) => {
+      if (mockState.failRenameOnce) {
+        mockState.failRenameOnce = false;
+        throw new Error("simulated rename failure");
+      }
+      return actual.renameSync(...args);
+    },
+  };
+});
+
+// Imported after vi.mock (vi.mock calls are hoisted by vitest regardless of
+// import order — written this way for readability, per piano-voices.test.ts).
+import { loadSongsFromDir, loadSongFile, saveSong } from "./loader.js";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -43,6 +85,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  mockState.failWriteOnce = false;
+  mockState.failRenameOnce = false;
   rmSync(tmp, { recursive: true, force: true });
 });
 
@@ -206,5 +250,69 @@ describe("saveSong", () => {
     const song = makeSong({ id: "my-tune" });
     const filePath = saveSong(song, tmp);
     expect(filePath).toBe(join(tmp, "my-tune.json"));
+  });
+});
+
+// ── saveSong — atomic write (write-temp-then-rename, mirrors ───────────────
+//    piano-voices.test.ts's D-B1-005 pattern) ───────────────────────────────
+
+describe("saveSong — atomic write (write-temp-then-rename)", () => {
+  it("CORE (write failure leg): an interrupted write does not corrupt the previously-saved live file, and leaves no .tmp orphan", () => {
+    const original = makeSong({ id: "atomic-song", title: "Original Title" });
+    const path = saveSong(original, tmp);
+    const before = readFileSync(path, "utf8");
+    expect(JSON.parse(before).title).toBe("Original Title");
+
+    mockState.failWriteOnce = true;
+    const mutated = makeSong({ id: "atomic-song", title: "MUTATED — should never land" });
+    expect(() => saveSong(mutated, tmp)).toThrow("simulated write failure");
+    expect(mockState.failWriteOnce).toBe(false); // one-shot consumed
+
+    // Live file is byte-identical to before the crashed save.
+    const after = readFileSync(path, "utf8");
+    expect(after).toBe(before);
+    expect(JSON.parse(after).title).toBe("Original Title");
+
+    // No .tmp (or any other stray file) left behind in the directory.
+    expect(readdirSync(tmp)).toEqual(["atomic-song.json"]);
+  });
+
+  it("CORE (rename failure leg): a failed rename does not corrupt the previously-saved live file, and leaves no .tmp orphan", () => {
+    const original = makeSong({ id: "atomic-song-2", title: "Original Title" });
+    const path = saveSong(original, tmp);
+    const before = readFileSync(path, "utf8");
+
+    mockState.failRenameOnce = true;
+    const mutated = makeSong({ id: "atomic-song-2", title: "MUTATED — should never land" });
+    expect(() => saveSong(mutated, tmp)).toThrow("simulated rename failure");
+    expect(mockState.failRenameOnce).toBe(false); // one-shot consumed
+
+    const after = readFileSync(path, "utf8");
+    expect(after).toBe(before);
+    expect(JSON.parse(after).title).toBe("Original Title");
+
+    expect(readdirSync(tmp)).toEqual(["atomic-song-2.json"]);
+  });
+
+  it("a subsequent (non-intercepted) save after a simulated write failure succeeds normally", () => {
+    saveSong(makeSong({ id: "atomic-song-3", title: "First" }), tmp);
+    mockState.failWriteOnce = true;
+    expect(() => saveSong(makeSong({ id: "atomic-song-3", title: "Crashed" }), tmp)).toThrow();
+
+    saveSong(makeSong({ id: "atomic-song-3", title: "Recovered" }), tmp);
+    const content = JSON.parse(readFileSync(join(tmp, "atomic-song-3.json"), "utf8"));
+    expect(content.title).toBe("Recovered");
+    expect(readdirSync(tmp)).toEqual(["atomic-song-3.json"]);
+  });
+
+  it("a subsequent (non-intercepted) save after a simulated rename failure succeeds normally", () => {
+    saveSong(makeSong({ id: "atomic-song-4", title: "First" }), tmp);
+    mockState.failRenameOnce = true;
+    expect(() => saveSong(makeSong({ id: "atomic-song-4", title: "Crashed" }), tmp)).toThrow();
+
+    saveSong(makeSong({ id: "atomic-song-4", title: "Recovered" }), tmp);
+    const content = JSON.parse(readFileSync(join(tmp, "atomic-song-4.json"), "utf8"));
+    expect(content.title).toBe("Recovered");
+    expect(readdirSync(tmp)).toEqual(["atomic-song-4.json"]);
   });
 });

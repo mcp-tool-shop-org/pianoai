@@ -44,7 +44,7 @@
 // a new artifact path (e.g. focused rerun in Slice 13, multi-run in Slice 14).
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync, renameSync } from "node:fs";
 import { join, dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -566,14 +566,32 @@ function writeCheckpoint(): void {
   if (!opts.checkpoint) return;
   checkpointState.written_at = new Date().toISOString();
   checkpointState.run_signature = RUN_SIGNATURE;
+  // FL1-008 fix: write atomically (temp file + rename) instead of a direct
+  // writeFileSync onto CHECKPOINT_PATH. A crash mid-write of the direct-write
+  // version leaves a torn checkpoint on disk; the reader below already
+  // tolerates a corrupt/missing checkpoint by treating it as "no checkpoint"
+  // (fresh start), but that forfeits the multi-hour progress the checkpoint
+  // exists to protect. The temp file is unique per-process, and the final
+  // rename onto CHECKPOINT_PATH is a single atomic filesystem operation
+  // (POSIX rename(2); Windows MoveFileEx with REPLACE_EXISTING via Node's
+  // fs.renameSync) — a reader can only ever observe the old complete
+  // checkpoint or the new complete one, never a partial write.
+  const tmpPath = `${CHECKPOINT_PATH}.${process.pid}.tmp`;
   try {
     if (!existsSync(CHECKPOINT_DIR)) {
       mkdirSync(CHECKPOINT_DIR, { recursive: true });
     }
-    writeFileSync(CHECKPOINT_PATH, JSON.stringify(checkpointState, null, 2) + "\n", "utf8");
+    writeFileSync(tmpPath, JSON.stringify(checkpointState, null, 2) + "\n", "utf8");
+    renameSync(tmpPath, CHECKPOINT_PATH);
   } catch (err) {
     // Checkpointing is a durability aid, not the primary output — a failed
-    // checkpoint write must never abort the eval run itself.
+    // checkpoint write must never abort the eval run itself. Best-effort
+    // clean up a partially-written temp file so it doesn't accumulate.
+    try {
+      if (existsSync(tmpPath)) rmSync(tmpPath);
+    } catch {
+      // Nothing more we can do here; the warn below still fires.
+    }
     console.warn(`  [checkpoint] WARN: failed to write ${CHECKPOINT_PATH}: ${(err as Error).message}`);
   }
 }

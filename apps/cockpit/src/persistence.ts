@@ -23,7 +23,10 @@
 //             whichever engine matches the active mode.
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const CURRENT_SCHEMA_VERSION = 1;
+// Schema v2 adds `customCents` (F-A1-004: custom-tuning not persisted) —
+// present only when tuning === "custom". v1 blobs (no customCents) still
+// load via the migration funnel in deserializeCockpitState below.
+export const CURRENT_SCHEMA_VERSION = 2;
 
 /** localStorage key for the persisted blob — centralised here so the schema
  *  and its storage key travel together. */
@@ -51,6 +54,11 @@ export interface CockpitPersistedState {
   tuning: string;
   refPitch: number;
   mode: PersistedMode;
+  /** Custom cent offsets per pitch class (12 entries, index 0 = C, forced
+   *  to 0), present only when tuning === "custom" — lets a restored session
+   *  reproduce the exact custom tuning instead of relabeling itself
+   *  "Custom" while silently playing 12-TET (F-A1-004). */
+  customCents?: number[];
 }
 
 /** Input to serializeCockpitState — same shape minus `v`, which is always
@@ -83,6 +91,21 @@ function sanitizeNote(raw: unknown): PersistedNote | null {
   return note;
 }
 
+/** Validate a persisted custom-tuning cents array: exactly 12 finite
+ *  numbers, one per pitch class. Anything else (wrong length, non-numbers,
+ *  NaN/Infinity) is dropped rather than restored, so a corrupt/foreign
+ *  value can't feed non-finite cents into Web Audio detune math on restore —
+ *  same failure class as sanitizeNote above (F-A1-004). */
+function sanitizeCustomCents(raw: unknown): number[] | undefined {
+  if (!Array.isArray(raw) || raw.length !== 12) return undefined;
+  const cents: number[] = [];
+  for (const v of raw) {
+    if (typeof v !== "number" || !Number.isFinite(v)) return undefined;
+    cents.push(v);
+  }
+  return cents;
+}
+
 /**
  * Parse + validate a persisted-state JSON string, migrating older schema
  * versions forward. Never throws — corrupt JSON, foreign data, wrong types,
@@ -103,11 +126,12 @@ export function deserializeCockpitState(raw: string): CockpitPersistedState | nu
   if (typeof parsed !== "object" || parsed === null) return null;
   const r = parsed as Record<string, unknown>;
 
-  // Schema migration funnel: only v1 exists today. A future v2 would branch
-  // here (e.g. `if (r.v === 1) r = migrateV1toV2(r);`) before falling
-  // through to the same validation below, so restore never has two
-  // divergent code paths to keep in sync.
-  if (r.v !== undefined && r.v !== CURRENT_SCHEMA_VERSION) return null;
+  // Schema migration funnel: v1 (no customCents) and v2 (adds customCents,
+  // F-A1-004) both fall through to the same validation below — a future v3
+  // would branch here the same way, so restore never has two divergent code
+  // paths to keep in sync. v1 blobs simply have no customCents property,
+  // which sanitizeCustomCents below naturally treats as "none persisted".
+  if (r.v !== undefined && r.v !== 1 && r.v !== CURRENT_SCHEMA_VERSION) return null;
   if (!Array.isArray(r.score)) return null;
 
   const score: PersistedNote[] = [];
@@ -122,6 +146,10 @@ export function deserializeCockpitState(raw: string): CockpitPersistedState | nu
   const voice = typeof r.voice === "string" ? r.voice : "kokoro-af-heart";
   const tuning = typeof r.tuning === "string" ? r.tuning : "equal";
   const mode: PersistedMode = r.mode === "vocal" ? "vocal" : "instrument";
+  const customCents = sanitizeCustomCents(r.customCents);
 
-  return { v: CURRENT_SCHEMA_VERSION, score, bpm, engine, voice, tuning, refPitch, mode };
+  return {
+    v: CURRENT_SCHEMA_VERSION, score, bpm, engine, voice, tuning, refPitch, mode,
+    ...(customCents ? { customCents } : {}),
+  };
 }

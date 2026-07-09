@@ -1827,7 +1827,11 @@ registerTool(
     const { writeFileSync } = await import("node:fs");
     const { join } = await import("node:path");
     const tempPath = join(tmpdir(), `guitar-tab-${songId}.html`);
-    writeFileSync(tempPath, html, "utf8");
+    try {
+      writeFileSync(tempPath, html, "utf8");
+    } catch (err) {
+      return fsErrorResult(err, `write guitar tab file for "${songId}"`);
+    }
 
     // Also return a text summary of the tab content so the LLM can "see" the arrangement
     const measures = song.measures.slice(
@@ -2337,7 +2341,12 @@ registerTool(
     }
 
     const entry = buildJournalEntry(session, note);
-    const filepath = appendJournalEntry(entry);
+    let filepath: string;
+    try {
+      filepath = appendJournalEntry(entry);
+    } catch (err) {
+      return fsErrorResult(err, "save practice journal entry");
+    }
     const stats = journalStats();
 
     return {
@@ -2454,14 +2463,9 @@ registerTool(
         }],
       };
     } catch (err) {
-      return {
-        content: [{
-          type: "text",
-          text: `Annotation saved but ingestion failed: ${err instanceof Error ? err.message : String(err)}\n` +
-            `The config was updated at ${entry.configPath}. Check the MIDI file.`,
-        }],
-        isError: true,
-      };
+      const result = fsErrorResult(err, `finish annotating "${song_id}" (ingest/persist)`);
+      result.content[0].text += `\n\nThe config was updated at ${entry.configPath}. Check the MIDI file.`;
+      return result;
     }
   }
 );

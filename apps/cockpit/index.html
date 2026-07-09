@@ -49,6 +49,12 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
   position: relative; overflow: auto; background: var(--bg);
   border-bottom: 1px solid var(--border);
 }
+/* Visible keyboard-focus ring (F-A1: keyboard-editing scope regression) —
+   the roll is now a tabindex="0" focusable editing surface; :focus-visible
+   keeps the ring from flashing on ordinary mouse clicks. */
+#piano-roll-container:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: -2px;
+}
 #piano-roll {
   position: relative; min-height: 100%;
 }
@@ -305,6 +311,22 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
 .score-status.error { display: block; background: #ff7b7222; color: #ff7b72; border: 1px solid #ff7b7255; }
 .score-status.ok { display: block; background: #7ee78722; color: #7ee787; border: 1px solid #7ee78755; }
 
+/* ─── Shortcuts Overlay (F-A1-009) ─── */
+#shortcuts-overlay {
+  display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  z-index: 200; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 14px 18px; max-width: 320px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+#shortcuts-overlay.open { display: block; }
+#shortcuts-overlay h2 { font-size: 12px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+#shortcuts-overlay ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+#shortcuts-overlay li { font-size: 12px; color: var(--text); display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+#shortcuts-overlay kbd {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 3px;
+  padding: 1px 5px; font-family: var(--mono); font-size: 10px; color: var(--text-muted);
+}
+
 /* ─── Responsive Layout (F-B1-003) ───
    Desktop assumes a fixed 320px right sidebar + 240px controls column inside
    a 100vh grid with html/body overflow:hidden — below ~1000px that grid no
@@ -403,7 +425,7 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
   </header>
 
   <!-- ─── Piano Roll ─── -->
-  <div id="piano-roll-container">
+  <div id="piano-roll-container" tabindex="0" aria-label="Piano roll. Tab selects notes, arrow keys nudge pitch and time, Enter inserts a note, Delete removes it.">
     <div id="piano-roll"></div>
     <div class="pr-playhead" id="playhead"></div>
     <div id="pr-hint" style="position:absolute;top:6px;left:8px;font-family:var(--mono);font-size:11px;color:var(--text-muted);opacity:0.65;pointer-events:none;z-index:5;">Click to add a note · press ? for shortcuts</div>
@@ -515,6 +537,21 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
     </div>
   </div>
 
+</div>
+
+<!-- ─── Keyboard Shortcuts Overlay (F-A1-009) ─── -->
+<div id="shortcuts-overlay" role="dialog" aria-label="Keyboard shortcuts" aria-hidden="true">
+  <h2>Keyboard Shortcuts</h2>
+  <ul>
+    <li><kbd>Space</kbd> Play / pause</li>
+    <li><kbd>Del</kbd> Delete selected note</li>
+    <li><kbd>Tab</kbd> Select next note (Shift+Tab: previous)</li>
+    <li><kbd>&uarr;</kbd><kbd>&darr;</kbd> Nudge pitch &nbsp; <kbd>&larr;</kbd><kbd>&rarr;</kbd> Nudge time</li>
+    <li><kbd>Enter</kbd> Add note at playhead</li>
+    <li><kbd>Esc</kbd> Panic (all notes off)</li>
+    <li><kbd>Z</kbd>&ndash;<kbd>M</kbd> / <kbd>Q</kbd>&ndash;<kbd>U</kbd> Play keyboard</li>
+    <li><kbd>?</kbd> Toggle this help</li>
+  </ul>
 </div>
 
 <script type="module" src="./src/main.ts"></script>

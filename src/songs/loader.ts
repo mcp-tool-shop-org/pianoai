@@ -5,7 +5,7 @@
 // No compilation needed to add songs — just drop a .json file.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { readdirSync, readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
+import { readdirSync, readFileSync, writeFileSync, existsSync, mkdirSync, renameSync, unlinkSync } from "node:fs";
 import { join, basename, resolve } from "node:path";
 import type { SongEntry } from "./types.js";
 import { validateSong, registerSong, clearRegistry } from "./registry.js";
@@ -81,7 +81,18 @@ export function saveSong(song: SongEntry, dir: string): string {
   if (!resolvedFile.startsWith(resolvedDir)) {
     throw new Error(`Path traversal detected: song ID "${song.id}" resolves outside target directory.`);
   }
-  writeFileSync(filePath, JSON.stringify(song, null, 2) + "\n", "utf8");
+  // Atomic (write-temp-then-rename), same pattern as piano-voices.ts's
+  // saveUserTuning: a crash or racing writer can't leave a half-written,
+  // corrupt song file behind for add_section / transpose_song / add_song /
+  // import_midi / annotate_song, which all persist through this function.
+  const tmpPath = `${filePath}.${process.pid}-${Date.now()}.tmp`;
+  try {
+    writeFileSync(tmpPath, JSON.stringify(song, null, 2) + "\n", "utf8");
+    renameSync(tmpPath, filePath);
+  } catch (err) {
+    try { unlinkSync(tmpPath); } catch { /* best-effort cleanup */ }
+    throw err;
+  }
   return filePath;
 }
 

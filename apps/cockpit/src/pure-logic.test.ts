@@ -18,6 +18,17 @@
 // coordinator's frontend verifier lenses rather than a test in this file —
 // see the swarm output's `skipped` entry for this specific sub-item.
 //
+// FL1-001 (keyboard-editing scope hardening) — SKIPPED, same reason as the
+// bpm-clamp note above. isRollEditContext() and isActivatableControl() (both
+// in main.ts) remain internal, unexported, DOM-bound functions —
+// isRollEditContext() reads document.activeElement/getElementById directly,
+// and isActivatableControl(), though it only touches its Element argument,
+// is only reachable by importing main.ts, which still runs boot() at module
+// top level on import. Neither was extracted into a DOM-free importable form
+// by the fix, so there is nothing new to unit-test from this pure/Node file.
+// The keyboard-scope behavior they implement is covered by the coordinator's
+// manual/verifier check, not by an automated test here.
+//
 // F-B1-001 / F-59d3148a (state persistence) — RESOLVED. The pure serialize/
 // deserialize/migrate surface flagged as missing below now lives in
 // persistence.ts, a DOM-free module mirroring synth.ts's own import-safe
@@ -88,6 +99,62 @@ describe("serializeCockpitState / deserializeCockpitState round-trip (pins F-B1-
     expect(Number.isFinite(restored!.bpm)).toBe(true);
     expect(Number.isFinite(restored!.refPitch)).toBe(true);
     expect(restored!.mode).toBe("instrument");
+  });
+});
+
+describe("serializeCockpitState / deserializeCockpitState — schema v2 customCents (pins F-A1-004)", () => {
+  const CUSTOM_CENTS = [0, 12, -7, 3, 9, -15, 0, 6, -11, 18, -4, 10];
+  const v2Sample = {
+    score: [{ midi: 60, startSec: 0, durationSec: 0.5, velocity: 100 }],
+    bpm: 120, engine: "grand", voice: "kokoro-af-heart",
+    tuning: "custom", refPitch: 440, mode: "instrument" as const,
+    customCents: CUSTOM_CENTS,
+  };
+
+  it("round-trips a v2 state with a custom-cents tuning exactly (full 12-entry array preserved)", () => {
+    const json = serializeCockpitState(v2Sample);
+    expect(JSON.parse(json).v).toBe(2);
+    const restored = deserializeCockpitState(json);
+    expect(restored).toEqual({ v: CURRENT_SCHEMA_VERSION, ...v2Sample });
+    expect(restored!.customCents).toEqual(CUSTOM_CENTS);
+  });
+
+  it("migrates a v1 blob (no customCents field at all) to a valid v2 state without throwing", () => {
+    const v1Raw = JSON.stringify({
+      v: 1,
+      score: [{ midi: 60, startSec: 0, durationSec: 0.5, velocity: 100 }],
+      bpm: 100, engine: "grand", voice: "kokoro-af-heart",
+      tuning: "equal", refPitch: 440, mode: "instrument",
+      // genuinely absent — a real pre-F-A1-004 v1 autosave blob never had this key
+    });
+    expect(() => deserializeCockpitState(v1Raw)).not.toThrow();
+    const restored = deserializeCockpitState(v1Raw);
+    expect(restored).not.toBeNull();
+    expect(restored!.v).toBe(CURRENT_SCHEMA_VERSION);
+    expect(restored!.customCents).toBeUndefined();
+    expect(restored!.tuning).toBe("equal");
+    expect(restored!.bpm).toBe(100);
+    expect(restored!.score).toHaveLength(1);
+  });
+
+  it("returns null for a not-yet-existing future schema version (v:3)", () => {
+    const raw = JSON.stringify({
+      v: 3,
+      score: [],
+      bpm: 120, engine: "grand", voice: "kokoro-af-heart",
+      tuning: "equal", refPitch: 440, mode: "instrument",
+    });
+    expect(deserializeCockpitState(raw)).toBeNull();
+  });
+
+  it("returns null for an invalid schema version (v:0)", () => {
+    const raw = JSON.stringify({
+      v: 0,
+      score: [],
+      bpm: 120, engine: "grand", voice: "kokoro-af-heart",
+      tuning: "equal", refPitch: 440, mode: "instrument",
+    });
+    expect(deserializeCockpitState(raw)).toBeNull();
   });
 });
 

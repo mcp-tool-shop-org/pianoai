@@ -248,19 +248,130 @@ describe("D-B1-002 — assertNoExcludedWorksInPublicSet (exclusion regression gu
   });
 });
 
-describe("D-B1-002 — real corpus regression: satie/debussy never survive the public packaging pipeline", () => {
-  it("selectPublicRecords + assertNoExcludedWorksInPublicSet on the real datasets/jam-actions-v0/records corpus excludes both deny-listed songs", () => {
-    const __dirname = dirname(fileURLToPath(import.meta.url));
-    const REPO_ROOT = join(__dirname, "..", "..");
-    const recordsDir = join(REPO_ROOT, "datasets", "jam-actions-v0", "records");
-    if (!existsSync(recordsDir)) {
-      // Environment without the dataset checked out (e.g. a sparse CI
-      // clone) — skip rather than false-fail. The synthetic guard tests
-      // above already pin the load-bearing invariant without a filesystem
-      // dependency; this test is an additional real-data regression trap
-      // when the corpus IS present.
-      return;
+// ────────────────────────────────────────────────────────────────────────────
+// ─── FL2-001 — normalizeSongId bypass regression (Fable adversarial, HIGH) ──
+// ────────────────────────────────────────────────────────────────────────────
+//
+// Pre-fix, the guard compared raw `scope.song_id` with strict `===` against
+// EXCLUDED_SONG_IDS and read ONLY scope.song_id — never the record id. Four
+// bypasses followed, each demonstrated below and proven to THROW post-fix:
+//   (a) a case-variant song_id
+//   (b) a whitespace-padded song_id
+//   (c) a homoglyph (full-width Unicode) song_id that NFKC-folds to the
+//       deny-listed ASCII string
+//   (d) a record whose id is genuinely prefixed with a deny-listed song but
+//       whose scope.song_id was mutated to something clean — caught by the
+//       id/song_id CONSISTENCY check (check 1), not the deny-list check
+describe("FL2-001 — assertNoExcludedWorksInPublicSet bypass regression (normalizeSongId + id/song_id consistency)", () => {
+  it("(a) THROWS on a case-variant song_id ('Satie-Gymnopedie-No1') consistent with its record id", () => {
+    const r = makeRecord(
+      "Satie-Gymnopedie-No1:m003-006:piano:mcp-session:v1",
+      "public",
+      "Satie-Gymnopedie-No1",
+      "standalone",
+    );
+    let caught: Error | undefined;
+    try {
+      assertNoExcludedWorksInPublicSet([r]);
+    } catch (err) {
+      caught = err as Error;
     }
+    expect(caught).toBeDefined();
+    expect(caught!.message).toContain("EXCLUSION REGRESSION");
+    // Caught by the deny-list check (2/3), not the id/song_id consistency
+    // check (1) — the two fields agree, only the casing bypasses a naive ===.
+    expect(caught!.message).not.toContain("CONSISTENCY check fired");
+  });
+
+  it("(b) THROWS on a whitespace-padded song_id ('  satie-gymnopedie-no1  ') consistent with its record id", () => {
+    const r = makeRecord(
+      "satie-gymnopedie-no1:m007-010:piano:mcp-session:v1",
+      "public",
+      "  satie-gymnopedie-no1  ",
+      "standalone",
+    );
+    let caught: Error | undefined;
+    try {
+      assertNoExcludedWorksInPublicSet([r]);
+    } catch (err) {
+      caught = err as Error;
+    }
+    expect(caught).toBeDefined();
+    expect(caught!.message).toContain("EXCLUSION REGRESSION");
+    expect(caught!.message).not.toContain("CONSISTENCY check fired");
+  });
+
+  it("(c) THROWS on a full-width-Unicode homoglyph song_id that NFKC-folds to the deny-listed ASCII id", () => {
+    // U+FF33 U+FF41 U+FF54 U+FF49 U+FF45 = fullwidth "Satie" — a genuine
+    // compatibility-equivalent homoglyph (NOT a cross-script lookalike):
+    // NFKC decomposes each fullwidth Latin letter to its Basic Latin
+    // equivalent, so normalizeSongId() reads it as "satie-gymnopedie-no1".
+    const homoglyphSongId = "Ｓａｔｉｅ-gymnopedie-no1";
+    // Sanity: prove this is a genuine bypass premise against a naive `===`
+    // compare — it is NOT byte-equal to the deny-listed ASCII string.
+    expect(homoglyphSongId === "satie-gymnopedie-no1").toBe(false);
+    expect(homoglyphSongId.normalize("NFKC").toLowerCase()).toBe("satie-gymnopedie-no1");
+
+    const r = makeRecord(
+      `${homoglyphSongId}:m011-014:piano:mcp-session:v1`,
+      "public",
+      homoglyphSongId,
+      "standalone",
+    );
+    expect(() => assertNoExcludedWorksInPublicSet([r])).toThrow(/EXCLUSION REGRESSION/);
+  });
+
+  it("(d) THROWS via the id/song_id CONSISTENCY check when a satie-gymnopedie-no1-prefixed record id carries a mutated, clean scope.song_id", () => {
+    // The id genuinely belongs to the deny-listed song (colon-prefix), but
+    // scope.song_id was mutated to something that, read alone, looks clean —
+    // exactly what a corpus-edit bug or bad merge could produce. The old
+    // guard read ONLY scope.song_id and would have let this straight
+    // through; the id<->song_id consistency check (check 1) must fire first
+    // and refuse to guess which field is lying.
+    const r = makeRecord(
+      "satie-gymnopedie-no1:m015-018:piano:mcp-session:v1",
+      "public",
+      "totally-clean-song-name",
+      "standalone",
+    );
+    let caught: Error | undefined;
+    try {
+      assertNoExcludedWorksInPublicSet([r]);
+    } catch (err) {
+      caught = err as Error;
+    }
+    expect(caught).toBeDefined();
+    expect(caught!.message).toContain("EXCLUSION REGRESSION");
+    expect(caught!.message).toContain("CONSISTENCY");
+    expect(caught!.message).toContain("satie-gymnopedie-no1:m015-018:piano:mcp-session:v1");
+  });
+
+  it("a normal public record with a consistent id/song_id and no deny-list membership still PASSES", () => {
+    const r = makeRecord(
+      "mozart-turkish-march:m001-004:piano:mcp-session:v1",
+      "public",
+      "mozart-turkish-march",
+      "standalone",
+    );
+    expect(() => assertNoExcludedWorksInPublicSet([r])).not.toThrow();
+  });
+});
+
+describe("D-B1-002 — real corpus regression: satie/debussy never survive the public packaging pipeline", () => {
+  // FL3-001 hygiene: this test previously did a silent `return` when the
+  // corpus dir was absent, which renders as a plain PASS in the run summary
+  // on a sparse checkout — indistinguishable from an actually-exercised
+  // pass. it.skipIf reports an absent corpus as a visibly SKIPPED test
+  // instead, so a sparse-checkout run can never be mistaken for a green
+  // real-corpus regression check.
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+  const REPO_ROOT = join(__dirname, "..", "..");
+  const recordsDir = join(REPO_ROOT, "datasets", "jam-actions-v0", "records");
+  const corpusAbsent = !existsSync(recordsDir);
+
+  it.skipIf(corpusAbsent)(
+    "selectPublicRecords + assertNoExcludedWorksInPublicSet on the real datasets/jam-actions-v0/records corpus excludes both deny-listed songs",
+    () => {
     const files = readdirSync(recordsDir).filter((f) => f.endsWith(".json"));
     expect(files.length).toBeGreaterThan(0);
     const allRecords: SourceRecord[] = files.map(

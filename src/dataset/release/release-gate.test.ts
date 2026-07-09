@@ -1087,3 +1087,98 @@ describe("D-B1-001 — axis 5 fail-closed on axis5_tool_called_count === 0", () 
     expect(result.summary).toContain("FAIL");
   });
 });
+
+// ────────────────────────────────────────────────────────────────────────────
+// ─── FL2-003 — axis 5 fails closed on non-finite/negative tool-called counts ─
+// ────────────────────────────────────────────────────────────────────────────
+//
+// The D-B1-001 fix above only special-cased `axis5_tool_called_count === 0`.
+// NaN, negative numbers, and Infinity are just as undefined a denominator —
+// reachable via an unvalidated JSON.parse baseline where a missing
+// `tool_called` field sums to NaN in scripts/check-release-gate.ts — but
+// `NaN === 0`, `-1 === 0`, and `Infinity === 0` are all false, so the old
+// `=== 0` check let them fall through to `nearlyAtMost(misinterp_rate,
+// ceiling)` and vacuously PASS. The fix generalizes the guard to
+// `!(Number.isFinite(count) && count > 0)`.
+describe("FL2-003 — axis 5 fails closed on NaN / negative / Infinity axis5_tool_called_count", () => {
+  it("FAILS when axis5_tool_called_count is NaN, even though misinterp_rate=0 would vacuously PASS under the old `=== 0` check", () => {
+    const input: ReleaseGateInput = {
+      ...passingFixture(),
+      axis5_tool_called_count: NaN,
+      misinterp_rate: 0,
+    };
+    // Sanity check the mutant premise: NaN !== 0, so the OLD `count === 0`
+    // guard would NOT have fired here — this is exactly the gap it missed.
+    expect(input.axis5_tool_called_count === 0).toBe(false);
+    expect(input.misinterp_rate <= DEFAULT_THRESHOLDS.axis5_misinterp_ceiling).toBe(true);
+
+    const result = evaluateReleaseGate(input);
+    const axis5 = result.axes[4];
+    expect(axis5.passed).toBe(false);
+    expect(axis5.note.toLowerCase()).toContain("not a positive finite count");
+    expect(result.blocking_failures).toContain(5);
+    expect(result.passed).toBe(false);
+  });
+
+  it("FAILS when axis5_tool_called_count is negative (-1), even though misinterp_rate clears the ceiling", () => {
+    const input: ReleaseGateInput = {
+      ...passingFixture(),
+      axis5_tool_called_count: -1,
+      misinterp_rate: 0.05,
+    };
+    expect(input.axis5_tool_called_count === 0).toBe(false);
+    const result = evaluateReleaseGate(input);
+    const axis5 = result.axes[4];
+    expect(axis5.passed).toBe(false);
+    expect(axis5.note.toLowerCase()).toContain("not a positive finite count");
+    expect(result.blocking_failures).toContain(5);
+    expect(result.passed).toBe(false);
+  });
+
+  it("FAILS when axis5_tool_called_count is Infinity, even though Infinity > 0 is technically true", () => {
+    const input: ReleaseGateInput = {
+      ...passingFixture(),
+      axis5_tool_called_count: Infinity,
+      misinterp_rate: 0.05,
+    };
+    // Sanity: a naive ">0" guard (without the Number.isFinite clause) would
+    // NOT have caught this either.
+    expect(input.axis5_tool_called_count > 0).toBe(true);
+    const result = evaluateReleaseGate(input);
+    const axis5 = result.axes[4];
+    expect(axis5.passed).toBe(false);
+    expect(axis5.note.toLowerCase()).toContain("not a positive finite count");
+    expect(result.blocking_failures).toContain(5);
+    expect(result.passed).toBe(false);
+  });
+
+  it("still FAILS for the plain count=0 case (regression guard against re-narrowing the fix back to === 0 only)", () => {
+    const input: ReleaseGateInput = {
+      ...passingFixture(),
+      axis5_tool_called_count: 0,
+      misinterp_rate: 0,
+    };
+    const result = evaluateReleaseGate(input);
+    expect(result.axes[4].passed).toBe(false);
+    expect(result.blocking_failures).toContain(5);
+  });
+
+  it("still PASSES (back-compat) when axis5_tool_called_count is absent entirely", () => {
+    const input = passingFixture();
+    expect(input.axis5_tool_called_count).toBeUndefined();
+    const result = evaluateReleaseGate(input);
+    expect(result.axes[4].passed).toBe(true);
+    expect(result.blocking_failures).not.toContain(5);
+  });
+
+  it("still PASSES when axis5_tool_called_count is a normal positive finite number and misinterp_rate clears the ceiling", () => {
+    const input: ReleaseGateInput = {
+      ...passingFixture(),
+      axis5_tool_called_count: 61,
+      misinterp_rate: 0.15,
+    };
+    const result = evaluateReleaseGate(input);
+    expect(result.axes[4].passed).toBe(true);
+    expect(result.blocking_failures).not.toContain(5);
+  });
+});
