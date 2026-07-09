@@ -146,6 +146,58 @@ describe("renderPianoRoll — chord tokens", () => {
   });
 });
 
+describe("renderPianoRoll — windowed sub-song (non-1-based measure numbers)", () => {
+  it("renders a measures-5-to-8 windowed song using the DEFAULT window (no explicit startMeasure/endMeasure)", () => {
+    // Mirrors a windowSong(song, 5, 8) product (practice-loop.ts): 4 measure
+    // objects numbered 5-8, whose .measures.length (4) is unrelated to those
+    // numbers. Before the fix, the default window filtered for numbers
+    // 1..song.measures.length (1..4), matching nothing here.
+    const song = makeSong({
+      measures: [
+        { number: 5, rightHand: "C4:q", leftHand: "" },
+        { number: 6, rightHand: "D4:q", leftHand: "" },
+        { number: 7, rightHand: "E4:q", leftHand: "" },
+        { number: 8, rightHand: "F4:q", leftHand: "" },
+      ],
+    });
+    const svg = renderPianoRoll(song);
+    expect(svg).not.toContain("No measures in range");
+    const notes = plottedNotes(svg);
+    expect(notes.map((n) => n.title)).toEqual([
+      "RH: C4 (m.5)",
+      "RH: D4 (m.6)",
+      "RH: E4 (m.7)",
+      "RH: F4 (m.8)",
+    ]);
+  });
+
+  it("an explicit startMeasure/endMeasure still wins over the derived default", () => {
+    const song = makeSong({
+      measures: [
+        { number: 5, rightHand: "C4:q", leftHand: "" },
+        { number: 6, rightHand: "D4:q", leftHand: "" },
+        { number: 7, rightHand: "E4:q", leftHand: "" },
+        { number: 8, rightHand: "F4:q", leftHand: "" },
+      ],
+    });
+    const svg = renderPianoRoll(song, { startMeasure: 6, endMeasure: 7 });
+    const notes = plottedNotes(svg);
+    expect(notes.map((n) => n.title)).toEqual(["RH: D4 (m.6)", "RH: E4 (m.7)"]);
+  });
+
+  it("a normal (1-based, contiguous) song's default window is unaffected (regression guard)", () => {
+    const song = makeSong({
+      measures: [
+        { number: 1, rightHand: "C4:q", leftHand: "" },
+        { number: 2, rightHand: "D4:q", leftHand: "" },
+      ],
+    });
+    const svg = renderPianoRoll(song);
+    const notes = plottedNotes(svg);
+    expect(notes.map((n) => n.title)).toEqual(["RH: C4 (m.1)", "RH: D4 (m.2)"]);
+  });
+});
+
 // ─── Library Integration ────────────────────────────────────────────────────
 //
 // Library songs are ingested from real MIDI, where nearly every song contains

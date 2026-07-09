@@ -295,11 +295,42 @@ function legendPill(x: number, y: number, color: string, label: string): string 
 
 // ─── Options + Layout (shared by renderPianoRoll and renderScoredPianoRoll) ─
 
-/** Apply PianoRollOptions defaults — identical for both rendering modes. */
+/**
+ * A song's own actual measure-number bounds — [min(m.number), max(m.number)].
+ * For a normal song these equal [1, song.measures.length], but a WINDOWED
+ * sub-song (see practice-loop.ts's `windowSong` / score_last_take's range
+ * windowing) only contains a SLICE of measure objects (e.g. numbers 5-8)
+ * whose `.length` (4) has nothing to do with those numbers. Defaulting/
+ * clamping the render window against `song.measures.length` instead of the
+ * song's real measure numbers made a windowed song's default render (no
+ * explicit startMeasure/endMeasure) filter for numbers 1..length — which,
+ * for a measures-5-to-8 window, matches nothing and silently falls back to
+ * the "No measures in range" placeholder. Falls back to [1, 1] for an empty
+ * song purely so this stays a total function — buildRollLayout's own
+ * `measures.length === 0` check is what actually handles that case.
+ */
+function songMeasureNumberBounds(song: SongEntry): { min: number; max: number } {
+  if (song.measures.length === 0) return { min: 1, max: 1 };
+  let min = Infinity;
+  let max = -Infinity;
+  for (const m of song.measures) {
+    if (m.number < min) min = m.number;
+    if (m.number > max) max = m.number;
+  }
+  return { min, max };
+}
+
+/**
+ * Apply PianoRollOptions defaults — identical for both rendering modes.
+ * startMeasure/endMeasure default to the song's own actual measure-number
+ * bounds (see songMeasureNumberBounds), not an assumed 1..length — an
+ * explicit option always wins over either.
+ */
 function resolveOptions(song: SongEntry, options?: PianoRollOptions): ResolvedPianoRollOptions {
+  const bounds = songMeasureNumberBounds(song);
   return {
-    startMeasure: options?.startMeasure ?? 1,
-    endMeasure: options?.endMeasure ?? song.measures.length,
+    startMeasure: options?.startMeasure ?? bounds.min,
+    endMeasure: options?.endMeasure ?? bounds.max,
     pixelsPerBeat: options?.pixelsPerBeat ?? 60,
     pitchRowHeight: options?.pitchRowHeight ?? 10,
     showMetronome: options?.showMetronome ?? true,
@@ -362,9 +393,12 @@ function buildRollLayout(
   const opts = resolveOptions(song, options);
   const extraPitches = overrides.extraPitches ?? [];
 
-  // Clamp measure range
-  const start = Math.max(1, opts.startMeasure);
-  const end = Math.min(song.measures.length, opts.endMeasure);
+  // Clamp measure range to the song's own actual measure-number bounds —
+  // NOT [1, song.measures.length], which undershoots for a windowed
+  // sub-song (see songMeasureNumberBounds's doc).
+  const bounds = songMeasureNumberBounds(song);
+  const start = Math.max(bounds.min, opts.startMeasure);
+  const end = Math.min(bounds.max, opts.endMeasure);
   const measures = song.measures.filter(m => m.number >= start && m.number <= end);
 
   if (measures.length === 0) {
@@ -1073,10 +1107,13 @@ export function renderScoredPianoRoll(
   // until this fix, its pitch still stretched minMidi/maxMidi regardless,
   // widening the grid for a note nobody can see on it. This duplicates
   // buildRollLayout's own start/end clamp (rather than changing its
-  // signature) since extraPitches has to be ready BEFORE calling it.
+  // signature) since extraPitches has to be ready BEFORE calling it — same
+  // songMeasureNumberBounds fix as that clamp (not [1, song.measures.length],
+  // which undershoots for a windowed sub-song).
   const resolvedForWindow = resolveOptions(song, options);
-  const windowStart = Math.max(1, resolvedForWindow.startMeasure);
-  const windowEnd = Math.min(song.measures.length, resolvedForWindow.endMeasure);
+  const windowBounds = songMeasureNumberBounds(song);
+  const windowStart = Math.max(windowBounds.min, resolvedForWindow.startMeasure);
+  const windowEnd = Math.min(windowBounds.max, resolvedForWindow.endMeasure);
   const inWindowExtras = result.details.extras.filter((e) => {
     const { measure } = secondsToMeasureBeat(measureStartTimes, e.timeSeconds, effectiveScoreBpm);
     return measure >= windowStart && measure <= windowEnd;

@@ -52,9 +52,11 @@ function beatsTotalDurationSec(beats: Beat[]): number {
 }
 
 /**
- * A measure's nominal duration (seconds) — the longer of its two hands'
- * total beat duration. Uses Math.max rather than assuming both hands sum to
- * the same total: well-formed measures should match, but this stays correct
+ * A measure's duration in EFFECTIVE/played-tempo seconds (beat durations
+ * were parsed at effectiveTempo() — convert via toNominalSec() before
+ * adding to a nominal-time cursor) — the longer of its two hands' total
+ * beat duration. Uses Math.max rather than assuming both hands sum to the
+ * same total: well-formed measures should match, but this stays correct
  * (and matches whichever hand is actually the long pole) if they don't.
  */
 function measureDurationSec(pm: PlayableMeasure): number {
@@ -332,10 +334,28 @@ export class SessionController {
           const [start, end] = this.session.loopRange ?? [1, this.totalMeasures];
           const startIdx = start - 1; // convert to 0-based
           const endIdx = end - 1;
+          // A resume-from-pause picks up at the interrupted measure — the
+          // same "play from the current position" contract "full" mode gets
+          // from playRange(currentMeasure, …) — NOT at the top of the loop,
+          // which would replay (and, when recording, re-record) measures
+          // that already completed before the pause. Fresh starts — and a
+          // paused position that goTo() moved outside the range — begin at
+          // the loop start.
+          const canResume =
+            !isFreshStart &&
+            this.session.currentMeasure >= startIdx &&
+            this.session.currentMeasure <= endIdx;
+          let iterStartIdx = canResume ? this.session.currentMeasure : startIdx;
           // Loop forever until stopped
           while (!signal.aborted) {
-            await this.playRange(startIdx, endIdx, signal);
+            await this.playRange(iterStartIdx, endIdx, signal);
+            // An aborted iteration must leave currentMeasure on the
+            // interrupted measure so the next resume can find it — only a
+            // COMPLETED iteration rewinds the position to the loop start.
+            // (Bailing here also keeps hands off stop()'s currentMeasure=0.)
+            if (signal.aborted) break;
             this.session.currentMeasure = startIdx;
+            iterStartIdx = startIdx;
           }
           break;
         }
@@ -600,7 +620,10 @@ export class SessionController {
         return;
       }
 
-      this._recordCursorSec = measureStartSec + measureDurationSec(pm);
+      // measureDurationSec() is at effective/played tempo; _recordCursorSec
+      // is a NOMINAL-time cursor — convert, same as playHandsSeparate's
+      // advances and playBeats' per-beat cursor (see toNominalSec).
+      this._recordCursorSec = measureStartSec + this.toNominalSec(measureDurationSec(pm));
       this.session.measuresPlayed++;
 
       // ── Progress notification ──

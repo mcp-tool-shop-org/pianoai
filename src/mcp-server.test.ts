@@ -238,6 +238,78 @@ describe("mcp-server.ts — MCP protocol-level tool tests", () => {
   );
 
   it(
+    "registers practice_loop, practice_status, score_last_take, view_scored_piano_roll, and play_song's schema gains metronome/countIn/record",
+    async () => {
+      const toolList = await client.listTools();
+      const names = toolList.tools.map((t) => t.name);
+      expect(names).toContain("practice_loop");
+      expect(names).toContain("practice_status");
+      expect(names).toContain("score_last_take");
+      expect(names).toContain("view_scored_piano_roll");
+
+      const playSong = toolList.tools.find((t) => t.name === "play_song");
+      expect(playSong).toBeDefined();
+      const props = (playSong!.inputSchema as { properties?: Record<string, unknown> }).properties ?? {};
+      expect(props).toHaveProperty("metronome");
+      expect(props).toHaveProperty("countIn");
+      expect(props).toHaveProperty("record");
+    },
+    15000,
+  );
+
+  it(
+    "practice_loop rejects an unknown song id with a structured isError response",
+    async () => {
+      const result = (await client.callTool({
+        name: "practice_loop",
+        arguments: { id: "not-a-real-song-xyz", startMeasure: 1, endMeasure: 2 },
+      })) as ToolResult;
+      expect(result.isError).toBe(true);
+      expect(extractText(result).toLowerCase()).toMatch(/no song called/);
+    },
+    15000,
+  );
+
+  it(
+    "practice_loop rejects an endMeasure beyond the song's length with a structured isError response (validated before any audio connect)",
+    async () => {
+      const result = (await client.callTool({
+        name: "practice_loop",
+        arguments: { id: "fallin", startMeasure: 1, endMeasure: 999999 },
+      })) as ToolResult;
+      expect(result.isError).toBe(true);
+      expect(extractText(result).toLowerCase()).toMatch(/exceeds/);
+    },
+    15000,
+  );
+
+  it(
+    "practice_loop rejects endMeasure < startMeasure with a structured isError response",
+    async () => {
+      const result = (await client.callTool({
+        name: "practice_loop",
+        arguments: { id: "fallin", startMeasure: 5, endMeasure: 2 },
+      })) as ToolResult;
+      expect(result.isError).toBe(true);
+      expect(extractText(result).toLowerCase()).toMatch(/startmeasure/);
+    },
+    15000,
+  );
+
+  it(
+    "practice_loop rejects a speedTargetPct below speedStartPct with a structured isError response",
+    async () => {
+      const result = (await client.callTool({
+        name: "practice_loop",
+        arguments: { id: "fallin", startMeasure: 1, endMeasure: 2, speedStartPct: 90, speedTargetPct: 60 },
+      })) as ToolResult;
+      expect(result.isError).toBe(true);
+      expect(extractText(result).toLowerCase()).toMatch(/speedtargetpct/);
+    },
+    15000,
+  );
+
+  it(
     "add_section persists to disk: re-reading the song file from the (isolated) user songs dir shows the new section (pins F-5aec2e16)",
     async () => {
       const result = (await client.callTool({
@@ -964,6 +1036,199 @@ describe("mcp-server.ts — fs-write errors return structured JamError results (
         chmodSync(libConfigPath, 0o644);
         writeFileSync(libConfigPath, originalBytes);
         if (iso) await iso.close();
+      }
+    },
+    25000,
+  );
+});
+
+// ─── Practice loop + scoring tools (Wave S3) ────────────────────────────────
+//
+// practice_loop/practice_status/score_last_take/view_scored_piano_roll are
+// new tools; play_song gained metronome/countIn/record (covered by the
+// registration/schema test above, in the first describe block). Registration
+// and input-validation paths are audio-free and fast (also above, reusing
+// the shared client). The tests below need PRISTINE server-side state
+// (lastRecording/lastScoredTake/activePracticeLoop start unset) or touch a
+// real audio connector, so — matching this file's own established pattern —
+// each gets its own spawnIsolatedServer() instance rather than reusing the
+// shared client. There is no DI seam for a mock connector at the protocol
+// level (see this file's header comment) — the mock-connector happy path
+// for the underlying PracticeLoop/scoring logic itself lives in
+// practice-loop.test.ts, which needs no real audio at all. The real-audio
+// test here follows the same "confirmed to connect in this sandbox, but
+// tolerate a headless/no-device CI runner" hedge the play_song tests above
+// already use.
+describe("mcp-server.ts — practice loop + scoring tools (Wave S3)", () => {
+  it(
+    "practice_status, score_last_take, and view_scored_piano_roll report their empty states on a fresh server",
+    async () => {
+      const iso = await spawnIsolatedServer();
+      try {
+        const status = (await iso.client.callTool({ name: "practice_status", arguments: {} })) as ToolResult;
+        expect(status.isError).not.toBe(true);
+        expect(extractText(status).toLowerCase()).toMatch(/no practice loop/);
+
+        const scored = (await iso.client.callTool({ name: "score_last_take", arguments: {} })) as ToolResult;
+        expect(scored.isError).toBe(true);
+        expect(extractText(scored).toLowerCase()).toMatch(/no recorded take/);
+
+        const roll = (await iso.client.callTool({ name: "view_scored_piano_roll", arguments: {} })) as ToolResult;
+        expect(roll.isError).toBe(true);
+        expect(extractText(roll).toLowerCase()).toMatch(/no scored take/);
+      } finally {
+        await iso.close();
+      }
+    },
+    20000,
+  );
+
+  it(
+    "practice_loop starts successfully and returns the first pass's micro-goal + a config echo (real audio — best-effort, mirrors this file's play_song hedge)",
+    async () => {
+      const iso = await spawnIsolatedServer();
+      try {
+        const result = (await iso.client.callTool({
+          name: "practice_loop",
+          arguments: { id: "fallin", startMeasure: 1, endMeasure: 1, speedStartPct: 80, speedTargetPct: 80 },
+        })) as ToolResult;
+        const text = extractText(result);
+
+        if (result.isError) {
+          // No audio device on this runner — the same degrade path
+          // play_song's own tests already tolerate (see this file's header
+          // comment). The validation-path tests in the first describe block
+          // already prove the input-checking logic independent of audio.
+          expect(text.toLowerCase()).toMatch(/couldn't start|engine/);
+        } else {
+          expect(text).toContain("Practice loop started");
+          expect(text).toContain("m. 1 at 80%"); // single-measure micro-goal (formatMicroGoal)
+          expect(text).toContain("measures 1–1");
+          expect(text).toContain("80% → 80%");
+
+          // practice_status should now see it as running (or already
+          // completed, if the pass finished fast) rather than "no loop yet".
+          const status = (await iso.client.callTool({ name: "practice_status", arguments: {} })) as ToolResult;
+          expect(extractText(status).toLowerCase()).not.toMatch(/no practice loop has run yet/);
+        }
+
+        // Best-effort cleanup in case audio did start (local dev with a device).
+        await iso.client.callTool({ name: "stop_playback", arguments: {} }).catch(() => {});
+      } finally {
+        await iso.close();
+      }
+    },
+    25000,
+  );
+
+  it(
+    "score_last_take refuses a loop-mode take with a structured message instead of mis-scoring it (real audio — best-effort)",
+    async () => {
+      const iso = await spawnIsolatedServer();
+      try {
+        const played = (await iso.client.callTool({
+          name: "play_song",
+          arguments: { id: "fallin", mode: "loop", record: true },
+        })) as ToolResult;
+
+        if (played.isError) {
+          // No audio device on this runner — same hedge as this file's other
+          // audio-touching tests.
+          expect(extractText(played).toLowerCase()).toMatch(/couldn't start|engine/);
+          return;
+        }
+
+        // stop_playback captures whatever was recorded (mcp-server.ts's
+        // stopActive -> captureLastRecording) regardless of how far the loop
+        // actually got — even a stop during count-in still tags mode:"loop"
+        // on lastRecording, since that comes from the session's own config,
+        // not from how much actually played.
+        await iso.client.callTool({ name: "stop_playback", arguments: {} });
+
+        const scored = (await iso.client.callTool({ name: "score_last_take", arguments: {} })) as ToolResult;
+        expect(scored.isError).toBe(true);
+        const text = extractText(scored);
+        expect(text.toLowerCase()).toMatch(/loop-mode take/);
+        expect(text).toMatch(/use `?practice_loop`? for scored looping, or record with mode:'full'/);
+      } finally {
+        await iso.close();
+      }
+    },
+    25000,
+  );
+
+  it(
+    "pause_playback pauses and resumes a running practice loop instead of reporting nothing is playing (real audio — best-effort)",
+    async () => {
+      const iso = await spawnIsolatedServer();
+      try {
+        const started = (await iso.client.callTool({
+          name: "practice_loop",
+          arguments: { id: "fallin", startMeasure: 1, endMeasure: 1, speedStartPct: 80, speedTargetPct: 80 },
+        })) as ToolResult;
+
+        if (started.isError) {
+          expect(extractText(started).toLowerCase()).toMatch(/couldn't start|engine/);
+          return;
+        }
+
+        // Every pass has a metronome count-in (practice_loop always enables
+        // the metronome — see the practice_loop tool), so the session is
+        // reliably "playing" for at least the count-in's duration right
+        // after practice_loop returns — no artificial wait needed.
+        const status = (await iso.client.callTool({ name: "practice_status", arguments: {} })) as ToolResult;
+        const running = /\*\*Status:\*\* running/.test(extractText(status));
+
+        if (running) {
+          const paused = (await iso.client.callTool({ name: "pause_playback", arguments: {} })) as ToolResult;
+          const pausedText = extractText(paused).toLowerCase();
+          expect(pausedText).not.toMatch(/no song is currently playing/);
+          expect(pausedText).toMatch(/paused practice loop/);
+
+          const resumed = (await iso.client.callTool({ name: "pause_playback", arguments: { resume: true } })) as ToolResult;
+          const resumedText = extractText(resumed).toLowerCase();
+          expect(resumedText).not.toMatch(/nothing is paused/);
+          expect(resumedText).toMatch(/resumed practice loop/);
+        }
+        // else: the single short pass already finished before we could
+        // observe "running" — same best-effort hedge this file's other
+        // practice_loop test already accepts for a fast completion.
+
+        await iso.client.callTool({ name: "stop_playback", arguments: {} }).catch(() => {});
+      } finally {
+        await iso.close();
+      }
+    },
+    25000,
+  );
+
+  it(
+    "set_speed refuses with a structured message while a practice loop is running, instead of fighting its tempo ramp (real audio — best-effort)",
+    async () => {
+      const iso = await spawnIsolatedServer();
+      try {
+        const started = (await iso.client.callTool({
+          name: "practice_loop",
+          arguments: { id: "fallin", startMeasure: 1, endMeasure: 1, speedStartPct: 80, speedTargetPct: 80 },
+        })) as ToolResult;
+
+        if (started.isError) {
+          expect(extractText(started).toLowerCase()).toMatch(/couldn't start|engine/);
+          return;
+        }
+
+        const status = (await iso.client.callTool({ name: "practice_status", arguments: {} })) as ToolResult;
+        const running = /\*\*Status:\*\* running/.test(extractText(status));
+
+        if (running) {
+          const result = (await iso.client.callTool({ name: "set_speed", arguments: { speed: 2 } })) as ToolResult;
+          expect(result.isError).toBe(true);
+          expect(extractText(result)).toMatch(/practice loop controls its own tempo ramp/);
+        }
+
+        await iso.client.callTool({ name: "stop_playback", arguments: {} }).catch(() => {});
+      } finally {
+        await iso.close();
       }
     },
     25000,

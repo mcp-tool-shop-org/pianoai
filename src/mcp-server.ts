@@ -44,11 +44,11 @@ import {
 } from "./songs/index.js";
 import type { SongEntry, Difficulty, Genre } from "./songs/types.js";
 import { safeParseMeasure, measureToSingableText, type SingAlongMode } from "./note-parser.js";
-import { renderPianoRoll } from "./piano-roll.js";
+import { renderPianoRoll, renderScoredPianoRoll } from "./piano-roll.js";
 import { renderGuitarTab } from "./guitar-tab-roll.js";
 import {
   ENGINE_IDS, ENGINE_LABELS,
-  type EngineId, type ParseWarning, type PlaybackMode, type SyncMode, type VmpkConnector,
+  type EngineId, type ParseWarning, type PlaybackMode, type SyncMode, type VmpkConnector, type Recording,
 } from "./types.js";
 import { createAudioEngine } from "./audio-engine.js";
 import { createVocalEngine } from "./vocal-engine.js";
@@ -77,10 +77,19 @@ import { PlaybackController } from "./playback/controls.js";
 import { createSingOnMidiHook } from "./teaching/sing-on-midi.js";
 import { createMidiFeedbackHook } from "./teaching/midi-feedback.js";
 import { createLiveMidiFeedbackHook } from "./teaching/live-midi-feedback.js";
-import { scorePerformance } from "./score-performance.js";
+import { scorePerformance, type PerformanceResult } from "./score-performance.js";
 import { scoreAnnotation, formatAnnotationScore } from "./annotation-scorer.js";
 import { compareSongs, formatComparison } from "./song-compare.js";
 import type { VoiceDirective, AsideDirective } from "./types.js";
+import {
+  PracticeLoop,
+  resolvePracticeLoopConfig,
+  windowSong,
+  measureDiagnostics,
+  formatMeasureDiagnosticLines,
+  formatPassSummary,
+  rankWorstMeasures,
+} from "./practice-loop.js";
 import { JamError } from "./errors.js";
 import { readFile } from "node:fs/promises";
 import { existsSync, readFileSync, writeFileSync, realpathSync, mkdirSync } from "node:fs";
@@ -854,6 +863,66 @@ let activeController: PlaybackController | null = null;
 let activeConnector: VmpkConnector | null = null;
 let activeVoiceId: string = "grand";
 let activeNotes: Set<number> = new Set();
+let activePracticeLoop: PracticeLoop | null = null;
+
+/**
+ * Most recently recorded take (session-source only — see
+ * `SessionOptions.record` and the `Recording` type's session-source
+ * contract, types.ts). Captured whenever a recorded play_song session
+ * (library-song path) is superseded/stopped, or whenever a practice_loop
+ * pass finishes (via its onPassComplete hook — see the practice_loop tool
+ * below).
+ *
+ * `mode` is the PlaybackMode the take was recorded under — score_last_take
+ * refuses to score a "loop"-mode take outright (loop mode repeats its range
+ * indefinitely, concatenating every iteration onto ONE continuous
+ * timeline — there's no single-pass span to score it against).
+ *
+ * `range` windows the song to just that measure range before scoring
+ * (practice-loop.ts's windowSong), matching how a practice pass itself was
+ * scored — scoring a range-relative recording against the WHOLE song would
+ * misalign it. Set for a practice-loop pass, and (via captureLastRecording)
+ * for any play_song take whose session carried a loopRange.
+ */
+let lastRecording: { recording: Recording; songId: string; mode?: PlaybackMode; range?: [number, number] } | null = null;
+
+/**
+ * Most recently SCORED take — the song actually scored against (which may
+ * be a windowed sub-song for a practice-loop pass, see windowSong) plus its
+ * PerformanceResult. Populated by score_last_take and by every completed
+ * practice_loop pass. Feeds view_scored_piano_roll.
+ */
+let lastScoredTake: { song: SongEntry; result: PerformanceResult } | null = null;
+
+/**
+ * Capture `session`'s recording (if `record` was enabled for it) into
+ * `lastRecording`. Called wherever a recorded library-song session might
+ * become "the most recent take": play_song (before superseding it),
+ * stop_playback, and pause_playback's pause branch. A no-op when recording
+ * wasn't enabled — `getRecording()` is cheap and always safe to call
+ * either way, so this doesn't need its own extra state-tracking.
+ *
+ * `mode`/`range` default to the session's OWN `mode`/`loopRange` (both
+ * already on `session.session` — see types.ts's `Session`), which is
+ * correct for every play_song-originated session. `override` exists only
+ * for a caller whose range isn't visible on the session itself — e.g.
+ * pause_playback pausing a running practice_loop's current pass, where the
+ * drilled range lives on the PracticeLoop's own config, not on the
+ * per-pass SessionController (which is created without a loopRange —
+ * practice-loop.ts drives it measure-by-measure via goTo() instead).
+ */
+function captureLastRecording(
+  session: SessionController,
+  override?: { mode?: PlaybackMode; range?: [number, number] }
+): void {
+  if (!session.session.recordingEnabled) return;
+  lastRecording = {
+    recording: session.getRecording(),
+    songId: session.session.song.id,
+    mode: override?.mode ?? session.session.mode,
+    range: override?.range ?? (session.session.loopRange ?? undefined),
+  };
+}
 
 /**
  * Serializes any operation that replaces or clears the shared "active
@@ -879,10 +948,39 @@ function withStateLock<T>(fn: () => Promise<T>): Promise<T> {
 
 /** Stop whatever is currently playing or paused. */
 async function stopActive(): Promise<void> {
-  if (activeSession && (activeSession.state === "playing" || activeSession.state === "paused")) {
-    activeSession.stop();
+  if (activeSession) {
+    captureLastRecording(activeSession);
+    if (activeSession.state === "playing" || activeSession.state === "paused") {
+      activeSession.stop();
+    }
   }
   activeSession = null;
+
+  if (activePracticeLoop) {
+    // The loop's own onPassComplete hook (see the practice_loop tool) keeps
+    // lastRecording/lastScoredTake current after every COMPLETED pass — an
+    // interrupted in-flight pass is never scored/pushed (see
+    // practice-loop.ts's PracticeLoop.runLoop), so there's nothing extra to
+    // capture here beyond stopping it.
+    const loop = activePracticeLoop;
+    loop.stop();
+    // stop() only SIGNALS the loop to stop — it doesn't wait for runLoop()'s
+    // promise to actually settle (the in-flight pass's session.play() abort
+    // still has to unwind). Without waiting here, activeConnector.disconnect()
+    // below could run WHILE the loop is still mid-teardown on that SAME
+    // connector (practice_loop's own tool handler assigns its connector to
+    // activeConnector) — a real race, not just a cleanup nicety. Bounded
+    // (not an unconditional await) so a loop that somehow never settles
+    // can't hang stop_playback/a superseding play_song/practice_loop call
+    // forever; PracticeLoop.stop() (practice-loop.ts) already flushes any
+    // pending pause() wait for exactly this reason, so the race is normally
+    // won well under this bound.
+    await Promise.race([
+      loop.done(),
+      new Promise<void>((resolve) => setTimeout(resolve, 2000)),
+    ]);
+  }
+  activePracticeLoop = null;
 
   if (activeMidiEngine && (activeMidiEngine.state === "playing" || activeMidiEngine.state === "paused")) {
     activeMidiEngine.stop();
@@ -925,8 +1023,11 @@ registerTool(
     tractVoice: z.enum(TRACT_VOICE_IDS as unknown as [string, ...string[]]).optional().describe("Voice preset for tract engine: soprano (default), alto, tenor, bass. Only used when engine='tract'."),
     guitarVoice: z.enum(GUITAR_VOICE_IDS as unknown as [string, ...string[]]).optional().describe("Guitar voice preset: classical-nylon, steel-dreadnought (default), electric-clean, electric-jazz. Only used when engine='guitar'."),
     syncMode: z.enum(["before", "concurrent"]).optional().describe("Voice sync timing when singing: 'before' (hear voice first, then play together) or 'concurrent' (simultaneous). Default: 'before' when singing only, 'concurrent' with teaching."),
+    metronome: z.boolean().optional().describe("Enable the metronome click track (library songs only). Default: false."),
+    countIn: z.number().int().min(0).max(8).optional().describe("Count-in length in bars before playback starts (library songs only). Only takes effect when metronome is true. Default: 1 bar when metronome is true and this is omitted, 0 otherwise."),
+    record: z.boolean().optional().describe("Record played notes for later scoring (library songs only) — retrieve with score_last_take. Default: false."),
   },
-  async ({ id, speed, tempo, mode, startMeasure, endMeasure, withSinging, withTeaching, singMode, keyboard, engine, tractVoice, guitarVoice, syncMode: syncModeParam }) => withStateLock(async () => {
+  async ({ id, speed, tempo, mode, startMeasure, endMeasure, withSinging, withTeaching, singMode, keyboard, engine, tractVoice, guitarVoice, syncMode: syncModeParam, metronome, countIn, record }) => withStateLock(async () => {
     // Stop whatever is currently playing
     await stopActive();
 
@@ -1232,6 +1333,9 @@ registerTool(
       tempo,
       loopRange,
       teachingHook,
+      metronome,
+      countIn,
+      record,
     });
     activeSession = session;
 
@@ -1271,6 +1375,10 @@ registerTool(
         };
       })
       .finally(() => {
+        // Capture whatever was recorded regardless of how playback ended
+        // (finished, errored, or stopped/superseded elsewhere) — a no-op
+        // when `record` wasn't enabled (see captureLastRecording()).
+        captureLastRecording(session);
         connector.disconnect().catch((e) => console.error(`Disconnect error: ${e instanceof Error ? e.message : String(e)}`));
         if (activeSession === session) activeSession = null;
         if (activeConnector === connector) activeConnector = null;
@@ -1296,6 +1404,12 @@ registerTool(
       const loopMeasureCount = loopRange[1] - loopRange[0] + 1;
       lines.push(`- **Loop range:** measures ${loopRange[0]}–${loopRange[1]} (${loopMeasureCount} measures)`);
     }
+    if (metronome) {
+      lines.push(`- **Metronome:** on${session.session.countInBars ? ` (${session.session.countInBars}-bar count-in)` : ""}`);
+    }
+    if (record) {
+      lines.push(`- **Recording:** on — use \`score_last_take\` after playback to see how it went.`);
+    }
     if (warnings.length > 0) {
       lines.push(``, `⚠ ${warnings.length} note(s) had parse warnings and will be skipped.`);
     }
@@ -1313,7 +1427,13 @@ registerTool(
   "Stop the currently playing song and disconnect MIDI.",
   {},
   async () => withStateLock(async () => {
-    const wasPlaying = activeSession || activeMidiEngine || activeController;
+    // A FINISHED practice loop deliberately stays in activePracticeLoop
+    // (see the practice_loop tool below) so practice_status can still
+    // report its final state — only a still-RUNNING loop counts as "was
+    // playing" here, so calling stop_playback with nothing actually active
+    // doesn't silently clear that memory.
+    const practiceLoopRunning = activePracticeLoop?.getState().status === "running";
+    const wasPlaying = activeSession || activeMidiEngine || activeController || practiceLoopRunning;
     if (!wasPlaying) {
       return {
         content: [{ type: "text", text: "No song is currently playing." }],
@@ -1322,11 +1442,13 @@ registerTool(
 
     const info = activeSession
       ? `${activeSession.session.song.title} (${activeSession.session.measuresPlayed} measures played)`
-      : activeMidiEngine
-        ? `MIDI file (${activeMidiEngine.eventsPlayed}/${activeMidiEngine.totalEvents} events played)`
-        : activeController
-          ? `MIDI file (${activeController.eventsPlayed}/${activeController.totalEvents} events played)`
-          : "Unknown";
+      : practiceLoopRunning
+        ? `Practice loop on "${activePracticeLoop!.song.title}" (pass ${activePracticeLoop!.getState().currentPassNumber})`
+        : activeMidiEngine
+          ? `MIDI file (${activeMidiEngine.eventsPlayed}/${activeMidiEngine.totalEvents} events played)`
+          : activeController
+            ? `MIDI file (${activeController.eventsPlayed}/${activeController.totalEvents} events played)`
+            : "Unknown";
 
     await stopActive();
 
@@ -1334,6 +1456,145 @@ registerTool(
       content: [{ type: "text", text: `Stopped: ${info}` }],
     };
   })
+);
+
+// ─── Tool: practice_loop ────────────────────────────────────────────────────
+
+registerTool(
+  "practice_loop",
+  "Start a practice loop: drills a measure range at reduced tempo, ramping toward full speed one step at a time — but only after a CLEAN pass (accurate + complete), never on a fixed schedule. Metronome + a count-in are on by default, every pass is recorded and scored. Returns immediately with the first pass's micro-goal while it runs in the background — poll with practice_status, stop with stop_playback.",
+  {
+    id: z.string().describe("Song ID from the library (e.g. 'fur-elise')"),
+    startMeasure: z.number().int().min(1).describe("First measure of the drilled range (1-based)"),
+    endMeasure: z.number().int().min(1).describe("Last measure of the drilled range (1-based, inclusive)"),
+    speedStartPct: z.number().min(1).max(400).optional().describe("Starting speed, percent of the song's tempo. Default: 70"),
+    speedTargetPct: z.number().min(1).max(400).optional().describe("Target speed, percent of the song's tempo. Default: 100"),
+    rampStepPct: z.number().min(0.1).max(100).optional().describe("Speed increase applied after each CLEAN pass. Default: 5"),
+    maxPasses: z.number().int().min(1).optional().describe("Optional cap on total passes. Default: no cap — runs until a clean pass at speedTargetPct, or stop_playback."),
+  },
+  async ({ id, startMeasure, endMeasure, speedStartPct, speedTargetPct, rampStepPct, maxPasses }) => withStateLock(async () => {
+    await stopActive();
+
+    const song = getSong(id);
+    if (!song) {
+      return {
+        content: [{ type: "text", text: `No song called "${id}" in the library. Try list_songs to browse.` }],
+        isError: true,
+      };
+    }
+
+    let config;
+    try {
+      config = resolvePracticeLoopConfig(song, { startMeasure, endMeasure, speedStartPct, speedTargetPct, rampStepPct, maxPasses });
+    } catch (err) {
+      return {
+        content: [{ type: "text", text: err instanceof Error ? err.message : String(err) }],
+        isError: true,
+      };
+    }
+
+    const connector = createAudioEngine("grand");
+    activeVoiceId = "grand";
+    try {
+      await connector.connect();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      return {
+        content: [{ type: "text", text: `Couldn't start the piano engine: ${msg}` }],
+        isError: true,
+      };
+    }
+    activeConnector = connector;
+
+    const loop = new PracticeLoop(song, connector, config, {
+      // Feedback timing (finding 29): only AFTER a pass finishes — never mid-take.
+      onPassComplete: (pass, recording) => {
+        lastRecording = { recording, songId: song.id, range: [config.startMeasure, config.endMeasure] };
+        lastScoredTake = { song: windowSong(song, config.startMeasure, config.endMeasure), result: pass.result };
+      },
+    });
+    activePracticeLoop = loop;
+
+    loop.start();
+    loop
+      .done()
+      .then(() => {
+        console.error(`Practice loop finished: ${song.title} mm.${config.startMeasure}-${config.endMeasure} (${loop.getState().status})`);
+      })
+      .catch((err) => {
+        console.error(`Practice loop error [${song.id}]: ${err instanceof Error ? err.message : String(err)}`);
+      })
+      .finally(() => {
+        connector.disconnect().catch((e) => console.error(`Disconnect error: ${e instanceof Error ? e.message : String(e)}`));
+        // Deliberately NOT nulling activePracticeLoop here (unlike
+        // activeSession/activeController for play_song) — practice_status
+        // needs to report the just-finished loop's final state, not
+        // "nothing is running." A new play_song/practice_loop call (via
+        // stopActive()) is what actually supersedes/clears it.
+        if (activeConnector === connector) activeConnector = null;
+      });
+
+    const lines = [
+      `Practice loop started: **${song.title}**`,
+      ``,
+      loop.getState().microGoal,
+      ``,
+      `- **Range:** measures ${config.startMeasure}–${config.endMeasure}`,
+      `- **Speed:** ${config.speedStartPct}% → ${config.speedTargetPct}% (ramp +${config.rampStepPct}% per clean pass)`,
+      `- **Metronome:** on (count-in each pass)`,
+    ];
+    if (config.maxPasses !== undefined) {
+      lines.push(`- **Max passes:** ${config.maxPasses}`);
+    }
+    lines.push(``, `Use \`practice_status\` to check progress, \`stop_playback\` to stop. Runs in the background.`);
+
+    return { content: [{ type: "text", text: lines.join("\n") }] };
+  })
+);
+
+// ─── Tool: practice_status ──────────────────────────────────────────────────
+
+registerTool(
+  "practice_status",
+  "Check progress on the current (or most recently run) practice loop: pass number, speed, and the last pass's diagnostic. Task-focused wording only — notes/timing/measures, no grades, no praise, no points/streaks. Returns a message if no practice loop has run yet.",
+  {},
+  async () => {
+    if (!activePracticeLoop) {
+      return { content: [{ type: "text", text: "No practice loop has run yet. Use `practice_loop` to start one." }] };
+    }
+
+    const state = activePracticeLoop.getState();
+    const lines = [
+      `# Practice Status`,
+      ``,
+      `- **Song:** ${activePracticeLoop.song.title}`,
+      `- **Range:** measures ${state.config.startMeasure}–${state.config.endMeasure}`,
+      `- **Status:** ${state.status}`,
+      `- **Pass:** ${state.currentPassNumber} (speed ${state.currentSpeedPct}%)`,
+      `- **Goal:** ${state.microGoal}`,
+    ];
+
+    if (state.error) {
+      lines.push(``, `⚠ ${state.error}`);
+    }
+
+    const lastPass = state.passes[state.passes.length - 1];
+    if (lastPass) {
+      lines.push(
+        ``,
+        `### Last pass (pass ${lastPass.passNumber}, ${lastPass.speedPct}%)`,
+        `${lastPass.clean ? "Clean" : "Not clean"} — ${formatPassSummary(lastPass.result)}`,
+      );
+      const diagLines = formatMeasureDiagnosticLines(measureDiagnostics(lastPass.result));
+      if (diagLines.length > 0) {
+        lines.push(`Per-measure:`, ...diagLines.map((l) => `  ${l}`));
+      }
+    }
+
+    lines.push(``, `Use \`stop_playback\` to stop, \`score_last_take\` for the full assessment, \`view_scored_piano_roll\` to see it.`);
+
+    return { content: [{ type: "text", text: lines.join("\n") }] };
+  }
 );
 
 // ─── Tool: pause_playback ─────────────────────────────────────────────────
@@ -1383,6 +1644,14 @@ registerTool(
           };
         }
       }
+      // A running practice loop plays through its OWN per-pass session, not
+      // activeSession (see the practice_loop tool) — without this,
+      // pause_playback couldn't see it at all and always fell through to
+      // "Nothing is paused." even while a loop pass sat paused mid-measure.
+      if (activePracticeLoop?.getState().paused) {
+        activePracticeLoop.resume();
+        return { content: [{ type: "text", text: `Resumed practice loop (pass ${activePracticeLoop.getState().currentPassNumber}).` }] };
+      }
       return { content: [{ type: "text", text: "Nothing is paused." }] };
     }
 
@@ -1407,6 +1676,7 @@ registerTool(
       };
     }
     if (activeSession && activeSession.state === "playing") {
+      captureLastRecording(activeSession);
       activeSession.pause();
       return {
         content: [{
@@ -1414,6 +1684,28 @@ registerTool(
           text: `Paused (${activeSession.session.measuresPlayed} measures played).`,
         }],
       };
+    }
+    // Same "route to the practice loop's current session" fix as the resume
+    // branch above — a running loop's audio lives on
+    // activePracticeLoop.getCurrentSession(), not activeSession.
+    if (activePracticeLoop?.getState().status === "running") {
+      const loop = activePracticeLoop;
+      const currentSession = loop.getCurrentSession();
+      if (currentSession && currentSession.state === "playing") {
+        // The per-pass session carries no loopRange of its own (practice-loop.ts
+        // drives it measure-by-measure via goTo()) — pass the loop's drilled
+        // range explicitly so a score_last_take called while paused windows
+        // correctly, same as a normal completed pass (practice_loop's own
+        // onPassComplete hook).
+        captureLastRecording(currentSession, { range: [loop.config.startMeasure, loop.config.endMeasure] });
+        loop.pause();
+        return {
+          content: [{
+            type: "text",
+            text: `Paused practice loop (pass ${loop.getState().currentPassNumber}).`,
+          }],
+        };
+      }
     }
 
     return { content: [{ type: "text", text: "No song is currently playing." }] };
@@ -1429,6 +1721,21 @@ registerTool(
     speed: z.number().min(0.1).max(4).describe("New speed multiplier (0.1–4.0)"),
   },
   async ({ speed }) => {
+    // A running practice loop owns its own tempo ramp (speedStartPct ->
+    // speedTargetPct, +rampStepPct per clean pass — see practice_loop) —
+    // letting set_speed override it mid-loop would fight that ramp on the
+    // very next pass (a fresh SessionController per pass re-reads
+    // config.speedStartPct/currentSpeedPct, not whatever set_speed last
+    // poked into the now-superseded session). Refuse instead of silently
+    // losing the change.
+    if (activePracticeLoop?.getState().status === "running") {
+      const jamErr = new JamError({
+        code: "INPUT_INVALID_ARGS",
+        message: "A practice loop is running.",
+        hint: "the practice loop controls its own tempo ramp — stop_playback to take manual control",
+      });
+      return { content: [{ type: "text", text: jamErr.toUserString() }], isError: true };
+    }
     if (activeController) {
       const prev = activeController.speed;
       activeController.setSpeed(speed);
@@ -1807,6 +2114,47 @@ registerTool(
         data: Buffer.from(svg).toString("base64"),
         mimeType: "image/svg+xml",
       }],
+    };
+  }
+);
+
+// ─── Tool: view_scored_piano_roll ──────────────────────────────────────────
+
+registerTool(
+  "view_scored_piano_roll",
+  "Render the scored piano-roll overlay (per-note verdicts: correct/timing/missed, plus extra-note ghosts) for the most recently scored take. Run score_last_take (or a practice_loop pass) first. Writes the SVG to a temp file (for viewing outside the chat) and also returns it inline.",
+  {},
+  async () => {
+    if (!lastScoredTake) {
+      return {
+        content: [{ type: "text" as const, text: "No scored take yet. Run `score_last_take` first (after a recorded play_song session or a practice_loop pass)." }],
+        isError: true,
+      };
+    }
+
+    const { song, result } = lastScoredTake;
+    const svg = renderScoredPianoRoll(song, result);
+
+    const { tmpdir } = await import("node:os");
+    const { writeFileSync } = await import("node:fs");
+    const { join } = await import("node:path");
+    const tempPath = join(tmpdir(), `scored-piano-roll-${song.id}.svg`);
+    try {
+      writeFileSync(tempPath, svg, "utf8");
+    } catch (err) {
+      return fsErrorResult(err, `write scored piano roll for "${song.id}"`);
+    }
+
+    const worst = rankWorstMeasures(result, 3);
+    const focusLine = worst.length > 0
+      ? `Focus: ${worst.length === 1 ? `m. ${worst[0]}` : `mm. ${worst.join(", ")}`}`
+      : "Clean take — no measures flagged.";
+
+    return {
+      content: [
+        { type: "text" as const, text: `Scored piano roll written to: ${tempPath}\n${focusLine}` },
+        { type: "image" as const, data: Buffer.from(svg).toString("base64"), mimeType: "image/svg+xml" },
+      ],
     };
   }
 );
@@ -2241,6 +2589,13 @@ registerTool(
   "Get a real-time snapshot of the current playback state: measure, tempo, speed, keyboard voice, and more. Returns nothing if no song is playing.",
   {},
   async () => {
+    // A running practice loop has its own dedicated status tool (richer:
+    // pass number, ramp progress, per-measure diagnostic) — point there
+    // instead of reporting "no active playback" while one is actually running.
+    if (activePracticeLoop?.getState().status === "running") {
+      return { content: [{ type: "text", text: "A practice loop is running. Use `practice_status` for its progress." }] };
+    }
+
     // Library song session
     if (activeSession) {
       const s = activeSession.session;
@@ -2529,6 +2884,9 @@ registerTool(
         toleranceMs: tolerance_ms,
         bpm,
       });
+      // Feeds view_scored_piano_roll — "the last scored take" isn't only
+      // score_last_take's; an ad-hoc score_performance call counts too.
+      lastScoredTake = { song, result };
 
       const summary = [
         `# Performance Assessment: ${result.songTitle}`,
@@ -2553,6 +2911,80 @@ registerTool(
         isError: true,
       };
     }
+  }
+);
+
+// ─── Tool: score_last_take ──────────────────────────────────────────────────
+
+registerTool(
+  "score_last_take",
+  "Score the most recently recorded take — from play_song with record:true, or the latest practice_loop pass — against the song (or drilled measure range, for a practice pass). Returns metrics, a per-measure diagnostic, and the full feedback assessment. No MIDI file needed.",
+  {},
+  async () => {
+    if (!lastRecording) {
+      return {
+        content: [{ type: "text", text: "No recorded take yet. Use `play_song` with record:true, or `practice_loop`, then try again." }],
+        isError: true,
+      };
+    }
+
+    // "loop" mode repeats its measure range indefinitely until stopped,
+    // concatenating every iteration onto ONE continuous recording timeline
+    // (session.ts's play() — the recording clock resets only on a fresh
+    // start, never between loop iterations). There's no single-pass span to
+    // score that against: windowing to the loop's range would only line up
+    // with the FIRST iteration, and every later iteration's notes would
+    // misread as extra/duplicate. Refuse outright rather than mis-scoring.
+    if (lastRecording.mode === "loop") {
+      const jamErr = new JamError({
+        code: "INPUT_INVALID_ARGS",
+        message: "The last recording was a loop-mode take — loop mode repeats its range on one continuous timeline, so there's no single pass to score.",
+        hint: "loop-mode takes accumulate multiple passes — use practice_loop for scored looping, or record with mode:'full'",
+      });
+      return { content: [{ type: "text", text: jamErr.toUserString() }], isError: true };
+    }
+
+    const song = getSong(lastRecording.songId);
+    if (!song) {
+      return {
+        content: [{ type: "text", text: `The song for the last recording ("${lastRecording.songId}") is no longer in the library.` }],
+        isError: true,
+      };
+    }
+
+    // A practice-loop pass's recording is relative to the drilled range, not
+    // the whole song (see practice-loop.ts's windowSong doc) — score it
+    // against the SAME windowed sub-song the pass itself was scored
+    // against, or the misalignment would flood the result with false
+    // "missed" notes for measures that were never meant to be played.
+    const scoringSong = lastRecording.range
+      ? windowSong(song, lastRecording.range[0], lastRecording.range[1])
+      : song;
+    const result = scorePerformance(scoringSong, lastRecording.recording.events, {
+      bpm: lastRecording.recording.nominalBpm,
+    });
+    lastScoredTake = { song: scoringSong, result };
+
+    const diagnostics = measureDiagnostics(result);
+    const lines = [`# Scored Take: ${result.songTitle}`];
+    if (lastRecording.range) {
+      lines.push(`Range: measures ${lastRecording.range[0]}–${lastRecording.range[1]}`);
+    }
+    lines.push(
+      ``,
+      `**Overall Score:** ${result.metrics.overallScore}/100`,
+      `- Pitch accuracy: ${result.metrics.pitchAccuracy}%`,
+      `- Timing accuracy: ±${result.metrics.timingAccuracyMs}ms`,
+      `- Completeness: ${result.metrics.completeness}%`,
+      `- Notes: ${result.details.matched}/${result.details.totalExpected} matched, ${result.metrics.extraNoteCount} extra`,
+    );
+    if (diagnostics.length > 0) {
+      lines.push(``, `### Per-measure diagnostic`, ...formatMeasureDiagnosticLines(diagnostics));
+    }
+    lines.push(``, result.feedback);
+    lines.push(``, `Use \`view_scored_piano_roll\` to see it on the piano roll.`);
+
+    return { content: [{ type: "text", text: lines.join("\n") }] };
   }
 );
 

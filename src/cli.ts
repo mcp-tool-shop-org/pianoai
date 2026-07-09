@@ -49,11 +49,13 @@ import {
 import type { PianoRollColorMode } from "./piano-roll.js";
 import { renderGuitarTab } from "./guitar-tab-roll.js";
 import { GUITAR_TUNING_IDS } from "./guitar-voices.js";
+import { pathToFileURL } from "node:url";
+import { resolve as resolvePathArg } from "node:path";
 import { createSession } from "./session.js";
 import { parseMidiFile } from "./midi/parser.js";
 import { MidiPlaybackEngine } from "./playback/midi-engine.js";
 import { PlaybackController } from "./playback/controls.js";
-import { existsSync } from "node:fs";
+import { existsSync, realpathSync } from "node:fs";
 import {
   createConsoleTeachingHook,
   createSingAlongHook,
@@ -68,6 +70,13 @@ import { renderPianoRoll } from "./piano-roll.js";
 import { buildJournalEntry, appendJournalEntry } from "./journal.js";
 import type { SessionSnapshot } from "./journal.js";
 import { VERSION } from "./version.js";
+import {
+  PracticeLoop,
+  resolvePracticeLoopConfig,
+  formatPassSummary,
+  type ResolvedPracticeLoopConfig,
+  type PracticePassResult,
+} from "./practice-loop.js";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -184,6 +193,37 @@ function hasFlag(args: string[], flag: string): boolean {
   return args.includes(flag);
 }
 
+/** `play`'s session-recording flags: --metronome, --count-in <bars>, --record. */
+export interface PlaySessionFlags {
+  metronome: boolean;
+  countIn: number | undefined;
+  record: boolean;
+}
+
+/**
+ * Parse `play`'s --metronome/--count-in/--record flags. Pure — no I/O, no
+ * process.exit — so it's directly importable/testable (see cli.test.ts)
+ * without pulling in cmdPlay's audio-engine/session machinery. Throws a
+ * plain Error with a user-facing message on an invalid --count-in; cmdPlay
+ * converts that into this file's usual "print + exit(1)" pattern (see the
+ * header comment on the pre-flight-validation convention, above cmdList).
+ */
+export function parsePlaySessionFlags(args: string[]): PlaySessionFlags {
+  const metronome = hasFlag(args, "--metronome");
+  const record = hasFlag(args, "--record");
+
+  const countInStr = getFlag(args, "--count-in");
+  let countIn: number | undefined;
+  if (countInStr !== null) {
+    countIn = parseInt(countInStr, 10);
+    if (isNaN(countIn) || countIn < 0) {
+      throw new Error(`Invalid --count-in: "${countInStr}". Must be a non-negative integer (bars).`);
+    }
+  }
+
+  return { metronome, countIn, record };
+}
+
 // ─── Commands ───────────────────────────────────────────────────────────────
 //
 // Error-handling split (F-1a562e8f): the ~25 early-validation sites below
@@ -243,7 +283,7 @@ function cmdInfo(args: string[]): void {
 async function cmdPlay(args: string[]): Promise<void> {
   const target = args[0];
   if (!target) {
-    console.error("Usage: ai-jam-sessions play <song-id | file.mid> [--speed N] [--tempo N] [--mode MODE] [--midi] [--with-singing] [--with-teaching] [--sing-mode MODE] [--seek N]");
+    console.error("Usage: ai-jam-sessions play <song-id | file.mid> [--speed N] [--tempo N] [--mode MODE] [--midi] [--with-singing] [--with-teaching] [--sing-mode MODE] [--seek N] [--metronome] [--count-in N] [--record]");
     process.exit(1);
   }
 
@@ -261,6 +301,15 @@ async function cmdPlay(args: string[]): Promise<void> {
   const engineStr = getFlag(args, "--engine") ?? "piano";
   const tractVoiceStr = getFlag(args, "--tract-voice") ?? "soprano";
   const guitarVoiceStr = getFlag(args, "--guitar-voice") ?? "steel-dreadnought";
+
+  // Session-recording flags (library songs only — see parsePlaySessionFlags).
+  let sessionFlags: PlaySessionFlags;
+  try {
+    sessionFlags = parsePlaySessionFlags(args);
+  } catch (err) {
+    console.error(err instanceof Error ? err.message : String(err));
+    process.exit(1);
+  }
 
   // Validate engine
   const VALID_ENGINES = ["piano", "vocal", "tract", "synth", "piano+synth", "vocal+synth", "guitar", "guitar+synth"];
@@ -499,6 +548,9 @@ async function cmdPlay(args: string[]): Promise<void> {
         teachingHook,
         onProgress: printProgress,
         progressInterval: 0,
+        metronome: sessionFlags.metronome,
+        countIn: sessionFlags.countIn,
+        record: sessionFlags.record,
       });
 
       if (session.parseWarnings.length > 0) {
@@ -540,6 +592,9 @@ async function cmdPlay(args: string[]): Promise<void> {
       const durationSec = Math.round((Date.now() - playStart) / 1000);
       console.log(`\nFinished! ${session.session.measuresPlayed} measures played.`);
       console.log(session.summary());
+      if (sessionFlags.record) {
+        console.log(`Recorded: ${session.getRecording().events.length} note event(s).`);
+      }
 
       // Auto-save journal entry
       try {
@@ -744,6 +799,194 @@ async function cmdSing(args: string[]): Promise<void> {
     // categories weren't distinguished here (F-1a562e8f). The engine
     // modules already construct JamError with the right code; this is
     // what lets that classification actually reach the exit code.
+    const { handleError } = await import("./errors.js");
+    const debug = process.argv.includes("--debug") || process.argv.includes("-D");
+    process.exit(handleError(err, debug));
+  } finally {
+    await connector.disconnect();
+  }
+}
+
+// ─── Practice command ───────────────────────────────────────────────────────
+
+/** Parsed, still-raw arguments for the `practice` command (before song lookup / config resolution). */
+export interface PracticeCliArgs {
+  songId: string;
+  startMeasure: number;
+  endMeasure: number;
+  speedStartPct: number | undefined;
+  speedTargetPct: number | undefined;
+  rampStepPct: number | undefined;
+  maxPasses: number | undefined;
+}
+
+/**
+ * Parse `practice <song-id> --measures <start-end> [--start-speed N] [--target N] [--step N] [--max-passes N]`.
+ * Pure — no song lookup, no I/O, no process.exit — so it's directly
+ * importable/testable (see cli.test.ts) without pulling in cmdPractice's
+ * audio-engine/PracticeLoop machinery. Throws a plain Error with a
+ * user-facing message on bad input; cmdPractice converts that into this
+ * file's usual "print + exit(1)" pattern (see the header comment on the
+ * pre-flight-validation convention, above cmdList).
+ */
+export function parsePracticeArgs(args: string[]): PracticeCliArgs {
+  const songId = args[0];
+  if (!songId) {
+    throw new Error(
+      "Usage: ai-jam-sessions practice <song-id> --measures <start-end> [--start-speed N] [--target N] [--step N] [--max-passes N]"
+    );
+  }
+
+  const measuresStr = getFlag(args, "--measures");
+  if (!measuresStr) {
+    throw new Error("Missing required --measures <start-end> (e.g. --measures 5-8).");
+  }
+  const parts = measuresStr.split("-");
+  const startMeasure = parseInt(parts[0], 10);
+  const endMeasure = parts[1] !== undefined ? parseInt(parts[1], 10) : startMeasure;
+  if (isNaN(startMeasure) || isNaN(endMeasure)) {
+    throw new Error(`Invalid --measures range: "${measuresStr}". Use format like "5-8".`);
+  }
+
+  const parseOptNum = (flag: string): number | undefined => {
+    const v = getFlag(args, flag);
+    if (v === null) return undefined;
+    const n = parseFloat(v);
+    if (isNaN(n)) throw new Error(`Invalid ${flag}: "${v}" (expected a number).`);
+    return n;
+  };
+  const speedStartPct = parseOptNum("--start-speed");
+  const speedTargetPct = parseOptNum("--target");
+  const rampStepPct = parseOptNum("--step");
+
+  const maxPassesStr = getFlag(args, "--max-passes");
+  let maxPasses: number | undefined;
+  if (maxPassesStr !== null) {
+    maxPasses = parseInt(maxPassesStr, 10);
+    if (isNaN(maxPasses)) {
+      throw new Error(`Invalid --max-passes: "${maxPassesStr}" (expected an integer).`);
+    }
+  }
+
+  return { songId, startMeasure, endMeasure, speedStartPct, speedTargetPct, rampStepPct, maxPasses };
+}
+
+async function cmdPractice(args: string[]): Promise<void> {
+  let parsed: PracticeCliArgs;
+  try {
+    parsed = parsePracticeArgs(args);
+  } catch (err) {
+    console.error(err instanceof Error ? err.message : String(err));
+    process.exit(1);
+  }
+
+  const song = getSong(parsed.songId);
+  if (!song) {
+    console.error(songNotFoundError(parsed.songId));
+    process.exit(1);
+  }
+
+  // Pre-flight validation (before touching audio) — mirrors cmdPlay's own
+  // early speed/tempo checks, even though PracticeLoop re-validates too.
+  let config: ResolvedPracticeLoopConfig;
+  try {
+    config = resolvePracticeLoopConfig(song, {
+      startMeasure: parsed.startMeasure,
+      endMeasure: parsed.endMeasure,
+      speedStartPct: parsed.speedStartPct,
+      speedTargetPct: parsed.speedTargetPct,
+      rampStepPct: parsed.rampStepPct,
+      maxPasses: parsed.maxPasses,
+    });
+  } catch (err) {
+    console.error(err instanceof Error ? err.message : String(err));
+    process.exit(1);
+  }
+
+  const connector = createAudioEngine("grand");
+  console.log(`\nStarting piano engine...`);
+
+  try {
+    await connector.connect();
+    console.log(`Connected!`);
+
+    const loop = new PracticeLoop(song, connector, config, {
+      teachingHook: createConsoleTeachingHook(),
+      // Task-focused per-pass console summaries (finding 28/35) — notes/
+      // timing/measures only, no grades/praise/points.
+      onPassComplete: (pass: PracticePassResult) => {
+        const cleanLabel = pass.clean ? "clean" : "not clean";
+        const nextSpeed = Math.min(config.speedTargetPct, pass.speedPct + config.rampStepPct);
+        const advanceNote = pass.advanced ? ` → advancing to ${nextSpeed}%` : "";
+        console.log(`  Pass ${pass.passNumber} @ ${pass.speedPct}%: ${cleanLabel} — ${formatPassSummary(pass.result)}${advanceNote}`);
+      },
+    });
+
+    console.log(`\nPracticing: ${song.title} — measures ${config.startMeasure}–${config.endMeasure}`);
+    console.log(`${loop.getState().microGoal}\n`);
+
+    // SIGINT handler for graceful stop — mirrors cmdPlay's own handler.
+    const sigintHandler = () => {
+      console.log("\n\nStopping practice loop...");
+      loop.stop();
+    };
+    process.on("SIGINT", sigintHandler);
+
+    loop.start();
+    await loop.done();
+    process.removeListener("SIGINT", sigintHandler);
+
+    const finalState = loop.getState();
+    console.log(`\nFinished (${finalState.status}). ${finalState.passes.length} pass(es) played, reached ${finalState.currentSpeedPct}%.`);
+    if (finalState.error) {
+      console.error(`Practice loop error: ${finalState.error}`);
+    }
+
+    // Auto-save journal entry — mirrors cmdPlay's own auto-save, with the
+    // last pass's score embedded (buildJournalEntry's optional 4th arg).
+    try {
+      const lastPass = finalState.passes[finalState.passes.length - 1];
+      const snapshot: SessionSnapshot = {
+        songId: song.id,
+        title: song.title,
+        composer: song.composer,
+        genre: song.genre,
+        difficulty: song.difficulty,
+        key: song.key,
+        tempo: song.tempo,
+        speed: finalState.currentSpeedPct / 100,
+        mode: "practice",
+        measuresPlayed: finalState.passes.length * (config.endMeasure - config.startMeasure + 1),
+        totalMeasures: song.measures.length,
+        durationSeconds: 0,
+        timestamp: new Date().toISOString(),
+      };
+      const note = lastPass
+        ? `CLI practice loop: measures ${config.startMeasure}-${config.endMeasure}, ${finalState.passes.length} pass(es), ${lastPass.clean ? "clean" : "not clean"} at ${lastPass.speedPct}%.`
+        : `CLI practice loop: measures ${config.startMeasure}-${config.endMeasure}, no passes completed.`;
+      const entry = buildJournalEntry(snapshot, note, new Date(), lastPass?.result);
+      appendJournalEntry(entry);
+      console.log("  📝 Session logged to practice journal.");
+    } catch (journalErr) {
+      const msg = journalErr instanceof Error ? journalErr.message : String(journalErr);
+      console.warn(`  ⚠ Could not save journal entry: ${msg}`);
+    }
+
+    // A loop that ended in "error" status must exit non-zero — without this,
+    // runLoop()'s caught error (see practice-loop.ts's start()) only ever
+    // surfaced as a console.error line above, main() still resolved
+    // normally, and the process exited 0 even though the loop actually
+    // failed mid-run. Thrown AFTER the journal save (still worth recording
+    // whatever passes did complete) so it's caught by this function's own
+    // catch block below — same EXIT_RUNTIME routing cmdPlay/cmdSing use for
+    // a runtime failure.
+    if (finalState.status === "error") {
+      throw new Error(finalState.error ?? `Practice loop for "${song.title}" ended in an error state.`);
+    }
+  } catch (err) {
+    // Same EXIT_USER/EXIT_RUNTIME routing as cmdPlay/cmdSing — see their
+    // own comments on why this goes through handleError() instead of a
+    // bare process.exit(1).
     const { handleError } = await import("./errors.js");
     const debug = process.argv.includes("--debug") || process.argv.includes("-D");
     process.exit(handleError(err, debug));
@@ -1162,6 +1405,7 @@ ai-jam-sessions — Play music through your speakers
 
 Commands:
   play <song | file.mid>     Play a song or MIDI file
+  practice <song-id> --measures <start-end> [options]  Drill a measure range, ramping speed on clean passes
   view <song-id> [options]   Render a piano roll SVG visualization
   view-guitar <song-id>      Interactive guitar tab editor (opens in browser)
   tune <keyboard> [options]  Tune a keyboard voice (persists across sessions)
@@ -1185,6 +1429,16 @@ Play options:
   --guitar-voice <voice>     Guitar voice: classical-nylon, steel-dreadnought, electric-clean, electric-jazz
   --midi                     Output via MIDI instead of built-in engine
   --port <name>              MIDI port name (with --midi)
+  --metronome                Enable the metronome click track (library songs only)
+  --count-in <bars>          Count-in bars before playback starts (with --metronome). Default: 1
+  --record                   Record played notes — printed as a note count when playback finishes
+
+Practice options (see 'practice' command):
+  --measures <start-end>     Measure range to drill (e.g. 5-8). Required
+  --start-speed <pct>        Starting speed, percent of the song's tempo. Default: 70
+  --target <pct>             Target speed, percent of the song's tempo. Default: 100
+  --step <pct>               Speed increase per CLEAN pass. Default: 5
+  --max-passes <n>           Optional cap on total passes. Default: no cap
 
 View options:
   --measures <start-end>     Measure range to render (e.g. 1-8, 9-16). Default: all
@@ -1322,6 +1576,11 @@ async function main(): Promise<void> {
       // See the "play" case above — same audio-engine cleanup workaround.
       process.exit(0);
       break;
+    case "practice":
+      await cmdPractice(args.slice(1));
+      // See the "play" case above — same audio-engine cleanup workaround.
+      process.exit(0);
+      break;
     case "view":
       await cmdView(args.slice(1));
       break;
@@ -1373,9 +1632,46 @@ async function main(): Promise<void> {
   }
 }
 
-main().catch(async (err) => {
-  const { handleError } = await import("./errors.js");
-  const debug = process.argv.includes("--debug") || process.argv.includes("-D");
-  const code = handleError(err, debug);
-  process.exit(code);
-});
+// ─── Entry guard ────────────────────────────────────────────────────────────
+//
+// Only run main() when this file is the actual process entry point — NOT
+// when it's imported (e.g. by cli.test.ts, which imports parsePlaySessionFlags/
+// parsePracticeArgs directly for unit testing). Without this guard, importing
+// this module for its pure parser exports would ALSO kick off main() against
+// whatever process.argv the IMPORTING process happens to have (the test
+// runner's own argv) — the same unsafe-to-import hazard mcp-server.test.ts's
+// header comment documents for mcp-server.ts, which has no such guard. Uses
+// pathToFileURL() (not a naive `file://${process.argv[1]}` string) so the
+// comparison is correct on Windows too (backslashes, drive-letter casing).
+//
+// realpath argv[1] before comparing (es-main pattern): Node resolves
+// import.meta.url to the module's REAL (symlink-resolved) path, but
+// process.argv[1] is whatever path the process was actually invoked with —
+// on Unix, an npm/pnpm-installed bin is a symlink (e.g.
+// node_modules/.bin/ai-jam-sessions -> ../ai-jam-sessions/dist/cli.js), so
+// the two strings never matched textually even though they name the same
+// file. That made the guard false for every installed-CLI invocation: main()
+// never ran, and the process exited 0 having printed nothing. realpathSync
+// can throw (e.g. a path that doesn't exist on disk, or an unusual/virtual
+// fs) — fall back to path.resolve() (never throws for a string input) so a
+// realpath failure degrades to the OLD (pre-fix) comparison rather than
+// crashing the entry guard itself.
+function resolveArgvMainPath(argvPath: string): string {
+  try {
+    return realpathSync(argvPath);
+  } catch {
+    return resolvePathArg(argvPath);
+  }
+}
+
+const isMainModule = process.argv[1] !== undefined
+  && import.meta.url === pathToFileURL(resolveArgvMainPath(process.argv[1])).href;
+
+if (isMainModule) {
+  main().catch(async (err) => {
+    const { handleError } = await import("./errors.js");
+    const debug = process.argv.includes("--debug") || process.argv.includes("-D");
+    const code = handleError(err, debug);
+    process.exit(code);
+  });
+}

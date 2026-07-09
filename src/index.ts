@@ -110,10 +110,46 @@ export {
 
 export type { SingAlongMode, SingAlongTextOptions } from "./note-parser.js";
 
+// Export piano-roll renderer
+export { renderPianoRoll } from "./piano-roll.js";
+export type { PianoRollOptions, PianoRollColorMode } from "./piano-roll.js";
+
 // Export scored piano-roll renderer — a post-take diagnostic overlay built
 // from a score-performance.ts PerformanceResult (see NoteVerdict).
 export { renderScoredPianoRoll } from "./piano-roll.js";
-export type { NoteVerdict } from "./score-performance.js";
+export type { NoteVerdict, PerformanceResult } from "./score-performance.js";
+
+// Export the practice loop — drills a measure range at reduced tempo,
+// ramping toward full speed only after a clean pass. See practice-loop.ts's
+// header comment for the design (built entirely on SessionController's
+// existing public API).
+export {
+  PracticeLoop,
+  resolvePracticeLoopConfig,
+  formatMicroGoal,
+  windowSong,
+  isCleanPass,
+  decideRamp,
+  rankWorstMeasures,
+  worstMeasuresPracticeConfig,
+  measureDiagnostics,
+  formatMeasureDiagnosticLines,
+  formatPassSummary,
+  CLEAN_PASS_MIN_COMPLETENESS,
+  DEFAULT_SPEED_START_PCT,
+  DEFAULT_SPEED_TARGET_PCT,
+  DEFAULT_RAMP_STEP_PCT,
+} from "./practice-loop.js";
+export type {
+  PracticeLoopConfig,
+  ResolvedPracticeLoopConfig,
+  PracticePassResult,
+  PracticeLoopStatus,
+  PracticeLoopState,
+  PracticeLoopHooks,
+  RampDecision,
+  MeasureDiagnostic,
+} from "./practice-loop.js";
 
 // Export teaching engine
 export {

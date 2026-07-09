@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { renderScoredPianoRoll } from "./piano-roll.js";
 import { scorePerformance } from "./score-performance.js";
+import { windowSong } from "./practice-loop.js";
 import type { SongEntry } from "./songs/types.js";
 import type { MidiNoteEvent } from "./midi/types.js";
 
@@ -302,6 +303,70 @@ describe("renderScoredPianoRoll — degraded fallback (INPUT_LIMIT guard)", () =
     const svg = renderScoredPianoRoll(song, result);
     expect(svg).not.toContain("Take too large to score note-by-note");
     expect(rectLinesWithClass(svg, "verdict-missed")).toHaveLength(1);
+  });
+});
+
+describe("renderScoredPianoRoll — windowed sub-song (non-1-based measure numbers)", () => {
+  it("renders a windowSong(song, 5, 8) product's 4 measures + verdicts using the DEFAULT window (no explicit startMeasure/endMeasure)", () => {
+    const song = makeSong({
+      measures: [
+        { number: 1, rightHand: "C4:q", leftHand: "" },
+        { number: 2, rightHand: "C4:q", leftHand: "" },
+        { number: 3, rightHand: "C4:q", leftHand: "" },
+        { number: 4, rightHand: "C4:q", leftHand: "" },
+        { number: 5, rightHand: "C4:q", leftHand: "" },
+        { number: 6, rightHand: "D4:q", leftHand: "" },
+        { number: 7, rightHand: "E4:q", leftHand: "" },
+        { number: 8, rightHand: "F4:q", leftHand: "" },
+      ],
+      tempo: 120, // 4/4 @ 120bpm -> 2s per measure
+    });
+    // windowSong(song, 5, 8): 4 measure objects numbered 5-8 — its OWN
+    // .measures.length (4) is unrelated to those numbers (practice-loop.ts's
+    // windowSong doc). Before the fix, renderScoredPianoRoll's default
+    // window (no explicit startMeasure/endMeasure) filtered for numbers
+    // 1..4, matching nothing in this song and falling back to the
+    // "No measures in range" placeholder.
+    const windowed = windowSong(song, 5, 8);
+    expect(windowed.measures).toHaveLength(4);
+
+    // windowSong's own contract: its first included measure starts at
+    // nominal time 0 — so measures 5/6/7/8 land at t=0/2/4/6s.
+    const result = scorePerformance(windowed, [
+      makeEvent(60, 0), // m.5 C4 — dead on time
+      makeEvent(62, 2), // m.6 D4
+      makeEvent(64, 4), // m.7 E4
+      makeEvent(65, 6), // m.8 F4
+    ]);
+
+    const svg = renderScoredPianoRoll(windowed, result);
+
+    expect(svg).not.toContain("No measures in range");
+    expect(rectLinesWithClass(svg, "verdict-correct")).toHaveLength(4);
+    expect(svg).toContain("Correct: C4 (m.5)");
+    expect(svg).toContain("Correct: D4 (m.6)");
+    expect(svg).toContain("Correct: E4 (m.7)");
+    expect(svg).toContain("Correct: F4 (m.8)");
+  });
+
+  it("an explicit startMeasure/endMeasure still wins over the derived default on a windowed song", () => {
+    const song = makeSong({
+      measures: [
+        { number: 5, rightHand: "C4:q", leftHand: "" },
+        { number: 6, rightHand: "D4:q", leftHand: "" },
+        { number: 7, rightHand: "E4:q", leftHand: "" },
+        { number: 8, rightHand: "F4:q", leftHand: "" },
+      ],
+      tempo: 120,
+    });
+    const result = scorePerformance(song, [makeEvent(60, 0), makeEvent(62, 2), makeEvent(64, 4), makeEvent(65, 6)]);
+    const svg = renderScoredPianoRoll(song, result, { startMeasure: 6, endMeasure: 7 });
+
+    expect(svg).not.toContain("No measures in range");
+    expect(svg).toContain("Correct: D4 (m.6)");
+    expect(svg).toContain("Correct: E4 (m.7)");
+    expect(svg).not.toContain("Correct: C4 (m.5)");
+    expect(svg).not.toContain("Correct: F4 (m.8)");
   });
 });
 

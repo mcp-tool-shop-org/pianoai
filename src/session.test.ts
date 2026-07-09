@@ -1195,6 +1195,42 @@ describe("Recording — nominal-time contract (session path)", () => {
     expect(byNote.get(50)?.duration).toBeCloseTo(1.0, 5);
     expect(byNote.get(57)?.time).toBeCloseTo(3.0, 5); // A3
   });
+
+  it("a whole take at speed 2.0 (full mode) lands measure 2 at the correct NOMINAL time — the measure-boundary cursor advance converts too", async () => {
+    const mock = createMockVmpkConnector();
+    const song = makeMetronomeTestSong();
+    // Unlike the mid-take test above (measure 1 at speed 1.0, where
+    // effective == nominal), the speed is != 1.0 from the very first
+    // measure — so playRange()'s END-OF-MEASURE cursor advance itself must
+    // convert to nominal, not just playBeats' per-beat advances.
+    const sc = createSession(song, mock, { record: true, speed: 2.0 });
+    await mock.connect();
+
+    await sc.play(); // full mode: both measures in one take, 2x throughout
+
+    const rec = sc.getRecording();
+    expect(rec.nominalBpm).toBe(120);
+    expect(rec.effectiveBpmAtStart).toBe(240);
+    expect(rec.events.length).toBe(12);
+
+    const byNote = new Map(rec.events.map((e) => [e.note, e]));
+    // Measure 1: per-beat advances convert, so these are at nominal spots.
+    expect(byNote.get(60)?.time).toBeCloseTo(0, 5); // C4
+    expect(byNote.get(64)?.time).toBeCloseTo(0.5, 5); // E4
+    expect(byNote.get(72)?.time).toBeCloseTo(1.5, 5); // C5
+    expect(byNote.get(48)?.duration).toBeCloseTo(1.0, 5); // C3 half note
+    // Measure 2 must start at nominal t=2.0. Before the fix, the boundary
+    // advance added the measure's EFFECTIVE duration (1.0s at 2x) without
+    // toNominalSec(), so measure 2's events landed at t=1.0 — overlapping
+    // measure 1's nominal span.
+    expect(byNote.get(62)?.time).toBeCloseTo(2.0, 5); // D4
+    expect(byNote.get(62)?.duration).toBeCloseTo(0.5, 5);
+    expect(byNote.get(65)?.time).toBeCloseTo(2.5, 5); // F4
+    expect(byNote.get(69)?.time).toBeCloseTo(3.0, 5); // A4
+    expect(byNote.get(74)?.time).toBeCloseTo(3.5, 5); // D5
+    expect(byNote.get(50)?.time).toBeCloseTo(2.0, 5); // D3
+    expect(byNote.get(57)?.time).toBeCloseTo(3.0, 5); // A3
+  });
 });
 
 // ─── Recording: pause/resume integrity (mid-measure abort fix-up) ──────────
@@ -1268,5 +1304,65 @@ describe("Recording — pause/resume mid-measure integrity", () => {
     // alone (2 notes), then both together (4 + 2 = 6) = 12 total — and,
     // critically, no leftover events from the interrupted first attempt.
     expect(rec.events).toHaveLength(12);
+  });
+
+  it("loop mode: pause mid-iteration then resume continues from the interrupted measure, not the top of the loop", async () => {
+    const song = makeMetronomeTestSong();
+    let pauseFn: (() => void) | null = null;
+    const connector = createCountingConnector((count) => {
+      // Loop range [1,2] with LH muted: measure 1 = counts 1-4 (C4 E4 G4
+      // C5), measure 2 = counts 5-8 (D4 F4 A4 D5). Pause at count 6 — mid
+      // measure 2, after D4 and F4 have played.
+      if (count === 6 && pauseFn) pauseFn();
+    });
+    let progressCount = 0;
+    let stopFn: (() => void) | null = null;
+    const sc = createSession(song, connector, {
+      mode: "loop",
+      loopRange: [1, 2],
+      record: true,
+      progressInterval: 0, // fire after every completed measure
+      onProgress: () => {
+        progressCount++;
+        // Progress #1 = measure 1 completing (first play). Progress #2 =
+        // measure 2 completing on resume — stop there, before the loop
+        // wraps around into another iteration.
+        if (progressCount >= 2 && stopFn) stopFn();
+      },
+    });
+    pauseFn = () => sc.pause();
+    stopFn = () => sc.stop();
+    sc.muteHand("left"); // removes RH/LH concurrency so note order is fully deterministic
+    await connector.connect();
+
+    await sc.play(); // runs until the engineered pause() fires mid measure-2
+
+    expect(sc.state).toBe("paused");
+    // The interrupted measure is preserved for the resume — before the fix
+    // the loop body unconditionally rewound currentMeasure to the loop
+    // start even when the iteration was aborted mid-flight.
+    expect(sc.session.currentMeasure).toBe(1);
+    expect(sc.session.measuresPlayed).toBe(1); // only measure 1 completed
+    // Measure 2's partial attempt (D4, F4) was rewound — only measure 1 remains.
+    expect(sc.getRecording().events.map((e) => e.note)).toEqual([60, 64, 67, 72]);
+
+    await sc.play(); // resume — must pick up at measure 2, not restart the loop
+
+    expect(sc.state).toBe("idle"); // the engineered stop() ended the loop
+    // Measure 1 once + measure 2 once. Before the fix the resume restarted
+    // the whole loop range, replaying (and re-counting) measure 1 first.
+    expect(sc.session.measuresPlayed).toBe(2);
+
+    const rec = sc.getRecording();
+    // Each measure recorded exactly once, in play order — before the fix
+    // events 5-8 were measure 1 again (C4 E4 G4 C5) instead of measure 2.
+    expect(rec.events.map((e) => e.note)).toEqual([60, 64, 67, 72, 62, 65, 69, 74]);
+    const byNote = new Map(rec.events.map((e) => [e.note, e]));
+    // Measure 2 sits at nominal t=2.0-3.5, continuous with measure 1 —
+    // recorded exactly once despite the mid-measure pause.
+    expect(byNote.get(62)?.time).toBeCloseTo(2.0, 5);
+    expect(byNote.get(65)?.time).toBeCloseTo(2.5, 5);
+    expect(byNote.get(69)?.time).toBeCloseTo(3.0, 5);
+    expect(byNote.get(74)?.time).toBeCloseTo(3.5, 5);
   });
 });
