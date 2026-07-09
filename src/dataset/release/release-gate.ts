@@ -185,6 +185,27 @@ export interface ReleaseGateInput {
    * axis-4/5 reporting symmetric).
    */
   misinterp_rate: number;
+  /**
+   * D-B1-001 fix — axis 5's denominator: the count of tool-called
+   * question-runs that `misinterp_rate` was computed over (i.e. the total
+   * from which `misinterp_rate = misinterpreted / axis5_tool_called_count`).
+   * Optional for backward compatibility, mirroring the `per_record?`
+   * precedent below: when omitted, axis 5 falls back to the pre-fix
+   * behavior of evaluating `misinterp_rate` directly against the ceiling
+   * threshold with no zero-denominator special case.
+   *
+   * When PRESENT and equal to 0, axis 5 FAILS regardless of `misinterp_rate`
+   * — a `misinterp_rate` value in that state was produced by a
+   * zero-denominator fallback (e.g. `totalToolCalled > 0 ? ... : 0` in
+   * `scripts/check-release-gate.ts`) and does not mean "0% misinterpretation
+   * measured," it means "no tool-called questions existed to measure."
+   * Evaluating that undefined rate against a `<=` ceiling threshold is a
+   * vacuous PASS (Stage B finding D-B1-001): the axis reports success on an
+   * empty measurement. Ceiling-type checks like axis 5 need this explicit
+   * guard because they fail OPEN on a 0 fallback; floor-type checks (axes
+   * 1/3/4) already fail closed for free since "0 ≥ floor" is false.
+   */
+  axis5_tool_called_count?: number;
   /** Per-stratum assessment used to evaluate axis 6 (under the old logic; */
   /** the revised axis 6 also consults `per_record`). */
   per_stratum: StratumAssessment[];
@@ -597,18 +618,35 @@ export function evaluateReleaseGate(
   }
 
   // ─── Axis 5: Misinterpretation rate ───────────────────────────────────────
+  //
+  // D-B1-001 fix: when the caller supplies `axis5_tool_called_count` and it
+  // is 0, the axis FAILS closed rather than evaluating `misinterp_rate`
+  // against the ceiling — a 0-denominator `misinterp_rate` is undefined, not
+  // "0% misinterpretation," and `nearlyAtMost(0, ceiling)` was a vacuous
+  // PASS on that undefined value (Stage B finding). When the field is
+  // absent, behavior is byte-for-byte unchanged from pre-fix (back-compat):
+  // `undefined === 0` is false, so `noToolCalledQuestions` is false and the
+  // original comparison runs exactly as before.
   {
-    const passed = nearlyAtMost(input.misinterp_rate, thresholds.axis5_misinterp_ceiling);
+    const noToolCalledQuestions = input.axis5_tool_called_count === 0;
+    const passed = noToolCalledQuestions
+      ? false
+      : nearlyAtMost(input.misinterp_rate, thresholds.axis5_misinterp_ceiling);
     axes.push({
       axis: 5,
       name: "misinterp",
       passed,
       blocking: true,
       threshold: { ceiling: thresholds.axis5_misinterp_ceiling },
-      measured: { misinterp_rate: input.misinterp_rate },
-      note: passed
-        ? `Misinterp rate ${(input.misinterp_rate * 100).toFixed(1)}% ≤ ${(thresholds.axis5_misinterp_ceiling * 100).toFixed(1)}%`
-        : `Misinterp rate ${(input.misinterp_rate * 100).toFixed(1)}% > ${(thresholds.axis5_misinterp_ceiling * 100).toFixed(1)}% — too many tool-called questions get wrong answers`,
+      measured: {
+        misinterp_rate: input.misinterp_rate,
+        tool_called_count: input.axis5_tool_called_count,
+      },
+      note: noToolCalledQuestions
+        ? `Axis 5 FAIL: axis5_tool_called_count = 0 — no tool-called questions were run, so the misinterpretation rate is undefined and cannot be certified (misinterp_rate=${input.misinterp_rate.toFixed(3)} is a zero-denominator artifact, not a measured 0%)`
+        : passed
+          ? `Misinterp rate ${(input.misinterp_rate * 100).toFixed(1)}% ≤ ${(thresholds.axis5_misinterp_ceiling * 100).toFixed(1)}%`
+          : `Misinterp rate ${(input.misinterp_rate * 100).toFixed(1)}% > ${(thresholds.axis5_misinterp_ceiling * 100).toFixed(1)}% — too many tool-called questions get wrong answers`,
     });
   }
 

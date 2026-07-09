@@ -54,11 +54,13 @@ import { fileURLToPath } from "node:url";
 import {
   assertCitationCffMatchesVersion,
   assertCuratedFilesPresent,
+  assertNoExcludedWorksInPublicSet,
   buildChecksumsManifest,
   buildManifest,
   buildRecordsJsonl,
   buildSplitIndex,
   countPairs,
+  EXCLUDED_SONG_IDS,
   filterProvenanceVerification,
   filterSplitsToPublic,
   findPairOrphans,
@@ -314,6 +316,15 @@ function main(): void {
   if (publicRecords.length === 0) {
     throw new Error("No public records found — refusing to package empty set.");
   }
+
+  // 2b. Exclusion regression guard (D-B1-002): fail closed if a deny-listed
+  //     work's records would enter the public subset, independent of what
+  //     record_verdict says on those records. See EXCLUDED_SONG_IDS in
+  //     src/dataset/package-public.ts for the deny-list + rationale.
+  assertNoExcludedWorksInPublicSet(publicRecords);
+  console.log(
+    `  Exclusion regression guard: PASS (${EXCLUDED_SONG_IDS.length} deny-listed song(s) checked: ${EXCLUDED_SONG_IDS.join(", ")})`,
+  );
 
   // 3. Pair-completeness gate (must pass before any writes).
   const orphans = findPairOrphans(publicRecords);

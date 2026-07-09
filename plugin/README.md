@@ -26,8 +26,8 @@ claude --plugin-dir ./plugin
 
 ### From npm
 
-The MCP server is available as `ai-jam-sessions` on npm. The plugin
-uses `npx -y -p ai-jam-sessions ai-jam-sessions-mcp` to auto-fetch and run it.
+The MCP server is available as `@mcptoolshop/ai-jam-sessions` on npm. The plugin
+uses `npx -y -p @mcptoolshop/ai-jam-sessions ai-jam-sessions-mcp` to auto-fetch and run it.
 
 ## Usage Examples
 

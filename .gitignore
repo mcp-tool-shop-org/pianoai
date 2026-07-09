@@ -16,3 +16,7 @@ package-lock.json
 
 # Local Python venv for Slice 9c LoRA experiment
 experiments/jam-actions-v0-lora/.venv/
+.swarm/
+
+# Dogfood-swarm worktrees + local eval checkpoints (never committed)
+.eval-checkpoints/

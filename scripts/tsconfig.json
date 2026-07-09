@@ -1,0 +1,39 @@
+{
+  // Gives scripts/ the same static safety net src/ already has (C-B1-003,
+  // Stage C amend). Root tsconfig.json's `include` is ["src/**/*.ts"] only,
+  // so `pnpm typecheck` never checked anything under scripts/ — including
+  // check-release-gate.ts and verify-public-package-checksums.ts, the two
+  // pre-flight scripts that gate the irreversible Zenodo DOI mint in
+  // publish-jam-actions-v0.yml. This is `--noEmit`-only (see package.json's
+  // "typecheck:scripts" script) so it never produces build output; unlike
+  // the root config, it does NOT exclude *.test.ts, since there's no build
+  // artifact to keep test code out of here — more type safety, not less.
+  //
+  // NOT WIRED into `pnpm typecheck` (or CI) yet, on purpose: running
+  // `pnpm typecheck:scripts` today surfaces ~20 pre-existing TS errors
+  // (build-jam-actions-corpus.ts, build-pilot-records.ts, import-classical.ts
+  // — SongEntry object literals missing a `status` field, plus
+  // verify-dataset-provenance-urls.ts's `RequestInfo` not resolving under
+  // this repo's Node-only `lib`). None of those files are in the ci-tooling
+  // domain that authored this config (scripts/**.ts source isn't in scope
+  // here), so wiring this into the default `typecheck` chain today would
+  // turn a currently-green gate red on merge. Once those are fixed, chain it
+  // in via `"typecheck": "tsc --noEmit && pnpm typecheck:scripts"` — a
+  // one-line change — and CI picks it up automatically (ci.yml already runs
+  // `pnpm typecheck`, no workflow edit needed).
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    // Repo root, not "." — scripts/*.ts freely import from ../src/**, and
+    // rootDir must contain every file that ends up in the program (imported
+    // files included), or tsc raises TS6059 on each one.
+    "rootDir": "..",
+    "noEmit": true,
+    // Required alongside noEmit: TS errors (TS5053) if declaration/
+    // declarationMap stay enabled (inherited from the base config) while
+    // noEmit is also true.
+    "declaration": false,
+    "declarationMap": false
+  },
+  "include": ["**/*.ts"],
+  "exclude": []
+}

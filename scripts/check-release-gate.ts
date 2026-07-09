@@ -509,6 +509,10 @@ function buildGateInput(
     tool_call_rate: baseline.tool_use_profile.cohort.tool_call_rate,
     correct_after_tool_rate: correctAfterTool,
     misinterp_rate: misinterp,
+    // D-B1-001 fix: wire the real denominator through so axis 5 can fail
+    // closed on a zero-tool-called cohort instead of vacuously passing on
+    // the `misinterp = totalToolCalled > 0 ? ... : 0` fallback above.
+    axis5_tool_called_count: totalToolCalled,
     per_stratum: perStratum,
     per_record: perRecord,
     enriched: {

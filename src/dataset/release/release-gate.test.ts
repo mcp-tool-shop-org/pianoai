@@ -968,3 +968,122 @@ describe("Slice 22 — Slice 21 baseline forward (revised gate clears)", () => {
     expect(result.passed).toBe(true);
   });
 });
+
+// ────────────────────────────────────────────────────────────────────────────
+// ─── D-B1-001 — axis 5 fail-closed on a zero tool-called denominator ───────
+// ────────────────────────────────────────────────────────────────────────────
+//
+// `misinterp_rate` is only meaningful when SOME tool-called questions were
+// actually run — it is computed elsewhere (scripts/check-release-gate.ts) as
+// `misinterpreted / axis5_tool_called_count`, with a `totalToolCalled > 0 ?
+// ... : 0` guard on the divide-by-zero case. That 0 fallback reads
+// indistinguishably from a genuine "0% misinterpretation, well done" measure
+// once it reaches this gate — before the fix, axis 5 evaluated
+// `nearlyAtMost(0, ceiling)` in that state and vacuously PASSED on a metric
+// that was never actually measured. `axis5_tool_called_count` is the
+// explicit denominator carried alongside `misinterp_rate` so the gate can
+// tell the two cases apart. Optional field: when absent, behavior is
+// byte-for-byte the pre-fix comparison (back-compat with 1.0.0-shaped
+// artifacts that predate this field).
+describe("D-B1-001 — axis 5 fail-closed on axis5_tool_called_count === 0", () => {
+  it("back-compat: axis 5 evaluates exactly as before when axis5_tool_called_count is absent", () => {
+    const input = passingFixture(); // misinterp_rate: 0.15, no axis5_tool_called_count field
+    expect(input.axis5_tool_called_count).toBeUndefined();
+    const result = evaluateReleaseGate(input);
+    const axis5 = result.axes[4];
+    expect(axis5.axis).toBe(5);
+    expect(axis5.passed).toBe(true);
+    expect(axis5.note.toLowerCase()).not.toContain("zero-denominator");
+    expect(result.blocking_failures).not.toContain(5);
+  });
+
+  it("PASSES when axis5_tool_called_count is a normal positive number and misinterp_rate clears the ceiling", () => {
+    const input: ReleaseGateInput = {
+      ...passingFixture(),
+      axis5_tool_called_count: 40,
+      misinterp_rate: 0.15,
+    };
+    const result = evaluateReleaseGate(input);
+    expect(result.axes[4].passed).toBe(true);
+    expect(result.blocking_failures).not.toContain(5);
+  });
+
+  it("FAILS when axis5_tool_called_count is a normal positive number and misinterp_rate exceeds the ceiling (unchanged from pre-fix behavior)", () => {
+    const input: ReleaseGateInput = {
+      ...passingFixture(),
+      axis5_tool_called_count: 40,
+      misinterp_rate: 0.21,
+    };
+    const result = evaluateReleaseGate(input);
+    expect(result.axes[4].passed).toBe(false);
+    expect(result.blocking_failures).toContain(5);
+  });
+
+  it(
+    "MUTATION-STYLE: FAILS when axis5_tool_called_count is 0, even though misinterp_rate=0 would have PASSED " +
+      "under the old vacuous `nearlyAtMost(0, ceiling)` logic",
+    () => {
+      const input: ReleaseGateInput = {
+        ...passingFixture(),
+        axis5_tool_called_count: 0,
+        // The "0/0 -> 0" zero-denominator fallback value that used to read
+        // as a vacuous 0% misinterpretation.
+        misinterp_rate: 0,
+      };
+      // Sanity check the mutant premise: under the PRE-fix comparison alone
+      // (misinterp_rate vs ceiling, ignoring the denominator), this input
+      // would pass — 0 <= 0.20.
+      expect(input.misinterp_rate <= DEFAULT_THRESHOLDS.axis5_misinterp_ceiling).toBe(true);
+
+      const result = evaluateReleaseGate(input);
+      const axis5 = result.axes[4];
+      expect(axis5.axis).toBe(5);
+      expect(axis5.blocking).toBe(true);
+      // The fix must make it FAIL instead.
+      expect(axis5.passed).toBe(false);
+      expect(axis5.note.toLowerCase()).toContain("zero-denominator");
+      // The aggregate must also flip, since axis 5 is blocking.
+      expect(result.blocking_failures).toContain(5);
+      expect(result.failing_axes).toContain(5);
+      expect(result.passed).toBe(false);
+    },
+  );
+
+  it("FAILS for the same zero-denominator reason even when a non-zero misinterp_rate is also present (the count, not the rate, is authoritative)", () => {
+    // Guards against an implementation that keys off `misinterp_rate === 0`
+    // instead of the actual `axis5_tool_called_count === 0` denominator
+    // field — the bug this pins is specifically about the denominator being
+    // 0, independent of whatever numeric value misinterp_rate happens to
+    // carry alongside it.
+    const input: ReleaseGateInput = {
+      ...passingFixture(),
+      axis5_tool_called_count: 0,
+      misinterp_rate: 0.05,
+    };
+    const result = evaluateReleaseGate(input);
+    expect(result.axes[4].passed).toBe(false);
+    expect(result.axes[4].note.toLowerCase()).toContain("zero-denominator");
+  });
+
+  it("reports axis5_tool_called_count in `measured` for downstream diagnostics", () => {
+    const input: ReleaseGateInput = { ...passingFixture(), axis5_tool_called_count: 61 };
+    const result = evaluateReleaseGate(input);
+    const measured = result.axes[4].measured as { tool_called_count?: number };
+    expect(measured.tool_called_count).toBe(61);
+  });
+
+  it("a zero-denominator axis-5 failure flips the OVERALL gate verdict even when every other axis passes", () => {
+    // End-to-end composition check: passingFixture() clears axes 1-4, 6, 7 —
+    // only axis 5's zero-denominator case should be responsible for the
+    // aggregate FAIL here.
+    const input: ReleaseGateInput = {
+      ...passingFixture(),
+      axis5_tool_called_count: 0,
+      misinterp_rate: 0,
+    };
+    const result = evaluateReleaseGate(input);
+    expect(result.blocking_failures).toEqual([5]);
+    expect(result.passed).toBe(false);
+    expect(result.summary).toContain("FAIL");
+  });
+});

@@ -155,6 +155,75 @@ export function publicIdSet(publicRecords: SourceRecord[]): Set<string> {
   return new Set(publicRecords.map((r) => r.id));
 }
 
+// ─── Exclusion regression guard (D-B1-002) ───────────────────────────────────
+//
+// `selectPublicRecords()` above filters strictly on
+// `provenance.record_verdict === "public"`. That is correct today, but it is
+// the ONLY thing standing between the two provenance-unverifiable works and
+// the public package — nothing would catch a future accidental
+// re-promotion (a corpus-edit bug, a bad merge, a script that flips
+// `record_verdict` back to "public") short of a human noticing after the
+// fact. This is a defense-in-depth backstop, independent of
+// `record_verdict`: even if a deny-listed song's records somehow carry
+// `record_verdict: "public"`, the packager still refuses to ship them.
+//
+// Deny-listed songs (Slice 2.5 URL verification could not confirm their
+// piano-midi.de provenance; see datasets/jam-actions-v0-public/README.md
+// "Limitations" and datasets/jam-actions-v0/PROVENANCE-NOTE.md):
+//   - satie-gymnopedie-no1   (piano-midi.de composer page returned HTTP 418)
+//   - debussy-arabesque-no1  (composer page reachable but didn't reference
+//                             this work)
+//
+// Song id format matches `scope.song_id` on each record (see
+// `recordFilenameFromId` above — song id is the id's segment before the
+// first colon).
+
+/**
+ * Songs that must NEVER appear in the public subset, regardless of what
+ * `provenance.record_verdict` says on any individual record. See the header
+ * comment above for the provenance rationale. Treat this list as append-only
+ * — a song is removed from it only after its arrangement provenance is
+ * re-verified (Slice 2.5-style URL verification), never as a packaging
+ * convenience.
+ */
+export const EXCLUDED_SONG_IDS: readonly string[] = [
+  "satie-gymnopedie-no1",
+  "debussy-arabesque-no1",
+];
+
+/**
+ * Regression guard: throws if any record in `publicRecords` belongs to a
+ * deny-listed song (see `EXCLUDED_SONG_IDS`). Call this immediately after
+ * `selectPublicRecords()` and before any package writes.
+ *
+ * Fails closed (throws rather than silently filtering the offending
+ * records out): a deny-listed record surviving the `record_verdict` filter
+ * means the source corpus's provenance data has regressed, so the
+ * packaging run as a whole is untrustworthy, not just the one record. The
+ * operator needs to investigate the source corpus, not have the packager
+ * quietly paper over it.
+ */
+export function assertNoExcludedWorksInPublicSet(
+  publicRecords: SourceRecord[],
+  excludedSongIds: readonly string[] = EXCLUDED_SONG_IDS,
+): void {
+  const denySet = new Set(excludedSongIds);
+  const offending = publicRecords.filter((r) => denySet.has(r.scope.song_id));
+  if (offending.length > 0) {
+    const offendingSongs = Array.from(new Set(offending.map((r) => r.scope.song_id))).sort();
+    const offendingIds = offending.map((r) => r.id).sort();
+    throw new Error(
+      `package-public: EXCLUSION REGRESSION — ${offending.length} record(s) from deny-listed ` +
+        `song(s) [${offendingSongs.join(", ")}] are present in the public-subset selection: ` +
+        `${offendingIds.join(", ")}. These works' provenance could not be verified against ` +
+        `piano-midi.de (see datasets/jam-actions-v0-public/README.md "Limitations") and must ` +
+        `never enter the public package, regardless of their current provenance.record_verdict. ` +
+        `Refusing to package. If provenance has since been re-verified, remove the song from ` +
+        `EXCLUDED_SONG_IDS in src/dataset/package-public.ts as an explicit, reviewed change.`,
+    );
+  }
+}
+
 // ─── Pair completeness ───────────────────────────────────────────────────────
 
 /**

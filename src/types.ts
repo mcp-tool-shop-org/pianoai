@@ -69,6 +69,25 @@ export type SyncMode =
   | "concurrent"  // Voice and piano play at the same time (duet feel)
   | "before";     // Voice speaks notes before piano plays (lecture style)
 
+/**
+ * Sound engine identifiers (play_song's `engine` parameter). Single source
+ * of truth — mcp-server.ts used to spell this list out at 3 separate sites
+ * (the tool's zod enum, an error-message lookup, and server_info's summary
+ * line) and they drifted out of sync with each other once already
+ * (B-B1-004). Derive from this constant everywhere instead of re-typing
+ * the literals.
+ */
+export const ENGINE_IDS = ["piano", "vocal", "tract", "guitar"] as const;
+export type EngineId = (typeof ENGINE_IDS)[number];
+
+/** Human-readable label for each engine id (e.g. for error messages). */
+export const ENGINE_LABELS: Record<EngineId, string> = {
+  piano: "piano",
+  vocal: "vocal",
+  tract: "vocal tract",
+  guitar: "guitar",
+};
+
 /** A practice session. */
 export interface Session {
   /** Unique session ID. */

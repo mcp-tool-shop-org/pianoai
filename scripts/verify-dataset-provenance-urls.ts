@@ -426,7 +426,11 @@ async function main(): Promise<void> {
 
 function makePacedFetch(rateLimitMs: number): typeof fetch {
   let firstCallDone = false;
-  return (async (input: RequestInfo | URL, init?: RequestInit) => {
+  // `RequestInfo` isn't exposed as a bare global under this repo's Node-only `lib`
+  // (no "DOM"), unlike RequestInit/fetch/Response. Derive the input type from `fetch`
+  // itself instead of naming it — identical type, and no shared-lib change that could
+  // ripple DOM-vs-undici global conflicts into other scripts.
+  return (async (input: Parameters<typeof fetch>[0], init?: RequestInit) => {
     if (firstCallDone) {
       await sleep(rateLimitMs);
     }

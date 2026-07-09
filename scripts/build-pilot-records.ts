@@ -384,6 +384,13 @@ async function buildRecord(
     fail(`Provenance rule engine rejected ${spec.songId}: ${provResult.verdict_reason}`);
   }
 
+  // ProvenanceSchema.composer is z.string().min(1) — required and non-empty — but
+  // songConfig.composer is optional in SongConfigSchema. Fail fast rather than mint a
+  // provenance record that would be rejected later by schema validation.
+  if (!songConfig.composer) {
+    fail(`${spec.songId}: song config is missing a composer — cannot build a provenance record.`);
+  }
+
   const provenance: Provenance = {
     source_url: provResult.extracted.arrangement_evidence_url ?? "https://piano-midi.de/",
     source_collected_at: "2026-05-16",

@@ -67,8 +67,11 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
   background: rgba(0,0,0,0.3);
 }
 .pr-key-label {
+  /* opacity:0.6 previously dropped contrast vs var(--bg) to ~2.97:1 (WCAG AA
+     fail). var(--text-muted) alone is ~6.15:1 — solid color, no opacity
+     blend (F-B1-007). */
   position: absolute; left: 4px; font-size: 9px; color: var(--text-muted);
-  font-family: var(--mono); pointer-events: none; z-index: 1; opacity: 0.6;
+  font-family: var(--mono); pointer-events: none; z-index: 1;
 }
 .pr-playhead {
   position: absolute; top: 0; bottom: 0; width: 2px; background: var(--accent);
@@ -109,9 +112,12 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
   color: #666; pointer-events: none; z-index: 3; width: 100%;
 }
 .kb-shortcut {
+  /* #999 @ opacity 0.7 on the light key-white bg was ~1.7:1 (WCAG AA fail);
+     #666 @ opacity 0.7 on key-black was ~2.1:1 (also fail). Solid colors,
+     no opacity blend, tuned per background below (F-B1-007). */
   position: absolute; bottom: 20px; text-align: center; font-size: 8px;
-  color: #999; pointer-events: none; z-index: 3; width: 100%;
-  font-family: var(--mono); opacity: 0.7;
+  color: #4d4d4d; pointer-events: none; z-index: 3; width: 100%;
+  font-family: var(--mono);
 }
 
 /* ─── Controls Panel ─── */
@@ -298,6 +304,35 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
 }
 .score-status.error { display: block; background: #ff7b7222; color: #ff7b72; border: 1px solid #ff7b7255; }
 .score-status.ok { display: block; background: #7ee78722; color: #7ee787; border: 1px solid #7ee78755; }
+
+/* ─── Responsive Layout (F-B1-003) ───
+   Desktop assumes a fixed 320px right sidebar + 240px controls column inside
+   a 100vh grid with html/body overflow:hidden — below ~1000px that grid no
+   longer fits, so it reflows to a single stacked column and the page itself
+   becomes scrollable instead of clipping. */
+@media (max-width: 1000px) {
+  html, body { overflow-y: auto; overflow-x: hidden; }
+  #app {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(280px, 45vh) auto auto auto;
+    height: auto; min-height: 100vh;
+  }
+  header { grid-column: 1; grid-row: 1; flex-wrap: wrap; row-gap: 6px; padding: 8px 16px; }
+  #piano-roll-container { grid-column: 1; grid-row: 2; }
+  /* Was position:absolute anchored to #app's bottom edge, tuned for the
+     fixed 160px keyboard row — with rows now auto-height that math breaks,
+     so it becomes a normal in-flow grid item between the roll and keyboard. */
+  #transport { position: static; grid-column: 1; grid-row: 3; margin: 6px 10px; }
+  #keyboard-area { grid-column: 1; grid-row: 4; }
+  #tuning-audit { grid-column: 1; grid-row: 5; max-height: 60vh; border-left: none; border-top: 1px solid var(--border); }
+}
+
+/* Narrower still: the keyboard + 240px controls column also stacks. */
+@media (max-width: 700px) {
+  #keyboard-area { grid-template-columns: 1fr; }
+  #keyboard { height: 120px; }
+  #controls { border-left: none; border-top: 1px solid var(--border); }
+}
 </style>
 </head>
 <body>
@@ -350,7 +385,7 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
     <div id="inspector">
       <span class="note-name" id="insp-name">—</span>
       <label>Vel <input type="range" id="insp-vel" min="1" max="127" value="100"> <span class="val" id="insp-vel-val">100</span></label>
-      <button class="ctrl-btn danger" id="insp-del" data-tip="Delete note (Del)">✕</button>
+      <button class="ctrl-btn danger" id="insp-del" data-tip="Delete note (Del)" aria-label="Delete note (Del)" title="Delete note (Del)">✕</button>
       <!-- Vocal note inspector -->
       <div id="insp-vocal">
         <button class="insp-vowel-btn" data-vowel="a">/a/</button>
@@ -371,13 +406,14 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
   <div id="piano-roll-container">
     <div id="piano-roll"></div>
     <div class="pr-playhead" id="playhead"></div>
+    <div id="pr-hint" style="position:absolute;top:6px;left:8px;font-family:var(--mono);font-size:11px;color:var(--text-muted);opacity:0.65;pointer-events:none;z-index:5;">Click to add a note · press ? for shortcuts</div>
   </div>
 
   <!-- ─── Transport (floating) ─── -->
   <div id="transport">
-    <button class="ctrl-btn" id="btn-play" data-tip="Play (Space)">▶</button>
-    <button class="ctrl-btn" id="btn-stop" data-tip="Stop">⏹</button>
-    <button class="ctrl-btn" id="btn-loop" data-tip="Loop">🔁</button>
+    <button class="ctrl-btn" id="btn-play" data-tip="Play (Space)" aria-label="Play (Space)" title="Play (Space)">▶</button>
+    <button class="ctrl-btn" id="btn-stop" data-tip="Stop" aria-label="Stop" title="Stop">⏹</button>
+    <button class="ctrl-btn" id="btn-loop" data-tip="Loop" aria-label="Loop" title="Loop" aria-pressed="false">🔁</button>
     <span class="time" id="transport-time">0:00.0</span>
     <div class="sep" style="height:18px"></div>
     <label style="font-size:11px;color:var(--text-muted)">BPM
@@ -402,7 +438,7 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
     <div style="margin-bottom:4px;font-size:10px;color:var(--text-muted)">Root note:</div>
     <div class="root-select" id="interval-roots"></div>
     <div class="interval-grid" id="interval-btns" style="margin-top:6px"></div>
-    <div id="interval-result"></div>
+    <div id="interval-result" aria-live="polite"></div>
 
     <!-- Custom Tuning Editor -->
     <h3>Custom Cent Editor</h3>
@@ -419,6 +455,7 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
       <button class="ctrl-btn" id="btn-import">Import JSON</button>
     </div>
     <textarea class="json-area" id="tuning-json" placeholder="Tuning JSON will appear here..."></textarea>
+    <div class="score-status" id="tuning-status" aria-live="polite"></div>
   </div>
 
   <!-- ─── Keyboard + Controls ─── -->
@@ -429,6 +466,7 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
       <h3>Actions</h3>
       <div class="ctrl-group">
         <button class="ctrl-btn" id="btn-clear" data-tip="Clear all notes">Clear</button>
+        <button class="ctrl-btn danger" id="btn-reset" data-tip="Clear saved session and start fresh">Reset / New</button>
         <button class="ctrl-btn danger" id="btn-panic" data-tip="All notes off (Esc)">Panic</button>
       </div>
 
@@ -438,7 +476,7 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
         <button class="ctrl-btn" id="btn-import-score" data-tip="Import score from JSON">Import</button>
       </div>
       <textarea class="score-json-area" id="score-json" placeholder="Score JSON — export to inspect, paste to import. LLM API: window.__cockpit"></textarea>
-      <div class="score-status" id="score-status"></div>
+      <div class="score-status" id="score-status" aria-live="polite"></div>
 
       <h3>Live</h3>
       <div class="telem-grid">
@@ -450,7 +488,7 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
 
       <h3>Master</h3>
       <div class="ctrl-row">
-        <label>Vol</label>
+        <label for="master-vol">Vol</label>
         <input type="range" id="master-vol" min="0" max="100" value="80">
         <span class="val" id="master-vol-val">80</span>
       </div>
@@ -459,17 +497,17 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
       <div class="vocal-only" style="flex-direction:column;gap:10px">
         <h3>Vocal</h3>
         <div class="ctrl-row">
-          <label>Breath</label>
+          <label for="vox-breathiness">Breath</label>
           <input type="range" id="vox-breathiness" min="0" max="100" value="15">
           <span class="val" id="vox-breathiness-val">15</span>
         </div>
         <div class="ctrl-row">
-          <label>Vib D</label>
+          <label for="vox-vib-depth">Vib D</label>
           <input type="range" id="vox-vib-depth" min="0" max="100" value="25" data-tip="Vibrato depth (cents)">
           <span class="val" id="vox-vib-depth-val">25</span>
         </div>
         <div class="ctrl-row">
-          <label>Vib R</label>
+          <label for="vox-vib-rate">Vib R</label>
           <input type="range" id="vox-vib-rate" min="10" max="120" value="55" data-tip="Vibrato rate (×0.1 Hz)">
           <span class="val" id="vox-vib-rate-val">5.5</span>
         </div>

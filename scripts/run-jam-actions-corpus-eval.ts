@@ -44,8 +44,8 @@
 // a new artifact path (e.g. focused rerun in Slice 13, multi-run in Slice 14).
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync } from "node:fs";
+import { join, dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   buildSample,
@@ -219,6 +219,9 @@ const SLICE_21_SCHUMANN_RECORD_IDS: readonly string[] = [
   "schumann-traumerei:m045-048:piano:mcp-session:v1",
 ];
 
+/** D-B1-004: LLM backend selection — same three options run-llm-eval.ts exposes. */
+type BackendName = "ollama" | "ollama-intern" | "anthropic";
+
 interface CliOpts {
   scope: "public" | "source";
   model: string;
@@ -232,6 +235,22 @@ interface CliOpts {
   n: number;
   /** Slice 14: restrict the sample plan to a named subset. Default "all". */
   sampleFilter: SampleFilter;
+  /**
+   * D-B1-004: which LlmBackend implementation to use for E1/E2/E3. Default
+   * "ollama" — preserves Slice 12 lock #1 (ollama qwen2.5:7b) byte-for-byte
+   * for anyone not passing --backend. Mirrors run-llm-eval.ts's
+   * --backend ollama|ollama-intern|anthropic. Does NOT affect the e3-tool
+   * evaluator, which uses the separate MultiTurnBackend interface — that
+   * currently has exactly one implementation (OllamaMultiTurnBackend), so
+   * e3-tool always runs against Ollama regardless of this flag.
+   */
+  backend: BackendName;
+  /**
+   * D-B1-003: write/resume incremental checkpoints during the eval loops.
+   * Default true (checkpointing is on by default); pass --no-checkpoint to
+   * opt out of both writing and resuming.
+   */
+  checkpoint: boolean;
 }
 
 function parseEvalsList(raw: string): Set<EvalName> {
@@ -273,6 +292,8 @@ function parseArgs(): CliOpts {
     sampleOutputPath: null,
     n: 1,
     sampleFilter: "all",
+    backend: "ollama",
+    checkpoint: true,
   };
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
@@ -312,6 +333,17 @@ function parseArgs(): CliOpts {
         process.exit(1);
       }
       opts.sampleFilter = v;
+    } else if (a === "--backend" && i + 1 < args.length) {
+      const v = args[++i];
+      if (v !== "ollama" && v !== "ollama-intern" && v !== "anthropic") {
+        console.error(
+          `ERROR: --backend must be one of ollama, ollama-intern, anthropic; got '${v}'.`,
+        );
+        process.exit(1);
+      }
+      opts.backend = v;
+    } else if (a === "--no-checkpoint") {
+      opts.checkpoint = false;
     } else if (a === "--help" || a === "-h") {
       opts.help = true;
     }
@@ -362,6 +394,19 @@ Options:
                                                 (13 Slice 18 + 3 fresh; E3-only)
                             slice21-schumann — 1-record Slice 21 remediation
                                                 (schumann m045-048 only; E3-only)
+  --backend ollama|ollama-intern|anthropic  (D-B1-004) LlmBackend for E1/E2/E3.
+                          Default: ollama (Slice 12 lock #1 default, unchanged
+                          unless you pass this flag). Mirrors run-llm-eval.ts's
+                          backend switch. Does NOT affect e3-tool, which always
+                          runs against Ollama (MultiTurnBackend currently has
+                          only one implementation).
+  --no-checkpoint         (D-B1-003) Disable incremental checkpointing. By
+                          default, progress is written to
+                          <result-path>.checkpoint.json after every completed
+                          record/pair, and a matching checkpoint (same scope/
+                          model/seed/evals/n/sample-filter) is auto-resumed on
+                          restart. Pass this flag to run without a checkpoint
+                          file at all.
   --help                  Show this help
 
 Sample plan (locked by kickoff):
@@ -373,7 +418,7 @@ Required inclusions (ENFORCED — sampler aborts if missing):
   - All 6 Slice 11 enriched records in E1 + E3
   - All 4 enriched-record pairs in E2
 
-Backend (LOCKED):
+Backend (default LOCKED per Slice 12 lock #1; override with --backend):
   ollama at http://localhost:11434, qwen2.5:7b model. The script probes the
   endpoint first and prints actionable setup instructions on failure.
 `);
@@ -419,16 +464,182 @@ const SAMPLE_PATH =
 
 const evalsLabel = ["e1", "e2", "e3", "e3-tool"].filter((e) => opts.evals.has(e as EvalName)).join(",");
 
+// ─── D-B1-003: incremental checkpointing ──────────────────────────────────
+//
+// Corpus-scale + multi-run (K>1) eval loops can run for hours; before this
+// fix the ONLY write was a single writeFileSync at the very end (after E1 +
+// E2 + E3 + E3-tool had all finished), so a mid-run crash lost every
+// already-computed result. Each of the four eval loops below now writes the
+// accumulated per-record/per-pair results to CHECKPOINT_PATH after every
+// completed unit of work.
+//
+// On restart, a checkpoint whose run_signature matches the current
+// invocation (scope/model/seed/evals/n/sampleFilter) is loaded and
+// already-completed ids are skipped (resume); a signature mismatch is
+// treated as a different run — the stale checkpoint is ignored and
+// overwritten, never merged. Opt out entirely with --no-checkpoint (disables
+// both writing and resuming). The checkpoint file is deleted once the final
+// result artifact has been written successfully.
+//
+// Deliberately NOT placed under datasets/jam-actions-v0-public/ (even though
+// that's where RESULT_PATH itself lives): that directory is the PUBLISHED
+// package tree, and its packager (scripts/package-jam-actions-public.ts)
+// walks package-inputs.json's declared curated/generated files but
+// warn-and-includes any UNDECLARED file it finds into the published
+// checksums.sha256 (see walkChecksumFiles in src/dataset/package-public.ts).
+// A stray leftover checkpoint sitting in evals/ would get swept into the
+// published checksums manifest the next time someone runs the packager
+// before cleaning up an interrupted eval run. Routing checkpoints through a
+// dedicated repo-root scratch directory instead means the packager never
+// sees them, regardless of operator cleanup discipline.
+const CHECKPOINT_DIR = join(REPO_ROOT, ".eval-checkpoints");
+const CHECKPOINT_PATH = join(CHECKPOINT_DIR, `${basename(RESULT_PATH)}.checkpoint.json`);
+
+interface CorpusEvalRunSignature {
+  scope: string;
+  model: string;
+  seed: string;
+  evals: string;
+  n: number;
+  sampleFilter: string;
+}
+
+const RUN_SIGNATURE: CorpusEvalRunSignature = {
+  scope: opts.scope,
+  model: opts.model,
+  seed: opts.seed,
+  evals: evalsLabel,
+  n: opts.n,
+  sampleFilter: opts.sampleFilter,
+};
+
+function runSignaturesMatch(a: CorpusEvalRunSignature, b: CorpusEvalRunSignature): boolean {
+  return (
+    a.scope === b.scope &&
+    a.model === b.model &&
+    a.seed === b.seed &&
+    a.evals === b.evals &&
+    a.n === b.n &&
+    a.sampleFilter === b.sampleFilter
+  );
+}
+
+interface CorpusEvalCheckpointFile {
+  schema_version: "corpus-eval-checkpoint/1.0.0";
+  written_at: string;
+  run_signature: CorpusEvalRunSignature;
+  e1Results: unknown[];
+  e2Results: unknown[];
+  e3Results: unknown[];
+  e3ToolResults: unknown[];
+}
+
+/**
+ * Mutable checkpoint state, initialized up front with empty-array
+ * placeholders. Each of the four `const eXResults = [...]` arrays declared
+ * later in this script is assigned into the matching field immediately
+ * after its declaration (`checkpointState.e1Results = e1Results;` etc.) —
+ * because arrays are reference types, later `.push()` calls on `e1Results`
+ * stay visible through `checkpointState.e1Results` with no further
+ * reassignment needed.
+ *
+ * This indirection matters because `writeCheckpoint()` must be callable
+ * from inside the E1 loop, which runs (and awaits model calls) well before
+ * the `const e2Results = []` / `e3Results` / `e3ToolResults` statements
+ * further down this script have executed. Referencing those identifiers
+ * directly from a shared helper at that point would hit the temporal dead
+ * zone; routing every read/write through `checkpointState` avoids that
+ * entirely, since its fields are valid (if initially empty) from the top of
+ * the script.
+ */
+const checkpointState: CorpusEvalCheckpointFile = {
+  schema_version: "corpus-eval-checkpoint/1.0.0",
+  written_at: new Date(0).toISOString(),
+  run_signature: RUN_SIGNATURE,
+  e1Results: [],
+  e2Results: [],
+  e3Results: [],
+  e3ToolResults: [],
+};
+
+function writeCheckpoint(): void {
+  if (!opts.checkpoint) return;
+  checkpointState.written_at = new Date().toISOString();
+  checkpointState.run_signature = RUN_SIGNATURE;
+  try {
+    if (!existsSync(CHECKPOINT_DIR)) {
+      mkdirSync(CHECKPOINT_DIR, { recursive: true });
+    }
+    writeFileSync(CHECKPOINT_PATH, JSON.stringify(checkpointState, null, 2) + "\n", "utf8");
+  } catch (err) {
+    // Checkpointing is a durability aid, not the primary output — a failed
+    // checkpoint write must never abort the eval run itself.
+    console.warn(`  [checkpoint] WARN: failed to write ${CHECKPOINT_PATH}: ${(err as Error).message}`);
+  }
+}
+
+function deleteCheckpoint(): void {
+  if (!existsSync(CHECKPOINT_PATH)) return;
+  try {
+    rmSync(CHECKPOINT_PATH);
+    console.log(`  [checkpoint] removed (run completed successfully): ${CHECKPOINT_PATH}`);
+  } catch (err) {
+    console.warn(`  [checkpoint] WARN: failed to remove ${CHECKPOINT_PATH}: ${(err as Error).message}`);
+  }
+}
+
+/**
+ * Load a prior checkpoint from disk IF checkpointing is enabled, the file
+ * exists, and its run_signature matches the current invocation. Returns
+ * null on any mismatch, parse failure, or when checkpointing is disabled —
+ * the caller then starts from empty accumulators exactly as before this
+ * fix.
+ */
+function loadCheckpointIfResumable(): CorpusEvalCheckpointFile | null {
+  if (!opts.checkpoint) return null;
+  if (!existsSync(CHECKPOINT_PATH)) return null;
+  let parsed: CorpusEvalCheckpointFile;
+  try {
+    parsed = JSON.parse(readFileSync(CHECKPOINT_PATH, "utf8")) as CorpusEvalCheckpointFile;
+  } catch (err) {
+    console.warn(
+      `  [checkpoint] WARN: ${CHECKPOINT_PATH} exists but failed to parse (${(err as Error).message}); starting fresh.`,
+    );
+    return null;
+  }
+  if (parsed.schema_version !== "corpus-eval-checkpoint/1.0.0") {
+    console.warn(
+      `  [checkpoint] WARN: ${CHECKPOINT_PATH} has unrecognized schema_version '${parsed.schema_version}'; starting fresh.`,
+    );
+    return null;
+  }
+  if (!runSignaturesMatch(parsed.run_signature, RUN_SIGNATURE)) {
+    console.warn(
+      `  [checkpoint] WARN: ${CHECKPOINT_PATH} was written for a different run ` +
+        `(${JSON.stringify(parsed.run_signature)} vs current ${JSON.stringify(RUN_SIGNATURE)}); ` +
+        `ignoring stale checkpoint and starting fresh (it will be overwritten).`,
+    );
+    return null;
+  }
+  console.log(
+    `  [checkpoint] resuming from ${CHECKPOINT_PATH} (written ${parsed.written_at}): ` +
+      `e1=${parsed.e1Results.length} e2=${parsed.e2Results.length} e3=${parsed.e3Results.length} e3-tool=${parsed.e3ToolResults.length} already complete`,
+  );
+  return parsed;
+}
+
 console.log("=".repeat(72));
 console.log(" jam-actions-v0 Corpus-Scale Eval Runner");
 console.log("=".repeat(72));
 console.log(`  scope:         ${opts.scope}`);
 console.log(`  model:         ${opts.model}`);
+console.log(`  backend:       ${opts.backend}`);
 console.log(`  seed:          ${opts.seed}`);
 console.log(`  evals:         ${evalsLabel}`);
 console.log(`  n (runs/rec):  ${opts.n}${opts.n === 1 ? " (n=1 backward-compat schema)" : ` (Slice 14 multi-run; schema 2.0.0)`}`);
 console.log(`  sample-filter: ${opts.sampleFilter}`);
 console.log(`  dry-run:       ${opts.dryRun}`);
+console.log(`  checkpoint:    ${opts.checkpoint ? CHECKPOINT_PATH : "disabled (--no-checkpoint)"}`);
 console.log(`  result:        ${RESULT_PATH}`);
 console.log(`  sample:        ${SAMPLE_PATH}`);
 console.log();
@@ -749,12 +960,69 @@ if (opts.dryRun) {
   process.exit(0);
 }
 
-await probeOllama(opts.model);
+// D-B1-003: attempt to resume from a prior checkpoint before any model calls.
+const loadedCheckpoint = loadCheckpointIfResumable();
+
+// e3-tool always talks to Ollama directly (see createLlmBackend below), so
+// probe it whenever e3-tool is in scope even if --backend picked something
+// else for E1/E2/E3.
+if (opts.backend === "ollama" || opts.evals.has("e3-tool")) {
+  await probeOllama(opts.model);
+}
 
 // ─── Backend + corpus load ─────────────────────────────────────────────────────
 
-const { OllamaBackend } = await import("../src/dataset/eval/llm-backends/ollama.js");
-const backend: LlmBackend = new OllamaBackend(opts.model);
+// D-B1-004: backend factory mirroring run-llm-eval.ts's multi-backend
+// abstraction. Default "ollama" preserves Slice 12 lock #1 byte-for-byte;
+// --backend ollama-intern / anthropic opt into the other two LlmBackend
+// implementations already used by run-llm-eval.ts.
+async function createLlmBackend(name: BackendName, model: string): Promise<LlmBackend> {
+  switch (name) {
+    case "ollama": {
+      const { OllamaBackend } = await import("../src/dataset/eval/llm-backends/ollama.js");
+      return new OllamaBackend(model);
+    }
+    case "ollama-intern": {
+      const { OllamaInternBackend } = await import(
+        "../src/dataset/eval/llm-backends/ollama-intern.js"
+      );
+      return new OllamaInternBackend(model);
+    }
+    case "anthropic": {
+      if (!process.env.ANTHROPIC_API_KEY) {
+        console.error(
+          "ERROR: ANTHROPIC_API_KEY is not set in environment.\n" +
+            "Export it before running:\n" +
+            "  export ANTHROPIC_API_KEY=sk-ant-...\n\n" +
+            "Or choose a local backend:\n" +
+            "  --backend ollama --model qwen2.5:7b\n" +
+            "  --backend ollama-intern --model qwen2.5:7b",
+        );
+        process.exit(1);
+      }
+      const { AnthropicBackend } = await import(
+        "../src/dataset/eval/llm-backends/anthropic.js"
+      );
+      return new AnthropicBackend(model);
+    }
+  }
+}
+
+const backend: LlmBackend = await createLlmBackend(opts.backend, opts.model);
+if (opts.backend === "ollama-intern") {
+  const backendWithProbe = backend as LlmBackend & { probe?: () => Promise<void> };
+  if (typeof backendWithProbe.probe === "function") {
+    try {
+      await backendWithProbe.probe();
+      console.log("  Ollama reachable (via ollama-intern backend).");
+    } catch (err) {
+      console.error(`\nERROR: ${String(err)}`);
+      process.exit(1);
+    }
+  }
+} else if (opts.backend === "anthropic") {
+  console.log("  Anthropic API key present. Will validate on first API call.");
+}
 
 const catalog: ToolSchemaCatalog = loadToolSchemaCatalog();
 console.log(`Tool catalog: ${catalog.tool_count} tools from ${catalog.derived_from}`);
@@ -775,7 +1043,10 @@ interface RecordE1Result {
   aggregate?: AggregateStats; // present when K>1
 }
 
-const e1Results: RecordE1Result[] = [];
+const e1Results: RecordE1Result[] =
+  (loadedCheckpoint?.e1Results as RecordE1Result[] | undefined) ?? [];
+checkpointState.e1Results = e1Results;
+const e1AlreadyDone = new Set(e1Results.map((r) => r.recordId));
 let e1PassRate = 0;
 let e1EnrichedPassRate = 0;
 let e1NonEnrichedPassRate = 0;
@@ -785,9 +1056,16 @@ if (opts.evals.has("e1")) {
   console.log(
     `\n━━━ E1: Tool-Use Correctness (${e1Total} records, K=${K_RUNS} run${K_RUNS === 1 ? "" : "s"}/record) ━━━`,
   );
+  if (e1AlreadyDone.size > 0) {
+    console.log(`  [checkpoint] ${e1AlreadyDone.size} record(s) already complete; skipping.`);
+  }
   let e1Index = 0;
   for (const recId of filteredE1Ids) {
     e1Index++;
+    if (e1AlreadyDone.has(recId)) {
+      console.log(`  [${String(e1Index).padStart(2)}/${e1Total}] ${recId}: [checkpoint] already done, skipping`);
+      continue;
+    }
     const raw = recordsById.get(recId);
     if (!raw) {
       console.error(`  [${e1Index}/${e1Total}] ${recId}: NOT FOUND in records`);
@@ -867,6 +1145,7 @@ if (opts.evals.has("e1")) {
       rawOutputs,
       aggregate,
     });
+    writeCheckpoint();
   }
 
   e1PassRate = e1Results.length > 0 ? e1Results.filter((r) => r.passed).length / e1Results.length : 0;
@@ -911,7 +1190,10 @@ function mean(values: Array<number | null | undefined>): number | null {
   return v.reduce((s, x) => s + x, 0) / v.length;
 }
 
-const e2Results: PairE2RunResultBundle[] = [];
+const e2Results: PairE2RunResultBundle[] =
+  (loadedCheckpoint?.e2Results as PairE2RunResultBundle[] | undefined) ?? [];
+checkpointState.e2Results = e2Results;
+const e2AlreadyDone = new Set(e2Results.map((r) => `${r.promptId}->${r.targetId}`));
 let e2GrooveMean: number | null = null;
 let e2GrooveMeanEnriched: number | null = null;
 let e2GrooveMeanNonEnriched: number | null = null;
@@ -924,9 +1206,18 @@ if (opts.evals.has("e2")) {
   console.log(
     `\n━━━ E2: Phrase Continuation (${e2Total} pairs, K=${K_RUNS} run${K_RUNS === 1 ? "" : "s"}/pair) ━━━`,
   );
+  if (e2AlreadyDone.size > 0) {
+    console.log(`  [checkpoint] ${e2AlreadyDone.size} pair(s) already complete; skipping.`);
+  }
   let e2Index = 0;
   for (const pair of filteredE2Pairs) {
     e2Index++;
+    if (e2AlreadyDone.has(`${pair.promptId}->${pair.targetId}`)) {
+      console.log(
+        `  [${String(e2Index).padStart(2)}/${e2Total}] ${pair.promptId} -> ${pair.targetId}: [checkpoint] already done, skipping`,
+      );
+      continue;
+    }
     const promptRaw = recordsById.get(pair.promptId);
     const targetRaw = recordsById.get(pair.targetId);
     if (!promptRaw || !targetRaw) {
@@ -1015,6 +1306,7 @@ if (opts.evals.has("e2")) {
       rawOutputs,
       aggregate,
     });
+    writeCheckpoint();
   }
 
   e2EnrichedPairs = e2Results.filter((r) => r.containsEnriched);
@@ -1055,7 +1347,10 @@ interface RecordE3ResultBundle {
   aggregateMarginRandomMidi?: AggregateStats;
 }
 
-const e3Results: RecordE3ResultBundle[] = [];
+const e3Results: RecordE3ResultBundle[] =
+  (loadedCheckpoint?.e3Results as RecordE3ResultBundle[] | undefined) ?? [];
+checkpointState.e3Results = e3Results;
+const e3AlreadyDone = new Set(e3Results.map((r) => r.recordId));
 let e3FullMean: number | null = null;
 let e3TextOnlyMean: number | null = null;
 let e3RandomMidiMean: number | null = null;
@@ -1078,10 +1373,17 @@ if (opts.evals.has("e3")) {
   console.log(
     `\n━━━ E3: Annotation Grounding MCQ (${e3Total} records, K=${K_RUNS} run${K_RUNS === 1 ? "" : "s"}/record) ━━━`,
   );
+  if (e3AlreadyDone.size > 0) {
+    console.log(`  [checkpoint] ${e3AlreadyDone.size} record(s) already complete; skipping.`);
+  }
   const e3RecordsForRandomMidi = publicRecords as unknown as E3Record[];
   let e3Index = 0;
   for (const recId of filteredE3Ids) {
     e3Index++;
+    if (e3AlreadyDone.has(recId)) {
+      console.log(`  [${String(e3Index).padStart(2)}/${e3Total}] ${recId}: [checkpoint] already done, skipping`);
+      continue;
+    }
     const raw = recordsById.get(recId);
     if (!raw) {
       console.error(`  [${e3Index}/${e3Total}] ${recId}: NOT FOUND`);
@@ -1228,6 +1530,7 @@ if (opts.evals.has("e3")) {
       aggregateMarginText,
       aggregateMarginRandomMidi,
     });
+    writeCheckpoint();
   }
 
   e3FullMean = mean(e3Results.map((r) => r.result.aggregate.full));
@@ -1293,9 +1596,18 @@ interface ToolInspectedRecordBundle {
   };
 }
 
-const e3ToolResults: ToolInspectedRecordBundle[] = [];
+const e3ToolResults: ToolInspectedRecordBundle[] =
+  (loadedCheckpoint?.e3ToolResults as ToolInspectedRecordBundle[] | undefined) ?? [];
+checkpointState.e3ToolResults = e3ToolResults;
+const e3ToolAlreadyDone = new Set(e3ToolResults.map((r) => r.recordId));
 
 if (opts.evals.has("e3-tool")) {
+  if (opts.backend !== "ollama") {
+    console.log(
+      `  [note] --backend ${opts.backend} does not apply to e3-tool: MultiTurnBackend currently ` +
+        `has only one implementation (OllamaMultiTurnBackend); e3-tool always uses Ollama.`,
+    );
+  }
   const { createOllamaMultiTurnBackend, runToolInspectedForRecord } =
     await import("../src/dataset/eval/annotation-grounding-tool.js");
 
@@ -1304,11 +1616,20 @@ if (opts.evals.has("e3-tool")) {
   console.log(
     `\n━━━ E3-TOOL: Tool-Scaffolded Annotation Grounding (${totalToolRecords} records, K=${K_RUNS} run${K_RUNS === 1 ? "" : "s"}/record) ━━━`,
   );
+  if (e3ToolAlreadyDone.size > 0) {
+    console.log(`  [checkpoint] ${e3ToolAlreadyDone.size} record(s) already complete; skipping.`);
+  }
   const e3ToolRecordsForRandomMidi = publicRecords as unknown as E3Record[];
   let e3tIndex = 0;
 
   for (const recId of filteredE3ToolIds) {
     e3tIndex++;
+    if (e3ToolAlreadyDone.has(recId)) {
+      console.log(
+        `  [${String(e3tIndex).padStart(2)}/${totalToolRecords}] ${recId}: [checkpoint] already done, skipping`,
+      );
+      continue;
+    }
     const raw = recordsById.get(recId);
     if (!raw) {
       console.error(
@@ -1405,6 +1726,7 @@ if (opts.evals.has("e3-tool")) {
       aggregate,
       toolUseStatsAggregate: tally,
     });
+    writeCheckpoint();
 
     if (K_RUNS > 1) {
       console.log(
@@ -1586,7 +1908,7 @@ const resultArtifact = {
   schema_version: SCHEMA_VERSION,
   generated_at: new Date().toISOString(),
   scope: opts.scope,
-  backend: "ollama",
+  backend: opts.backend,
   model: opts.model,
   seed: opts.seed,
   n_runs: K_RUNS,
@@ -1849,6 +2171,7 @@ const resultArtifact = {
 writeFileSync(RESULT_PATH, JSON.stringify(resultArtifact, null, 2) + "\n", "utf8");
 console.log(`\nResult artifact written: ${RESULT_PATH}`);
 console.log(`Sample manifest written: ${SAMPLE_PATH}`);
+deleteCheckpoint();
 
 console.log("\n━━━ DONE ━━━");
 if (opts.evals.has("e1")) {

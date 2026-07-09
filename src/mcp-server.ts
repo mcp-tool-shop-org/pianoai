@@ -45,7 +45,10 @@ import type { SongEntry, Difficulty, Genre } from "./songs/types.js";
 import { safeParseMeasure, measureToSingableText, type SingAlongMode } from "./note-parser.js";
 import { renderPianoRoll } from "./piano-roll.js";
 import { renderGuitarTab } from "./guitar-tab-roll.js";
-import type { ParseWarning, PlaybackMode, SyncMode, VmpkConnector } from "./types.js";
+import {
+  ENGINE_IDS, ENGINE_LABELS,
+  type EngineId, type ParseWarning, type PlaybackMode, type SyncMode, type VmpkConnector,
+} from "./types.js";
 import { createAudioEngine } from "./audio-engine.js";
 import { createVocalEngine } from "./vocal-engine.js";
 import { createTractEngine, TRACT_VOICE_IDS, type TractVoiceId } from "./vocal-tract-engine.js";
@@ -66,7 +69,7 @@ import {
 import { detectChord, midiNotesToNames } from "./chord-detect.js";
 import type { PianoRollColorMode } from "./piano-roll.js";
 import { createSession, SessionController } from "./session.js";
-import { createConsoleTeachingHook, composeTeachingHooks } from "./teaching.js";
+import { createStderrTeachingHook, composeTeachingHooks } from "./teaching.js";
 import { parseMidiFile, parseMidiBuffer } from "./midi/parser.js";
 import { MidiPlaybackEngine } from "./playback/midi-engine.js";
 import { PlaybackController } from "./playback/controls.js";
@@ -77,6 +80,7 @@ import { scorePerformance } from "./score-performance.js";
 import { scoreAnnotation, formatAnnotationScore } from "./annotation-scorer.js";
 import { compareSongs, formatComparison } from "./song-compare.js";
 import type { VoiceDirective, AsideDirective } from "./types.js";
+import { JamError } from "./errors.js";
 import { readFile } from "node:fs/promises";
 import { existsSync, readFileSync, writeFileSync, realpathSync, mkdirSync } from "node:fs";
 import {
@@ -166,6 +170,27 @@ function resolveContainedExistingPath(inputPath: string, allowedRoot: string): s
   }
 
   return null;
+}
+
+/**
+ * Turn a caught filesystem error into a structured, actionable tool result
+ * instead of leaking a raw OS error string (e.g. "EACCES: permission
+ * denied") straight to the caller (B-B1-003). Reused by the fs-touching
+ * tuning tools (tune_keyboard, reset_keyboard, tune_guitar, reset_guitar).
+ */
+function fsErrorResult(err: unknown, action: string): { content: [{ type: "text"; text: string }]; isError: true } {
+  const jamErr = err instanceof JamError
+    ? err
+    : new JamError({
+        code: "IO_FILE_WRITE",
+        message: `Failed to ${action}: ${err instanceof Error ? err.message : String(err)}`,
+        hint: "Check that ~/.ai-jam-sessions is writable and there's free disk space.",
+        cause: err instanceof Error ? err : undefined,
+      });
+  return {
+    content: [{ type: "text", text: jamErr.toUserString() }],
+    isError: true,
+  };
 }
 
 // ─── Server ─────────────────────────────────────────────────────────────────
@@ -299,7 +324,15 @@ server.prompt(
 // ─── Practice Journal State ─────────────────────────────────────────────────
 
 let lastCompletedSession: SessionSnapshot | null = null;
-let lastPlaybackError: { message: string; songOrFile: string; timestamp: string } | null = null;
+let lastPlaybackError: {
+  message: string;
+  songOrFile: string;
+  timestamp: string;
+  /** 1-based measure in flight when a library-song session failed (B-B1-006). */
+  measure?: number;
+  /** Playback position in flight when a MIDI file session failed (B-B1-006). */
+  positionSeconds?: number;
+} | null = null;
 
 // ─── Tool: list_songs ───────────────────────────────────────────────────────
 
@@ -887,7 +920,7 @@ registerTool(
     withTeaching: z.boolean().optional().describe("Enable live teaching feedback (encouragement, dynamics tips, difficulty warnings). Default: false"),
     singMode: z.enum(["note-names", "solfege", "contour", "syllables"]).optional().describe("Sing-along mode when withSinging is true. Default: note-names"),
     keyboard: z.enum(VOICE_IDS as unknown as [string, ...string[]]).optional().describe("Piano voice/keyboard: grand (default), upright, electric, honkytonk, musicbox, bright. Each has a different character suited to different genres."),
-    engine: z.enum(["piano", "vocal", "tract", "guitar"]).optional().describe("Sound engine: 'piano' (default) plays piano, 'vocal' plays sustained vowel tones, 'tract' uses Pink Trombone vocal tract synthesis, 'guitar' plays physically-modeled guitar."),
+    engine: z.enum(ENGINE_IDS as unknown as [string, ...string[]]).optional().describe("Sound engine: 'piano' (default) plays piano, 'vocal' plays sustained vowel tones, 'tract' uses Pink Trombone vocal tract synthesis, 'guitar' plays physically-modeled guitar."),
     tractVoice: z.enum(TRACT_VOICE_IDS as unknown as [string, ...string[]]).optional().describe("Voice preset for tract engine: soprano (default), alto, tenor, bass. Only used when engine='tract'."),
     guitarVoice: z.enum(GUITAR_VOICE_IDS as unknown as [string, ...string[]]).optional().describe("Guitar voice preset: classical-nylon, steel-dreadnought (default), electric-clean, electric-jazz. Only used when engine='guitar'."),
     syncMode: z.enum(["before", "concurrent"]).optional().describe("Voice sync timing when singing: 'before' (hear voice first, then play together) or 'concurrent' (simultaneous). Default: 'before' when singing only, 'concurrent' with teaching."),
@@ -958,7 +991,7 @@ registerTool(
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       return {
-        content: [{ type: "text", text: `Couldn't start the ${engine === "tract" ? "vocal tract" : engine === "vocal" ? "vocal" : engine === "guitar" ? "guitar" : "piano"} engine: ${msg}` }],
+        content: [{ type: "text", text: `Couldn't start the ${ENGINE_LABELS[(engine ?? "piano") as EngineId]} engine: ${msg}` }],
         isError: true,
       };
     }
@@ -1007,7 +1040,10 @@ registerTool(
         hooks.push(createLiveMidiFeedbackHook(voiceSink, asideSink, parsed));
       }
 
-      hooks.push(createConsoleTeachingHook());
+      // stderr, not stdout — this server speaks JSON-RPC over stdout
+      // (StdioServerTransport); a stdout teaching hook here corrupts the
+      // protocol stream (B-B1-001).
+      hooks.push(createStderrTeachingHook());
       const teachingHook = composeTeachingHooks(...hooks);
 
       // Use PlaybackController when hooks are active, raw engine otherwise
@@ -1041,7 +1077,12 @@ registerTool(
           .catch((err) => {
             const msg = err instanceof Error ? err.message : String(err);
             console.error(`Playback error [${id}]: ${msg}`);
-            lastPlaybackError = { message: msg, songOrFile: id, timestamp: new Date().toISOString() };
+            lastPlaybackError = {
+              message: msg,
+              songOrFile: id,
+              timestamp: new Date().toISOString(),
+              positionSeconds: controller.positionSeconds,
+            };
           })
           .finally(() => {
             connector.disconnect().catch((e) => console.error(`Disconnect error: ${e instanceof Error ? e.message : String(e)}`));
@@ -1078,7 +1119,12 @@ registerTool(
           .catch((err) => {
             const msg = err instanceof Error ? err.message : String(err);
             console.error(`Playback error [${id}]: ${msg}`);
-            lastPlaybackError = { message: msg, songOrFile: id, timestamp: new Date().toISOString() };
+            lastPlaybackError = {
+              message: msg,
+              songOrFile: id,
+              timestamp: new Date().toISOString(),
+              positionSeconds: engine.positionSeconds,
+            };
           })
           .finally(() => {
             connector.disconnect().catch((e) => console.error(`Disconnect error: ${e instanceof Error ? e.message : String(e)}`));
@@ -1160,7 +1206,10 @@ registerTool(
       libHooks.push(createLiveFeedbackHook(voiceSink, asideSink, song));
     }
 
-    libHooks.push(createConsoleTeachingHook());
+    // stderr, not stdout — this server speaks JSON-RPC over stdout
+    // (StdioServerTransport); a stdout teaching hook here corrupts the
+    // protocol stream (B-B1-001).
+    libHooks.push(createStderrTeachingHook());
     const teachingHook = composeTeachingHooks(...libHooks);
 
     const syncMode: SyncMode = syncModeParam ?? ((withSinging && !withTeaching) ? "before" : "concurrent");
@@ -1202,7 +1251,12 @@ registerTool(
       .catch((err) => {
         const msg = err instanceof Error ? err.message : String(err);
         console.error(`Playback error [${song.id}]: ${msg}`);
-        lastPlaybackError = { message: msg, songOrFile: song.id, timestamp: new Date().toISOString() };
+        lastPlaybackError = {
+          message: msg,
+          songOrFile: song.id,
+          timestamp: new Date().toISOString(),
+          measure: session.currentMeasureDisplay,
+        };
       })
       .finally(() => {
         connector.disconnect().catch((e) => console.error(`Disconnect error: ${e instanceof Error ? e.message : String(e)}`));
@@ -1862,7 +1916,11 @@ registerTool(
       };
     }
 
-    saveUserTuning(id, overrides);
+    try {
+      saveUserTuning(id, overrides);
+    } catch (err) {
+      return fsErrorResult(err, `save tuning for "${id}"`);
+    }
     const merged = getMergedVoice(id)!;
     const userTuning = loadUserTuning(id);
 
@@ -1943,7 +2001,11 @@ registerTool(
   },
   async ({ id }) => {
     const hadOverrides = Object.keys(loadUserTuning(id)).length > 0;
-    resetUserTuning(id);
+    try {
+      resetUserTuning(id);
+    } catch (err) {
+      return fsErrorResult(err, `reset tuning for "${id}"`);
+    }
     const voice = getVoice(id)!;
 
     if (hadOverrides) {
@@ -2057,7 +2119,11 @@ registerTool(
       };
     }
 
-    saveGuitarUserTuning(id, overrides);
+    try {
+      saveGuitarUserTuning(id, overrides);
+    } catch (err) {
+      return fsErrorResult(err, `save tuning for "${id}"`);
+    }
     const merged = getMergedGuitarVoice(id)!;
     const userTuning = loadGuitarUserTuning(id);
 
@@ -2138,7 +2204,11 @@ registerTool(
   },
   async ({ id }) => {
     const hadOverrides = Object.keys(loadGuitarUserTuning(id)).length > 0;
-    resetGuitarUserTuning(id);
+    try {
+      resetGuitarUserTuning(id);
+    } catch (err) {
+      return fsErrorResult(err, `reset tuning for "${id}"`);
+    }
     const voice = getGuitarVoice(id)!;
 
     if (hadOverrides) {
@@ -2220,7 +2290,12 @@ registerTool(
 
     if (lastPlaybackError) {
       const e = lastPlaybackError;
-      return { content: [{ type: "text", text: `No active playback.\n\n**Last error:** ${e.message}\n**Source:** ${e.songOrFile}\n**When:** ${e.timestamp}\n\nUse \`play_song\` to try again.` }] };
+      const whereLine = e.measure !== undefined
+        ? `\n**Failed at:** measure ${e.measure}`
+        : e.positionSeconds !== undefined
+          ? `\n**Failed at:** ${e.positionSeconds.toFixed(1)}s`
+          : "";
+      return { content: [{ type: "text", text: `No active playback.\n\n**Last error:** ${e.message}\n**Source:** ${e.songOrFile}${whereLine}\n**When:** ${e.timestamp}\n\nUse \`play_song\` to try again.` }] };
     }
 
     return { content: [{ type: "text", text: `No active playback. Use \`play_song\` to start playing.` }] };
@@ -2811,7 +2886,7 @@ registerTool(
       ``,
       `**Genres:** ${GENRES.join(", ")}`,
       `**Difficulties:** ${DIFFICULTIES.join(", ")}`,
-      `**Sound engines:** piano, vocal, tract, guitar`,
+      `**Sound engines:** ${ENGINE_IDS.join(", ")}`,
       `**Piano voices:** ${VOICE_IDS.join(", ")}`,
       `**Guitar voices:** ${GUITAR_VOICE_IDS.join(", ")}`,
       `**Tract voices:** ${TRACT_VOICE_IDS.join(", ")}`,
@@ -2890,11 +2965,37 @@ const STATE_FILE = pathJoin(
   "server-state.json"
 );
 
+// Bump this if SessionSnapshot's shape changes in a way that would make an
+// older persisted server-state.json misleading (not just missing fields).
+// loadSessionState() discards anything that doesn't match (B-B1-002).
+const SERVER_STATE_SCHEMA_VERSION = 1;
+
+/** Shape-check a persisted lastCompletedSession before trusting it (mirrors the song loader's validate-then-skip pattern in songs/loader.ts). */
+function isValidSessionSnapshot(x: unknown): x is SessionSnapshot {
+  if (typeof x !== "object" || x === null) return false;
+  const s = x as Record<string, unknown>;
+  return (
+    typeof s.songId === "string" &&
+    typeof s.title === "string" &&
+    (s.composer === undefined || typeof s.composer === "string") &&
+    typeof s.genre === "string" &&
+    typeof s.difficulty === "string" &&
+    typeof s.key === "string" &&
+    typeof s.tempo === "number" &&
+    typeof s.speed === "number" &&
+    typeof s.mode === "string" &&
+    typeof s.measuresPlayed === "number" &&
+    typeof s.totalMeasures === "number" &&
+    typeof s.durationSeconds === "number" &&
+    typeof s.timestamp === "string"
+  );
+}
+
 function persistSessionState(): void {
   if (!lastCompletedSession) return;
   try {
     mkdirSync(pathJoin(process.env.HOME ?? process.env.USERPROFILE ?? ".", ".ai-jam-sessions"), { recursive: true });
-    writeFileSync(STATE_FILE, JSON.stringify({ lastCompletedSession }, null, 2));
+    writeFileSync(STATE_FILE, JSON.stringify({ schemaVersion: SERVER_STATE_SCHEMA_VERSION, lastCompletedSession }, null, 2));
   } catch (err) {
     // This used to be a bare require("node:fs") in an ESM module — silently
     // threw ReferenceError on every call and was swallowed here, so session
@@ -2908,10 +3009,25 @@ function loadSessionState(): void {
   try {
     if (!existsSync(STATE_FILE)) return;
     const data = JSON.parse(readFileSync(STATE_FILE, "utf8"));
-    if (data.lastCompletedSession) {
-      lastCompletedSession = data.lastCompletedSession;
+
+    if (typeof data !== "object" || data === null) {
+      console.error(`WARNING: ignoring ${STATE_FILE} — not a JSON object.`);
+      return;
     }
-  } catch { /* best-effort */ }
+    if (data.schemaVersion !== SERVER_STATE_SCHEMA_VERSION) {
+      console.error(`WARNING: ignoring ${STATE_FILE} — schema version ${JSON.stringify(data.schemaVersion)} != ${SERVER_STATE_SCHEMA_VERSION} (old or corrupt file).`);
+      return;
+    }
+    if (data.lastCompletedSession !== undefined) {
+      if (isValidSessionSnapshot(data.lastCompletedSession)) {
+        lastCompletedSession = data.lastCompletedSession;
+      } else {
+        console.error(`WARNING: ignoring lastCompletedSession in ${STATE_FILE} — doesn't match the expected shape.`);
+      }
+    }
+  } catch (err) {
+    console.error(`WARNING: failed to load session state from ${STATE_FILE}: ${err instanceof Error ? err.message : String(err)}`);
+  }
 }
 
 // ─── Start ──────────────────────────────────────────────────────────────────

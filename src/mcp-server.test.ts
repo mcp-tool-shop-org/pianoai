@@ -32,7 +32,7 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import { mkdtempSync, rmSync, readFileSync, existsSync } from "node:fs";
+import { mkdtempSync, rmSync, readFileSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -49,6 +49,68 @@ function extractText(result: ToolResult): string {
     .filter((c) => c.type === "text" && typeof c.text === "string")
     .map((c) => c.text)
     .join("\n");
+}
+
+// ─── Shared helper: fully isolated server instance ─────────────────────────
+//
+// The `client`/`transport` pair set up in the outer `beforeAll` below is
+// shared across all of that describe block's tests and is already connected
+// by the time any test runs — fine for tests that only care about tool
+// call/response behavior, but two categories of test below need more control
+// than that:
+//
+//   1. Tests that must pre-seed a file under the server's HOME (e.g. a
+//      server-state.json with a specific shape) BEFORE the server process
+//      starts, since loadSessionState() only runs once, inside main(), at
+//      startup.
+//   2. Tests that need to observe the raw child process's stdout stream
+//      directly (bypassing the SDK's own lenient per-line JSON-parse-or-drop
+//      handling in ReadBuffer.readMessage(), which silently swallows any
+//      non-JSON line without failing the calling test — see
+//      node_modules/.../@modelcontextprotocol/sdk/dist/esm/shared/stdio.js).
+//
+// Both need their own dedicated, independently-torn-down server instance
+// rather than reusing the shared one.
+async function spawnIsolatedServer(options: {
+  /**
+   * Called with the fresh tmpHome directory path BEFORE the server process
+   * is spawned, so callers can pre-seed files (e.g.
+   * `<tmpHome>/.ai-jam-sessions/server-state.json`) that the server will
+   * read during its own startup.
+   */
+  beforeStart?: (tmpHome: string) => void;
+} = {}): Promise<{
+  client: Client;
+  transport: StdioClientTransport;
+  tmpHome: string;
+  close: () => Promise<void>;
+}> {
+  const tmpHome = mkdtempSync(join(tmpdir(), "ajs-mcp-server-test-iso-"));
+  options.beforeStart?.(tmpHome);
+  const transport = new StdioClientTransport({
+    command: process.execPath,
+    args: ["--import", "tsx", SERVER_PATH],
+    env: {
+      ...process.env,
+      HOME: tmpHome,
+      USERPROFILE: tmpHome,
+    } as Record<string, string>,
+  });
+  const client = new Client({ name: "tests-agent-mcp-server-test-iso", version: "0.0.0" });
+  await client.connect(transport);
+  return {
+    client,
+    transport,
+    tmpHome,
+    close: async () => {
+      try {
+        await client.close();
+      } catch {
+        /* best-effort */
+      }
+      rmSync(tmpHome, { recursive: true, force: true });
+    },
+  };
 }
 
 describe("mcp-server.ts — MCP protocol-level tool tests", () => {
@@ -303,6 +365,379 @@ describe("mcp-server.ts — MCP protocol-level tool tests", () => {
           (m) => m.rightHand.includes("+") || m.leftHand.includes("+"),
         ),
       ).toBe(true);
+    },
+    20000,
+  );
+});
+
+// ─── Stdio purity (pins B-B1-001) ───────────────────────────────────────────
+//
+// mcp-server.ts's MCP transport is StdioServerTransport — the JSON-RPC
+// framing channel IS the child process's stdout. Anything else written to
+// stdout (a stray console.log, a teaching-hook narration line, a debug
+// print) corrupts that channel. Pre-fix, `createConsoleTeachingHook()`
+// (src/teaching.ts) — which calls `console.log(...)` for onMeasureStart /
+// onKeyMoment / onSongComplete / push — was pushed into the hooks array
+// UNCONDITIONALLY by both play_song code paths (mcp-server.ts's MIDI-file
+// branch at ~line 1010 and library-song branch at ~line 1163), regardless of
+// the withTeaching flag. Any play_song call that gets far enough to start
+// playback leaks lines like "  [Measure 1]" onto stdout.
+//
+// This bug does NOT necessarily fail the OTHER tests in this file: the SDK's
+// own StdioClientTransport (see shared/stdio.js's ReadBuffer) reads stdout
+// newline-delimited, and if `JSON.parse(line)` throws on a garbage line, it
+// just forwards to `transport.onerror` (a no-op unless a caller sets one —
+// confirmed by reading the SDK's Protocol class) and moves on to the next
+// line; the legitimate JSON-RPC response, sent as its own separate write,
+// still parses fine and resolves the pending tool call. So a client built on
+// this SDK silently tolerates the leak. A stricter client, or any
+// line-oriented proxy/logger sitting on the stdio pipe (exactly the shape of
+// a real MCP host), would not. This test bypasses the SDK's lenient
+// per-line handling entirely and inspects the raw byte stream, which is the
+// only way to actually catch this class of bug — this is why it is a new,
+// dedicated test rather than an assertion bolted onto an existing one.
+describe("mcp-server.ts — stdio purity (pins B-B1-001)", () => {
+  it(
+    "writes ONLY JSON-RPC to stdout during a play_song call — no teaching-hook narration text " +
+      "(e.g. '[Measure N]') leaks onto the framing channel, even though the SDK client itself " +
+      "would silently tolerate such a leak",
+    async () => {
+      const rawStdoutLines: string[] = [];
+      let lineBuf = "";
+
+      const iso = await spawnIsolatedServer();
+      try {
+        // Reach into the transport's own child process to observe the exact
+        // bytes written to stdout — the same stream the SDK's ReadBuffer
+        // consumes to frame JSON-RPC messages. This is a second, independent
+        // 'data' listener on the real stdout stream (Node streams dispatch
+        // 'data' to every registered listener; this doesn't steal or reorder
+        // bytes the SDK's own transport needs to keep functioning).
+        const rawProcess = (
+          iso.transport as unknown as { _process?: { stdout?: NodeJS.ReadableStream } }
+        )._process;
+        expect(rawProcess?.stdout).toBeTruthy();
+        rawProcess!.stdout!.on("data", (chunk: Buffer) => {
+          lineBuf += chunk.toString("utf8");
+          let idx: number;
+          while ((idx = lineBuf.indexOf("\n")) !== -1) {
+            rawStdoutLines.push(lineBuf.slice(0, idx).replace(/\r$/, ""));
+            lineBuf = lineBuf.slice(idx + 1);
+          }
+        });
+
+        // Loop mode over a tiny 1-measure range on a real library song — the
+        // library-song play_song path is the one that unconditionally pushed
+        // createConsoleTeachingHook() into libHooks pre-fix. onMeasureStart
+        // fires essentially immediately once session.play() starts
+        // (synchronously, before the tool handler's own return — playRange's
+        // first loop iteration awaits Promise.all([onMeasureStart(...),
+        // playMeasure(...)]), and onMeasureStart's console.log runs
+        // synchronously within that), so this exercises the leak whether or
+        // not this machine has a real audio device — see F-765eb987 /
+        // T-B1-001 for confirmation that connector.connect() succeeds
+        // (degrades gracefully) on headless CI here. Per this wave's brief:
+        // if audio genuinely can't start on some other test machine, the
+        // handler still returns its own JSON-RPC response before ever
+        // reaching the hooks code, so the assertion below ("any stdout
+        // observed must be JSON") holds regardless either way.
+        const playResult = (await iso.client.callTool({
+          name: "play_song",
+          arguments: { id: "fallin", mode: "loop", startMeasure: 1, endMeasure: 1 },
+        })) as ToolResult;
+        expect(playResult).toBeDefined();
+
+        // Give any backgrounded teaching-hook callbacks (onMeasureStart /
+        // onKeyMoment / onSongComplete / push) a window to fire and
+        // potentially write to stdout.
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+
+        // Best-effort stop so the background loop doesn't outlive the test.
+        await iso.client.callTool({ name: "stop_playback", arguments: {} }).catch(() => {});
+        await new Promise((resolve) => setTimeout(resolve, 200));
+      } finally {
+        await iso.close();
+      }
+
+      // Flush a trailing partial line (no terminating newline yet, e.g. if
+      // the process was still mid-write when the test stopped listening) —
+      // a non-JSON trailing fragment is just as much a leak as a full line.
+      if (lineBuf.trim().length > 0) {
+        rawStdoutLines.push(lineBuf);
+      }
+
+      const nonEmptyLines = rawStdoutLines.filter((l) => l.trim().length > 0);
+      // Non-vacuous: must have actually observed traffic (at minimum the
+      // play_song and stop_playback tool responses) — otherwise the
+      // all-lines-are-JSON assertion below would trivially pass over zero
+      // lines and prove nothing.
+      expect(nonEmptyLines.length).toBeGreaterThan(0);
+
+      const badLines: string[] = [];
+      for (const line of nonEmptyLines) {
+        try {
+          JSON.parse(line);
+        } catch {
+          badLines.push(line);
+        }
+      }
+      // The load-bearing assertion. Pre-fix, this fails with badLines
+      // containing lines like "  [Measure 1]" (from
+      // createConsoleTeachingHook's console.log) — proving the leak reaches
+      // raw stdout even though the higher-level SDK-client-based tests
+      // elsewhere in this file don't (and structurally can't) detect it.
+      expect(badLines).toEqual([]);
+    },
+    25000,
+  );
+});
+
+// ─── Session-state persistence validation (pins B-B1-002) ──────────────────
+//
+// loadSessionState() (mcp-server.ts) reads <HOME>/.ai-jam-sessions/
+// server-state.json at startup and restores `lastCompletedSession` from it.
+// Neither loadSessionState nor persistSessionState nor STATE_FILE are
+// exported — mcp-server.ts has no isMain-style guard (see this file's own
+// header comment), so there is no way to unit-test the loader function
+// directly. These tests instead pre-seed a server-state.json BEFORE spawning
+// a fresh, isolated server instance (loadSessionState only runs once, inside
+// main(), at startup) and observe the loader's effect indirectly through
+// save_practice_note, which falls back to `lastCompletedSession` whenever no
+// `song_id` override is given ("Tool: save_practice_note") and renders it
+// into the journal entry via buildJournalEntry() (src/journal.ts) — a
+// session-less fallback renders a "### HH:MM — General notes" header; a
+// loaded session renders "### HH:MM — <title> (<composer>)" with the
+// session's fields.
+//
+// Confirmed directly against the landed implementation (mcp-server.ts, "─
+// Helpers ─" section) — two independent gates, both must pass:
+//   1. Top-level `schemaVersion` must strictly equal `SERVER_STATE_SCHEMA_
+//      VERSION` (currently 1). Anything else (absent, wrong number, wrong
+//      type) discards the WHOLE file — even a perfectly-shaped
+//      lastCompletedSession alongside a bad schemaVersion is discarded, not
+//      just the version field.
+//   2. Once the version gate passes, `lastCompletedSession` (if present) is
+//      checked field-by-field by isValidSessionSnapshot() — every required
+//      field must be present with the right primitive type. A shape that
+//      fails this is discarded on its own (schemaVersion alone doesn't save
+//      it), falling back to no-session rather than a corrupted load.
+//
+// Session-state persistence had ZERO coverage before this file.
+describe("mcp-server.ts — session-state validation (pins B-B1-002)", () => {
+  const SERVER_STATE_SCHEMA_VERSION = 1;
+
+  /** A SessionSnapshot that satisfies isValidSessionSnapshot()'s full field/type contract. */
+  function validSessionSnapshot(title: string): Record<string, unknown> {
+    return {
+      songId: "fallin",
+      title,
+      composer: "Tests Agent Composer",
+      genre: "pop",
+      difficulty: "intermediate",
+      key: "C minor",
+      tempo: 92,
+      speed: 1.0,
+      mode: "full",
+      measuresPlayed: 8,
+      totalMeasures: 8,
+      durationSeconds: 30,
+      timestamp: "2026-01-01T00:00:00.000Z",
+    };
+  }
+
+  function seedStateFile(tmpHome: string, rawContent: string): void {
+    const dir = join(tmpHome, ".ai-jam-sessions");
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(join(dir, "server-state.json"), rawContent, "utf-8");
+  }
+
+  async function saveNoteAndReadJournal(
+    client: Client,
+    note: string,
+  ): Promise<{ result: ToolResult; journalText: string }> {
+    const result = (await client.callTool({
+      name: "save_practice_note",
+      arguments: { note },
+    })) as ToolResult;
+    const text = extractText(result);
+    const pathMatch = text.match(/Journal entry saved to (.+)/);
+    expect(pathMatch).not.toBeNull();
+    const journalPath = pathMatch![1].trim();
+    expect(existsSync(journalPath)).toBe(true);
+    const journalText = readFileSync(journalPath, "utf-8");
+    return { result, journalText };
+  }
+
+  it(
+    "loads a well-formed lastCompletedSession from server-state.json (with the correct schemaVersion) and uses it as save_practice_note's fallback session",
+    async () => {
+      const validState = {
+        schemaVersion: SERVER_STATE_SCHEMA_VERSION,
+        lastCompletedSession: validSessionSnapshot("TestsAgentSeededSession"),
+      };
+      const iso = await spawnIsolatedServer({
+        beforeStart: (tmpHome) => seedStateFile(tmpHome, JSON.stringify(validState)),
+      });
+      try {
+        const { journalText } = await saveNoteAndReadJournal(
+          iso.client,
+          "tests-agent-B-B1-002 valid-load probe",
+        );
+        // Full invariant: the seeded session's title/composer genuinely made
+        // it into the rendered entry (not just "didn't crash").
+        expect(journalText).toContain("TestsAgentSeededSession");
+        expect(journalText).toContain("Tests Agent Composer");
+        expect(journalText).not.toContain("General notes");
+        expect(journalText).toContain("tests-agent-B-B1-002 valid-load probe");
+      } finally {
+        await iso.close();
+      }
+    },
+    20000,
+  );
+
+  it(
+    "MUTATION-STYLE: discards the ENTIRE file — including an otherwise perfectly-valid lastCompletedSession — when schemaVersion doesn't match, proving the version gate is a real hard cutoff and not a no-op",
+    async () => {
+      // A validator that only shape-checked lastCompletedSession (ignoring
+      // schemaVersion entirely) would happily accept this fixture — the
+      // session payload alone is 100% valid. The real contract must reject
+      // it anyway because the wrapping schemaVersion doesn't match.
+      const staleVersionState = {
+        schemaVersion: 0, // != SERVER_STATE_SCHEMA_VERSION (1)
+        lastCompletedSession: validSessionSnapshot("ShouldNeverAppearInJournal"),
+      };
+      const iso = await spawnIsolatedServer({
+        beforeStart: (tmpHome) => seedStateFile(tmpHome, JSON.stringify(staleVersionState)),
+      });
+      try {
+        const { result, journalText } = await saveNoteAndReadJournal(
+          iso.client,
+          "tests-agent-B-B1-002 stale-schema-version probe",
+        );
+        expect(result.isError).not.toBe(true);
+        expect(journalText).toContain("General notes");
+        expect(journalText).not.toContain("ShouldNeverAppearInJournal");
+      } finally {
+        await iso.close();
+      }
+    },
+    20000,
+  );
+
+  it(
+    "discards gracefully (falls back to no-session) when schemaVersion is correct but lastCompletedSession is a string, not an object",
+    async () => {
+      const iso = await spawnIsolatedServer({
+        beforeStart: (tmpHome) =>
+          seedStateFile(
+            tmpHome,
+            JSON.stringify({
+              schemaVersion: SERVER_STATE_SCHEMA_VERSION,
+              lastCompletedSession: "not-a-valid-session-object",
+            }),
+          ),
+      });
+      try {
+        const { result, journalText } = await saveNoteAndReadJournal(
+          iso.client,
+          "tests-agent-B-B1-002 malformed-string probe",
+        );
+        expect(result.isError).not.toBe(true);
+        // Discarded, not corrupt-loaded: the null-session fallback header,
+        // no "undefined" leaking from blindly reading .title/.genre/etc off
+        // a string, and definitely not the raw garbage value itself. This
+        // exercises isValidSessionSnapshot()'s `typeof x !== "object"`
+        // branch specifically (schemaVersion is correct here, so the outer
+        // version gate isn't what's catching this case).
+        expect(journalText).toContain("General notes");
+        expect(journalText).not.toContain("undefined");
+        expect(journalText).not.toContain("not-a-valid-session-object");
+      } finally {
+        await iso.close();
+      }
+    },
+    20000,
+  );
+
+  it(
+    "discards gracefully when schemaVersion is correct but lastCompletedSession is an incomplete/old-shape object (missing required fields)",
+    async () => {
+      // Represents a hypothetical hand-edited or partially-written
+      // server-state.json that carries the current schemaVersion but a
+      // session object predating fields SessionSnapshot now requires —
+      // truthy, a real object, but nowhere near a valid session. This
+      // exercises isValidSessionSnapshot()'s per-field type checks
+      // specifically (schemaVersion is correct, so the outer version gate
+      // isn't what's catching this case — a validator that checked ONLY
+      // "is lastCompletedSession an object" would wrongly accept this).
+      const iso = await spawnIsolatedServer({
+        beforeStart: (tmpHome) =>
+          seedStateFile(
+            tmpHome,
+            JSON.stringify({
+              schemaVersion: SERVER_STATE_SCHEMA_VERSION,
+              lastCompletedSession: { songId: "old-song-from-a-prior-schema" },
+            }),
+          ),
+      });
+      try {
+        const { result, journalText } = await saveNoteAndReadJournal(
+          iso.client,
+          "tests-agent-B-B1-002 old-shape probe",
+        );
+        expect(result.isError).not.toBe(true);
+        expect(journalText).toContain("General notes");
+        expect(journalText).not.toContain("undefined");
+        expect(journalText).not.toContain("old-song-from-a-prior-schema");
+      } finally {
+        await iso.close();
+      }
+    },
+    20000,
+  );
+
+  it(
+    "discards gracefully (server still starts, tools still work) when server-state.json is unparseable JSON",
+    async () => {
+      const iso = await spawnIsolatedServer({
+        beforeStart: (tmpHome) => seedStateFile(tmpHome, "{ this is not valid json at all ][["),
+      });
+      try {
+        // Server-level "no crash" — the whole process must still come up and
+        // serve tools normally despite a corrupt state file.
+        const toolList = await iso.client.listTools();
+        expect(toolList.tools.length).toBeGreaterThan(0);
+
+        const { result, journalText } = await saveNoteAndReadJournal(
+          iso.client,
+          "tests-agent-B-B1-002 corrupt-json probe",
+        );
+        expect(result.isError).not.toBe(true);
+        expect(journalText).toContain("General notes");
+      } finally {
+        await iso.close();
+      }
+    },
+    20000,
+  );
+
+  it(
+    "discards gracefully when server-state.json's top level is valid JSON but not an object (e.g. an array)",
+    async () => {
+      const iso = await spawnIsolatedServer({
+        beforeStart: (tmpHome) => seedStateFile(tmpHome, JSON.stringify(["not", "an", "object"])),
+      });
+      try {
+        const { result, journalText } = await saveNoteAndReadJournal(
+          iso.client,
+          "tests-agent-B-B1-002 non-object-top-level probe",
+        );
+        expect(result.isError).not.toBe(true);
+        expect(journalText).toContain("General notes");
+      } finally {
+        await iso.close();
+      }
     },
     20000,
   );

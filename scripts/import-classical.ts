@@ -45,6 +45,7 @@ const IMPORTS: ClassicalImport[] = [
       key: "A minor",
       tags: ["beethoven", "bagatelle", "iconic", "romantic"],
       source: SOURCE,
+      status: "raw",
       musicalLanguage: {
         description: "One of the most instantly recognizable piano pieces ever written. The gentle, lilting A theme with its signature E-D#-E motif contrasts with more turbulent middle sections.",
         structure: "Rondo: A-B-A-C-A",
@@ -66,6 +67,7 @@ const IMPORTS: ClassicalImport[] = [
       key: "Ab major",
       tags: ["beethoven", "sonata", "adagio", "lyrical", "romantic"],
       source: SOURCE,
+      status: "raw",
       musicalLanguage: {
         description: "One of the most beautiful slow movements in the piano repertoire. A serene, singing melody over a gently rocking accompaniment, with a more dramatic middle episode.",
         structure: "Rondo: A-B-A-C-A",
@@ -87,6 +89,7 @@ const IMPORTS: ClassicalImport[] = [
       key: "Eb major",
       tags: ["chopin", "nocturne", "romantic", "lyrical", "ornamental"],
       source: SOURCE,
+      status: "raw",
       musicalLanguage: {
         description: "Perhaps the most famous nocturne ever written. A dreamy, ornamental melody floats over a gentle left-hand waltz pattern. Each return of the theme adds more elaborate decorations.",
         structure: "A-A'-A''-Coda with progressive ornamentation",
@@ -108,6 +111,7 @@ const IMPORTS: ClassicalImport[] = [
       key: "E minor",
       tags: ["chopin", "prelude", "minimalist", "melancholic", "funeral"],
       source: SOURCE,
+      status: "raw",
       musicalLanguage: {
         description: "A masterpiece of economy — a simple, descending melody over slowly shifting chords creates profound sadness. Reportedly played at Chopin's own funeral.",
         structure: "Through-composed: continuous descending motion with final cadence",
@@ -129,6 +133,7 @@ const IMPORTS: ClassicalImport[] = [
       key: "Db major",
       tags: ["chopin", "prelude", "raindrop", "dramatic", "programmatic"],
       source: SOURCE,
+      status: "raw",
       musicalLanguage: {
         description: "Named for the persistent repeated note that evokes raindrops throughout. Gentle outer sections frame a dramatic, stormy middle section in C# minor.",
         structure: "ABA: lyrical outer sections, dramatic middle",
@@ -150,6 +155,7 @@ const IMPORTS: ClassicalImport[] = [
       key: "Db major",
       tags: ["debussy", "impressionist", "moonlight", "atmospheric", "iconic"],
       source: SOURCE,
+      status: "raw",
       musicalLanguage: {
         description: "Debussy's most beloved work — a shimmering, impressionistic evocation of moonlight. Rich arpeggiated textures and floating harmonies create an otherworldly atmosphere.",
         structure: "A-B-A': contemplative opening, flowing middle, ethereal return",
@@ -171,6 +177,7 @@ const IMPORTS: ClassicalImport[] = [
       key: "C major",
       tags: ["mozart", "sonata", "classical-era", "sonata-form", "pedagogical"],
       source: SOURCE,
+      status: "raw",
       musicalLanguage: {
         description: "Mozart labeled this 'a little keyboard sonata for beginners,' but its simplicity is deceptive. Crystal-clear melodies and Alberti bass patterns make it a cornerstone of the Classical repertoire.",
         structure: "Sonata form: Exposition-Development-Recapitulation",
@@ -192,6 +199,7 @@ const IMPORTS: ClassicalImport[] = [
       key: "Ab major",
       tags: ["schubert", "impromptu", "cascading", "virtuosic", "romantic"],
       source: SOURCE,
+      status: "raw",
       musicalLanguage: {
         description: "Cascading arpeggiated figures flow like a waterfall, with a singing melody woven into the right-hand patterns. One of the most pianistically gratifying pieces in the Romantic repertoire.",
         structure: "ABA: flowing outer sections, lyrical middle",
@@ -213,6 +221,7 @@ const IMPORTS: ClassicalImport[] = [
       key: "F major",
       tags: ["schumann", "kinderszenen", "dreaming", "romantic", "lyrical"],
       source: SOURCE,
+      status: "raw",
       musicalLanguage: {
         description: "A tender, nostalgic reverie — perhaps the most famous character piece of the Romantic era. The melody rises and falls like gentle breathing, supported by warm inner voices.",
         structure: "ABA': two statements of the theme with a contrasting middle",
@@ -234,6 +243,7 @@ const IMPORTS: ClassicalImport[] = [
       key: "Ab major",
       tags: ["liszt", "liebestraum", "love", "virtuosic", "romantic"],
       source: SOURCE,
+      status: "raw",
       musicalLanguage: {
         description: "The most famous of Liszt's three Dreams of Love — a passionate, sweeping melody that builds to ecstatic climaxes. Originally a song, transcribed for solo piano with Liszt's characteristic brilliance.",
         structure: "A-B-A': lyrical theme, passionate development, tranquil return",
@@ -255,6 +265,7 @@ const IMPORTS: ClassicalImport[] = [
       key: "C# minor",
       tags: ["rachmaninoff", "prelude", "dramatic", "powerful", "bells"],
       source: SOURCE,
+      status: "raw",
       musicalLanguage: {
         description: "Three thunderous opening chords announce one of the most dramatic piano pieces ever written. The bell-like opening gives way to an agitated middle section before returning with full force.",
         structure: "ABA: chordal opening, agitated middle, triumphant return",
@@ -276,6 +287,7 @@ const IMPORTS: ClassicalImport[] = [
       key: "C major",
       tags: ["bach", "prelude", "baroque", "arpeggiated", "wtc", "pedagogical"],
       source: SOURCE,
+      status: "raw",
       musicalLanguage: {
         description: "The piece that opens Bach's monumental Well-Tempered Clavier — a flowing sequence of arpeggiated chords that journey through a rich harmonic landscape. Deceptively simple, profoundly beautiful.",
         structure: "Through-composed: continuous arpeggiated progression",
@@ -297,6 +309,7 @@ const IMPORTS: ClassicalImport[] = [
       key: "C major",
       tags: ["bach", "invention", "baroque", "counterpoint", "pedagogical"],
       source: SOURCE,
+      status: "raw",
       musicalLanguage: {
         description: "Bach's two-part inventions were designed to teach independent hand coordination. This first invention introduces a simple motif that passes between hands in elegant counterpoint.",
         structure: "Binary: A (tonic) - B (dominant/tonic) with invertible counterpoint",
@@ -318,6 +331,7 @@ const IMPORTS: ClassicalImport[] = [
       key: "A major",
       tags: ["brahms", "intermezzo", "late-romantic", "lyrical", "intimate"],
       source: SOURCE,
+      status: "raw",
       musicalLanguage: {
         description: "One of Brahms's most intimate late works — a tender, autumnal meditation. Rich inner voices and gentle cross-rhythms create warmth beneath a singing melody.",
         structure: "ABA': lyrical outer sections, more intense middle in F# minor",
@@ -339,6 +353,7 @@ const IMPORTS: ClassicalImport[] = [
       key: "C major",
       tags: ["beethoven", "sonata", "heroic", "virtuosic", "dramatic"],
       source: SOURCE,
+      status: "raw",
       musicalLanguage: {
         description: "A blazing, heroic sonata that opens with propulsive repeated chords driving relentlessly forward. One of Beethoven's most technically demanding and emotionally exhilarating works.",
         structure: "Sonata form: dramatic exposition, intense development, triumphant recapitulation",
@@ -360,6 +375,7 @@ const IMPORTS: ClassicalImport[] = [
       key: "C minor",
       tags: ["chopin", "etude", "revolutionary", "virtuosic", "passionate"],
       source: SOURCE,
+      status: "raw",
       musicalLanguage: {
         description: "Written in anguish over the fall of Warsaw, this etude channels political fury into a torrent of left-hand sixteenth notes beneath a declamatory right-hand melody. One of the most technically demanding and emotionally powerful etudes.",
         structure: "Through-composed with dramatic arc: fury → climax → despair → defiance",
@@ -381,6 +397,7 @@ const IMPORTS: ClassicalImport[] = [
       key: "E major",
       tags: ["debussy", "arabesque", "impressionist", "flowing", "ornamental"],
       source: SOURCE,
+      status: "raw",
       musicalLanguage: {
         description: "An early Debussy masterwork that bridges Romanticism and Impressionism. Flowing triplet arpeggios and a graceful melody create a sense of arabesque ornamentation — musical filigree.",
         structure: "ABA: flowing outer sections, contrasting lyrical middle",
@@ -402,6 +419,7 @@ const IMPORTS: ClassicalImport[] = [
       key: "D major",
       tags: ["satie", "gymnopedie", "minimalist", "ambient", "meditative"],
       source: SOURCE,
+      status: "raw",
       musicalLanguage: {
         description: "A strikingly modern piece from 1888 — spare, floating, and meditative. The simple waltz-like accompaniment and wandering melody anticipated ambient music by nearly a century.",
         structure: "A-A'-B: two statements of the theme with a contrasting section",

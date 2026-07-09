@@ -20,6 +20,10 @@ import {
   createVocalSynth, VOCAL_VOICES, VOCAL_VOICE_IDS, VOWEL_IDS,
   type VocalVoiceId, type VowelId, type VocalSynth,
 } from "./vocal-synth.js";
+import {
+  serializeCockpitState, deserializeCockpitState, STORAGE_KEY,
+  type CockpitPersistedState,
+} from "./persistence.js";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -146,13 +150,129 @@ function safeNumber(input: HTMLInputElement, prevValue: number, asFloat = false)
  *  here instead of just failing to match (F-A1: unsafe note-id selectors). */
 const noteSelector = (id: string) => `[data-note-id="${CSS.escape(id)}"]`;
 
+// ─── Persistence ─────────────────────────────────────────────────────────────
+//
+// Autosave/restore cockpit state to localStorage (F-B1-001). All access is
+// wrapped in try/catch — private-mode Safari and quota-exceeded both throw
+// synchronously on getItem/setItem, and this app previously had ZERO
+// persistence: every reload silently discarded the whole score with no
+// warning. A failed save/restore must never crash boot — it just means the
+// session isn't remembered.
+
+function safeLoadRaw(): string | null {
+  try { return localStorage.getItem(STORAGE_KEY); } catch { return null; }
+}
+function safeSaveRaw(json: string): void {
+  try { localStorage.setItem(STORAGE_KEY, json); } catch { /* private mode / quota — no-op */ }
+}
+function safeClearStorage(): void {
+  try { localStorage.removeItem(STORAGE_KEY); } catch { /* no-op */ }
+}
+
+let autosaveTimer: ReturnType<typeof setTimeout> | undefined;
+
+/** Debounced (~500ms) save — call after any score/settings mutation rather
+ *  than saving synchronously, since drag/resize/nudge fire many times a
+ *  second and every save is a full JSON.stringify + localStorage write. */
+function scheduleAutosave() {
+  if (autosaveTimer !== undefined) clearTimeout(autosaveTimer);
+  autosaveTimer = setTimeout(saveStateNow, 500);
+}
+
+/** Immediate (non-debounced) save — used for visibilitychange/pagehide,
+ *  where the tab may be gone before a pending debounce timer would fire. */
+function saveStateNow() {
+  if (autosaveTimer !== undefined) { clearTimeout(autosaveTimer); autosaveTimer = undefined; }
+  const json = serializeCockpitState({
+    score: score.map(({ id: _id, ...rest }) => rest),
+    bpm,
+    engine: ($("sel-voice") as HTMLSelectElement).value,
+    voice: ($("sel-vocal-voice") as HTMLSelectElement).value,
+    tuning: ($("sel-tuning") as HTMLSelectElement).value,
+    refPitch: synth.getRefPitch(),
+    mode,
+  });
+  safeSaveRaw(json);
+}
+
+/** Call after any score/settings mutation: updates the first-run hint
+ *  visibility immediately (autosave is debounced, but a hint that lingers
+ *  for 500ms after the first note lands would just look broken) and
+ *  schedules a debounced autosave. */
+function onStateChanged() {
+  updateFirstRunHint();
+  scheduleAutosave();
+}
+
+/**
+ * Restore a previously-autosaved session on boot, if one exists and is
+ * valid. Reuses importScore() for the bulk of the restore (notes, bpm,
+ * tuning, refPitch, mode, and the active engine's voice) — the same
+ * validated path the score-JSON textarea and window.__cockpit.importScore
+ * already go through, so restore gets the same NaN/range/count guards for
+ * free instead of a second hand-rolled copy of them. importScore only
+ * restores the engine matching the currently-active mode (a pre-existing
+ * limitation of ScoreSnapshot shared with manual Export/Import); since this
+ * persisted schema tracks both engines' voices explicitly, the other
+ * engine's pick is restored separately right after.
+ */
+function restoreFromStorage(): boolean {
+  const raw = safeLoadRaw();
+  if (!raw) return false;
+  const state: CockpitPersistedState | null = deserializeCockpitState(raw);
+  if (!state) return false;
+
+  importScore({
+    version: 1,
+    mode: state.mode,
+    bpm: state.bpm,
+    voice: state.mode === "vocal" ? state.voice : state.engine,
+    vocalVoice: state.voice,
+    tuning: state.tuning,
+    refPitch: state.refPitch,
+    notes: state.score,
+  });
+
+  if (state.mode === "vocal") {
+    ($("sel-voice") as HTMLSelectElement).value = state.engine;
+    synth.setVoice(state.engine as VoiceId);
+  } else {
+    ($("sel-vocal-voice") as HTMLSelectElement).value = state.voice;
+    vocalSynth.setVoice(state.voice as VocalVoiceId);
+  }
+  return true;
+}
+
+// ─── Audio Error Reporting ───────────────────────────────────────────────────
+
+/** Surface a Web Audio init/resume failure to the user instead of the
+ *  silent `.catch(() => {})` this used to be — a suspended/failed
+ *  AudioContext otherwise looks identical to a working one (keys light up,
+ *  telemetry updates, piano roll works) but produces total silence with no
+ *  on-page explanation (F-B1-010). Reuses the existing #score-status area
+ *  rather than adding a second status surface. */
+function reportAudioError(context: string, err: unknown) {
+  const msg = err instanceof Error ? err.message : String(err);
+  setScoreStatus(`Audio ${context} failed: ${msg}`, "error");
+}
+
 // ─── Init ────────────────────────────────────────────────────────────────────
 
 async function init() {
   synth = createSynth();
   vocalSynth = createVocalSynth();
-  await synth.connect();
-  await vocalSynth.connect();
+  // A construction/connect failure (rare, but possible if the browser
+  // refuses to hand out an AudioContext at all) used to reject init()
+  // silently — boot()'s top-level .catch(console.error) only logs to the
+  // devtools console, so the page would look like it loaded fine (keys,
+  // telemetry, piano roll all render) while being completely mute with zero
+  // on-page explanation (F-B1-010). Surface it instead.
+  try {
+    await synth.connect();
+    await vocalSynth.connect();
+  } catch (err) {
+    reportAudioError("init", err);
+  }
   bindAutoplayUnlock();
   populateSelectors();
   buildPianoRoll();
@@ -163,13 +283,19 @@ async function init() {
   updateTuningTable();
   updateTelemetry();
   setInterval(updateTelemetry, 200);
+  restoreFromStorage();
+  updateFirstRunHint();
 
   // A held key or a scheduled score playing when the tab loses focus should
   // not drone on until the user finds Panic — release everything on blur or
   // when the tab is hidden, matching standard on-screen-instrument behavior
-  // (F-A1: stuck notes on focus loss).
+  // (F-A1: stuck notes on focus loss). Also autosave on the same hidden
+  // transition, plus pagehide, since a debounced autosave timer may not
+  // have fired yet if the tab is closed/backgrounded right after an edit
+  // (F-B1-001).
   window.addEventListener("blur", panic);
-  document.addEventListener("visibilitychange", () => { if (document.hidden) panic(); });
+  document.addEventListener("visibilitychange", () => { if (document.hidden) { panic(); saveStateNow(); } });
+  window.addEventListener("pagehide", saveStateNow);
 }
 
 /**
@@ -183,8 +309,8 @@ function bindAutoplayUnlock() {
   const unlock = () => {
     const c1 = synth.getContext();
     const c2 = vocalSynth.getContext();
-    if (c1 && c1.state === "suspended") c1.resume().catch(() => {});
-    if (c2 && c2.state === "suspended") c2.resume().catch(() => {});
+    if (c1 && c1.state === "suspended") c1.resume().catch((err) => reportAudioError("resume", err));
+    if (c2 && c2.state === "suspended") c2.resume().catch((err) => reportAudioError("resume", err));
   };
   window.addEventListener("pointerdown", unlock, { once: true });
   window.addEventListener("keydown", unlock, { once: true });
@@ -203,7 +329,7 @@ function populateSelectors() {
     vs.appendChild(o);
   }
   vs.value = "grand";
-  vs.addEventListener("change", () => { synth.setVoice(vs.value as VoiceId); updateTelemetry(); });
+  vs.addEventListener("change", () => { synth.setVoice(vs.value as VoiceId); updateTelemetry(); onStateChanged(); });
 
   // ── Vocal voice selector ──
   const vvs = $("sel-vocal-voice") as HTMLSelectElement;
@@ -230,6 +356,7 @@ function populateSelectors() {
     vocalSynth.setVowel(vc.defaultVowel);
     document.querySelectorAll(".vowel-btn").forEach(b => b.classList.toggle("active", b.getAttribute("data-vowel") === vc.defaultVowel));
     updateTelemetry();
+    onStateChanged();
   });
 
   // ── Vowel buttons ──
@@ -260,6 +387,7 @@ function populateSelectors() {
     synth.setTuning(ts.value as TuningId);
     vocalSynth.setTuning(ts.value as TuningId);
     updateTuningTable(); updateTelemetry();
+    onStateChanged();
   });
 
   ($('ref-pitch') as HTMLInputElement).addEventListener("change", (e) => {
@@ -273,6 +401,7 @@ function populateSelectors() {
     vocalSynth.setRefPitch(hz);
     updateTuningTable();
     updateTelemetry();
+    onStateChanged();
   });
 }
 
@@ -288,6 +417,7 @@ function setMode(m: "instrument" | "vocal") {
   rerenderAllNotes();
   updateInspector();
   updateTelemetry();
+  onStateChanged();
 }
 
 /** Read current breathiness slider value 0–1 */
@@ -355,6 +485,7 @@ function buildPianoRoll() {
     score.push(note);
     renderNote(note);
     selectNote(note);
+    onStateChanged();
     // Preview sound
     activeNoteOn(midi, 100);
     setTimeout(() => activeNoteOff(midi), 180);
@@ -418,6 +549,7 @@ function renderNote(note: Note) {
     const onUp = () => {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseup", onUp);
+      onStateChanged();
     };
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseup", onUp);
@@ -441,6 +573,7 @@ function renderNote(note: Note) {
     const onUp = () => {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseup", onUp);
+      onStateChanged();
     };
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseup", onUp);
@@ -496,6 +629,73 @@ function deleteSelectedNote() {
   document.querySelector(noteSelector(selectedNote.id))?.remove();
   selectedNote = null;
   updateInspector();
+  onStateChanged();
+}
+
+/** Show/hide the "click to add a note" hint (F-B1-009) — visible while the
+ *  score is empty, hidden as soon as the first note exists. */
+function updateFirstRunHint() {
+  const hint = document.getElementById("pr-hint");
+  if (hint) hint.style.display = score.length === 0 ? "" : "none";
+}
+
+// ─── Keyboard Note Editing (F-B1-002) ────────────────────────────────────────
+//
+// Piano-roll editing without a mouse: reuses the existing selectedNote /
+// selectNote concept (mouse-click selection already applies the `.selected`
+// CSS class — accent border + box-shadow — as the visible focus outline, so
+// nothing new is needed there). Bound from the same keydown listener as the
+// existing Space/Escape/Delete shortcuts in buildKeyboard(), so it inherits
+// the same isTypingTarget()/ctrl-meta-alt guards for free.
+
+/** Tab / Shift-Tab — move selection to the next/previous note, ordered by
+ *  start time then pitch (a stable, predictable traversal order — the
+ *  score array itself is insertion-ordered, which would jump around). */
+function cycleNoteSelection(dir: 1 | -1) {
+  if (score.length === 0) return;
+  const ordered = [...score].sort((a, b) => a.startSec - b.startSec || a.midi - b.midi);
+  const curIdx = selectedNote ? ordered.indexOf(selectedNote) : -1;
+  const nextIdx = curIdx < 0 ? (dir > 0 ? 0 : ordered.length - 1) : (curIdx + dir + ordered.length) % ordered.length;
+  selectNote(ordered[nextIdx]);
+  document.querySelector(noteSelector(ordered[nextIdx].id))?.scrollIntoView({ block: "nearest", inline: "nearest" });
+}
+
+/** ArrowUp/Down (±1 semitone) and ArrowLeft/Right (±1 grid step) on the
+ *  selected note — same clamp/quantize rules as mouse drag (positionNote /
+ *  quantize) so keyboard and mouse edits stay consistent. */
+function nudgeSelectedNote(semitones: number, steps: number) {
+  if (!selectedNote) return;
+  if (semitones !== 0) {
+    selectedNote.midi = Math.max(MIDI_LO, Math.min(MIDI_HI, selectedNote.midi + semitones));
+  }
+  if (steps !== 0) {
+    const grid = 60 / bpm / 4;
+    const step = Number.isFinite(grid) && grid > 0 ? grid : 0.25;
+    selectedNote.startSec = Math.max(0, quantize(selectedNote.startSec + step * steps));
+  }
+  const el = document.querySelector<HTMLElement>(noteSelector(selectedNote.id));
+  if (el) { applyNoteStyle(el, selectedNote); positionNote(el, selectedNote); }
+  updateInspector();
+  onStateChanged();
+}
+
+/** Enter / Insert — add a new note at the current playhead position. Reuses
+ *  the selected note's pitch/vowel as a starting point when one exists, so
+ *  rapid keyboard entry (nudge, insert, nudge, insert...) stays musically
+ *  useful instead of always dropping back to middle C. */
+function insertNoteAtPlayhead() {
+  const midi = selectedNote ? selectedNote.midi : 60;
+  const startSec = quantize(playPosition);
+  const note: Note = {
+    id: "n" + nextId++, midi, startSec,
+    durationSec: 60 / bpm, velocity: 100,
+    ...(mode === "vocal" ? { vowel: selectedNote?.vowel ?? vocalSynth.getVowel(), breathiness: selectedNote?.breathiness ?? getCurrentBreathiness() } : {}),
+  };
+  score.push(note);
+  renderNote(note);
+  selectNote(note);
+  document.querySelector(noteSelector(note.id))?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  onStateChanged();
 }
 
 // ─── Inspector ───────────────────────────────────────────────────────────────
@@ -576,7 +776,9 @@ function buildKeyboard() {
       sc.className = "kb-shortcut";
       sc.textContent = QWERTY_LABELS[m];
       sc.style.bottom = "8px";
-      sc.style.color = "#666";
+      // #666 (~2.1:1 on key-black incl. the shared .kb-shortcut opacity) failed
+      // WCAG AA; #8c8c8c is solid (no opacity) at ~5.1:1 (F-B1-007).
+      sc.style.color = "#8c8c8c";
       key.appendChild(sc);
     }
 
@@ -617,6 +819,14 @@ function buildKeyboard() {
     if (k === " ") { e.preventDefault(); togglePlay(); return; }
     if (k === "escape") { panic(); return; }
     if (k === "delete" || k === "backspace") { e.preventDefault(); deleteSelectedNote(); return; }
+    // Keyboard editing of the piano roll (F-B1-002) — selection, pitch/time
+    // nudge, and insert, so the roll is usable without a mouse.
+    if (k === "tab") { e.preventDefault(); cycleNoteSelection(e.shiftKey ? -1 : 1); return; }
+    if (k === "arrowup") { e.preventDefault(); nudgeSelectedNote(1, 0); return; }
+    if (k === "arrowdown") { e.preventDefault(); nudgeSelectedNote(-1, 0); return; }
+    if (k === "arrowleft") { e.preventDefault(); nudgeSelectedNote(0, -1); return; }
+    if (k === "arrowright") { e.preventDefault(); nudgeSelectedNote(0, 1); return; }
+    if (k === "enter" || k === "insert") { e.preventDefault(); insertNoteAtPlayhead(); return; }
 
     const code = e.code;
     if (QWERTY[code] !== undefined && !heldKeys.has(code)) {
@@ -742,8 +952,8 @@ function play() {
   // gesture, and resume() is async — make sure both contexts are (or are
   // becoming) "running" before we schedule anything (F-A1-003).
   const otherCtx = mode === "vocal" ? synth.getContext() : vocalSynth.getContext();
-  if (ctx.state === "suspended") ctx.resume().catch(() => {});
-  if (otherCtx && otherCtx.state === "suspended") otherCtx.resume().catch(() => {});
+  if (ctx.state === "suspended") ctx.resume().catch((err) => reportAudioError("resume", err));
+  if (otherCtx && otherCtx.state === "suspended") otherCtx.resume().catch((err) => reportAudioError("resume", err));
 
   isPlaying = true;
   $("btn-play").textContent = "⏸";
@@ -826,14 +1036,34 @@ function bindControls() {
   $("btn-loop").addEventListener("click", () => {
     looping = !looping;
     $("btn-loop").classList.toggle("active", looping);
+    $("btn-loop").setAttribute("aria-pressed", String(looping)); // F-B1-005
   });
 
   $("btn-clear").addEventListener("click", () => {
+    // Persistence makes note loss permanent (autosave would immediately
+    // overwrite the last-saved copy with an empty score) — confirm first,
+    // same as Import below (G-1). Skipped when already empty so clearing a
+    // blank score never nags.
+    if (score.length > 0 && !confirm("Clear all notes? This cannot be undone.")) return;
     stop(); playPosition = 0; updateTransportTime();
     score.length = 0;
     selectedNote = null;
     document.querySelectorAll(".pr-note").forEach((el) => el.remove());
     updateInspector();
+    onStateChanged();
+  });
+
+  $("btn-reset").addEventListener("click", () => {
+    const hasSaved = !!safeLoadRaw();
+    if ((score.length > 0 || hasSaved) && !confirm("Reset the cockpit and clear the saved session? This cannot be undone.")) return;
+    stop(); playPosition = 0; updateTransportTime();
+    score.length = 0;
+    selectedNote = null;
+    document.querySelectorAll(".pr-note").forEach((el) => el.remove());
+    updateInspector();
+    safeClearStorage();
+    updateFirstRunHint();
+    setScoreStatus("Reset — starting a new session", "ok");
   });
 
   $("btn-panic").addEventListener("click", panic);
@@ -843,6 +1073,7 @@ function bindControls() {
     if (!selectedNote) return;
     selectedNote.velocity = safeNumber(e.target as HTMLInputElement, selectedNote.velocity);
     $("insp-vel-val").textContent = String(selectedNote.velocity);
+    onStateChanged();
   });
   $("insp-del").addEventListener("click", deleteSelectedNote);
 
@@ -856,6 +1087,7 @@ function bindControls() {
       const el = document.querySelector<HTMLElement>(noteSelector(selectedNote.id));
       if (el) applyNoteStyle(el, selectedNote);
       updateInspector();
+      onStateChanged();
     });
   });
   $("insp-breath").addEventListener("input", (e) => {
@@ -864,6 +1096,7 @@ function bindControls() {
     const v = safeNumber(e.target as HTMLInputElement, prev);
     selectedNote.breathiness = v / 100;
     $("insp-breath-val").textContent = String(v);
+    onStateChanged();
   });
 
   // Master volume
@@ -909,6 +1142,7 @@ function bindControls() {
     bpm = Math.max(BPM_MIN, Math.min(BPM_MAX, parsed));
     input.value = String(bpm);
     drawBeatLines();
+    onStateChanged();
   });
 }
 
@@ -961,7 +1195,7 @@ function updateTuningTable() {
       <td class="hz">${entry.hz.toFixed(3)}</td>
       <td class="cents ${centsClass}">${centsStr}¢</td>
       <td>${entry.ratioFromC.toFixed(5)}</td>
-      <td><button class="tt-ref-btn" data-midi="${60 + entry.pc}" title="Play reference tone">🔊</button></td>
+      <td><button class="tt-ref-btn" data-midi="${60 + entry.pc}" title="Play reference tone" aria-label="Play reference tone for ${entry.name}">🔊</button></td>
     `;
     tbody.appendChild(tr);
   }
@@ -1041,9 +1275,11 @@ function buildCustomEditor() {
   for (let pc = 0; pc < 12; pc++) {
     const label = document.createElement("label");
     label.textContent = NOTE_NAMES[pc];
+    label.htmlFor = "cc-" + pc; // F-B1-004: label was a sibling, not associated
 
     const slider = document.createElement("input");
     slider.type = "range";
+    slider.id = "cc-" + pc;
     slider.min = pc === 0 ? "0" : "0";
     slider.max = pc === 0 ? "0" : "1200";
     slider.step = "0.5";
@@ -1095,6 +1331,7 @@ function bindAuditControls() {
   $("btn-export").addEventListener("click", () => {
     const data = synth.exportTuning();
     ($("tuning-json") as HTMLTextAreaElement).value = JSON.stringify(data, null, 2);
+    clearTuningStatus();
   });
 
   $("btn-import").addEventListener("click", () => {
@@ -1118,10 +1355,26 @@ function bindAuditControls() {
       ($("ref-pitch") as HTMLInputElement).value = String(synth.getRefPitch());
       updateTuningTable();
       updateTelemetry();
+      setTuningStatus("Tuning imported", "ok");
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Invalid tuning JSON");
+      // F-B1-008: alert() blocks the main thread — that also freezes the
+      // Panic (Escape) path until dismissed. Inline status instead, same
+      // pattern as setScoreStatus/#score-status below.
+      setTuningStatus(err instanceof Error ? err.message : "Invalid tuning JSON", "error");
     }
   });
+}
+
+function setTuningStatus(message: string, kind: "error" | "ok") {
+  const el = $("tuning-status");
+  el.textContent = message;
+  el.className = "score-status " + kind;
+}
+
+function clearTuningStatus() {
+  const el = $("tuning-status");
+  el.textContent = "";
+  el.className = "score-status";
 }
 
 // ─── Score Export / Import (LLM API) ─────────────────────────────────────────
@@ -1291,6 +1544,7 @@ function importScore(snap: ScoreSnapshot) {
   updateTelemetry();
   updateInspector();
   setScoreStatus(`Imported ${cleaned.length} note${cleaned.length === 1 ? "" : "s"}`, "ok");
+  onStateChanged();
 }
 
 function bindScoreControls() {
@@ -1301,6 +1555,9 @@ function bindScoreControls() {
   });
 
   $("btn-import-score").addEventListener("click", () => {
+    // Persistence makes overwrite permanent (autosave fires right after) —
+    // confirm before replacing a non-empty score, same as Clear above (G-1).
+    if (score.length > 0 && !confirm("Import will replace the current score. Continue?")) return;
     let data: ScoreSnapshot;
     try {
       data = JSON.parse(($("score-json") as HTMLTextAreaElement).value) as ScoreSnapshot;
@@ -1358,6 +1615,7 @@ async function boot() {
       score.push(note);
       renderNote(note);
       setScoreStatus(`Added note ${noteName(note.midi)}`, "ok");
+      onStateChanged();
     },
   };
 }

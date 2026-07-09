@@ -1,6 +1,6 @@
 // ─── MIDI Playback Engine Tests ──────────────────────────────────────────────
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { writeMidi } from "midi-file";
 import { parseMidiBuffer } from "../midi/parser.js";
 import { MidiPlaybackEngine } from "./midi-engine.js";
@@ -73,6 +73,22 @@ function createMockConnector(): VmpkConnector & {
 // ─── Engine Tests ───────────────────────────────────────────────────────────
 
 describe("MidiPlaybackEngine", () => {
+  // T-B-* (Stage B real-timer-race fix): three tests below (pause-mid-flight,
+  // stop-mid-flight, pause+resume+stop-again) use vi.useFakeTimers() to
+  // deterministically control the engine's internal setTimeout-based
+  // scheduling (sleepInterruptible / scheduleNoteOff in midi-engine.ts, both
+  // plain global setTimeout) instead of racing it against a real wall-clock
+  // wait. This afterEach unconditionally restores real timers after EVERY
+  // test in this describe block (a safe no-op for tests that never faked
+  // them, e.g. "respects speed multiplier" below, which genuinely measures
+  // real elapsed time and must keep doing so), so a thrown assertion
+  // mid-test can never leak fake timers into a later test — mirrors the
+  // established pattern in src/dataset/provenance-url-verifier.test.ts
+  // (F-24c7adee).
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("plays all notes in order", async () => {
     // 3 quarter notes at 120 BPM (C, E, G)
     const buf = buildMidi([
@@ -211,10 +227,17 @@ describe("MidiPlaybackEngine", () => {
     const connector = createMockConnector();
     const engine = new MidiPlaybackEngine(connector, parsed);
 
+    vi.useFakeTimers();
     const playPromise = engine.play({ speed: 2.0 });
     // Let a handful of notes fire, then pause mid-flight (well inside the
-    // inter-note sleep window at this speed).
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    // inter-note sleep window at this speed). Deterministic fake-timer
+    // advance replaces the original real `setTimeout(resolve, 50)` race
+    // against the engine's own real-timer scheduling (T-B-* fix, Stage B):
+    // the 50ms simulated advance is queued and flushed synchronously with
+    // respect to the engine's internal setTimeout calls, so exactly one
+    // note fires here on every run, not "usually one note, occasionally a
+    // different count under CI load."
+    await vi.advanceTimersByTimeAsync(50);
     engine.pause();
     await playPromise;
 
@@ -231,7 +254,13 @@ describe("MidiPlaybackEngine", () => {
     // Before the fix, state was already clobbered to 'stopped' by this point,
     // so resume() (guarded on state === 'paused') would have silently no-op'd
     // and playback would never continue.
-    await engine.resume({ speed: 4 });
+    const resumePromise = engine.resume({ speed: 4 });
+    // Fire every remaining fake timer (inter-note sleeps + note-off timers)
+    // until the queue drains, which happens exactly when play() reaches
+    // "finished" and stops scheduling new ones — equivalent to "wait for it
+    // to actually finish," just without any real wall-clock wait.
+    await vi.runAllTimersAsync();
+    await resumePromise;
 
     expect(engine.state).toBe("finished");
     expect(engine.eventsPlayed).toBe(NOTE_COUNT);
@@ -253,8 +282,11 @@ describe("MidiPlaybackEngine", () => {
     const connector = createMockConnector();
     const engine = new MidiPlaybackEngine(connector, parsed);
 
+    vi.useFakeTimers();
     const playPromise = engine.play({ speed: 2.0 });
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    // Deterministic fake-timer advance — see the pause() test above for why
+    // this replaces the original real 50ms race (T-B-* fix, Stage B).
+    await vi.advanceTimersByTimeAsync(50);
     engine.stop();
     await playPromise;
 
@@ -281,8 +313,11 @@ describe("MidiPlaybackEngine", () => {
     const engine = new MidiPlaybackEngine(connector, parsed);
 
     // First pause/resume cycle.
+    vi.useFakeTimers();
     const firstPlay = engine.play({ speed: 2.0 });
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    // Deterministic fake-timer advance — see the pause() test above for why
+    // this replaces the original real 50ms race (T-B-* fix, Stage B).
+    await vi.advanceTimersByTimeAsync(50);
     engine.pause();
     await firstPlay;
     expect(engine.state).toBe("paused");
@@ -292,7 +327,7 @@ describe("MidiPlaybackEngine", () => {
     // wrong: a stale _pauseRequested=true left over from the earlier pause()
     // could make this stop() incorrectly resolve to 'paused'.
     const resumePromise = engine.resume({ speed: 2.0 });
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    await vi.advanceTimersByTimeAsync(50);
     engine.stop();
     await resumePromise;
 

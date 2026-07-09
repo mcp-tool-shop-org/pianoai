@@ -54,6 +54,44 @@ export function createConsoleTeachingHook(): TeachingHook {
   };
 }
 
+// ─── Stderr Hook (MCP server) ───────────────────────────────────────────────
+
+/**
+ * Logs teaching interjections to stderr — identical formatting to
+ * createConsoleTeachingHook(), just routed to stderr instead of stdout.
+ *
+ * Use this instead of createConsoleTeachingHook() in any host that speaks a
+ * framed protocol over stdout, such as the MCP server's StdioServerTransport
+ * (JSON-RPC on stdout). Writing teaching lines to stdout there interleaves
+ * plain text with the JSON-RPC stream and corrupts it (B-B1-001). CLI mode
+ * has no such stream to protect, so it keeps using the stdout console hook.
+ */
+export function createStderrTeachingHook(): TeachingHook {
+  return {
+    async onMeasureStart(measureNumber, teachingNote, dynamics) {
+      const parts: string[] = [`  [Measure ${measureNumber}]`];
+      if (dynamics) parts.push(`(${dynamics})`);
+      if (teachingNote) parts.push(`— ${teachingNote}`);
+      console.error(parts.join(" "));
+    },
+
+    async onKeyMoment(moment) {
+      console.error(`  ★ ${moment}`);
+    },
+
+    async onSongComplete(measuresPlayed, songTitle) {
+      console.error(`\n  ✓ Finished "${songTitle}" — ${measuresPlayed} measures played.`);
+    },
+
+    async push(interjection) {
+      const prefix =
+        interjection.priority === "high" ? "❗" :
+        interjection.priority === "med" ? "💡" : "ℹ️";
+      console.error(`  ${prefix} ${interjection.text}`);
+    },
+  };
+}
+
 // ─── Silent Hook (testing) ──────────────────────────────────────────────────
 
 /**

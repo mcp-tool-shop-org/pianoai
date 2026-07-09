@@ -474,7 +474,7 @@ export const TUNING_PARAMS: TuningParam[] = [
 
 // ─── User Tuning Persistence ────────────────────────────────────────────────
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync, unlinkSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync, renameSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
 import { homedir } from "node:os";
 
@@ -505,16 +505,33 @@ export function loadUserTuning(voiceId: string): UserTuning {
   if (!existsSync(p)) return {};
   try {
     return JSON.parse(readFileSync(p, "utf-8"));
-  } catch {
+  } catch (err) {
+    // A corrupt file used to silently and permanently fall back to factory
+    // defaults with no trace of why (B-B1-005) — warn so it's diagnosable
+    // instead of a keyboard mysteriously "forgetting" its tuning.
+    console.error(`WARNING: corrupt tuning file, using factory defaults: ${p} (${err instanceof Error ? err.message : String(err)})`);
     return {};
   }
 }
 
-/** Save user tuning overrides. Merges with existing overrides. */
+/** Save user tuning overrides. Merges with existing overrides. Atomic (write-temp-then-rename) so a crash or racing writer can't leave a half-written, corrupt tuning file (B-B1-005). */
 export function saveUserTuning(voiceId: string, overrides: UserTuning): void {
   const existing = loadUserTuning(voiceId);
   const merged = { ...existing, ...overrides };
-  writeFileSync(tuningPath(voiceId), JSON.stringify(merged, null, 2), "utf-8");
+  const finalPath = tuningPath(voiceId);
+  const tmpPath = `${finalPath}.${process.pid}-${Date.now()}.tmp`;
+  // One try/catch around the WHOLE write-temp-then-rename sequence. The temp
+  // write itself can throw (disk full mid-write, I/O error, process killed
+  // during the write syscall) — that leaves an orphaned .tmp too, not just a
+  // failed rename does. Cleaning up only on rename failure left .tmp litter to
+  // accumulate across repeated write-time crashes (B-B1-005 hygiene gap).
+  try {
+    writeFileSync(tmpPath, JSON.stringify(merged, null, 2), "utf-8");
+    renameSync(tmpPath, finalPath);
+  } catch (err) {
+    try { unlinkSync(tmpPath); } catch { /* best-effort cleanup */ }
+    throw err;
+  }
 }
 
 /** Clear all user tuning overrides for a voice (reset to factory). */

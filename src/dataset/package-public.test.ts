@@ -10,13 +10,15 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { describe, it, expect } from "vitest";
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync, readFileSync, existsSync } from "node:fs";
-import { join } from "node:path";
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync, readFileSync, readdirSync, existsSync } from "node:fs";
+import { join, dirname } from "node:path";
 import { tmpdir } from "node:os";
+import { fileURLToPath } from "node:url";
 
 import {
   assertCitationCffMatchesVersion,
   assertCuratedFilesPresent,
+  assertNoExcludedWorksInPublicSet,
   assertPackageInputsValid,
   buildChecksumsManifest,
   buildCitationCff,
@@ -26,6 +28,7 @@ import {
   buildRecordsJsonl,
   buildSplitIndex,
   countPairs,
+  EXCLUDED_SONG_IDS,
   extractCitationCffVersion,
   filterProvenanceVerification,
   filterSplitsToPublic,
@@ -134,6 +137,156 @@ describe("selectPublicRecords", () => {
     expect(out).toHaveLength(5);
     expect(out.find((r) => r.id.startsWith("songY"))).toBeUndefined();
     expect(out.find((r) => r.id.startsWith("songZ"))).toBeUndefined();
+  });
+});
+
+// ────────────────────────────────────────────────────────────────────────────
+// ─── D-B1-002 — exclusion regression guard ─────────────────────────────────
+// ────────────────────────────────────────────────────────────────────────────
+//
+// selectPublicRecords() filters strictly on `provenance.record_verdict ===
+// "public"`. That is correct today, but before this guard existed, it was
+// the ONLY thing standing between the two provenance-unverifiable works
+// (Satie Gymnopédie No. 1; Debussy Arabesque No. 1 — see PROVENANCE-NOTE.md)
+// and the public package: nothing would have caught a future accidental
+// re-promotion (a corpus-edit bug, a bad merge, a script that flips
+// `record_verdict` back to "public"). assertNoExcludedWorksInPublicSet() is
+// a defense-in-depth backstop, independent of `record_verdict` — even if a
+// deny-listed song's records somehow carry `record_verdict: "public"`, the
+// packager must still refuse to ship them. These tests construct exactly
+// that regression scenario and assert the guard actually rejects it — this
+// is the gate that was previously missing from the suite entirely (T-B1-002
+// / F-1ab2f033).
+describe("D-B1-002 — assertNoExcludedWorksInPublicSet (exclusion regression guard)", () => {
+  it("does NOT throw when the public set contains no deny-listed song", () => {
+    expect(() => assertNoExcludedWorksInPublicSet(PUBLIC_FIVE)).not.toThrow();
+  });
+
+  it("EXCLUDED_SONG_IDS contains exactly the two provenance-unverifiable songs", () => {
+    expect([...EXCLUDED_SONG_IDS].sort()).toEqual(["debussy-arabesque-no1", "satie-gymnopedie-no1"]);
+  });
+
+  it("throws when a satie-gymnopedie-no1 record sneaks into the public set despite record_verdict: 'public'", () => {
+    // Simulates the exact regression this guard defends against: a
+    // corpus-edit bug or bad merge that flips record_verdict back to
+    // "public" for a deny-listed song. selectPublicRecords() alone does NOT
+    // catch this (it only filters on record_verdict) — the deny-list guard
+    // is the only thing standing between this fixture and a public release.
+    const sneaky = makeRecord(
+      "satie-gymnopedie-no1:m003-006:piano:mcp-session:v1",
+      "public",
+      "satie-gymnopedie-no1",
+      "prompt",
+    );
+    const attemptedPublicSet = selectPublicRecords([...PUBLIC_FIVE, sneaky]);
+    // Prove selectPublicRecords' own filter really did let it through — i.e.
+    // this test is actually exercising the guard, not a filter that already
+    // caught it upstream.
+    expect(attemptedPublicSet.some((r) => r.scope.song_id === "satie-gymnopedie-no1")).toBe(true);
+    expect(() => assertNoExcludedWorksInPublicSet(attemptedPublicSet)).toThrow(/EXCLUSION REGRESSION/);
+  });
+
+  it("throws when a debussy-arabesque-no1 record sneaks into the public set despite record_verdict: 'public'", () => {
+    const sneaky = makeRecord(
+      "debussy-arabesque-no1:m001-004:piano:mcp-session:v1",
+      "public",
+      "debussy-arabesque-no1",
+      "standalone",
+    );
+    const attemptedPublicSet = selectPublicRecords([...PUBLIC_FIVE, sneaky]);
+    expect(attemptedPublicSet.some((r) => r.scope.song_id === "debussy-arabesque-no1")).toBe(true);
+    expect(() => assertNoExcludedWorksInPublicSet(attemptedPublicSet)).toThrow(/EXCLUSION REGRESSION/);
+  });
+
+  it("throws when EITHER deny-listed song is mixed in among otherwise-clean public records (does not require an all-bad set)", () => {
+    const satieSneaky = makeRecord(
+      "satie-gymnopedie-no1:m003-006:piano:mcp-session:v1",
+      "public",
+      "satie-gymnopedie-no1",
+      "prompt",
+    );
+    expect(() =>
+      assertNoExcludedWorksInPublicSet(selectPublicRecords([...MIXED_SEVEN, satieSneaky])),
+    ).toThrow(/EXCLUSION REGRESSION/);
+  });
+
+  it("the thrown error message names the offending song and the specific record id (actionable, not just 'something failed')", () => {
+    const sneaky = makeRecord(
+      "satie-gymnopedie-no1:m003-006:piano:mcp-session:v1",
+      "public",
+      "satie-gymnopedie-no1",
+      "prompt",
+    );
+    let caught: Error | undefined;
+    try {
+      assertNoExcludedWorksInPublicSet([sneaky]);
+    } catch (err) {
+      caught = err as Error;
+    }
+    expect(caught).toBeDefined();
+    expect(caught!.message).toContain("satie-gymnopedie-no1");
+    expect(caught!.message).toContain("satie-gymnopedie-no1:m003-006:piano:mcp-session:v1");
+  });
+
+  it("does not flag a song whose id merely shares a prefix with a deny-listed id (exact match, not substring match)", () => {
+    // Guards against an implementation that does substring/prefix matching
+    // instead of exact song_id equality — a false positive here would be a
+    // real (if less severe) bug of its own.
+    const notActuallyDenylisted = makeRecord(
+      "satie-gymnopedie-no1-arrangement-b:m001-004:piano:mcp-session:v1",
+      "public",
+      "satie-gymnopedie-no1-arrangement-b",
+      "standalone",
+    );
+    expect(() => assertNoExcludedWorksInPublicSet([notActuallyDenylisted])).not.toThrow();
+  });
+
+  it("supports a custom deny-list override rather than hardcoding EXCLUDED_SONG_IDS internally", () => {
+    const record = makeRecord("songZ:m001-004:piano:mcp-session:v1", "public", "songZ", "standalone");
+    expect(() => assertNoExcludedWorksInPublicSet([record])).not.toThrow(); // not deny-listed by default
+    expect(() => assertNoExcludedWorksInPublicSet([record], ["songZ"])).toThrow(/EXCLUSION REGRESSION/);
+  });
+});
+
+describe("D-B1-002 — real corpus regression: satie/debussy never survive the public packaging pipeline", () => {
+  it("selectPublicRecords + assertNoExcludedWorksInPublicSet on the real datasets/jam-actions-v0/records corpus excludes both deny-listed songs", () => {
+    const __dirname = dirname(fileURLToPath(import.meta.url));
+    const REPO_ROOT = join(__dirname, "..", "..");
+    const recordsDir = join(REPO_ROOT, "datasets", "jam-actions-v0", "records");
+    if (!existsSync(recordsDir)) {
+      // Environment without the dataset checked out (e.g. a sparse CI
+      // clone) — skip rather than false-fail. The synthetic guard tests
+      // above already pin the load-bearing invariant without a filesystem
+      // dependency; this test is an additional real-data regression trap
+      // when the corpus IS present.
+      return;
+    }
+    const files = readdirSync(recordsDir).filter((f) => f.endsWith(".json"));
+    expect(files.length).toBeGreaterThan(0);
+    const allRecords: SourceRecord[] = files.map(
+      (f) => JSON.parse(readFileSync(join(recordsDir, f), "utf8")) as SourceRecord,
+    );
+
+    const publicRecords = selectPublicRecords(allRecords);
+    expect(publicRecords.length).toBeGreaterThan(0);
+
+    // Must not throw for TODAY's real corpus (both deny-listed songs are
+    // correctly "internal" today, per PROVENANCE-NOTE.md) — a throw here
+    // would mean the source data has ALREADY regressed and this test is
+    // correctly reporting that, not a test bug.
+    expect(() => assertNoExcludedWorksInPublicSet(publicRecords)).not.toThrow();
+
+    const offendingIds = publicRecords
+      .filter((r) => r.id.startsWith("satie-gymnopedie") || r.id.startsWith("debussy-arabesque"))
+      .map((r) => r.id);
+    expect(offendingIds).toEqual([]);
+
+    // Sanity: the deny-listed songs really are present in the SOURCE corpus
+    // (proving this test isn't vacuously passing because the records simply
+    // don't exist on disk) — they're just correctly excluded by verdict.
+    const songIds = new Set(allRecords.map((r) => r.scope.song_id));
+    expect(songIds.has("satie-gymnopedie-no1")).toBe(true);
+    expect(songIds.has("debussy-arabesque-no1")).toBe(true);
   });
 });
 
