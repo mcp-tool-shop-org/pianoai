@@ -16,7 +16,7 @@ on:
       hf_repo_id:
         description: "HF dataset repo (namespace/name)"
         required: true
-        default: "mcp-tool-shop-org/jam-actions-v0"
+        default: "mcp-tool-shop/jam-actions-v0"
       commit_message:
         description: "HF commit message"
         required: false
@@ -53,12 +53,12 @@ jobs:
         run: |
           set -euo pipefail
           case "$REPO_ID" in
-            mcp-tool-shop-org/*)
+            mcp-tool-shop/*|mcp-tool-shop-org/*)
               echo "hf_repo_id OK: $REPO_ID"
               ;;
             *)
-              echo "ERROR: hf_repo_id must start with 'mcp-tool-shop-org/' (got: $REPO_ID)"
-              echo "This workflow is a narrowly-scoped recovery tool for this org's datasets only."
+              echo "ERROR: hf_repo_id must start with 'mcp-tool-shop/' or 'mcp-tool-shop-org/' (got: $REPO_ID)"
+              echo "This workflow is a narrowly-scoped recovery tool for this studio's datasets only."
               exit 1
               ;;
           esac

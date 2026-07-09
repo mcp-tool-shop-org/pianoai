@@ -292,7 +292,7 @@ jobs:
         if: github.event.inputs.mode == 'publish' && github.event.inputs.confirm_irreversible == 'yes-mint-doi'
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-          HF_REPO_ID: mcp-tool-shop-org/jam-actions-v0
+          HF_REPO_ID: mcp-tool-shop/jam-actions-v0
         run: |
           set -euo pipefail
           if [ -z "${HF_TOKEN:-}" ]; then
