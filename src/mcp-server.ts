@@ -986,6 +986,16 @@ registerTool(
         : engine === "guitar"
           ? createGuitarEngine({ voice: (guitarVoice ?? "steel-dreadnought") as GuitarVoiceId })
           : createAudioEngine(voiceId);
+    // KNOWN LIMITATION (stdio hardening follow-up): on a host with no audio
+    // device or JACK library, node-web-audio-api's native cpal layer prints a
+    // backend-probe failure ("Failed to open client because of error:
+    // LibraryError(\"libjack.so.0: ...\")") directly to fd-1 (stdout) during
+    // connect() — bypassing our console, which we route to stderr everywhere
+    // else. On an MCP stdio host that non-JSON line can corrupt the JSON-RPC
+    // frame. We can't intercept a native fd-1 write from JS without OS-level
+    // dup2; the robust fix is to redirect fd-1 -> fd-2 around this connect (or
+    // run audio in a worker). Tracked as a hardening item; the stdio-purity
+    // test documents + tolerates only this specific native line.
     try {
       await connector.connect();
     } catch (err) {
