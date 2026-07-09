@@ -202,3 +202,15 @@ Then **Phase 9** (full verify ×3 on flake-prone surfaces, CI green) → **Phase
 **Coordinator infra commit:** pnpm 10 across all 5 CI pins (ci ×3, release, publish — release.yml was the lens catch that saved the next release), action pins → peeled v6.0.9 commit `0ebf4713…`, package.json legacy `pnpm` field removed (overrides live in pnpm-workspace.yaml only).
 
 **Chips spawned (open):** `renderPianoRoll` missing from index.ts exports; loop-mode resume restarts whole range (S3-adjacent).
+
+---
+
+## Iteration-2 receipt (executed 2026-07-09)
+
+**Execution:** Waves C1 (undo/redo — first attempt died on the 64k per-response output cap composing a mega-write; tree untouched, retried clean under chunked-write discipline) + S3 (practice loop + scoring wire-up), parallel Sonnet, exclusive ownership held. Mid-wave: the director ran both open chips as operator sessions — `renderPianoRoll` export landed, the loop-resume fix landed, **and the chip session found + fixed a third bug** (playRange's recording cursor skipped `toNominalSec` at speed≠1 — proven red-then-green). S3 was briefed mid-flight and built on all three.
+
+**Shipped:** linear command stack (per-note deltas + Clear/Import full snapshots, gesture coalescing, depth 100) [findings 1–8]; Clear/Import confirm() → undoable + toast, Reset keeps confirm [5, 6]; Ctrl+Z/Shift+Z/Y + toolbar buttons. PracticeLoop (clean-pass-gated ramp 70→100% +5, windowed per-pass scoring, worst-measure targeting, micro-goal lines) [26, 29–31]; `play_song{metronome, countIn, record}`; new tools `practice_loop` / `practice_status` / `score_last_take` / `view_scored_piano_roll` (**42 → 46**); CLI `practice` + the first `cli.test.ts` (Tier-1 gap chipped).
+
+**Adversarial verify (lenses D + E):** 3 HIGH confirmed + fixed — cross-command id invalidation in undo (fixed via id-preserving `restoreNote`/`replaceScoreWithIds` primitives; the whole delta-staleness class dies); CLI entry guard no-op through Unix symlinked bins (realpath fix + symlink-exec test + first dist-binary smoke); windowed songs rendered as empty SVG (renderer defaults now derive from actual measure numbers). Mediums fixed: loop-blind transport tools (pause/resume route into the loop, set_speed refuses against the ramp), score_last_take range capture + loop-take refusal, import-undo restores settings, toast a11y (opacity not display:none), slider-focus Ctrl+Z, boundary-nudge redo-wipe. LOWs fixed: practice CLI exit code, max-passes-reached honest status, stopActive teardown race, mid-drag undo guard, undo key-repeat. **Zero unfixed CONFIRMED findings.**
+
+**Gate:** 62 files, **2051 passed + 1 expected skip** (win32 symlink), smoke 48/48, `node dist/cli.js --version` executes, cockpit typecheck/build green. Session arc: 1701 → 2051 tests.
