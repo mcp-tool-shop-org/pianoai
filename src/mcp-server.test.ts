@@ -482,33 +482,24 @@ describe("mcp-server.ts — stdio purity (pins B-B1-001)", () => {
         }
       }
 
-      // Our teaching/singing hooks — the thing B-B1-001 fixed. If ANY of these
-      // reach stdout the fix has regressed. (createConsoleTeachingHook emitted
-      // "  [Measure N]"; the singing/aside hooks emit ♪ / ★ / 🎓 / ℹ / 💡 / ❗.)
-      const OUR_NARRATION =
-        /\[Measure\b|★|🎓|♪|Finished\b|ℹ|💡|❗|Do-|Re-|Mi-|Fa-|Sol-|La-|Ti-/;
-      // Known THIRD-PARTY native-audio backend-probe noise: node-web-audio-api's
-      // cpal layer prints a JACK/ALSA failure to stdout when no audio device or
-      // JACK lib is present (headless CI: `Failed to open client because of
-      // error: LibraryError("libjack.so.0: cannot open shared object file …")`).
-      // This is emitted from native code, outside our JS control, and is NOT the
-      // teaching-hook leak this test pins. It is a real (narrow) stdio-hardening
-      // gap — a headless MCP host could see it corrupt the JSON-RPC frame — and
-      // is tracked separately (see the audio-connect comment in mcp-server.ts:
-      // redirect native fd-1 during connect). We tolerate ONLY these documented
-      // lines here so the test stays green + meaningful across environments.
-      const NATIVE_AUDIO_NOISE =
-        /Failed to open client because of error|LibraryError|libjack|cannot open shared object|ALSA lib|cannot find card|snd_/i;
-
-      const narrationLeaks = badLines.filter((l) => OUR_NARRATION.test(l));
-      const unexpectedLeaks = badLines.filter((l) => !NATIVE_AUDIO_NOISE.test(l));
-
-      // Load-bearing: our narration must NEVER reach stdout (pins B-B1-001;
-      // reverting the stderr-hook makes "[Measure N]" appear here → RED).
-      expect(narrationLeaks).toEqual([]);
-      // And nothing unexpected either — only the documented native-audio probe
-      // noise above is allowed; any other non-JSON line is a real leak → RED.
-      expect(unexpectedLeaks).toEqual([]);
+      // Strict purity: stdout IS the JSON-RPC framing channel, so it must carry
+      // nothing but JSON. Two classes of non-JSON used to reach it, both now
+      // closed:
+      //   • our own teaching/singing narration ("[Measure N]", ♪/★/🎓/ℹ/💡/❗,
+      //     solfège) — routed to stderr (B-B1-001);
+      //   • the native audio layer's fd-1 writes — node-web-audio-api's cpal
+      //     JACK probe (`Failed to open client … LibraryError("libjack.so.0…")`)
+      //     prints to fd-1 from native code, outside our JS console. It could
+      //     not be intercepted in-process (no dup2 in pure Node; /proc/self/fd
+      //     reopen is ENXIO for a pipe fd; worker threads share the fd table),
+      //     so it is now quarantined to stderr by the stdio-purity supervisor
+      //     (src/stdio-supervisor.ts), which runs the real server as an inner
+      //     child and splits JSON-RPC onto fd 3.
+      // With both closed there is no tolerated-noise exception left: ANY
+      // non-JSON line on stdout is a real protocol-corruption regression.
+      // (Reverting the stderr hook makes "[Measure N]" reappear here; disabling
+      // the supervisor makes the libjack line reappear here — both → RED.)
+      expect(badLines).toEqual([]);
     },
     25000,
   );

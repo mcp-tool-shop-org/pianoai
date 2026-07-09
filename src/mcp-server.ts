@@ -19,6 +19,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { VERSION } from "./version.js";
+import { shouldSuperviseStdio, runStdioSupervisor, openRpcOutputStream } from "./stdio-supervisor.js";
 import { z } from "zod";
 import {
   getAllSongs,
@@ -986,16 +987,17 @@ registerTool(
         : engine === "guitar"
           ? createGuitarEngine({ voice: (guitarVoice ?? "steel-dreadnought") as GuitarVoiceId })
           : createAudioEngine(voiceId);
-    // KNOWN LIMITATION (stdio hardening follow-up): on a host with no audio
-    // device or JACK library, node-web-audio-api's native cpal layer prints a
-    // backend-probe failure ("Failed to open client because of error:
+    // Native stdout hardening: on a host without a running JACK server /
+    // libjack.so.0, node-web-audio-api's cpal layer prints a backend-probe
+    // failure ("Failed to open client because of error:
     // LibraryError(\"libjack.so.0: ...\")") directly to fd-1 (stdout) during
-    // connect() — bypassing our console, which we route to stderr everywhere
-    // else. On an MCP stdio host that non-JSON line can corrupt the JSON-RPC
-    // frame. We can't intercept a native fd-1 write from JS without OS-level
-    // dup2; the robust fix is to redirect fd-1 -> fd-2 around this connect (or
-    // run audio in a worker). Tracked as a hardening item; the stdio-purity
-    // test documents + tolerates only this specific native line.
+    // connect(), bypassing our console (which we route to stderr everywhere
+    // else). On an MCP stdio host that non-JSON line would corrupt the
+    // JSON-RPC frame. A native fd-1 write can't be intercepted from JS (no
+    // dup2 in pure Node; /proc/self/fd reopen is ENXIO for a pipe fd; worker
+    // threads share the fd table), so it is handled one layer up: on POSIX the
+    // process runs under the stdio-purity supervisor, which puts JSON-RPC on
+    // fd 3 and routes any fd-1 writes here to stderr. See src/stdio-supervisor.ts.
     try {
       await connector.connect();
     } catch (err) {
@@ -3047,6 +3049,17 @@ function loadSessionState(): void {
 // ─── Start ──────────────────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
+  // On POSIX, re-exec into the stdio-purity supervisor before doing any real
+  // work: it runs this server as an inner child with the native audio layer's
+  // stray stdout writes quarantined to stderr and JSON-RPC split onto fd 3, so
+  // the host's stdout can never be corrupted regardless of JACK state. See
+  // src/stdio-supervisor.ts for the full rationale (dup2 is unavailable in
+  // pure Node, so separation requires this one thin external process).
+  if (shouldSuperviseStdio()) {
+    runStdioSupervisor();
+    return;
+  }
+
   // Load songs from library + user directories
   const { dirname } = await import("node:path");
   const { fileURLToPath } = await import("node:url");
@@ -3064,7 +3077,10 @@ async function main(): Promise<void> {
     );
   }
 
-  const transport = new StdioServerTransport();
+  // JSON-RPC output target: fd 3 when running as the supervised inner server
+  // (the supervisor wired fd 3 to the host's stdout), otherwise stdout. This
+  // is what keeps fd 1 free for the native audio layer's stray prints.
+  const transport = new StdioServerTransport(process.stdin, openRpcOutputStream());
   await server.connect(transport);
   console.error("ai-jam-sessions MCP server running on stdio");
 }
