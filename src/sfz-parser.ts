@@ -107,6 +107,20 @@ export function parseSfz(content: string): SfzData {
   return { regions, ampVeltrack, ampegRelease };
 }
 
+/**
+ * Clamp a parsed SFZ numeric opcode to a valid MIDI value (0-127), falling
+ * back to defaultValue when non-finite (e.g. an unparseable opcode string
+ * produced NaN via parseInt). A malformed/hostile SFZ file with a huge or
+ * NaN lokey/hikey previously flowed straight into buildRegionMap's
+ * `for (let key = lokey; key <= hikey; key++)` loop unchecked, which could
+ * iterate enormously (or, for NaN, produce a loop condition that's always
+ * false or always true) and freeze the single-threaded process (F-a6d13c8d).
+ */
+function clampMidiValue(raw: number, defaultValue: number): number {
+  if (!Number.isFinite(raw)) return defaultValue;
+  return Math.max(0, Math.min(127, raw));
+}
+
 function parseRegion(opcodeStr: string, groupTune: number): SfzRegion | null {
   const opcodes = new Map<string, string>();
 
@@ -122,11 +136,11 @@ function parseRegion(opcodeStr: string, groupTune: number): SfzRegion | null {
 
   return {
     sample: sample.replace(/\\/g, "/"), // normalize path separators
-    lokey: parseInt(opcodes.get("lokey") ?? "0", 10),
-    hikey: parseInt(opcodes.get("hikey") ?? "127", 10),
-    lovel: parseInt(opcodes.get("lovel") ?? "1", 10),
-    hivel: parseInt(opcodes.get("hivel") ?? "127", 10),
-    pitchKeycenter: parseInt(opcodes.get("pitch_keycenter") ?? "60", 10),
+    lokey: clampMidiValue(parseInt(opcodes.get("lokey") ?? "0", 10), 0),
+    hikey: clampMidiValue(parseInt(opcodes.get("hikey") ?? "127", 10), 127),
+    lovel: clampMidiValue(parseInt(opcodes.get("lovel") ?? "1", 10), 1),
+    hivel: clampMidiValue(parseInt(opcodes.get("hivel") ?? "127", 10), 127),
+    pitchKeycenter: clampMidiValue(parseInt(opcodes.get("pitch_keycenter") ?? "60", 10), 60),
     volume: parseFloat(opcodes.get("volume") ?? "0"),
     tune: groupTune + parseInt(opcodes.get("tune") ?? "0", 10),
   };

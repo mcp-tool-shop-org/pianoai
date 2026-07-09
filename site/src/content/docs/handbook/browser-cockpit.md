@@ -7,7 +7,15 @@ sidebar:
 
 ## The cockpit
 
-A browser-based instrument and vocal studio that opens alongside the MCP server. No plugins, no DAW — just a web page with a piano.
+A browser-based instrument and vocal studio that lives in the repo at `apps/cockpit`. No plugins, no DAW — just a web page with a piano.
+
+It is not yet bundled into the npm package — run it from a clone of the repository:
+
+```bash
+git clone https://github.com/mcp-tool-shop-org/ai-jam-sessions.git
+cd ai-jam-sessions/apps/cockpit
+npm install && npm run dev    # Vite dev server, opens in your browser
+```
 
 ### Dual-mode piano roll
 

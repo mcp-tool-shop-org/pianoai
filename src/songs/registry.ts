@@ -13,6 +13,7 @@ import type {
   RegistryStats,
 } from "./types.js";
 import { GENRES, DIFFICULTIES } from "./types.js";
+import { MIN_TEMPO, MAX_TEMPO } from "./config/schema.js";
 
 // ─── Internal state ─────────────────────────────────────────────────────────
 
@@ -76,8 +77,8 @@ export function validateSong(song: SongEntry): string[] {
     errors.push("key signature is required");
   }
 
-  if (typeof song.tempo !== "number" || song.tempo < 20 || song.tempo > 300) {
-    errors.push("tempo must be a number between 20 and 300 BPM");
+  if (typeof song.tempo !== "number" || song.tempo < MIN_TEMPO || song.tempo > MAX_TEMPO) {
+    errors.push(`tempo must be a number between ${MIN_TEMPO} and ${MAX_TEMPO} BPM`);
   }
 
   if (!song.timeSignature || !/^\d+\/\d+$/.test(song.timeSignature)) {

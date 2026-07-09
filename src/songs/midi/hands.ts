@@ -81,7 +81,13 @@ export function isChord(group: ResolvedNote[]): boolean {
  */
 export function midiNoteToScientific(noteNumber: number): string {
   const octave = Math.floor(noteNumber / 12) - 1;
-  const name = NOTE_NAMES[noteNumber % 12];
+  // JS's % returns a negative remainder for a negative dividend
+  // (-1 % 12 === -1), so a plain `noteNumber % 12` would index
+  // NOTE_NAMES[-1] (undefined) for negative input instead of wrapping
+  // correctly. This function is re-exported as part of the module's
+  // public API with no enforced 0-127 contract for external callers
+  // (F-1f842fd1).
+  const name = NOTE_NAMES[((noteNumber % 12) + 12) % 12];
   return `${name}${octave}`;
 }
 
@@ -127,7 +133,12 @@ export function formatNote(note: ResolvedNote, ticksPerBeat: number): string {
 export function chordToString(chord: ResolvedNote[], ticksPerBeat: number): string {
   if (chord.length === 1) return formatNote(chord[0], ticksPerBeat);
 
-  const maxDur = Math.max(...chord.map(n => n.durationTicks));
+  // Loop, not Math.max(...spread) — avoids the call-stack limit a large
+  // chord group could hit (same root cause as B-A1-001; F-fd5a98c9).
+  let maxDur = 0;
+  for (const n of chord) {
+    if (n.durationTicks > maxDur) maxDur = n.durationTicks;
+  }
   const dur = ticksToDuration(maxDur, ticksPerBeat);
   const noteNames = [...chord]
     .sort((a, b) => a.noteNumber - b.noteNumber)

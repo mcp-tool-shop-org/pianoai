@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.4.3] - 2026-05-19
+### Added
+- `pnpm-workspace.yaml` with esbuild build-script approval — fresh clones on pnpm 10/11 can now run `pnpm verify` without interactive `approve-builds` (pnpm 9, which CI uses, ignores the file).
+- `datasets/jam-actions-v0/PROVENANCE-NOTE.md` — documents the working-corpus/published-subset boundary, the two excluded unverified-provenance works (Satie Gymnopédie No. 1, Debussy Arabesque No. 1), and the MIT-code / CC-BY-SA-3.0-DE-dataset license boundary.
+
+### Fixed
+- Public-surface accuracy pass (dogfood swarm Stage A): dead unscoped `ai-jam-sessions` install commands replaced with `@mcptoolshop/ai-jam-sessions` on the handbook (getting-started, beginners) and the landing-page config card + npm link; dataset composer list corrected to the actual 6 composers on README/CHANGELOG/landing/handbook; the handbook's provenance table rebuilt from the shipped records (it listed three works that have never been in the subset); README Status un-stuck from v1.4.1; cockpit access story and Sample Piano availability made honest; SECURITY.md network/credential claims scoped to distinguish the default MCP/CLI paths from the opt-in dataset/eval tooling; codecov badge removed (no coverage data has ever been uploaded behind it).
+- `version.test.ts` NAME assertion updated for the scoped package name (post-v1.4.3-tag repair, recorded here for the audit trail).
 
 **npm-recovery release.** Restores the package to npm under the `@mcptoolshop/ai-jam-sessions` scope after the v1.4.0 unscoped publish was unpublished a month ago. The v1.4.2 publish attempt under the unscoped name hit npm's E409 packument-save race (the known "first-publish-of-recently-unpublished-name" failure mode); rather than wait out the cooldown, this release migrates to the scoped name that previously hosted v1.3.0 (per the v1.3.1 changelog entry). The scope is now fresh territory on npm (404 at lookup time), so this publish completes cleanly.
 
@@ -46,7 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 This is a publication-readiness release — no new MCP server functionality. It integrates the **jam-actions-v0** training dataset (built across 24 named slices) into the repo's marketed surface, ahead of public Zenodo + HuggingFace publication.
 
 ### Added
-- **`jam-actions-v0` dataset (public subset)** — 115 records across 8 classical piano works (Beethoven, Bach, Schubert, Schumann, Mozart, Mendelssohn, Tchaikovsky), pairing 4-measure phrase windows with annotated teaching targets and multi-turn MCP tool-use traces. CC-BY-SA-3.0-DE. Version `0.4.3`. Lives at `datasets/jam-actions-v0-public/`.
+- **`jam-actions-v0` dataset (public subset)** — 115 records across 8 classical piano works by 6 composers (Bach, Beethoven, Chopin, Debussy, Mozart, Schumann; an earlier version of this entry misattributed the works to a list including Schubert, Mendelssohn, and Tchaikovsky — corrected 2026-07-09), pairing 4-measure phrase windows with annotated teaching targets and multi-turn MCP tool-use traces. CC-BY-SA-3.0-DE. Version `0.4.3`. Lives at `datasets/jam-actions-v0-public/`.
 - **7-axis release gate** for the dataset (axes 1–6 blocking, axis 7 reporting). Axes 2 and 6 admit a `ceiling_saturated_pass` bucket so trivial-ceiling records do not dilute harder strata. Slice 22 baseline PASSES; Slice 19 baseline still FAILS (kept as a regression diagnostic).
 - **9-tool MIDI inspector surface** for grounded tool-use over symbolic music: `get_events_in_measure`, `get_events_in_hand`, `count_distinct_pitch_classes`, `count_notes_with_pitch_class`, `count_beat_1_onsets`, `get_pitch_at`, `get_hand_balance`, `find_highest_pitch`, `find_lowest_pitch`.
 - **Cold-start reproducibility** — `.gitattributes` pins LF for `*.sha256` and `datasets/jam-actions-v0-public/**` so Windows / macOS / Linux / WSL contributors get reproducible checksums. `parseChecksumsManifest` strips trailing `\r` as defense in depth. `scripts/check-release-gate.ts` rejects unknown / multiple positional args.

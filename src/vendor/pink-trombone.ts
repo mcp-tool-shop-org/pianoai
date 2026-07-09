@@ -257,7 +257,14 @@ export class Glottis {
 
   private calculateNewFrequency(time: number, delta: number): void {
     if (this.intensity == 0) {
-      this.smoothFrequency = this.targetFrequency;
+      // Unlike the two branches below, this path assigns targetFrequency
+      // directly with no Math.max floor. Because oldFrequency=newFrequency
+      // each call (line below), a non-finite targetFrequency here would
+      // self-perpetuate indefinitely until intensity becomes nonzero again
+      // (F-8664bd70). Defensive guard — the real fix is validating note
+      // input before it ever reaches targetFrequency (see
+      // vocal-tract-engine.ts's noteOn).
+      this.smoothFrequency = Number.isFinite(this.targetFrequency) ? this.targetFrequency : this.smoothFrequency;
     } else if (this.targetFrequency > this.smoothFrequency) {
       this.smoothFrequency = Math.min(this.smoothFrequency * (1 + 0.1 * delta), this.targetFrequency);
     } else if (this.targetFrequency < this.smoothFrequency) {

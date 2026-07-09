@@ -8,19 +8,12 @@
 // Usage:
 //   node dist/mcp-server.js          # stdio transport
 //
-// Tools (34):
-//   Library:    list_songs, song_info, registry_stats, suggest_song, compare_songs, add_song
-//   Teaching:   teaching_note, list_measures, practice_setup, sing_along
-//   Playback:   play_song, stop_playback, pause_playback, set_speed, playback_status
-//   Synthesis:  list_voices, voice_info, tune_voice, reset_tuning
-//              list_guitar_voices, guitar_voice_info, tune_guitar, reset_guitar_tuning
-//   Rendering:  view_piano_roll, view_guitar_tab
-//   MIDI:       import_midi, detect_chord
-//   Scoring:    score_performance, score_annotation, annotation_progress
-//   Annotation: annotate_song
-//   Jam:        ai_jam_sessions
-//   Journal:    save_practice_note, practice_journal
-//   Config:     server_info, validate_song_entry
+// Tools: see the registerTool(...) calls below for the authoritative,
+// always-current list — this header used to hand-enumerate tool names and
+// silently drifted out of sync with the real registrations (stale count +
+// renamed/missing entries). The live count is now tracked automatically
+// (registeredToolCount) and reported by the server_info tool, so it can't
+// drift again. Grep `registerTool(` in this file to enumerate every tool.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -85,7 +78,7 @@ import { scoreAnnotation, formatAnnotationScore } from "./annotation-scorer.js";
 import { compareSongs, formatComparison } from "./song-compare.js";
 import type { VoiceDirective, AsideDirective } from "./types.js";
 import { readFile } from "node:fs/promises";
-import { existsSync, readFileSync, writeFileSync, realpathSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync, realpathSync, mkdirSync } from "node:fs";
 import {
   join as pathJoin,
   resolve as pathResolve,
@@ -181,6 +174,16 @@ const server = new McpServer({
   name: "ai-jam-sessions",
   version: VERSION,
 });
+
+// Thin wrapper around server.tool() that keeps an authoritative count of
+// registered tools, so server_info's reported count (and the header comment
+// above) can never silently drift from reality the way the old hardcoded
+// "36"/"Tools (34)" literals did (B-A1-005/006).
+let registeredToolCount = 0;
+const registerTool: typeof server.tool = (...args: any[]) => {
+  registeredToolCount++;
+  return (server.tool as any)(...args);
+};
 
 // ─── Prompts ────────────────────────────────────────────────────────────────
 
@@ -300,7 +303,7 @@ let lastPlaybackError: { message: string; songOrFile: string; timestamp: string 
 
 // ─── Tool: list_songs ───────────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "list_songs",
   "Browse and search the piano song library. Filter by genre, difficulty, composer, or search query.",
   {
@@ -331,7 +334,7 @@ server.tool(
 
 // ─── Tool: song_info ────────────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "song_info",
   "Get detailed information about a specific song — musical language, teaching goals, key moments, structure.",
   {
@@ -387,7 +390,7 @@ server.tool(
 
 // ─── Tool: registry_stats ───────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "registry_stats",
   "Get statistics about the song registry: total songs, genres, difficulties, measures.",
   {},
@@ -420,7 +423,7 @@ server.tool(
 
 // ─── Tool: teaching_note ────────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "teaching_note",
   "Get the teaching note, fingering, and dynamics for a specific measure in a song.",
   {
@@ -462,7 +465,7 @@ server.tool(
 
 // ─── Tool: suggest_song ─────────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "suggest_song",
   "Get a song recommendation based on genre preference and/or difficulty level.",
   {
@@ -504,7 +507,7 @@ server.tool(
 
 // ─── Tool: list_measures ────────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "list_measures",
   "Get an overview of all measures in a song, showing right hand, left hand, and any teaching notes.",
   {
@@ -566,7 +569,7 @@ server.tool(
 
 // ─── Tool: preview_teaching_cues ─────────────────────────────────────────
 
-server.tool(
+registerTool(
   "preview_teaching_cues",
   "Preview all teaching cues for a song — teaching notes, dynamics markings, and fingering suggestions per measure. Use this to see what guidance is available before playing.",
   {
@@ -641,7 +644,7 @@ server.tool(
 
 // ─── Tool: practice_setup ──────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "practice_setup",
   "Get a recommended practice configuration for a song — speed, mode, voice settings, and CLI command. Tailored to the song's difficulty and teaching goals.",
   {
@@ -721,7 +724,7 @@ server.tool(
 
 // ─── Tool: sing_along ─────────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "sing_along",
   "Get singable text (note names, solfege, contour, or syllables) for a range of measures. Optionally enable piano accompaniment for synchronized singing + playback.",
   {
@@ -818,6 +821,28 @@ let activeConnector: VmpkConnector | null = null;
 let activeVoiceId: string = "grand";
 let activeNotes: Set<number> = new Set();
 
+/**
+ * Serializes any operation that replaces or clears the shared "active
+ * playback" pointers above (play_song, stop_playback). Without this, two
+ * concurrent play_song calls — or a play_song racing a stop_playback — can
+ * interleave their stopActive() + assignment steps: call B's stopActive()
+ * can run in between call A's stopActive() and A's later assignment of
+ * activeConnector/activeMidiEngine/etc, leaving one engine connected and
+ * playing with no reachable pointer any tool can use to stop it
+ * (F-0f05e39d). Each queued operation runs only after the previous one has
+ * fully settled, so the stop+connect+assign sequence is atomic with respect
+ * to other state-touching tool calls.
+ */
+let stateLock: Promise<unknown> = Promise.resolve();
+function withStateLock<T>(fn: () => Promise<T>): Promise<T> {
+  const run = stateLock.then(fn, fn);
+  stateLock = run.then(
+    () => undefined,
+    () => undefined,
+  );
+  return run;
+}
+
 /** Stop whatever is currently playing or paused. */
 async function stopActive(): Promise<void> {
   if (activeSession && (activeSession.state === "playing" || activeSession.state === "paused")) {
@@ -848,7 +873,7 @@ async function stopActive(): Promise<void> {
 
 // ─── Tool: play_song ──────────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "play_song",
   "Play a song through the built-in audio engine. Supports piano (default) and vocal engines. Accepts a library song ID or a path to a .mid file. Returns immediately with session info while playback runs in the background.",
   {
@@ -867,7 +892,7 @@ server.tool(
     guitarVoice: z.enum(GUITAR_VOICE_IDS as unknown as [string, ...string[]]).optional().describe("Guitar voice preset: classical-nylon, steel-dreadnought (default), electric-clean, electric-jazz. Only used when engine='guitar'."),
     syncMode: z.enum(["before", "concurrent"]).optional().describe("Voice sync timing when singing: 'before' (hear voice first, then play together) or 'concurrent' (simultaneous). Default: 'before' when singing only, 'concurrent' with teaching."),
   },
-  async ({ id, speed, tempo, mode, startMeasure, endMeasure, withSinging, withTeaching, singMode, keyboard, engine, tractVoice, guitarVoice, syncMode: syncModeParam }) => {
+  async ({ id, speed, tempo, mode, startMeasure, endMeasure, withSinging, withTeaching, singMode, keyboard, engine, tractVoice, guitarVoice, syncMode: syncModeParam }) => withStateLock(async () => {
     // Stop whatever is currently playing
     await stopActive();
 
@@ -1080,6 +1105,25 @@ server.tool(
     }
 
     const song = librarySong!;
+
+    // Bound startMeasure/endMeasure against the song's actual length before
+    // ever reporting success — mirrors add_section's check. Without this,
+    // an out-of-range loop request returned "Now playing" immediately and
+    // then crashed the background playback promise once the loop indexed
+    // past the last real measure (F-c969321e).
+    if (startMeasure !== undefined && startMeasure > song.measures.length) {
+      return {
+        content: [{ type: "text", text: `startMeasure (${startMeasure}) exceeds "${song.title}"'s length. Valid range: 1-${song.measures.length}.` }],
+        isError: true,
+      };
+    }
+    if (endMeasure !== undefined && endMeasure > song.measures.length) {
+      return {
+        content: [{ type: "text", text: `endMeasure (${endMeasure}) exceeds "${song.title}"'s length. Valid range: 1-${song.measures.length}.` }],
+        isError: true,
+      };
+    }
+
     const loopRange: [number, number] | undefined =
       startMeasure !== undefined && endMeasure !== undefined ? [startMeasure, endMeasure] : undefined;
 
@@ -1186,16 +1230,16 @@ server.tool(
     lines.push(``, `Tip: After listening, use \`save_practice_note\` to record what you learned.`);
 
     return { content: [{ type: "text", text: lines.join("\n") }] };
-  }
+  })
 );
 
 // ─── Tool: stop_playback ──────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "stop_playback",
   "Stop the currently playing song and disconnect MIDI.",
   {},
-  async () => {
+  async () => withStateLock(async () => {
     const wasPlaying = activeSession || activeMidiEngine || activeController;
     if (!wasPlaying) {
       return {
@@ -1216,12 +1260,12 @@ server.tool(
     return {
       content: [{ type: "text", text: `Stopped: ${info}` }],
     };
-  }
+  })
 );
 
 // ─── Tool: pause_playback ─────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "pause_playback",
   "Pause or resume the currently playing song.",
   {
@@ -1305,7 +1349,7 @@ server.tool(
 
 // ─── Tool: set_speed ──────────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "set_speed",
   "Change the playback speed of the currently playing song. Takes effect on the next note.",
   {
@@ -1348,7 +1392,7 @@ server.tool(
 
 // ─── Tool: mute_hand ─────────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "mute_hand",
   "Mute or unmute a hand during playback. Muting the left hand lets you focus on the right hand (and vice versa). Great for hands-separate practice.",
   {
@@ -1383,7 +1427,7 @@ server.tool(
 
 // ─── Tool: ai_jam_sessions ──────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "ai_jam_sessions",
   "Start a jam session — get a 'jam brief' with chord progression, melody outline, structure, and style hints. Provide a songId for a specific song, or just a genre to jam on a random pick. Use the brief to create your own interpretation, then save with add_song and play with play_song.",
   {
@@ -1442,7 +1486,7 @@ server.tool(
 
 // ─── Tool: add_song ──────────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "add_song",
   "Add a new song to the library. Provide a complete SongEntry as JSON. The song is validated, registered, and saved to the user songs directory.",
   {
@@ -1530,7 +1574,7 @@ server.tool(
 
 // ─── Tool: import_midi ──────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "import_midi",
   "Import a MIDI file as a song. Provide the file path and metadata. The MIDI is parsed into measures with right/left hand separation, converted to a SongEntry JSON, and saved to ~/.ai-jam-sessions/songs/. User songs persist across server restarts and package updates.",
   {
@@ -1632,9 +1676,35 @@ server.tool(
   }
 );
 
+// ─── Tool: detect_chord ─────────────────────────────────────────────────
+
+// Documented in this file's header and imported since the module's
+// inception, but never actually registered as a tool (F-a886453e) — an LLM
+// or developer calling it per the docs got the SDK's generic "not found"
+// error. This wires the existing, already-tested chord-detect.ts module in.
+registerTool(
+  "detect_chord",
+  "Detect the chord name from a set of currently-sounding MIDI note numbers (0-127). Useful for identifying what chord is being held during live playback. Returns the chord name (e.g. 'C', 'Gm7', 'F#/A#') and the note names involved.",
+  {
+    notes: z.array(z.number().int().min(0).max(127)).min(1).max(64).describe("MIDI note numbers currently sounding, e.g. [60, 64, 67] for a C major triad"),
+  },
+  async ({ notes }) => {
+    const names = midiNotesToNames(notes);
+    const chord = detectChord(notes);
+
+    if (chord) {
+      return { content: [{ type: "text", text: `**Chord:** ${chord}\n**Notes:** ${names}` }] };
+    }
+    if (notes.length < 2) {
+      return { content: [{ type: "text", text: `**Notes:** ${names}\nNeed at least 2 distinct notes to detect a chord.` }] };
+    }
+    return { content: [{ type: "text", text: `**Notes:** ${names}\nNo known chord pattern matched.` }] };
+  }
+);
+
 // ─── Tool: view_piano_roll ─────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "view_piano_roll",
   "Render a piano roll visualization of a song as SVG. Returns an image showing note positions over time. Color modes: 'hand' (blue RH / coral LH, default) or 'pitch-class' (chromatic rainbow — each pitch class gets its own color, making harmonic patterns visible).",
   {
@@ -1670,7 +1740,7 @@ server.tool(
 
 // ─── Tool: view_guitar_tab ─────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "view_guitar_tab",
   "Render an interactive guitar tablature editor for a song as a self-contained HTML page. Open the output file in a browser for real-time playback cursor, click-to-add notes, drag editing, string/fret reassignment, and JSON export. Supports configurable guitar tunings.",
   {
@@ -1720,7 +1790,7 @@ server.tool(
 
 // ─── Tool: list_keyboards ──────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "list_keyboards",
   "List available piano keyboard voices. Each voice has a different timbre suited to different genres. Use the keyboard parameter in play_song to choose one.",
   {},
@@ -1751,7 +1821,7 @@ server.tool(
 
 // ─── Tool: tune_keyboard ──────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "tune_keyboard",
   "Tune a piano keyboard voice by adjusting synthesis parameters. Changes are saved and persist across sessions. Use get_keyboard_config to see current settings, reset_keyboard to restore factory defaults.",
   {
@@ -1805,7 +1875,7 @@ server.tool(
 
 // ─── Tool: get_keyboard_config ────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "get_keyboard_config",
   "Show the full configuration of a keyboard voice, including any user tuning overrides. Shows both the factory preset values and any custom adjustments.",
   {
@@ -1858,7 +1928,7 @@ server.tool(
 
 // ─── Tool: reset_keyboard ─────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "reset_keyboard",
   "Reset a keyboard voice to factory default settings, clearing all user tuning overrides.",
   {
@@ -1878,7 +1948,7 @@ server.tool(
 
 // ─── Tool: list_guitar_voices ─────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "list_guitar_voices",
   "List available guitar voice presets. Each voice models a different guitar type with physically accurate synthesis parameters. Use the guitarVoice parameter in play_song (with engine='guitar') to choose one.",
   {},
@@ -1910,7 +1980,7 @@ server.tool(
 
 // ─── Tool: list_guitar_tunings ────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "list_guitar_tunings",
   "List available guitar tuning systems (standard, drop-D, open G, DADGAD, etc.). Shows open string MIDI note numbers for each tuning.",
   {},
@@ -1942,7 +2012,7 @@ server.tool(
 
 // ─── Tool: tune_guitar ────────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "tune_guitar",
   "Tune a guitar voice by adjusting synthesis parameters. Changes are saved and persist across sessions. Use get_guitar_config to see current settings, reset_guitar to restore factory defaults.",
   {
@@ -2000,7 +2070,7 @@ server.tool(
 
 // ─── Tool: get_guitar_config ──────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "get_guitar_config",
   "Show the full configuration of a guitar voice, including any user tuning overrides. Shows factory preset values and custom adjustments.",
   {
@@ -2053,7 +2123,7 @@ server.tool(
 
 // ─── Tool: reset_guitar ──────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "reset_guitar",
   "Reset a guitar voice to factory default settings, clearing all user tuning overrides.",
   {
@@ -2073,7 +2143,7 @@ server.tool(
 
 // ─── Tool: playback_status ────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "playback_status",
   "Get a real-time snapshot of the current playback state: measure, tempo, speed, keyboard voice, and more. Returns nothing if no song is playing.",
   {},
@@ -2152,7 +2222,7 @@ server.tool(
 
 // ─── Tool: save_practice_note ──────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "save_practice_note",
   "Save a practice journal entry. Combines your reflections with auto-captured session data (what you just played, speed, measures, duration). The journal persists across sessions — next time, use read_practice_journal to pick up where you left off.",
   {
@@ -2201,7 +2271,7 @@ server.tool(
 
 // ─── Tool: read_practice_journal ────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "read_practice_journal",
   "Read your practice journal — reflections, observations, and session history from previous sessions. Use this at the start of a session to remember what you learned before, or to review notes on a specific song.",
   {
@@ -2232,7 +2302,7 @@ server.tool(
 
 // ─── Tool: annotate_song ──────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "annotate_song",
   "Annotate a raw song with musical language and promote it to 'ready' status. This is how you do your homework — study the exemplar in the genre, then write your own annotation for a raw song. Once annotated, the song becomes playable immediately.",
   {
@@ -2272,8 +2342,16 @@ server.tool(
       styleTips: style_tips,
     };
 
-    // Write back to disk
-    writeFileSync(entry.configPath, JSON.stringify(config, null, 2) + "\n", "utf8");
+    // Write back to disk. Best-effort: entry.configPath lives inside the
+    // installed package's own songs/library/ directory, which can be
+    // read-only (root-owned global installs, read-only container
+    // filesystems). A failure here must not block the durable save to the
+    // user's own directory below (F-a53c900d).
+    try {
+      writeFileSync(entry.configPath, JSON.stringify(config, null, 2) + "\n", "utf8");
+    } catch (err) {
+      console.error(`WARNING: could not update library config at ${entry.configPath} (likely a read-only package install): ${err instanceof Error ? err.message : String(err)}`);
+    }
 
     // Re-ingest so the song is immediately playable
     try {
@@ -2308,7 +2386,7 @@ server.tool(
 
 // ─── Tool: score_performance ──────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "score_performance",
   "Score a MIDI performance against a song from the library. Compares note-by-note: pitch accuracy, timing, missed notes, and extra notes. Returns a structured assessment with metrics and practice suggestions. Use this after recording yourself playing a song to see how you did.",
   {
@@ -2382,7 +2460,7 @@ server.tool(
 
 // ─── Tool: score_annotation ──────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "score_annotation",
   "Score the quality of a song's annotation (musicalLanguage) against exemplar standards. Evaluates completeness, depth, specificity, teaching value, and musical vocabulary. Use this after annotating a raw song to check your work before moving on.",
   {
@@ -2416,7 +2494,7 @@ server.tool(
 
 // ─── Tool: annotation_progress ──────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "annotation_progress",
   "Show annotation progress for the song library — how many songs are raw (unannotated), annotated, or ready, broken down by genre. Use this to see which genres still need work and pick your next annotation target.",
   {},
@@ -2467,7 +2545,7 @@ server.tool(
 
 // ─── Tool: compare_songs ──────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "compare_songs",
   "Compare two songs to find shared harmonic, structural, and rhythmic patterns. Surfaces cross-genre connections and teaching opportunities. Use this to understand how different pieces relate musically.",
   {
@@ -2499,7 +2577,7 @@ server.tool(
 
 // ─── Tool: list_sections ─────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "list_sections",
   "List the structural sections of a song (Intro, Verse, Chorus, etc.). Sections help with navigation, practice planning, and understanding song form.",
   {
@@ -2548,7 +2626,7 @@ server.tool(
 
 // ─── Tool: add_section ──────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "add_section",
   "Add a structural section marker to a song. Sections label parts like Intro, Verse, Chorus, Bridge, Coda — useful for teaching, navigation, and practice planning.",
   {
@@ -2593,6 +2671,24 @@ server.tool(
     // Sort sections by start measure
     song.sections.sort((a, b) => a.startMeasure - b.startMeasure);
 
+    // Persist so the section survives a server restart — matches
+    // add_song/import_midi/annotate_song, which all call saveSong after
+    // mutating registry state (F-5aec2e16).
+    let filePath: string;
+    try {
+      filePath = saveSong(song, getUserSongsDir());
+    } catch (saveErr) {
+      const msg = saveErr instanceof Error ? saveErr.message : String(saveErr);
+      return {
+        content: [{
+          type: "text",
+          text: `Added section **${sectionName}** to **${song.title}** in memory, but failed to save to disk: ${msg}\n` +
+            `The section is available for this session but will be lost on restart.`,
+        }],
+        isError: true,
+      };
+    }
+
     return {
       content: [{
         type: "text",
@@ -2600,6 +2696,7 @@ server.tool(
           `Added section **${sectionName}** to **${song.title}** (measures ${startMeasure}–${endMeasure}).`,
           ``,
           `The song now has ${song.sections.length} section(s). Use \`list_sections\` to see them all.`,
+          `Saved to: ${filePath}`,
         ].join("\n"),
       }],
     };
@@ -2608,7 +2705,7 @@ server.tool(
 
 // ─── Tool: transpose_song ────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "transpose_song",
   "Transpose a song to a different key. Shifts all notes by the specified number of semitones and registers the transposed version as a new song. Useful for matching student range or practicing in different keys.",
   {
@@ -2645,6 +2742,25 @@ server.tool(
 
       registerSong(transposed);
 
+      // Persist so the transposed song survives a server restart — matches
+      // add_song/import_midi/annotate_song. Without this, "The transposed
+      // version is now playable" was false the moment the process
+      // restarted (F-a4c5e9b7).
+      let filePath: string;
+      try {
+        filePath = saveSong(transposed, getUserSongsDir());
+      } catch (saveErr) {
+        const msg = saveErr instanceof Error ? saveErr.message : String(saveErr);
+        return {
+          content: [{
+            type: "text",
+            text: `Transposed **${song.title}** and registered "${transposed.id}" in memory, but failed to save to disk: ${msg}\n` +
+              `The transposed version is available for this session but will be lost on restart.`,
+          }],
+          isError: true,
+        };
+      }
+
       const direction = semitones > 0 ? "up" : "down";
       return {
         content: [{
@@ -2657,6 +2773,7 @@ server.tool(
             `- **New ID:** ${transposed.id}`,
             `- **Measures:** ${transposed.measures.length}`,
             ``,
+            `Saved to: ${filePath}`,
             `The transposed version is now playable — try \`play_song { id: "${transposed.id}" }\``,
           ].join("\n"),
         }],
@@ -2673,7 +2790,7 @@ server.tool(
 
 // ─── Tool: server_info ───────────────────────────────────────────────────
 
-server.tool(
+registerTool(
   "server_info",
   "Get server capabilities, version, and available options at a glance — genres, difficulties, engines, voice presets, and tool count.",
   {},
@@ -2683,7 +2800,7 @@ server.tool(
       `# ai-jam-sessions v${VERSION}`,
       ``,
       `**Songs loaded:** ${stats.totalSongs}`,
-      `**Tools:** 36`,
+      `**Tools:** ${registeredToolCount}`,
       ``,
       `**Genres:** ${GENRES.join(", ")}`,
       `**Difficulties:** ${DIFFICULTIES.join(", ")}`,
@@ -2703,7 +2820,7 @@ server.tool(
 
 // ─── Tool: validate_song_entry ──────────────────────────────────────────
 
-server.tool(
+registerTool(
   "validate_song_entry",
   "Validate a SongEntry JSON without adding it to the registry. Use this to check if your song data is correct before calling add_song.",
   {
@@ -2769,10 +2886,15 @@ const STATE_FILE = pathJoin(
 function persistSessionState(): void {
   if (!lastCompletedSession) return;
   try {
-    const { mkdirSync } = require("node:fs") as typeof import("node:fs");
     mkdirSync(pathJoin(process.env.HOME ?? process.env.USERPROFILE ?? ".", ".ai-jam-sessions"), { recursive: true });
     writeFileSync(STATE_FILE, JSON.stringify({ lastCompletedSession }, null, 2));
-  } catch { /* best-effort */ }
+  } catch (err) {
+    // This used to be a bare require("node:fs") in an ESM module — silently
+    // threw ReferenceError on every call and was swallowed here, so session
+    // state never actually persisted (F-43b426ba). Log so a regression like
+    // that is visible instead of silent.
+    console.error(`WARNING: failed to persist session state to ${STATE_FILE}: ${err instanceof Error ? err.message : String(err)}`);
+  }
 }
 
 function loadSessionState(): void {
@@ -2801,7 +2923,7 @@ async function main(): Promise<void> {
   if (!existsSync(libraryDir)) {
     console.error(
       "WARNING: Song library directory not found. The server will start but " +
-      "no built-in songs will be available. Reinstall with: npm install ai-jam-sessions"
+      "no built-in songs will be available. Reinstall with: npm install -g @mcptoolshop/ai-jam-sessions"
     );
   }
 

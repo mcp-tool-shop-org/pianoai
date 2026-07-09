@@ -44,11 +44,11 @@ A real teacher says "play measures 5-8 again, slower." The system can't do that.
 ### Song Library Annotation (96/120 songs raw)
 Only 24/120 songs are "ready" with musicalLanguage annotations. 80% of the library is inert.
 - Batch annotation script (MIDI analysis + LLM pass for musicalLanguage)
-- Prioritize genres with 0 ready songs: blues, rock, pop, latin, ragtime, folk
+- Every genre now has at least one ready song (classical 10, R&B 4, the other ten 1 each) — prioritize depth in the 1-song genres
 - **Effort:** Large | **Priority:** HIGH
 
 ### MCP Server + CLI Test Coverage
-The two largest files (mcp-server.ts: 2108 lines, cli.ts: 1308 lines) plus all 6 engines have zero unit tests.
+The two largest files (mcp-server.ts: ~2800 lines, cli.ts: ~1350 lines) plus the engines have near-zero direct unit tests.
 - mcp-server.test.ts: tool registration, input validation, error responses
 - cli.test.ts: argument parsing, subcommand dispatch
 - Engine unit tests (mock node-web-audio-api)
@@ -120,7 +120,7 @@ Track what you've practiced and how you've improved.
 ## Tier 3 — Deeper Musical Experience
 
 ### Transposition (`--key`)
-Play everything in a different key — essential for singers and horn players.
+Play everything in a different key — essential for singers and horn players. (Partially covered since v1.4.0: the `transpose_song` MCP tool rewrites a song's key permanently; this item is the ephemeral play-in-key variant.)
 - `ai-jam-sessions play autumn-leaves --key Bb` transposes all notes
 - Apply semitone offset at note-parser level (before MIDI number conversion)
 - Update piano roll and guitar tab to reflect transposed pitches

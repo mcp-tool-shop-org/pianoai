@@ -141,8 +141,18 @@ export interface VerifyInput {
 }
 
 export interface VerificationAttempt {
-  /** Site root / composer page / song-detail URL fetched. */
+  /** Site root / composer page / song-detail URL that was REQUESTED (the literal, configured URL — not necessarily where the bytes came from; see `final_url`). */
   url: string;
+  /**
+   * The response's actual final URL after following redirects (F-ce95fee0).
+   * Null when the fetch failed before any response was received. This is
+   * the URL the shipped provenance audit trail should point at when it
+   * needs to name "where the bytes were actually read from" — `url` alone
+   * can misrepresent that if piano-midi.de ever serves a redirect.
+   */
+  final_url: string | null;
+  /** True if reaching `final_url` required following one or more HTTP redirects. */
+  was_redirected: boolean;
   /** HTTP status code if response received, or null on hard network error. */
   status: number | null;
   /** ISO timestamp of the fetch. */
@@ -320,6 +330,17 @@ export function isPublicCompatibleFamily(family: string | null): boolean {
 
 interface FetchResult {
   url: string;
+  /**
+   * The response's actual final URL after following redirects (the Fetch
+   * API's `res.url`). Null when the fetch failed before any response was
+   * received (network error / timeout) — see `error`. F-ce95fee0: this is
+   * the URL bytes were actually read from, which can differ from `url` (the
+   * literal URL that was requested) whenever piano-midi.de serves a
+   * redirect.
+   */
+  final_url: string | null;
+  /** True if reaching `final_url` required following one or more HTTP redirects (Fetch API `res.redirected`). False when the fetch failed before any response was received. */
+  was_redirected: boolean;
   status: number | null;
   body: string;
   size_bytes: number;
@@ -339,7 +360,13 @@ async function fetchOnce(
   url: string,
   fetchImpl: typeof fetch,
   opts: { timeoutMs: number; userAgent: string },
-): Promise<{ status: number | null; body: string; error?: string }> {
+): Promise<{
+  status: number | null;
+  body: string;
+  final_url: string | null;
+  was_redirected: boolean;
+  error?: string;
+}> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), opts.timeoutMs);
   try {
@@ -350,10 +377,13 @@ async function fetchOnce(
       headers: { "User-Agent": opts.userAgent },
     });
     const body = await res.text();
-    return { status: res.status, body };
+    // F-ce95fee0: capture the response's actual final URL + whether a
+    // redirect was followed, so callers can record what was really fetched
+    // instead of assuming it matches the requested `url` literal.
+    return { status: res.status, body, final_url: res.url, was_redirected: res.redirected };
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : String(e);
-    return { status: null, body: "", error: msg };
+    return { status: null, body: "", final_url: null, was_redirected: false, error: msg };
   } finally {
     clearTimeout(timer);
   }
@@ -374,6 +404,8 @@ async function fetchWithRetry(
   if (!firstTransient) {
     return {
       url,
+      final_url: first.final_url,
+      was_redirected: first.was_redirected,
       status: first.status,
       body: first.body,
       size_bytes: Buffer.byteLength(first.body, "utf8"),
@@ -386,6 +418,8 @@ async function fetchWithRetry(
   const second = await fetchOnce(url, fetchImpl, opts);
   return {
     url,
+    final_url: second.final_url,
+    was_redirected: second.was_redirected,
     status: second.status,
     body: second.body,
     size_bytes: Buffer.byteLength(second.body, "utf8"),
@@ -802,6 +836,8 @@ export async function verifyProvenanceUrl(
   const siteVersion = siteCcUrl.version ?? parseLicenseVersion(siteText);
   const siteAttempt: VerificationAttempt = {
     url: siteResult.url,
+    final_url: siteResult.final_url,
+    was_redirected: siteResult.was_redirected,
     status: siteResult.status,
     fetched_at: new Date().toISOString(),
     response_size_bytes: siteResult.size_bytes,
@@ -836,6 +872,8 @@ export async function verifyProvenanceUrl(
     composerLicenseVersion = composerCcUrl.version ?? parseLicenseVersion(composerText);
     composerAttempt = {
       url: composerResult.url,
+      final_url: composerResult.final_url,
+      was_redirected: composerResult.was_redirected,
       status: composerResult.status,
       fetched_at: new Date().toISOString(),
       response_size_bytes: composerResult.size_bytes,
@@ -882,8 +920,19 @@ export async function verifyProvenanceUrl(
   // Per kickoff: per-song > composer-page > site-root.
   // We never reached an actual per-song URL — the deepest available is the
   // composer page IF it resolved. Otherwise site root.
+  //
+  // F-ce95fee0: prefer the response's actual final URL (`final_url`) over the
+  // hardcoded literal (`composerPage!.url` / `SITE_ROOT_URL`) so the shipped
+  // evidence_url_chosen names the URL bytes were really read from, not just
+  // the URL that was requested. `||` (not `??`) is deliberate: a directly-
+  // constructed `Response` (as used by this module's own test mocks) reports
+  // `res.url === ""`, which must fall through to the configured literal the
+  // same way a real network error (`final_url === null`) does — only a
+  // genuinely non-empty final URL should override the literal.
   const evidenceUrl =
-    composerAttempt?.status === 200 ? composerPage!.url : SITE_ROOT_URL;
+    composerAttempt?.status === 200
+      ? composerAttempt.final_url || composerPage!.url
+      : siteAttempt.final_url || SITE_ROOT_URL;
 
   const verdictReason = buildVerifierReason({
     song_title: input.song_title,

@@ -1092,3 +1092,147 @@ export function walkChecksumFiles(
   undeclared.sort();
   return { files, undeclared };
 }
+
+// ─── Manifest ↔ on-disk / checksums completeness cross-check (D-A1-002) ──────
+//
+// A checksums.sha256 that is internally self-consistent — every claimed hash
+// matches a file on disk, one-to-one — can still be systematically WRONG if
+// the package itself was built from a corrupted or partial checkout: a bad
+// merge, an interrupted rsync, or someone re-running the regenerator against
+// a checkout that's silently missing whole records. That corrupted state
+// re-hashes cleanly and "passes" a purely internal check. This helper closes
+// that hole by cross-checking manifest.json's declared record_count (and
+// split sizes, when declared) against independent signals that all move
+// together when the package is intact: the on-disk file count per
+// generated_dirs entry (records/, pianoroll/), the matching count of
+// checksums.sha256 entries, records.jsonl's line count, and splits.json's
+// train/test list lengths.
+
+/** manifest.json fields relevant to the completeness cross-check. */
+export interface PackageManifestSummary {
+  record_count: number;
+  splits?: { train: number; test: number };
+  /** Prompt/response pair records — present in the full manifest. */
+  pair_count?: number;
+  /** Standalone records — present in the full manifest. */
+  standalone_count?: number;
+  /** Declared number of distinct source songs. */
+  songs_count?: number;
+  /** The actual list of source song ids. */
+  songs_included?: string[];
+}
+
+/** Per-generated_dir on-disk vs checksums-manifest entry counts. */
+export interface GeneratedDirCompletenessInput {
+  /** Generated-dir name, e.g. "records" or "pianoroll" (from package-inputs.json). */
+  dir: string;
+  /** Number of files currently on disk under this dir. */
+  onDiskCount: number;
+  /** Number of checksums.sha256 entries whose path starts with `${dir}/`. */
+  checksumsCount: number;
+}
+
+export interface CompletenessCheckInputs {
+  manifest: PackageManifestSummary;
+  /** One entry per package-inputs.json generated_dirs entry. */
+  generatedDirs: GeneratedDirCompletenessInput[];
+  /** records.jsonl line count, when that file is present in the package. */
+  recordsJsonlLineCount?: number;
+  /** splits.json train/test id-list lengths, when that file is present. */
+  splitsJson?: { train: number; test: number };
+}
+
+/**
+ * Cross-check manifest.json's declared record_count (and split sizes, if
+ * declared) against the checksums manifest, the on-disk generated_dirs, and
+ * (when present) records.jsonl and splits.json. Returns a list of human-
+ * readable problem strings — empty when everything agrees. Pure function:
+ * never throws, never logs; the caller decides how to report/exit.
+ */
+export function checkManifestCompleteness(
+  inputs: CompletenessCheckInputs,
+): string[] {
+  const problems: string[] = [];
+  const { manifest, generatedDirs, recordsJsonlLineCount, splitsJson } = inputs;
+
+  for (const gd of generatedDirs) {
+    if (gd.onDiskCount !== manifest.record_count) {
+      problems.push(
+        `manifest.json record_count (${manifest.record_count}) does not match ` +
+          `${gd.dir}/ files on disk (${gd.onDiskCount})`,
+      );
+    }
+    if (gd.checksumsCount !== manifest.record_count) {
+      problems.push(
+        `manifest.json record_count (${manifest.record_count}) does not match ` +
+          `${gd.dir}/ entries in checksums.sha256 (${gd.checksumsCount})`,
+      );
+    }
+  }
+
+  if (
+    recordsJsonlLineCount !== undefined &&
+    recordsJsonlLineCount !== manifest.record_count
+  ) {
+    problems.push(
+      `manifest.json record_count (${manifest.record_count}) does not match ` +
+        `records.jsonl line count (${recordsJsonlLineCount})`,
+    );
+  }
+
+  if (manifest.splits) {
+    const declaredTotal = manifest.splits.train + manifest.splits.test;
+    if (declaredTotal !== manifest.record_count) {
+      problems.push(
+        `manifest.json splits (train ${manifest.splits.train} + test ${manifest.splits.test} ` +
+          `= ${declaredTotal}) does not sum to record_count (${manifest.record_count})`,
+      );
+    }
+    if (splitsJson) {
+      if (splitsJson.train !== manifest.splits.train) {
+        problems.push(
+          `manifest.json splits.train (${manifest.splits.train}) does not match ` +
+            `splits.json train list length (${splitsJson.train})`,
+        );
+      }
+      if (splitsJson.test !== manifest.splits.test) {
+        problems.push(
+          `manifest.json splits.test (${manifest.splits.test}) does not match ` +
+            `splits.json test list length (${splitsJson.test})`,
+        );
+      }
+    }
+  }
+
+  // Internal composition consistency: pair + standalone records must sum to
+  // record_count, and songs_count must match the songs_included list length.
+  // A same-total-but-miscomposed corruption (e.g. a pair record misclassified
+  // as standalone, or a song dropped from the list without touching the count)
+  // passes every count check above but is caught here.
+  if (
+    manifest.pair_count !== undefined &&
+    manifest.standalone_count !== undefined
+  ) {
+    const composed = manifest.pair_count + manifest.standalone_count;
+    if (composed !== manifest.record_count) {
+      problems.push(
+        `manifest.json pair_count (${manifest.pair_count}) + standalone_count ` +
+          `(${manifest.standalone_count}) = ${composed} does not sum to ` +
+          `record_count (${manifest.record_count})`,
+      );
+    }
+  }
+
+  if (
+    manifest.songs_count !== undefined &&
+    manifest.songs_included !== undefined &&
+    manifest.songs_count !== manifest.songs_included.length
+  ) {
+    problems.push(
+      `manifest.json songs_count (${manifest.songs_count}) does not match ` +
+        `songs_included list length (${manifest.songs_included.length})`,
+    );
+  }
+
+  return problems;
+}

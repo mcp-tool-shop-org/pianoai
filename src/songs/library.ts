@@ -86,7 +86,12 @@ export function scanLibrary(libraryDir: string): LibraryEntry[] {
             configPath,
           });
         } else {
-          console.error(`  SKIP ${genre}/${file}: ${result.error.issues[0]?.message}`);
+          // Log every issue, not just the first — mirrors config/loader.ts's
+          // equivalent path, so a config with multiple simultaneous
+          // validation problems doesn't silently hide all but one of them
+          // (F-c19001c1).
+          const issues = result.error.issues.map(i => `${i.path.join(".")}: ${i.message}`).join("; ");
+          console.error(`  SKIP ${genre}/${file}: ${issues}`);
         }
       } catch (err) {
         console.error(`  SKIP ${genre}/${file}: ${err instanceof Error ? err.message : String(err)}`);
@@ -213,7 +218,7 @@ export function initializeFromLibrary(libraryDir: string, userDir?: string): Ini
   } else {
     console.error(
       `Song library not found at ${libraryDir}. ` +
-      `The package may need reinstalling: npm install ai-jam-sessions`
+      `The package may need reinstalling: npm install -g @mcptoolshop/ai-jam-sessions`
     );
   }
 

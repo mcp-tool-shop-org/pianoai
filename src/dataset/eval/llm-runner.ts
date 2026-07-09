@@ -929,9 +929,17 @@ export function buildE3UserPrompt(
 
 /** Parse a single-letter answer (A/B/C/D) from model plain text response. */
 export function parseE3Response(text: string): number | null {
-  const match = /\b([A-D])\b/.exec(text.trim());
-  if (match) {
-    return ["A", "B", "C", "D"].indexOf(match[1]);
+  // F-20dce5c5: prefer the LAST word-boundary A/B/C/D match, not the first.
+  // The E3 system prompt asks for "ONLY the single letter" and maxTokens is
+  // capped at 16, but a model that ignores instructions and prepends a short
+  // justification before its answer (e.g. "A minor mode, so B") would have
+  // its earlier, unintended letter picked up by a first-match parse instead
+  // of the actual final answer. Taking the last match is closer to "final
+  // answer" semantics and does not change behavior for any single-letter
+  // response — first and last are the same match whenever there's only one.
+  const matches = text.trim().match(/\b[A-D]\b/g);
+  if (matches && matches.length > 0) {
+    return ["A", "B", "C", "D"].indexOf(matches[matches.length - 1]);
   }
   return null;
 }

@@ -33,7 +33,7 @@
 
 ## C. Operator Docs
 
-- [x] `[all]` README is current: what it does, install, usage, supported platforms + runtime versions (2026-05-19) — added Training Dataset section + hero badge + Status update for v1.4.1
+- [x] `[all]` README is current: what it does, install, usage, supported platforms + runtime versions (2026-07-09) — Stage A accuracy pass: Status → v1.4.3, composer list corrected, cockpit access story + sample-piano scope made honest, checksum/gate outputs verified against live runs
 - [x] `[all]` CHANGELOG.md (Keep a Changelog format) (2026-05-19) — v1.4.1 entry added for jam-actions-v0 marketing integration
 - [x] `[all]` LICENSE file present and repo states support status (2026-02-27)
 - [x] `[cli]` `--help` output accurate for all commands and flags (2026-02-27)
@@ -44,7 +44,7 @@
 ## D. Shipping Hygiene
 
 - [x] `[all]` `verify` script exists (test + build + smoke in one command) (2026-02-27)
-- [x] `[all]` Version in manifest matches git tag (2026-05-19) — package.json version = "1.4.1"
+- [x] `[all]` Version in manifest matches git tag (2026-07-09) — package.json version = "1.4.3" = npm dist-tag latest = tag v1.4.3
 - [x] `[all]` Dependency scanning runs in CI (ecosystem-appropriate) (2026-02-27) — pnpm audit in CI
 - [x] `[all]` Automated dependency update mechanism exists (2026-02-27) — GitHub Dependabot
 - [x] `[npm]` `npm pack --dry-run` includes: dist/, README.md, CHANGELOG.md, LICENSE (2026-02-27)

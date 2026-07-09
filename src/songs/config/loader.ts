@@ -6,10 +6,15 @@
 
 import { readdirSync, readFileSync, existsSync } from "node:fs";
 import { join, basename, resolve, relative, isAbsolute } from "node:path";
-import { SongConfigSchema, type SongConfig } from "./schema.js";
+import { SongConfigSchema, SONG_ID_REGEX, type SongConfig } from "./schema.js";
 
 function sanitizeConfigId(id: string): string {
-  if (!/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/.test(id) || id.includes("..") || id.includes("/") || id.includes("\\") ) {
+  // Reuse the schema's own id regex (F-6acb6320) — the previous local
+  // regex was looser (permitted consecutive hyphens like "a--b") than
+  // SongConfigSchema.id's, so this could accept an id shape no valid
+  // config could actually have. The path-traversal check below is kept
+  // as independent defense-in-depth regardless of which regex is used.
+  if (!SONG_ID_REGEX.test(id) || id.includes("..") || id.includes("/") || id.includes("\\") ) {
     throw new Error(`Invalid config ID: "${id}"`);
   }
   return id;

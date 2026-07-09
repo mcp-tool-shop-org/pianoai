@@ -200,13 +200,22 @@ export class PositionTracker {
       }
     }
 
+    // Reduce, not Math.min/max(...spread) — avoids the call-stack limit a
+    // large event array could hit (same class of bug as B-A1-001).
+    let minNote = notes[0];
+    let maxNote = notes[0];
+    for (const n of notes) {
+      if (n < minNote) minNote = n;
+      if (n > maxNote) maxNote = n;
+    }
+
     return {
       measure,
       events,
       noteCount: events.length,
       avgVelocity: Math.round(velocities.reduce((a, b) => a + b, 0) / velocities.length),
-      minNote: Math.min(...notes),
-      maxNote: Math.max(...notes),
+      minNote,
+      maxNote,
       hasChord,
       bpm: this.bpmAt(events[0].time),
     };

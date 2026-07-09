@@ -141,6 +141,29 @@ export function parseHandString(
 }
 
 /**
+ * Split a (possibly chord) token into its "+"-joined parts, resolving the
+ * duration suffix each part should use. A suffix on any part is shared by
+ * parts without their own (the MIDI ingest puts it on the last part:
+ * "C4+E4+G4:q"). A single note is returned as a one-part chord.
+ */
+export function splitChordToken(
+  token: string
+): { noteStr: string; durSuffix: string }[] {
+  const parts = token.split("+");
+  // Find the shared duration from the part that has one (last one wins)
+  let sharedDuration = "q";
+  for (const part of parts) {
+    if (part.includes(":")) {
+      sharedDuration = part.split(":")[1];
+    }
+  }
+  return parts.map((part) => {
+    const pieces = part.split(":");
+    return { noteStr: pieces[0], durSuffix: pieces[1] ?? sharedDuration };
+  });
+}
+
+/**
  * Parse a chord token like "C4+E4+G4:q" into a Beat with multiple notes.
  * The duration suffix from the last sub-token applies to all notes.
  */
@@ -151,20 +174,9 @@ function parseChordToken(
   channel: number,
   velocity: number
 ): Beat {
-  const parts = token.split("+");
-  // Find the duration from the part that has one (last part has ":dur")
-  let sharedDuration = "q";
-  for (const part of parts) {
-    if (part.includes(":")) {
-      sharedDuration = part.split(":")[1];
-    }
-  }
-  const notes = parts.map((part) => {
-    if (part.includes(":")) {
-      return parseNoteToken(part, bpm, channel, velocity);
-    }
-    return parseNoteToken(`${part}:${sharedDuration}`, bpm, channel, velocity);
-  });
+  const notes = splitChordToken(token).map(({ noteStr, durSuffix }) =>
+    parseNoteToken(`${noteStr}:${durSuffix}`, bpm, channel, velocity)
+  );
   return { notes, hand };
 }
 
@@ -312,6 +324,18 @@ export function noteToSingable(noteStr: string, mode: SingAlongMode): string {
   const trimmed = noteStr.trim();
   if (trimmed === "R" || trimmed === "r") return mode === "syllables" ? "..." : "rest";
 
+  // Chord token ("+"-joined tones, e.g. "C4+E4+G4" from the MIDI ingest) —
+  // narrate the tones rather than reading the raw token aloud.
+  if (trimmed.includes("+")) {
+    const parts = splitChordToken(trimmed)
+      .map((p) => p.noteStr.trim())
+      .filter((p) => p !== "");
+    if (parts.length === 0) return trimmed; // pass through unparseable
+    if (parts.length === 1) return noteToSingable(parts[0], mode);
+    if (mode === "syllables") return "da"; // a chord is one beat — one syllable
+    return `${parts.map((p) => noteToSingable(p, mode)).join("-")} chord`;
+  }
+
   const match = trimmed.match(/^([A-Ga-g])(#|b)?(\d)?$/);
   if (!match) return trimmed; // pass through unparseable
 
@@ -360,12 +384,17 @@ export function handToSingableText(
   if (mode === "contour") {
     if (tokens.length <= 1) return "hold";
     const midis = tokens.map((t) => {
-      const noteStr = t.split(":")[0];
-      try {
-        return parseNoteToMidi(noteStr);
-      } catch {
-        return -1;
+      // A chord's contour follows its top (highest) tone — the melody note
+      let best = -1;
+      for (const { noteStr } of splitChordToken(t)) {
+        try {
+          const midi = parseNoteToMidi(noteStr);
+          if (midi > best) best = midi;
+        } catch {
+          // ignore unparseable tones
+        }
       }
+      return best;
     });
     const dirs: string[] = [];
     for (let i = 1; i < midis.length; i++) {
@@ -381,8 +410,13 @@ export function handToSingableText(
 
   // note-names, solfege, syllables
   const syllables = tokens.map((t) => {
-    const noteStr = t.split(":")[0];
-    return noteToSingable(noteStr, mode);
+    // Strip durations per chord part and rejoin, so a chord token like
+    // "C4:q+E4:q" reaches noteToSingable as "C4+E4" with no tone lost
+    const noteStr = splitChordToken(t)
+      .map((p) => p.noteStr)
+      .filter((p) => p !== "")
+      .join("+");
+    return noteToSingable(noteStr || t.split(":")[0], mode);
   });
   return syllables.join("... ");
 }

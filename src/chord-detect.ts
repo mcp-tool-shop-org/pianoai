@@ -54,8 +54,13 @@ export function detectChord(midiNotes: number[]): string | null {
   const pitchClasses = [...new Set(midiNotes.map(n => n % 12))].sort((a, b) => a - b);
   if (pitchClasses.length < 2) return null;
 
-  // Find the bass note (lowest MIDI) — prefer it as root
-  const bassNote = Math.min(...midiNotes);
+  // Find the bass note (lowest MIDI) — prefer it as root.
+  // Loop, not Math.min(...spread), to avoid the call-stack limit a large
+  // input array could hit (same class of bug as B-A1-001).
+  let bassNote = midiNotes[0];
+  for (const n of midiNotes) {
+    if (n < bassNote) bassNote = n;
+  }
   const bassPc = bassNote % 12;
 
   // Try each of the 12 possible roots, but try bass note first
@@ -94,7 +99,10 @@ function matchesPattern(intervals: number[], pattern: number[]): boolean {
  * Returns compact note names like "C4 E4 G4".
  */
 export function midiNotesToNames(midiNotes: number[]): string {
-  return midiNotes
+  // Sort a copy — Array.prototype.sort mutates in place, and this is a
+  // display-formatting helper that must not reorder the caller's own
+  // "currently held notes" array as a side effect (F-08847ab4).
+  return [...midiNotes]
     .sort((a, b) => a - b)
     .map(midi => {
       const octave = Math.floor(midi / 12) - 1;

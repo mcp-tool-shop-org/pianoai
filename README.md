@@ -18,7 +18,6 @@
 
 <p align="center">
   <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml"><img src="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://codecov.io/gh/mcp-tool-shop-org/ai-jam-sessions"><img src="https://codecov.io/gh/mcp-tool-shop-org/ai-jam-sessions/branch/main/graph/badge.svg" alt="codecov"></a>
   <a href="https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions"><img src="https://img.shields.io/npm/v/@mcptoolshop/ai-jam-sessions" alt="npm"></a>
   <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/songs-120_across_12_genres-blue" alt="Songs"></a>
   <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/annotated-24-green" alt="Ready"></a>
@@ -40,7 +39,7 @@ An LLM can read and write text, but it can't experience music the way we do. No 
 - **Remembering** — a practice journal that persists across sessions, so learning compounds over time.
 - **Singing** — vocal tract synthesis with 20 voice presets, from operatic soprano to electronic choir. Sing-along mode with solfege, contour, and syllable narration.
 
-Each of the 12 genres has a richly annotated exemplar — a reference piece the AI studies first, with historical context, bar-by-bar structural analysis, key moments, teaching goals, and performance tips. The other 96 songs are raw MIDI, waiting for the AI to absorb the patterns, play the music, and write its own annotations.
+Each of the 12 genres has at least one richly annotated exemplar — a reference piece the AI studies first, with historical context, bar-by-bar structural analysis, key moments, teaching goals, and performance tips. 24 songs are fully annotated today; the other 96 are raw MIDI, waiting for the AI to absorb the patterns, play the music, and write its own annotations.
 
 Out of this same work, we also publish **[jam-actions-v0](#training-dataset)** — a public dataset of 115 multi-turn MCP tool-use traces over real classical piano. It teaches LLMs to do *grounded tool-use over symbolic music*, not just text generation, and ships with a 7-axis release gate that distinguishes "passing on evidence" from "passing because the task is trivial." See [Training Dataset](#training-dataset) below for the full story.
 
@@ -58,7 +57,11 @@ Two color modes: **hand** (blue/coral) or **pitch-class** (chromatic rainbow —
 
 ## The Cockpit
 
-A browser-based instrument and vocal studio that opens alongside the MCP server. No plugins, no DAW — just a web page with a piano.
+A browser-based instrument and vocal studio that lives in this repo at [`apps/cockpit`](apps/cockpit). No plugins, no DAW — just a web page with a piano. It isn't bundled into the npm package yet; run it from a clone:
+
+```bash
+cd apps/cockpit && npm install && npm run dev   # Vite dev server, opens in your browser
+```
 
 - **Dual-mode piano roll** — switch between Instrument mode (chromatic pitch-class colors) and Vocal mode (notes colored by vowel shape: /a/ /e/ /i/ /o/ /u/)
 - **Visual keyboard** — two octaves from C4, mapped to your QWERTY keyboard. Click or type.
@@ -115,7 +118,7 @@ Six engines, plus a layered combinator that runs any two simultaneously:
 | Engine | Type | What it sounds like |
 |--------|------|---------------------|
 | **Oscillator Piano** | Additive synthesis | Multi-harmonic piano with hammer noise, inharmonicity, 48-voice polyphony, stereo imaging. Zero dependencies. |
-| **Sample Piano** | WAV playback | Salamander Grand Piano — 480 samples, 16 velocity layers, 88 keys. The real thing. |
+| **Sample Piano** | WAV playback | Salamander Grand Piano — 480 samples, 16 velocity layers, 88 keys. The real thing. *Programmatic API only: samples are not shipped (you supply the [Salamander](https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html) download); not yet wired into the CLI/MCP engine lists.* |
 | **Vocal (Sample)** | Pitch-shifted samples | Sustained vowel tones with portamento and legato mode. |
 | **Vocal Tract** | Physical model | Pink Trombone — LF glottal waveform through a 44-cell digital waveguide. Four presets: soprano, alto, tenor, bass. |
 | **Vocal Synth** | Additive synthesis | 15 Kokoro voice presets with formant shaping, breathiness, vibrato. Deterministic (seeded RNG). |
@@ -176,7 +179,7 @@ Each record pairs a 4-measure phrase window with an annotated teaching target an
 | **DOI** | [**`10.5281/zenodo.20279919`**](https://doi.org/10.5281/zenodo.20279919) — Zenodo, published 2026-05-19 |
 | Records | 115 (public subset) |
 | Canonical baseline | 16-record post-repair E3 |
-| Compositions | 8 classical piano works (Beethoven, Bach, Schubert, Schumann, Mozart, Mendelssohn, Tchaikovsky) |
+| Compositions | 8 classical piano works across 6 composers (Bach, Beethoven, Chopin, Debussy, Mozart, Schumann) |
 | Source MIDI | piano-midi.de — Bernd Krueger arrangements |
 | License | CC-BY-SA-3.0-DE (arrangements) over public-domain compositions |
 | Version | 0.4.3 (2026-05-19) |
@@ -189,10 +192,10 @@ Each record pairs a 4-measure phrase window with an annotated teaching target an
 ```bash
 git clone https://github.com/mcp-tool-shop-org/ai-jam-sessions.git
 cd ai-jam-sessions && pnpm install
-pnpm exec tsx scripts/verify-public-package-checksums.ts        # 273 entries, ~2s
+pnpm exec tsx scripts/verify-public-package-checksums.ts        # 274 entries, ~2s
 pnpm exec tsx scripts/check-release-gate.ts \
   datasets/jam-actions-v0-public/evals/slice21-fair-e3-baseline-results.json
-# → "Verdict: PASS"
+# → "Aggregate: PASS" (exit 0)
 ```
 
 `.gitattributes` pins LF line endings for `*.sha256` and the public-dataset tree so the checksum verifier works on every platform. The release-gate CLI is strict-positional (rejects unknown / multiple positional args) so cold-start contributors can't silently mis-invoke it.
@@ -203,7 +206,7 @@ pnpm exec tsx scripts/check-release-gate.ts \
 
 **HuggingFace mirror.** Coming in a v1.4.x patch — see [`datasets/jam-actions-v0-public/publication-receipt.json`](datasets/jam-actions-v0-public/publication-receipt.json) for the deferred-status block. The Zenodo DOI is the canonical citation handle; the HF mirror is for ML-ecosystem discovery only.
 
-> The MIDI arrangements are by Bernd Krueger (piano-midi.de), licensed CC-BY-SA-3.0-DE. The annotations, traces, and eval artifacts are by the AI Jam Sessions team, released under the same license so the share-alike chain is preserved end-to-end.
+> The MIDI arrangements are by Bernd Krueger (piano-midi.de), licensed CC-BY-SA-3.0-DE. The annotations, traces, and eval artifacts are by the AI Jam Sessions team, released under the same license so the share-alike chain is preserved end-to-end. **License boundary:** the repository's MIT license covers the code; everything under `datasets/` is CC-BY-SA-3.0-DE. The working corpus at `datasets/jam-actions-v0/` additionally contains two works (Satie Gymnopédie No. 1, Debussy Arabesque No. 1) that are *excluded* from the published subset because their arrangement provenance could not be verified — see [`datasets/jam-actions-v0/PROVENANCE-NOTE.md`](datasets/jam-actions-v0/PROVENANCE-NOTE.md).
 
 ## Install
 
@@ -228,7 +231,7 @@ Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external softwar
 
 ## MCP Tools
 
-41 tools and 3 prompt templates across six categories:
+42 tools and 3 prompt templates across six categories:
 
 ### Learn
 
@@ -249,7 +252,7 @@ Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external softwar
 
 | Tool | What it does |
 |------|--------------|
-| `play_song` | Play through speakers — library songs or raw .mid files. Any engine, speed, mode, measure range. |
+| `play_song` | Play through speakers — library songs or raw .mid files. Four engines (piano, vocal, tract, guitar), any speed, mode, measure range. The synth and layered engines are CLI-only. |
 | `stop_playback` | Stop |
 | `pause_playback` | Pause or resume |
 | `set_speed` | Change speed mid-playback (0.1×–4.0×) |
@@ -257,6 +260,7 @@ Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external softwar
 | `view_piano_roll` | Render as SVG (hand color or pitch-class chromatic rainbow) |
 | `score_performance` | Score a MIDI play-along — pitch accuracy, timing, completeness, with graded feedback |
 | `mute_hand` | Mute or unmute left/right hand during practice — isolate one hand at a time |
+| `detect_chord` | Name the chord from a set of currently-sounding MIDI notes (e.g. `[60,64,67]` → C) |
 | `preview_teaching_cues` | See all teaching notes and key moments before playing |
 
 ### Sing
@@ -328,7 +332,7 @@ ai-jam-sessions --version
 
 ## Status
 
-v1.4.1. Six sound engines, 41 MCP tools, 3 prompt templates, 120 songs across 12 genres with deeply annotated exemplars. Song transposition, section markers, per-hand mute/solo for focused practice. Interactive guitar tablature editor. Browser cockpit with 20 vocal presets, 10 instrument voices, 7 tuning systems, and an LLM-facing score API. Piano roll visualization in two color modes. Practice journal for persistent learning. Session state persistence across server restarts. MIDI play-along scoring, annotation quality assessment, and cross-genre pattern recognition.
+v1.4.3 (v1.4.2 published the dataset DOI; v1.4.3 restored the package to npm under the `@mcptoolshop` scope — see [CHANGELOG](CHANGELOG.md)). Six sound engines, 42 MCP tools, 3 prompt templates, 120 songs across 12 genres with deeply annotated exemplars. Song transposition, section markers, per-hand mute/solo for focused practice. Interactive guitar tablature editor. Browser cockpit with 20 vocal presets, 10 instrument voices, 7 tuning systems, and an LLM-facing score API. Piano roll visualization in two color modes. Practice journal for persistent learning. Session state persistence across server restarts. MIDI play-along scoring, annotation quality assessment, and cross-genre pattern recognition.
 
 Also publishes **[jam-actions-v0](#training-dataset)** — a 115-record training dataset of multi-turn MCP tool-use traces over classical piano, with a 7-axis release gate, cold-start reproducibility, and full Zenodo + CITATION.cff metadata (CC-BY-SA-3.0-DE). 1513 tests passing across the MCP server + dataset packagers + eval harnesses + release-gate validator. The MIDI is all there — the library grows as the AI learns, and now there's a corpus of that learning shipped with it.
 
@@ -336,7 +340,7 @@ Also publishes **[jam-actions-v0](#training-dataset)** — a 115-record training
 
 **Data touched:** song library (JSON + MIDI), user songs directory (`~/.ai-jam-sessions/songs/`), guitar tuning configs, practice journal entries, local audio output device.
 
-**Data NOT touched:** no cloud APIs, no user credentials, no browsing data, no system files outside the user song directory. No telemetry is collected or sent.
+**Data NOT touched (default paths):** the MCP server and CLI make no network calls, read no credentials, and touch no system files outside the user song directory. No telemetry is collected or sent. The **opt-in dataset/eval tooling** shipped in the same package (`scripts/run-llm-eval.ts`, provenance verifier) is the one exception: when you explicitly invoke it, it can call LLM APIs (reads `ANTHROPIC_API_KEY` from your environment, never stores it) and fetch provenance URLs. It never runs as part of the server, CLI, or install.
 
 **Permissions:** MCP server uses stdio transport only (no HTTP). CLI accesses local filesystem and audio devices. See [SECURITY.md](SECURITY.md) for the full policy.
 

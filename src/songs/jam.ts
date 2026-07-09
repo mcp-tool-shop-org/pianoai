@@ -289,7 +289,11 @@ const MOOD_HINTS: Record<string, string[]> = {
 /** Get style guidance strings for a target genre and optional mood. */
 export function getStyleGuidance(genre?: Genre, mood?: string): string[] {
   const hints: string[] = [];
-  if (genre) hints.push(...STYLE_HINTS[genre]);
+  // Guard the lookup the same way mood is guarded below — options.style is
+  // untyped JSON at the MCP tool boundary, so an unrecognized genre string
+  // (e.g. an LLM passing "synthwave") previously threw "undefined is not
+  // iterable" from `hints.push(...undefined)` (F-daecb4be).
+  if (genre && STYLE_HINTS[genre]) hints.push(...STYLE_HINTS[genre]);
 
   if (mood) {
     const key = mood.toLowerCase();

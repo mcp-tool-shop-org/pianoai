@@ -162,8 +162,15 @@ export function createVocalSynthEngine(options?: VocalSynthOptions): VmpkConnect
   let connectTime = 0;
   let noteCounter = 0;
 
-  // Map MIDI note number → engine noteId for noteOff lookup
-  const activeNoteIds = new Map<number, string>();
+  // Map MIDI note number → FIFO queue of engine noteIds for noteOff
+  // lookup. A single-slot map (the previous shape) had the same bug as
+  // audio-engine.ts's Map<number, Voice>: a same-pitch noteOn/noteOff pair
+  // could overlap another same-pitch pair (unison / fast retrigger), and a
+  // "late" noteOff for an already-superseded noteId would wrongly release
+  // the newer voice occupying the slot instead (F-c1eab2d2). Bounded at 2
+  // — see audio-engine.ts's MAX_VOICES_PER_NOTE for the full rationale.
+  const MAX_VOICES_PER_NOTE = 2;
+  const activeNoteIds = new Map<number, string[]>();
 
   const debugLog: Array<{ type: string; t: number; midi?: number; velocity?: number }> = [];
 
@@ -287,14 +294,25 @@ export function createVocalSynthEngine(options?: VocalSynthOptions): VmpkConnect
     noteOn(note: number, velocity: number, _channel?: number): void {
       if (!engine || currentStatus !== "connected") return;
 
-      // Release previous voice on this note to prevent leaks
-      const existingId = activeNoteIds.get(note);
-      if (existingId) {
-        engine.noteOff(existingId);
+      // Bounded overlap instead of an unconditional release — a same-pitch
+      // noteOn/noteOff pair can legitimately overlap another same-pitch
+      // pair (unison / fast retrigger). Only once a pitch already has
+      // MAX_VOICES_PER_NOTE voices queued do we release the oldest
+      // (F-c1eab2d2).
+      let queue = activeNoteIds.get(note);
+      if (queue && queue.length >= MAX_VOICES_PER_NOTE) {
+        const oldestId = queue.shift()!;
+        engine.noteOff(oldestId);
+        if (queue.length === 0) activeNoteIds.delete(note);
       }
 
       const noteId = `n${noteCounter++}`;
-      activeNoteIds.set(note, noteId);
+      queue = activeNoteIds.get(note);
+      if (!queue) {
+        queue = [];
+        activeNoteIds.set(note, queue);
+      }
+      queue.push(noteId);
 
       const noteOnConfig: {
         noteId: string;
@@ -321,10 +339,13 @@ export function createVocalSynthEngine(options?: VocalSynthOptions): VmpkConnect
     noteOff(note: number, _channel?: number): void {
       if (!engine || currentStatus !== "connected") return;
 
-      const noteId = activeNoteIds.get(note);
-      if (noteId) {
+      // FIFO pairing — release the OLDEST still-active noteId for this
+      // pitch, not "whatever's in a single slot" (F-c1eab2d2).
+      const queue = activeNoteIds.get(note);
+      if (queue && queue.length > 0) {
+        const noteId = queue.shift()!;
+        if (queue.length === 0) activeNoteIds.delete(note);
         engine.noteOff(noteId);
-        activeNoteIds.delete(note);
       }
 
       if (debug) {

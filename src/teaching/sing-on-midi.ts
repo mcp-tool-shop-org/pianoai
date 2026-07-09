@@ -62,7 +62,7 @@ export function clusterToSingable(
   if (events.length === 0) return "";
 
   if (mode === "syllables") {
-    return events.length === 1 ? "da" : "da".repeat(1); // single syllable per cluster
+    return "da"; // single syllable per cluster, regardless of chord size
   }
 
   const syllables = events.map((e) => midiNoteToSingable(e.note, mode));
@@ -81,8 +81,10 @@ export function contourDirection(
   curr: readonly MidiNoteEvent[]
 ): string {
   if (prev.length === 0 || curr.length === 0) return "";
-  const prevMax = Math.max(...prev.map((e) => e.note));
-  const currMax = Math.max(...curr.map((e) => e.note));
+  // Reduce, not Math.max(...spread) — avoids the call-stack limit a large
+  // cluster could hit (same class of bug as B-A1-001).
+  const prevMax = prev.reduce((m, e) => Math.max(m, e.note), -Infinity);
+  const currMax = curr.reduce((m, e) => Math.max(m, e.note), -Infinity);
   if (currMax > prevMax) return "up";
   if (currMax < prevMax) return "down";
   return "same";

@@ -148,6 +148,19 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+/**
+ * Clamp a tract-shape parameter to its documented physical range, falling
+ * back to the preset default when non-finite. Without this, a very
+ * small/zero tractLength (or an out-of-range tongueIndex/tongueDiameter)
+ * flows unclamped into `new Synthesizer(SAMPLE_RATE, tractLength)` and the
+ * tract shaper, which can silently return NaN from out-of-bounds reads in
+ * the vendored Tract class instead of a clean error (F-2a5a4abb).
+ */
+function clampTractParam(value: number, min: number, max: number, fallback: number): number {
+  if (!Number.isFinite(value)) return fallback;
+  return Math.max(min, Math.min(max, value));
+}
+
 // ─── Lazy Import ──────────────────────────────────────────────────────────
 
 let _AudioContext: any = null;
@@ -179,11 +192,15 @@ export function createTractEngine(options?: TractEngineOptions): VmpkConnector &
     debug = false,
   } = options ?? {};
 
-  // Resolve voice preset, allow per-parameter overrides
+  // Resolve voice preset, allow per-parameter overrides.
+  // Clamped to documented physical ranges (F-2a5a4abb) — see
+  // TractEngineOptions' own doc comments for the ranges (tongueIndex
+  // 0-44, tongueDiameter 0-3.5) and the module header for tractLength
+  // (20-70 cells is a generous superset of the 36-46 the presets use).
   const preset = VOICE_PRESETS[voice];
-  const tongueIndex = options?.tongueIndex ?? preset.tongueIndex;
-  const tongueDiameter = options?.tongueDiameter ?? preset.tongueDiameter;
-  const tractLength = options?.tractLength ?? preset.tractLength;
+  const tongueIndex = clampTractParam(options?.tongueIndex ?? preset.tongueIndex, 0, 44, preset.tongueIndex);
+  const tongueDiameter = clampTractParam(options?.tongueDiameter ?? preset.tongueDiameter, 0, 3.5, preset.tongueDiameter);
+  const tractLength = clampTractParam(options?.tractLength ?? preset.tractLength, 20, 70, preset.tractLength);
   const transpose = preset.transpose;
 
   const SAMPLE_RATE = 48000;
@@ -380,6 +397,15 @@ export function createTractEngine(options?: TractEngineOptions): VmpkConnector &
     noteOn(note: number, velocity: number, _channel?: number): void {
       if (!ctx || currentStatus !== "connected" || !synth) return;
 
+      // Unlike velocity, note was never validated here — a non-finite note
+      // would flow into updateSounding()'s midiToFreq(highest + transpose)
+      // and assign glottis.targetFrequency = NaN directly, bypassing
+      // calculateNewFrequency's own Math.max floor (Math.max(10, NaN) is
+      // NaN, not 10). Because oldFrequency=newFrequency each call, that
+      // corruption self-perpetuates until a full disconnect()/connect()
+      // cycle (F-8664bd70).
+      if (!Number.isFinite(note) || !Number.isFinite(velocity)) return;
+      note = Math.max(0, Math.min(127, Math.round(note)));
       velocity = Math.max(1, Math.min(127, velocity));
 
       // Track this note as held
@@ -401,6 +427,12 @@ export function createTractEngine(options?: TractEngineOptions): VmpkConnector &
 
     noteOff(note: number, _channel?: number): void {
       if (!ctx || currentStatus !== "connected") return;
+      if (!Number.isFinite(note)) return;
+      // Match noteOn's clamp/round exactly — heldNotes is keyed by the
+      // clamped value noteOn actually stored, so an out-of-range or
+      // fractional note here must resolve to the same key or the note
+      // would never be released (stuck held note).
+      note = Math.max(0, Math.min(127, Math.round(note)));
 
       // Remove from held notes
       heldNotes.delete(note);

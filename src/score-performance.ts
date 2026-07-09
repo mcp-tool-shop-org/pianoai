@@ -139,8 +139,19 @@ function parseHandTokens(
   return notes;
 }
 
+/** Fallback tempo used when both the bpm override and song.tempo are invalid (<=0 or non-finite). */
+const DEFAULT_FALLBACK_BPM = 120;
+
 export function flattenSongToExpected(song: SongEntry, bpm?: number): ExpectedNote[] {
-  const effectiveBpm = bpm ?? song.tempo;
+  // Guard bpm<=0 the same way durationToMs already does elsewhere in this
+  // file — an effectiveBpm of 0 or negative would make measureDurationSec
+  // Infinity/negative, poisoning every ExpectedNote.time with
+  // Infinity/NaN and silently producing a 0%-match score instead of a
+  // clear validation error (F-eaa28d23). Falls back to a sane default
+  // tempo rather than throwing, matching flattenSongToExpected's role as
+  // a best-effort scorer rather than a strict validator.
+  const rawBpm = bpm ?? song.tempo;
+  const effectiveBpm = Number.isFinite(rawBpm) && rawBpm > 0 ? rawBpm : DEFAULT_FALLBACK_BPM;
   const notes: ExpectedNote[] = [];
   let measureStartTime = 0;
 

@@ -36,6 +36,8 @@ You have access to the AI Jam Session MCP tools:
 | `practice_setup` | Student wants a structured practice plan |
 | `sing_along` | Student wants to hear or read the notes before playing |
 | `ai_jam_sessions` | Student wants to improvise or create their own version of a song |
+| `add_song` | Saving a student's jam creation to the library |
+| `play_song` | Playing back a student's jam creation |
 
 ## How You Teach
 

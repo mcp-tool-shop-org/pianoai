@@ -228,15 +228,23 @@ export class PlaybackController {
       options.onProgress?.(p);
     };
 
-    this.emitStateChange(previousState);
-
     try {
-      await this.engine.play({
+      const playPromise = this.engine.play({
         speed: options.speed,
         startAtSeconds: options.startAtSeconds,
         onProgress,
         signal: options.signal,
       });
+      // engine.play() is an async function: it runs synchronously (setting
+      // its internal state to "playing") right up to its first internal
+      // await, THEN returns the pending promise above — so by this point
+      // the transition has genuinely already happened. Emitting here
+      // (instead of before the call) is what actually fires the
+      // idle/stopped/paused -> "playing" transition; the previous
+      // pre-call emitStateChange(previousState) compared engine.state
+      // against itself and always silently no-op'd (F-beb8a589).
+      this.emitStateChange(previousState);
+      await playPromise;
     } catch (err) {
       this.emit({
         type: "error",
@@ -270,14 +278,20 @@ export class PlaybackController {
   /** Resume playback after pause. Fires stateChange event. */
   async resume(options: PlaybackControlOptions = {}): Promise<void> {
     if (this.engine.state !== "paused") return;
-    const prev = this.engine.state;
-    this.emitStateChange(prev);
+    const previousState = this.engine.state;
     try {
-      await this.engine.resume({
+      const resumePromise = this.engine.resume({
         speed: options.speed,
         onProgress: options.onProgress,
         signal: options.signal,
       });
+      // Same fix as play() above: emit after initiating resume() (which
+      // synchronously reaches "playing" before its first internal await),
+      // not before. The old `const prev = this.engine.state;
+      // this.emitStateChange(prev)` called here compared engine.state
+      // (still "paused") against itself and was dead code (F-beb8a589).
+      this.emitStateChange(previousState);
+      await resumePromise;
     } catch (err) {
       this.emit({
         type: "error",

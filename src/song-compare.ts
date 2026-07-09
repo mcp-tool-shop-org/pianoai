@@ -150,10 +150,18 @@ export function compareSongs(songA: SongEntry, songB: SongEntry): SongComparison
   // Key relationship
   const keyRel = describeKeyRelationship(songA.key, songB.key);
 
-  // Tempo comparison
-  const tempoRatio = Math.max(songA.tempo, songB.tempo) / Math.min(songA.tempo, songB.tempo);
+  // Tempo comparison. Guard against a non-positive tempo (malformed song
+  // data) the same way unparseable keys are already treated as "unknown"
+  // elsewhere in this file — otherwise tempoRatio becomes Infinity and the
+  // formatted text reads "ratio Infinityx" (F-4ed34654).
+  const hasValidTempo = songA.tempo > 0 && songB.tempo > 0;
+  const tempoRatio = hasValidTempo
+    ? Math.max(songA.tempo, songB.tempo) / Math.min(songA.tempo, songB.tempo)
+    : 1;
 
-  if (tempoRatio <= 1.15) {
+  if (!hasValidTempo) {
+    // Skip — can't meaningfully compare a non-positive tempo.
+  } else if (tempoRatio <= 1.15) {
     similarities.push(`Similar tempo (${songA.title}: ${songA.tempo} BPM, ${songB.title}: ${songB.tempo} BPM)`);
   } else {
     differences.push(`Different tempos (${songA.title}: ${songA.tempo} BPM, ${songB.title}: ${songB.tempo} BPM, ratio ${tempoRatio.toFixed(1)}x)`);

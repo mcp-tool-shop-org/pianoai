@@ -12,7 +12,8 @@
 
 import { describe, it, expect } from "vitest";
 import { readFileSync, readdirSync } from "node:fs";
-import { join } from "node:path";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   // Question generators
   generateKeyTimeSigQuestion,
@@ -1002,38 +1003,47 @@ describe("evaluateRecord", () => {
 // ─── Corpus regression: full E3 eval ─────────────────────────────────────────
 
 describe("runFullE3Eval — corpus regression", () => {
-  // Load real corpus records.
-  const RECORDS_DIR = join(
-    new URL(".", import.meta.url).pathname.replace(/^\/([A-Z]:)/, "$1"),
-    "../../../datasets/jam-actions-v0/records",
-  );
+  // Load real corpus records. The corpus is git-tracked under
+  // datasets/jam-actions-v0/records — a load failure here means the corpus is
+  // missing/moved or path resolution is broken, NOT that the fixture is
+  // optional. Fail loud (F-e53d225f): previously a bare try/catch swallowed
+  // the failure and left `skip` true, so all 16 gated tests below executed
+  // `if (skip) return;` as their entire body — indistinguishable in the
+  // vitest summary from a real pass. Neighbors tool-use.test.ts and
+  // phrase-continuation.test.ts already load the identical corpus with no
+  // try/catch (readdirSync failure propagates); this block now matches that
+  // convention, using the same __dirname-based path resolution instead of the
+  // fragile file:// URL regex hack.
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+  const REPO_ROOT = join(__dirname, "..", "..", "..");
+  const RECORDS_DIR = join(REPO_ROOT, "datasets", "jam-actions-v0", "records");
 
-  let allRecords: E3Record[] = [];
-
+  let allRecords: E3Record[];
   try {
     const files = readdirSync(RECORDS_DIR).filter((f) => f.endsWith(".json")).sort();
     allRecords = files.map((f) =>
       JSON.parse(readFileSync(join(RECORDS_DIR, f), "utf8")) as E3Record,
     );
-  } catch {
-    // If records not found, skip these tests gracefully.
+  } catch (err) {
+    throw new Error(
+      `Failed to load E3 corpus records from "${RECORDS_DIR}": ${(err as Error).message}\n` +
+        `This corpus is git-tracked — a load failure means it is missing/moved or path ` +
+        `resolution is broken, not that this fixture is optional. All corpus-regression and ` +
+        `Slice 8 hard-gate tests in this file depend on it; fix the underlying cause instead ` +
+        `of letting these tests silently skip.`,
+    );
   }
 
-  const skip = allRecords.length === 0;
-
   it("loads 145 corpus records", () => {
-    if (skip) return;
     expect(allRecords.length).toBe(145);
   });
 
   it("gold score is 1.0 across all records and all computable questions", () => {
-    if (skip) return;
     const run = runFullE3Eval(allRecords);
     expect(run.overallAggregate.goldMean).toBe(1.0);
   });
 
   it("gold > text_only by ≥0.10 on load-bearing types", () => {
-    if (skip) return;
     const run = runFullE3Eval(allRecords);
     const lb = run.loadBearingAggregate;
     expect(lb.goldMean).not.toBeNull();
@@ -1042,7 +1052,6 @@ describe("runFullE3Eval — corpus regression", () => {
   });
 
   it("gold > random_midi by ≥0.10 on load-bearing types", () => {
-    if (skip) return;
     const run = runFullE3Eval(allRecords);
     const lb = run.loadBearingAggregate;
     expect(lb.goldMean).not.toBeNull();
@@ -1051,7 +1060,6 @@ describe("runFullE3Eval — corpus regression", () => {
   });
 
   it("text_only score is at chance (≤0.40) on load-bearing types", () => {
-    if (skip) return;
     const run = runFullE3Eval(allRecords);
     const lb = run.loadBearingAggregate;
     expect(lb.textOnlyMean).not.toBeNull();
@@ -1059,7 +1067,6 @@ describe("runFullE3Eval — corpus regression", () => {
   });
 
   it("random_midi score is at chance (≤0.40) on load-bearing types", () => {
-    if (skip) return;
     const run = runFullE3Eval(allRecords);
     const lb = run.loadBearingAggregate;
     expect(lb.randomMidiMean).not.toBeNull();
@@ -1067,7 +1074,6 @@ describe("runFullE3Eval — corpus regression", () => {
   });
 
   it("all records produce computable questions on types 3, 4, 5", () => {
-    if (skip) return;
     const run = runFullE3Eval(allRecords);
     // Slice 9b corpus expansion note: 3 new records (pathetique mm.29-32, mm.57-60,
     // schumann mm.45-48) have no downbeat onsets (anacrusis / syncopated start patterns),
@@ -1095,7 +1101,6 @@ describe("runFullE3Eval — corpus regression", () => {
   });
 
   it("not_computable entries have non-empty reason strings", () => {
-    if (skip) return;
     const run = runFullE3Eval(allRecords);
     const audit = run.hardGates.notComputableAudit;
     for (const entry of audit) {
@@ -1105,37 +1110,31 @@ describe("runFullE3Eval — corpus regression", () => {
   });
 
   it("hard gate: gold beats text_only by ≥0.10 passes", () => {
-    if (skip) return;
     const run = runFullE3Eval(allRecords);
     expect(run.hardGates.goldBeatsTextOnlyByMin010).toBe(true);
   });
 
   it("hard gate: gold beats random_midi by ≥0.10 passes", () => {
-    if (skip) return;
     const run = runFullE3Eval(allRecords);
     expect(run.hardGates.goldBeatsRandomMidiByMin010).toBe(true);
   });
 
   it("hard gate: text_only at chance (≤0.40) passes", () => {
-    if (skip) return;
     const run = runFullE3Eval(allRecords);
     expect(run.hardGates.textOnlyAtChance).toBe(true);
   });
 
   it("hard gate: random_midi at chance (≤0.40) passes", () => {
-    if (skip) return;
     const run = runFullE3Eval(allRecords);
     expect(run.hardGates.randomMidiAtChance).toBe(true);
   });
 
   it("schema version is set correctly", () => {
-    if (skip) return;
     const run = runFullE3Eval(allRecords);
     expect(run.schemaVersion).toBe("e3-annotation-grounding/1.0.0");
   });
 
   it("per-type aggregates cover all 7 types", () => {
-    if (skip) return;
     const run = runFullE3Eval(allRecords);
     expect(run.perTypeAggregates).toHaveLength(7);
     const types = run.perTypeAggregates.map((a) => a.questionType);
@@ -1145,7 +1144,6 @@ describe("runFullE3Eval — corpus regression", () => {
   });
 
   it("load-bearing types marked as isLoadBearing in aggregates", () => {
-    if (skip) return;
     const run = runFullE3Eval(allRecords);
     for (const agg of run.perTypeAggregates) {
       if (LOAD_BEARING_TYPES.includes(agg.questionType)) {
@@ -1157,7 +1155,6 @@ describe("runFullE3Eval — corpus regression", () => {
   });
 
   it("145 partner assignments correspond to 145 records", () => {
-    if (skip) return;
     const run = runFullE3Eval(allRecords);
     expect(run.partnerAssignments).toHaveLength(145);
     // No self-pairings.
@@ -1173,26 +1170,29 @@ describe("runFullE3Eval — corpus regression", () => {
 // not just as part of the aggregate load-bearing score.
 
 describe("Slice 8 hard gates — annotation_grounding per-type", () => {
-  const RECORDS_DIR_S8 = join(
-    new URL(".", import.meta.url).pathname.replace(/^\/([A-Z]:)/, "$1"),
-    "../../../datasets/jam-actions-v0/records",
-  );
+  // Same fail-loud contract as the "runFullE3Eval — corpus regression" block
+  // above (F-e53d225f) — these are, in the file's own words, "the
+  // load-bearing gates that motivated this slice"; a silent skip here is
+  // exactly the vacuous-pass pattern this fix eliminates.
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+  const REPO_ROOT = join(__dirname, "..", "..", "..");
+  const RECORDS_DIR_S8 = join(REPO_ROOT, "datasets", "jam-actions-v0", "records");
 
-  let allRecordsS8: E3Record[] = [];
-
+  let allRecordsS8: E3Record[];
   try {
     const files = readdirSync(RECORDS_DIR_S8).filter((f) => f.endsWith(".json")).sort();
     allRecordsS8 = files.map((f) =>
       JSON.parse(readFileSync(join(RECORDS_DIR_S8, f), "utf8")) as E3Record,
     );
-  } catch {
-    // Skip gracefully if corpus not found.
+  } catch (err) {
+    throw new Error(
+      `Failed to load E3 corpus records from "${RECORDS_DIR_S8}" for the Slice 8 hard gates: ` +
+        `${(err as Error).message}\nThis corpus is git-tracked — a load failure means it is ` +
+        `missing/moved or path resolution is broken, not that this fixture is optional.`,
+    );
   }
 
-  const skipS8 = allRecordsS8.length === 0;
-
   it("gold scores 1.0 on annotation_grounding across all 45 records", () => {
-    if (skipS8) return;
     const run = runFullE3Eval(allRecordsS8);
     const agg = run.perTypeAggregates.find(
       (a) => a.questionType === QUESTION_TYPES.ANNOTATION_GROUNDING,
@@ -1201,7 +1201,6 @@ describe("Slice 8 hard gates — annotation_grounding per-type", () => {
   });
 
   it("text_only scores ≤0.30 on annotation_grounding (strict per-type gate)", () => {
-    if (skipS8) return;
     const run = runFullE3Eval(allRecordsS8);
     const agg = run.perTypeAggregates.find(
       (a) => a.questionType === QUESTION_TYPES.ANNOTATION_GROUNDING,
@@ -1212,7 +1211,6 @@ describe("Slice 8 hard gates — annotation_grounding per-type", () => {
   });
 
   it("random_midi scores ≤0.30 on annotation_grounding (strict per-type gate)", () => {
-    if (skipS8) return;
     const run = runFullE3Eval(allRecordsS8);
     const agg = run.perTypeAggregates.find(
       (a) => a.questionType === QUESTION_TYPES.ANNOTATION_GROUNDING,
@@ -1223,7 +1221,6 @@ describe("Slice 8 hard gates — annotation_grounding per-type", () => {
   });
 
   it("annotation_grounding gold margin over text_only ≥0.70", () => {
-    if (skipS8) return;
     const run = runFullE3Eval(allRecordsS8);
     const agg = run.perTypeAggregates.find(
       (a) => a.questionType === QUESTION_TYPES.ANNOTATION_GROUNDING,
@@ -1233,7 +1230,6 @@ describe("Slice 8 hard gates — annotation_grounding per-type", () => {
   });
 
   it("annotation_grounding gold margin over random_midi ≥0.70", () => {
-    if (skipS8) return;
     const run = runFullE3Eval(allRecordsS8);
     const agg = run.perTypeAggregates.find(
       (a) => a.questionType === QUESTION_TYPES.ANNOTATION_GROUNDING,
@@ -1243,7 +1239,6 @@ describe("Slice 8 hard gates — annotation_grounding per-type", () => {
   });
 
   it("all 145 records produce a computable annotation_grounding question (no regressions)", () => {
-    if (skipS8) return;
     const run = runFullE3Eval(allRecordsS8);
     const agg = run.perTypeAggregates.find(
       (a) => a.questionType === QUESTION_TYPES.ANNOTATION_GROUNDING,
@@ -1253,7 +1248,6 @@ describe("Slice 8 hard gates — annotation_grounding per-type", () => {
   });
 
   it("all annotation_grounding questions have evidence_required: 'midi_sidecar'", () => {
-    if (skipS8) return;
     for (const rawRecord of allRecordsS8) {
       const q = generateAnnotationGroundingQuestion(rawRecord) as MCQuestion;
       expect(q.evidence_required).toBe("midi_sidecar");
@@ -1261,7 +1255,6 @@ describe("Slice 8 hard gates — annotation_grounding per-type", () => {
   });
 
   it("other 6 question types' gold scores are still 1.0 (no regression)", () => {
-    if (skipS8) return;
     const run = runFullE3Eval(allRecordsS8);
     const otherTypes = run.perTypeAggregates.filter(
       (a) => a.questionType !== QUESTION_TYPES.ANNOTATION_GROUNDING,
@@ -1272,7 +1265,6 @@ describe("Slice 8 hard gates — annotation_grounding per-type", () => {
   });
 
   it("other load-bearing types (3, 4, 5) maintain text_only ≤0.40 (no regression)", () => {
-    if (skipS8) return;
     const run = runFullE3Eval(allRecordsS8);
     const loadBearingOtherTypes = run.perTypeAggregates.filter(
       (a) =>
@@ -1289,7 +1281,6 @@ describe("Slice 8 hard gates — annotation_grounding per-type", () => {
     // random_midi should score at or below text_only chance, proving MIDI-grounding has teeth.
     // When the random MIDI has different notes, it either produces the wrong answer or falls
     // through to LCG random. Either way, it should not beat text_only.
-    if (skipS8) return;
     const run = runFullE3Eval(allRecordsS8);
     const agg = run.perTypeAggregates.find(
       (a) => a.questionType === QUESTION_TYPES.ANNOTATION_GROUNDING,

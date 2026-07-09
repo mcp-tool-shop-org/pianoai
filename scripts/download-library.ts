@@ -468,6 +468,10 @@ const ALL_GENRES: Record<string, LibraryImport[]> = {
 
 // ─── Download Helper ────────────────────────────────────────────────────────
 
+/** Matches src/midi/parser.ts's own 10MB oversized-file guard. */
+const MAX_MIDI_BYTES = 10 * 1024 * 1024;
+const DOWNLOAD_TIMEOUT_MS = 30_000;
+
 async function downloadMidi(url: string, dest: string): Promise<boolean> {
   try {
     const response = await fetch(url, {
@@ -476,14 +480,37 @@ async function downloadMidi(url: string, dest: string): Promise<boolean> {
         "Accept": "*/*",
       },
       redirect: "follow",
+      // Without a timeout, a slow/hostile host among the 80+ hardcoded
+      // external hosts this script fetches from could hang indefinitely
+      // (F-a4886014).
+      signal: AbortSignal.timeout(DOWNLOAD_TIMEOUT_MS),
     });
     if (!response.ok) {
       console.error(`  HTTP ${response.status} for ${url}`);
       return false;
     }
+    const contentLength = response.headers.get("content-length");
+    if (contentLength && Number(contentLength) > MAX_MIDI_BYTES) {
+      console.error(`  Too large (Content-Length ${contentLength} bytes, max ${MAX_MIDI_BYTES}) — skipping`);
+      return false;
+    }
     const buffer = await response.arrayBuffer();
+    if (buffer.byteLength > MAX_MIDI_BYTES) {
+      console.error(`  Too large (${buffer.byteLength} bytes, max ${MAX_MIDI_BYTES}) — skipping`);
+      return false;
+    }
     if (buffer.byteLength < 100) {
       console.error(`  Too small (${buffer.byteLength} bytes) — likely not a MIDI file`);
+      return false;
+    }
+    // Validate the MIDI header magic bytes before caching — byteLength<100
+    // alone lets a small HTML error page through, and once written to
+    // disk this script's cache check skips re-downloading on every
+    // subsequent run (F-a4886014).
+    const header = new Uint8Array(buffer, 0, 4);
+    const magic = String.fromCharCode(...header);
+    if (magic !== "MThd") {
+      console.error(`  Not a MIDI file (expected "MThd" header, got "${magic}") — skipping`);
       return false;
     }
     writeFileSync(dest, Buffer.from(buffer));

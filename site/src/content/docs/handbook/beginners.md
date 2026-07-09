@@ -34,7 +34,7 @@ No MIDI hardware, virtual ports, or external audio software is needed.
 ### 1. Install
 
 ```bash
-npm install -g ai-jam-sessions
+npm install -g @mcptoolshop/ai-jam-sessions
 ```
 
 ### 2. Configure your MCP client
@@ -46,7 +46,7 @@ Add this to your Claude Desktop config (`claude_desktop_config.json`):
   "mcpServers": {
     "ai_jam_sessions": {
       "command": "npx",
-      "args": ["-y", "-p", "ai-jam-sessions", "ai-jam-sessions-mcp"]
+      "args": ["-y", "-p", "@mcptoolshop/ai-jam-sessions", "ai-jam-sessions-mcp"]
     }
   }
 }

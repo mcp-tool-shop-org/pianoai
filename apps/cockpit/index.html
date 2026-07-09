@@ -290,6 +290,14 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
   border: 1px solid var(--border); border-radius: 4px; font-family: var(--mono);
   font-size: 10px; padding: 6px; resize: vertical;
 }
+/* Visible import/export status — surfaces validation errors from
+   importScore()/addNote() instead of silently dropping bad data. */
+.score-status {
+  display: none; font-family: var(--mono); font-size: 10px; padding: 4px 6px;
+  border-radius: 4px; word-break: break-word;
+}
+.score-status.error { display: block; background: #ff7b7222; color: #ff7b72; border: 1px solid #ff7b7255; }
+.score-status.ok { display: block; background: #7ee78722; color: #7ee787; border: 1px solid #7ee78755; }
 </style>
 </head>
 <body>
@@ -373,7 +381,7 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
     <span class="time" id="transport-time">0:00.0</span>
     <div class="sep" style="height:18px"></div>
     <label style="font-size:11px;color:var(--text-muted)">BPM
-      <input type="number" id="bpm" value="120" min="20" max="300" step="1"
+      <input type="number" id="bpm" value="120" min="20" max="400" step="1"
              style="width:48px;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:3px;padding:2px 4px;font-size:11px">
     </label>
   </div>
@@ -430,6 +438,7 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
         <button class="ctrl-btn" id="btn-import-score" data-tip="Import score from JSON">Import</button>
       </div>
       <textarea class="score-json-area" id="score-json" placeholder="Score JSON — export to inspect, paste to import. LLM API: window.__cockpit"></textarea>
+      <div class="score-status" id="score-status"></div>
 
       <h3>Live</h3>
       <div class="telem-grid">

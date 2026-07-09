@@ -197,6 +197,101 @@ describe("toAbc — bar lines", () => {
   });
 });
 
+describe("toAbc — melody-silent measures inside the phrase window (pins D-A1-004)", () => {
+  // Before the fix, bar-line emission was driven by transitions between
+  // consecutive RH melody events, not by meta.measure_range — a measure with
+  // zero RH events (RH rests while LH plays, or a genuinely silent measure)
+  // silently collapsed into its neighbor: exactly one "|" was emitted no
+  // matter how many measures were actually skipped, and nothing recorded
+  // that a measure had been skipped at all. The emitted bar count fell short
+  // of what the M: header + measure_range imply.
+
+  it("produces exactly measure_count+1 bar separators, with a full-measure rest for each melody-silent measure (mirrors real pathetique-mvt2:m001-004 — RH present only in measures 1 and 3)", () => {
+    const events: TimedEvent[] = [
+      makeEvent(72, 1, 0, 120), // measure 1: C5 sixteenth note
+      makeEvent(74, 3, 3840, 120), // measure 3: D5 sixteenth note (measure 3 starts at tick 3840 @ 480 tpb, 4/4)
+      // measures 2 and 4 are melody-silent — no RH events at all.
+    ];
+    const meta: PhraseMeta = {
+      phrase_window: "measures 1-4",
+      measure_range: [1, 4],
+      start_tick: 0,
+      end_tick: 7680,
+      start_seconds: 0,
+      end_seconds: 16,
+      event_count: 2,
+      measure_count: 4,
+    };
+    const result = toAbc(events, meta, {
+      key: "C major",
+      timeSignature: "4/4",
+      tempoBpm: 120,
+    });
+
+    const bodyLine = result.split("\n").find((l) => l.startsWith("|"));
+    expect(bodyLine).toBeDefined();
+
+    const pipeCount = (bodyLine!.match(/\|/g) ?? []).length;
+    // Bar count always equals measure_count + 1 (one bar line per measure
+    // boundary, fencepost-style), regardless of how many measures inside the
+    // window are melody-silent.
+    expect(pipeCount).toBe(meta.measure_count + 1);
+
+    // Split into one segment per measure (drop the empty strings before the
+    // leading "|" and after the trailing "|").
+    const parts = bodyLine!.split("|");
+    const segments = parts.slice(1, parts.length - 1);
+    expect(segments).toHaveLength(meta.measure_count);
+
+    // Measures 2 and 4 (segments[1], segments[3]) are melody-silent — each
+    // must be EXACTLY a full-measure rest token (z16 at 4/4 with L:1/16),
+    // not merged into a neighboring bar and not silently dropped.
+    expect(segments[1]).toBe("z16");
+    expect(segments[3]).toBe("z16");
+
+    // Measures 1 and 3 (segments[0], segments[2]) carry the actual notes.
+    expect(segments[0]).toContain("c"); // C5
+    expect(segments[2]).toContain("d"); // D5
+  });
+
+  it("produces measure_count+1 bars for a single melody-silent measure (mirrors real chopin-prelude-e-minor:m025-028's 1-silent-measure case)", () => {
+    const events: TimedEvent[] = [
+      makeEvent(72, 1, 0, 120),
+      makeEvent(74, 2, 1920, 120),
+      // measure 3 is melody-silent.
+      makeEvent(76, 4, 5760, 120),
+    ];
+    const meta: PhraseMeta = {
+      phrase_window: "measures 1-4",
+      measure_range: [1, 4],
+      start_tick: 0,
+      end_tick: 7680,
+      start_seconds: 0,
+      end_seconds: 16,
+      event_count: 3,
+      measure_count: 4,
+    };
+    const result = toAbc(events, meta, {
+      key: "C major",
+      timeSignature: "4/4",
+      tempoBpm: 120,
+    });
+
+    const bodyLine = result.split("\n").find((l) => l.startsWith("|"));
+    expect(bodyLine).toBeDefined();
+    const pipeCount = (bodyLine!.match(/\|/g) ?? []).length;
+    expect(pipeCount).toBe(meta.measure_count + 1);
+
+    const parts = bodyLine!.split("|");
+    const segments = parts.slice(1, parts.length - 1);
+    expect(segments).toHaveLength(4);
+    // Measure 3 (segments[2]) is the melody-silent one — always exactly a
+    // full-measure rest, regardless of gap-fill rests in neighboring
+    // populated measures.
+    expect(segments[2]).toBe("z16");
+  });
+});
+
 describe("toAbc — RH melody extraction", () => {
   it("prefers right-hand events when both hands are present", () => {
     const events: TimedEvent[] = [

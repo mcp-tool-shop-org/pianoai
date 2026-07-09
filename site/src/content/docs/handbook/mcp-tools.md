@@ -1,11 +1,11 @@
 ---
 title: MCP tools reference
-description: All 41 MCP tools and 3 prompt templates organized by category — Learn, Play, Sing, Guitar, Build, and Score.
+description: All 42 MCP tools and 3 prompt templates organized by category — Learn, Play, Sing, Guitar, Build, and Score.
 sidebar:
   order: 4
 ---
 
-AI Jam Sessions exposes 41 tools and 3 prompt templates through the Model Context Protocol, organized into six categories.
+AI Jam Sessions exposes 42 tools and 3 prompt templates through the Model Context Protocol, organized into six categories.
 
 ## Learn (10 tools)
 
@@ -24,13 +24,13 @@ Tools for exploring the song library and understanding music.
 | `compare_songs` | Cross-genre pattern recognition — key relationships, pitch/interval similarity, shared forms, teaching connections |
 | `server_info` | Server version, library stats, engine list, active session info |
 
-## Play (8 tools)
+## Play (9 tools)
 
 Tools for audio playback and visualization.
 
 | Tool | Description |
 |------|-------------|
-| `play_song` | Play through speakers — library songs or raw .mid files. Any engine, speed, mode, measure range |
+| `play_song` | Play through speakers — library songs or raw .mid files. Four engines (piano, vocal, tract, guitar), speed, mode, measure range |
 | `stop_playback` | Stop playback |
 | `pause_playback` | Pause or resume |
 | `set_speed` | Change speed mid-playback (0.1x to 4.0x) |
@@ -38,6 +38,7 @@ Tools for audio playback and visualization.
 | `view_piano_roll` | Render as SVG — hand color mode (blue/coral) or pitch-class chromatic rainbow |
 | `mute_hand` | Mute or unmute left/right hand during practice — isolate one hand at a time |
 | `preview_teaching_cues` | See all teaching notes and key moments before playing |
+| `detect_chord` | Name the chord from a set of currently-sounding MIDI notes (e.g. `[60, 64, 67]` → C) |
 
 ## Sing (2 tools)
 

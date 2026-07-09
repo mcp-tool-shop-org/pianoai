@@ -14,7 +14,7 @@ teaching and jam session workflows.
 | Skill | `/ai-jam-sessions:jam` | Start a jam session — improvise on a song or genre |
 | Agent | `piano-teacher` | Patient AI piano teacher persona |
 | Agent | `jam-musician` | Laid-back jam band musician persona |
-| MCP Server | `ai_jam_sessions` | 34 tools for playback, teaching, jamming, and song management |
+| MCP Server | `ai_jam_sessions` | 42 tools for playback, teaching, jamming, and song management |
 
 ## Install
 

@@ -91,7 +91,7 @@ describe("PlaybackController", () => {
       if (e.type === "noteOn") noteOns.push(e.note);
     });
 
-    await controller.play({ speed: 100 });
+    await controller.play({ speed: 4 });
 
     expect(noteOns).toEqual([60, 64]);
     expect(controller.state).toBe("finished");
@@ -149,7 +149,7 @@ describe("PlaybackController", () => {
     const controller = new PlaybackController(connector, parsed);
     const recording = createRecordingTeachingHook();
 
-    await controller.play({ speed: 100, teachingHook: recording });
+    await controller.play({ speed: 4, teachingHook: recording });
 
     // Teaching hook receives onMeasureStart for each note + onSongComplete
     const measureStarts = recording.events.filter((e) => e.type === "measure-start");
@@ -401,7 +401,7 @@ describe("composed hooks: singing + feedback during MIDI playback", () => {
     );
 
     const composed = composeTeachingHooks(singHook, feedbackHook);
-    await controller.play({ speed: 100, teachingHook: composed });
+    await controller.play({ speed: 4, teachingHook: composed });
 
     // Sing hook should have produced directives for each cluster
     expect(singDirectives.length).toBeGreaterThan(0);
@@ -801,7 +801,7 @@ describe("composed hooks: singing + live feedback during MIDI playback", () => {
     );
 
     const composed = composeTeachingHooks(singHook, feedbackHook);
-    await controller.play({ speed: 100, teachingHook: composed });
+    await controller.play({ speed: 4, teachingHook: composed });
 
     // Singing should have produced solfege directives
     expect(singDirectives.length).toBeGreaterThan(0);

@@ -24,16 +24,16 @@ The training signal is not "generate text about music." It is "call the right to
 | Records (public subset) | 115 |
 | Canonical baseline | 16 records (post-repair E3) |
 | Compositions | 8 classical piano works |
-| Composers | Beethoven, Bach, Schubert, Schumann, Mozart, Mendelssohn, Tchaikovsky |
+| Composers | Bach, Beethoven, Chopin, Debussy, Mozart, Schumann |
 | Source MIDI | piano-midi.de — Bernd Krueger arrangements |
 | License | CC-BY-SA-3.0-DE |
 | Version | 0.4.3 (2026-05-19) |
 | Schema | `release-gate-assessment/2.0.0` |
-| Tests covering it | 1513 (passing) |
+| Repo test suite | 1513 passing (includes the dataset packagers, eval harnesses, and release-gate validator) |
 
-## How it was built — the 24-slice arc
+## How it was built — the 25-slice arc
 
-The dataset is the product of 24 iteratively named slices (numbered with a `.5` for in-arc corrections):
+The dataset is the product of 25 iteratively named slices (numbered with a `.5` for in-arc corrections):
 
 | Slice | Theme |
 |-------|-------|
@@ -51,6 +51,7 @@ The dataset is the product of 24 iteratively named slices (numbered with a `.5` 
 | 23.5 | Reproducibility cleanup (Windows-safe checksums) |
 | 24 | Publication dry-run dossier |
 | 24.5 | HuggingFace dataset card polish |
+| 25 | Publication execution — Zenodo DOI minted (`10.5281/zenodo.20279919`) |
 
 Every slice has a semantic git tag (`jam-actions-v0-<theme>-<date>`), and every claim in the release-gate assessment is reproducible from a tagged commit.
 
@@ -64,7 +65,7 @@ The gate exists to answer a specific question: *is this dataset PASSING because 
 | 2 | Margin compound — the tool-inspected condition must beat the text-only condition by a margin (with a ceiling-saturated bucket for trivial wins) | Yes |
 | 3 | Tool-use rate — the assistant must actually call the inspector tools | Yes |
 | 4 | Correct-after-tool — once tools are called, the answer must be right | Yes |
-| 5 | Misinterpretation count — wrong-tool calls must be zero | Yes |
+| 5 | Misinterpretation rate — wrong-tool calls must stay at or below the threshold (20% by default) | Yes |
 | 6 | Stratum floor — every stratum (easy / medium / hard) must clear its floor (with the same ceiling-saturated relief) | Yes |
 | 7 | Enriched-vs-non reporting — comparison of enriched vs non-enriched records | Informational only |
 
@@ -97,11 +98,11 @@ A fresh contributor cloning the repo on Windows native, macOS, Linux, or WSL can
 ```bash
 git clone https://github.com/mcp-tool-shop-org/ai-jam-sessions.git
 cd ai-jam-sessions
-git checkout jam-actions-v0-rc-gate-revised-2026-05-19   # or a later tag
+git checkout jam-actions-v0-zenodo-published-2026-05-19   # the v0.4.3 publication state (or stay on main)
 
 pnpm install
 
-# Step 1: verify the package (273 entries, ~2 seconds).
+# Step 1: verify the package (274 entries, ~2 seconds).
 pnpm exec tsx scripts/verify-public-package-checksums.ts
 
 # Step 2: reproduce the canonical Slice 22 RC-gate PASS verdict.
@@ -109,7 +110,7 @@ pnpm exec tsx scripts/check-release-gate.ts \
   datasets/jam-actions-v0-public/evals/slice21-fair-e3-baseline-results.json
 ```
 
-Expected: both commands exit 0, the release-gate CLI prints `Verdict: PASS`, and `blocking_failures` is `[]`.
+Expected: both commands exit 0, and the release-gate CLI prints `Aggregate: PASS` with `RC gate PASS (all 6 blocking axes cleared; reporting declared)`.
 
 **What makes this reliable on Windows.** Slice 23.5 added `.gitattributes` pinning LF line endings for `*.sha256` and the entire `datasets/jam-actions-v0-public/**` tree, so Git on Windows doesn't silently CRLF-convert your checkout. The verifier itself is also CRLF-tolerant (`parseChecksumsManifest` strips trailing `\r`) as defense in depth, in case someone forks without the gitattributes.
 
@@ -119,14 +120,14 @@ Expected: both commands exit 0, the release-gate CLI prints `Verdict: PASS`, and
 
 | Composition | Composer | Source | In public subset? |
 |-------------|----------|--------|-------------------|
-| Für Elise | Beethoven | piano-midi.de (Krueger) | Yes |
-| Pathétique mvt. 2 | Beethoven | piano-midi.de (Krueger) | Yes |
-| Prelude in C major (WTC I) | Bach | piano-midi.de (Krueger) | Yes |
-| Impromptu D.899 No. 3 | Schubert | piano-midi.de (Krueger) | Yes |
-| Kinderszenen No. 7 (Träumerei) | Schumann | piano-midi.de (Krueger) | Yes |
-| Variations on "Ah vous dirai-je, Maman" | Mozart | piano-midi.de (Krueger) | Yes |
-| Lieder ohne Worte Op. 19 No. 1 | Mendelssohn | piano-midi.de (Krueger) | Yes |
-| Album for the Young — Sweet Dreams | Tchaikovsky | piano-midi.de (Krueger) | Yes |
+| Prelude in C major, BWV 846 (WTC I) | Bach | piano-midi.de (Krueger) | Yes — 16 records |
+| Für Elise | Beethoven | piano-midi.de (Krueger) | Yes — 13 records |
+| Pathétique mvt. 2 | Beethoven | piano-midi.de (Krueger) | Yes — 16 records |
+| Nocturne Op. 9 No. 2 | Chopin | piano-midi.de (Krueger) | Yes — 18 records |
+| Prelude in E minor, Op. 28 No. 4 | Chopin | piano-midi.de (Krueger) | Yes — 12 records |
+| Clair de lune | Debussy | piano-midi.de (Krueger) | Yes — 12 records (held-out test split) |
+| Sonata K545 mvt. 1 | Mozart | piano-midi.de (Krueger) | Yes — 16 records |
+| Kinderszenen No. 7 (Träumerei) | Schumann | piano-midi.de (Krueger) | Yes — 12 records |
 | Gymnopédie No. 1 | Satie | piano-midi.de | **No — Slice 2.5 URL verification failed** |
 | Arabesque No. 1 | Debussy | piano-midi.de | **No — Slice 2.5 URL verification failed** |
 
@@ -148,9 +149,9 @@ cat datasets/jam-actions-v0-public/CITATION.cff
 
 Or a plain-text form:
 
-> mcp-tool-shop-org & Krueger, B. (2026). *AI Jam Sessions — Tool-Use Traces v0 (Public Subset)*, Version 0.4.3. CC-BY-SA-3.0-DE.
+> mcp-tool-shop-org & Krueger, B. (2026). *AI Jam Sessions — Tool-Use Traces v0 (Public Subset)*, Version 0.4.3. Zenodo. CC-BY-SA-3.0-DE. https://doi.org/10.5281/zenodo.20279919
 
-After Zenodo publication (planned), a DOI will be added to `CITATION.cff` and to the HuggingFace dataset card. The DOI is the canonical citation handle once minted.
+The DOI [`10.5281/zenodo.20279919`](https://doi.org/10.5281/zenodo.20279919) was minted on Zenodo on 2026-05-19 and is recorded in `CITATION.cff`. It is the canonical citation handle; the record lives at [zenodo.org/records/20279919](https://zenodo.org/records/20279919).
 
 ## Where everything lives
 

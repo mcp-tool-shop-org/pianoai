@@ -13,6 +13,26 @@ import { GENRES, DIFFICULTIES } from "../types.js";
 export const SONG_STATUSES = ["raw", "annotated", "ready"] as const;
 export type SongStatus = (typeof SONG_STATUSES)[number];
 
+/**
+ * Shared tempo bounds — imported by registry.ts's validateSong() too.
+ * Previously schema.ts accepted 10-400 while registry.ts independently
+ * enforced 20-300, so a config with e.g. tempo:350 passed scanLibrary's
+ * validation (reported "ready" in getLibraryProgress) only to be silently
+ * rejected later at registerSong() with a registry-level error that didn't
+ * obviously connect back to the tempo field (F-a5b89833).
+ */
+export const MIN_TEMPO = 20;
+export const MAX_TEMPO = 300;
+
+/**
+ * Shared id-format regex — imported by config/loader.ts's sanitizeConfigId
+ * too. Previously loader.ts had its own, looser regex that permitted
+ * consecutive hyphens (e.g. "a--b") that could never pass this schema's
+ * own id validation, so loadSongConfig would accept an id shape no valid
+ * config could actually have (F-6acb6320).
+ */
+export const SONG_ID_REGEX = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
 // ─── Zod Schemas ─────────────────────────────────────────────────────────────
 
 export const MeasureOverrideSchema = z.object({
@@ -20,7 +40,7 @@ export const MeasureOverrideSchema = z.object({
   fingering: z.string().optional(),
   teachingNote: z.string().optional(),
   dynamics: z.string().optional(),
-  tempoOverride: z.number().min(10).max(400).optional(),
+  tempoOverride: z.number().min(MIN_TEMPO).max(MAX_TEMPO).optional(),
 });
 
 export const MusicalLanguageSchema = z.object({
@@ -32,14 +52,14 @@ export const MusicalLanguageSchema = z.object({
 });
 
 export const SongConfigSchema = z.object({
-  id: z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "id must be kebab-case"),
+  id: z.string().regex(SONG_ID_REGEX, "id must be kebab-case"),
   title: z.string().min(1),
   genre: z.enum(GENRES),
   composer: z.string().optional(),
   arranger: z.string().optional(),
   difficulty: z.enum(DIFFICULTIES),
   key: z.string().min(1),
-  tempo: z.number().min(10).max(400).optional(),
+  tempo: z.number().min(MIN_TEMPO).max(MAX_TEMPO).optional(),
   timeSignature: z.string().optional(),
   tags: z.array(z.string()),
   source: z.string().optional(),

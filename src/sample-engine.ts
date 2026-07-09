@@ -54,7 +54,12 @@ interface VelocitySlot {
 function buildRegionMap(regions: SfzRegion[]): Map<number, VelocitySlot[]> {
   const map = new Map<number, VelocitySlot[]>();
   for (const r of regions) {
-    for (let key = r.lokey; key <= r.hikey; key++) {
+    // Defensive bound even though sfz-parser.ts now validates lokey/hikey
+    // at parse time — a huge or malformed range here would otherwise
+    // iterate near-indefinitely on a single-threaded process (F-a6d13c8d).
+    const lokey = Number.isFinite(r.lokey) ? Math.max(0, Math.min(127, r.lokey)) : 0;
+    const hikey = Number.isFinite(r.hikey) ? Math.max(0, Math.min(127, r.hikey)) : 127;
+    for (let key = lokey; key <= hikey; key++) {
       let slots = map.get(key);
       if (!slots) {
         slots = [];
@@ -139,9 +144,14 @@ export function createSampleEngine(options: SampleEngineOptions): VmpkConnector 
   let regionMap: Map<number, VelocitySlot[]> | null = null;
   const audioBuffers = new Map<string, any>(); // sample path → AudioBuffer
 
-  // Voice management
-  const activeVoices = new Map<number, Voice>();
-  const voiceOrder: number[] = [];
+  // Voice management. FIFO queue per note (not a single Voice) so a
+  // same-pitch noteOn/noteOff pair can overlap another same-pitch pair
+  // (unison / fast retrigger) without a late noteOff wrongly cutting off a
+  // newer, unrelated voice — see audio-engine.ts's identical pattern for
+  // the full rationale (F-c1eab2d2).
+  const MAX_VOICES_PER_NOTE = 2;
+  const activeVoices = new Map<number, Voice[]>();
+  const voiceOrder: Voice[] = []; // Global LRU across all voice instances, oldest first
 
   // ── WAV Parsing ──
 
@@ -289,19 +299,28 @@ export function createSampleEngine(options: SampleEngineOptions): VmpkConnector 
 
   // ── Voice Management ──
 
-  function stealOldest(): void {
-    if (voiceOrder.length === 0) return;
-    const oldestNote = voiceOrder.shift()!;
-    const voice = activeVoices.get(oldestNote);
-    if (voice) {
-      killVoice(voice);
-      activeVoices.delete(oldestNote);
-    }
+  /** Remove a specific voice instance from its note's queue. */
+  function removeFromNoteQueue(voice: Voice): void {
+    const queue = activeVoices.get(voice.note);
+    if (!queue) return;
+    const idx = queue.indexOf(voice);
+    if (idx >= 0) queue.splice(idx, 1);
+    if (queue.length === 0) activeVoices.delete(voice.note);
   }
 
-  function removeFromOrder(note: number): void {
-    const idx = voiceOrder.indexOf(note);
+  /** Remove a specific voice instance from the global LRU order. */
+  function removeFromOrder(voice: Voice): void {
+    const idx = voiceOrder.indexOf(voice);
     if (idx >= 0) voiceOrder.splice(idx, 1);
+  }
+
+  /** Steal the oldest voice (across all notes) when at max polyphony. */
+  function stealOldest(): void {
+    const oldest = voiceOrder.shift();
+    if (oldest) {
+      fadeAndKillVoice(oldest);
+      removeFromNoteQueue(oldest);
+    }
   }
 
   function killVoice(voice: Voice): void {
@@ -329,6 +348,28 @@ export function createSampleEngine(options: SampleEngineOptions): VmpkConnector 
 
     // Cleanup after release
     voice.cleanupTimer = setTimeout(() => killVoice(voice), (releaseTime + 0.1) * 1000);
+  }
+
+  /**
+   * Stop a voice for an involuntary reason (voice stealing at max
+   * polyphony, or per-note overlap eviction) with a very short gain ramp
+   * instead of killVoice's instant full-amplitude stop — avoids an
+   * audible click/pop (F-637edb02).
+   */
+  function fadeAndKillVoice(voice: Voice, fadeSeconds = 0.008): void {
+    if (voice.cleanupTimer) {
+      clearTimeout(voice.cleanupTimer);
+      voice.cleanupTimer = null;
+    }
+    try {
+      const now = ctx.currentTime;
+      voice.gain.gain.cancelScheduledValues(now);
+      voice.gain.gain.setValueAtTime(voice.gain.gain.value, now);
+      voice.gain.gain.linearRampToValueAtTime(0, now + fadeSeconds);
+      voice.cleanupTimer = setTimeout(() => killVoice(voice), (fadeSeconds + 0.02) * 1000);
+    } catch {
+      killVoice(voice);
+    }
   }
 
   // ── VmpkConnector Implementation ──
@@ -380,7 +421,7 @@ export function createSampleEngine(options: SampleEngineOptions): VmpkConnector 
     },
 
     async disconnect(): Promise<void> {
-      for (const [, voice] of activeVoices) {
+      for (const voice of voiceOrder) {
         try { killVoice(voice); } catch { /* ok */ }
       }
       activeVoices.clear();
@@ -409,20 +450,28 @@ export function createSampleEngine(options: SampleEngineOptions): VmpkConnector 
     noteOn(note: number, velocity: number, channel?: number): void {
       if (!ctx || currentStatus !== "connected" || !regionMap) return;
 
+      // Reject non-finite input before clamping — Math.max/min alone does
+      // NOT sanitize NaN (NaN in produces NaN out), so a non-finite
+      // note/velocity would otherwise silently bypass this clamp entirely
+      // (F-af5c8733).
+      if (!Number.isFinite(note) || !Number.isFinite(velocity)) return;
+
       // Clamp
       velocity = Math.max(1, Math.min(127, velocity));
       note = Math.max(21, Math.min(108, note));
 
-      // Kill existing voice on same note (retrigger)
-      const existing = activeVoices.get(note);
-      if (existing) {
-        killVoice(existing);
-        activeVoices.delete(note);
-        removeFromOrder(note);
+      // Bounded overlap instead of an unconditional kill — see
+      // MAX_VOICES_PER_NOTE / F-c1eab2d2.
+      let queue = activeVoices.get(note);
+      if (queue && queue.length >= MAX_VOICES_PER_NOTE) {
+        const oldest = queue.shift()!;
+        fadeAndKillVoice(oldest);
+        removeFromOrder(oldest);
+        if (queue.length === 0) activeVoices.delete(note);
       }
 
       // Voice stealing
-      while (activeVoices.size >= maxPolyphony) {
+      while (voiceOrder.length >= maxPolyphony) {
         stealOldest();
       }
 
@@ -475,24 +524,39 @@ export function createSampleEngine(options: SampleEngineOptions): VmpkConnector 
         cleanupTimer: null,
       };
 
-      activeVoices.set(note, voice);
-      voiceOrder.push(note);
+      queue = activeVoices.get(note);
+      if (!queue) {
+        queue = [];
+        activeVoices.set(note, queue);
+      }
+      queue.push(voice);
+      voiceOrder.push(voice);
     },
 
     noteOff(note: number, channel?: number): void {
       if (!ctx || currentStatus !== "connected") return;
+      if (!Number.isFinite(note)) return;
+      // Match noteOn's clamp exactly (also a pre-existing gap: noteOn has
+      // clamped to [21,108] since before this fix, but noteOff never did)
+      // so an out-of-range or fractional note resolves to the same map
+      // key noteOn stored it under — otherwise the voice never receives
+      // its noteOff.
+      note = Math.max(21, Math.min(108, note));
 
-      const voice = activeVoices.get(note);
-      if (voice) {
+      // FIFO pairing — release the OLDEST still-active voice for this
+      // pitch, not "whatever's in a single slot" (F-c1eab2d2).
+      const queue = activeVoices.get(note);
+      if (queue && queue.length > 0) {
+        const voice = queue.shift()!;
+        if (queue.length === 0) activeVoices.delete(note);
         releaseVoice(voice);
-        activeVoices.delete(note);
-        removeFromOrder(note);
+        removeFromOrder(voice);
       }
     },
 
     allNotesOff(channel?: number): void {
       if (!ctx) return;
-      for (const [, voice] of activeVoices) {
+      for (const voice of voiceOrder) {
         killVoice(voice);
       }
       activeVoices.clear();

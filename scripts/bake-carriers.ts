@@ -22,7 +22,10 @@ const __dirname = dirname(__filename);
 
 // ─── Config ─────────────────────────────────────────────────────────────────
 
-const RAW_DIR = "F:/AI/avatar-face-mvp/.tts-output/vocal-carriers";
+// Raw carrier source directory — machine-specific, so it's read from an env
+// var with a documented default rather than hardcoded (F-b7183721). Override
+// with: VOCAL_CARRIERS_RAW_DIR=/path/to/carriers npx tsx scripts/bake-carriers.ts
+const RAW_DIR = process.env.VOCAL_CARRIERS_RAW_DIR ?? "F:/AI/avatar-face-mvp/.tts-output/vocal-carriers";
 const OUTPUT_DIR = join(__dirname, "..", "samples", "vocal");
 const TARGET_RMS_DB = -18; // target RMS in dBFS
 
@@ -77,6 +80,12 @@ function readWav(filePath: string): { samples: Float32Array; sampleRate: number 
     offset += 8 + size + (size % 2);
   }
 
+  // Ported from analyze-carriers.ts's identical readWav, which already had
+  // this guard — a malformed/truncated WAV missing 'fmt '/'data' chunks
+  // previously read garbage header fields instead of failing loudly
+  // (F-372d7e84).
+  if (fmtOffset < 0 || dataOffset < 0) throw new Error(`Bad WAV: ${filePath}`);
+
   const sampleRate = view.getUint32(fmtOffset + 4, true);
   const bitsPerSample = view.getUint16(fmtOffset + 14, true);
   const numChannels = view.getUint16(fmtOffset + 2, true);
@@ -94,6 +103,11 @@ function readWav(filePath: string): { samples: Float32Array; sampleRate: number 
       const b2 = view.getUint8(sampleOffset + 2);
       const raw = b0 | (b1 << 8) | (b2 << 16);
       samples[i] = (raw > 0x7FFFFF ? raw - 0x1000000 : raw) / 8388608;
+    } else {
+      // Previously silently zero-filled (Float32Array defaults to 0),
+      // producing a silent all-zero carrier instead of an error for any
+      // unsupported bit depth (F-372d7e84).
+      throw new Error(`Unsupported bit depth ${bitsPerSample} in ${filePath} (only 16-bit and 24-bit PCM are handled)`);
     }
   }
 

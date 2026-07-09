@@ -12,9 +12,9 @@
 
 import {
   createSynth, VOICES, VOICE_IDS, TUNINGS, TUNING_IDS,
-  INTERVAL_TESTS, computeTuningTable, analyzeInterval,
+  INTERVAL_TESTS,
   type VoiceId, type TuningId, type Synth,
-  type TuningTableEntry, type IntervalAnalysis, type TuningExport,
+  type IntervalAnalysis, type TuningExport,
 } from "./synth.js";
 import {
   createVocalSynth, VOCAL_VOICES, VOCAL_VOICE_IDS, VOWEL_IDS,
@@ -57,6 +57,12 @@ const PX_PER_SEC = 120;
 const SCORE_SECS = 32;
 const PR_WIDTH = SCORE_SECS * PX_PER_SEC;
 const PR_HEIGHT = ROWS * ROW_H;
+/** Hard cap on notes accepted by a single score import — an unbounded count
+ *  renders one absolutely-positioned DOM element per note synchronously and
+ *  can lock the tab (F-A1: score-size bomb). */
+const MAX_IMPORT_NOTES = 5000;
+const BPM_MIN = 20;
+const BPM_MAX = 400;
 
 const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const IS_BLACK = [false, true, false, true, false, false, true, false, true, false, true, false];
@@ -77,13 +83,19 @@ const VOWEL_COLORS: Record<VowelId, string> = {
 };
 const VOWEL_LABELS: Record<VowelId, string> = { a: "/a/", e: "/e/", i: "/i/", o: "/o/", u: "/u/" };
 
-// QWERTY → MIDI (DAW keyboard layout — 2 octaves from C4)
+// QWERTY → MIDI (DAW keyboard layout — 2 octaves from C4).
+// Keyed by KeyboardEvent.code (physical key position), not .key (the
+// character the layout produces) — .key is layout-dependent, so on AZERTY
+// the physical bottom-row "Z" key produces "w" and scrambles this whole
+// mapping, and Dvorak is unplayable. .code always names the physical key
+// regardless of the active layout, matching how DAW keyboards conventionally
+// work. (F-A1: physical-layout QWERTY mapping)
 const QWERTY: Record<string, number> = {
-  z: 60, s: 61, x: 62, d: 63, c: 64, v: 65, g: 66, b: 67, h: 68, n: 69, j: 70, m: 71,
-  q: 72, "2": 73, w: 74, "3": 75, e: 76, r: 77, "5": 78, t: 79, "6": 80, y: 81, "7": 82, u: 83,
+  KeyZ: 60, KeyS: 61, KeyX: 62, KeyD: 63, KeyC: 64, KeyV: 65, KeyG: 66, KeyB: 67, KeyH: 68, KeyN: 69, KeyJ: 70, KeyM: 71,
+  KeyQ: 72, Digit2: 73, KeyW: 74, Digit3: 75, KeyE: 76, KeyR: 77, Digit5: 78, KeyT: 79, Digit6: 80, KeyY: 81, Digit7: 82, KeyU: 83,
 };
 const QWERTY_LABELS: Record<number, string> = {};
-for (const [k, v] of Object.entries(QWERTY)) QWERTY_LABELS[v] = k.toUpperCase();
+for (const [code, v] of Object.entries(QWERTY)) QWERTY_LABELS[v] = code.replace(/^Key|^Digit/, "");
 
 // ─── State ───────────────────────────────────────────────────────────────────
 
@@ -108,6 +120,32 @@ let intervalRoot = 60; // C4
 
 const $ = (id: string) => document.getElementById(id)!;
 
+/**
+ * Parse a numeric <input>'s current value; if it's empty/NaN/non-finite,
+ * restore the field to `prevValue` and return `prevValue` instead of
+ * propagating NaN into app state. Used by every numeric input handler in
+ * this file (ref pitch, BPM, velocity/breathiness sliders, custom-tuning
+ * cents, vibrato controls) — a bare parseInt/parseFloat on an emptied number
+ * input silently produces NaN, which then poisons every downstream
+ * calculation (midiToFreq, quantize, AudioParam automation) with no visible
+ * error (F-A1: numeric input NaN guards).
+ */
+function safeNumber(input: HTMLInputElement, prevValue: number, asFloat = false): number {
+  const n = asFloat ? parseFloat(input.value) : parseInt(input.value, 10);
+  if (!Number.isFinite(n)) {
+    input.value = String(prevValue);
+    return prevValue;
+  }
+  return n;
+}
+
+/** CSS.escape()-safe [data-note-id="..."] selector. Note ids are normally our
+ *  own "n123" strings, but hand-crafted/LLM-generated import JSON can carry
+ *  arbitrary id values (see the id-override guard in importScore/addNote) —
+ *  an unescaped id containing a quote or bracket would throw a SyntaxError
+ *  here instead of just failing to match (F-A1: unsafe note-id selectors). */
+const noteSelector = (id: string) => `[data-note-id="${CSS.escape(id)}"]`;
+
 // ─── Init ────────────────────────────────────────────────────────────────────
 
 async function init() {
@@ -115,6 +153,7 @@ async function init() {
   vocalSynth = createVocalSynth();
   await synth.connect();
   await vocalSynth.connect();
+  bindAutoplayUnlock();
   populateSelectors();
   buildPianoRoll();
   buildKeyboard();
@@ -124,6 +163,31 @@ async function init() {
   updateTuningTable();
   updateTelemetry();
   setInterval(updateTelemetry, 200);
+
+  // A held key or a scheduled score playing when the tab loses focus should
+  // not drone on until the user finds Panic — release everything on blur or
+  // when the tab is hidden, matching standard on-screen-instrument behavior
+  // (F-A1: stuck notes on focus loss).
+  window.addEventListener("blur", panic);
+  document.addEventListener("visibilitychange", () => { if (document.hidden) panic(); });
+}
+
+/**
+ * Chrome/Safari create AudioContexts in the "suspended" state until a user
+ * gesture unlocks audio. Nothing previously called ctx.resume() anywhere, so
+ * the cockpit was silent on first visit — keys lit up, telemetry updated,
+ * but no sound played, with no visible error (F-A1-003). Resume on the very
+ * first pointerdown/keydown anywhere on the page.
+ */
+function bindAutoplayUnlock() {
+  const unlock = () => {
+    const c1 = synth.getContext();
+    const c2 = vocalSynth.getContext();
+    if (c1 && c1.state === "suspended") c1.resume().catch(() => {});
+    if (c2 && c2.state === "suspended") c2.resume().catch(() => {});
+  };
+  window.addEventListener("pointerdown", unlock, { once: true });
+  window.addEventListener("keydown", unlock, { once: true });
 }
 
 // ─── Selectors ───────────────────────────────────────────────────────────────
@@ -199,7 +263,12 @@ function populateSelectors() {
   });
 
   ($('ref-pitch') as HTMLInputElement).addEventListener("change", (e) => {
-    const hz = parseInt((e.target as HTMLInputElement).value);
+    const input = e.target as HTMLInputElement;
+    // Clearing this field used to yield parseInt("") === NaN, which bricked
+    // every subsequent noteOn (NaN refPitch -> NaN frequency -> non-finite
+    // AudioParam throw) until a valid value was re-entered. Fall back to the
+    // last valid ref pitch instead (F-A1-006).
+    const hz = safeNumber(input, synth.getRefPitch(), false);
     synth.setRefPitch(hz);
     vocalSynth.setRefPitch(hz);
     updateTuningTable();
@@ -238,12 +307,6 @@ function activeNoteOff(midi: number, time?: number) {
   else synth.noteOff(midi, time);
 }
 
-/** Route allNotesOff to active engine */
-function activeAllOff() {
-  if (mode === "vocal") vocalSynth.allNotesOff();
-  else synth.allNotesOff();
-}
-
 // ─── Piano Roll ──────────────────────────────────────────────────────────────
 
 function buildPianoRoll() {
@@ -279,7 +342,6 @@ function buildPianoRoll() {
   pr.addEventListener("mousedown", (e) => {
     if ((e.target as HTMLElement).closest(".pr-note")) return;
     const rect = pr.getBoundingClientRect();
-    const scrollParent = pr.parentElement!;
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     const midi = MIDI_HI - Math.floor(y / ROW_H);
@@ -301,6 +363,10 @@ function buildPianoRoll() {
 
 function quantize(sec: number): number {
   const grid = 60 / bpm / 4;
+  // Structural guard, independent of whatever validated bpm should be: a
+  // non-positive/non-finite grid would make Math.round(sec/grid) NaN or
+  // Infinity and corrupt note placement (F-A1-002).
+  if (!Number.isFinite(grid) || grid <= 0) return Math.max(0, sec);
   return Math.max(0, Math.round(sec / grid) * grid);
 }
 
@@ -308,6 +374,10 @@ function drawBeatLines() {
   document.querySelectorAll(".pr-beat-line").forEach((el) => el.remove());
   const pr = $("piano-roll");
   const beatSec = 60 / bpm;
+  // Structural guard regardless of upstream bpm clamping — a non-positive or
+  // non-finite beatSec would make this loop increment by 0/NaN and never
+  // terminate, appending DOM nodes until the tab freezes/OOMs (F-A1-002).
+  if (!Number.isFinite(beatSec) || beatSec <= 0) return;
   for (let t = 0; t < SCORE_SECS; t += beatSec) {
     const div = document.createElement("div");
     div.className = "pr-beat-line";
@@ -406,7 +476,7 @@ function rerenderAllNotes() {
   document.querySelectorAll(".pr-note").forEach(el => el.remove());
   for (const n of score) renderNote(n);
   if (selectedNote) {
-    document.querySelector(`[data-note-id="${selectedNote.id}"]`)?.classList.add("selected");
+    document.querySelector(noteSelector(selectedNote.id))?.classList.add("selected");
   }
 }
 
@@ -414,7 +484,7 @@ function selectNote(note: Note | null) {
   document.querySelectorAll(".pr-note.selected").forEach((el) => el.classList.remove("selected"));
   selectedNote = note;
   if (note) {
-    document.querySelector(`[data-note-id="${note.id}"]`)?.classList.add("selected");
+    document.querySelector(noteSelector(note.id))?.classList.add("selected");
   }
   updateInspector();
 }
@@ -423,7 +493,7 @@ function deleteSelectedNote() {
   if (!selectedNote) return;
   const i = score.indexOf(selectedNote);
   if (i >= 0) score.splice(i, 1);
-  document.querySelector(`[data-note-id="${selectedNote.id}"]`)?.remove();
+  document.querySelector(noteSelector(selectedNote.id))?.remove();
   selectedNote = null;
   updateInspector();
 }
@@ -455,25 +525,20 @@ function updateInspector() {
 
 const KB_LO = 48; // C3
 const KB_HI = 84; // C6 (inclusive)
+const KB_WHITES: number[] = [];
+for (let m = KB_LO; m <= KB_HI; m++) if (!IS_BLACK[m % 12]) KB_WHITES.push(m);
+
+interface KeyboardKeyRef { el: HTMLElement; midi: number; isBlack: boolean }
+const keyboardKeys: KeyboardKeyRef[] = [];
 
 function buildKeyboard() {
   const kb = $("keyboard");
-  const whites: number[] = [];
-  for (let m = KB_LO; m <= KB_HI; m++) {
-    if (!IS_BLACK[m % 12]) whites.push(m);
-  }
-
-  const totalW = kb.clientWidth || 800;
-  const ww = totalW / whites.length;
-  const bw = ww * 0.58;
 
   // White keys
-  for (let i = 0; i < whites.length; i++) {
-    const midi = whites[i];
+  for (let i = 0; i < KB_WHITES.length; i++) {
+    const midi = KB_WHITES[i];
     const key = document.createElement("div");
     key.className = "kb-white";
-    key.style.left = i * ww + "px";
-    key.style.width = (ww - 1) + "px";
     key.dataset.midi = String(midi);
 
     if (midi % 12 === 0) {
@@ -494,18 +559,16 @@ function buildKeyboard() {
     key.addEventListener("mouseup", () => midiKeyUp(midi));
     key.addEventListener("mouseleave", () => { if (heldMidi.has(midi)) midiKeyUp(midi); });
     kb.appendChild(key);
+    keyboardKeys.push({ el: key, midi, isBlack: false });
   }
 
   // Black keys
   for (let m = KB_LO; m <= KB_HI; m++) {
     if (!IS_BLACK[m % 12]) continue;
-    const wi = whites.indexOf(m - 1);
-    if (wi < 0) continue;
+    if (KB_WHITES.indexOf(m - 1) < 0) continue;
 
     const key = document.createElement("div");
     key.className = "kb-black";
-    key.style.left = ((wi + 1) * ww - bw / 2 - 0.5) + "px";
-    key.style.width = bw + "px";
     key.dataset.midi = String(m);
 
     if (QWERTY_LABELS[m]) {
@@ -521,28 +584,86 @@ function buildKeyboard() {
     key.addEventListener("mouseup", () => midiKeyUp(m));
     key.addEventListener("mouseleave", () => { if (heldMidi.has(m)) midiKeyUp(m); });
     kb.appendChild(key);
+    keyboardKeys.push({ el: key, midi: m, isBlack: true });
   }
+
+  layoutKeyboard();
+
+  // Key geometry was previously computed once from kb.clientWidth at init
+  // (falling back to 800 if the element had no width yet) and never
+  // recomputed — resizing the window left the keyboard clipped or short,
+  // and wrong from the start if the initial layout pass hadn't finished
+  // (F-A1: keyboard not responsive to resize). Recompute on resize, coalesced
+  // to one layout pass per frame.
+  let resizeRaf = 0;
+  new ResizeObserver(() => {
+    if (resizeRaf) cancelAnimationFrame(resizeRaf);
+    resizeRaf = requestAnimationFrame(layoutKeyboard);
+  }).observe(kb);
 
   // QWERTY events
   window.addEventListener("keydown", (e) => {
     if (e.repeat) return;
-    if ((e.target as HTMLElement).tagName === "INPUT" || (e.target as HTMLElement).tagName === "SELECT") return;
-    const k = e.key.toLowerCase();
+    // Typing in an input/select/textarea (or any contenteditable) must never
+    // trigger notes/transport/deletion — this used to exempt only INPUT and
+    // SELECT, so the score/tuning JSON textareas were unusable for hand
+    // editing (every mapped letter played a note, Space/Backspace were
+    // preventDefault'd instead of typing) (F-A1-007).
+    if (isTypingTarget(e)) return;
+    // Don't hijack Ctrl/Cmd/Alt combos (Ctrl+C, Ctrl+V, Cmd+A, ...).
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
 
+    const k = e.key.toLowerCase();
     if (k === " ") { e.preventDefault(); togglePlay(); return; }
     if (k === "escape") { panic(); return; }
     if (k === "delete" || k === "backspace") { e.preventDefault(); deleteSelectedNote(); return; }
 
-    if (QWERTY[k] !== undefined && !heldKeys.has(k)) {
-      heldKeys.add(k);
-      midiKeyDown(QWERTY[k]);
+    const code = e.code;
+    if (QWERTY[code] !== undefined && !heldKeys.has(code)) {
+      heldKeys.add(code);
+      midiKeyDown(QWERTY[code]);
     }
   });
 
   window.addEventListener("keyup", (e) => {
-    const k = e.key.toLowerCase();
-    if (QWERTY[k] !== undefined) { heldKeys.delete(k); midiKeyUp(QWERTY[k]); }
+    if (isTypingTarget(e)) return;
+    const code = e.code;
+    if (QWERTY[code] !== undefined) { heldKeys.delete(code); midiKeyUp(QWERTY[code]); }
   });
+}
+
+/** Reposition every existing key element from current keyboard-container
+ *  width — called on initial build and on every ResizeObserver frame. */
+function layoutKeyboard() {
+  const kb = $("keyboard");
+  const totalW = kb.clientWidth || 800;
+  const ww = totalW / KB_WHITES.length;
+  const bw = ww * 0.58;
+
+  for (const { el, midi, isBlack } of keyboardKeys) {
+    if (!isBlack) {
+      const i = KB_WHITES.indexOf(midi);
+      el.style.left = i * ww + "px";
+      el.style.width = (ww - 1) + "px";
+    } else {
+      const wi = KB_WHITES.indexOf(midi - 1);
+      if (wi < 0) continue;
+      el.style.left = ((wi + 1) * ww - bw / 2 - 0.5) + "px";
+      el.style.width = bw + "px";
+    }
+  }
+}
+
+/** True when the event's target (or the currently focused element) is a
+ *  text-entry control — used to keep global keyboard shortcuts (note
+ *  triggering, Space/Delete/Escape) from hijacking typing in the score/tuning
+ *  JSON textareas or any other form field (F-A1-007). */
+function isTypingTarget(e: KeyboardEvent): boolean {
+  const el = (e.target as HTMLElement | null) ?? (document.activeElement as HTMLElement | null);
+  if (!el) return false;
+  const tag = el.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
+  return !!el.isContentEditable;
 }
 
 function midiKeyDown(midi: number) {
@@ -615,6 +736,15 @@ function play() {
   if (score.length === 0) return;
   const ctx = mode === "vocal" ? vocalSynth.getContext() : synth.getContext();
   if (!ctx) return;
+
+  // Belt-and-suspenders resume: the global gesture listener (bindAutoplayUnlock)
+  // should already have unlocked audio, but Play itself is also a user
+  // gesture, and resume() is async — make sure both contexts are (or are
+  // becoming) "running" before we schedule anything (F-A1-003).
+  const otherCtx = mode === "vocal" ? synth.getContext() : vocalSynth.getContext();
+  if (ctx.state === "suspended") ctx.resume().catch(() => {});
+  if (otherCtx && otherCtx.state === "suspended") otherCtx.resume().catch(() => {});
+
   isPlaying = true;
   $("btn-play").textContent = "⏸";
 
@@ -711,7 +841,7 @@ function bindControls() {
   // Inspector velocity
   $("insp-vel").addEventListener("input", (e) => {
     if (!selectedNote) return;
-    selectedNote.velocity = parseInt((e.target as HTMLInputElement).value);
+    selectedNote.velocity = safeNumber(e.target as HTMLInputElement, selectedNote.velocity);
     $("insp-vel-val").textContent = String(selectedNote.velocity);
   });
   $("insp-del").addEventListener("click", deleteSelectedNote);
@@ -723,21 +853,24 @@ function bindControls() {
       const v = btn.dataset.vowel as VowelId;
       selectedNote.vowel = v;
       // Update the note's visual
-      const el = document.querySelector<HTMLElement>(`[data-note-id="${selectedNote.id}"]`);
+      const el = document.querySelector<HTMLElement>(noteSelector(selectedNote.id));
       if (el) applyNoteStyle(el, selectedNote);
       updateInspector();
     });
   });
   $("insp-breath").addEventListener("input", (e) => {
     if (!selectedNote) return;
-    const v = parseInt((e.target as HTMLInputElement).value);
+    const prev = Math.round((selectedNote.breathiness ?? 0.15) * 100);
+    const v = safeNumber(e.target as HTMLInputElement, prev);
     selectedNote.breathiness = v / 100;
     $("insp-breath-val").textContent = String(v);
   });
 
   // Master volume
   $("master-vol").addEventListener("input", (e) => {
-    const v = parseInt((e.target as HTMLInputElement).value);
+    const input = e.target as HTMLInputElement;
+    const prev = parseInt($("master-vol-val").textContent || "80", 10) || 80;
+    const v = safeNumber(input, prev);
     $("master-vol-val").textContent = String(v);
     synth.setMasterVolume(v / 100);
     vocalSynth.setMasterVolume(v / 100);
@@ -745,25 +878,36 @@ function bindControls() {
 
   // ── Vocal controls ──
   $("vox-breathiness").addEventListener("input", (e) => {
-    const v = parseInt((e.target as HTMLInputElement).value);
+    const input = e.target as HTMLInputElement;
+    const prev = parseInt($("vox-breathiness-val").textContent || "15", 10) || 15;
+    const v = safeNumber(input, prev);
     $("vox-breathiness-val").textContent = String(v);
     vocalSynth.setBreathiness(v / 100);
   });
   $("vox-vib-depth").addEventListener("input", (e) => {
-    const v = parseInt((e.target as HTMLInputElement).value);
+    const input = e.target as HTMLInputElement;
+    const prev = parseInt($("vox-vib-depth-val").textContent || "25", 10) || 25;
+    const v = safeNumber(input, prev);
     $("vox-vib-depth-val").textContent = String(v);
     vocalSynth.setVibratoDepth(v);
   });
   $("vox-vib-rate").addEventListener("input", (e) => {
-    const v = parseInt((e.target as HTMLInputElement).value);
+    const input = e.target as HTMLInputElement;
+    const prevHz = parseFloat($("vox-vib-rate-val").textContent || "5.5") || 5.5;
+    const v = safeNumber(input, Math.round(prevHz * 10));
     const hz = v / 10;
     $("vox-vib-rate-val").textContent = hz.toFixed(1);
     vocalSynth.setVibratoRate(hz);
   });
 
-  // BPM
+  // BPM — clamped to [BPM_MIN, BPM_MAX] and guarded against NaN (an emptied
+  // field falls back to the last valid bpm, never stored as NaN) (F-A1-002,
+  // F-A1-006).
   ($("bpm") as HTMLInputElement).addEventListener("change", (e) => {
-    bpm = Math.max(20, Math.min(300, parseInt((e.target as HTMLInputElement).value) || 120));
+    const input = e.target as HTMLInputElement;
+    const parsed = safeNumber(input, bpm);
+    bpm = Math.max(BPM_MIN, Math.min(BPM_MAX, parsed));
+    input.value = String(bpm);
     drawBeatLines();
   });
 }
@@ -913,7 +1057,7 @@ function buildCustomEditor() {
     val.textContent = CUSTOM_CENTS[pc] + "¢";
 
     slider.addEventListener("input", () => {
-      CUSTOM_CENTS[pc] = parseFloat(slider.value);
+      CUSTOM_CENTS[pc] = safeNumber(slider, CUSTOM_CENTS[pc], true);
       val.textContent = CUSTOM_CENTS[pc] + "¢";
     });
 
@@ -926,6 +1070,12 @@ function buildCustomEditor() {
 function bindAuditControls() {
   $("btn-apply-custom").addEventListener("click", () => {
     synth.setCustomTuning([...CUSTOM_CENTS]);
+    // Keep the vocal engine's tuning in sync — it previously kept playing in
+    // whatever tuning was active before "Apply Custom", while the audit
+    // table/badges/telemetry (which only read the instrument synth) showed
+    // the new custom tuning as if both engines had it (F-A1: tuning divergence
+    // between engines).
+    vocalSynth.setTuning("custom");
     ($("sel-tuning") as HTMLSelectElement).value = "custom";
     updateTuningTable();
     updateTelemetry();
@@ -950,7 +1100,11 @@ function bindAuditControls() {
   $("btn-import").addEventListener("click", () => {
     try {
       const data = JSON.parse(($("tuning-json") as HTMLTextAreaElement).value) as TuningExport;
-      synth.importTuning(data);
+      synth.importTuning(data); // throws with a descriptive message on invalid cents/refPitch
+      // Mirror the import onto the vocal engine too (same divergence class as
+      // "Apply Custom" above — see F-A1 tuning-divergence note).
+      vocalSynth.setTuning("custom");
+      if (Number.isFinite(data.refPitch)) vocalSynth.setRefPitch(data.refPitch);
       // Update custom editor sliders
       const t = synth.getTuning();
       for (let pc = 0; pc < 12; pc++) {
@@ -964,8 +1118,8 @@ function bindAuditControls() {
       ($("ref-pitch") as HTMLInputElement).value = String(synth.getRefPitch());
       updateTuningTable();
       updateTelemetry();
-    } catch {
-      alert("Invalid tuning JSON");
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Invalid tuning JSON");
     }
   });
 }
@@ -985,7 +1139,101 @@ function exportScore(): ScoreSnapshot {
   };
 }
 
+type NoteValidation = { ok: true; note: Omit<Note, "id"> } | { ok: false; message: string };
+
+/**
+ * Validate one note from untrusted JSON (score import or window.__cockpit.
+ * addNote) before it reaches Web Audio params. A non-finite midi/velocity
+ * propagating to osc.frequency.value or gain automation throws a TypeError
+ * mid-noteOn — aborting playback partway through and leaking partially-built
+ * node graphs — and out-of-range midi renders notes outside the piano-roll
+ * grid (F-A1-005).
+ */
+function validateImportedNote(n: unknown, index: number): NoteValidation {
+  if (typeof n !== "object" || n === null) {
+    return { ok: false, message: `note[${index}] is not an object` };
+  }
+  const r = n as Record<string, unknown>;
+
+  const midi = r.midi as number;
+  if (!Number.isFinite(midi) || midi < 0 || midi > 127) {
+    return { ok: false, message: `note[${index}].midi must be a finite number 0-127 (got ${JSON.stringify(r.midi)})` };
+  }
+  const velocity = r.velocity as number;
+  if (!Number.isFinite(velocity) || velocity < 0 || velocity > 127) {
+    return { ok: false, message: `note[${index}].velocity must be a finite number 0-127 (got ${JSON.stringify(r.velocity)})` };
+  }
+  const startSec = r.startSec as number;
+  if (!Number.isFinite(startSec) || startSec < 0) {
+    return { ok: false, message: `note[${index}].startSec must be a finite number >= 0 (got ${JSON.stringify(r.startSec)})` };
+  }
+  const durationSec = r.durationSec as number;
+  if (!Number.isFinite(durationSec) || durationSec < 0) {
+    return { ok: false, message: `note[${index}].durationSec must be a finite number >= 0 (got ${JSON.stringify(r.durationSec)})` };
+  }
+  if (r.vowel !== undefined && !(VOWEL_IDS as readonly unknown[]).includes(r.vowel)) {
+    return { ok: false, message: `note[${index}].vowel must be one of ${VOWEL_IDS.join(", ")} (got ${JSON.stringify(r.vowel)})` };
+  }
+  if (r.breathiness !== undefined) {
+    const b = r.breathiness as number;
+    if (!Number.isFinite(b) || b < 0 || b > 1) {
+      return { ok: false, message: `note[${index}].breathiness must be a finite number 0-1 (got ${JSON.stringify(r.breathiness)})` };
+    }
+  }
+
+  const note: Omit<Note, "id"> = {
+    midi, velocity, durationSec,
+    // Clamp (rather than reject) notes starting beyond the score window —
+    // the piano roll is a fixed SCORE_SECS-wide canvas (F-A1: score-size bomb).
+    startSec: Math.min(startSec, SCORE_SECS),
+  };
+  if (r.vowel !== undefined) note.vowel = r.vowel as VowelId;
+  if (r.breathiness !== undefined) note.breathiness = r.breathiness as number;
+  if (typeof r.lyric === "string") note.lyric = r.lyric;
+  return { ok: true, note };
+}
+
+function setScoreStatus(message: string, kind: "error" | "ok") {
+  const el = $("score-status");
+  el.textContent = message;
+  el.className = "score-status " + kind;
+}
+
+function clearScoreStatus() {
+  const el = $("score-status");
+  el.textContent = "";
+  el.className = "score-status";
+}
+
 function importScore(snap: ScoreSnapshot) {
+  if (!snap || !Array.isArray(snap.notes)) {
+    setScoreStatus("Import rejected: snapshot.notes must be an array", "error");
+    return;
+  }
+  if (snap.version !== undefined && snap.version !== 1) {
+    setScoreStatus(`Import rejected: unsupported snapshot version ${JSON.stringify(snap.version)} (expected 1)`, "error");
+    return;
+  }
+  // Unbounded note counts render one absolutely-positioned DOM element per
+  // note synchronously and can lock the tab (F-A1: score-size bomb).
+  if (snap.notes.length > MAX_IMPORT_NOTES) {
+    setScoreStatus(`Import rejected: ${snap.notes.length} notes exceeds the ${MAX_IMPORT_NOTES}-note import cap`, "error");
+    return;
+  }
+
+  // Validate every note BEFORE mutating any state — the whole import is
+  // rejected on the first bad field naming it, instead of silently importing
+  // partial garbage (F-A1-005).
+  const cleaned: Omit<Note, "id">[] = [];
+  for (let i = 0; i < snap.notes.length; i++) {
+    const result = validateImportedNote(snap.notes[i], i);
+    if (!result.ok) {
+      setScoreStatus(`Import rejected: ${result.message}`, "error");
+      return;
+    }
+    cleaned.push(result.note);
+  }
+
   stop();
   playPosition = 0;
   updateTransportTime();
@@ -995,8 +1243,12 @@ function importScore(snap: ScoreSnapshot) {
   selectedNote = null;
   document.querySelectorAll(".pr-note").forEach(el => el.remove());
 
-  // Apply settings
-  bpm = snap.bpm ?? 120;
+  // Apply settings. bpm is clamped + finite-checked here regardless of the
+  // UI-side guard, since importScore is also reachable directly via
+  // window.__cockpit.importScore() and the #score-json textarea, bypassing
+  // the <input> entirely — a negative/zero/non-numeric bpm made
+  // drawBeatLines() loop forever (F-A1-002).
+  bpm = Number.isFinite(+snap.bpm) ? Math.max(BPM_MIN, Math.min(BPM_MAX, +snap.bpm)) : 120;
   ($("bpm") as HTMLInputElement).value = String(bpm);
   drawBeatLines();
 
@@ -1018,15 +1270,19 @@ function importScore(snap: ScoreSnapshot) {
     synth.setTuning(snap.tuning as TuningId);
     vocalSynth.setTuning(snap.tuning as TuningId);
   }
-  if (snap.refPitch) {
-    ($("ref-pitch") as HTMLInputElement).value = String(snap.refPitch);
+  if (Number.isFinite(snap.refPitch)) {
     synth.setRefPitch(snap.refPitch);
     vocalSynth.setRefPitch(snap.refPitch);
+    ($("ref-pitch") as HTMLInputElement).value = String(synth.getRefPitch());
   }
 
-  // Notes
-  for (const n of snap.notes) {
-    const note: Note = { id: "n" + nextId++, ...n };
+  // Notes (already validated + cleaned above). Spread the imported fields
+  // FIRST, then assign the generated id last, so a caller-supplied `id` in
+  // the source JSON can never override it — a duplicate or quote/bracket-
+  // containing id used to break selection and could throw a SyntaxError out
+  // of querySelector on select/delete (F-A1: note id override).
+  for (const n of cleaned) {
+    const note: Note = { ...n, id: "n" + nextId++ };
     score.push(note);
     renderNote(note);
   }
@@ -1034,22 +1290,25 @@ function importScore(snap: ScoreSnapshot) {
   updateTuningTable();
   updateTelemetry();
   updateInspector();
+  setScoreStatus(`Imported ${cleaned.length} note${cleaned.length === 1 ? "" : "s"}`, "ok");
 }
 
 function bindScoreControls() {
   $("btn-export-score").addEventListener("click", () => {
     const json = JSON.stringify(exportScore(), null, 2);
     ($("score-json") as HTMLTextAreaElement).value = json;
+    clearScoreStatus();
   });
 
   $("btn-import-score").addEventListener("click", () => {
+    let data: ScoreSnapshot;
     try {
-      const data = JSON.parse(($("score-json") as HTMLTextAreaElement).value) as ScoreSnapshot;
-      if (!data.notes || !Array.isArray(data.notes)) throw new Error("missing notes");
-      importScore(data);
-    } catch {
-      alert("Invalid score JSON");
+      data = JSON.parse(($("score-json") as HTMLTextAreaElement).value) as ScoreSnapshot;
+    } catch (err) {
+      setScoreStatus(`Import rejected: invalid JSON (${err instanceof Error ? err.message : "parse error"})`, "error");
+      return;
     }
+    importScore(data);
   });
 }
 
@@ -1085,9 +1344,20 @@ async function boot() {
     setMode,
     getScore: () => [...score],
     addNote: (n) => {
-      const note: Note = { id: "n" + nextId++, ...n };
+      // Same untrusted-input validation as importScore — addNote is an
+      // equally-reachable LLM-facing path that used to copy midi/velocity/
+      // startSec/durationSec verbatim into Web Audio params (F-A1-005).
+      const result = validateImportedNote(n, 0);
+      if (!result.ok) {
+        setScoreStatus(`addNote rejected: ${result.message}`, "error");
+        return;
+      }
+      // Spread first, then assign the id, so a caller-supplied `id` can never
+      // override the generated one (F-A1: note id override).
+      const note: Note = { ...result.note, id: "n" + nextId++ };
       score.push(note);
       renderNote(note);
+      setScoreStatus(`Added note ${noteName(note.midi)}`, "ok");
     },
   };
 }

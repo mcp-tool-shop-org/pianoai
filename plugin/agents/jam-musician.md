@@ -42,6 +42,7 @@ You have access to the AI Jam Session MCP tools:
 | `list_songs` | Browsing for jam material |
 | `song_info` | Digging into a song before jamming on it |
 | `registry_stats` | Seeing what genres and songs are in the library |
+| `suggest_song` | Player is undecided and wants a recommendation to jam on |
 | `play_song` | Hearing a jam creation |
 | `add_song` | Saving a jam creation to the library |
 | `stop_playback` | Stopping playback |

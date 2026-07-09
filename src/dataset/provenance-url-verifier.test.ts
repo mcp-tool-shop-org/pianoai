@@ -16,7 +16,7 @@
 //  10. Bonus: license-family-detector regex sanity (unit-level)
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import {
   verifyProvenanceUrl,
   parseLicenseFamily,
@@ -177,6 +177,14 @@ describe("verifyProvenanceUrl", () => {
     today: "2026-05-17",
   };
 
+  // F-24c7adee: the two retry-backoff tests below used to sleep for a real
+  // RETRY_BACKOFF_MS (2 real seconds) each, adding ~4s of mandatory wall-clock
+  // time to every `pnpm test` run. vi.useRealTimers() here guarantees fake
+  // timers never leak into a later test if an assertion throws mid-test.
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("promotes to 'public' when CC-BY-SA + version + creator + title all confirmed", async () => {
     const { fetchImpl, calls } = makeFetch({
       [SITE_ROOT]: { status: 200, body: SITE_HTML_CC_BY_SA_3 },
@@ -246,6 +254,10 @@ describe("verifyProvenanceUrl", () => {
   // ─── 5. 503 twice → stays public_candidate (transient ≠ provenance failure)
 
   it("stays at 'public_candidate' on transient (5xx twice) failure for composer page", async () => {
+    // F-24c7adee: this exercises the retry-once path (composer page 503s
+    // twice), which sleeps RETRY_BACKOFF_MS between attempts. Fake timers
+    // replace that real 2s wait with an instant, deterministic advance.
+    vi.useFakeTimers();
     const { fetchImpl, calls } = makeFetch({
       [SITE_ROOT]: { status: 200, body: SITE_HTML_CC_BY_SA_3 },
       "http://piano-midi.de/bach.htm": [
@@ -253,7 +265,9 @@ describe("verifyProvenanceUrl", () => {
         { status: 503, body: "" },
       ],
     });
-    const result = await verifyProvenanceUrl({ ...baseInput, fetchImpl });
+    const resultPromise = verifyProvenanceUrl({ ...baseInput, fetchImpl });
+    await vi.advanceTimersByTimeAsync(POLITENESS_DEFAULTS.RETRY_BACKOFF_MS);
+    const result = await resultPromise;
     expect(result.post_verdict).toBe("public_candidate");
     expect(
       result.failure_reasons.some((r) =>
@@ -344,7 +358,13 @@ describe("verifyProvenanceUrl", () => {
 
   it("applies retry backoff (>= RETRY_BACKOFF_MS) on transient site failure", async () => {
     // Site returns 503 first, then 200 — retry happens inside fetchWithRetry,
-    // which sleeps for RETRY_BACKOFF_MS. We measure elapsed wall time.
+    // which sleeps for RETRY_BACKOFF_MS. F-24c7adee: previously this measured
+    // real Date.now() elapsed time around a real sleep (~2s per run). Fake
+    // timers prove the same invariant deterministically: the call cannot
+    // complete before the backoff window elapses (checked via `settled`
+    // staying false just short of RETRY_BACKOFF_MS), and does complete once
+    // the full window is advanced — without ever sleeping for real.
+    vi.useFakeTimers();
     const { fetchImpl } = makeFetch({
       [SITE_ROOT]: [
         { status: 503, body: "" },
@@ -352,14 +372,29 @@ describe("verifyProvenanceUrl", () => {
       ],
       "http://piano-midi.de/bach.htm": { status: 200, body: BACH_HTML_OK },
     });
-    const start = Date.now();
-    const result = await verifyProvenanceUrl({ ...baseInput, fetchImpl });
-    const elapsed = Date.now() - start;
+
+    let settled = false;
+    const resultPromise = verifyProvenanceUrl({ ...baseInput, fetchImpl }).then(
+      (r) => {
+        settled = true;
+        return r;
+      },
+    );
+
+    // Advance to just short of the backoff window — the retry must still be
+    // asleep, proving a real (simulated) wait is in the call graph rather
+    // than the retry firing immediately.
+    await vi.advanceTimersByTimeAsync(POLITENESS_DEFAULTS.RETRY_BACKOFF_MS - 50);
+    expect(settled).toBe(false);
+
+    // Advance past the remainder of the backoff window — the retry can now
+    // complete.
+    await vi.advanceTimersByTimeAsync(50);
+
+    const result = await resultPromise;
+    expect(settled).toBe(true);
     expect(result.post_verdict).toBe("public");
     expect(result.verification_attempts[0].retried).toBe(true);
-    expect(elapsed).toBeGreaterThanOrEqual(
-      POLITENESS_DEFAULTS.RETRY_BACKOFF_MS - 50,
-    );
   });
 
   // ─── 10. COMPOSER_PAGES coverage matches the scan's 10 songs ───────────────

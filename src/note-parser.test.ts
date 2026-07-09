@@ -10,6 +10,7 @@ import {
   safeParseHandString,
   safeParseMeasure,
   midiToNoteName,
+  splitChordToken,
   noteToSingable,
   handToSingableText,
   measureToSingableText,
@@ -278,6 +279,47 @@ describe("safeParseMeasure", () => {
   });
 });
 
+// ─── Chord Token Splitting ──────────────────────────────────────────────────
+
+describe("splitChordToken", () => {
+  it("returns a single note as a one-part chord", () => {
+    expect(splitChordToken("C4:q")).toEqual([{ noteStr: "C4", durSuffix: "q" }]);
+  });
+
+  it("defaults a bare note to quarter duration", () => {
+    expect(splitChordToken("C4")).toEqual([{ noteStr: "C4", durSuffix: "q" }]);
+  });
+
+  it("shares the last part's duration across the chord (MIDI ingest format)", () => {
+    expect(splitChordToken("C4+E4+G4:h")).toEqual([
+      { noteStr: "C4", durSuffix: "h" },
+      { noteStr: "E4", durSuffix: "h" },
+      { noteStr: "G4", durSuffix: "h" },
+    ]);
+  });
+
+  it("shares a duration that appears on a non-last part", () => {
+    expect(splitChordToken("C4:h+E4")).toEqual([
+      { noteStr: "C4", durSuffix: "h" },
+      { noteStr: "E4", durSuffix: "h" },
+    ]);
+  });
+
+  it("keeps per-part durations when present", () => {
+    expect(splitChordToken("C4:q+E4:h")).toEqual([
+      { noteStr: "C4", durSuffix: "q" },
+      { noteStr: "E4", durSuffix: "h" },
+    ]);
+  });
+
+  it("defaults a chord without any suffix to quarter duration", () => {
+    expect(splitChordToken("E4+G4")).toEqual([
+      { noteStr: "E4", durSuffix: "q" },
+      { noteStr: "G4", durSuffix: "q" },
+    ]);
+  });
+});
+
 // ─── Sing-Along Conversion ──────────────────────────────────────────────────
 
 describe("noteToSingable", () => {
@@ -337,6 +379,26 @@ describe("noteToSingable", () => {
   it("passes through unparseable tokens", () => {
     expect(noteToSingable("XYZ", "note-names")).toBe("XYZ");
   });
+
+  it("note-names: chord → 'C-E-G chord'", () => {
+    expect(noteToSingable("C4+E4+G4", "note-names")).toBe("C-E-G chord");
+  });
+
+  it("note-names: chord with accidentals", () => {
+    expect(noteToSingable("C#4+F4", "note-names")).toBe("C sharp-F chord");
+  });
+
+  it("solfege: chord → 'Do-Mi-Sol chord'", () => {
+    expect(noteToSingable("C4+E4+G4", "solfege")).toBe("Do-Mi-Sol chord");
+  });
+
+  it("syllables: chord is one beat → single 'da'", () => {
+    expect(noteToSingable("C4+E4+G4", "syllables")).toBe("da");
+  });
+
+  it("strips per-part duration suffixes inside chord tokens", () => {
+    expect(noteToSingable("C4:q+E4:q", "note-names")).toBe("C-E chord");
+  });
 });
 
 describe("handToSingableText", () => {
@@ -378,6 +440,35 @@ describe("handToSingableText", () => {
 
   it("handles rest tokens in contour", () => {
     expect(handToSingableText("C4:q R:q E4:q", "contour")).toBe("rest... rest");
+  });
+
+  it("note-names: '+'-joined chord token with shared duration (MIDI ingest format)", () => {
+    expect(handToSingableText("C4+E4+G4:q", "note-names")).toBe("C-E-G chord");
+  });
+
+  it("note-names: mixes melody, chords, and rests", () => {
+    expect(handToSingableText("C4:q E4+G4:h R:q", "note-names")).toBe(
+      "C... E-G chord... rest"
+    );
+  });
+
+  it("note-names: chord token with per-part durations loses no tone", () => {
+    expect(handToSingableText("C4:q+E4:q", "note-names")).toBe("C-E chord");
+  });
+
+  it("solfege: chord token", () => {
+    expect(handToSingableText("C3+G3:h C4:q", "solfege")).toBe("Do-Sol chord... Do");
+  });
+
+  it("syllables: chord is one beat → single 'da'", () => {
+    expect(handToSingableText("C4+E4+G4:q C4:q", "syllables")).toBe("da... da");
+  });
+
+  it("contour: chord contour follows its top tone", () => {
+    // Top of C4+E4 is E4; G4 is above it → "up"
+    expect(handToSingableText("C4+E4:q G4:q", "contour")).toBe("up");
+    // Top of C4+G4 is G4; E4 is below it → "down"
+    expect(handToSingableText("C4+G4:q E4:q", "contour")).toBe("down");
   });
 });
 

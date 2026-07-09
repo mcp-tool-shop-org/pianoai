@@ -17,9 +17,9 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
-      - uses: pnpm/action-setup@v5
+      - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
         with:
           version: 9
 
@@ -36,31 +36,52 @@ jobs:
       - name: Verify tarball contents
         run: pnpm pack && ls -la *.tgz
 
+      # TODO(PR #12): migrate this step to OIDC Trusted Publishing once a
+      # Trusted Publisher is configured for @mcptoolshop/ai-jam-sessions on
+      # npmjs.com (owner=mcp-tool-shop-org, repo=ai-jam-sessions,
+      # workflow=release.yml). Until then, publish-docker below `needs:`
+      # this job so an invalid/expired NPM_TOKEN can't leave a Docker image
+      # published under a version that was never actually shipped to npm.
       - name: Publish to npm
         run: pnpm publish --no-git-checks --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-docker:
+    needs: publish-npm
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
-      - uses: docker/login-action@v4
+      - uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Strip a leading "v" so release-triggered runs (tag_name=v1.4.3) and
+      # workflow_dispatch runs (falls back to package.json's bare 1.4.3)
+      # always produce the same Docker tag for the same version.
       - name: Determine Docker tag
         id: tag
+        # The tag name is passed via env, never interpolated into the shell
+        # body — git tag names may legally contain shell metacharacters, and
+        # this step runs after ghcr.io login with packages:write granted.
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
-          if [ -n "${{ github.event.release.tag_name }}" ]; then
-            echo "version=${{ github.event.release.tag_name }}" >> "$GITHUB_OUTPUT"
+          set -euo pipefail
+          if [ -n "$RELEASE_TAG" ]; then
+            VERSION="${RELEASE_TAG#v}"
+            if [ -z "$VERSION" ]; then
+              echo "ERROR: release tag '$RELEASE_TAG' is empty after stripping the leading 'v'"
+              exit 1
+            fi
+            echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           else
             echo "version=$(node -p 'require(\"./package.json\").version')" >> "$GITHUB_OUTPUT"
           fi

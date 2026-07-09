@@ -185,7 +185,20 @@ function hasFlag(args: string[], flag: string): boolean {
 }
 
 // ─── Commands ───────────────────────────────────────────────────────────────
-
+//
+// Error-handling split (F-1a562e8f): the ~25 early-validation sites below
+// (`console.error(...); process.exit(1);`) are pre-flight argument checks —
+// bad flag values, missing required args, unknown song IDs. These are
+// EXIT_USER by construction: a conscious decision, not an oversight. They
+// intentionally stay as direct process.exit(1) calls (which already equals
+// errors.ts's EXIT_USER) rather than `throw new JamError(...)`, because
+// they run before any engine/file-I/O/transport work has started, so the
+// failure category is never ambiguous. JamError + main().catch()'s
+// handleError() is reserved for errors whose category ISN'T known until
+// runtime — see cmdPlay/cmdSing's own catch blocks below, which route
+// through handleError() precisely because a failure during playback really
+// could be either an EXIT_USER (bad song data) or EXIT_RUNTIME (audio
+// engine crash, MIDI port dropped) condition.
 function cmdList(args: string[]): void {
   const genreArg = getFlag(args, "--genre");
   const diffArg = getFlag(args, "--difficulty");
@@ -554,9 +567,15 @@ async function cmdPlay(args: string[]): Promise<void> {
       }
     }
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    console.error(`\nError: ${msg}`);
-    process.exit(1);
+    // Route through handleError() instead of a bare process.exit(1) — a
+    // failure during playback could be EXIT_USER (bad song data) or
+    // EXIT_RUNTIME (audio engine crash, MIDI port dropped), and the two
+    // categories weren't distinguished here (F-1a562e8f). The engine
+    // modules already construct JamError with the right code; this is
+    // what lets that classification actually reach the exit code.
+    const { handleError } = await import("./errors.js");
+    const debug = process.argv.includes("--debug") || process.argv.includes("-D");
+    process.exit(handleError(err, debug));
   } finally {
     await connector.disconnect();
   }
@@ -719,9 +738,15 @@ async function cmdSing(args: string[]): Promise<void> {
     console.log(`\nFinished! ${session.session.measuresPlayed} measures played.`);
     console.log(session.summary());
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    console.error(`\nError: ${msg}`);
-    process.exit(1);
+    // Route through handleError() instead of a bare process.exit(1) — a
+    // failure during playback could be EXIT_USER (bad song data) or
+    // EXIT_RUNTIME (audio engine crash, MIDI port dropped), and the two
+    // categories weren't distinguished here (F-1a562e8f). The engine
+    // modules already construct JamError with the right code; this is
+    // what lets that classification actually reach the exit code.
+    const { handleError } = await import("./errors.js");
+    const debug = process.argv.includes("--debug") || process.argv.includes("-D");
+    process.exit(handleError(err, debug));
   } finally {
     await connector.disconnect();
   }
@@ -1283,11 +1308,19 @@ async function main(): Promise<void> {
       break;
     case "play":
       await cmdPlay(args.slice(1));
-      process.exit(0); // Audio engines may keep event loop alive
+      // Force exit: the audio engines (node-web-audio-api) don't release
+      // all handles/timers on disconnect(), so the event loop can stay
+      // alive indefinitely otherwise. This is a known workaround for that
+      // resource-cleanup gap (F-68e883cf), not a general-purpose pattern —
+      // fix the underlying engine leak before layering more logic after
+      // this exit; a forced exit can truncate buffered stdout/stderr and
+      // skips any future 'beforeExit'/'exit' listeners.
+      process.exit(0);
       break;
     case "sing":
       await cmdSing(args.slice(1));
-      process.exit(0); // Audio engines may keep event loop alive
+      // See the "play" case above — same audio-engine cleanup workaround.
+      process.exit(0);
       break;
     case "view":
       await cmdView(args.slice(1));

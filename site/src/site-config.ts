@@ -6,7 +6,7 @@ export const config: SiteConfig = {
   logoBadge: 'JS',
   brandName: 'AI Jam Sessions',
   repoUrl: 'https://github.com/mcp-tool-shop-org/ai-jam-sessions',
-  npmUrl: 'https://www.npmjs.com/package/ai-jam-sessions',
+  npmUrl: 'https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions',
   footerText: 'MIT Licensed — built by <a href="https://github.com/mcp-tool-shop-org" style="color:var(--color-muted);text-decoration:underline">mcp-tool-shop-org</a>',
 
   hero: {
@@ -51,7 +51,7 @@ export const config: SiteConfig = {
           desc: 'Vocal tract synthesis with 20 voice presets. Sing-along mode with solfege, contour, and syllable narration.',
         },
         {
-          title: '41 MCP Tools + 3 Prompts',
+          title: '42 MCP Tools + 3 Prompts',
           desc: 'Learn, play, sing, build, score — browse songs, transpose keys, mute hands, preview teaching cues, render piano rolls, write annotations, and journal reflections.',
         },
         {
@@ -68,7 +68,7 @@ export const config: SiteConfig = {
       features: [
         {
           title: '115 records · 8 piano pieces',
-          desc: 'Public subset of the full corpus: 8 classical-piano arrangements from piano-midi.de (Beethoven, Bach, Schubert, Schumann, Mozart, Mendelssohn, Tchaikovsky). 16-record canonical post-repair baseline.',
+          desc: 'Public subset of the full corpus: 8 classical-piano arrangements from piano-midi.de across 6 composers (Bach, Beethoven, Chopin, Debussy, Mozart, Schumann). 16-record canonical post-repair baseline.',
         },
         {
           title: '7-axis release gate',
@@ -102,7 +102,7 @@ export const config: SiteConfig = {
           code: `git clone https://github.com/mcp-tool-shop-org/ai-jam-sessions.git
 cd ai-jam-sessions && pnpm install
 
-# 273 checksum entries; ~2 seconds.
+# 274 checksum entries; ~2 seconds.
 pnpm exec tsx scripts/verify-public-package-checksums.ts`,
         },
         {
@@ -110,7 +110,7 @@ pnpm exec tsx scripts/verify-public-package-checksums.ts`,
           code: `pnpm exec tsx scripts/check-release-gate.ts \\
   datasets/jam-actions-v0-public/evals/\\
 slice21-fair-e3-baseline-results.json
-# → "Verdict: PASS"`,
+# → "Aggregate: PASS" (exit 0)`,
         },
         {
           title: 'Read the dataset card',
@@ -148,7 +148,7 @@ cat datasets/jam-actions-v0-public/CITATION.cff
       "command": "npx",
       "args": [
         "-y", "-p",
-        "ai-jam-sessions",
+        "@mcptoolshop/ai-jam-sessions",
         "ai-jam-sessions-mcp"
       ]
     }
@@ -184,7 +184,7 @@ ai-jam-sessions list --genre folk`,
       columns: ['Engine', 'Type', 'Character'],
       rows: [
         ['Oscillator Piano', 'Additive synthesis', 'Multi-harmonic piano with hammer noise, 48-voice polyphony, stereo imaging'],
-        ['Sample Piano', 'WAV playback', 'Salamander Grand Piano — 480 samples, 16 velocity layers, 88 keys'],
+        ['Sample Piano', 'WAV playback', 'Salamander Grand Piano — 480 samples, 16 velocity layers, 88 keys (programmatic API; samples user-supplied)'],
         ['Vocal (Sample)', 'Pitch-shifted samples', 'Sustained vowel tones with portamento and legato mode'],
         ['Vocal Tract', 'Physical model', 'LF glottal waveform through 44-cell digital waveguide. Soprano, alto, tenor, bass'],
         ['Vocal Synth', 'Additive synthesis', '15 Kokoro voice presets with formant shaping, breathiness, vibrato'],
@@ -217,7 +217,7 @@ ai-jam-sessions list --genre folk`,
       kind: 'data-table',
       id: 'tools',
       title: 'MCP tools',
-      subtitle: '41 tools and 3 prompt templates across six categories: Learn, Play, Sing, Guitar, Build, and Score.',
+      subtitle: '42 tools and 3 prompt templates across six categories: Learn, Play, Sing, Guitar, Build, and Score.',
       columns: ['Tool', 'Category', 'Description'],
       rows: [
         ['`list_songs`', 'Learn', 'Browse by genre, difficulty, or keyword'],

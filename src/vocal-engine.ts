@@ -114,25 +114,39 @@ export function createVocalEngine(options?: VocalEngineOptions): VmpkConnector &
   // Debug log (accessible from outside)
   const debugLog: VocalNoteEvent[] = [];
 
-  // Voice management
-  const activeVoices = new Map<number, Voice>();
-  const voiceOrder: number[] = [];
+  // Voice management. FIFO queue per note (not a single Voice) so a
+  // same-pitch noteOn/noteOff pair can overlap another same-pitch pair
+  // (unison / fast retrigger) without a late noteOff wrongly cutting off a
+  // newer, unrelated voice — see audio-engine.ts's identical pattern for
+  // the full rationale (F-c1eab2d2).
+  const MAX_VOICES_PER_NOTE = 2;
+  const activeVoices = new Map<number, Voice[]>();
+  const voiceOrder: Voice[] = []; // Global LRU across all voice instances, oldest first
 
   // ── Voice Management ──
 
-  function stealOldest(): void {
-    if (voiceOrder.length === 0) return;
-    const oldestNote = voiceOrder.shift()!;
-    const voice = activeVoices.get(oldestNote);
-    if (voice) {
-      killVoice(voice);
-      activeVoices.delete(oldestNote);
-    }
+  /** Remove a specific voice instance from its note's queue. */
+  function removeFromNoteQueue(voice: Voice): void {
+    const queue = activeVoices.get(voice.note);
+    if (!queue) return;
+    const idx = queue.indexOf(voice);
+    if (idx >= 0) queue.splice(idx, 1);
+    if (queue.length === 0) activeVoices.delete(voice.note);
   }
 
-  function removeFromOrder(note: number): void {
-    const idx = voiceOrder.indexOf(note);
+  /** Remove a specific voice instance from the global LRU order. */
+  function removeFromOrder(voice: Voice): void {
+    const idx = voiceOrder.indexOf(voice);
     if (idx >= 0) voiceOrder.splice(idx, 1);
+  }
+
+  /** Steal the oldest voice (across all notes) when at max polyphony. */
+  function stealOldest(): void {
+    const oldest = voiceOrder.shift();
+    if (oldest) {
+      fadeAndKillVoice(oldest);
+      removeFromNoteQueue(oldest);
+    }
   }
 
   function killVoice(voice: Voice): void {
@@ -175,6 +189,33 @@ export function createVocalEngine(options?: VocalEngineOptions): VmpkConnector &
     }
 
     voice.cleanupTimer = setTimeout(() => killVoice(voice), (releaseTime + 0.1) * 1000);
+  }
+
+  /**
+   * Stop a voice for an involuntary reason (voice stealing at max
+   * polyphony, or per-note overlap eviction) with a very short gain ramp
+   * instead of killVoice's instant full-amplitude stop — avoids an
+   * audible click/pop (F-637edb02).
+   */
+  function fadeAndKillVoice(voice: Voice, fadeSeconds = 0.008): void {
+    if (voice.cleanupTimer) {
+      clearTimeout(voice.cleanupTimer);
+      voice.cleanupTimer = null;
+    }
+    try {
+      const now = ctx.currentTime;
+      voice.gain.gain.cancelScheduledValues(now);
+      voice.gain.gain.setValueAtTime(voice.gain.gain.value, now);
+      voice.gain.gain.linearRampToValueAtTime(0, now + fadeSeconds);
+      if (voice.chorusGain) {
+        voice.chorusGain.gain.cancelScheduledValues(now);
+        voice.chorusGain.gain.setValueAtTime(voice.chorusGain.gain.value, now);
+        voice.chorusGain.gain.linearRampToValueAtTime(0, now + fadeSeconds);
+      }
+      voice.cleanupTimer = setTimeout(() => killVoice(voice), (fadeSeconds + 0.02) * 1000);
+    } catch {
+      killVoice(voice);
+    }
   }
 
   // ── VmpkConnector Implementation ──
@@ -232,7 +273,7 @@ export function createVocalEngine(options?: VocalEngineOptions): VmpkConnector &
     },
 
     async disconnect(): Promise<void> {
-      for (const [, voice] of activeVoices) {
+      for (const voice of voiceOrder) {
         try { killVoice(voice); } catch { /* ok */ }
       }
       activeVoices.clear();
@@ -259,20 +300,26 @@ export function createVocalEngine(options?: VocalEngineOptions): VmpkConnector &
     noteOn(note: number, velocity: number, _channel?: number): void {
       if (!ctx || currentStatus !== "connected" || !bank) return;
 
+      // Reject non-finite input before clamping — Math.max/min alone does
+      // NOT sanitize NaN (NaN in produces NaN out) (F-af5c8733).
+      if (!Number.isFinite(note) || !Number.isFinite(velocity)) return;
+
       // Clamp to reasonable vocal range (C2–C7)
       velocity = Math.max(1, Math.min(127, velocity));
       note = Math.max(36, Math.min(96, note));
 
-      // Kill existing voice on same note (retrigger)
-      const existing = activeVoices.get(note);
-      if (existing) {
-        killVoice(existing);
-        activeVoices.delete(note);
-        removeFromOrder(note);
+      // Bounded overlap instead of an unconditional kill — see
+      // MAX_VOICES_PER_NOTE / F-c1eab2d2.
+      let queue = activeVoices.get(note);
+      if (queue && queue.length >= MAX_VOICES_PER_NOTE) {
+        const oldest = queue.shift()!;
+        fadeAndKillVoice(oldest);
+        removeFromOrder(oldest);
+        if (queue.length === 0) activeVoices.delete(note);
       }
 
       // Voice stealing
-      while (activeVoices.size >= maxPolyphony) {
+      while (voiceOrder.length >= maxPolyphony) {
         stealOldest();
       }
 
@@ -390,15 +437,29 @@ export function createVocalEngine(options?: VocalEngineOptions): VmpkConnector &
         cleanupTimer: null,
       };
 
-      activeVoices.set(note, voice);
-      voiceOrder.push(note);
+      queue = activeVoices.get(note);
+      if (!queue) {
+        queue = [];
+        activeVoices.set(note, queue);
+      }
+      queue.push(voice);
+      voiceOrder.push(voice);
     },
 
     noteOff(note: number, _channel?: number): void {
       if (!ctx || currentStatus !== "connected") return;
+      if (!Number.isFinite(note)) return;
+      // Match noteOn's clamp to [36,96] exactly so an out-of-range or
+      // fractional note resolves to the same map key noteOn stored it
+      // under — otherwise the voice never receives its noteOff.
+      note = Math.max(36, Math.min(96, note));
 
-      const voice = activeVoices.get(note);
-      if (voice) {
+      // FIFO pairing — release the OLDEST still-active voice for this
+      // pitch, not "whatever's in a single slot" (F-c1eab2d2).
+      const queue = activeVoices.get(note);
+      if (queue && queue.length > 0) {
+        const voice = queue.shift()!;
+        if (queue.length === 0) activeVoices.delete(note);
         if (debug) {
           const now = ctx.currentTime;
           debugLog.push({
@@ -408,14 +469,13 @@ export function createVocalEngine(options?: VocalEngineOptions): VmpkConnector &
           });
         }
         releaseVoice(voice);
-        activeVoices.delete(note);
-        removeFromOrder(note);
+        removeFromOrder(voice);
       }
     },
 
     allNotesOff(_channel?: number): void {
       if (!ctx) return;
-      for (const [, voice] of activeVoices) {
+      for (const voice of voiceOrder) {
         killVoice(voice);
       }
       activeVoices.clear();

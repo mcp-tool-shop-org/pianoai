@@ -156,6 +156,14 @@ export function createVmpkConnector(
       if (!port || currentStatus !== "connected") {
         throw new Error("MIDI port not connected");
       }
+      // noteOn/noteOff are public VmpkConnector methods reachable directly
+      // by any caller, bypassing parseNoteToMidi's 0-127 enforcement.
+      // `& 0x7F` bitmasks out-of-range values instead of rejecting them
+      // (e.g. note=128 silently becomes 0, playing the wrong note) —
+      // reject loudly instead (F-7164731d).
+      if (!Number.isFinite(note) || note < 0 || note > 127 || !Number.isFinite(velocity) || velocity < 0 || velocity > 127) {
+        throw new Error(`noteOn: note and velocity must be finite values 0-127: got note=${note}, velocity=${velocity}`);
+      }
       const ch = channel ?? cfg.channel;
       port.send([0x90 + ch, note & 0x7F, velocity & 0x7F]);
     },
@@ -163,6 +171,9 @@ export function createVmpkConnector(
     noteOff(note: number, channel?: number): void {
       if (!port || currentStatus !== "connected") {
         throw new Error("MIDI port not connected");
+      }
+      if (!Number.isFinite(note) || note < 0 || note > 127) {
+        throw new Error(`noteOff: note must be a finite value 0-127: got note=${note}`);
       }
       const ch = channel ?? cfg.channel;
       port.send([0x80 + ch, note & 0x7F, 0]);

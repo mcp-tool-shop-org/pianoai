@@ -8,3 +8,12 @@ src/smoke.ts
 .github
 plugin
 scripts
+
+# Not COPY'd into the image by the Dockerfile — keep the build context lean.
+datasets
+apps
+experiments
+site
+docs
+swarms
+.swarm

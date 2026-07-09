@@ -62,8 +62,10 @@ function detectSectionBoundary(
   const nextEvents = tracker.eventsInMeasure(measure + 1);
   if (currEvents.length === 0 || nextEvents.length === 0) return null;
 
-  const lastNoteEnd = Math.max(...currEvents.map((e) => e.time + e.duration));
-  const nextNoteStart = Math.min(...nextEvents.map((e) => e.time));
+  // Reduce, not Math.max/min(...spread) — avoids the call-stack limit a
+  // large event array could hit (same class of bug as B-A1-001).
+  const lastNoteEnd = currEvents.reduce((m, e) => Math.max(m, e.time + e.duration), -Infinity);
+  const nextNoteStart = nextEvents.reduce((m, e) => Math.min(m, e.time), Infinity);
   const gap = nextNoteStart - lastNoteEnd;
 
   // A full measure's rest or more suggests a section boundary

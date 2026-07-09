@@ -21,7 +21,7 @@
 //   // Open in browser for interactive editing
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { parseNoteToMidi, parseDuration, midiToNoteName } from "./note-parser.js";
+import { parseNoteToMidi, parseDuration, midiToNoteName, splitChordToken } from "./note-parser.js";
 import type { SongEntry, Measure } from "./songs/types.js";
 import { GUITAR_TUNINGS } from "./guitar-voices.js";
 
@@ -102,19 +102,24 @@ function parseHandToNotes(
   let currentBeat = 0;
 
   for (const token of tokens) {
-    const parts = token.split(":");
-    const noteStr = parts[0];
-    const durSuffix = parts[1] ?? "q";
+    // Chord tokens join simultaneous tones with "+" (e.g. "C4+E4+G4:q", the
+    // MIDI-ingest format); a single note is a one-part chord. Tones share a
+    // startBeat; the beat cursor advances by the chord's longest tone.
+    let advanceBeats = 0;
 
-    let midi: number;
-    try { midi = parseNoteToMidi(noteStr); } catch { try { currentBeat += parseDuration(durSuffix); } catch { currentBeat += 1; } continue; }
-    let durationBeats: number;
-    try { durationBeats = parseDuration(durSuffix); } catch { durationBeats = 1; }
+    for (const { noteStr, durSuffix } of splitChordToken(token)) {
+      let durationBeats: number;
+      try { durationBeats = parseDuration(durSuffix); } catch { durationBeats = 1; }
+      advanceBeats = Math.max(advanceBeats, durationBeats);
 
-    if (midi >= 0) {
-      notes.push({ midi, startBeat: currentBeat, durationBeats, hand, measureIndex });
+      let midi: number;
+      try { midi = parseNoteToMidi(noteStr); } catch { continue; } // skip unparseable tones
+
+      if (midi >= 0) {
+        notes.push({ midi, startBeat: currentBeat, durationBeats, hand, measureIndex });
+      }
     }
-    currentBeat += durationBeats;
+    currentBeat += advanceBeats;
   }
   return notes;
 }

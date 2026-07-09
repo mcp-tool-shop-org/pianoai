@@ -2,3 +2,12 @@ allowBuilds:
   esbuild: true
 onlyBuiltDependencies:
   - esbuild
+
+# Mirrors package.json's "pnpm.overrides" (which pnpm 9, the version CI
+# tests against, reads). pnpm 10/11 read workspace-level overrides from
+# this file instead, so both are kept in sync — see package.json for the
+# CVE rationale (fast-uri: GHSA path-traversal/host-confusion via the ajv
+# chain; ws: GHSA memory-exhaustion DoS via vocal-synth-engine).
+overrides:
+  fast-uri: 3.1.3
+  ws: 8.21.0

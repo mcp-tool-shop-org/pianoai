@@ -1,7 +1,7 @@
 // ─── Song Transposition ─────────────────────────────────────────────────────
 //
 // Transposes all notes in a SongEntry by a given number of semitones.
-// Handles scientific pitch notation: "C4:q", "F#5:h", "C4 E4 G4:q", "R".
+// Handles scientific pitch notation: "C4:q", "F#5:h", "C4+E4+G4:q", "R".
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { SongEntry, Measure } from "./types.js";
@@ -44,11 +44,26 @@ function transposeNoteStr(noteStr: string, semitones: number): string {
 }
 
 /**
- * Transpose a hand string (e.g., "C4:q E4:q G4:h" or "C4 E4 G4:q").
+ * Transpose one "note[:duration]" part (e.g., "C4" or "E4:q"),
+ * preserving any duration suffix.
+ */
+function transposeTokenPart(part: string, semitones: number): string {
+  const colonIdx = part.indexOf(":");
+  if (colonIdx >= 0) {
+    const noteStr = part.substring(0, colonIdx);
+    const duration = part.substring(colonIdx); // includes the ":"
+    return `${transposeNoteStr(noteStr, semitones)}${duration}`;
+  }
+  return transposeNoteStr(part, semitones);
+}
+
+/**
+ * Transpose a hand string (e.g., "C4:q E4:q G4:h" or "C4+E4+G4:q").
  *
  * Handles:
  * - Single notes with duration: "C4:q"
- * - Chords (space-separated notes, last may have duration): "C4 E4 G4:q"
+ * - Chords ("+"-joined simultaneous notes, as emitted by the MIDI ingest
+ *   and consumed by parseChordToken): "C4+E4+G4:q", "C4:q+E4:q"
  * - Rests: "R:q" or "R"
  * - Multiple beats separated by spaces with durations
  */
@@ -62,17 +77,15 @@ function transposeHandString(hand: string, semitones: number): string {
   for (const token of tokens) {
     if (!token) continue;
 
-    // Split note from duration suffix
-    const colonIdx = token.indexOf(":");
-    if (colonIdx >= 0) {
-      const noteStr = token.substring(0, colonIdx);
-      const duration = token.substring(colonIdx); // includes the ":"
-      const transposed = transposeNoteStr(noteStr, semitones);
-      result.push(`${transposed}${duration}`);
-    } else {
-      // No duration — just a note or rest
-      result.push(transposeNoteStr(token, semitones));
-    }
+    // Chord tokens join simultaneous notes with "+" — transpose each
+    // joined note, keeping any per-part duration suffix in place.
+    // Non-chord tokens are a single-element split, handled identically.
+    result.push(
+      token
+        .split("+")
+        .map((part) => transposeTokenPart(part, semitones))
+        .join("+")
+    );
   }
 
   return result.join(" ");
@@ -105,6 +118,13 @@ function transposeKey(key: string, semitones: number): string {
  * @returns A new SongEntry (original is not modified)
  */
 export function transposeSong(song: SongEntry, semitones: number): SongEntry {
+  // JavaScript's NaN comparisons are always false, so the MIDI-range guard
+  // in transposeNoteStr (`transposed < 0 || transposed > 127`) silently
+  // lets a NaN semitones value slip through uncaught — reject it once,
+  // loudly, at the entry point instead (F-1b8c194a).
+  if (!Number.isFinite(semitones) || !Number.isInteger(semitones)) {
+    throw new Error(`semitones must be a finite integer: got ${semitones}`);
+  }
   if (semitones === 0) return { ...song };
 
   const newKey = transposeKey(song.key, semitones);

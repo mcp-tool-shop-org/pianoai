@@ -30,7 +30,10 @@ const __dirname = dirname(__filename);
 
 // ─── Config ─────────────────────────────────────────────────────────────────
 
-const RAW_DIR = "F:/AI/avatar-face-mvp/.tts-output/vocal-carriers";
+// Raw carrier source directory — machine-specific, so it's read from an env
+// var with a documented default rather than hardcoded (F-b7183721). Override
+// with: VOCAL_CARRIERS_RAW_DIR=/path/to/carriers npx tsx scripts/analyze-carriers.ts
+const RAW_DIR = process.env.VOCAL_CARRIERS_RAW_DIR ?? "F:/AI/avatar-face-mvp/.tts-output/vocal-carriers";
 const OUTPUT_DIR = join(__dirname, "..", "samples", "vocal-params");
 const FFT_SIZE = 2048;
 const HOP_SIZE = 512;
@@ -108,6 +111,11 @@ function readWav(filePath: string): { samples: Float32Array; sampleRate: number 
       samples[i] = view.getInt16(byteOff, true) / 32768;
     } else if (bitsPerSample === 32) {
       samples[i] = view.getFloat32(byteOff, true);
+    } else {
+      // Previously silently zero-filled (Float32Array defaults to 0),
+      // producing a silent all-zero carrier instead of an error for any
+      // unsupported bit depth (F-372d7e84).
+      throw new Error(`Unsupported bit depth ${bitsPerSample} in ${filePath} (only 16-bit PCM and 32-bit float are handled)`);
     }
   }
 

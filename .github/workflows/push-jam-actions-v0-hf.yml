@@ -39,10 +39,29 @@ jobs:
     timeout-minutes: 15
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: ${{ github.event.inputs.ref }}
           fetch-depth: 0
+
+      - name: Validate hf_repo_id input
+        # The dispatch input is passed via env, never interpolated into the
+        # shell body — a raw ${{ ... }} expansion here would let a crafted
+        # input inject shell before the allowlist check runs.
+        env:
+          REPO_ID: ${{ github.event.inputs.hf_repo_id }}
+        run: |
+          set -euo pipefail
+          case "$REPO_ID" in
+            mcp-tool-shop-org/*)
+              echo "hf_repo_id OK: $REPO_ID"
+              ;;
+            *)
+              echo "ERROR: hf_repo_id must start with 'mcp-tool-shop-org/' (got: $REPO_ID)"
+              echo "This workflow is a narrowly-scoped recovery tool for this org's datasets only."
+              exit 1
+              ;;
+          esac
 
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:

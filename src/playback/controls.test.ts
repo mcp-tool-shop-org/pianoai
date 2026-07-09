@@ -361,7 +361,7 @@ describe("PlaybackController", () => {
   describe("reset", () => {
     it("reset returns to idle state", async () => {
       const { controller } = createTestController();
-      await controller.play({ speed: 100 });
+      await controller.play({ speed: 4 });
       expect(controller.state).toBe("finished");
 
       controller.reset();

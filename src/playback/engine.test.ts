@@ -84,7 +84,7 @@ describe("MidiPlaybackEngine", () => {
     const connector = createMockConnector();
     const engine = new MidiPlaybackEngine(connector, parsed);
 
-    await engine.play({ speed: 100 }); // very fast
+    await engine.play({ speed: 4 }); // max allowed speed — fast
 
     // Should have called noteOn for all 3 notes
     const noteOns = connector.calls.filter((c) => c.method === "noteOn");
@@ -106,11 +106,11 @@ describe("MidiPlaybackEngine", () => {
     const engine = new MidiPlaybackEngine(connector, parsed);
 
     const start = Date.now();
-    await engine.play({ speed: 100 }); // 100x speed — nearly instant
+    await engine.play({ speed: 4 }); // max allowed speed (0.1-4, MidiPlaybackEngine.setSpeed's bound)
     const elapsed = Date.now() - start;
 
-    // At 100x speed, a 0.5s note should take ~5ms
-    expect(elapsed).toBeLessThan(200);
+    // At 4x speed, a 0.5s note should take ~125ms — well under a 1x bound.
+    expect(elapsed).toBeLessThan(300);
     expect(engine.state).toBe("finished");
   });
 
@@ -147,7 +147,7 @@ describe("MidiPlaybackEngine", () => {
     const connector = createMockConnector();
     const engine = new MidiPlaybackEngine(connector, parsed);
 
-    await engine.play({ speed: 100 });
+    await engine.play({ speed: 4 });
 
     const noteOns = connector.calls.filter((c) => c.method === "noteOn");
     expect(noteOns[0].args).toEqual([60, 42, 0]); // note, velocity, channel
@@ -159,7 +159,7 @@ describe("MidiPlaybackEngine", () => {
     const connector = createMockConnector();
     const engine = new MidiPlaybackEngine(connector, parsed);
 
-    await engine.play({ speed: 100 });
+    await engine.play({ speed: 4 });
 
     expect(engine.state).toBe("finished");
     expect(engine.eventsPlayed).toBe(0);
@@ -177,9 +177,126 @@ describe("MidiPlaybackEngine", () => {
     expect(engine.totalEvents).toBe(2);
     expect(engine.eventsPlayed).toBe(0);
 
-    await engine.play({ speed: 100 });
+    await engine.play({ speed: 4 });
 
     expect(engine.eventsPlayed).toBe(2);
+  });
+
+  // ── pause/resume/stop state machine (pins F-ca978f89) ──────────────────
+  //
+  // pause() and stop() both interrupt playback via the same
+  // _abortController. Before the fix, BOTH of play()'s abort-check branches
+  // unconditionally set `this._state = "stopped"` — so pause() would set
+  // 'paused' synchronously, then the suspended play() loop would wake up on
+  // the next microtask tick and immediately clobber it back to 'stopped'.
+  // resume() (and MidiPlaybackEngine.resume()) both guard on
+  // state === 'paused', so after any pause() the pause/resume feature was a
+  // silent no-op. The fix tracks pause-vs-stop intent via a private
+  // `_pauseRequested` flag, set by pause() and cleared by stop().
+
+  it("pause() sets state to 'paused' (not 'stopped') and resume() continues without replaying finished notes", async () => {
+    // Kept small (5 notes, not 20): resume() below must run at a real,
+    // capped speed (MidiPlaybackEngine.setSpeed's post-F-d50cccd7 bound of
+    // 0.1-4, so it can no longer "speed: 100" fast-forward through many
+    // notes instantly) — a small note count keeps this test's wall-clock
+    // cost reasonable while still proving the invariant: >=1 note before
+    // pause, >=1 remaining note after resume, none replayed, none dropped.
+    const NOTE_COUNT = 5;
+    const notes = [];
+    for (let i = 0; i < NOTE_COUNT; i++) {
+      notes.push({ note: 60 + (i % 12), velocity: 100, startTick: i * 480, endTick: (i + 1) * 480 });
+    }
+    const buf = buildMidi(notes);
+    const parsed = parseMidiBuffer(buf);
+    const connector = createMockConnector();
+    const engine = new MidiPlaybackEngine(connector, parsed);
+
+    const playPromise = engine.play({ speed: 2.0 });
+    // Let a handful of notes fire, then pause mid-flight (well inside the
+    // inter-note sleep window at this speed).
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    engine.pause();
+    await playPromise;
+
+    // The load-bearing assertion: pause() must land on 'paused', not
+    // 'stopped'.
+    expect(engine.state).toBe("paused");
+    const playedBeforeResume = engine.eventsPlayed;
+    expect(playedBeforeResume).toBeGreaterThan(0);
+    expect(playedBeforeResume).toBeLessThan(NOTE_COUNT);
+
+    const noteOnsBeforeResume = connector.calls.filter((c) => c.method === "noteOn").length;
+    expect(noteOnsBeforeResume).toBe(playedBeforeResume);
+
+    // Before the fix, state was already clobbered to 'stopped' by this point,
+    // so resume() (guarded on state === 'paused') would have silently no-op'd
+    // and playback would never continue.
+    await engine.resume({ speed: 4 });
+
+    expect(engine.state).toBe("finished");
+    expect(engine.eventsPlayed).toBe(NOTE_COUNT);
+
+    // Full invariant: every note fired exactly once, in order — none
+    // replayed from the top, none dropped.
+    const noteOnsAfterResume = connector.calls.filter((c) => c.method === "noteOn");
+    expect(noteOnsAfterResume.length).toBe(NOTE_COUNT);
+    expect(noteOnsAfterResume.map((c) => c.args[0])).toEqual(notes.map((n) => n.note));
+  });
+
+  it("stop() still transitions to 'stopped' (not 'paused'), and resume() no-ops afterward", async () => {
+    const notes = [];
+    for (let i = 0; i < 20; i++) {
+      notes.push({ note: 60 + (i % 12), velocity: 100, startTick: i * 480, endTick: (i + 1) * 480 });
+    }
+    const buf = buildMidi(notes);
+    const parsed = parseMidiBuffer(buf);
+    const connector = createMockConnector();
+    const engine = new MidiPlaybackEngine(connector, parsed);
+
+    const playPromise = engine.play({ speed: 2.0 });
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    engine.stop();
+    await playPromise;
+
+    expect(engine.state).toBe("stopped");
+    const noteOnsAtStop = connector.calls.filter((c) => c.method === "noteOn").length;
+    expect(noteOnsAtStop).toBeGreaterThan(0);
+    expect(noteOnsAtStop).toBeLessThan(20);
+
+    // resume() is guarded on state === 'paused'; after a real stop() it must
+    // remain a no-op — no additional notes fire, state stays 'stopped'.
+    await engine.resume({ speed: 4 });
+    expect(engine.state).toBe("stopped");
+    expect(connector.calls.filter((c) => c.method === "noteOn").length).toBe(noteOnsAtStop);
+  });
+
+  it("a stop() issued after a prior pause()+resume() cycle still ends in 'stopped' (pause intent from the earlier cycle does not leak in)", async () => {
+    const notes = [];
+    for (let i = 0; i < 20; i++) {
+      notes.push({ note: 60 + (i % 12), velocity: 100, startTick: i * 480, endTick: (i + 1) * 480 });
+    }
+    const buf = buildMidi(notes);
+    const parsed = parseMidiBuffer(buf);
+    const connector = createMockConnector();
+    const engine = new MidiPlaybackEngine(connector, parsed);
+
+    // First pause/resume cycle.
+    const firstPlay = engine.play({ speed: 2.0 });
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    engine.pause();
+    await firstPlay;
+    expect(engine.state).toBe("paused");
+
+    // Resume, then stop while genuinely playing (not paused) this time —
+    // this is the scenario a naive "set once, never clear" flag would get
+    // wrong: a stale _pauseRequested=true left over from the earlier pause()
+    // could make this stop() incorrectly resolve to 'paused'.
+    const resumePromise = engine.resume({ speed: 2.0 });
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    engine.stop();
+    await resumePromise;
+
+    expect(engine.state).toBe("stopped");
   });
 });
 

@@ -6,17 +6,23 @@
 // Undeclared files are warned (not fatal) so the verifier matches the
 // regenerator's behavior.
 
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
+  checkManifestCompleteness,
   parseChecksumsManifest,
   readPackageInputs,
   sha256Hex,
   walkChecksumFiles,
+  type GeneratedDirCompletenessInput,
+  type PackageManifestSummary,
 } from "../src/dataset/package-public.js";
 
 const PACKAGE_DIR = "datasets/jam-actions-v0-public";
 const CHECKSUMS_FILE = "checksums.sha256";
+const MANIFEST_FILE = "manifest.json";
+const RECORDS_JSONL_FILE = "records.jsonl";
+const SPLITS_FILE = "splits.json";
 
 function main(): void {
   const inputs = readPackageInputs(PACKAGE_DIR);
@@ -78,12 +84,107 @@ function main(): void {
   console.log(`Hash mismatches: ${mismatches}`);
   console.log(`Files missing in manifest: ${missingInManifest}`);
   console.log(`Files missing on disk: ${missingOnDisk}`);
+
+  // D-A1-002: an internally self-consistent checksums.sha256 (every claimed
+  // hash matches a file on disk, one-to-one) can still be systematically
+  // WRONG if the on-disk state itself is a corrupted/partial checkout — the
+  // checks above have no way to notice that, say, 10 record files silently
+  // went missing before the walk ran. Cross-check manifest.json's declared
+  // record_count (and split sizes) against independent signals that all move
+  // together when the package is intact.
+  const manifestPath = join(PACKAGE_DIR, MANIFEST_FILE);
+  const manifestParsed = JSON.parse(readFileSync(manifestPath, "utf8")) as {
+    record_count?: unknown;
+    splits?: { train?: unknown; test?: unknown };
+    pair_count?: unknown;
+    standalone_count?: unknown;
+    songs_count?: unknown;
+    songs_included?: unknown;
+  };
+  if (typeof manifestParsed.record_count !== "number") {
+    throw new Error(`${manifestPath} has no numeric 'record_count' field`);
+  }
+  const manifestSummary: PackageManifestSummary = {
+    record_count: manifestParsed.record_count,
+  };
+  if (typeof manifestParsed.pair_count === "number") {
+    manifestSummary.pair_count = manifestParsed.pair_count;
+  }
+  if (typeof manifestParsed.standalone_count === "number") {
+    manifestSummary.standalone_count = manifestParsed.standalone_count;
+  }
+  if (typeof manifestParsed.songs_count === "number") {
+    manifestSummary.songs_count = manifestParsed.songs_count;
+  }
+  if (
+    Array.isArray(manifestParsed.songs_included) &&
+    manifestParsed.songs_included.every((s) => typeof s === "string")
+  ) {
+    manifestSummary.songs_included = manifestParsed.songs_included as string[];
+  }
+  if (
+    manifestParsed.splits &&
+    typeof manifestParsed.splits.train === "number" &&
+    typeof manifestParsed.splits.test === "number"
+  ) {
+    manifestSummary.splits = {
+      train: manifestParsed.splits.train,
+      test: manifestParsed.splits.test,
+    };
+  }
+
+  const generatedDirs: GeneratedDirCompletenessInput[] = inputs.generated_dirs.map(
+    (dir) => {
+      const prefix = `${dir}/`;
+      let onDiskCount = 0;
+      for (const rel of onDisk.keys()) if (rel.startsWith(prefix)) onDiskCount++;
+      let checksumsCount = 0;
+      for (const rel of claimed.keys()) if (rel.startsWith(prefix)) checksumsCount++;
+      return { dir, onDiskCount, checksumsCount };
+    },
+  );
+
+  let recordsJsonlLineCount: number | undefined;
+  const recordsJsonlPath = join(PACKAGE_DIR, RECORDS_JSONL_FILE);
+  if (existsSync(recordsJsonlPath)) {
+    recordsJsonlLineCount = readFileSync(recordsJsonlPath, "utf8")
+      .split(/\r?\n/)
+      .filter((l) => l.length > 0).length;
+  }
+
+  let splitsJson: { train: number; test: number } | undefined;
+  const splitsPath = join(PACKAGE_DIR, SPLITS_FILE);
+  if (existsSync(splitsPath)) {
+    const splitsParsed = JSON.parse(readFileSync(splitsPath, "utf8")) as {
+      train?: unknown;
+      test?: unknown;
+    };
+    if (Array.isArray(splitsParsed.train) && Array.isArray(splitsParsed.test)) {
+      splitsJson = {
+        train: splitsParsed.train.length,
+        test: splitsParsed.test.length,
+      };
+    }
+  }
+
+  const completenessProblems = checkManifestCompleteness({
+    manifest: manifestSummary,
+    generatedDirs,
+    recordsJsonlLineCount,
+    splitsJson,
+  });
+  for (const p of completenessProblems) {
+    console.error(`[completeness] ${p}`);
+  }
+  console.log(`Manifest completeness problems: ${completenessProblems.length}`);
+
   if (
     badLineCount === 0 &&
     mismatches === 0 &&
     missingInManifest === 0 &&
     missingOnDisk === 0 &&
-    totalLines === onDisk.size
+    totalLines === onDisk.size &&
+    completenessProblems.length === 0
   ) {
     console.log("[ok] All checksums verify, every file accounted for.");
   } else {

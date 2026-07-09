@@ -84,6 +84,73 @@ describe("transposeSong", () => {
     expect(result.measures[0].rightHand).toBe("E4 G#4 B4:q");
   });
 
+  it("handles '+'-joined chord tokens with shared duration (MIDI ingest format)", () => {
+    const song = makeSong({
+      measures: [{ number: 1, rightHand: "C4+E4+G4:q", leftHand: "C3+G3:h" }],
+    });
+    const result = transposeSong(song, 2);
+    expect(result.measures[0].rightHand).toBe("D4+F#4+A4:q");
+    expect(result.measures[0].leftHand).toBe("D3+A3:h");
+  });
+
+  it("handles chord tokens without a duration suffix", () => {
+    const song = makeSong({
+      measures: [{ number: 1, rightHand: "E4+G4", leftHand: "C3:q" }],
+    });
+    const result = transposeSong(song, 2);
+    expect(result.measures[0].rightHand).toBe("F#4+A4");
+  });
+
+  it("handles chord tokens with accidentals", () => {
+    const song = makeSong({
+      measures: [{ number: 1, rightHand: "C#4+F4:h", leftHand: "D4+F#4:w" }],
+    });
+    const result = transposeSong(song, 2);
+    expect(result.measures[0].rightHand).toBe("D#4+G4:h");
+    expect(result.measures[0].leftHand).toBe("E4+G#4:w");
+  });
+
+  it("handles chord tokens with duplicate notes", () => {
+    const song = makeSong({
+      measures: [{ number: 1, rightHand: "C4:q", leftHand: "C2+C2+E3+E3+G3+G3:w" }],
+    });
+    const result = transposeSong(song, 2);
+    expect(result.measures[0].leftHand).toBe("D2+D2+F#3+F#3+A3+A3:w");
+  });
+
+  it("preserves per-part durations inside chord tokens", () => {
+    const song = makeSong({
+      measures: [{ number: 1, rightHand: "C4:q+E4:q", leftHand: "C3:q" }],
+    });
+    const result = transposeSong(song, 2);
+    expect(result.measures[0].rightHand).toBe("D4:q+F#4:q");
+  });
+
+  it("handles hand strings mixing melody, chords, and rests", () => {
+    const song = makeSong({
+      measures: [{ number: 1, rightHand: "C4:q E4+G4:h R:q", leftHand: "R:w" }],
+    });
+    const result = transposeSong(song, 2);
+    expect(result.measures[0].rightHand).toBe("D4:q F#4+A4:h R:q");
+    expect(result.measures[0].leftHand).toBe("R:w");
+  });
+
+  it("transposes chord tokens down", () => {
+    const song = makeSong({
+      measures: [{ number: 1, rightHand: "D4+F#4:h", leftHand: "D3:q" }],
+    });
+    const result = transposeSong(song, -2);
+    expect(result.measures[0].rightHand).toBe("C4+E4:h");
+  });
+
+  it("throws when a note inside a chord goes out of MIDI range", () => {
+    const song = makeSong({
+      measures: [{ number: 1, rightHand: "C4+C8:q", leftHand: "C3:q" }],
+    });
+    // C8 = MIDI 108, +20 = 128 which is out of range
+    expect(() => transposeSong(song, 20)).toThrow("out of MIDI range");
+  });
+
   it("transposes minor keys correctly", () => {
     const song = makeSong({ key: "A minor" });
     const result = transposeSong(song, 3);

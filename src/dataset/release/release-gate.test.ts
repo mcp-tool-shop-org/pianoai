@@ -459,6 +459,41 @@ describe("evaluateReleaseGate — per-axis fail boundaries", () => {
     expect(result.blocking_failures).toContain(6);
   });
 
+  it("axis 6 FAILS (does not vacuously pass) when per_stratum is empty — pins F-6ee6847f", () => {
+    // Before the fix: filtering an empty per_stratum array trivially
+    // produces zero failing strata, so `passed = failingStrata.length === 0`
+    // was vacuously true — reporting "All 0 strata clear stratum floor" while
+    // checking nothing. A malformed/truncated baseline artifact whose
+    // aggregate.per_stratum is empty (a real upstream failure mode, not just
+    // adversarial input — see check-release-gate.ts's buildGateInput())
+    // would silently pass this gate instead of failing it.
+    const input = passingFixture();
+    input.per_stratum = [];
+    const result = evaluateReleaseGate(input);
+    const axis6 = result.axes[5];
+    expect(axis6.axis).toBe(6);
+    expect(axis6.passed).toBe(false);
+    expect(axis6.note.toLowerCase()).toContain("strata expected");
+    // The aggregate verdict must also flip, since axis 6 is blocking.
+    expect(result.blocking_failures).toContain(6);
+    expect(result.failing_axes).toContain(6);
+    expect(result.passed).toBe(false);
+  });
+
+  it("axis 6 with empty per_stratum fails identically under the Slice-22 revised (per_record-supplied) path", () => {
+    // Same empty-input probe as above, but with per_record supplied so the
+    // revised axis-6 branch (bucket A / bucket B qualification) runs instead
+    // of the pre-revision fallback — the noStrataProvided guard sits above
+    // both branches and must catch this regardless of which logic path ran.
+    const input = slice19FixtureRevised();
+    input.per_stratum = [];
+    const result = evaluateReleaseGate(input);
+    const axis6 = result.axes[5];
+    expect(axis6.passed).toBe(false);
+    expect(axis6.note.toLowerCase()).toContain("strata expected");
+    expect(result.blocking_failures).toContain(6);
+  });
+
   it("axis 7 fails when the enriched-vs-non split is not declared", () => {
     const input = passingFixture();
     input.reports_enriched_vs_non_enriched = false;

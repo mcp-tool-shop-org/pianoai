@@ -721,7 +721,18 @@ export function evaluateReleaseGate(
           records_clearing: s.records_clearing_margin,
         }));
     }
-    const passed = failingStrata.length === 0;
+    // D-A1-003: an empty `per_stratum` array makes `failingStrata` trivially
+    // empty too (there is nothing to filter), which would otherwise report a
+    // vacuous PASS — "0 strata clear stratum floor" — even though zero
+    // strata were actually checked. This is a real failure mode, not just an
+    // adversarial input: `scripts/check-release-gate.ts`'s buildGateInput()
+    // derives per_stratum via `Object.entries(baseline.aggregate.per_stratum)
+    // .map(...)`, so an upstream artifact whose `aggregate.per_stratum` object
+    // is empty (a failed aggregation step, a malformed/truncated baseline
+    // JSON) silently produces `per_stratum: []` here. Axis 6 always expects
+    // strata when it runs; an empty array is a hard FAIL, never a pass.
+    const noStrataProvided = input.per_stratum.length === 0;
+    const passed = !noStrataProvided && failingStrata.length === 0;
     const measured: Record<string, unknown> = {
       n_strata: input.per_stratum.length,
       failing_strata: failingStrata,
@@ -740,11 +751,13 @@ export function evaluateReleaseGate(
         revised: input.per_record !== undefined,
       },
       measured,
-      note: passed
-        ? input.per_record !== undefined
-          ? `All ${input.per_stratum.length} strata qualify via bucket A (≥1 margin_pass) or bucket B (≥1 ceiling_saturated_pass AND mean margin ≥ ${thresholds.axis6_stratum_min_mean_margin_when_ceiling.toFixed(2)})`
-          : `All ${input.per_stratum.length} strata clear stratum floor (mean margin ≥ ${thresholds.axis6_stratum_mean_margin_floor.toFixed(2)} AND ≥${thresholds.axis6_stratum_min_records_clearing} record clearing)`
-        : `${failingStrata.length} stratum/strata fail: ${failingStrata.map(s => `${s.stratum}(mean ${s.margin_mean.toFixed(3)}, ${s.records_clearing}/${s.n_records} clearing${"reason" in s && s.reason ? `; ${s.reason}` : ""})`).join("; ")} — catastrophic subgroup present`,
+      note: noStrataProvided
+        ? "strata expected but none present"
+        : passed
+          ? input.per_record !== undefined
+            ? `All ${input.per_stratum.length} strata qualify via bucket A (≥1 margin_pass) or bucket B (≥1 ceiling_saturated_pass AND mean margin ≥ ${thresholds.axis6_stratum_min_mean_margin_when_ceiling.toFixed(2)})`
+            : `All ${input.per_stratum.length} strata clear stratum floor (mean margin ≥ ${thresholds.axis6_stratum_mean_margin_floor.toFixed(2)} AND ≥${thresholds.axis6_stratum_min_records_clearing} record clearing)`
+          : `${failingStrata.length} stratum/strata fail: ${failingStrata.map(s => `${s.stratum}(mean ${s.margin_mean.toFixed(3)}, ${s.records_clearing}/${s.n_records} clearing${"reason" in s && s.reason ? `; ${s.reason}` : ""})`).join("; ")} — catastrophic subgroup present`,
     });
   }
 

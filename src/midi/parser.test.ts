@@ -522,4 +522,54 @@ describe("parseMidiBuffer edge cases", () => {
       expect(parsed.events[0].duration).toBeCloseTo(0.001);
     });
   });
+
+  // ── Dense MIDI files (pins the Math.max-spread fix, F-c2e585a7) ─────────
+  //
+  // `Math.max(...events.map(...))` spreads the full note-events array as
+  // call arguments; V8 throws RangeError: Maximum call stack size exceeded
+  // once the spread argument list exceeds roughly 65,000-125,000 elements. A
+  // dense, entirely legitimate MIDI import (orchestral/game-soundtrack style)
+  // can trivially exceed that while staying well under the 10MB file-size
+  // guard, especially with MIDI running-status compression. This is reached
+  // directly by play_song, import_midi, score_performance, and cli.ts's play
+  // command — all on ordinary non-malicious input, not just adversarial
+  // fuzzing.
+  describe("dense MIDI files", () => {
+    it("parses a MIDI file with more than 70,000 note events without a RangeError", () => {
+      const NOTE_COUNT = 71_000;
+      const notes: Array<{ note: number; velocity: number; startTick: number; endTick: number }> = [];
+      for (let i = 0; i < NOTE_COUNT; i++) {
+        const startTick = i * 10;
+        notes.push({
+          note: 60 + (i % 12),
+          velocity: 100,
+          startTick,
+          endTick: startTick + 5,
+        });
+      }
+      const buf = buildMidiBuffer({ notes });
+
+      let parsed: ReturnType<typeof parseMidiBuffer> | undefined;
+      expect(() => {
+        parsed = parseMidiBuffer(buf);
+      }).not.toThrow();
+
+      expect(parsed).toBeDefined();
+      expect(parsed!.events).toHaveLength(NOTE_COUNT);
+      expect(parsed!.noteCount).toBe(NOTE_COUNT);
+
+      // Full invariant, not just "didn't crash": durationSeconds must be the
+      // real finite max(time + duration) across all events — proving the
+      // manual-loop replacement computes the same result the spread version
+      // was supposed to, not merely that it avoids throwing.
+      expect(Number.isFinite(parsed!.durationSeconds)).toBe(true);
+      expect(Number.isNaN(parsed!.durationSeconds)).toBe(false);
+      const expectedDuration = parsed!.events.reduce(
+        (m, e) => Math.max(m, e.time + e.duration),
+        0,
+      );
+      expect(parsed!.durationSeconds).toBeCloseTo(expectedDuration, 6);
+      expect(parsed!.durationSeconds).toBeGreaterThan(0);
+    }, 20000);
+  });
 });

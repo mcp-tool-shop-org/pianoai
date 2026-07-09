@@ -52,6 +52,19 @@ async function loadAudioContext(): Promise<any> {
 /** Maximum simultaneous voices before stealing. */
 const MAX_POLYPHONY = 48;
 
+/**
+ * Maximum simultaneous voices for a single pitch. A queue (not a single
+ * slot) so a same-pitch noteOn/noteOff pair can overlap another same-pitch
+ * pair — realistic for two-hand unison notes or a fast retrigger/trill
+ * where the next attack starts before the previous release timer fires
+ * (F-c1eab2d2). Bounded at 2 (not unbounded) so live key-mashing on one
+ * note still feels like a retrigger rather than an unbounded pileup — a
+ * full per-instance-token model (threading an id through the VmpkConnector
+ * interface) would remove this cap entirely but was judged too invasive
+ * for this fix; see noteOn/noteOff below for the documented tradeoff.
+ */
+const MAX_VOICES_PER_NOTE = 2;
+
 /** MIDI note → frequency (A4 = 440 Hz). */
 function midiToFreq(note: number): number {
   return 440 * Math.pow(2, (note - 69) / 12);
@@ -162,8 +175,9 @@ export function createAudioEngine(voiceId?: PianoVoiceId): VmpkConnector {
   let currentStatus: MidiStatus = "disconnected";
   let compressor: any = null;
   let master: any = null;
-  const activeVoices = new Map<number, Voice>();
-  const voiceOrder: number[] = []; // LRU tracking for voice stealing
+  // FIFO queue per note (not a single Voice) — see MAX_VOICES_PER_NOTE.
+  const activeVoices = new Map<number, Voice[]>();
+  const voiceOrder: Voice[] = []; // Global LRU across all voice instances, oldest first
 
   // ── Noise buffer (shared across all voices) ──
   let hammerNoiseBuffer: any = null;
@@ -298,6 +312,32 @@ export function createAudioEngine(voiceId?: PianoVoiceId): VmpkConnector {
     v.cleanupTimer = setTimeout(() => killVoice(v), (releaseTime + 0.05) * 1000);
   }
 
+  /**
+   * Stop a voice for an involuntary reason (voice stealing at max
+   * polyphony, or per-note overlap eviction) with a very short gain ramp
+   * instead of killVoice's instant full-amplitude stop — avoids an
+   * audible click/pop (F-637edb02).
+   */
+  function fadeAndKillVoice(v: Voice, fadeSeconds = 0.008): void {
+    if (v.cleanupTimer) {
+      clearTimeout(v.cleanupTimer);
+      v.cleanupTimer = null;
+    }
+    try {
+      const now = ctx.currentTime;
+      for (const g of v.partialGains) {
+        g.gain.cancelScheduledValues(now);
+        g.gain.setValueAtTime(g.gain.value, now);
+        g.gain.linearRampToValueAtTime(0, now + fadeSeconds);
+      }
+      v.cleanupTimer = setTimeout(() => killVoice(v), (fadeSeconds + 0.02) * 1000);
+    } catch {
+      // ctx unavailable or node already stopped — fall back to an
+      // immediate stop rather than leaking the voice.
+      killVoice(v);
+    }
+  }
+
   /** Immediately destroy a voice and free resources. */
   function killVoice(v: Voice): void {
     if (v.cleanupTimer) {
@@ -339,21 +379,28 @@ export function createAudioEngine(voiceId?: PianoVoiceId): VmpkConnector {
     }
   }
 
-  /** Steal the oldest voice when at max polyphony. */
-  function stealOldest(): void {
-    if (voiceOrder.length === 0) return;
-    const oldestNote = voiceOrder.shift()!;
-    const oldest = activeVoices.get(oldestNote);
-    if (oldest) {
-      killVoice(oldest);
-      activeVoices.delete(oldestNote);
-    }
+  /** Remove a specific voice instance from its note's queue. */
+  function removeFromNoteQueue(v: Voice): void {
+    const queue = activeVoices.get(v.note);
+    if (!queue) return;
+    const idx = queue.indexOf(v);
+    if (idx >= 0) queue.splice(idx, 1);
+    if (queue.length === 0) activeVoices.delete(v.note);
   }
 
-  /** Remove a note from the LRU order. */
-  function removeFromOrder(note: number): void {
-    const idx = voiceOrder.indexOf(note);
+  /** Remove a specific voice instance from the global LRU order. */
+  function removeFromOrder(v: Voice): void {
+    const idx = voiceOrder.indexOf(v);
     if (idx >= 0) voiceOrder.splice(idx, 1);
+  }
+
+  /** Steal the oldest voice (across all notes) when at max polyphony. */
+  function stealOldest(): void {
+    const oldest = voiceOrder.shift();
+    if (oldest) {
+      fadeAndKillVoice(oldest);
+      removeFromNoteQueue(oldest);
+    }
   }
 
   // ── VmpkConnector Implementation ──
@@ -404,7 +451,7 @@ export function createAudioEngine(voiceId?: PianoVoiceId): VmpkConnector {
 
     async disconnect(): Promise<void> {
       // Kill all active voices
-      for (const [, v] of activeVoices) {
+      for (const v of voiceOrder) {
         try {
           killVoice(v);
         } catch {
@@ -439,38 +486,74 @@ export function createAudioEngine(voiceId?: PianoVoiceId): VmpkConnector {
     noteOn(note: number, velocity: number, channel?: number): void {
       ensureConnected();
 
-      // Kill existing voice on same note (retrigger)
-      const existing = activeVoices.get(note);
-      if (existing) {
-        killVoice(existing);
-        activeVoices.delete(note);
-        removeFromOrder(note);
+      // Reject non-finite input before anything else — unlike
+      // guitar/sample/vocal engines, this engine previously had no range
+      // check at all, so an out-of-range or non-finite note/velocity fed
+      // straight into midiToFreq/partialFreq/noteToPan, setting native
+      // AudioNode params to NaN/Infinity (F-e1e48adf). Math.max/min alone
+      // would not have been sufficient — NaN in produces NaN out — hence
+      // the explicit Number.isFinite guard before clamping (F-af5c8733).
+      if (!Number.isFinite(note) || !Number.isFinite(velocity)) return;
+      note = Math.max(0, Math.min(127, Math.round(note)));
+      velocity = Math.max(1, Math.min(127, Math.round(velocity)));
+
+      // Bounded overlap instead of an unconditional kill: a same-pitch
+      // noteOn/noteOff pair can legitimately overlap another same-pitch
+      // pair (unison / fast retrigger / trill), and hard-killing on every
+      // retrigger broke that pairing (F-c1eab2d2 — see noteOff below).
+      // Only once a pitch already has MAX_VOICES_PER_NOTE voices ringing
+      // do we hard-kill the oldest, so rapid live key-mashing still feels
+      // bounded rather than piling up indefinitely.
+      let queue = activeVoices.get(note);
+      if (queue && queue.length >= MAX_VOICES_PER_NOTE) {
+        const oldest = queue.shift()!;
+        fadeAndKillVoice(oldest);
+        removeFromOrder(oldest);
+        if (queue.length === 0) activeVoices.delete(note);
       }
 
-      // Voice stealing if at capacity
-      while (activeVoices.size >= MAX_POLYPHONY) {
+      // Voice stealing if at global polyphony capacity
+      while (voiceOrder.length >= MAX_POLYPHONY) {
         stealOldest();
       }
 
       const v = createVoice(note, velocity);
-      activeVoices.set(note, v);
-      voiceOrder.push(note);
+      queue = activeVoices.get(note);
+      if (!queue) {
+        queue = [];
+        activeVoices.set(note, queue);
+      }
+      queue.push(v);
+      voiceOrder.push(v);
     },
 
     noteOff(note: number, channel?: number): void {
       if (!ctx || currentStatus !== "connected") return;
+      if (!Number.isFinite(note)) return;
+      // Match noteOn's clamp/round exactly — activeVoices is keyed by the
+      // clamped value noteOn actually stored, so an out-of-range or
+      // fractional note here must resolve to the same key or the voice
+      // would never receive its noteOff (a stuck note).
+      note = Math.max(0, Math.min(127, Math.round(note)));
 
-      const v = activeVoices.get(note);
-      if (v) {
+      // FIFO pairing: release the OLDEST still-active voice for this
+      // pitch, not "whatever's in a single slot." Matches the
+      // noteOn/noteOff stack pairing already used in
+      // songs/midi/ingest.ts and midi/parser.ts for the same reason — a
+      // single-slot map let a noteOff meant for an already-superseded
+      // voice wrongly cut off a newer, unrelated voice at the same pitch.
+      const queue = activeVoices.get(note);
+      if (queue && queue.length > 0) {
+        const v = queue.shift()!;
+        if (queue.length === 0) activeVoices.delete(note);
         releaseVoice(v);
-        activeVoices.delete(note);
-        removeFromOrder(note);
+        removeFromOrder(v);
       }
     },
 
     allNotesOff(channel?: number): void {
       if (!ctx) return;
-      for (const [, v] of activeVoices) {
+      for (const v of voiceOrder) {
         killVoice(v);
       }
       activeVoices.clear();

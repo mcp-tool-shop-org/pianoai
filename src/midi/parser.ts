@@ -173,11 +173,17 @@ export function parseMidiBuffer(buffer: Buffer | Uint8Array): ParsedMidi {
   // Sort by time, then by note (for stable ordering)
   events.sort((a, b) => a.time - b.time || a.note - b.note);
 
-  // Calculate total duration
-  const durationSeconds =
-    events.length > 0
-      ? Math.max(...events.map((e) => e.time + e.duration))
-      : 0;
+  // Calculate total duration.
+  // A plain loop, not Math.max(...spread) — V8 throws RangeError: Maximum
+  // call stack size exceeded once a spread argument list crosses roughly
+  // 65,000-125,000 elements, which a dense but entirely legitimate
+  // orchestral/game-soundtrack MIDI import can exceed while staying under
+  // this file's own 10MB/100-track guards (B-A1-001).
+  let durationSeconds = 0;
+  for (const e of events) {
+    const end = e.time + e.duration;
+    if (end > durationSeconds) durationSeconds = end;
+  }
 
   // Build tempo events list
   const tempoChanges: TempoEvent[] = rawTempos.map((rt) => ({

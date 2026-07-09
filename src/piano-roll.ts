@@ -12,7 +12,7 @@
 //   Pitch labels on left axis, measure numbers below
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { parseNoteToMidi, parseDuration, midiToNoteName } from "./note-parser.js";
+import { parseNoteToMidi, parseDuration, midiToNoteName, splitChordToken } from "./note-parser.js";
 import type { SongEntry, Measure } from "./songs/types.js";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -123,42 +123,43 @@ function parseHand(
   let currentBeat = 0;
 
   for (const token of tokens) {
-    const parts = token.split(":");
-    const noteStr = parts[0];
-    const durSuffix = parts[1] ?? "q";
+    // Chord tokens join simultaneous tones with "+" (e.g. "C4+E4+G4:q",
+    // the MIDI-ingest format); a single note is a one-part chord. Every
+    // tone plots at the same startBeat; the beat cursor advances by the
+    // chord's longest tone (the ingest stamps the shared duration from
+    // its longest note).
+    let advanceBeats = 0;
 
-    let midi: number;
-    try {
-      midi = parseNoteToMidi(noteStr);
-    } catch {
-      // Skip unparseable notes
+    for (const { noteStr, durSuffix } of splitChordToken(token)) {
+      let durationBeats: number;
       try {
-        currentBeat += parseDuration(durSuffix);
+        durationBeats = parseDuration(durSuffix);
       } catch {
-        currentBeat += 1;
+        durationBeats = 1;
       }
-      continue;
+      advanceBeats = Math.max(advanceBeats, durationBeats);
+
+      let midi: number;
+      try {
+        midi = parseNoteToMidi(noteStr);
+      } catch {
+        // Skip unparseable tones, keep the rest of the chord
+        continue;
+      }
+
+      if (midi >= 0) {
+        // Not a rest
+        notes.push({
+          midi,
+          startBeat: currentBeat,
+          durationBeats,
+          measureIndex,
+          hand,
+        });
+      }
     }
 
-    let durationBeats: number;
-    try {
-      durationBeats = parseDuration(durSuffix);
-    } catch {
-      durationBeats = 1;
-    }
-
-    if (midi >= 0) {
-      // Not a rest
-      notes.push({
-        midi,
-        startBeat: currentBeat,
-        durationBeats,
-        measureIndex,
-        hand,
-      });
-    }
-
-    currentBeat += durationBeats;
+    currentBeat += advanceBeats;
   }
 
   return notes;

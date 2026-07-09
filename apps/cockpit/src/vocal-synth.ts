@@ -194,6 +194,9 @@ interface ActiveVocalVoice {
   vibratoLfo: OscillatorNode;
   vibratoGain: GainNode;
   released: boolean;
+  /** True once killVoice() has torn this voice down — makes teardown idempotent
+   *  when both the scheduled onended handler and a fallback timer can fire it. */
+  killed: boolean;
   timer: ReturnType<typeof setTimeout> | null;
 }
 
@@ -247,6 +250,11 @@ export function createVocalSynth(options?: {
 
   const activeVoices = new Map<number, ActiveVocalVoice>();
   const voiceOrder: number[] = [];
+  /** Voices past noteOff but not yet fully stopped/torn down. Kept reachable
+   *  here (separately from activeVoices) so allNotesOff()/panic() can still
+   *  silence a scheduled-but-releasing voice instead of only seeing an empty
+   *  activeVoices map (F-A1-004). */
+  const releasingVoices = new Set<ActiveVocalVoice>();
 
   function ensureCtx() {
     if (!ctx) throw new Error("VocalSynth not connected");
@@ -266,8 +274,11 @@ export function createVocalSynth(options?: {
   }
 
   function killVoice(v: ActiveVocalVoice) {
+    if (v.killed) return;
+    v.killed = true;
+    releasingVoices.delete(v);
     if (v.timer) { clearTimeout(v.timer); v.timer = null; }
-    try { v.source.stop(); v.source.disconnect(); } catch {}
+    try { v.source.onended = null; v.source.stop(); v.source.disconnect(); } catch {}
     try { v.noiseSource.stop(); v.noiseSource.disconnect(); } catch {}
     try { v.vibratoLfo.stop(); v.vibratoLfo.disconnect(); } catch {}
     for (const f of v.formantFilters) try { f.disconnect(); } catch {}
@@ -283,12 +294,33 @@ export function createVocalSynth(options?: {
     if (v.released) return;
     v.released = true;
     const c = ensureCtx();
+    // `now` is the SCHEDULED release instant (e.g. a future note-off time
+    // passed in from play()), not necessarily wall-clock "now" — see the
+    // matching comment in synth.ts's releaseVoice for the full rationale.
     const now = time ?? c.currentTime;
     const rel = voice.release;
-    v.master.gain.cancelScheduledValues(now);
-    v.master.gain.setValueAtTime(v.master.gain.value, now);
+    const margin = 0.05;
+    const stopAt = now + rel + margin;
+
+    if (typeof v.master.gain.cancelAndHoldAtTime === "function") {
+      v.master.gain.cancelAndHoldAtTime(now);
+    }
     v.master.gain.linearRampToValueAtTime(0, now + rel);
-    v.timer = setTimeout(() => killVoice(v), (rel + 0.05) * 1000);
+
+    // Schedule the actual stop on the audio clock instead of relying solely
+    // on a wall-clock setTimeout — sample-accurate and immune to setTimeout
+    // drift/throttling (e.g. background tabs).
+    try { v.source.stop(stopAt); } catch {}
+    try { v.noiseSource.stop(stopAt); } catch {}
+    try { v.vibratoLfo.stop(stopAt); } catch {}
+
+    releasingVoices.add(v);
+    v.source.onended = () => killVoice(v);
+
+    // Fallback timer in case onended never fires — still computed relative
+    // to the scheduled stop time, not call time.
+    const delayMs = Math.max(0, stopAt - c.currentTime) * 1000;
+    v.timer = setTimeout(() => killVoice(v), delayMs);
   }
 
   function stealOldest() {
@@ -338,9 +370,17 @@ export function createVocalSynth(options?: {
       const formants = getFormants();
       const fs = formants[vowel];
 
-      // Kill existing same-note
+      // Kill existing same-note. Live play (time undefined) cuts it instantly,
+      // as before. A SCHEDULED retrigger (time given) releases the old voice
+      // starting exactly at the new note's scheduled start time instead of
+      // killing it at wall-clock "now" (F-A1-001).
       const existing = activeVoices.get(note);
-      if (existing) { killVoice(existing); activeVoices.delete(note); removeOrder(note); }
+      if (existing) {
+        activeVoices.delete(note);
+        removeOrder(note);
+        if (time === undefined) killVoice(existing);
+        else releaseVoice(existing, time);
+      }
       while (activeVoices.size >= MAX_VOCAL_POLYPHONY) stealOldest();
 
       // ── Glottal source ──
@@ -423,7 +463,7 @@ export function createVocalSynth(options?: {
         note, source, noiseSource, noiseMix, sourceMix,
         formantFilters, formantGains, mixBus,
         master: voiceMaster, panner, vibratoLfo, vibratoGain,
-        released: false, timer: null,
+        released: false, killed: false, timer: null,
       };
       activeVoices.set(note, av);
       voiceOrder.push(note);
@@ -431,13 +471,21 @@ export function createVocalSynth(options?: {
 
     noteOff(note: number, time?: number) {
       const av = activeVoices.get(note);
-      if (av) { releaseVoice(av, time); activeVoices.delete(note); removeOrder(note); }
+      if (av) {
+        activeVoices.delete(note);
+        removeOrder(note);
+        releaseVoice(av, time); // adds av to releasingVoices so panic can still reach it
+      }
     },
 
     allNotesOff() {
       for (const [, av] of activeVoices) killVoice(av);
       activeVoices.clear();
       voiceOrder.length = 0;
+      // Bulletproof panic: also kill anything mid-release or scheduled to
+      // stop in the future (F-A1-004).
+      for (const av of [...releasingVoices]) killVoice(av);
+      releasingVoices.clear();
     },
 
     setVoice(id: VocalVoiceId) {
@@ -457,7 +505,12 @@ export function createVocalSynth(options?: {
     getActiveCount() { return activeVoices.size; },
     getContext() { return ctx; },
     setTuning(id: TuningId) { tuning = TUNINGS[id] ?? TUNINGS.equal; },
-    setRefPitch(hz: number) { refPitch = Math.max(392, Math.min(494, hz)); },
+    setRefPitch(hz: number) {
+      // Guard against NaN propagation (see the matching guard + rationale in
+      // synth.ts's setRefPitch) — Math.min/max silently pass NaN through.
+      if (!Number.isFinite(hz)) return;
+      refPitch = Math.max(392, Math.min(494, hz));
+    },
     getTuning() { return tuning; },
     getRefPitch() { return refPitch; },
   };

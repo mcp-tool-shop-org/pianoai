@@ -491,7 +491,7 @@ test("PlaybackController emits noteOn events", async () => {
   const controller = new PlaybackController(connector, parsed);
   const noteOns: number[] = [];
   controller.on("noteOn", (e) => { if (e.type === "noteOn") noteOns.push(e.note); });
-  await controller.play({ speed: 100 });
+  await controller.play({ speed: 4 });
   assert(noteOns.length === 2, `expected 2 noteOn events, got ${noteOns.length}`);
   assert(controller.state === "finished", `expected finished, got ${controller.state}`);
 });
@@ -504,7 +504,7 @@ test("PlaybackController invokes teaching hook", async () => {
   const connector = createSmokeMockConnector();
   const controller = new PlaybackController(connector, parsed);
   const hook = createRecordingTeachingHook();
-  await controller.play({ speed: 100, teachingHook: hook });
+  await controller.play({ speed: 4, teachingHook: hook });
   const starts = hook.events.filter((e) => e.type === "measure-start");
   assert(starts.length >= 1, `expected >= 1 measure-start, got ${starts.length}`);
   const completions = hook.events.filter((e) => e.type === "song-complete");
@@ -594,7 +594,7 @@ test("composed sing + live feedback on PlaybackController", async () => {
   const singHook = createSingOnMidiHook(async (d) => { singD.push(d); }, parsed, { mode: "solfege" });
   const fbHook = createLiveMidiFeedbackHook(async () => {}, async (d) => { feedbackA.push(d); }, parsed, { voiceInterval: 100 });
   const composed = composeTeachingHooks(singHook, fbHook);
-  await controller.play({ speed: 100, teachingHook: composed });
+  await controller.play({ speed: 4, teachingHook: composed });
   assert(singD.length > 0, "sing hook should produce directives");
 });
 

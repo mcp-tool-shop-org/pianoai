@@ -96,7 +96,25 @@ interface CompiledCatalog {
   catalog: ToolSchemaCatalog;
 }
 
+// F-afd2c768: memoize compiled catalogs by object identity. The catalog
+// (tool-schemas.json) is static within a process run, and corpus-scale
+// callers (scripts/validate-jam-actions-corpus.ts and friends) load it once
+// and pass the SAME object into validateTrace() once per record — up to 145
+// times across the current corpus — so recompiling a fresh AJV instance and
+// re-compiling every tool's schema from scratch on every call was pure
+// waste. Keyed on object identity (WeakMap) rather than e.g.
+// `catalog.derived_at`: two structurally different catalog objects could in
+// principle share a `derived_at` string (a test fixture that mutates a
+// cloned catalog without bumping it, for instance), and caching on that
+// string would silently return the WRONG compiled validators for one of
+// them. Object identity can't collide that way, and lets the cache entry be
+// garbage-collected once the catalog itself is no longer referenced.
+const compiledCatalogCache = new WeakMap<ToolSchemaCatalog, CompiledCatalog>();
+
 function compileCatalog(catalog: ToolSchemaCatalog): CompiledCatalog {
+  const cached = compiledCatalogCache.get(catalog);
+  if (cached) return cached;
+
   const ajv = new Ajv({
     strict: false,
     allErrors: true,
@@ -107,7 +125,9 @@ function compileCatalog(catalog: ToolSchemaCatalog): CompiledCatalog {
     const hardened = harden(tool.inputSchema) as Record<string, unknown>;
     byName.set(tool.name, ajv.compile(hardened));
   }
-  return { byName, catalog };
+  const compiled: CompiledCatalog = { byName, catalog };
+  compiledCatalogCache.set(catalog, compiled);
+  return compiled;
 }
 
 // ─── Validation ──────────────────────────────────────────────────────────────

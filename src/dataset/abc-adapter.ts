@@ -104,16 +104,11 @@ export function toAbc(
   // ─── Extract RH melody (monophonic: highest note per tick cluster) ────────
   const rhMelody = extractRhMelody(events);
 
-  if (rhMelody.length === 0) {
-    // No RH events — write a rest bar.
-    return `${header}\n|${buildRestToken(sixteenthsPerMeasure)}|\n`;
-  }
-
-  // ─── Find the start tick for bar-line calculation ─────────────────────────
-  const phraseStartTick = meta.start_tick ?? rhMelody[0].t_ticks;
-
-  // Determine quantization unit in ticks from the first event durations.
-  // We use the smallest non-zero duration in the phrase (usually one sixteenth).
+  // Determine quantization unit in ticks from the smallest non-zero RH
+  // duration in the phrase (usually one sixteenth). Falls back to 120 ticks
+  // (a sixteenth at the common 480-ticks-per-beat resolution) when there is
+  // no RH event to infer from — e.g. a phrase window that is RH-silent in
+  // every measure.
   const smallestDur = rhMelody.reduce(
     (m, e) => (e.dur_ticks > 0 && e.dur_ticks < m ? e.dur_ticks : m),
     Infinity,
@@ -123,31 +118,70 @@ export function toAbc(
   // Use smallest observed duration as the sixteenth-note tick count.
   const ticksPerUnit = isFinite(smallestDur) ? smallestDur : 120;
 
-  // ─── Build note sequence with bar lines ───────────────────────────────────
-  const tokens: string[] = [];
-  let currentMeasure = rhMelody[0].measure;
-  let prevEndTick = phraseStartTick;
+  // Find the start tick for gap-fill calculation (leading silence before the
+  // phrase's first RH note). Falls back to 0 when there is no RH event at
+  // all — the value goes unused in that case since every measure below then
+  // takes the melody-silent branch.
+  let prevEndTick = meta.start_tick ?? rhMelody[0]?.t_ticks ?? 0;
 
+  // ─── Build note sequence, one segment per declared measure ────────────────
+  //
+  // D-A1-004: bar-line emission is driven by `meta.measure_range`, NOT by
+  // transitions between consecutive RH melody events. The old event-
+  // transition-driven approach silently collapsed any measure with zero RH
+  // events (RH rests while LH plays, or a genuinely silent measure) into its
+  // neighboring bar — the emitted "|" count fell short of what the M:
+  // time-signature header + measure_range imply, and nothing in the output
+  // recorded that a measure had been skipped. Iterating every measure number
+  // in the declared window instead guarantees the emitted bar count always
+  // equals measure_count + 1 (one bar per measure boundary, fencepost-style),
+  // with melody-silent measures rendered as an explicit full-measure rest
+  // (correct ABC z-notation for the meter) instead of vanishing. This also
+  // subsumes the old "rhMelody is empty" special case: when every measure in
+  // the window is melody-silent, the loop below naturally emits one rest per
+  // measure instead of a single rest for the whole phrase.
+  const [startMeasure, endMeasure] = meta.measure_range;
+  const ticksPerMeasure = sixteenthsPerMeasure * ticksPerUnit;
+
+  const eventsByMeasure = new Map<number, TimedEvent[]>();
   for (const event of rhMelody) {
-    // Insert bar line when measure changes.
-    if (event.measure !== currentMeasure) {
-      tokens.push("|");
-      currentMeasure = event.measure;
+    const arr = eventsByMeasure.get(event.measure);
+    if (arr) arr.push(event);
+    else eventsByMeasure.set(event.measure, [event]);
+  }
+
+  const tokens: string[] = [];
+  for (let measure = startMeasure; measure <= endMeasure; measure++) {
+    if (measure > startMeasure) tokens.push("|");
+
+    const measureEvents = eventsByMeasure.get(measure);
+    if (!measureEvents || measureEvents.length === 0) {
+      // Melody-silent measure inside the window: emit a full-measure rest so
+      // this measure's bar still accounts for the full declared duration,
+      // and advance prevEndTick by one measure so the next populated
+      // measure's gap-fill isn't polluted by the silence already accounted
+      // for here explicitly (avoids double-counting the same gap as both a
+      // measure rest and a leading rest in the next populated measure).
+      tokens.push(buildRestToken(sixteenthsPerMeasure));
+      prevEndTick += ticksPerMeasure;
+      continue;
     }
 
-    // Fill gap with rest if there's a silence gap.
-    const gapTicks = event.t_ticks - prevEndTick;
-    if (gapTicks > ticksPerUnit / 2) {
-      const restUnits = Math.max(1, Math.round(gapTicks / ticksPerUnit));
-      tokens.push(buildRestToken(restUnits));
+    for (const event of measureEvents) {
+      // Fill gap with rest if there's a silence gap before this note.
+      const gapTicks = event.t_ticks - prevEndTick;
+      if (gapTicks > ticksPerUnit / 2) {
+        const restUnits = Math.max(1, Math.round(gapTicks / ticksPerUnit));
+        tokens.push(buildRestToken(restUnits));
+      }
+
+      // Note token.
+      const noteName = midiToAbcNote(event.note, noteMap);
+      const durationUnits = Math.max(1, Math.round(event.dur_ticks / ticksPerUnit));
+      tokens.push(buildNoteToken(noteName, durationUnits));
+
+      prevEndTick = event.t_ticks + event.dur_ticks;
     }
-
-    // Note token.
-    const noteName = midiToAbcNote(event.note, noteMap);
-    const durationUnits = Math.max(1, Math.round(event.dur_ticks / ticksPerUnit));
-    tokens.push(buildNoteToken(noteName, durationUnits));
-
-    prevEndTick = event.t_ticks + event.dur_ticks;
   }
 
   // Close final bar.

@@ -9,7 +9,24 @@ name: Publish jam-actions-v0
 # Tokens (ZEN_TOKEN, HF_TOKEN) come from GitHub Secrets. They are injected
 # as env vars only inside the steps that need them. Never echoed, never
 # written to files, never logged.
-
+#
+# ─── Compensators (irreversible actions in this workflow) ───────────────────
+# Zenodo DOI mint (publish step)
+#   Undo:  DOIs cannot be revoked. Zenodo supports "new version" deposits on
+#          the published record for corrections — there is no delete.
+#          See https://developers.zenodo.org
+#   Owner: mcp-tool-shop
+#
+# Abandoned Zenodo DRAFT (mode=draft-only, no publish)
+#   Undo:  Safely deletable from the Zenodo web UI, or
+#          DELETE /api/deposit/depositions/{id}
+#   Owner: mcp-tool-shop
+#
+# HuggingFace dataset push (mode=publish, HF half fails after Zenodo succeeds)
+#   Undo:  push-jam-actions-v0-hf.yml (this repo) is the designated recovery
+#          path — re-run it standalone to retry just the HF upload without
+#          re-minting a DOI.
+#   Owner: mcp-tool-shop
 on:
   workflow_dispatch:
     inputs:
@@ -77,12 +94,12 @@ jobs:
           esac
 
       # ─── Checkout + tooling ──────────────────────────────────────────────────
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: ${{ github.event.inputs.ref }}
           fetch-depth: 0
 
-      - uses: pnpm/action-setup@v5
+      - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
         with:
           version: 9
 

@@ -44,6 +44,15 @@ export class MidiPlaybackEngine {
   private _noteOffTimers: Set<ReturnType<typeof setTimeout>> = new Set();
   private _abortController: AbortController | null = null;
   private _resolveWait: (() => void) | null = null;
+  /**
+   * Set by pause() just before it aborts _abortController, cleared by
+   * stop() and by whichever abort-check branch in play()'s loop consumes
+   * it. Lets those branches distinguish "this abort came from pause()"
+   * from "this abort came from stop() (or an external signal)" — without
+   * it, both cases unconditionally forced _state to "stopped", so
+   * pause()/resume() silently never worked (F-ca978f89).
+   */
+  private _pauseRequested: boolean = false;
 
   constructor(
     private readonly connector: VmpkConnector,
@@ -87,7 +96,13 @@ export class MidiPlaybackEngine {
   async play(options: MidiPlaybackOptions = {}): Promise<void> {
     if (this._state === "playing") return;
 
-    this._speed = options.speed ?? this._speed;
+    // Route through setSpeed()'s validation instead of assigning directly
+    // (F-d50cccd7) — an unvalidated 0/negative/NaN speed here would make
+    // waitSeconds Infinity/NaN, and Node's setTimeout silently clamps
+    // out-of-range delays to 1ms rather than actually waiting.
+    if (options.speed !== undefined) {
+      this.setSpeed(options.speed);
+    }
     if (options.startAtSeconds !== undefined && this._state !== "paused") {
       this.seekToTime(options.startAtSeconds);
     }
@@ -106,7 +121,8 @@ export class MidiPlaybackEngine {
     try {
       while (this._eventIndex < events.length) {
         if (internalSignal.aborted || signal?.aborted) {
-          this._state = "stopped";
+          this._state = this._pauseRequested ? "paused" : "stopped";
+          this._pauseRequested = false;
           this.silenceAll();
           return;
         }
@@ -120,7 +136,8 @@ export class MidiPlaybackEngine {
           await this.sleepInterruptible(waitSeconds * 1000, internalSignal);
 
           if (internalSignal.aborted || signal?.aborted) {
-            this._state = "stopped";
+            this._state = this._pauseRequested ? "paused" : "stopped";
+            this._pauseRequested = false;
             this.silenceAll();
             return;
           }
@@ -168,7 +185,8 @@ export class MidiPlaybackEngine {
       }
     } catch (err) {
       if (internalSignal.aborted || signal?.aborted) {
-        this._state = "stopped";
+        this._state = this._pauseRequested ? "paused" : "stopped";
+        this._pauseRequested = false;
       } else {
         throw err;
       }
@@ -180,6 +198,7 @@ export class MidiPlaybackEngine {
   /** Pause playback. Can be resumed with play(). */
   pause(): void {
     if (this._state !== "playing") return;
+    this._pauseRequested = true;
     this._state = "paused";
     this._pausedAtTime = this._playbackTime;
     this._abortController?.abort();
@@ -195,6 +214,11 @@ export class MidiPlaybackEngine {
 
   /** Stop playback and reset to beginning. */
   stop(): void {
+    // Clear any in-flight pause request so a pause() immediately followed
+    // by stop() (before the play() loop's next abort-check runs) can't
+    // leave the loop resolving to "paused" after stop() already committed
+    // to "stopped".
+    this._pauseRequested = false;
     this._state = "stopped";
     this._abortController?.abort();
     this.silenceAll();

@@ -5,8 +5,8 @@
 //
 // Features:
 //   - 10 voice presets (6 piano + 4 synth/keys)
-//   - 6 tuning systems (equal, just, Pythagorean, meantone, Werckmeister)
-//   - Adjustable reference pitch (A4 = 415–466 Hz)
+//   - 7 tuning systems (equal, just, Pythagorean, meantone, Werckmeister, custom)
+//   - Adjustable reference pitch (A4 = 392–494 Hz)
 //   - Per-partial envelopes, inharmonicity stretching, hammer noise
 //   - Velocity-sensitive brightness, stereo imaging, voice stealing
 //   - Sustain levels (piano decay → organ sustain continuum)
@@ -120,7 +120,6 @@ const PURE_INTERVALS: { semitones: number; name: string; ratio: number }[] = [
 ];
 
 export function computeTuningTable(tuning: TuningSystem, refPitch: number): TuningTableEntry[] {
-  const etCents = TUNINGS.equal.cents;
   const table: TuningTableEntry[] = [];
   for (let pc = 0; pc < 12; pc++) {
     const midi = 60 + pc; // octave 4
@@ -145,11 +144,31 @@ export function analyzeInterval(
   const freq2 = midiToFreq(midi2, tuning, refPitch);
   const actualRatio = freq2 / freq1;
   const intervalCents = 1200 * Math.log2(actualRatio);
-  const semitones = ((midi2 - midi1) % 12 + 12) % 12;
+
+  // Fold into the 0-12 semitone range covered by PURE_INTERVALS. An interval
+  // of exactly one octave (12) — or a compound multiple of one (24, 36...) —
+  // resolves to the P8 entry instead of wrapping to unison (folding via a
+  // plain `% 12` turns 12 into 0, which made the P8 test button report a
+  // pure octave as a "WOLF unison"). Anything above an octave is expressed
+  // as a base interval plus however many whole octaves it's displaced by.
+  const raw = Math.abs(midi2 - midi1);
+  const semitones = raw <= 12 ? raw : (raw % 12 === 0 ? 12 : raw % 12);
   const pure = PURE_INTERVALS[semitones] ?? PURE_INTERVALS[0];
-  const pureCents = 1200 * Math.log2(pure.ratio);
+  const octaveDisplacement = Math.floor((raw - semitones) / 12);
+  const pureRatio = pure.ratio * Math.pow(2, octaveDisplacement);
+  const pureCents = 1200 * Math.log2(pureRatio);
   const deviationCents = intervalCents - pureCents;
-  const beatFrequency = Math.abs(freq2 - freq1 * pure.ratio);
+  const beatFrequency = Math.abs(freq2 - freq1 * pureRatio);
+
+  let intervalName: string;
+  if (semitones === 12) {
+    const totalOctaves = octaveDisplacement + 1;
+    intervalName = totalOctaves === 1 ? pure.name : `${totalOctaves} Octaves`;
+  } else if (octaveDisplacement > 0) {
+    intervalName = `${pure.name} + ${octaveDisplacement} octave${octaveDisplacement === 1 ? "" : "s"}`;
+  } else {
+    intervalName = pure.name;
+  }
 
   return {
     note1: midi1, note2: midi2,
@@ -158,8 +177,8 @@ export function analyzeInterval(
     freq1: Math.round(freq1 * 1000) / 1000,
     freq2: Math.round(freq2 * 1000) / 1000,
     actualRatio: Math.round(actualRatio * 100000) / 100000,
-    intervalName: pure.name,
-    pureRatio: pure.ratio,
+    intervalName,
+    pureRatio: Math.round(pureRatio * 100000) / 100000,
     deviationCents: Math.round(deviationCents * 100) / 100,
     beatFrequency: Math.round(beatFrequency * 1000) / 1000,
     intervalCents: Math.round(intervalCents * 100) / 100,
@@ -436,6 +455,9 @@ interface ActiveVoice {
   panner: StereoPannerNode;
   noiseSource: AudioBufferSourceNode | null;
   released: boolean;
+  /** True once killVoice() has torn this voice down — makes teardown idempotent
+   *  when both the scheduled onended handler and a fallback timer can fire it. */
+  killed: boolean;
   timer: ReturnType<typeof setTimeout> | null;
 }
 
@@ -490,6 +512,11 @@ export function createSynth(options?: {
 
   const activeVoices = new Map<number, ActiveVoice>();
   const voiceOrder: number[] = [];
+  /** Voices past noteOff but not yet fully stopped/torn down. Kept reachable
+   *  here (separately from activeVoices) so allNotesOff()/panic() can still
+   *  silence a scheduled-but-releasing voice instead of only seeing an empty
+   *  activeVoices map (F-A1-004). */
+  const releasingVoices = new Set<ActiveVoice>();
 
   function ensureCtx() {
     if (!ctx) throw new Error("Synth not connected");
@@ -505,8 +532,11 @@ export function createSynth(options?: {
   }
 
   function killVoice(v: ActiveVoice) {
+    if (v.killed) return;
+    v.killed = true;
+    releasingVoices.delete(v);
     if (v.timer) { clearTimeout(v.timer); v.timer = null; }
-    for (const o of v.oscillators) { try { o.stop(); o.disconnect(); } catch {} }
+    for (const o of v.oscillators) { try { o.onended = null; o.stop(); o.disconnect(); } catch {} }
     for (const g of v.gains) { try { g.disconnect(); } catch {} }
     if (v.noiseSource) { try { v.noiseSource.stop(); v.noiseSource.disconnect(); } catch {} }
     try { v.master.disconnect(); } catch {}
@@ -517,14 +547,45 @@ export function createSynth(options?: {
     if (v.released) return;
     v.released = true;
     const c = ensureCtx();
+    // `now` is the SCHEDULED release instant (e.g. a future note-off time
+    // passed in from play()), not necessarily wall-clock "now". Everything
+    // below is computed relative to it so releases scheduled far in the
+    // future aren't cut off the moment this function is called (F-A1-001).
     const now = time ?? c.currentTime;
     const rel = voice.releaseTime;
+    const margin = 0.05;
+    const stopAt = now + rel + margin;
+
     for (const g of v.gains) {
-      g.gain.cancelScheduledValues(now);
-      g.gain.setValueAtTime(g.gain.value, now);
+      // cancelAndHoldAtTime captures whatever the automation curve's value
+      // will actually be AT `now` (computed on the audio thread), even when
+      // `now` is in the future. Reading `g.gain.value` synchronously instead
+      // (the old approach) returns the value as of THIS call, which for a
+      // scheduled release is almost always still 0 (attack hasn't run yet),
+      // producing a release ramp from the wrong starting point.
+      if (typeof g.gain.cancelAndHoldAtTime === "function") {
+        g.gain.cancelAndHoldAtTime(now);
+      }
       g.gain.linearRampToValueAtTime(0, now + rel);
     }
-    v.timer = setTimeout(() => killVoice(v), (rel + 0.05) * 1000);
+
+    // Schedule the actual stop on the audio clock instead of relying solely
+    // on a wall-clock setTimeout — osc.stop(time) is sample-accurate and
+    // immune to setTimeout drift/throttling (e.g. background tabs).
+    for (const o of v.oscillators) { try { o.stop(stopAt); } catch {} }
+    if (v.noiseSource) { try { v.noiseSource.stop(stopAt); } catch {} }
+
+    releasingVoices.add(v);
+
+    const primary = v.oscillators[0];
+    if (primary) {
+      primary.onended = () => killVoice(v);
+    }
+    // Fallback timer in case onended never fires (e.g. no oscillators, or a
+    // browser quirk) — still computed relative to the scheduled stop time,
+    // not call time, so it can't reintroduce the original bug.
+    const delayMs = Math.max(0, stopAt - c.currentTime) * 1000;
+    v.timer = setTimeout(() => killVoice(v), delayMs);
   }
 
   function stealOldest() {
@@ -571,9 +632,18 @@ export function createSynth(options?: {
       const atk = attackTime(vel01, v);
       const numP = partialsForNote(note, v);
 
-      // Kill existing same-note
+      // Kill existing same-note. Live play (time undefined) cuts it instantly,
+      // as before. A SCHEDULED retrigger (time given) must not be killed at
+      // wall-clock "now" — that could silence a voice that hasn't sounded yet
+      // if it was scheduled further out than this new note. Instead release
+      // it starting exactly at the new note's scheduled start time (F-A1-001).
       const existing = activeVoices.get(note);
-      if (existing) { killVoice(existing); activeVoices.delete(note); removeOrder(note); }
+      if (existing) {
+        activeVoices.delete(note);
+        removeOrder(note);
+        if (time === undefined) killVoice(existing);
+        else releaseVoice(existing, time);
+      }
       while (activeVoices.size >= MAX_POLYPHONY) stealOldest();
 
       // Voice master gain
@@ -647,7 +717,7 @@ export function createSynth(options?: {
 
       const av: ActiveVoice = {
         note, oscillators, gains, master: voiceMaster, panner,
-        noiseSource, released: false, timer: null,
+        noiseSource, released: false, killed: false, timer: null,
       };
       activeVoices.set(note, av);
       voiceOrder.push(note);
@@ -655,13 +725,22 @@ export function createSynth(options?: {
 
     noteOff(note: number, time?: number) {
       const v = activeVoices.get(note);
-      if (v) { releaseVoice(v, time); activeVoices.delete(note); removeOrder(note); }
+      if (v) {
+        activeVoices.delete(note);
+        removeOrder(note);
+        releaseVoice(v, time); // adds v to releasingVoices so panic can still reach it
+      }
     },
 
     allNotesOff() {
       for (const [, v] of activeVoices) killVoice(v);
       activeVoices.clear();
       voiceOrder.length = 0;
+      // Bulletproof panic: also kill anything mid-release or scheduled to
+      // stop in the future (F-A1-004) — without this, a runaway scheduled
+      // score could only be silenced by closing the tab.
+      for (const v of [...releasingVoices]) killVoice(v);
+      releasingVoices.clear();
     },
 
     setVoice(id: VoiceId) {
@@ -671,7 +750,14 @@ export function createSynth(options?: {
     },
 
     setTuning(id: TuningId) { tuning = TUNINGS[id] ?? TUNINGS.equal; },
-    setRefPitch(hz: number) { refPitch = Math.max(392, Math.min(494, hz)); },
+    setRefPitch(hz: number) {
+      // Math.min/max propagate NaN silently (Math.max(392, NaN) === NaN), so
+      // an emptied #ref-pitch field or a garbage imported value would brick
+      // every subsequent noteOn (midiToFreq -> NaN -> non-finite AudioParam
+      // throws). Reject non-finite input instead of letting it through.
+      if (!Number.isFinite(hz)) return;
+      refPitch = Math.max(392, Math.min(494, hz));
+    },
     setMasterVolume(vol01: number) { if (master) master.gain.value = Math.max(0, Math.min(1, vol01)); },
     getVoice() { return voice; },
     getTuning() { return tuning; },
@@ -731,10 +817,31 @@ export function createSynth(options?: {
     },
 
     importTuning(data: TuningExport) {
+      // Validate before applying anything — a partially-applied bad import
+      // (e.g. cents accepted, refPitch rejected) is worse than rejecting the
+      // whole thing. Absurd-but-numeric cent values (e.g. 1e9) or a NaN
+      // refPitch used to import cleanly here and only throw later at noteOn
+      // time, defeating the Import button's try/catch (which only guarded
+      // JSON.parse).
+      if (data.cents !== undefined) {
+        if (data.cents.length !== 12) {
+          throw new Error(`Invalid tuning: cents must have exactly 12 values (got ${data.cents.length})`);
+        }
+        for (let i = 0; i < 12; i++) {
+          const c = data.cents[i];
+          if (!Number.isFinite(c) || c < -1200 || c > 2400) {
+            throw new Error(`Invalid tuning: cents[${i}] must be a finite number between -1200 and 2400 (got ${c})`);
+          }
+        }
+      }
+      if (data.refPitch !== undefined && !Number.isFinite(data.refPitch)) {
+        throw new Error(`Invalid tuning: refPitch must be a finite number (got ${data.refPitch})`);
+      }
+
       if (data.cents?.length === 12) {
         synth.setCustomTuning(data.cents);
       }
-      if (data.refPitch) {
+      if (data.refPitch !== undefined) {
         synth.setRefPitch(data.refPitch);
       }
     },

@@ -528,7 +528,15 @@ export function resetUserTuning(voiceId: string): void {
  * Friendly param names are mapped back to PianoVoiceConfig properties.
  */
 function applyTuning(base: PianoVoiceConfig, tuning: UserTuning): PianoVoiceConfig {
-  const config = { ...base, attackRange: [...base.attackRange] as [number, number] };
+  // Deep-clone every array-typed field, not just attackRange. A shallow
+  // `{ ...base, attackRange: [...] }` left inharmonicity/partialsPerRegister/
+  // hammerNoiseQRange as the SAME array references as the shared
+  // module-level preset — currently inert since no TUNING_PARAMS entry
+  // targets those fields, but a future tunable parameter that did would
+  // mutate the shared preset in place, silently corrupting it for every
+  // future session until restart (F-9611954f). structuredClone removes the
+  // whole class of "forgot to clone the new array field" bugs.
+  const config = structuredClone(base);
 
   for (const [key, value] of Object.entries(tuning)) {
     const param = TUNING_PARAMS.find(p => p.key === key);

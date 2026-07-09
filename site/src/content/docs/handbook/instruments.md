@@ -28,6 +28,8 @@ Six tunable keyboard voices, each adjustable per-parameter (brightness, decay, h
 
 Salamander Grand Piano with 480 samples, 16 velocity layers, and all 88 keys. Real recorded samples for the most authentic sound.
 
+*Programmatic API only for now: the samples are not shipped with the package (you supply the Salamander download), and the engine is not yet wired into the CLI or MCP engine lists.*
+
 ## Vocal engines
 
 ### Vocal (Sample)

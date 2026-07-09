@@ -693,11 +693,12 @@ export function resetGuitarUserTuning(voiceId: string): void {
 }
 
 function applyGuitarTuning(base: GuitarVoiceConfig, tuning: GuitarUserTuning): GuitarVoiceConfig {
-  const config = {
-    ...base,
-    attackRange: [...base.attackRange] as [number, number],
-    pluckNoiseQRange: [...base.pluckNoiseQRange] as [number, number],
-  };
+  // Deep-clone every array-typed field (not just the two currently
+  // targeted by GUITAR_TUNING_PARAMS) — same rationale as
+  // piano-voices.ts's applyTuning (F-9611954f). structuredClone removes
+  // the whole class of "forgot to clone the new array field" bugs for any
+  // future tunable parameter.
+  const config = structuredClone(base);
 
   for (const [key, value] of Object.entries(tuning)) {
     const param = GUITAR_TUNING_PARAMS.find(p => p.key === key);

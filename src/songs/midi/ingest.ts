@@ -38,7 +38,11 @@ export function midiToSongEntry(
   config: SongConfig,
 ): SongEntry {
   const midi = parseMidi(midiBuffer);
-  const tpb = midi.header.ticksPerBeat ?? 480;
+  // `??` only replaces null/undefined, not 0 — a malformed MIDI header with
+  // ticksPerBeat=0 would otherwise flow straight through into
+  // ticksPerMeasure's division (F-39068b04). ticksPerMeasure itself now
+  // guards this too, but validating at the source keeps the intent clear.
+  const tpb = midi.header.ticksPerBeat && midi.header.ticksPerBeat > 0 ? midi.header.ticksPerBeat : 480;
   const splitPoint = config.splitPoint ?? DEFAULT_SPLIT_POINT;
 
   // 1. Collect tempo + time signature events across all tracks
@@ -56,7 +60,7 @@ export function midiToSongEntry(
   const tpm = ticksPerMeasure(tpb, effectiveTimeSig.numerator, effectiveTimeSig.denominator);
 
   // 5. Determine total measures
-  const totalMeasures = computeTotalMeasures(notes, tpm);
+  const totalMeasures = computeTotalMeasures(notes, tpm, { songId: config.id });
 
   // 6. Slice notes into measure buckets
   const buckets = sliceIntoMeasures(notes, totalMeasures, tpm);
@@ -82,7 +86,13 @@ export function midiToSongEntry(
     timeSignature: `${effectiveTimeSig.numerator}/${effectiveTimeSig.denominator}`,
     durationSeconds: Math.round(durationSeconds),
     musicalLanguage: config.musicalLanguage ?? (() => {
-      console.error(`  WARNING: config for "${config.id}" has no musicalLanguage — song will be registered as raw (not ready)`);
+      // Note: this placeholder's empty keyMoments/teachingGoals will fail
+      // registry.ts's validateSong (which requires >= 1 entry in each), so
+      // registerSong will actually reject a "ready" song ingested this way
+      // rather than silently keeping it live with degraded content. There
+      // is no "raw" status on SongEntry to downgrade to — the previous
+      // message here claimed both things incorrectly (F-312db6a7).
+      console.error(`  WARNING: config for "${config.id}" has no musicalLanguage — substituting placeholder content. This will likely fail registry validation (empty keyMoments/teachingGoals) and the song will not be registered.`);
       return {
         description: `Imported from MIDI: ${config.title}`,
         structure: "Unknown",
@@ -150,14 +160,20 @@ function resolveNotes(midi: MidiData): ResolvedNote[] {
 
   for (const track of midi.tracks) {
     let tick = 0;
-    const pending = new Map<string, { startTick: number; velocity: number; channel: number; noteNumber: number }>();
+    // Stack per channel+pitch, not a single slot: two noteOn events for the
+    // same key without an intervening noteOff is a legitimate MIDI
+    // retrigger/trill pattern. A single `pending.set(key, ...)` silently
+    // overwrote the first note-on, dropping its onset entirely (F-7fa16226).
+    // Mirrors the stack already used in midi/parser.ts for the same reason.
+    const pending = new Map<string, Array<{ startTick: number; velocity: number; channel: number; noteNumber: number }>>();
 
     for (const event of track) {
       tick += event.deltaTime;
 
       if (event.type === "noteOn" && event.velocity > 0) {
         const key = `${event.channel}:${event.noteNumber}`;
-        pending.set(key, {
+        if (!pending.has(key)) pending.set(key, []);
+        pending.get(key)!.push({
           startTick: tick,
           velocity: event.velocity,
           channel: event.channel,
@@ -168,8 +184,9 @@ function resolveNotes(midi: MidiData): ResolvedNote[] {
         (event.type === "noteOn" && event.velocity === 0)
       ) {
         const key = `${event.channel}:${event.noteNumber}`;
-        const start = pending.get(key);
-        if (start) {
+        const stack = pending.get(key);
+        if (stack && stack.length > 0) {
+          const start = stack.shift()!;
           notes.push({
             noteNumber: start.noteNumber,
             startTick: start.startTick,
@@ -177,7 +194,6 @@ function resolveNotes(midi: MidiData): ResolvedNote[] {
             velocity: start.velocity,
             channel: start.channel,
           });
-          pending.delete(key);
         }
       }
     }
