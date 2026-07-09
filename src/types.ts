@@ -5,6 +5,8 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { SongEntry, Measure, Genre, Difficulty } from "./songs/types.js";
+import type { MidiNoteEvent } from "./midi/types.js";
+import type { MetronomeEngine } from "./playback/metronome.js";
 
 // ─── MIDI Types ─────────────────────────────────────────────────────────────
 
@@ -125,6 +127,39 @@ export interface Session {
 
   /** Voice feedback enabled. */
   voiceEnabled: boolean;
+
+  /**
+   * Metronome click track enabled (mirrors SessionOptions.metronome).
+   * Optional — added after `Session` shipped, so an external hand-built
+   * `Session` (e.g. a test double implementing this interface) doesn't
+   * break; `createSession()` always sets it explicitly. Undefined reads
+   * the same as `false` everywhere it's consulted.
+   */
+  metronomeEnabled?: boolean;
+
+  /**
+   * Count-in length in bars (mirrors SessionOptions.countIn). 0 = no
+   * count-in. Only actually used when metronomeEnabled is true — stored
+   * here as-requested regardless, so it stays introspectable. Optional for
+   * the same external-implementor reason as `metronomeEnabled`; undefined
+   * reads the same as `0`.
+   */
+  countInBars?: number;
+
+  /**
+   * Click plays only during count-in, silent during actual playback
+   * (mirrors SessionOptions.clickOnlyDuringCountIn). Optional for the same
+   * external-implementor reason as `metronomeEnabled`; undefined reads the
+   * same as `false`.
+   */
+  clickOnlyDuringCountIn?: boolean;
+
+  /**
+   * Performance recording enabled (mirrors SessionOptions.record).
+   * Optional for the same external-implementor reason as
+   * `metronomeEnabled`; undefined reads the same as `false`.
+   */
+  recordingEnabled?: boolean;
 }
 
 /** Progress update — emitted during playback. */
@@ -193,6 +228,38 @@ export interface SessionOptions {
    * Set to 0 to fire after every measure. Set to 1 to only fire at completion.
    */
   progressInterval?: number;
+
+  /** Enable the metronome click track during playback (default: false). */
+  metronome?: boolean;
+
+  /**
+   * Count-in length in bars, clicked before playback starts (0 = none).
+   * Only takes effect when `metronome` is true. Default: 1 bar when
+   * `metronome` is true and `countIn` is left undefined (Logic Pro
+   * convention); default 0 when `metronome` is false/omitted.
+   */
+  countIn?: number;
+
+  /**
+   * When true, the click plays only during the count-in and falls silent
+   * once real playback begins (default: false — click continues through
+   * playback, synced to effectiveTempo()).
+   */
+  clickOnlyDuringCountIn?: boolean;
+
+  /**
+   * Inject a metronome engine factory for tests — called once (if
+   * `metronome` is true) to construct this session's MetronomeEngine
+   * instance, in place of the default `createMetronome()` (which touches a
+   * real AudioContext). See src/playback/metronome.ts.
+   */
+  metronomeFactory?: () => MetronomeEngine;
+
+  /**
+   * Opt in to recording played notes — retrieve via
+   * `SessionController.getRecording()` (default: false).
+   */
+  record?: boolean;
 }
 
 // ─── VMPK Types ─────────────────────────────────────────────────────────────
@@ -234,6 +301,129 @@ export interface VmpkConnector {
 
   /** Play a single MidiNote (note-on, wait, note-off). */
   playNote(note: MidiNote): Promise<void>;
+}
+
+// ─── Recording Types ────────────────────────────────────────────────────────
+
+/**
+ * A captured performance recording — produced by either playback path when
+ * recording is opted into: `PlaybackController` (MIDI-file playback,
+ * `source: "midi-playback"`) or `SessionController` (library-song playback,
+ * `source: "session"`). Retrieve via each controller's `getRecording()`,
+ * which always returns a `Recording` (with `events: []` when recording
+ * wasn't enabled or nothing has played yet) rather than null/undefined.
+ *
+ * IMPORTANT — time units differ BY SOURCE; read the section that applies:
+ *
+ * `source: "session"` (SessionController / library-song playback):
+ *   `events[].time` / `.duration` are NOMINAL song-time seconds — i.e.
+ *   what they'd be at speed 1.0, on the `nominalBpm` tempo baseline — even
+ *   though the take may have actually sounded faster/slower at whatever
+ *   `speed` was in effect while each note played. This is deliberate: the
+ *   recording cursor accumulates each increment's nominal duration (the
+ *   played/effective-tempo duration converted back to speed-1.0 terms
+ *   using the speed live at that moment), so a mid-take `setSpeed()` call
+ *   still produces exact, recoverable song-time positions — only the
+ *   portion of the take recorded AFTER the change picks up the new speed;
+ *   nothing already recorded shifts retroactively. Pass
+ *   `{ bpm: recording.nominalBpm }` into `scorePerformance()` so its own
+ *   tempo assumption matches this timebase (using `song.tempo` instead
+ *   would silently disagree whenever `tempoOverride` was set). Caveat:
+ *   `nominalBpm` is captured ONCE when the take begins — a mid-take
+ *   `setTempo()` (not `setSpeed()`) changes the nominal tempo baseline
+ *   itself partway through, which this scheme does not attempt to
+ *   reconcile; only `speed` changes are guaranteed exact.
+ *
+ * `source: "midi-playback"` (PlaybackController / MIDI-file playback):
+ *   `events[].time` / `.duration` are real wall-clock seconds "as actually
+ *   heard" — i.e. distorted by whatever `speed` was in effect while each
+ *   note played, NOT normalized back to speed-1.0/logical time. A
+ *   speed=2.0 recording of a passage has half the real-time gap between
+ *   notes that a speed=1.0 recording of the same passage would. This path
+ *   has no fixed nominal tempo to normalize against (there's no `bpm`
+ *   concept for an arbitrary MIDI file the way there is for a library
+ *   song), so it intentionally preserves "how did the student actually
+ *   play this" (rushing, dragging, an uneven tempo within one take) rather
+ *   than attempting to undo it. If `speedChangedDuringTake` is true, the
+ *   take was played at more than one speed and there is no single bpm that
+ *   converts its wall-clock times back to a consistent song-time — a
+ *   scorer/consumer should warn or refuse rather than silently mis-score it.
+ *
+ * `startedAtMs` (both sources): wall-clock ms (`Date.now()`) stamped once
+ * the take actually begins. For `source: "session"` that's AFTER any
+ * count-in has finished clicking — not at the top of `play()`, which would
+ * be off by the count-in's own real-world duration — immediately before
+ * the first note is scheduled. It is metadata (when the take started), NOT
+ * an epoch `events[].time` is computed relative to for that source (those
+ * times are nominal/schedule-based — see above); don't derive session-path
+ * event times from `Date.now() - startedAtMs`. For `source:
+ * "midi-playback"`, `events[].time` IS computed as
+ * `(Date.now() - startedAtMs) / 1000` at the moment each note-on fires, so
+ * there `startedAtMs` genuinely is the epoch those times are relative to.
+ */
+export interface Recording {
+  /** Captured note events, in the order they were played. Empty when recording wasn't enabled. See the per-source time-unit doc above. */
+  events: MidiNoteEvent[];
+
+  /**
+   * Speed multiplier in effect as of the most recent play()/query (1.0 =
+   * normal) — the LIVE/current value, not the speed at record-start (see
+   * `speedAtStart` for that, on the midi-playback source). Useful for
+   * display ("what's the dial at right now"); NOT a valid divisor/
+   * multiplier for reconstructing `events[].time` from a take that
+   * included a mid-take speed change — different portions of the take may
+   * have played at different speeds.
+   */
+  speed: number;
+
+  /** Library song id — set when recorded via SessionController, undefined for MIDI-file playback. */
+  songId?: string;
+
+  /** Wall-clock ms (Date.now()) when this recording's take actually began — see the doc above for exactly when that is per source. */
+  startedAtMs: number;
+
+  /** Which playback path produced this recording. */
+  source: "midi-playback" | "session";
+
+  /**
+   * SESSION-SOURCE ONLY (`source: "session"`) — the nominal tempo (BPM at
+   * speed 1.0) this recording's `events[].time` / `.duration` are
+   * expressed relative to: `tempoOverride ?? song.tempo`, captured once
+   * when the take began and held fixed for its duration. Pass this as
+   * `scorePerformance(song, recording.events, { bpm: recording.nominalBpm })`.
+   * Undefined for `source: "midi-playback"`.
+   */
+  nominalBpm?: number;
+
+  /**
+   * SESSION-SOURCE ONLY — `effectiveTempo()` (nominalBpm × speed) at the
+   * moment this take began. Informational only (what the playback actually
+   * sounded like at the start) — NOT used to interpret `events[].time`,
+   * which is nominal (see `nominalBpm`). Undefined for `source:
+   * "midi-playback"`.
+   */
+  effectiveBpmAtStart?: number;
+
+  /**
+   * MIDI-PLAYBACK-SOURCE ONLY (`source: "midi-playback"`) — the speed
+   * multiplier in effect when this take began, captured once (unlike
+   * `speed` above, which always reflects the current/live value).
+   * Undefined for `source: "session"`, which sidesteps needing this by
+   * recording nominal time directly (see `nominalBpm`).
+   */
+  speedAtStart?: number;
+
+  /**
+   * MIDI-PLAYBACK-SOURCE ONLY — true if `setSpeed()` was called at least
+   * once after this take began, i.e. the take was not played at one
+   * constant speed throughout. `events[].time` / `.duration` remain real
+   * wall-clock values either way (see above) — this is a warning flag: no
+   * single bpm converts a mixed-speed take's wall-clock times back to a
+   * consistent song-time, so a scorer/consumer should treat this as
+   * unrecoverable-to-nominal-time and warn or refuse rather than silently
+   * mis-score it. Always `false`/undefined for `source: "session"`.
+   */
+  speedChangedDuringTake?: boolean;
 }
 
 // ─── Parse Warning ──────────────────────────────────────────────────────────

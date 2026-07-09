@@ -4,7 +4,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { writeMidi } from "midi-file";
 import { parseMidiBuffer } from "../midi/parser.js";
 import { PlaybackController, createPlaybackController } from "./controls.js";
-import type { AnyPlaybackEvent, StateChangeEvent, SpeedChangeEvent } from "./controls.js";
+import type { AnyPlaybackEvent, StateChangeEvent, SpeedChangeEvent, PlaybackControllerOptions } from "./controls.js";
 import type { VmpkConnector, MidiStatus, MidiNote } from "../types.js";
 
 // ─── Test Helpers ───────────────────────────────────────────────────────────
@@ -65,7 +65,7 @@ function createMockConnector(): VmpkConnector & { calls: Array<{ method: string;
   };
 }
 
-function createTestController(noteCount = 3) {
+function createTestController(noteCount = 3, options: PlaybackControllerOptions = {}) {
   const notes = [];
   for (let i = 0; i < noteCount; i++) {
     notes.push({ note: 60 + i, velocity: 100, startTick: i * 480, endTick: (i + 1) * 480 });
@@ -73,7 +73,7 @@ function createTestController(noteCount = 3) {
   const buf = buildMidi(notes);
   const parsed = parseMidiBuffer(buf);
   const connector = createMockConnector();
-  const controller = new PlaybackController(connector, parsed);
+  const controller = new PlaybackController(connector, parsed, options);
   return { controller, connector, parsed };
 }
 
@@ -383,6 +383,134 @@ describe("PlaybackController", () => {
       controller.reset();
       const resetEvent = events.find((e) => e.state === "idle");
       expect(resetEvent).toBeDefined();
+    });
+  });
+
+  // ── Recording (Wave S1) ──────────────────────────────────────────────
+
+  describe("getRecording()", () => {
+    it("is empty when record is not enabled (default)", async () => {
+      const { controller } = createTestController(3);
+      await controller.play({ speed: 4 });
+
+      const rec = controller.getRecording();
+      expect(rec.events).toEqual([]);
+      expect(rec.source).toBe("midi-playback");
+    });
+
+    it("captures played notes with wall-clock time/duration when record is enabled", async () => {
+      const { controller } = createTestController(3, { record: true });
+      await controller.play({ speed: 4 }); // fast, to keep the test quick
+
+      const rec = controller.getRecording();
+      expect(rec.source).toBe("midi-playback");
+      expect(rec.events.length).toBe(3);
+
+      // Real wall-clock timing (at played speed) — assert sanity/ordering
+      // rather than exact milliseconds, to avoid CI timing flakiness.
+      for (let i = 0; i < rec.events.length; i++) {
+        expect(rec.events[i].note).toBe(60 + i);
+        expect(rec.events[i].time).toBeGreaterThanOrEqual(0);
+        expect(rec.events[i].duration).toBeGreaterThan(0);
+      }
+      expect(rec.events[1].time).toBeGreaterThan(rec.events[0].time);
+      expect(rec.events[2].time).toBeGreaterThan(rec.events[1].time);
+
+      // At speed 4, a quarter note (500ms at speed 1) plays in ~125ms real
+      // time — a generous upper bound that still catches a gross regression
+      // (e.g. speed not applied, or recording using logical instead of
+      // wall-clock time).
+      expect(rec.events[0].duration).toBeLessThan(0.5);
+    });
+
+    it("reflects the current engine speed, not the speed at record-start", () => {
+      const { controller } = createTestController(3);
+      controller.setSpeed(2.0);
+      expect(controller.getRecording().speed).toBe(2.0);
+    });
+
+    // ── speedAtStart / speedChangedDuringTake (nominal-time contract fix-up) ──
+    //
+    // `speed` (above) is always the LIVE/current value, which makes it
+    // impossible to reconstruct a MIDI-playback recording's timing once a
+    // mid-take setSpeed() has moved it on: different portions of the take
+    // may have played at different speeds. speedAtStart captures the
+    // take's starting speed once; speedChangedDuringTake flags a take that
+    // is unrecoverable to a single-bpm-normalized timeline.
+
+    it("speedAtStart captures the speed at record-start, not the live/current speed", async () => {
+      const { controller } = createTestController(3, { record: true });
+      await controller.play({ speed: 4 });
+      controller.setSpeed(1.0); // change speed AFTER the take finished recording
+
+      const rec = controller.getRecording();
+      expect(rec.speedAtStart).toBe(4);
+      expect(rec.speed).toBe(1.0); // live/current — unchanged meaning from above
+    });
+
+    it("speedChangedDuringTake is false when speed never changes during the take", async () => {
+      const { controller } = createTestController(3, { record: true });
+      await controller.play({ speed: 2 });
+      expect(controller.getRecording().speedChangedDuringTake).toBe(false);
+    });
+
+    it("speedChangedDuringTake becomes true after a mid-take setSpeed() call", async () => {
+      const { controller } = createTestController(20, { record: true });
+      const playPromise = controller.play({ speed: 2 });
+      await new Promise((r) => setTimeout(r, 10));
+      controller.setSpeed(4); // mid-take speed change
+      controller.pause();
+      await playPromise;
+
+      expect(controller.getRecording().speedChangedDuringTake).toBe(true);
+    });
+
+    it("a fresh play() after stop() resets speedAtStart/speedChangedDuringTake for the new take", async () => {
+      const { controller } = createTestController(20, { record: true });
+      const playPromise = controller.play({ speed: 2 });
+      await new Promise((r) => setTimeout(r, 10));
+      controller.setSpeed(4);
+      controller.stop();
+      await playPromise;
+      expect(controller.getRecording().speedChangedDuringTake).toBe(true);
+
+      const secondPlayPromise = controller.play({ speed: 3 }); // fresh start (stopped -> playing)
+      // _recording is reset synchronously at the top of play(), before its
+      // first internal await — readable immediately, no need to wait for
+      // playback to finish.
+      expect(controller.getRecording().speedChangedDuringTake).toBe(false);
+      expect(controller.getRecording().speedAtStart).toBe(3);
+
+      controller.stop(); // clean up rather than waiting out the full (slower) playback
+      await secondPlayPromise;
+    });
+
+    it("getRecording() without record enabled still has a well-formed speedAtStart/speedChangedDuringTake (harmless defaults)", () => {
+      const { controller } = createTestController(3);
+      const rec = controller.getRecording();
+      expect(rec.speedAtStart).toBe(1.0);
+      expect(rec.speedChangedDuringTake).toBe(false);
+    });
+
+    it("a fresh play() after stop() starts a new recording (does not carry over)", async () => {
+      const { controller } = createTestController(3, { record: true });
+      await controller.play({ speed: 4 });
+      expect(controller.getRecording().events.length).toBe(3);
+
+      controller.stop();
+      await controller.play({ speed: 4 }); // fresh start (stopped -> playing)
+      expect(controller.getRecording().events.length).toBe(3); // not 6 — old recording discarded
+    });
+
+    it("createPlaybackController passes constructor options through", async () => {
+      const buf = buildMidi([{ note: 60, velocity: 100, startTick: 0, endTick: 480 }]);
+      const parsed = parseMidiBuffer(buf);
+      const connector = createMockConnector();
+      const controller = createPlaybackController(connector, parsed, { record: true });
+
+      await controller.play({ speed: 4 });
+      expect(controller.getRecording().events.length).toBe(1);
+      expect(controller.getRecording().source).toBe("midi-playback");
     });
   });
 });

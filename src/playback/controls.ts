@@ -6,7 +6,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { ParsedMidi, MidiNoteEvent } from "../midi/types.js";
-import type { VmpkConnector, TeachingHook, ProgressCallback } from "../types.js";
+import type { VmpkConnector, TeachingHook, ProgressCallback, Recording } from "../types.js";
 import { MidiPlaybackEngine } from "./midi-engine.js";
 import type { MidiPlaybackState } from "./midi-engine.js";
 import { midiToNoteName } from "../note-parser.js";
@@ -101,6 +101,15 @@ export interface PlaybackControlOptions {
   signal?: AbortSignal;
 }
 
+/** Constructor options for PlaybackController. */
+export interface PlaybackControllerOptions {
+  /**
+   * Opt in to recording played notes — retrieve via getRecording()
+   * (default: false).
+   */
+  record?: boolean;
+}
+
 // ─── PlaybackController ─────────────────────────────────────────────────────
 
 /**
@@ -121,11 +130,26 @@ export class PlaybackController {
   private wrappedConnector: VmpkConnector | null = null;
   private playbackGeneration = 0;
 
+  // ─── Recording (see getRecording()) ──
+  private readonly _recordEnabled: boolean;
+  private _recording: Recording = {
+    events: [],
+    speed: 1.0,
+    startedAtMs: 0,
+    source: "midi-playback",
+    speedAtStart: 1.0,
+    speedChangedDuringTake: false,
+  };
+  /** Notes currently sounding, keyed "channel-note" — paired with the matching noteOff to finalize a recorded MidiNoteEvent. */
+  private _openRecordedNotes = new Map<string, { note: number; velocity: number; time: number; channel: number }>();
+
   constructor(
     private readonly connector: VmpkConnector,
-    public readonly midi: ParsedMidi
+    public readonly midi: ParsedMidi,
+    options: PlaybackControllerOptions = {}
   ) {
     this.engine = new MidiPlaybackEngine(connector, midi);
+    this._recordEnabled = options.record ?? false;
   }
 
   // ─── State Accessors ────────────────────────────────────────────────────
@@ -136,6 +160,20 @@ export class PlaybackController {
   get positionSeconds(): number { return this.engine.positionSeconds; }
   get eventsPlayed(): number { return this.engine.eventsPlayed; }
   get totalEvents(): number { return this.engine.totalEvents; }
+
+  /**
+   * Get the current recording (`source: "midi-playback"`). See the
+   * `Recording` type for time-unit semantics. Always returns a valid
+   * Recording — `events` is empty when `record` wasn't enabled in the
+   * constructor or nothing has played yet, never null/undefined.
+   */
+  getRecording(): Recording {
+    return {
+      ...this._recording,
+      speed: this.engine.speed, // always the current speed, not the speed at record-start
+      events: [...this._recording.events],
+    };
+  }
 
   // ─── Event System ───────────────────────────────────────────────────────
 
@@ -211,6 +249,27 @@ export class PlaybackController {
       const generation = ++this.playbackGeneration;
       this.wrappedConnector = this.createWrappedConnector(generation);
       this.engine = new MidiPlaybackEngine(this.wrappedConnector, this.midi);
+
+      if (this._recordEnabled) {
+        // Fresh start only — resuming from a pause keeps accumulating into
+        // the same recording rather than starting a new one, mirroring how
+        // wrappedConnector itself is only recreated on a fresh start.
+        const startSpeed = options.speed ?? this.engine.speed;
+        this._recording = {
+          events: [],
+          speed: startSpeed,
+          startedAtMs: Date.now(),
+          source: "midi-playback",
+          // Captured once, here — unlike `speed` above (kept live/current
+          // for backward-compat + display), this stays fixed for the whole
+          // take so a caller can tell what speed a take STARTED at even
+          // after setSpeed() has since moved `speed` on. See
+          // speedChangedDuringTake for whether it moved mid-take.
+          speedAtStart: startSpeed,
+          speedChangedDuringTake: false,
+        };
+        this._openRecordedNotes.clear();
+      }
     }
 
     // Emit state change
@@ -317,6 +376,15 @@ export class PlaybackController {
   setSpeed(speed: number): void {
     const prev = this.engine.speed;
     this.engine.setSpeed(speed);
+    if (this._recordEnabled) {
+      // Flags this take as mixed-speed (see Recording.speedChangedDuringTake)
+      // — events[].time/.duration for this source stay real wall-clock
+      // either way, but a mixed-speed take has no single bpm that converts
+      // them back to a consistent song-time, so downstream scoring should
+      // know. Harmless to set before any take has actually started — a
+      // fresh play() replaces `_recording` wholesale, clearing it.
+      this._recording.speedChangedDuringTake = true;
+    }
     this.emit({
       type: "speedChange",
       state: this.engine.state,
@@ -354,6 +422,17 @@ export class PlaybackController {
         inner.noteOn(note, velocity, channel);
 
         const ch = channel ?? 0;
+
+        // ── Recording tap (see PlaybackController.getRecording()) ──
+        // Times are real wall-clock seconds since this recording's
+        // startedAtMs — i.e. "at played speed," not normalized (see the
+        // Recording type doc). Opened here, finalized (with a duration) on
+        // the matching noteOff below.
+        if (self._recordEnabled) {
+          const t = (Date.now() - self._recording.startedAtMs) / 1000;
+          self._openRecordedNotes.set(`${ch}-${note}`, { note, velocity, time: t, channel: ch });
+        }
+
         const eventIndex = self.engine.eventsPlayed + 1;
         const event: NoteOnEvent = {
           type: "noteOn",
@@ -384,6 +463,29 @@ export class PlaybackController {
         if (generation !== self.playbackGeneration) return;
         inner.noteOff(note, channel);
 
+        // ── Recording tap: finalize the matching noteOn, if any ──
+        // A noteOff with no open noteOn (e.g. a stray allNotesOff-driven
+        // off, or recording toggled off mid-note) has nothing to finalize
+        // and is silently ignored, same as the FIFO-pairing connectors
+        // elsewhere in this codebase tolerate an unpaired noteOff.
+        if (self._recordEnabled) {
+          const ch = channel ?? 0;
+          const key = `${ch}-${note}`;
+          const open = self._openRecordedNotes.get(key);
+          if (open) {
+            self._openRecordedNotes.delete(key);
+            const now = (Date.now() - self._recording.startedAtMs) / 1000;
+            const event: MidiNoteEvent = {
+              note: open.note,
+              velocity: open.velocity,
+              time: open.time,
+              duration: Math.max(0, now - open.time),
+              channel: open.channel,
+            };
+            self._recording.events.push(event);
+          }
+        }
+
         self.emit({
           type: "noteOff",
           state: self.engine.state,
@@ -411,11 +513,12 @@ export class PlaybackController {
 
 /**
  * Create a PlaybackController for a parsed MIDI file.
- * Shorthand for `new PlaybackController(connector, midi)`.
+ * Shorthand for `new PlaybackController(connector, midi, options)`.
  */
 export function createPlaybackController(
   connector: VmpkConnector,
-  midi: ParsedMidi
+  midi: ParsedMidi,
+  options?: PlaybackControllerOptions
 ): PlaybackController {
-  return new PlaybackController(connector, midi);
+  return new PlaybackController(connector, midi, options);
 }
