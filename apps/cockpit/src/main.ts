@@ -1,13 +1,25 @@
 // ─── Cockpit Main ────────────────────────────────────────────────────────────
 //
-// UI wiring for the Cockpit (Instrument + Vocal modes):
+// UI wiring for the Cockpit (Instrument + Vocal modes). This file is DOM
+// wiring only — the score model lives in state.ts, beat/tempo math in
+// time.ts, playback scheduling in transport.ts, and autosave shape in
+// persistence.ts. Every note mutation here calls into state.ts's mutation
+// API rather than touching a note object's fields directly (that API is
+// the seam a future undo/redo wave hooks); every play/pause/stop/scheduling
+// concern calls into transport.ts.
+//
 //   - Dual-mode piano roll — pitch-class colors (instrument) or vowel colors
 //     (vocal) with per-note vowel/breathiness metadata
 //   - Visual keyboard with QWERTY mapping + MIDI input
 //   - Note inspector (velocity + vocal params when in vocal mode)
-//   - Transport (play, stop, loop) with per-note vowel switching
+//   - Transport (play/pause, stop, loop) with per-note vowel switching
 //   - LLM-facing score API: exportScore() / importScore() / window.__cockpit
 //   - Telemetry dashboard (voice count, preset, tuning, reference pitch)
+//
+// boot() still runs unconditionally at this module's top level (below), so
+// main.ts remains the one module in this app that's NOT safe to import from
+// a Node/vitest test — same constraint as before the module split. Nothing
+// else may import main.ts.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import {
@@ -24,49 +36,53 @@ import {
   serializeCockpitState, deserializeCockpitState, STORAGE_KEY,
   type CockpitPersistedState,
 } from "./persistence.js";
+import * as state from "./state.js";
+import { MIDI_LO, MIDI_HI, type Note, type NoteInit } from "./state.js";
+import {
+  DEFAULT_BPM, PX_PER_BEAT, SCORE_BEATS,
+  QUANTIZE_GRID_BEATS, DEFAULT_NOTE_DURATION_BEATS,
+  clampBpm, beatsToSeconds, secondsToBeats, quantizeBeats,
+} from "./time.js";
+import { createTransport, type Transport } from "./transport.js";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-interface Note {
-  id: string;
-  midi: number;
-  startSec: number;
-  durationSec: number;
-  velocity: number;
-  // ── Vocal metadata (present when created in vocal mode) ──
-  vowel?: VowelId;
-  breathiness?: number; // 0–1
-  lyric?: string;       // free-text syllable label (future)
-}
-
-/** Serialisable score snapshot for LLM import/export */
+/**
+ * Serialisable score snapshot for LLM import/export (window.__cockpit,
+ * the #score-json textarea).
+ *
+ * version 2 = current, BEATS-based notes (startBeat/durationBeats — see
+ * time.ts's file header for why the app stores beats now). exportScore()
+ * below only ever produces version 2.
+ *
+ * version 1 = legacy, SECONDS-based notes (startSec/durationSec) from
+ * before the beat-based time model. importScore() still ACCEPTS version-1
+ * snapshots (and individual legacy-shaped notes even under a version-2
+ * envelope) for backward compatibility with anything previously exported —
+ * see validateImportedNote()'s doc comment for exactly how the conversion
+ * works and which bpm it uses.
+ */
 interface ScoreSnapshot {
-  version: 1;
+  version: 1 | 2;
   mode: "instrument" | "vocal";
   bpm: number;
   voice: string;
   vocalVoice?: string;
   tuning: string;
   refPitch: number;
-  notes: Omit<Note, "id">[];
+  notes: NoteInit[];
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const ROW_H = 14;
-const MIDI_LO = 36;
-const MIDI_HI = 96;
 const ROWS = MIDI_HI - MIDI_LO + 1;
-const PX_PER_SEC = 120;
-const SCORE_SECS = 32;
-const PR_WIDTH = SCORE_SECS * PX_PER_SEC;
+const PR_WIDTH = SCORE_BEATS * PX_PER_BEAT;
 const PR_HEIGHT = ROWS * ROW_H;
 /** Hard cap on notes accepted by a single score import — an unbounded count
  *  renders one absolutely-positioned DOM element per note synchronously and
  *  can lock the tab (F-A1: score-size bomb). */
 const MAX_IMPORT_NOTES = 5000;
-const BPM_MIN = 20;
-const BPM_MAX = 400;
 
 const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const IS_BLACK = [false, true, false, true, false, false, true, false, true, false, true, false];
@@ -101,21 +117,22 @@ const QWERTY: Record<string, number> = {
 const QWERTY_LABELS: Record<number, string> = {};
 for (const [code, v] of Object.entries(QWERTY)) QWERTY_LABELS[v] = code.replace(/^Key|^Digit/, "");
 
+const PLAY_ICON_SVG = '<svg class="icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M5 3 L12 8 L5 13 Z"/></svg>';
+const PAUSE_ICON_SVG = '<svg class="icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><rect x="4" y="3" width="2.6" height="10" rx="0.5"/><rect x="9.4" y="3" width="2.6" height="10" rx="0.5"/></svg>';
+
 // ─── State ───────────────────────────────────────────────────────────────────
+//
+// The score itself (notes + selection) lives in state.ts; playback position/
+// scheduling lives in transport.ts. What's left here is UI-only state: which
+// engine is active, live-performance held-key tracking, and the tuning-audit
+// panel's working copy of custom cents.
 
 let synth: Synth;
 let vocalSynth: VocalSynth;
+let transport: Transport;
 let mode: "instrument" | "vocal" = "instrument";
-const score: Note[] = [];
-let selectedNote: Note | null = null;
-let isPlaying = false;
 let looping = false;
-let playPosition = 0;
-let playStartAudio = 0;
-let playStartOffset = 0;
-let bpm = 120;
-let nextId = 1;
-let animFrame = 0;
+let bpm = DEFAULT_BPM;
 const heldKeys = new Set<string>();
 const heldMidi = new Set<number>();
 let intervalRoot = 60; // C4
@@ -145,9 +162,10 @@ function safeNumber(input: HTMLInputElement, prevValue: number, asFloat = false)
 
 /** CSS.escape()-safe [data-note-id="..."] selector. Note ids are normally our
  *  own "n123" strings, but hand-crafted/LLM-generated import JSON can carry
- *  arbitrary id values (see the id-override guard in importScore/addNote) —
- *  an unescaped id containing a quote or bracket would throw a SyntaxError
- *  here instead of just failing to match (F-A1: unsafe note-id selectors). */
+ *  arbitrary id values (see the id-override guard in state.ts's addNote/
+ *  replaceScore) — an unescaped id containing a quote or bracket would throw
+ *  a SyntaxError here instead of just failing to match (F-A1: unsafe
+ *  note-id selectors). */
 const noteSelector = (id: string) => `[data-note-id="${CSS.escape(id)}"]`;
 
 // ─── Persistence ─────────────────────────────────────────────────────────────
@@ -196,7 +214,7 @@ function saveStateNow() {
   if (suppressNextAutosave) { suppressNextAutosave = false; return; }
   const tuning = synth.getTuning();
   const json = serializeCockpitState({
-    score: score.map(({ id: _id, ...rest }) => rest),
+    score: state.getScore().map(({ id: _id, ...rest }) => rest),
     bpm,
     engine: ($("sel-voice") as HTMLSelectElement).value,
     voice: ($("sel-vocal-voice") as HTMLSelectElement).value,
@@ -232,30 +250,34 @@ function onStateChanged() {
  * limitation of ScoreSnapshot shared with manual Export/Import); since this
  * persisted schema tracks both engines' voices explicitly, the other
  * engine's pick is restored separately right after.
+ *
+ * persistence.ts's deserializeCockpitState already migrates v1/v2 (seconds)
+ * blobs to v3 (beats) internally, so `persisted.score` here is always
+ * beats-shaped — no conversion needed at this layer.
  */
 function restoreFromStorage(): boolean {
   const raw = safeLoadRaw();
   if (!raw) return false;
-  const state: CockpitPersistedState | null = deserializeCockpitState(raw);
-  if (!state) return false;
+  const persisted: CockpitPersistedState | null = deserializeCockpitState(raw);
+  if (!persisted) return false;
 
   importScore({
-    version: 1,
-    mode: state.mode,
-    bpm: state.bpm,
-    voice: state.mode === "vocal" ? state.voice : state.engine,
-    vocalVoice: state.voice,
-    tuning: state.tuning,
-    refPitch: state.refPitch,
-    notes: state.score,
+    version: 2,
+    mode: persisted.mode,
+    bpm: persisted.bpm,
+    voice: persisted.mode === "vocal" ? persisted.voice : persisted.engine,
+    vocalVoice: persisted.voice,
+    tuning: persisted.tuning,
+    refPitch: persisted.refPitch,
+    notes: persisted.score,
   });
 
-  if (state.mode === "vocal") {
-    ($("sel-voice") as HTMLSelectElement).value = state.engine;
-    synth.setVoice(state.engine as VoiceId);
+  if (persisted.mode === "vocal") {
+    ($("sel-voice") as HTMLSelectElement).value = persisted.engine;
+    synth.setVoice(persisted.engine as VoiceId);
   } else {
-    ($("sel-vocal-voice") as HTMLSelectElement).value = state.voice;
-    vocalSynth.setVoice(state.voice as VocalVoiceId);
+    ($("sel-vocal-voice") as HTMLSelectElement).value = persisted.voice;
+    vocalSynth.setVoice(persisted.voice as VocalVoiceId);
   }
 
   // Restore the actual custom cent offsets when the persisted tuning is
@@ -264,15 +286,15 @@ function restoreFromStorage(): boolean {
   // the user actually dialed in (F-A1-004). Order matters: setCustomTuning()
   // must run before vocalSynth.setTuning() so the vocal engine picks up the
   // freshly-applied cents — same order "Apply Custom" already uses.
-  if (state.tuning === "custom" && state.customCents) {
-    synth.setCustomTuning(state.customCents);
+  if (persisted.tuning === "custom" && persisted.customCents) {
+    synth.setCustomTuning(persisted.customCents);
     vocalSynth.setTuning("custom");
     for (let pc = 0; pc < 12; pc++) {
-      CUSTOM_CENTS[pc] = state.customCents[pc];
+      CUSTOM_CENTS[pc] = persisted.customCents[pc];
       const slider = document.querySelector<HTMLInputElement>(`input[data-pc="${pc}"]`);
-      if (slider) slider.value = String(state.customCents[pc]);
+      if (slider) slider.value = String(persisted.customCents[pc]);
       const val = document.getElementById("cv-" + pc);
-      if (val) val.textContent = state.customCents[pc] + "¢";
+      if (val) val.textContent = persisted.customCents[pc] + "¢";
     }
     updateTuningTable();
     updateTelemetry();
@@ -298,6 +320,35 @@ function reportAudioError(context: string, err: unknown) {
 async function init() {
   synth = createSynth();
   vocalSynth = createVocalSynth();
+  transport = createTransport({
+    getContext: () => (mode === "vocal" ? vocalSynth.getContext() : synth.getContext()),
+    resumeContexts: () => {
+      const c1 = synth.getContext();
+      const c2 = vocalSynth.getContext();
+      if (c1 && c1.state === "suspended") c1.resume().catch((err) => reportAudioError("resume", err));
+      if (c2 && c2.state === "suspended") c2.resume().catch((err) => reportAudioError("resume", err));
+    },
+    noteOn: (midi, velocity, time) => activeNoteOn(midi, velocity, time),
+    noteOff: (midi, time) => activeNoteOff(midi, time),
+    allNotesOff: () => silenceEngines(),
+    isVocalMode: () => mode === "vocal",
+    setVowel: (v) => vocalSynth.setVowel(v),
+    setBreathiness: (b) => vocalSynth.setBreathiness(b),
+    getScore: () => state.getScore(),
+    getBpm: () => bpm,
+    isLooping: () => looping,
+    onTick: (positionBeats) => {
+      const ph = $("playhead") as HTMLElement;
+      // Visible whenever playing OR paused mid-score (position > 0) — hidden
+      // only once stop() has driven position all the way back to 0.
+      ph.style.display = (transport.isPlaying() || positionBeats > 0) ? "block" : "none";
+      ph.style.left = positionBeats * PX_PER_BEAT + "px";
+      updateTransportTime(positionBeats);
+    },
+    onPlayStateChange: (isPlayingNow) => {
+      $("btn-play").innerHTML = isPlayingNow ? PAUSE_ICON_SVG : PLAY_ICON_SVG;
+    },
+  });
   // A construction/connect failure (rare, but possible if the browser
   // refuses to hand out an AudioContext at all) used to reject init()
   // silently — boot()'s top-level .catch(console.error) only logs to the
@@ -313,6 +364,7 @@ async function init() {
   bindAutoplayUnlock();
   populateSelectors();
   buildPianoRoll();
+  centerRollOnMiddleC();
   buildKeyboard();
   bindControls();
   bindMidi();
@@ -326,10 +378,13 @@ async function init() {
   // A held key or a scheduled score playing when the tab loses focus should
   // not drone on until the user finds Panic — release everything on blur or
   // when the tab is hidden, matching standard on-screen-instrument behavior
-  // (F-A1: stuck notes on focus loss). Also autosave on the same hidden
-  // transition, plus pagehide, since a debounced autosave timer may not
-  // have fired yet if the tab is closed/backgrounded right after an edit
-  // (F-B1-001).
+  // (F-A1: stuck notes on focus loss), AND pause score playback (position
+  // preserved, not discarded) rather than leaving the lookahead scheduler
+  // running silently in the background — see panic()'s doc comment for why
+  // that pause is now required (Wave C0 fix). Also autosave on the same
+  // hidden transition, plus pagehide, since a debounced autosave timer may
+  // not have fired yet if the tab is closed/backgrounded right after an
+  // edit (F-B1-001).
   window.addEventListener("blur", panic);
   document.addEventListener("visibilitychange", () => { if (document.hidden) { panic(); saveStateNow(); } });
   window.addEventListener("pagehide", saveStateNow);
@@ -351,6 +406,21 @@ function bindAutoplayUnlock() {
   };
   window.addEventListener("pointerdown", unlock, { once: true });
   window.addEventListener("keydown", unlock, { once: true });
+}
+
+/** Scroll the piano roll so MIDI 60 (C4) is vertically centered — called
+ *  once at boot. Previously nothing ever set scrollTop, so the roll opened
+ *  scrolled to its top (near C7) while the QWERTY keyboard's home row maps
+ *  to C4 (KeyZ=60) — the visible default view and the default playable
+ *  range didn't match (F-A1: initial scroll position doesn't match default
+ *  playable range). Assigning scrollTop beyond the scrollable max is
+ *  clamped by the browser itself, so there's no need to clamp against
+ *  scrollHeight here. */
+function centerRollOnMiddleC() {
+  const container = $("piano-roll-container");
+  if (!container.clientHeight) return; // not laid out yet — nothing sane to center against
+  const rowTop = (MIDI_HI - 60) * ROW_H;
+  container.scrollTop = Math.max(0, rowTop - container.clientHeight / 2 + ROW_H / 2);
 }
 
 // ─── Selectors ───────────────────────────────────────────────────────────────
@@ -474,6 +544,15 @@ function activeNoteOff(midi: number, time?: number) {
   else synth.noteOff(midi, time);
 }
 
+/** Silence both engines immediately — the shared body behind both panic()
+ *  (which additionally clears live-performance held-key UI state) and
+ *  transport's pause()/stop() (which must NOT touch held-key state, since
+ *  those are live-play concerns independent of score playback). */
+function silenceEngines() {
+  synth.allNotesOff();
+  vocalSynth.allNotesOff();
+}
+
 // ─── Piano Roll ──────────────────────────────────────────────────────────────
 
 function buildPianoRoll() {
@@ -502,7 +581,9 @@ function buildPianoRoll() {
     }
   }
 
-  // Vertical beat lines
+  // Vertical beat lines — bpm-independent (PX_PER_BEAT is a fixed
+  // pixels-per-BEAT scale), so unlike the old seconds-based grid this is
+  // drawn exactly once and never needs to be redrawn on a bpm change.
   drawBeatLines();
 
   // Click empty space → add note
@@ -513,13 +594,12 @@ function buildPianoRoll() {
     const y = e.clientY - rect.top;
     const midi = MIDI_HI - Math.floor(y / ROW_H);
     if (midi < MIDI_LO || midi > MIDI_HI) return;
-    const startSec = quantize(x / PX_PER_SEC);
-    const note: Note = {
-      id: "n" + nextId++, midi, startSec,
-      durationSec: 60 / bpm, velocity: 100,
+    const startBeat = quantizeBeats(x / PX_PER_BEAT);
+    const note = state.addNote({
+      midi, startBeat,
+      durationBeats: DEFAULT_NOTE_DURATION_BEATS, velocity: 100,
       ...(mode === "vocal" ? { vowel: vocalSynth.getVowel(), breathiness: getCurrentBreathiness() } : {}),
-    };
-    score.push(note);
+    });
     renderNote(note);
     selectNote(note);
     onStateChanged();
@@ -529,28 +609,14 @@ function buildPianoRoll() {
   });
 }
 
-function quantize(sec: number): number {
-  const grid = 60 / bpm / 4;
-  // Structural guard, independent of whatever validated bpm should be: a
-  // non-positive/non-finite grid would make Math.round(sec/grid) NaN or
-  // Infinity and corrupt note placement (F-A1-002).
-  if (!Number.isFinite(grid) || grid <= 0) return Math.max(0, sec);
-  return Math.max(0, Math.round(sec / grid) * grid);
-}
-
 function drawBeatLines() {
   document.querySelectorAll(".pr-beat-line").forEach((el) => el.remove());
   const pr = $("piano-roll");
-  const beatSec = 60 / bpm;
-  // Structural guard regardless of upstream bpm clamping — a non-positive or
-  // non-finite beatSec would make this loop increment by 0/NaN and never
-  // terminate, appending DOM nodes until the tab freezes/OOMs (F-A1-002).
-  if (!Number.isFinite(beatSec) || beatSec <= 0) return;
-  for (let t = 0; t < SCORE_SECS; t += beatSec) {
+  for (let b = 0; b <= SCORE_BEATS; b++) {
     const div = document.createElement("div");
     div.className = "pr-beat-line";
-    if (Math.round(t / beatSec) % 4 === 0) div.classList.add("bar");
-    div.style.left = t * PX_PER_SEC + "px";
+    if (b % 4 === 0) div.classList.add("bar");
+    div.style.left = b * PX_PER_BEAT + "px";
     pr.appendChild(div);
   }
 }
@@ -578,9 +644,9 @@ function renderNote(note: Note) {
     e.stopPropagation();
     selectNote(note);
     const startX = e.clientX;
-    const startDur = note.durationSec;
+    const startDur = note.durationBeats;
     const onMove = (e2: MouseEvent) => {
-      note.durationSec = Math.max(60 / bpm / 4, quantize(startDur + (e2.clientX - startX) / PX_PER_SEC) || 60 / bpm / 4);
+      state.resizeNote(note, quantizeBeats(startDur + (e2.clientX - startX) / PX_PER_BEAT));
       positionNote(el, note);
     };
     const onUp = () => {
@@ -598,11 +664,12 @@ function renderNote(note: Note) {
     e.stopPropagation();
     selectNote(note);
     const startX = e.clientX, startY = e.clientY;
-    const origSec = note.startSec, origMidi = note.midi;
+    const origBeat = note.startBeat, origMidi = note.midi;
 
     const onMove = (e2: MouseEvent) => {
-      note.startSec = Math.max(0, quantize(origSec + (e2.clientX - startX) / PX_PER_SEC));
-      note.midi = Math.max(MIDI_LO, Math.min(MIDI_HI, origMidi - Math.round((e2.clientY - startY) / ROW_H)));
+      const newBeat = quantizeBeats(origBeat + (e2.clientX - startX) / PX_PER_BEAT);
+      const newMidi = origMidi - Math.round((e2.clientY - startY) / ROW_H);
+      state.moveNote(note, newBeat, newMidi);
       applyNoteStyle(el, note);
       positionNote(el, note);
       updateInspector();
@@ -620,9 +687,9 @@ function renderNote(note: Note) {
 }
 
 function positionNote(el: HTMLElement, note: Note) {
-  el.style.left = note.startSec * PX_PER_SEC + "px";
+  el.style.left = note.startBeat * PX_PER_BEAT + "px";
   el.style.top = (MIDI_HI - note.midi) * ROW_H + "px";
-  el.style.width = Math.max(8, note.durationSec * PX_PER_SEC) + "px";
+  el.style.width = Math.max(8, note.durationBeats * PX_PER_BEAT) + "px";
   el.style.height = ROW_H - 1 + "px";
 }
 
@@ -644,15 +711,16 @@ function applyNoteStyle(el: HTMLElement, note: Note) {
 /** Remove + re-render every note (called on mode switch) */
 function rerenderAllNotes() {
   document.querySelectorAll(".pr-note").forEach(el => el.remove());
-  for (const n of score) renderNote(n);
-  if (selectedNote) {
-    document.querySelector(noteSelector(selectedNote.id))?.classList.add("selected");
+  for (const n of state.getScore()) renderNote(n);
+  const selected = state.getSelectedNote();
+  if (selected) {
+    document.querySelector(noteSelector(selected.id))?.classList.add("selected");
   }
 }
 
 function selectNote(note: Note | null) {
   document.querySelectorAll(".pr-note.selected").forEach((el) => el.classList.remove("selected"));
-  selectedNote = note;
+  state.selectNote(note);
   if (note) {
     document.querySelector(noteSelector(note.id))?.classList.add("selected");
   }
@@ -660,11 +728,9 @@ function selectNote(note: Note | null) {
 }
 
 function deleteSelectedNote() {
-  if (!selectedNote) return;
-  const i = score.indexOf(selectedNote);
-  if (i >= 0) score.splice(i, 1);
-  document.querySelector(noteSelector(selectedNote.id))?.remove();
-  selectedNote = null;
+  const removed = state.deleteSelectedNote();
+  if (!removed) return;
+  document.querySelector(noteSelector(removed.id))?.remove();
   updateInspector();
   onStateChanged();
 }
@@ -673,25 +739,27 @@ function deleteSelectedNote() {
  *  score is empty, hidden as soon as the first note exists. */
 function updateFirstRunHint() {
   const hint = document.getElementById("pr-hint");
-  if (hint) hint.style.display = score.length === 0 ? "" : "none";
+  if (hint) hint.style.display = state.getScore().length === 0 ? "" : "none";
 }
 
 // ─── Keyboard Note Editing (F-B1-002) ────────────────────────────────────────
 //
-// Piano-roll editing without a mouse: reuses the existing selectedNote /
-// selectNote concept (mouse-click selection already applies the `.selected`
-// CSS class — accent border + box-shadow — as the visible focus outline, so
-// nothing new is needed there). Bound from the same keydown listener as the
-// existing Space/Escape/Delete shortcuts in buildKeyboard(), so it inherits
-// the same isTypingTarget()/ctrl-meta-alt guards for free.
+// Piano-roll editing without a mouse: reuses the existing selectNote/state.
+// getSelectedNote() concept (mouse-click selection already applies the
+// `.selected` CSS class — accent border + box-shadow — as the visible focus
+// outline, so nothing new is needed there). Bound from the same keydown
+// listener as the existing Space/Escape/Delete shortcuts in buildKeyboard(),
+// so it inherits the same isTypingTarget()/ctrl-meta-alt guards for free.
 
 /** Tab / Shift-Tab — move selection to the next/previous note, ordered by
  *  start time then pitch (a stable, predictable traversal order — the
  *  score array itself is insertion-ordered, which would jump around). */
 function cycleNoteSelection(dir: 1 | -1) {
-  if (score.length === 0) return;
-  const ordered = [...score].sort((a, b) => a.startSec - b.startSec || a.midi - b.midi);
-  const curIdx = selectedNote ? ordered.indexOf(selectedNote) : -1;
+  const notes = state.getScore();
+  if (notes.length === 0) return;
+  const ordered = [...notes].sort((a, b) => a.startBeat - b.startBeat || a.midi - b.midi);
+  const selected = state.getSelectedNote();
+  const curIdx = selected ? ordered.indexOf(selected) : -1;
   const nextIdx = curIdx < 0 ? (dir > 0 ? 0 : ordered.length - 1) : (curIdx + dir + ordered.length) % ordered.length;
   selectNote(ordered[nextIdx]);
   document.querySelector(noteSelector(ordered[nextIdx].id))?.scrollIntoView({ block: "nearest", inline: "nearest" });
@@ -699,19 +767,15 @@ function cycleNoteSelection(dir: 1 | -1) {
 
 /** ArrowUp/Down (±1 semitone) and ArrowLeft/Right (±1 grid step) on the
  *  selected note — same clamp/quantize rules as mouse drag (positionNote /
- *  quantize) so keyboard and mouse edits stay consistent. */
+ *  state.moveNote) so keyboard and mouse edits stay consistent. */
 function nudgeSelectedNote(semitones: number, steps: number) {
-  if (!selectedNote) return;
-  if (semitones !== 0) {
-    selectedNote.midi = Math.max(MIDI_LO, Math.min(MIDI_HI, selectedNote.midi + semitones));
-  }
-  if (steps !== 0) {
-    const grid = 60 / bpm / 4;
-    const step = Number.isFinite(grid) && grid > 0 ? grid : 0.25;
-    selectedNote.startSec = Math.max(0, quantize(selectedNote.startSec + step * steps));
-  }
-  const el = document.querySelector<HTMLElement>(noteSelector(selectedNote.id));
-  if (el) { applyNoteStyle(el, selectedNote); positionNote(el, selectedNote); }
+  const note = state.getSelectedNote();
+  if (!note) return;
+  const newMidi = note.midi + semitones;
+  const newBeat = steps !== 0 ? quantizeBeats(note.startBeat + QUANTIZE_GRID_BEATS * steps) : note.startBeat;
+  state.moveNote(note, newBeat, newMidi);
+  const el = document.querySelector<HTMLElement>(noteSelector(note.id));
+  if (el) { applyNoteStyle(el, note); positionNote(el, note); }
   updateInspector();
   onStateChanged();
 }
@@ -721,14 +785,14 @@ function nudgeSelectedNote(semitones: number, steps: number) {
  *  rapid keyboard entry (nudge, insert, nudge, insert...) stays musically
  *  useful instead of always dropping back to middle C. */
 function insertNoteAtPlayhead() {
-  const midi = selectedNote ? selectedNote.midi : 60;
-  const startSec = quantize(playPosition);
-  const note: Note = {
-    id: "n" + nextId++, midi, startSec,
-    durationSec: 60 / bpm, velocity: 100,
-    ...(mode === "vocal" ? { vowel: selectedNote?.vowel ?? vocalSynth.getVowel(), breathiness: selectedNote?.breathiness ?? getCurrentBreathiness() } : {}),
-  };
-  score.push(note);
+  const selected = state.getSelectedNote();
+  const midi = selected ? selected.midi : 60;
+  const startBeat = quantizeBeats(transport.getPositionBeats());
+  const note = state.addNote({
+    midi, startBeat,
+    durationBeats: DEFAULT_NOTE_DURATION_BEATS, velocity: 100,
+    ...(mode === "vocal" ? { vowel: selected?.vowel ?? vocalSynth.getVowel(), breathiness: selected?.breathiness ?? getCurrentBreathiness() } : {}),
+  });
   renderNote(note);
   selectNote(note);
   document.querySelector(noteSelector(note.id))?.scrollIntoView({ block: "nearest", inline: "nearest" });
@@ -739,24 +803,26 @@ function insertNoteAtPlayhead() {
 
 function updateInspector() {
   const insp = $("inspector");
-  if (!selectedNote) { insp.classList.remove("active"); return; }
+  const note = state.getSelectedNote();
+  if (!note) { insp.classList.remove("active"); return; }
   insp.classList.add("active");
-  $("insp-name").textContent = noteName(selectedNote.midi);
-  ($("insp-vel") as HTMLInputElement).value = String(selectedNote.velocity);
-  $("insp-vel-val").textContent = String(selectedNote.velocity);
+  $("insp-name").textContent = noteName(note.midi);
+  ($("insp-vel") as HTMLInputElement).value = String(note.velocity);
+  $("insp-vel-val").textContent = String(note.velocity);
   // Vocal-specific inspector fields
   const vSection = $("insp-vocal");
-  if (mode === "vocal" && selectedNote.vowel) {
+  if (mode === "vocal" && note.vowel) {
     vSection.style.display = "flex";
     // Highlight active vowel
     vSection.querySelectorAll<HTMLButtonElement>(".insp-vowel-btn").forEach(b => {
-      b.classList.toggle("active", b.dataset.vowel === selectedNote!.vowel);
+      b.classList.toggle("active", b.dataset.vowel === note.vowel);
     });
-    ($('insp-breath') as HTMLInputElement).value = String(Math.round((selectedNote.breathiness ?? 0.15) * 100));
-    $("insp-breath-val").textContent = String(Math.round((selectedNote.breathiness ?? 0.15) * 100));
+    ($('insp-breath') as HTMLInputElement).value = String(Math.round((note.breathiness ?? 0.15) * 100));
+    $("insp-breath-val").textContent = String(Math.round((note.breathiness ?? 0.15) * 100));
   } else {
     vSection.style.display = "none";
-  }}
+  }
+}
 
 // ─── Keyboard ────────────────────────────────────────────────────────────────
 
@@ -861,14 +927,14 @@ function buildKeyboard() {
       // hijack it for play/pause when focus isn't on one of those
       // (F-A1: keyboard-editing scope regression).
       if (isActivatableControl(document.activeElement)) return;
-      e.preventDefault(); togglePlay(); return;
+      e.preventDefault(); transport.togglePlayPause(); return;
     }
     if (k === "escape") { panic(); return; }
     if (k === "delete" || k === "backspace") {
       // Only intercept when there's actually a note to delete — otherwise
       // this stole Backspace/Delete from every other context on the page
       // for nothing (F-A1: keyboard-editing scope regression).
-      if (selectedNote) { e.preventDefault(); deleteSelectedNote(); }
+      if (state.getSelectedNote()) { e.preventDefault(); deleteSelectedNote(); }
       return;
     }
     // Keyboard editing of the piano roll (F-B1-002) — selection, pitch/time
@@ -939,10 +1005,10 @@ function isTypingTarget(e: KeyboardEvent): boolean {
 }
 
 /** True for elements where native Space/Enter already means "activate" —
- *  buttons, links, and ARIA role=button — so the global Space=play shortcut
- *  must never steal the keystroke from them. Inputs/selects/textareas never
- *  reach this check; they already exit earlier via isTypingTarget
- *  (F-A1: keyboard-editing scope regression). */
+ *  buttons, links, and ARIA role=button — so the global Space=play/pause
+ *  shortcut must never steal the keystroke from them. Inputs/selects/
+ *  textareas never reach this check; they already exit earlier via
+ *  isTypingTarget (F-A1: keyboard-editing scope regression). */
 function isActivatableControl(el: Element | null): boolean {
   if (!el) return false;
   if (el.tagName === "BUTTON" || el.tagName === "A") return true;
@@ -963,7 +1029,7 @@ function isRollEditContext(): boolean {
     if (roll && (active === roll || roll.contains(active))) return true;
     return false;
   }
-  return selectedNote != null;
+  return state.getSelectedNote() != null;
 }
 
 /** Toggle the "?" keyboard-shortcuts overlay (F-A1-009) — the first-run
@@ -998,9 +1064,32 @@ function updateKeyVisuals() {
   });
 }
 
+/** Live-performance panic (Escape / btn-panic / blur): silences both
+ *  engines, releases every held QWERTY/on-screen/MIDI key, AND pauses score
+ *  playback (position preserved, playhead stays visible) — the same "stop
+ *  the clock, keep the place" semantics as the play/pause button, not a
+ *  hard stop.
+ *
+ *  Wave C0 fix — this used to (deliberately) NOT touch transport playback
+ *  state, on the claim that "score playback keeps running its own
+ *  schedule" was fine, same scope as before the module split. That claim
+ *  was true before the module split but stopped being true once
+ *  transport.ts's lookahead scheduler landed: pre-split, the whole score
+ *  was committed to the audio clock up front, so silencing engines here
+ *  really did permanently silence the rest of that playback. The lookahead
+ *  scheduler instead re-commits only a rolling ~100ms window on every
+ *  ~25ms tick, so silencing engines alone left the transport's setInterval
+ *  running — the very next tick just scheduled more notes and sound
+ *  resumed within ~25ms, i.e. panic no longer actually silenced the rest
+ *  of the score (it only glitched it for one tick). Explicitly pausing the
+ *  transport here restores the "panic actually stops the music" guarantee
+ *  under the new scheduler. transport.pause() is a no-op when nothing is
+ *  playing (see transport.ts), so this is safe to call unconditionally —
+ *  including from setMode()'s panic() call on every mode switch, and from
+ *  blur/visibilitychange when nothing was playing to begin with. */
 function panic() {
-  synth.allNotesOff();
-  vocalSynth.allNotesOff();
+  transport.pause();
+  silenceEngines();
   heldMidi.clear();
   heldKeys.clear();
   updateKeyVisuals();
@@ -1036,107 +1125,25 @@ function bindMidi() {
 }
 
 // ─── Transport ───────────────────────────────────────────────────────────────
+//
+// Play/pause/stop/scheduling itself lives in transport.ts (a lookahead
+// scheduler — see that file's header for why). What's left here is purely
+// DOM glue: the transport instance is constructed in init() with callbacks
+// that read/write this file's UI state (mode, bpm, looping, the playhead
+// element, the play/pause button icon).
 
-function togglePlay() { isPlaying ? stop() : play(); }
-
-/** Pending setTimeout ids for per-note vowel switches */
-const scheduledVowelTimers: ReturnType<typeof setTimeout>[] = [];
-
-function play() {
-  stop();
-  if (score.length === 0) return;
-  const ctx = mode === "vocal" ? vocalSynth.getContext() : synth.getContext();
-  if (!ctx) return;
-
-  // Belt-and-suspenders resume: the global gesture listener (bindAutoplayUnlock)
-  // should already have unlocked audio, but Play itself is also a user
-  // gesture, and resume() is async — make sure both contexts are (or are
-  // becoming) "running" before we schedule anything (F-A1-003).
-  const otherCtx = mode === "vocal" ? synth.getContext() : vocalSynth.getContext();
-  if (ctx.state === "suspended") ctx.resume().catch((err) => reportAudioError("resume", err));
-  if (otherCtx && otherCtx.state === "suspended") otherCtx.resume().catch((err) => reportAudioError("resume", err));
-
-  isPlaying = true;
-  // Emoji glyphs were replaced with inline SVG (VD visual pass) — the static
-  // HTML button starts on the play icon; toggling here needs innerHTML since
-  // textContent can't render markup.
-  $("btn-play").innerHTML = '<svg class="icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><rect x="4" y="3" width="2.6" height="10" rx="0.5"/><rect x="9.4" y="3" width="2.6" height="10" rx="0.5"/></svg>';
-
-  const audioNow = ctx.currentTime;
-  const offset = playPosition;
-  const sorted = [...score].sort((a, b) => a.startSec - b.startSec);
-
-  for (const note of sorted) {
-    if (note.startSec + note.durationSec <= offset) continue;
-    const delayMs = Math.max(0, (note.startSec - offset)) * 1000;
-    const onTime = audioNow + Math.max(0, note.startSec - offset);
-    const offTime = audioNow + Math.max(0, note.startSec + note.durationSec - offset);
-
-    // In vocal mode, schedule vowel + breathiness switch just before noteOn
-    if (mode === "vocal" && note.vowel) {
-      const tid = setTimeout(() => {
-        vocalSynth.setVowel(note.vowel!);
-        if (note.breathiness !== undefined) vocalSynth.setBreathiness(note.breathiness);
-      }, Math.max(0, delayMs - 5)); // 5ms early
-      scheduledVowelTimers.push(tid);
-    }
-
-    activeNoteOn(note.midi, note.velocity, onTime);
-    activeNoteOff(note.midi, offTime);
-  }
-
-  playStartAudio = audioNow;
-  playStartOffset = offset;
-  animatePlayhead();
-}
-
-function stop() {
-  isPlaying = false;
-  synth.allNotesOff();
-  vocalSynth.allNotesOff();
-  // Clear scheduled vowel timers
-  for (const t of scheduledVowelTimers) clearTimeout(t);
-  scheduledVowelTimers.length = 0;
-  $("btn-play").innerHTML = '<svg class="icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M5 3 L12 8 L5 13 Z"/></svg>';
-  if (animFrame) { cancelAnimationFrame(animFrame); animFrame = 0; }
-  $("playhead").style.display = "none";
-}
-
-function animatePlayhead() {
-  if (!isPlaying) return;
-  const ctx = mode === "vocal" ? vocalSynth.getContext() : synth.getContext();
-  if (!ctx) return;
-
-  const elapsed = ctx.currentTime - playStartAudio;
-  playPosition = playStartOffset + elapsed;
-  const maxSec = score.reduce((m, n) => Math.max(m, n.startSec + n.durationSec), 0);
-
-  if (playPosition >= maxSec) {
-    if (looping && maxSec > 0) { playPosition = 0; play(); return; }
-    stop();
-    playPosition = 0;
-    updateTransportTime();
-    return;
-  }
-
-  const ph = $("playhead");
-  ph.style.display = "block";
-  ph.style.left = playPosition * PX_PER_SEC + "px";
-  updateTransportTime();
-  animFrame = requestAnimationFrame(animatePlayhead);
-}
-
-function updateTransportTime() {
-  const m = Math.floor(playPosition / 60);
-  const s = (playPosition % 60).toFixed(1).padStart(4, "0");
+function updateTransportTime(positionBeats: number) {
+  const totalSec = beatsToSeconds(positionBeats, bpm);
+  const m = Math.floor(totalSec / 60);
+  const s = (totalSec % 60).toFixed(1).padStart(4, "0");
   $("transport-time").textContent = `${m}:${s}`;
 }
 
 // ─── Controls ────────────────────────────────────────────────────────────────
 
 function bindControls() {
-  $("btn-play").addEventListener("click", togglePlay);
-  $("btn-stop").addEventListener("click", () => { stop(); playPosition = 0; updateTransportTime(); });
+  $("btn-play").addEventListener("click", () => transport.togglePlayPause());
+  $("btn-stop").addEventListener("click", () => transport.stop());
   $("btn-loop").addEventListener("click", () => {
     looping = !looping;
     $("btn-loop").classList.toggle("active", looping);
@@ -1148,10 +1155,9 @@ function bindControls() {
     // overwrite the last-saved copy with an empty score) — confirm first,
     // same as Import below (G-1). Skipped when already empty so clearing a
     // blank score never nags.
-    if (score.length > 0 && !confirm("Clear all notes? This cannot be undone.")) return;
-    stop(); playPosition = 0; updateTransportTime();
-    score.length = 0;
-    selectedNote = null;
+    if (state.getScore().length > 0 && !confirm("Clear all notes? This cannot be undone.")) return;
+    transport.stop();
+    state.clearScore();
     document.querySelectorAll(".pr-note").forEach((el) => el.remove());
     updateInspector();
     onStateChanged();
@@ -1159,10 +1165,9 @@ function bindControls() {
 
   $("btn-reset").addEventListener("click", () => {
     const hasSaved = !!safeLoadRaw();
-    if ((score.length > 0 || hasSaved) && !confirm("Reset the cockpit and clear the saved session? This cannot be undone.")) return;
-    stop(); playPosition = 0; updateTransportTime();
-    score.length = 0;
-    selectedNote = null;
+    if ((state.getScore().length > 0 || hasSaved) && !confirm("Reset the cockpit and clear the saved session? This cannot be undone.")) return;
+    transport.stop();
+    state.clearScore();
     document.querySelectorAll(".pr-note").forEach((el) => el.remove());
     updateInspector();
     // A lingering debounced timer (or an involuntary visibilitychange/
@@ -1180,9 +1185,11 @@ function bindControls() {
 
   // Inspector velocity
   $("insp-vel").addEventListener("input", (e) => {
-    if (!selectedNote) return;
-    selectedNote.velocity = safeNumber(e.target as HTMLInputElement, selectedNote.velocity);
-    $("insp-vel-val").textContent = String(selectedNote.velocity);
+    const note = state.getSelectedNote();
+    if (!note) return;
+    const v = safeNumber(e.target as HTMLInputElement, note.velocity);
+    state.setVelocity(note, v);
+    $("insp-vel-val").textContent = String(note.velocity);
     onStateChanged();
   });
   $("insp-del").addEventListener("click", deleteSelectedNote);
@@ -1190,21 +1197,23 @@ function bindControls() {
   // Inspector vocal: per-note vowel + breathiness
   document.querySelectorAll<HTMLButtonElement>(".insp-vowel-btn").forEach(btn => {
     btn.addEventListener("click", () => {
-      if (!selectedNote || !selectedNote.vowel) return;
+      const note = state.getSelectedNote();
+      if (!note || !note.vowel) return;
       const v = btn.dataset.vowel as VowelId;
-      selectedNote.vowel = v;
+      state.setVowel(note, v);
       // Update the note's visual
-      const el = document.querySelector<HTMLElement>(noteSelector(selectedNote.id));
-      if (el) applyNoteStyle(el, selectedNote);
+      const el = document.querySelector<HTMLElement>(noteSelector(note.id));
+      if (el) applyNoteStyle(el, note);
       updateInspector();
       onStateChanged();
     });
   });
   $("insp-breath").addEventListener("input", (e) => {
-    if (!selectedNote) return;
-    const prev = Math.round((selectedNote.breathiness ?? 0.15) * 100);
+    const note = state.getSelectedNote();
+    if (!note) return;
+    const prev = Math.round((note.breathiness ?? 0.15) * 100);
     const v = safeNumber(e.target as HTMLInputElement, prev);
-    selectedNote.breathiness = v / 100;
+    state.setBreathiness(note, v / 100);
     $("insp-breath-val").textContent = String(v);
     onStateChanged();
   });
@@ -1245,13 +1254,15 @@ function bindControls() {
 
   // BPM — clamped to [BPM_MIN, BPM_MAX] and guarded against NaN (an emptied
   // field falls back to the last valid bpm, never stored as NaN) (F-A1-002,
-  // F-A1-006).
+  // F-A1-006). No grid redraw needed here — the piano-roll beat grid is
+  // bpm-independent now (PX_PER_BEAT is a fixed pixels-per-BEAT scale);
+  // only actual playback speed and the transport-time mm:ss readout change
+  // with bpm, and both read `bpm` live already.
   ($("bpm") as HTMLInputElement).addEventListener("change", (e) => {
     const input = e.target as HTMLInputElement;
     const parsed = safeNumber(input, bpm);
-    bpm = Math.max(BPM_MIN, Math.min(BPM_MAX, parsed));
+    bpm = clampBpm(parsed, bpm);
     input.value = String(bpm);
-    drawBeatLines();
     onStateChanged();
   });
 }
@@ -1498,28 +1509,39 @@ function clearTuningStatus() {
 
 function exportScore(): ScoreSnapshot {
   return {
-    version: 1,
+    version: 2,
     mode,
     bpm,
     voice: ($(mode === "vocal" ? "sel-vocal-voice" : "sel-voice") as HTMLSelectElement).value,
     ...(mode === "vocal" ? { vocalVoice: ($("sel-vocal-voice") as HTMLSelectElement).value } : {}),
     tuning: ($("sel-tuning") as HTMLSelectElement).value,
     refPitch: parseInt(($("ref-pitch") as HTMLInputElement).value),
-    notes: score.map(({ id: _id, ...rest }) => rest),
+    notes: state.getScore().map(({ id: _id, ...rest }) => rest),
   };
 }
 
-type NoteValidation = { ok: true; note: Omit<Note, "id"> } | { ok: false; message: string };
+type NoteValidation = { ok: true; note: NoteInit } | { ok: false; message: string };
 
 /**
  * Validate one note from untrusted JSON (score import or window.__cockpit.
- * addNote) before it reaches Web Audio params. A non-finite midi/velocity
- * propagating to osc.frequency.value or gain automation throws a TypeError
- * mid-noteOn — aborting playback partway through and leaking partially-built
- * node graphs — and out-of-range midi renders notes outside the piano-roll
- * grid (F-A1-005).
+ * addNote) before it reaches Web Audio params or the score model.
+ *
+ * Accepts EITHER the current beats shape (startBeat/durationBeats) or the
+ * legacy seconds shape (startSec/durationSec, from before the beat-based
+ * time model) — a note is treated as legacy when it has neither
+ * `startBeat` nor `durationBeats` as a number. Legacy notes are converted
+ * with `secondsToBeats(_, snapshotBpm)`, where `snapshotBpm` is the bpm the
+ * CALLER passes in — importScore() below passes the snapshot's OWN bpm
+ * (the tempo in effect when those seconds were originally recorded);
+ * window.__cockpit.addNote passes the cockpit's current live bpm, since a
+ * lone addNote call has no snapshot bpm of its own.
+ *
+ * A non-finite midi/velocity propagating to osc.frequency.value or gain
+ * automation throws a TypeError mid-noteOn — aborting playback partway
+ * through and leaking partially-built node graphs — and out-of-range midi
+ * renders notes outside the piano-roll grid (F-A1-005).
  */
-function validateImportedNote(n: unknown, index: number): NoteValidation {
+function validateImportedNote(n: unknown, index: number, snapshotBpm: number): NoteValidation {
   if (typeof n !== "object" || n === null) {
     return { ok: false, message: `note[${index}] is not an object` };
   }
@@ -1533,14 +1555,34 @@ function validateImportedNote(n: unknown, index: number): NoteValidation {
   if (!Number.isFinite(velocity) || velocity < 0 || velocity > 127) {
     return { ok: false, message: `note[${index}].velocity must be a finite number 0-127 (got ${JSON.stringify(r.velocity)})` };
   }
-  const startSec = r.startSec as number;
-  if (!Number.isFinite(startSec) || startSec < 0) {
-    return { ok: false, message: `note[${index}].startSec must be a finite number >= 0 (got ${JSON.stringify(r.startSec)})` };
+
+  let startBeat: number;
+  let durationBeats: number;
+  const hasBeatsShape = typeof r.startBeat === "number" || typeof r.durationBeats === "number";
+  if (hasBeatsShape) {
+    const sb = r.startBeat as number;
+    const db = r.durationBeats as number;
+    if (!Number.isFinite(sb) || sb < 0) {
+      return { ok: false, message: `note[${index}].startBeat must be a finite number >= 0 (got ${JSON.stringify(r.startBeat)})` };
+    }
+    if (!Number.isFinite(db) || db < 0) {
+      return { ok: false, message: `note[${index}].durationBeats must be a finite number >= 0 (got ${JSON.stringify(r.durationBeats)})` };
+    }
+    startBeat = sb;
+    durationBeats = db;
+  } else {
+    const startSec = r.startSec as number;
+    const durationSec = r.durationSec as number;
+    if (!Number.isFinite(startSec) || startSec < 0) {
+      return { ok: false, message: `note[${index}].startSec must be a finite number >= 0 (got ${JSON.stringify(r.startSec)})` };
+    }
+    if (!Number.isFinite(durationSec) || durationSec < 0) {
+      return { ok: false, message: `note[${index}].durationSec must be a finite number >= 0 (got ${JSON.stringify(r.durationSec)})` };
+    }
+    startBeat = secondsToBeats(startSec, snapshotBpm);
+    durationBeats = secondsToBeats(durationSec, snapshotBpm);
   }
-  const durationSec = r.durationSec as number;
-  if (!Number.isFinite(durationSec) || durationSec < 0) {
-    return { ok: false, message: `note[${index}].durationSec must be a finite number >= 0 (got ${JSON.stringify(r.durationSec)})` };
-  }
+
   if (r.vowel !== undefined && !(VOWEL_IDS as readonly unknown[]).includes(r.vowel)) {
     return { ok: false, message: `note[${index}].vowel must be one of ${VOWEL_IDS.join(", ")} (got ${JSON.stringify(r.vowel)})` };
   }
@@ -1551,11 +1593,11 @@ function validateImportedNote(n: unknown, index: number): NoteValidation {
     }
   }
 
-  const note: Omit<Note, "id"> = {
-    midi, velocity, durationSec,
+  const note: NoteInit = {
+    midi, velocity, durationBeats,
     // Clamp (rather than reject) notes starting beyond the score window —
-    // the piano roll is a fixed SCORE_SECS-wide canvas (F-A1: score-size bomb).
-    startSec: Math.min(startSec, SCORE_SECS),
+    // the piano roll is a fixed SCORE_BEATS-wide canvas (F-A1: score-size bomb).
+    startBeat: Math.min(startBeat, SCORE_BEATS),
   };
   if (r.vowel !== undefined) note.vowel = r.vowel as VowelId;
   if (r.breathiness !== undefined) note.breathiness = r.breathiness as number;
@@ -1580,8 +1622,8 @@ function importScore(snap: ScoreSnapshot) {
     setScoreStatus("Import rejected: snapshot.notes must be an array", "error");
     return;
   }
-  if (snap.version !== undefined && snap.version !== 1) {
-    setScoreStatus(`Import rejected: unsupported snapshot version ${JSON.stringify(snap.version)} (expected 1)`, "error");
+  if (snap.version !== undefined && snap.version !== 1 && snap.version !== 2) {
+    setScoreStatus(`Import rejected: unsupported snapshot version ${JSON.stringify(snap.version)} (expected 1 or 2)`, "error");
     return;
   }
   // Unbounded note counts render one absolutely-positioned DOM element per
@@ -1591,12 +1633,20 @@ function importScore(snap: ScoreSnapshot) {
     return;
   }
 
+  // bpm is clamped + finite-checked here regardless of the UI-side guard —
+  // importScore is also reachable directly via window.__cockpit.importScore
+  // and the #score-json textarea, bypassing the <input> entirely — AND is
+  // needed up front (before per-note validation) since a legacy
+  // seconds-shaped note is converted using exactly this value, the
+  // snapshot's OWN bpm (F-A1-002; see validateImportedNote's doc comment).
+  const importBpm = clampBpm(+snap.bpm, DEFAULT_BPM);
+
   // Validate every note BEFORE mutating any state — the whole import is
   // rejected on the first bad field naming it, instead of silently importing
   // partial garbage (F-A1-005).
-  const cleaned: Omit<Note, "id">[] = [];
+  const cleaned: NoteInit[] = [];
   for (let i = 0; i < snap.notes.length; i++) {
-    const result = validateImportedNote(snap.notes[i], i);
+    const result = validateImportedNote(snap.notes[i], i, importBpm);
     if (!result.ok) {
       setScoreStatus(`Import rejected: ${result.message}`, "error");
       return;
@@ -1604,23 +1654,15 @@ function importScore(snap: ScoreSnapshot) {
     cleaned.push(result.note);
   }
 
-  stop();
-  playPosition = 0;
-  updateTransportTime();
+  transport.stop();
 
   // Clear existing
-  score.length = 0;
-  selectedNote = null;
+  state.clearScore();
   document.querySelectorAll(".pr-note").forEach(el => el.remove());
 
-  // Apply settings. bpm is clamped + finite-checked here regardless of the
-  // UI-side guard, since importScore is also reachable directly via
-  // window.__cockpit.importScore() and the #score-json textarea, bypassing
-  // the <input> entirely — a negative/zero/non-numeric bpm made
-  // drawBeatLines() loop forever (F-A1-002).
-  bpm = Number.isFinite(+snap.bpm) ? Math.max(BPM_MIN, Math.min(BPM_MAX, +snap.bpm)) : 120;
+  // Apply settings.
+  bpm = importBpm;
   ($("bpm") as HTMLInputElement).value = String(bpm);
-  drawBeatLines();
 
   // Mode
   if (snap.mode === "vocal" || snap.mode === "instrument") setMode(snap.mode);
@@ -1646,16 +1688,12 @@ function importScore(snap: ScoreSnapshot) {
     ($("ref-pitch") as HTMLInputElement).value = String(synth.getRefPitch());
   }
 
-  // Notes (already validated + cleaned above). Spread the imported fields
-  // FIRST, then assign the generated id last, so a caller-supplied `id` in
-  // the source JSON can never override it — a duplicate or quote/bracket-
-  // containing id used to break selection and could throw a SyntaxError out
-  // of querySelector on select/delete (F-A1: note id override).
-  for (const n of cleaned) {
-    const note: Note = { ...n, id: "n" + nextId++ };
-    score.push(note);
-    renderNote(note);
-  }
+  // Notes (already validated + cleaned above). state.replaceScore assigns
+  // every note a freshly generated id — a caller-supplied `id` in the
+  // source JSON can never override it (same guard as before the module
+  // split, now enforced in state.ts rather than here).
+  const added = state.replaceScore(cleaned);
+  for (const note of added) renderNote(note);
 
   updateTuningTable();
   updateTelemetry();
@@ -1674,7 +1712,7 @@ function bindScoreControls() {
   $("btn-import-score").addEventListener("click", () => {
     // Persistence makes overwrite permanent (autosave fires right after) —
     // confirm before replacing a non-empty score, same as Clear above (G-1).
-    if (score.length > 0 && !confirm("Import will replace the current score. Continue?")) return;
+    if (state.getScore().length > 0 && !confirm("Import will replace the current score. Continue?")) return;
     let data: ScoreSnapshot;
     try {
       data = JSON.parse(($("score-json") as HTMLTextAreaElement).value) as ScoreSnapshot;
@@ -1697,7 +1735,7 @@ declare global {
       panic: () => void;
       setMode: (m: "instrument" | "vocal") => void;
       getScore: () => Note[];
-      addNote: (n: Omit<Note, "id">) => void;
+      addNote: (n: NoteInit) => void;
     };
   }
 }
@@ -1712,24 +1750,21 @@ async function boot() {
   window.__cockpit = {
     exportScore,
     importScore,
-    play,
-    stop,
+    play: () => transport.play(),
+    stop: () => transport.stop(),
     panic,
     setMode,
-    getScore: () => [...score],
+    getScore: () => [...state.getScore()],
     addNote: (n) => {
       // Same untrusted-input validation as importScore — addNote is an
       // equally-reachable LLM-facing path that used to copy midi/velocity/
       // startSec/durationSec verbatim into Web Audio params (F-A1-005).
-      const result = validateImportedNote(n, 0);
+      const result = validateImportedNote(n, 0, bpm);
       if (!result.ok) {
         setScoreStatus(`addNote rejected: ${result.message}`, "error");
         return;
       }
-      // Spread first, then assign the id, so a caller-supplied `id` can never
-      // override the generated one (F-A1: note id override).
-      const note: Note = { ...result.note, id: "n" + nextId++ };
-      score.push(note);
+      const note = state.addNote(result.note);
       renderNote(note);
       setScoreStatus(`Added note ${noteName(note.midi)}`, "ok");
       onStateChanged();

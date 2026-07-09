@@ -8,6 +8,8 @@ on:
       - "pnpm-workspace.yaml"
       - "tsconfig.json"
       - "src/**"
+      - "apps/**"
+      - "scripts/**"
       - "Dockerfile"
       - "plugin/**"
       - ".github/workflows/**"
@@ -19,6 +21,8 @@ on:
       - "pnpm-workspace.yaml"
       - "tsconfig.json"
       - "src/**"
+      - "apps/**"
+      - "scripts/**"
       - "Dockerfile"
       - "plugin/**"
       - ".github/workflows/**"
@@ -38,9 +42,9 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
-      - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
         with:
-          version: 9
+          version: 10
 
       - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
@@ -72,19 +76,19 @@ jobs:
       - name: Smoke
         run: pnpm smoke
 
-  # Node 20/22 above always install via pnpm 9 (pnpm/action-setup version: 9).
-  # This job covers the modern-pnpm cold-start path so a future bump past
-  # pnpm 9 in the main matrix doesn't ship untested. pnpm-workspace.yaml's
-  # allowBuilds/onlyBuiltDependencies keys were verified (coordinator,
-  # 2026-07) to install cleanly under pnpm 11 too — this job pins pnpm 10 to
-  # cover the nearer-term upgrade path without expanding the main matrix.
+  # The main matrix installs via pnpm 10 (bumped from 9 on 2026-07-09 when
+  # overrides moved to pnpm-workspace.yaml — pnpm 9 can't read them there and
+  # fails frozen installs with ERR_PNPM_LOCKFILE_CONFIG_MISMATCH). This job
+  # keeps the cold-start + dependency-cache path covered on the same pnpm 10;
+  # pnpm-workspace.yaml's keys were verified (coordinator, 2026-07) to install
+  # cleanly under pnpm 11 too, so the next major bump is pre-validated.
   pnpm10-install:
     name: Modern pnpm cold-start (pnpm 10, Node 22)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
-      - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
         with:
           version: 10
 
@@ -106,9 +110,9 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
-      - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
         with:
-          version: 9
+          version: 10
 
       - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
@@ -148,3 +152,39 @@ jobs:
             }
             console.log("Plugin manifests match package.json version " + pkg.version);
           '
+
+  # apps/cockpit is a standalone Vite/TS app, deliberately NOT a pnpm
+  # workspace member (pnpm-workspace.yaml's `packages` list is just "." —
+  # see that file's own comment) and has no pnpm-lock.yaml of its own (only
+  # a legacy package-lock.json) — so this job installs/typechecks/builds it
+  # in isolation rather than folding it into the root `ci` job's
+  # `pnpm install --frozen-lockfile` (which only ever touches the root
+  # lockfile). No dependency caching here: with no pnpm-lock.yaml to hash,
+  # actions/setup-node's `cache: pnpm` has nothing reliable to key off for
+  # this directory, and the install here is small/fast enough that it isn't
+  # worth the risk of a cache-resolution edge case failing the job.
+  cockpit:
+    name: Cockpit app (typecheck + build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/cockpit
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          version: 10
+
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 22
+
+      - name: Install cockpit dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Build
+        run: pnpm build

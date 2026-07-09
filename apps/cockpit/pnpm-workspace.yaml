@@ -1,0 +1,13 @@
+# The cockpit is intentionally its OWN single-package workspace. This file's
+# presence stops `pnpm install` run in this directory from walking up to the
+# repo root workspace — which does NOT include apps/cockpit and would silently
+# install the root project instead, leaving vite/typescript missing here
+# (broke the cockpit CI job; found by adversarial verify, 2026-07-09).
+packages:
+  - "."
+
+# vite's esbuild dependency needs its install script approved under pnpm 10+.
+allowBuilds:
+  esbuild: true
+onlyBuiltDependencies:
+  - esbuild
