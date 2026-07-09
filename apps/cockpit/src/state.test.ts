@@ -270,6 +270,86 @@ describe("replaceScore", () => {
   });
 });
 
+describe("restoreNote (Wave C1 finding 1)", () => {
+  it("re-inserts a note under its ORIGINAL id, not a freshly generated one", () => {
+    const note = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    state.deleteNote(note);
+    const restored = state.restoreNote({ ...note });
+    expect(restored.id).toBe(note.id);
+    expect(state.getNoteById(note.id)).toBe(restored);
+  });
+
+  it("bumps the id counter past a restored numeric id, so a later addNote never re-mints it", () => {
+    const note = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    state.deleteNote(note);
+    // Restore under an id far ahead of wherever addNote's internal counter
+    // currently sits, simulating undo of a note minted much later in the
+    // session than any note still present.
+    state.restoreNote({ ...note, id: "n99999" });
+    const next = state.addNote({ midi: 61, startBeat: 1, durationBeats: 1, velocity: 100 });
+    expect(next.id).toBe("n100000");
+  });
+});
+
+describe("replaceScoreWithIds (Wave C1 finding 1)", () => {
+  it("restores every note under its EXACT prior id", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    const snapshot = state.getScore().map((n) => ({ ...n }));
+    state.clearScore();
+    const restored = state.replaceScoreWithIds(snapshot);
+    expect(restored.map((n) => n.id)).toEqual([a.id, b.id]);
+  });
+
+  it("clears selection (nothing meaningful to keep selected across a full replace)", () => {
+    const note = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    state.selectNote(note);
+    state.replaceScoreWithIds([{ ...note }]);
+    expect(state.getSelectedNote()).toBeNull();
+  });
+
+  it("bumps the id counter past every restored id, so a later addNote never collides", () => {
+    // nextId is a module-level counter that persists across tests in this
+    // file (there's no reset — resetting it would risk id collisions with
+    // notes a real session still references), so this probes the
+    // counter's CURRENT position rather than assuming any fixed value.
+    const probe = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const probeNum = Number(/^n(\d+)$/.exec(probe.id)![1]);
+    state.clearScore();
+    const aheadId = `n${probeNum + 1000}`;
+    state.replaceScoreWithIds([{ ...probe, id: aheadId }]);
+    const next = state.addNote({ midi: 61, startBeat: 1, durationBeats: 1, velocity: 100 });
+    expect(next.id).toBe(`n${probeNum + 1001}`);
+  });
+});
+
+describe("clampedMoveTarget (Wave C1 finding 2)", () => {
+  it("returns the clamped target when the note actually moves", () => {
+    const note = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    expect(state.clampedMoveTarget(note, 1, 61)).toEqual({ startBeat: 1, midi: 61 });
+  });
+
+  it("returns null when nudging pitch up while already at MIDI_HI (boundary no-op)", () => {
+    const note = state.addNote({ midi: MIDI_HI, startBeat: 4, durationBeats: 1, velocity: 100 });
+    expect(state.clampedMoveTarget(note, 4, MIDI_HI + 1)).toBeNull();
+  });
+
+  it("returns null when nudging pitch down while already at MIDI_LO (boundary no-op)", () => {
+    const note = state.addNote({ midi: MIDI_LO, startBeat: 0, durationBeats: 1, velocity: 100 });
+    expect(state.clampedMoveTarget(note, 0, MIDI_LO - 1)).toBeNull();
+  });
+
+  it("returns null when nudging time left while already at startBeat 0 (boundary no-op)", () => {
+    const note = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    expect(state.clampedMoveTarget(note, -1, 60)).toBeNull();
+  });
+
+  it("clamps a target that overshoots both bounds at once", () => {
+    const note = state.addNote({ midi: 60, startBeat: 5, durationBeats: 1, velocity: 100 });
+    expect(state.clampedMoveTarget(note, -10, MIDI_HI + 10)).toEqual({ startBeat: 0, midi: MIDI_HI });
+  });
+});
+
 describe("getNoteById", () => {
   it("finds a note by id", () => {
     const note = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });

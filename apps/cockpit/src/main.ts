@@ -44,6 +44,7 @@ import {
   clampBpm, beatsToSeconds, secondsToBeats, quantizeBeats,
 } from "./time.js";
 import { createTransport, type Transport } from "./transport.js";
+import * as undo from "./undo.js";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -72,6 +73,13 @@ interface ScoreSnapshot {
   refPitch: number;
   notes: NoteInit[];
 }
+
+/** The non-notes half of ScoreSnapshot — bpm/mode/voice/tuning/refPitch
+ *  only. Wave C1 finding 5: importScoreCommand's settings delta uses this
+ *  shape so undoing/redoing a score import also restores/reapplies the
+ *  settings that rode along with it, not just the notes — see
+ *  captureSettings()/applySettings() below. */
+type ImportSettings = Omit<ScoreSnapshot, "version" | "notes">;
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -136,6 +144,13 @@ let bpm = DEFAULT_BPM;
 const heldKeys = new Set<string>();
 const heldMidi = new Set<number>();
 let intervalRoot = 60; // C4
+/** True for the duration of a resize-handle or move-drag gesture
+ *  (mousedown → mouseup) on a piano-roll note — Wave C1 finding 6: guards
+ *  the Ctrl+Z/Ctrl+Shift+Z/Ctrl+Y carve-out in the keydown handler below so
+ *  an undo/redo mid-drag can't rerenderAllNotes() the piano roll out from
+ *  under the drag's onMove/onUp closures, which still hold a direct
+ *  reference to the (now possibly-replaced) dragged DOM element. */
+let dragActive = false;
 
 // ─── DOM ─────────────────────────────────────────────────────────────────────
 
@@ -239,6 +254,30 @@ function onStateChanged() {
   scheduleAutosave();
 }
 
+/** Reflects the undo/redo command stack's current depth onto the toolbar
+ *  buttons' disabled state (Wave C1) — called once at boot for the initial
+ *  (both-disabled) state, and after that entirely via undo.setOnChange
+ *  below, never called directly from an edit handler. */
+function updateUndoRedoButtons() {
+  ($("btn-undo") as HTMLButtonElement).disabled = !undo.canUndo();
+  ($("btn-redo") as HTMLButtonElement).disabled = !undo.canRedo();
+}
+
+/** The undo module's single onChange hook (Wave C1, finding 8: "every
+ *  execute/undo/redo triggers onStateChanged"): fires after every
+ *  execute()/commit()/undo()/redo() call that actually changed something.
+ *  undo.ts itself knows neither DOM buttons nor autosave exist — this is
+ *  where those two concerns meet. Note-mutation call sites that go through
+ *  the command stack rely on THIS firing onStateChanged() instead of
+ *  calling it themselves (see e.g. the piano-roll click-to-add handler);
+ *  call sites for settings unrelated to the score (bpm, master volume,
+ *  mode, tuning) keep calling onStateChanged() directly, same as before
+ *  this wave. */
+function afterUndoStackChange() {
+  updateUndoRedoButtons();
+  onStateChanged();
+}
+
 /**
  * Restore a previously-autosaved session on boot, if one exists and is
  * valid. Reuses importScore() for the bulk of the restore (notes, bpm,
@@ -261,6 +300,9 @@ function restoreFromStorage(): boolean {
   const persisted: CockpitPersistedState | null = deserializeCockpitState(raw);
   if (!persisted) return false;
 
+  // recordUndo=false — see importScore()'s doc comment: a fresh session's
+  // boot-time restore has no meaningful "before" state to offer undo back
+  // to, and recording one would make the very first Ctrl+Z surprising.
   importScore({
     version: 2,
     mode: persisted.mode,
@@ -270,7 +312,7 @@ function restoreFromStorage(): boolean {
     tuning: persisted.tuning,
     refPitch: persisted.refPitch,
     notes: persisted.score,
-  });
+  }, false);
 
   if (persisted.mode === "vocal") {
     ($("sel-voice") as HTMLSelectElement).value = persisted.engine;
@@ -368,6 +410,7 @@ async function init() {
   buildKeyboard();
   bindControls();
   bindMidi();
+  bindUndoRedo();
   buildTuningAudit();
   updateTuningTable();
   updateTelemetry();
@@ -595,14 +638,15 @@ function buildPianoRoll() {
     const midi = MIDI_HI - Math.floor(y / ROW_H);
     if (midi < MIDI_LO || midi > MIDI_HI) return;
     const startBeat = quantizeBeats(x / PX_PER_BEAT);
-    const note = state.addNote({
+    const init: NoteInit = {
       midi, startBeat,
       durationBeats: DEFAULT_NOTE_DURATION_BEATS, velocity: 100,
       ...(mode === "vocal" ? { vowel: vocalSynth.getVowel(), breathiness: getCurrentBreathiness() } : {}),
-    });
+    };
+    undo.execute(undo.addNoteCommand(init));
+    const note = state.getSelectedNote()!; // addNoteCommand.redo() selects the new note
     renderNote(note);
-    selectNote(note);
-    onStateChanged();
+    selectNote(note); // DOM `.selected` class + inspector sync
     // Preview sound
     activeNoteOn(midi, 100);
     setTimeout(() => activeNoteOff(midi), 180);
@@ -643,6 +687,7 @@ function renderNote(note: Note) {
   handle.addEventListener("mousedown", (e) => {
     e.stopPropagation();
     selectNote(note);
+    dragActive = true; // Wave C1 finding 6 — see this flag's declaration
     const startX = e.clientX;
     const startDur = note.durationBeats;
     const onMove = (e2: MouseEvent) => {
@@ -652,7 +697,15 @@ function renderNote(note: Note) {
     const onUp = () => {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseup", onUp);
-      onStateChanged();
+      dragActive = false;
+      // Coalesced gesture (Wave C1, finding 2): the drag already applied
+      // itself live via state.resizeNote() above on every mousemove tick —
+      // only the FINAL before/after delta is committed here, as ONE entry,
+      // and only if the resize actually changed anything (a mousedown with
+      // no movement must not pollute the undo stack).
+      if (note.durationBeats !== startDur) {
+        undo.commit(undo.resizeCommand(note.id, startDur, note.durationBeats));
+      }
     };
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseup", onUp);
@@ -663,6 +716,7 @@ function renderNote(note: Note) {
     if ((e.target as HTMLElement) === handle) return;
     e.stopPropagation();
     selectNote(note);
+    dragActive = true; // Wave C1 finding 6 — see this flag's declaration
     const startX = e.clientX, startY = e.clientY;
     const origBeat = note.startBeat, origMidi = note.midi;
 
@@ -677,7 +731,14 @@ function renderNote(note: Note) {
     const onUp = () => {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseup", onUp);
-      onStateChanged();
+      dragActive = false;
+      // Coalesced gesture — see the resize handle's onUp above for the
+      // same rationale (finding 2). state.moveNote() already ran live on
+      // every mousemove tick; only commit if the note actually ended up
+      // somewhere different from where it started.
+      if (note.startBeat !== origBeat || note.midi !== origMidi) {
+        undo.commit(undo.moveCommand(note.id, { startBeat: origBeat, midi: origMidi }, { startBeat: note.startBeat, midi: note.midi }));
+      }
     };
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseup", onUp);
@@ -728,11 +789,11 @@ function selectNote(note: Note | null) {
 }
 
 function deleteSelectedNote() {
-  const removed = state.deleteSelectedNote();
-  if (!removed) return;
-  document.querySelector(noteSelector(removed.id))?.remove();
+  const note = state.getSelectedNote();
+  if (!note) return;
+  undo.execute(undo.deleteNoteCommand(note));
+  document.querySelector(noteSelector(note.id))?.remove();
   updateInspector();
-  onStateChanged();
 }
 
 /** Show/hide the "click to add a note" hint (F-B1-009) — visible while the
@@ -771,13 +832,21 @@ function cycleNoteSelection(dir: 1 | -1) {
 function nudgeSelectedNote(semitones: number, steps: number) {
   const note = state.getSelectedNote();
   if (!note) return;
-  const newMidi = note.midi + semitones;
-  const newBeat = steps !== 0 ? quantizeBeats(note.startBeat + QUANTIZE_GRID_BEATS * steps) : note.startBeat;
-  state.moveNote(note, newBeat, newMidi);
+  const before: undo.Point = { startBeat: note.startBeat, midi: note.midi };
+  const rawBeat = steps !== 0 ? quantizeBeats(note.startBeat + QUANTIZE_GRID_BEATS * steps) : note.startBeat;
+  const after = state.clampedMoveTarget(note, rawBeat, note.midi + semitones);
+  // Wave C1 finding 2: null means the clamped target is identical to where
+  // the note already is (e.g. ArrowUp at MIDI_HI, ArrowLeft at beat 0) —
+  // skip entirely rather than pushing a no-op command. undo.execute()
+  // unconditionally wipes the redo stack, so a vacuous command here would
+  // silently destroy the user's redo history for zero visible effect.
+  if (!after) return;
+  // Each keypress is its own command (no coalescing) — a nudge is already
+  // a single discrete gesture, unlike a mouse drag's continuous stream.
+  undo.execute(undo.moveCommand(note.id, before, after));
   const el = document.querySelector<HTMLElement>(noteSelector(note.id));
   if (el) { applyNoteStyle(el, note); positionNote(el, note); }
   updateInspector();
-  onStateChanged();
 }
 
 /** Enter / Insert — add a new note at the current playhead position. Reuses
@@ -788,15 +857,39 @@ function insertNoteAtPlayhead() {
   const selected = state.getSelectedNote();
   const midi = selected ? selected.midi : 60;
   const startBeat = quantizeBeats(transport.getPositionBeats());
-  const note = state.addNote({
+  const init: NoteInit = {
     midi, startBeat,
     durationBeats: DEFAULT_NOTE_DURATION_BEATS, velocity: 100,
     ...(mode === "vocal" ? { vowel: selected?.vowel ?? vocalSynth.getVowel(), breathiness: selected?.breathiness ?? getCurrentBreathiness() } : {}),
-  });
+  };
+  undo.execute(undo.addNoteCommand(init));
+  const note = state.getSelectedNote()!; // addNoteCommand.redo() selects the new note
   renderNote(note);
-  selectNote(note);
+  selectNote(note); // DOM `.selected` class + inspector sync (state.selectNote() re-run inside is a harmless no-op)
   document.querySelector(noteSelector(note.id))?.scrollIntoView({ block: "nearest", inline: "nearest" });
-  onStateChanged();
+}
+
+/** Ctrl+Z / toolbar Undo button. Undo/redo traversal doesn't know which
+ *  note(s) a popped command touched (could be a single-note delta or a
+ *  whole-score Clear/Import snapshot), so — unlike the surgical single-
+ *  element DOM updates execute()/commit() call sites do — this always
+ *  does a full rerenderAllNotes() to resync the DOM with state.ts, same
+ *  as a mode switch already does. undo.setOnChange (afterUndoStackChange)
+ *  handles the button-disabled-state refresh and onStateChanged(); this
+ *  only needs to handle the DOM-note-sync afterUndoStackChange can't. */
+function performUndo() {
+  if (!undo.undo()) return;
+  rerenderAllNotes();
+  updateInspector();
+  updateFirstRunHint();
+}
+
+/** Ctrl+Shift+Z / Ctrl+Y / toolbar Redo button — see performUndo above. */
+function performRedo() {
+  if (!undo.redo()) return;
+  rerenderAllNotes();
+  updateInspector();
+  updateFirstRunHint();
 }
 
 // ─── Inspector ───────────────────────────────────────────────────────────────
@@ -908,14 +1001,37 @@ function buildKeyboard() {
 
   // QWERTY events
   window.addEventListener("keydown", (e) => {
-    if (e.repeat) return;
     // Typing in an input/select/textarea (or any contenteditable) must never
     // trigger notes/transport/deletion — this used to exempt only INPUT and
     // SELECT, so the score/tuning JSON textareas were unusable for hand
     // editing (every mapped letter played a note, Space/Backspace were
-    // preventDefault'd instead of typing) (F-A1-007).
+    // preventDefault'd instead of typing) (F-A1-007). Checked before the
+    // repeat bail below (unlike the old ordering) since it must apply
+    // identically to both a first keydown and a held-key repeat.
     if (isTypingTarget(e)) return;
-    // Don't hijack Ctrl/Cmd/Alt combos (Ctrl+C, Ctrl+V, Cmd+A, ...).
+
+    // Undo/redo (Wave C1) — carved out of the Ctrl/Cmd-bail below so
+    // Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y (+ Cmd on mac, via metaKey) reach the
+    // command stack instead of being swallowed by the "don't hijack Ctrl
+    // combos" guard just below. Still respects isTypingTarget() above
+    // (ignored while typing) and excludes Alt so a Ctrl+Alt+Z-style combo
+    // falls through to that guard untouched. Also excludes a mid-drag
+    // gesture (Wave C1 finding 6 — dragActive) since an undo/redo mid-drag
+    // would rerenderAllNotes() out from under the drag's own closures.
+    // Deliberately checked BEFORE the e.repeat bail below (Wave C1 finding
+    // 7): a held-down Ctrl+Z/Ctrl+Shift+Z/Ctrl+Y should keep repeating
+    // undo/redo, same as every mainstream editor's hold-to-undo — every
+    // OTHER shortcut below still ignores key-repeat.
+    if ((e.ctrlKey || e.metaKey) && !e.altKey && !dragActive) {
+      const uk = e.key.toLowerCase();
+      if (uk === "z" && e.shiftKey) { e.preventDefault(); performRedo(); return; }
+      if (uk === "z") { e.preventDefault(); performUndo(); return; }
+      if (uk === "y") { e.preventDefault(); performRedo(); return; }
+    }
+
+    if (e.repeat) return;
+
+    // Don't hijack any other Ctrl/Cmd/Alt combos (Ctrl+C, Ctrl+V, Cmd+A, ...).
     if (e.ctrlKey || e.metaKey || e.altKey) return;
 
     const k = e.key.toLowerCase();
@@ -992,6 +1108,18 @@ function layoutKeyboard() {
   }
 }
 
+/** INPUT types that never accept text entry — Ctrl+Z with one of these
+ *  focused (e.g. a velocity/breathiness/ref-pitch <input type=range>
+ *  slider, still focused after a drag) must reach the undo/redo
+ *  carve-out instead of being swallowed by the typing-target bail (Wave
+ *  C1 finding 3: Ctrl+Z was dead while ANY <input> held focus). Every
+ *  OTHER input type (text, number, search, ... — anything not listed
+ *  here) keeps the bail: those DO accept typed text, and native
+ *  browser undo inside them must not be hijacked. */
+const NON_TEXT_INPUT_TYPES = new Set([
+  "range", "checkbox", "radio", "button", "submit", "reset", "color", "file", "image",
+]);
+
 /** True when the event's target (or the currently focused element) is a
  *  text-entry control — used to keep global keyboard shortcuts (note
  *  triggering, Space/Delete/Escape) from hijacking typing in the score/tuning
@@ -1000,7 +1128,8 @@ function isTypingTarget(e: KeyboardEvent): boolean {
   const el = (e.target as HTMLElement | null) ?? (document.activeElement as HTMLElement | null);
   if (!el) return false;
   const tag = el.tagName;
-  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
+  if (tag === "INPUT") return !NON_TEXT_INPUT_TYPES.has((el as HTMLInputElement).type);
+  if (tag === "TEXTAREA" || tag === "SELECT") return true;
   return !!el.isContentEditable;
 }
 
@@ -1124,6 +1253,21 @@ function bindMidi() {
   }).catch(() => { /* MIDI not available */ });
 }
 
+// ─── Undo/Redo ───────────────────────────────────────────────────────────────
+//
+// Wave C1: the command stack itself lives in undo.ts (pure, DOM-free); this
+// wires it to the DOM — the toolbar buttons, and the onChange hook that
+// keeps them (and autosave) in sync with every execute/commit/undo/redo.
+// Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y are handled separately, inside
+// buildKeyboard()'s existing keydown listener (see its Ctrl-bail carve-out).
+
+function bindUndoRedo() {
+  undo.setOnChange(afterUndoStackChange);
+  updateUndoRedoButtons(); // initial (both-disabled) state
+  $("btn-undo").addEventListener("click", performUndo);
+  $("btn-redo").addEventListener("click", performRedo);
+}
+
 // ─── Transport ───────────────────────────────────────────────────────────────
 //
 // Play/pause/stop/scheduling itself lives in transport.ts (a lookahead
@@ -1142,6 +1286,14 @@ function updateTransportTime(positionBeats: number) {
 // ─── Controls ────────────────────────────────────────────────────────────────
 
 function bindControls() {
+  // Gesture-coalescing state for the velocity/breathiness sliders (Wave C1,
+  // finding 2): captured on the FIRST "input" tick of a gesture (mouse drag
+  // OR a keyboard arrow-key nudge on the focused slider — both fire "input"
+  // first, so this covers both uniformly), reset to null once the gesture's
+  // single coalesced command is committed on "change".
+  let velGestureBefore: number | null = null;
+  let breathGestureBefore: number | null = null;
+
   $("btn-play").addEventListener("click", () => transport.togglePlayPause());
   $("btn-stop").addEventListener("click", () => transport.stop());
   $("btn-loop").addEventListener("click", () => {
@@ -1151,16 +1303,16 @@ function bindControls() {
   });
 
   $("btn-clear").addEventListener("click", () => {
-    // Persistence makes note loss permanent (autosave would immediately
-    // overwrite the last-saved copy with an empty score) — confirm first,
-    // same as Import below (G-1). Skipped when already empty so clearing a
-    // blank score never nags.
-    if (state.getScore().length > 0 && !confirm("Clear all notes? This cannot be undone.")) return;
+    // Wave C1 (findings 5/6): Clear is no longer destructive-with-confirm()
+    // — it's an undoable command with a non-blocking toast instead. Still
+    // skipped when already empty so clearing a blank score is a true no-op
+    // (and doesn't push a pointless undo entry).
+    if (state.getScore().length === 0) return;
     transport.stop();
-    state.clearScore();
+    undo.execute(undo.clearScoreCommand());
     document.querySelectorAll(".pr-note").forEach((el) => el.remove());
     updateInspector();
-    onStateChanged();
+    showToast("Score cleared — Ctrl+Z to undo");
   });
 
   $("btn-reset").addEventListener("click", () => {
@@ -1170,6 +1322,11 @@ function bindControls() {
     state.clearScore();
     document.querySelectorAll(".pr-note").forEach((el) => el.remove());
     updateInspector();
+    // Reset KEEPS its confirm() (unlike Clear/Import) and, once confirmed,
+    // clears the undo stack too — a fresh session shouldn't offer to undo
+    // back into the session it just abandoned.
+    undo.resetStack();
+    updateUndoRedoButtons();
     // A lingering debounced timer (or an involuntary visibilitychange/
     // pagehide flush firing right after this click) would otherwise
     // silently re-write the session we're about to clear — cancel the
@@ -1183,39 +1340,60 @@ function bindControls() {
 
   $("btn-panic").addEventListener("click", panic);
 
-  // Inspector velocity
+  // Inspector velocity — live-applies on every "input" tick (unchanged, for
+  // instant visual/audio feedback + autosave scheduling), but only commits
+  // ONE coalesced undo command on "change" (fires once, on mouse-release or
+  // after a keyboard-driven change) — see the gesture-coalescing comment
+  // above bindControls().
   $("insp-vel").addEventListener("input", (e) => {
     const note = state.getSelectedNote();
     if (!note) return;
+    if (velGestureBefore === null) velGestureBefore = note.velocity;
     const v = safeNumber(e.target as HTMLInputElement, note.velocity);
     state.setVelocity(note, v);
     $("insp-vel-val").textContent = String(note.velocity);
     onStateChanged();
   });
+  $("insp-vel").addEventListener("change", () => {
+    const note = state.getSelectedNote();
+    if (note && velGestureBefore !== null && velGestureBefore !== note.velocity) {
+      undo.commit(undo.velocityCommand(note.id, velGestureBefore, note.velocity));
+    }
+    velGestureBefore = null;
+  });
   $("insp-del").addEventListener("click", deleteSelectedNote);
 
-  // Inspector vocal: per-note vowel + breathiness
+  // Inspector vocal: per-note vowel (discrete — one command per click) +
+  // breathiness (coalesced, same shape as velocity above).
   document.querySelectorAll<HTMLButtonElement>(".insp-vowel-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       const note = state.getSelectedNote();
       if (!note || !note.vowel) return;
       const v = btn.dataset.vowel as VowelId;
-      state.setVowel(note, v);
+      if (note.vowel === v) return; // already this vowel — no-op click
+      undo.execute(undo.vowelCommand(note.id, note.vowel, v));
       // Update the note's visual
       const el = document.querySelector<HTMLElement>(noteSelector(note.id));
       if (el) applyNoteStyle(el, note);
       updateInspector();
-      onStateChanged();
     });
   });
   $("insp-breath").addEventListener("input", (e) => {
     const note = state.getSelectedNote();
     if (!note) return;
     const prev = Math.round((note.breathiness ?? 0.15) * 100);
+    if (breathGestureBefore === null) breathGestureBefore = note.breathiness ?? 0.15;
     const v = safeNumber(e.target as HTMLInputElement, prev);
     state.setBreathiness(note, v / 100);
     $("insp-breath-val").textContent = String(v);
     onStateChanged();
+  });
+  $("insp-breath").addEventListener("change", () => {
+    const note = state.getSelectedNote();
+    if (note && breathGestureBefore !== null && note.breathiness !== undefined && breathGestureBefore !== note.breathiness) {
+      undo.commit(undo.breathinessCommand(note.id, breathGestureBefore, note.breathiness));
+    }
+    breathGestureBefore = null;
   });
 
   // Master volume
@@ -1507,15 +1685,56 @@ function clearTuningStatus() {
 
 // ─── Score Export / Import (LLM API) ─────────────────────────────────────────
 
-function exportScore(): ScoreSnapshot {
+/** Read the CURRENT bpm/mode/voice/tuning/refPitch as a complete settings
+ *  snapshot — the non-notes half of exportScore() below, factored out
+ *  (Wave C1 finding 5) so importScore()'s undo/redo path can capture a
+ *  "before" and "after" snapshot of exactly the same shape and hand both
+ *  to applySettings() below. */
+function captureSettings(): ImportSettings {
   return {
-    version: 2,
     mode,
     bpm,
     voice: ($(mode === "vocal" ? "sel-vocal-voice" : "sel-voice") as HTMLSelectElement).value,
     ...(mode === "vocal" ? { vocalVoice: ($("sel-vocal-voice") as HTMLSelectElement).value } : {}),
     tuning: ($("sel-tuning") as HTMLSelectElement).value,
     refPitch: parseInt(($("ref-pitch") as HTMLInputElement).value),
+  };
+}
+
+/** Unconditionally apply a COMPLETE settings snapshot from
+ *  captureSettings() — never a partial/untrusted one like a raw import's
+ *  ScoreSnapshot can be (Wave C1 finding 5). Used by importScoreCommand's
+ *  undo()/redo() to restore/reapply the bpm/mode/voice/tuning/refPitch
+ *  that rode along with a score import — see importScore() below.
+ *  Deliberately simpler than importScore()'s own settings-application
+ *  block: THAT one is conditional (a partial/untrusted snapshot leaves an
+ *  unset field unchanged); this one always has every field, so it just
+ *  sets all of them. */
+function applySettings(s: ImportSettings): void {
+  bpm = s.bpm;
+  ($("bpm") as HTMLInputElement).value = String(bpm);
+  setMode(s.mode);
+  if (s.mode === "vocal" && s.vocalVoice) {
+    ($("sel-vocal-voice") as HTMLSelectElement).value = s.vocalVoice;
+    vocalSynth.setVoice(s.vocalVoice as VocalVoiceId);
+  } else {
+    ($("sel-voice") as HTMLSelectElement).value = s.voice;
+    synth.setVoice(s.voice as VoiceId);
+  }
+  ($("sel-tuning") as HTMLSelectElement).value = s.tuning;
+  synth.setTuning(s.tuning as TuningId);
+  vocalSynth.setTuning(s.tuning as TuningId);
+  synth.setRefPitch(s.refPitch);
+  vocalSynth.setRefPitch(s.refPitch);
+  ($("ref-pitch") as HTMLInputElement).value = String(synth.getRefPitch());
+  updateTuningTable();
+  updateTelemetry();
+}
+
+function exportScore(): ScoreSnapshot {
+  return {
+    version: 2,
+    ...captureSettings(),
     notes: state.getScore().map(({ id: _id, ...rest }) => rest),
   };
 }
@@ -1617,7 +1836,41 @@ function clearScoreStatus() {
   el.className = "score-status";
 }
 
-function importScore(snap: ScoreSnapshot) {
+let toastTimer: ReturnType<typeof setTimeout> | undefined;
+
+/** Small non-blocking toast (Wave C1, findings 5/6) — replaces the
+ *  confirm() dialogs Clear/Import used to show, now that both are
+ *  undoable instead of destructive. Single instance: a new call while one
+ *  is showing replaces the message and restarts the ~5s auto-dismiss timer
+ *  rather than stacking a second toast. aria-live="polite" (set once in
+ *  index.html) announces the text change to screen readers without
+ *  stealing focus, matching the existing #score-status pattern. */
+function showToast(message: string): void {
+  const el = document.getElementById("toast");
+  if (!el) return;
+  el.textContent = message;
+  el.classList.add("show");
+  if (toastTimer !== undefined) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    el.classList.remove("show");
+    // Wave C1 finding 4: #toast now hides via opacity, not display:none,
+    // so it stays in the accessibility tree at all times (that's the
+    // whole fix — a display:none element is invisible to a11y APIs
+    // regardless of aria-live). Clearing the text on hide keeps a stale
+    // message from lingering in that tree indefinitely.
+    el.textContent = "";
+    toastTimer = undefined;
+  }, 5000);
+}
+
+/**
+ * `recordUndo` (Wave C1, findings 5/6) — default true for every caller
+ * except restoreFromStorage()'s boot-time session restore, which passes
+ * false: there's no meaningful prior state to offer undo back to at boot,
+ * and recording one would make a fresh session's very first Ctrl+Z
+ * surprising (see restoreFromStorage's call site for the full rationale).
+ */
+function importScore(snap: ScoreSnapshot, recordUndo = true) {
   if (!snap || !Array.isArray(snap.notes)) {
     setScoreStatus("Import rejected: snapshot.notes must be an array", "error");
     return;
@@ -1653,6 +1906,17 @@ function importScore(snap: ScoreSnapshot) {
     }
     cleaned.push(result.note);
   }
+
+  // Capture the "before" NOTES (with their real ids) and the "before"
+  // SETTINGS now, prior to any mutation below (Wave C1 findings 1/5). The
+  // Command itself is built further down, AFTER the settings/notes
+  // mutations run — its "after" halves need to read back what actually
+  // got applied, since the settings block below is conditional (only
+  // fields present in `snap` change anything), so the true "after" state
+  // is only knowable once that block has run. See this function's doc
+  // comment for recordUndo.
+  const beforeNotes = recordUndo ? state.getScore().map((n) => ({ ...n })) : null;
+  const beforeSettings = recordUndo ? captureSettings() : null;
 
   transport.stop();
 
@@ -1699,7 +1963,24 @@ function importScore(snap: ScoreSnapshot) {
   updateTelemetry();
   updateInspector();
   setScoreStatus(`Imported ${cleaned.length} note${cleaned.length === 1 ? "" : "s"}`, "ok");
-  onStateChanged();
+
+  if (beforeNotes && beforeSettings) {
+    // Built AFTER the mutations above so `added` (real ids) and a fresh
+    // captureSettings() read (Wave C1 finding 5) reflect EXACTLY what got
+    // applied — see importScoreCommand's doc comment in undo.ts for why
+    // this factory takes both ends of the notes delta explicitly rather
+    // than reading state.getScore() internally. commit()-not-execute() is
+    // the same shape gesture-coalescing uses elsewhere in this file: the
+    // mutations above already produced this "after" state, so redo() must
+    // never re-run them, only replay the snapshot.
+    const cmd = undo.importScoreCommand(beforeNotes, added, {
+      before: beforeSettings, after: captureSettings(), apply: applySettings,
+    });
+    undo.commit(cmd);
+    showToast("Score imported — Ctrl+Z to undo");
+  } else {
+    onStateChanged();
+  }
 }
 
 function bindScoreControls() {
@@ -1710,9 +1991,9 @@ function bindScoreControls() {
   });
 
   $("btn-import-score").addEventListener("click", () => {
-    // Persistence makes overwrite permanent (autosave fires right after) —
-    // confirm before replacing a non-empty score, same as Clear above (G-1).
-    if (state.getScore().length > 0 && !confirm("Import will replace the current score. Continue?")) return;
+    // Wave C1 (findings 5/6): Import is no longer destructive-with-confirm()
+    // — importScore() below records an undoable command and shows a
+    // non-blocking toast instead.
     let data: ScoreSnapshot;
     try {
       data = JSON.parse(($("score-json") as HTMLTextAreaElement).value) as ScoreSnapshot;
@@ -1736,6 +2017,8 @@ declare global {
       setMode: (m: "instrument" | "vocal") => void;
       getScore: () => Note[];
       addNote: (n: NoteInit) => void;
+      undo: () => void;
+      redo: () => void;
     };
   }
 }
@@ -1764,11 +2047,13 @@ async function boot() {
         setScoreStatus(`addNote rejected: ${result.message}`, "error");
         return;
       }
-      const note = state.addNote(result.note);
+      undo.execute(undo.addNoteCommand(result.note));
+      const note = state.getSelectedNote()!; // addNoteCommand.redo() selects the new note
       renderNote(note);
       setScoreStatus(`Added note ${noteName(note.midi)}`, "ok");
-      onStateChanged();
     },
+    undo: () => performUndo(),
+    redo: () => performRedo(),
   };
 }
 

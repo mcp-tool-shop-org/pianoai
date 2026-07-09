@@ -172,6 +172,8 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
   font-family: var(--font); transition: all 0.1s;
 }
 .ctrl-btn:hover { border-color: var(--accent); }
+.ctrl-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.ctrl-btn:disabled:hover { border-color: var(--border); }
 .ctrl-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
 .ctrl-btn.danger { color: var(--danger); }
 .ctrl-btn.danger:hover { border-color: var(--danger); background: var(--danger-dim); }
@@ -367,6 +369,26 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
   padding: 1px 4px; font-family: var(--mono); font-size: 10px; color: var(--text-muted);
 }
 
+/* ─── Toast (Wave C1) ─── non-blocking notification, replaces the Clear/
+   Import confirm() dialogs now that both are undoable commands. Single
+   instance — showToast() reuses this one element and resets its dismiss
+   timer rather than stacking multiple toasts. pointer-events:none so it
+   never intercepts clicks on the piano roll underneath it.
+   Wave C1 finding 4: hidden via opacity, NOT display:none — a display:none
+   element is removed from the accessibility tree, so aria-live="polite"
+   (see the element below) never gets a chance to announce a text change
+   that happens while it's display:none. Opacity keeps it permanently
+   present (and visually invisible) to both sighted users and screen
+   readers, only becoming VISIBLE (not just present) when .show applies. */
+#toast {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+  z-index: 250; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 6px; padding: 8px 14px; font-size: 12px; color: var(--text);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4); pointer-events: none; max-width: 320px;
+  text-align: center; opacity: 0; transition: opacity 0.15s ease;
+}
+#toast.show { opacity: 1; }
+
 /* ─── Responsive Layout (F-B1-003) ───
    Desktop assumes a fixed 320px right sidebar + 240px controls column inside
    a 100vh grid with html/body overflow:hidden — below ~1000px that grid no
@@ -476,6 +498,9 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
     <button class="ctrl-btn" id="btn-play" data-tip="Play (Space)" aria-label="Play (Space)" title="Play (Space)"><svg class="icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M5 3 L12 8 L5 13 Z"/></svg></button>
     <button class="ctrl-btn" id="btn-stop" data-tip="Stop" aria-label="Stop" title="Stop"><svg class="icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><rect x="4" y="4" width="8" height="8" rx="1"/></svg></button>
     <button class="ctrl-btn" id="btn-loop" data-tip="Loop" aria-label="Loop" title="Loop" aria-pressed="false"><svg class="icon" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2.5 9.5 V7 a3 3 0 0 1 3-3 H11"/><path d="M8.5 1 L11.5 4 L8.5 7"/><path d="M13.5 6.5 V9 a3 3 0 0 1-3 3 H5"/><path d="M7.5 15 L4.5 12 L7.5 9"/></svg></button>
+    <div class="sep" style="height:18px"></div>
+    <button class="ctrl-btn" id="btn-undo" data-tip="Undo (Ctrl+Z)" aria-label="Undo (Ctrl+Z)" title="Undo (Ctrl+Z)" disabled><svg class="icon" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6.5 3.5 L3 7 L6.5 10.5"/><path d="M3 7 H9.5 A3.5 3.5 0 0 1 9.5 14 H7"/></svg></button>
+    <button class="ctrl-btn" id="btn-redo" data-tip="Redo (Ctrl+Y)" aria-label="Redo (Ctrl+Y)" title="Redo (Ctrl+Y)" disabled><svg class="icon" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9.5 3.5 L13 7 L9.5 10.5"/><path d="M13 7 H6.5 A3.5 3.5 0 0 0 6.5 14 H9"/></svg></button>
     <span class="time" id="transport-time">0:00.0</span>
     <div class="sep" style="height:18px"></div>
     <label style="font-size:11px;color:var(--text-muted)">BPM
@@ -579,6 +604,12 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
 
 </div>
 
+<!-- ─── Toast (Wave C1) ─── non-blocking, single-instance, auto-dismiss —
+     replaces the Clear/Import confirm() dialogs now that both are
+     undoable. Always present in the DOM (never display:none via inline
+     style) so aria-live picks up text changes; .show controls visibility. -->
+<div id="toast" role="status" aria-live="polite"></div>
+
 <!-- ─── Keyboard Shortcuts Overlay (F-A1-009) ─── -->
 <div id="shortcuts-overlay" role="dialog" aria-label="Keyboard shortcuts" aria-hidden="true">
   <h2>Keyboard Shortcuts</h2>
@@ -588,6 +619,7 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
     <li><kbd>Tab</kbd> Select next note (Shift+Tab: previous)</li>
     <li><kbd>&uarr;</kbd><kbd>&darr;</kbd> Nudge pitch &nbsp; <kbd>&larr;</kbd><kbd>&rarr;</kbd> Nudge time</li>
     <li><kbd>Enter</kbd> Add note at playhead</li>
+    <li><kbd>Ctrl</kbd>+<kbd>Z</kbd> Undo &nbsp; <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd> Redo</li>
     <li><kbd>Esc</kbd> Panic (all notes off)</li>
     <li><kbd>Z</kbd>&ndash;<kbd>M</kbd> / <kbd>Q</kbd>&ndash;<kbd>U</kbd> Play keyboard</li>
     <li><kbd>?</kbd> Toggle this help</li>

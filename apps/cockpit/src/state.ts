@@ -106,6 +106,37 @@ export function addNote(init: NoteInit): Note {
   return note;
 }
 
+/** Parse a "n<N>"-shaped id and bump `nextId` past it if needed, so the
+ *  counter can never re-mint an id that restoreNote()/replaceScoreWithIds()
+ *  (below) is putting back into the score (Wave C1 finding 1). Ids that
+ *  don't match this module's own "n<N>" shape are skipped — they can't
+ *  collide with anything addNote() will ever generate. */
+function bumpNextIdPast(id: string): void {
+  const m = /^n(\d+)$/.exec(id);
+  if (!m) return;
+  const n = Number(m[1]) + 1;
+  if (n > nextId) nextId = n;
+}
+
+/**
+ * Re-insert a note under its ORIGINAL id (Wave C1 finding 1) — for
+ * undo.ts's command factories ONLY, never for ordinary note creation
+ * (which always goes through addNote()'s fresh-id path above). Every
+ * command on the undo/redo stack resolves its target note by id via
+ * getNoteById(), so re-minting a new id every time a note is restored (the
+ * pre-Wave-C1 behavior of routing every undo through addNote()/
+ * replaceScore()) stranded any earlier command that still held the old id
+ * — e.g. add→move→delete→undo used to bring the note back under a NEW id,
+ * silently breaking the earlier move command's own undo/redo. restoreNote
+ * keeps that id forever, bumping the internal counter past it so a later
+ * addNote() can never mint a duplicate.
+ */
+export function restoreNote(note: Note): Note {
+  bumpNextIdPast(note.id);
+  score.push(note);
+  return note;
+}
+
 /** Remove a specific note. Clears the selection if the removed note was
  *  selected (an orphaned `selected` pointer would make getSelectedNote()
  *  return a note no longer in the score). Returns true if the note was
@@ -183,4 +214,43 @@ export function replaceScore(notes: readonly NoteInit[]): readonly Note[] {
     score.push({ ...init, id: "n" + nextId++ });
   }
   return score;
+}
+
+/**
+ * Bulk-replace the score preserving every note's EXACT id (Wave C1 finding
+ * 1) — the id-preserving counterpart to replaceScore() above, for
+ * undo.ts's Clear/Import undo AND redo paths only (a snapshot this module
+ * itself produced earlier in the same session, being put back exactly as
+ * it was — never for ordinary import, which still goes through
+ * replaceScore()'s fresh-id path since freshly-imported JSON has no prior
+ * identity worth preserving). Copies each note defensively so the caller's
+ * array can't alias the live score.
+ */
+export function replaceScoreWithIds(notes: readonly Note[]): readonly Note[] {
+  score = notes.map((n) => ({ ...n }));
+  selected = null;
+  for (const n of score) bumpNextIdPast(n.id);
+  return score;
+}
+
+/**
+ * Compute the clamped target position for nudging `note` to
+ * (startBeat, midi), or null if the clamped target is IDENTICAL to where
+ * the note already is (Wave C1 finding 2) — e.g. nudging pitch up while
+ * already at MIDI_HI, or nudging time left while already at startBeat 0.
+ * Callers (main.ts's keyboard nudge) use the null case to skip the move
+ * entirely rather than pushing a no-op undo command: undo.execute()
+ * unconditionally wipes the redo stack, so a vacuous command at a
+ * boundary would silently destroy the user's redo history for zero
+ * visible effect. `startBeat` is taken as already-quantized by the caller
+ * (e.g. time.ts's quantizeBeats) — this only applies the same >= 0 floor
+ * moveNote() itself enforces. Pure — does not mutate `note`.
+ */
+export function clampedMoveTarget(
+  note: Note, startBeat: number, midi: number,
+): { startBeat: number; midi: number } | null {
+  const clampedBeat = Math.max(0, startBeat);
+  const clampedMidi = clampMidi(midi);
+  if (clampedBeat === note.startBeat && clampedMidi === note.midi) return null;
+  return { startBeat: clampedBeat, midi: clampedMidi };
 }
