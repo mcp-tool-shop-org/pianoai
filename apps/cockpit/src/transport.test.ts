@@ -38,6 +38,7 @@ import {
   type TransportAnchor, type TransportCallbacks,
 } from "./transport.js";
 import type { Note } from "./state.js";
+import type { LoopRegion } from "./time.js";
 
 /** Build a minimal fake Note for scheduler tests — id + the fields
  *  computeScheduleWindow/computeScoreEndBeat actually read. */
@@ -61,7 +62,10 @@ function note(id: string, startBeat: number, durationBeats: number, extra: Parti
 interface RecordedNoteOn { midi: number; velocity: number; time: number }
 interface RecordedNoteOff { midi: number; time: number }
 
-function createFakeTransportEnv(opts: { score: Note[]; bpm?: number; looping?: boolean; vocalMode?: boolean }) {
+function createFakeTransportEnv(opts: {
+  score: Note[]; bpm?: number; looping?: boolean; vocalMode?: boolean;
+  region?: LoopRegion | null;
+}) {
   const state = { currentTime: 0 };
   const ctx = state as unknown as AudioContext;
 
@@ -74,6 +78,7 @@ function createFakeTransportEnv(opts: { score: Note[]; bpm?: number; looping?: b
   let score = opts.score;
   let bpm = opts.bpm ?? 120;
   let looping = opts.looping ?? false;
+  let region: LoopRegion | null = opts.region ?? null;
 
   const cb: TransportCallbacks = {
     getContext: () => ctx,
@@ -91,6 +96,7 @@ function createFakeTransportEnv(opts: { score: Note[]; bpm?: number; looping?: b
     getScore: () => score,
     getBpm: () => bpm,
     isLooping: () => looping,
+    getLoopRegion: () => region,
     onTick: (p) => onTicks.push(p),
     onPlayStateChange: (p) => playStateChanges.push(p),
   };
@@ -104,6 +110,7 @@ function createFakeTransportEnv(opts: { score: Note[]; bpm?: number; looping?: b
     setBpm: (v: number) => { bpm = v; },
     setLooping: (v: boolean) => { looping = v; },
     setScore: (s: Note[]) => { score = s; },
+    setLoopRegion: (r: LoopRegion | null) => { region = r; },
   };
 }
 
@@ -230,6 +237,61 @@ describe("computeScheduleWindow", () => {
     const notes = [note("a", 0, 1)];
     computeScheduleWindow(notes, scheduled, anchor, 100, 100.1);
     expect(scheduled.size).toBe(0);
+  });
+});
+
+describe("computeScheduleWindow — boundaryBeat clamp/exclusion (Wave C2b findings 1/2)", () => {
+  const anchor: TransportAnchor = { audioTime: 100, beat: 0, bpm: 120 }; // 2 beats/sec
+
+  it("clamps a straddling note's offAudioTime to the boundary's own audio-time instant, not its natural end", () => {
+    // Note spans beats [2, 10] (onAudioTime 101, natural off 105); boundary
+    // at beat 6 -> boundary audio time 103.
+    const notes = [note("a", 2, 8)];
+    const items = computeScheduleWindow(notes, new Set(), anchor, 100, 102, 6);
+    expect(items).toHaveLength(1);
+    expect(items[0].onAudioTime).toBeCloseTo(101, 10);
+    expect(items[0].offAudioTime).toBeCloseTo(103, 10); // clamped, not the natural 105
+  });
+
+  it("leaves a non-straddling note's offAudioTime at its natural end", () => {
+    // Note spans beats [2, 4] (off@102), well inside a boundary at beat 6 (@103).
+    const notes = [note("a", 2, 2)];
+    const items = computeScheduleWindow(notes, new Set(), anchor, 100, 102, 6);
+    expect(items[0].offAudioTime).toBeCloseTo(102, 10);
+  });
+
+  it("excludes a note whose start is exactly AT the boundary — it belongs to the next lap", () => {
+    const notes = [note("a", 6, 1)];
+    const items = computeScheduleWindow(notes, new Set(), anchor, 100, 110, 6);
+    expect(items).toHaveLength(0);
+  });
+
+  it("excludes a note whose start is PAST the boundary", () => {
+    const notes = [note("a", 6.5, 1)];
+    const items = computeScheduleWindow(notes, new Set(), anchor, 100, 110, 6);
+    expect(items).toHaveLength(0);
+  });
+
+  it("still schedules a note starting just BEFORE the boundary, clamped", () => {
+    const notes = [note("a", 5.9, 2)]; // would naturally run to beat 7.9, past the boundary
+    const items = computeScheduleWindow(notes, new Set(), anchor, 100, 110, 6);
+    expect(items).toHaveLength(1);
+    expect(items[0].offAudioTime).toBeCloseTo(103, 10); // clamped to boundary (beat 6 -> audioTime 103)
+  });
+
+  it("with no boundaryBeat given, behaves exactly as before — full natural extent, no exclusion", () => {
+    const notes = [note("a", 6, 8)]; // would be excluded/clamped if a boundary of 6 were passed
+    const items = computeScheduleWindow(notes, new Set(), anchor, 100, 110);
+    expect(items).toHaveLength(1);
+    expect(items[0].offAudioTime).toBeCloseTo(107, 10); // unclamped natural end
+  });
+
+  it("score-end clamping is a no-op by construction — computeScoreEndBeat IS the last note's own natural end", () => {
+    const notes = [note("a", 0, 4), note("b", 2, 6)]; // scoreEnd = max(4, 8) = 8
+    const scoreEnd = computeScoreEndBeat(notes);
+    const items = computeScheduleWindow(notes, new Set(), anchor, 100, 110, scoreEnd);
+    const b = items.find((i) => i.note.id === "b")!;
+    expect(b.offAudioTime).toBeCloseTo(beatToAudioTime(anchor, 8), 10); // unclamped — IS the boundary
   });
 });
 
@@ -449,5 +511,304 @@ describe("createTransport — pause() (Wave C0 stateful coverage: pause mid-wind
     expect(transport.isPlaying()).toBe(false);
     expect(env.allNotesOffCalls).toBe(0); // stopClockAndSound is only reached via the playing guard
     expect(env.playStateChanges).toEqual([]); // no spurious onPlayStateChange(false)
+  });
+});
+
+describe("createTransport — seekTo (Wave C2a)", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("when stopped, just moves the position and fires onTick — no audio calls", () => {
+    const env = createFakeTransportEnv({ score: [note("a", 0, 4)] });
+    const transport = createTransport(env.cb);
+
+    transport.seekTo(2.5);
+
+    expect(transport.getPositionBeats()).toBe(2.5);
+    expect(env.onTicks).toEqual([2.5]);
+    expect(env.allNotesOffCalls).toBe(0);
+    expect(env.noteOns).toHaveLength(0);
+  });
+
+  it("floors a negative target at 0", () => {
+    const env = createFakeTransportEnv({ score: [note("a", 0, 4)] });
+    const transport = createTransport(env.cb);
+    transport.seekTo(-10);
+    expect(transport.getPositionBeats()).toBe(0);
+  });
+
+  it("when paused mid-score, seeking updates the position a later play() resumes from", () => {
+    vi.useFakeTimers();
+    const notes = [note("a", 0, 20)];
+    const env = createFakeTransportEnv({ score: notes, bpm: 120 });
+    const transport = createTransport(env.cb);
+
+    transport.play();
+    env.setTime(1); // 2 beats in
+    vi.advanceTimersByTime(LOOKAHEAD_MS);
+    transport.pause();
+    expect(transport.getPositionBeats()).toBeCloseTo(2, 10);
+
+    transport.seekTo(10);
+    expect(transport.getPositionBeats()).toBe(10);
+
+    env.setTime(5);
+    transport.play(); // must resume from the SOUGHT position (10), not the pre-seek one (2)
+    const onsAfterResume = env.noteOns.filter((c) => c.time === 5);
+    expect(onsAfterResume).toHaveLength(1); // "a" (spans beat 0-20) is still sounding at beat 10
+
+    transport.stop();
+  });
+
+  it("while playing, re-anchors at the new position: silences current sound and schedules exactly once at the target — no double-schedule", () => {
+    vi.useFakeTimers();
+    // "early" only sounds before beat 2; "late" only sounds at/after beat 5.
+    const notes = [note("early", 0, 2, { midi: 60 }), note("late", 5, 2, { midi: 61 })];
+    const env = createFakeTransportEnv({ score: notes, bpm: 120 }); // 2 beats/sec
+    const transport = createTransport(env.cb);
+
+    transport.play(); // schedules "early" immediately (on@0)
+    expect(env.noteOns.map((c) => c.midi)).toEqual([60]);
+
+    env.setTime(2); // 4 beats in — between the two notes, nothing new due yet
+    vi.advanceTimersByTime(LOOKAHEAD_MS);
+
+    transport.seekTo(5); // jump straight to "late"'s start
+
+    expect(env.allNotesOffCalls).toBe(1); // silenced whatever was (or wasn't) sounding
+    expect(transport.getPositionBeats()).toBe(5);
+    const lateOns = env.noteOns.filter((c) => c.midi === 61);
+    expect(lateOns).toHaveLength(1);
+    expect(lateOns[0].time).toBeCloseTo(2, 10); // scheduled at the CURRENT audio time (the seek instant)
+
+    // Advancing further must not re-schedule "late" a second time.
+    env.setTime(2.05);
+    vi.advanceTimersByTime(LOOKAHEAD_MS);
+    expect(env.noteOns.filter((c) => c.midi === 61)).toHaveLength(1);
+
+    transport.stop();
+  });
+
+  it("seeking past the end of the score while playing lets the very next tick stop playback", () => {
+    vi.useFakeTimers();
+    const notes = [note("a", 0, 2)];
+    const env = createFakeTransportEnv({ score: notes, bpm: 120, looping: false });
+    const transport = createTransport(env.cb);
+
+    transport.play();
+    transport.seekTo(100); // past computeScoreEndBeat (2)
+
+    env.setTime(0.001);
+    vi.advanceTimersByTime(LOOKAHEAD_MS);
+
+    expect(transport.isPlaying()).toBe(false); // tick() noticed positionBeats >= endBeat and stopped
+    expect(transport.getPositionBeats()).toBe(0); // stop() always resets to 0
+  });
+});
+
+describe("createTransport — loop region (Wave C2a)", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("wraps region-end -> region-start (not beat 0) when a region is set and looping is on", () => {
+    vi.useFakeTimers();
+    const region = { startBeat: 4, endBeat: 8 };
+    // 120bpm = 2 beats/sec -> 1 beat = 0.5s. The region is 4 beats = 2s long,
+    // so it wraps every 2s exactly. "b" sits just after the region start
+    // (beat 4.1) so its scheduled onAudioTime directly reveals which
+    // audioTime the WRAPPED anchor actually used — same technique the
+    // whole-score wrap test above uses.
+    const notes = [note("a", 4, 0.2, { midi: 60 }), note("b", 4.1, 0.1, { midi: 61 })];
+    const env = createFakeTransportEnv({ score: notes, bpm: 120, looping: true, region });
+    const transport = createTransport(env.cb);
+
+    transport.seekTo(region.startBeat); // start already inside the region
+    transport.play(); // lap 1 — synchronous first tick at audio time 0
+
+    const bLap1 = env.noteOns.filter((c) => c.midi === 61);
+    expect(bLap1).toHaveLength(1);
+    expect(bLap1[0].time).toBeCloseTo(0.05, 10);
+
+    env.setTime(2.0); // exactly the region's own 2s length has elapsed
+    vi.advanceTimersByTime(LOOKAHEAD_MS);
+
+    const aLap2 = env.noteOns.filter((c) => c.midi === 60);
+    const bLap2 = env.noteOns.filter((c) => c.midi === 61);
+    expect(aLap2).toHaveLength(2);
+    expect(bLap2).toHaveLength(2);
+    expect(bLap2[1].time).toBeCloseTo(2.05, 10); // wrapped anchor + 0.05s into lap 2
+
+    expect(transport.getPositionBeats()).toBe(region.startBeat); // wrapped to region START, not 0
+
+    transport.stop();
+  });
+
+  it("clamps a straddling note's noteOff to the region boundary AT SCHEDULE TIME — no stuck notes, no separate forced-off needed (Wave C2b finding 1)", () => {
+    vi.useFakeTimers();
+    const region = { startBeat: 4, endBeat: 8 };
+    // "long" starts inside the region (beat 6) but its natural duration
+    // carries it to beat 12 — past the region's end (8). Both synth engines
+    // drop a voice from their active-voice map the instant noteOff() is
+    // CALLED (not when its scheduled audio time arrives) — so the ONLY
+    // noteOff call this note ever gets must already carry the clamped
+    // (boundary) time, not the natural one, or a later "force it off"
+    // call would find nothing left to silence (this is exactly what a
+    // forced-noteOff-at-wrap approach gets wrong against a real engine).
+    const notes = [note("long", 6, 6, { midi: 62 })];
+    const env = createFakeTransportEnv({ score: notes, bpm: 120, looping: true, region });
+    const transport = createTransport(env.cb);
+
+    transport.seekTo(region.startBeat);
+    transport.play(); // lap 1 — "long" is 1s away, outside the 100ms lookahead yet
+
+    env.setTime(1.0); // now within the lookahead of "long"'s beat-6 onset
+    vi.advanceTimersByTime(LOOKAHEAD_MS);
+    expect(env.noteOns.filter((c) => c.midi === 62)).toHaveLength(1);
+    // The SCHEDULED noteOff time already equals the region boundary's own
+    // audio-time instant (beat 8 -> audioTime 2, at 120bpm from this
+    // anchor) — clamped at the moment of scheduling, not the natural
+    // beat-12 end (audioTime 4).
+    expect(env.noteOffs.filter((c) => c.midi === 62)).toEqual([{ midi: 62, time: 2 }]);
+
+    env.setTime(2.0); // the region's own 2s length has elapsed -> wrap
+    vi.advanceTimersByTime(LOOKAHEAD_MS);
+
+    // Still exactly the one (already-clamped) noteOff call — nothing new
+    // fires at the wrap instant, because there was never anything left to
+    // force off.
+    expect(env.noteOffs.filter((c) => c.midi === 62)).toEqual([{ midi: 62, time: 2 }]);
+    // Not re-triggered again within the same tick — its new-lap occurrence
+    // (beat 6 relative to the new anchor) is still outside the 100ms lookahead.
+    expect(env.noteOns.filter((c) => c.midi === 62)).toHaveLength(1);
+
+    transport.stop();
+  });
+
+  it("a non-straddling note inside a region keeps its natural noteOff, unclamped (Wave C2b finding 1)", () => {
+    vi.useFakeTimers();
+    const region = { startBeat: 4, endBeat: 8 };
+    const notes = [note("short", 4, 1, { midi: 62 })]; // spans [4, 5] — well inside the region
+    const env = createFakeTransportEnv({ score: notes, bpm: 120, looping: true, region });
+    const transport = createTransport(env.cb);
+
+    transport.seekTo(region.startBeat);
+    transport.play();
+
+    // Region start (beat 4) -> audioTime 0; note ends at beat 5 -> audioTime 0.5.
+    expect(env.noteOffs.filter((c) => c.midi === 62)).toEqual([{ midi: 62, time: 0.5 }]);
+
+    transport.stop();
+  });
+
+  it("does not schedule a note starting at/past the region's end boundary — no phantom trigger at the wrap seam, lap after lap (Wave C2b finding 2)", () => {
+    vi.useFakeTimers();
+    const region = { startBeat: 4, endBeat: 8 };
+    // Both notes sit AT/PAST the region's own end (outside [start, end)) —
+    // a correctly-looping region must never sound them while active. The
+    // pre-wrap lookahead window reaches right up to (and slightly past)
+    // the wrap instant every lap — exactly what used to leak these through
+    // (scheduled against the OLD, pre-wrap anchor, transport.ts:283 was
+    // unclamped).
+    const notes = [
+      note("atEnd", 8, 1, { midi: 62 }),
+      note("justAfter", 8.05, 1, { midi: 63 }),
+    ];
+    const env = createFakeTransportEnv({ score: notes, bpm: 120, looping: true, region });
+    const transport = createTransport(env.cb);
+
+    transport.seekTo(region.startBeat);
+    transport.play();
+
+    // Run several laps (region is 2s long at 120bpm) — each iteration
+    // closes in on, then crosses, the wrap boundary.
+    for (let lap = 0; lap < 3; lap++) {
+      env.advanceTime(1.0);
+      vi.advanceTimersByTime(LOOKAHEAD_MS);
+      env.advanceTime(1.0);
+      vi.advanceTimersByTime(LOOKAHEAD_MS);
+    }
+
+    expect(env.noteOns.filter((c) => c.midi === 62)).toHaveLength(0);
+    expect(env.noteOns.filter((c) => c.midi === 63)).toHaveLength(0);
+
+    transport.stop();
+  });
+
+  it("a region has no effect when looping is off — plays past the region's bounds, ignoring it", () => {
+    vi.useFakeTimers();
+    const region = { startBeat: 1, endBeat: 2 }; // deliberately tiny/early
+    const notes = [note("a", 0, 4)]; // whole-score end is beat 4
+    const env = createFakeTransportEnv({ score: notes, bpm: 120, looping: false, region });
+    const transport = createTransport(env.cb);
+
+    transport.play();
+    env.setTime(1.0); // 2 beats in — already past the region's endBeat(2), but NOT looping
+    vi.advanceTimersByTime(LOOKAHEAD_MS);
+
+    expect(transport.isPlaying()).toBe(true); // did NOT stop/wrap at the region's bounds
+    expect(transport.getPositionBeats()).toBeCloseTo(2, 10);
+
+    transport.stop();
+  });
+
+  it("a seek that lands past the region's end plays straight through to score end — no instant-wrap back into the region (Wave C2b finding 5)", () => {
+    vi.useFakeTimers();
+    const region = { startBeat: 4, endBeat: 8 };
+    const notes = [
+      note("inRegion", 5, 1, { midi: 60 }),
+      note("afterRegion", 10, 2, { midi: 61 }), // outside the region, near score end (12)
+    ];
+    const env = createFakeTransportEnv({ score: notes, bpm: 120, looping: true, region });
+    const transport = createTransport(env.cb);
+
+    transport.seekTo(9); // deliberately past region.endBeat(8), before score end(12)
+    transport.play();
+
+    // Immediately after landing past the region, playback must NOT have
+    // instant-wrapped back to region.startBeat — the old
+    // (positionBeats >= endBeat) check fired on ANY position read, seek
+    // included, not just a live crossing.
+    expect(transport.getPositionBeats()).toBeCloseTo(9, 10);
+
+    env.setTime(0.5); // beat 10 -- "afterRegion" begins
+    vi.advanceTimersByTime(LOOKAHEAD_MS);
+    expect(env.noteOns.filter((c) => c.midi === 61)).toHaveLength(1); // plays normally, past the region
+
+    env.setTime(1.5); // beat 12 -- the TRUE score end
+    vi.advanceTimersByTime(LOOKAHEAD_MS);
+    expect(transport.isPlaying()).toBe(false); // stopped at score end
+    expect(transport.getPositionBeats()).toBe(0); // stop()'s own reset — never wrapped to region.startBeat(4)
+
+    transport.stop();
+  });
+
+  it("crossing the region's end from inside wraps exactly once — position never observably sits at/past the boundary", () => {
+    vi.useFakeTimers();
+    const region = { startBeat: 4, endBeat: 8 };
+    const notes = [note("a", 4, 1, { midi: 60 })];
+    const env = createFakeTransportEnv({ score: notes, bpm: 120, looping: true, region });
+    const transport = createTransport(env.cb);
+
+    transport.seekTo(region.startBeat);
+    transport.play();
+
+    env.setTime(2.0); // exactly the region's own 2s length -> crosses endBeat
+    vi.advanceTimersByTime(LOOKAHEAD_MS);
+
+    // The crossing rebases positionBeats back to wrapStart within the SAME
+    // tick it's detected — no external observer (onTick) ever sees a
+    // position at/past endBeat while a region is active.
+    expect(env.onTicks.every((p) => p < region.endBeat)).toBe(true);
+    expect(transport.getPositionBeats()).toBe(region.startBeat);
+
+    // Advancing further within the new lap must not wrap again — exactly
+    // one wrap per crossing, not a runaway repeat.
+    env.setTime(2.05);
+    vi.advanceTimersByTime(LOOKAHEAD_MS);
+    expect(transport.getPositionBeats()).toBeCloseTo(region.startBeat + 0.1, 5);
+
+    transport.stop();
   });
 });

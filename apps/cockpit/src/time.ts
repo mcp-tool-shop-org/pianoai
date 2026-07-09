@@ -100,3 +100,21 @@ export function quantizeBeats(beats: number, grid: number = QUANTIZE_GRID_BEATS)
   if (!Number.isFinite(grid) || grid <= 0) return Math.max(0, beats);
   return Math.max(0, Math.round(beats / grid) * grid);
 }
+
+// ─── Loop region (Wave C2a) ─────────────────────────────────────────────────
+
+/** A loop region on the transport's timeline — always startBeat < endBeat
+ *  (ruler.ts's normalizeRegion is the only place one of these should be
+ *  constructed from raw drag input; it enforces that invariant). Defined
+ *  here rather than owned by ruler.ts (which computes one) or transport.ts
+ *  (which consumes one during loop-wrap) so neither module has to import
+ *  the other — both already depend on this file for PX_PER_BEAT/
+ *  quantizeBeats and beat<->second conversions respectively. UI-only
+ *  state: never persisted (persistence.ts's schema has no field for it)
+ *  and never pushed onto the undo stack (undo.ts) — it's transport state,
+ *  not score state, same category as the `looping` boolean main.ts already
+ *  keeps outside both of those systems. */
+export interface LoopRegion {
+  startBeat: number;
+  endBeat: number;
+}

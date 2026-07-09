@@ -70,6 +70,14 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
 #piano-roll-container {
   position: relative; overflow: auto; background: var(--bg);
   border-bottom: 1px solid var(--border);
+  /* Wave C2b (finding 39/45, pinned decision): the roll is a GESTURE
+     surface, not a native-pan surface — a touch drag on it means "move a
+     note" or "add a note," never "scroll the roll." Native scrollbar drag
+     and the follow-scroll auto-scroll (main.ts's applyFollowScroll) still
+     work; only touch-driven panning is disabled. Two-finger/dedicated pan
+     on touch is an explicit known limitation of this wave (see the C2b
+     report) — left to a future polish wave. */
+  touch-action: none;
 }
 /* Visible keyboard-focus ring (F-A1: keyboard-editing scope regression) —
    the roll is now a tabindex="0" focusable editing surface; :focus-visible
@@ -87,9 +95,30 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
   position: absolute; border-radius: 3px; cursor: pointer; min-width: 8px;
   border: 1px solid rgba(255,255,255,0.15); transition: opacity 0.1s;
   z-index: 2;
+  /* Wave C2b — a note is a gesture surface (tap selects, drag moves); no
+     native touch behavior (scroll/callout/selection) should intercept it. */
+  touch-action: none;
 }
 .pr-note:hover { opacity: 0.85; }
 .pr-note.selected { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); z-index: 3; }
+/* Resize handle (Wave C2b, finding 41 — touch target size): the VISIBLE
+   affordance stays a thin 6px strip at the note's right edge (unchanged
+   size/position), but ::after gives it a >=24px-wide invisible hit zone
+   centered on that strip so a drag can be grabbed without pixel-perfect
+   accuracy. Height is intentionally left matching the note's own rendered
+   height (not expanded) rather than also widening vertically — expanding
+   vertically would bleed into the neighboring PITCH row's own note/empty
+   space in a dense stack (a worse failure than a slightly-undersized
+   target); the Resize+/- toolbar buttons (>=24x24, see #transport) are the
+   fully WCAG-2.5.8-compliant equivalent for anyone who needs one. */
+.pr-resize-handle {
+  position: absolute; right: 0; top: 0; bottom: 0; width: 6px; cursor: ew-resize;
+  touch-action: none;
+}
+.pr-resize-handle::after {
+  content: ""; position: absolute; top: 0; bottom: 0; left: 50%;
+  width: 24px; transform: translateX(-50%);
+}
 .pr-note .vel-bar {
   position: absolute; bottom: 0; left: 0; right: 0; border-radius: 0 0 2px 2px;
   background: rgba(0,0,0,0.3);
@@ -104,6 +133,51 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
 .pr-playhead {
   position: absolute; top: 0; bottom: 0; width: 2px; background: var(--accent);
   z-index: 10; pointer-events: none; display: none;
+}
+
+/* ─── Time Ruler (Wave C2a) ─── docked above the roll, INSIDE the same
+   horizontal scroll context: sticky vertically (stays pinned to the top of
+   the viewport as the roll scrolls vertically) but scrolls normally
+   horizontally (only `top` is sticky, not `left`), so its ticks always line
+   up with the piano-roll beat grid below. Width/height are set from JS
+   (ruler.ts's RULER_HEIGHT_PX, and PR_WIDTH to match the roll exactly). */
+#pr-ruler {
+  position: sticky; top: 0;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  z-index: 20; cursor: pointer;
+  /* Wave C2b — click-to-seek / drag-to-define-a-loop-region is a gesture,
+     not native panning (the ruler has no scroll of its own). */
+  touch-action: none;
+}
+.pr-ruler-tick {
+  position: absolute; bottom: 0; width: 1px; height: 7px;
+  background: var(--text-muted); opacity: 0.5; pointer-events: none;
+}
+.pr-ruler-tick.bar { height: 14px; opacity: 0.9; background: var(--text); }
+.pr-ruler-bar-label {
+  position: absolute; top: 2px; font-size: 9px; font-family: var(--mono);
+  color: var(--text-muted); pointer-events: none;
+}
+/* Loop-region band on the ruler strip — pointer-events:none so a
+   click/drag anywhere on top of it (other than its own clear button) still
+   reaches #pr-ruler underneath for seek/redefine. */
+.pr-region-band {
+  position: absolute; top: 0; bottom: 0;
+  background: var(--accent-dim); border-left: 1px solid var(--accent); border-right: 1px solid var(--accent);
+  pointer-events: none;
+}
+.pr-region-clear {
+  position: absolute; top: 50%; right: 2px; transform: translateY(-50%);
+  width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 3px;
+  color: var(--text-muted); font-size: 13px; line-height: 1; cursor: pointer; pointer-events: auto;
+}
+.pr-region-clear:hover { color: var(--danger); border-color: var(--danger); }
+/* Optional subtler echo of the region over the roll itself — non-
+   interactive, sits above the grid/beat lines but below notes. */
+.pr-roll-region-band {
+  position: absolute; top: 0; bottom: 0; z-index: 1;
+  background: var(--accent-dim); opacity: 0.5; pointer-events: none;
 }
 
 /* ─── Note Inspector (inline in header area) ─── */
@@ -133,6 +207,9 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -2px 2px -1px rgba(0,0,0,0.22);
   border: 1px solid #aaa; border-radius: 0 0 4px 4px; cursor: pointer; z-index: 1;
   transition: background 0.08s, transform 0.05s;
+  /* Wave C2b — a played key is a gesture surface; no native touch
+     scroll/callout/selection should intercept press-and-hold or slides. */
+  touch-action: none; -webkit-touch-callout: none;
 }
 .kb-white:active, .kb-white.active { background: var(--accent); transform: translateY(1px); }
 .kb-black {
@@ -141,6 +218,7 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -2px 2px -1px rgba(0,0,0,0.45);
   border: 1px solid #000; border-radius: 0 0 3px 3px; cursor: pointer; z-index: 2;
   transition: background 0.08s, transform 0.05s;
+  touch-action: none; -webkit-touch-callout: none;
 }
 .kb-black:active, .kb-black.active { background: var(--accent); transform: translateY(1px); }
 .kb-label {
@@ -487,10 +565,11 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
   </header>
 
   <!-- ─── Piano Roll ─── -->
-  <div id="piano-roll-container" tabindex="0" aria-label="Piano roll. Tab selects notes, arrow keys nudge pitch and time, Enter inserts a note, Delete removes it.">
+  <div id="piano-roll-container" tabindex="0" aria-label="Piano roll. Tab selects notes, arrow keys nudge pitch and time, Shift+Left/Right resizes, Enter inserts a note, Delete removes it. The toolbar's Move and Resize buttons give tap/click-only alternatives to dragging.">
+    <div id="pr-ruler" title="Click to seek, drag to set a loop region. Focus + arrow keys to seek from the keyboard."></div>
     <div id="piano-roll"></div>
     <div class="pr-playhead" id="playhead"></div>
-    <div id="pr-hint" style="position:absolute;top:6px;left:8px;font-family:var(--mono);font-size:11px;color:var(--text-muted);pointer-events:none;z-index:5;">Click to add a note · press ? for shortcuts</div>
+    <div id="pr-hint" style="position:absolute;top:50px;left:8px;font-family:var(--mono);font-size:11px;color:var(--text-muted);pointer-events:none;z-index:5;">Click to add a note · press ? for shortcuts</div>
   </div>
 
   <!-- ─── Transport (floating) ─── -->
@@ -498,6 +577,16 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
     <button class="ctrl-btn" id="btn-play" data-tip="Play (Space)" aria-label="Play (Space)" title="Play (Space)"><svg class="icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M5 3 L12 8 L5 13 Z"/></svg></button>
     <button class="ctrl-btn" id="btn-stop" data-tip="Stop" aria-label="Stop" title="Stop"><svg class="icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><rect x="4" y="4" width="8" height="8" rx="1"/></svg></button>
     <button class="ctrl-btn" id="btn-loop" data-tip="Loop" aria-label="Loop" title="Loop" aria-pressed="false"><svg class="icon" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2.5 9.5 V7 a3 3 0 0 1 3-3 H11"/><path d="M8.5 1 L11.5 4 L8.5 7"/><path d="M13.5 6.5 V9 a3 3 0 0 1-3 3 H5"/><path d="M7.5 15 L4.5 12 L7.5 9"/></svg></button>
+    <button class="ctrl-btn active" id="btn-follow" data-tip="Follow playhead" aria-label="Follow playhead" title="Follow playhead" aria-pressed="true"><svg class="icon" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="2.6"/><path d="M8 1.2 V4 M8 12 V14.8 M1.2 8 H4 M12 8 H14.8"/></svg></button>
+    <div class="sep" style="height:18px"></div>
+    <!-- Wave C2b (finding 40 — WCAG 2.5.7 single-pointer alternative to a
+         move/resize DRAG): select a note, then Move a single tap on the
+         roll relocates it; Resize +/- extend/shrink it by one grid step
+         per press. Disabled with no note selected (see main.ts's
+         updateGestureAltButtons). -->
+    <button class="ctrl-btn" id="btn-move-mode" data-tip="Move mode — tap the roll to relocate the selected note" aria-label="Move mode — tap the roll to relocate the selected note" title="Move mode — tap the roll to relocate the selected note" aria-pressed="false" disabled><svg class="icon" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 1.5 V14.5 M1.5 8 H14.5"/><path d="M8 1.5 L6 3.5 M8 1.5 L10 3.5"/><path d="M8 14.5 L6 12.5 M8 14.5 L10 12.5"/><path d="M1.5 8 L3.5 6 M1.5 8 L3.5 10"/><path d="M14.5 8 L12.5 6 M14.5 8 L12.5 10"/></svg></button>
+    <button class="ctrl-btn" id="btn-resize-dec" data-tip="Shrink selected note by one grid step (Shift+Left)" aria-label="Shrink selected note by one grid step" title="Shrink selected note by one grid step (Shift+Left)" style="min-width:26px" disabled>&minus;</button>
+    <button class="ctrl-btn" id="btn-resize-inc" data-tip="Extend selected note by one grid step (Shift+Right)" aria-label="Extend selected note by one grid step" title="Extend selected note by one grid step (Shift+Right)" style="min-width:26px" disabled>+</button>
     <div class="sep" style="height:18px"></div>
     <button class="ctrl-btn" id="btn-undo" data-tip="Undo (Ctrl+Z)" aria-label="Undo (Ctrl+Z)" title="Undo (Ctrl+Z)" disabled><svg class="icon" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6.5 3.5 L3 7 L6.5 10.5"/><path d="M3 7 H9.5 A3.5 3.5 0 0 1 9.5 14 H7"/></svg></button>
     <button class="ctrl-btn" id="btn-redo" data-tip="Redo (Ctrl+Y)" aria-label="Redo (Ctrl+Y)" title="Redo (Ctrl+Y)" disabled><svg class="icon" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9.5 3.5 L13 7 L9.5 10.5"/><path d="M13 7 H6.5 A3.5 3.5 0 0 0 6.5 14 H9"/></svg></button>
@@ -618,10 +707,15 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
     <li><kbd>Del</kbd> Delete selected note</li>
     <li><kbd>Tab</kbd> Select next note (Shift+Tab: previous)</li>
     <li><kbd>&uarr;</kbd><kbd>&darr;</kbd> Nudge pitch &nbsp; <kbd>&larr;</kbd><kbd>&rarr;</kbd> Nudge time</li>
+    <li><kbd>Shift</kbd>+<kbd>&larr;</kbd><kbd>&rarr;</kbd> Resize by one grid step</li>
     <li><kbd>Enter</kbd> Add note at playhead</li>
     <li><kbd>Ctrl</kbd>+<kbd>Z</kbd> Undo &nbsp; <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd> Redo</li>
-    <li><kbd>Esc</kbd> Panic (all notes off)</li>
+    <li>Toolbar <b>Move</b> button — tap the roll to relocate the selected note (no drag needed)</li>
+    <li>Toolbar <b>&minus;</b> / <b>+</b> — resize selected note by one grid step</li>
+    <li><kbd>Esc</kbd> Panic (all notes off) &mdash; cancels an active drag or Move mode first</li>
     <li><kbd>Z</kbd>&ndash;<kbd>M</kbd> / <kbd>Q</kbd>&ndash;<kbd>U</kbd> Play keyboard</li>
+    <li>Ruler (focus it first): <kbd>&larr;</kbd><kbd>&rarr;</kbd> Seek &plusmn;1 beat &nbsp; <kbd>Shift</kbd>+<kbd>&larr;</kbd><kbd>&rarr;</kbd> &plusmn;1 bar &nbsp; <kbd>Home</kbd>/<kbd>End</kbd> Start/score end</li>
+    <li>Loop region: drag on the ruler (pointer only — no keyboard equivalent yet)</li>
     <li><kbd>?</kbd> Toggle this help</li>
   </ul>
 </div>

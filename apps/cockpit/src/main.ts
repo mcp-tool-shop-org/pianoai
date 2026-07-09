@@ -43,8 +43,16 @@ import {
   QUANTIZE_GRID_BEATS, DEFAULT_NOTE_DURATION_BEATS,
   clampBpm, beatsToSeconds, secondsToBeats, quantizeBeats,
 } from "./time.js";
-import { createTransport, type Transport } from "./transport.js";
+import { createTransport, computeScoreEndBeat, type Transport } from "./transport.js";
 import * as undo from "./undo.js";
+import {
+  pxToBeat, computeRulerTicks, normalizeRegion, computeFollowScroll,
+  RULER_HEIGHT_PX, MIN_REGION_BEATS, type LoopRegion,
+} from "./ruler.js";
+import {
+  resolveDragBeats, commitDragBeats, moveModeTarget, resizeStepTarget,
+  findNearbyNoteForDragInit,
+} from "./gesture.js";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -87,6 +95,9 @@ const ROW_H = 14;
 const ROWS = MIDI_HI - MIDI_LO + 1;
 const PR_WIDTH = SCORE_BEATS * PX_PER_BEAT;
 const PR_HEIGHT = ROWS * ROW_H;
+/** Movement threshold (px) below which a ruler pointerdown is treated as a
+ *  click (seek) rather than a drag (define a loop region) — Wave C2a. */
+const DRAG_THRESHOLD_PX = 4;
 /** Hard cap on notes accepted by a single score import — an unbounded count
  *  renders one absolutely-positioned DOM element per note synchronously and
  *  can lock the tab (F-A1: score-size bomb). */
@@ -145,12 +156,74 @@ const heldKeys = new Set<string>();
 const heldMidi = new Set<number>();
 let intervalRoot = 60; // C4
 /** True for the duration of a resize-handle or move-drag gesture
- *  (mousedown → mouseup) on a piano-roll note — Wave C1 finding 6: guards
+ *  (pointerdown → pointerup/pointercancel — Wave C2b migrated this off
+ *  mousedown/mouseup, see startNoteMoveDrag/startNoteResizeDrag) on a
+ *  piano-roll note — Wave C1 finding 6: guards
  *  the Ctrl+Z/Ctrl+Shift+Z/Ctrl+Y carve-out in the keydown handler below so
  *  an undo/redo mid-drag can't rerenderAllNotes() the piano roll out from
  *  under the drag's onMove/onUp closures, which still hold a direct
  *  reference to the (now possibly-replaced) dragged DOM element. */
 let dragActive = false;
+/** Set by whichever note-drag gesture (resize handle or move) is currently
+ *  active, to its own rollback closure — Wave C2b findings 38/39.
+ *  pointercancel/lostpointercapture on the captured element call this
+ *  directly; the Escape keydown handler also calls it (taking precedence
+ *  over panic) when `dragActive` is true, so Escape can abort a drag
+ *  cleanly (restore pre-drag geometry, no command pushed) instead of only
+ *  silencing audio. Cleared back to null the moment a gesture ends
+ *  (commit OR rollback) — never left pointing at a finished gesture's
+ *  closure. Deliberately NOT set by the ruler's own drag (see buildRuler):
+ *  that gesture doesn't touch `dragActive` either, preserving this flag's
+ *  original scope (guarding the Ctrl+Z-mid-note-drag hazard — see
+ *  dragActive's own doc comment above) exactly as Wave C1 left it. */
+let cancelActiveDrag: (() => void) | null = null;
+/** True while "Move mode" (Wave C2b finding 40 — WCAG 2.5.7 non-drag
+ *  single-pointer alternative) is armed: the NEXT tap/click anywhere on
+ *  the roll relocates the selected note to the tapped beat/pitch instead
+ *  of its usual meaning (add a note / start a note drag) — see
+ *  bindGestureAltControls()'s capture-phase listener. Auto-clears after
+ *  one use, on Escape, or if the selection is lost while armed (see
+ *  updateGestureAltButtons). */
+let moveModeActive = false;
+/** Current loop region (Wave C2a) — ruler drag-to-define UI state, read by
+ *  the transport's getLoopRegion callback (see init()). Deliberately NOT
+ *  persisted (persistence.ts's schema has no field for it) and NOT routed
+ *  through undo.ts — transport state, not score state, same category as
+ *  `looping` above. */
+let loopRegion: LoopRegion | null = null;
+/** Playhead auto-scroll-follow (finding 43) — defaults ON so a score wider
+ *  than the viewport keeps the playhead visible without an extra click. */
+let followEnabled = true;
+/** Wall-clock deadline (performance.now()-based) until which the next
+ *  #piano-roll-container "scroll" event should be treated as OUR OWN
+ *  programmatic scroll (see programmaticScroll() below), not a
+ *  user-initiated one — see bindFollowToggle()'s scroll listener. A grace
+ *  window rather than "the next scroll event" because a smooth scrollTo()
+ *  fires several scroll events over its animation, not just one. Set by
+ *  programmaticScroll(), never assigned directly (Wave C2b finding 3). */
+let programmaticScrollUntil = 0;
+/** Grace window length (ms) — Wave C2b finding 3 bumped this from 500 to
+ *  800 to comfortably cover a long smooth scrollTo() animation (e.g. a
+ *  follow-jump spanning most of a wide score) without its tail-end scroll
+ *  events slipping past the deadline and being misread as the user taking
+ *  over. */
+const PROGRAMMATIC_SCROLL_GRACE_MS = 800;
+
+/**
+ * Run `fn`, a synchronous action that scrolls #piano-roll-container (a
+ * scrollTop/scrollLeft assignment, scrollIntoView, or scrollTo), with the
+ * grace window open FIRST (Wave C2b finding 3) — so every "scroll" event
+ * the action produces, including ones dispatched asynchronously after this
+ * call returns, is recognized as OUR OWN and never disables follow. Every
+ * programmatic scroll site in this file (centering on boot, scrollIntoView
+ * on keyboard nav, applyFollowScroll's own jump) goes through this single
+ * helper rather than each setting `programmaticScrollUntil` itself, so
+ * bindFollowToggle()'s listener has exactly one thing to trust.
+ */
+function programmaticScroll(fn: () => void): void {
+  programmaticScrollUntil = performance.now() + PROGRAMMATIC_SCROLL_GRACE_MS;
+  fn();
+}
 
 // ─── DOM ─────────────────────────────────────────────────────────────────────
 
@@ -379,6 +452,7 @@ async function init() {
     getScore: () => state.getScore(),
     getBpm: () => bpm,
     isLooping: () => looping,
+    getLoopRegion: () => loopRegion,
     onTick: (positionBeats) => {
       const ph = $("playhead") as HTMLElement;
       // Visible whenever playing OR paused mid-score (position > 0) — hidden
@@ -386,6 +460,15 @@ async function init() {
       ph.style.display = (transport.isPlaying() || positionBeats > 0) ? "block" : "none";
       ph.style.left = positionBeats * PX_PER_BEAT + "px";
       updateTransportTime(positionBeats);
+      applyFollowScroll(positionBeats);
+      // Wave C2b finding 6 — keep the ruler's role="slider" ARIA state in
+      // sync with every position change (playback tick, pause/stop, or any
+      // seek — onTick is the one chokepoint all of those already share).
+      const ruler = document.getElementById("pr-ruler");
+      if (ruler) {
+        ruler.setAttribute("aria-valuemax", String(computeScoreEndBeat(state.getScore())));
+        ruler.setAttribute("aria-valuenow", String(Math.round(positionBeats * 100) / 100));
+      }
     },
     onPlayStateChange: (isPlayingNow) => {
       $("btn-play").innerHTML = isPlayingNow ? PAUSE_ICON_SVG : PLAY_ICON_SVG;
@@ -406,11 +489,17 @@ async function init() {
   bindAutoplayUnlock();
   populateSelectors();
   buildPianoRoll();
+  buildRuler();
+  // Wave C2b finding 3 — bindFollowToggle's scroll listener must exist
+  // BEFORE the very first programmatic scroll (centerRollOnMiddleC, next)
+  // so its grace-window check has something to run against from the start.
+  bindFollowToggle();
   centerRollOnMiddleC();
   buildKeyboard();
   bindControls();
   bindMidi();
   bindUndoRedo();
+  bindGestureAltControls();
   buildTuningAudit();
   updateTuningTable();
   updateTelemetry();
@@ -462,8 +551,18 @@ function bindAutoplayUnlock() {
 function centerRollOnMiddleC() {
   const container = $("piano-roll-container");
   if (!container.clientHeight) return; // not laid out yet — nothing sane to center against
-  const rowTop = (MIDI_HI - 60) * ROW_H;
-  container.scrollTop = Math.max(0, rowTop - container.clientHeight / 2 + ROW_H / 2);
+  // #pr-ruler (Wave C2a) is a preceding sibling of #piano-roll inside the
+  // same scrollable content, so every row now sits RULER_HEIGHT_PX further
+  // down the container's own scrollTop axis than it does within #piano-roll
+  // itself — without this offset the roll would center ~44px too high.
+  const rowTop = RULER_HEIGHT_PX + (MIDI_HI - 60) * ROW_H;
+  // Wave C2b finding 3 — routed through programmaticScroll() so the async
+  // "scroll" event this assignment produces can't be misread as the user
+  // taking over follow (it used to set scrollTop directly, bypassing the
+  // grace window entirely).
+  programmaticScroll(() => {
+    container.scrollTop = Math.max(0, rowTop - container.clientHeight / 2 + ROW_H / 2);
+  });
 }
 
 // ─── Selectors ───────────────────────────────────────────────────────────────
@@ -629,14 +728,40 @@ function buildPianoRoll() {
   // drawn exactly once and never needs to be redrawn on a bpm change.
   drawBeatLines();
 
-  // Click empty space → add note
-  pr.addEventListener("mousedown", (e) => {
+  // Click empty space → add note (Wave C2b: pointer events, so a touch tap
+  // reaches this same path unchanged — touch-action:none on the container
+  // keeps it from ever being interpreted as a scroll). Move mode's own
+  // capture-phase listener (bindGestureAltControls) intercepts and stops
+  // propagation before this ever runs while armed.
+  pr.addEventListener("pointerdown", (e) => {
+    // Wave C2b finding 8 — single-gesture policy: a second touch point
+    // while a note drag is already active (from a first finger) must not
+    // start ANOTHER gesture (add-note or the nearby-note drag fallback),
+    // which would overwrite the shared dragActive/cancelActiveDrag state
+    // the first gesture's Escape-cancel/Ctrl+Z-guard still depend on.
+    if (dragActive) return;
     if ((e.target as HTMLElement).closest(".pr-note")) return;
     const rect = pr.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     const midi = MIDI_HI - Math.floor(y / ROW_H);
     if (midi < MIDI_LO || midi > MIDI_HI) return;
+
+    // Finding 41 (touch target size) fallback: the exact-pixel DOM hit-test
+    // above already came up empty (we're past the `.closest` bail) — before
+    // treating this as "empty space, add a note," give a thin (ROW_H=14px)
+    // neighboring-row note one more chance to claim a near-miss tap. See
+    // gesture.ts's findNearbyNoteForDragInit for why running this ONLY
+    // after a real hit-test miss is what keeps it from ever shadowing a
+    // note the user precisely, visibly clicked.
+    const rowFraction = (y - Math.floor(y / ROW_H) * ROW_H) / ROW_H;
+    const nearbyId = findNearbyNoteForDragInit(state.getScore(), x / PX_PER_BEAT, midi, rowFraction, e.pointerType);
+    if (nearbyId) {
+      const nearbyNote = state.getNoteById(nearbyId);
+      const nearbyEl = nearbyNote && document.querySelector<HTMLElement>(noteSelector(nearbyId));
+      if (nearbyNote && nearbyEl) { startNoteMoveDrag(nearbyNote, nearbyEl, e); return; }
+    }
+
     const startBeat = quantizeBeats(x / PX_PER_BEAT);
     const init: NoteInit = {
       midi, startBeat,
@@ -679,72 +804,170 @@ function renderNote(note: Note) {
   vlbl.textContent = note.vowel ? VOWEL_LABELS[note.vowel] : "";
   el.appendChild(vlbl);
 
-  // ── Resize handle on right edge ──
+  // ── Resize handle on right edge ── (finding 41: .pr-resize-handle's CSS
+  // gives it a >=24px invisible hit zone — see index.html)
   const handle = document.createElement("div");
-  handle.style.cssText = "position:absolute;right:0;top:0;bottom:0;width:6px;cursor:ew-resize;";
+  handle.className = "pr-resize-handle";
   el.appendChild(handle);
 
-  handle.addEventListener("mousedown", (e) => {
-    e.stopPropagation();
-    selectNote(note);
-    dragActive = true; // Wave C1 finding 6 — see this flag's declaration
-    const startX = e.clientX;
-    const startDur = note.durationBeats;
-    const onMove = (e2: MouseEvent) => {
-      state.resizeNote(note, quantizeBeats(startDur + (e2.clientX - startX) / PX_PER_BEAT));
-      positionNote(el, note);
-    };
-    const onUp = () => {
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mouseup", onUp);
-      dragActive = false;
-      // Coalesced gesture (Wave C1, finding 2): the drag already applied
-      // itself live via state.resizeNote() above on every mousemove tick —
-      // only the FINAL before/after delta is committed here, as ONE entry,
-      // and only if the resize actually changed anything (a mousedown with
-      // no movement must not pollute the undo stack).
-      if (note.durationBeats !== startDur) {
-        undo.commit(undo.resizeCommand(note.id, startDur, note.durationBeats));
-      }
-    };
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseup", onUp);
-  });
+  handle.addEventListener("pointerdown", (e) => startNoteResizeDrag(note, el, handle, e));
 
   // ── Drag to move ──
-  el.addEventListener("mousedown", (e) => {
-    if ((e.target as HTMLElement) === handle) return;
-    e.stopPropagation();
-    selectNote(note);
-    dragActive = true; // Wave C1 finding 6 — see this flag's declaration
-    const startX = e.clientX, startY = e.clientY;
-    const origBeat = note.startBeat, origMidi = note.midi;
-
-    const onMove = (e2: MouseEvent) => {
-      const newBeat = quantizeBeats(origBeat + (e2.clientX - startX) / PX_PER_BEAT);
-      const newMidi = origMidi - Math.round((e2.clientY - startY) / ROW_H);
-      state.moveNote(note, newBeat, newMidi);
-      applyNoteStyle(el, note);
-      positionNote(el, note);
-      updateInspector();
-    };
-    const onUp = () => {
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mouseup", onUp);
-      dragActive = false;
-      // Coalesced gesture — see the resize handle's onUp above for the
-      // same rationale (finding 2). state.moveNote() already ran live on
-      // every mousemove tick; only commit if the note actually ended up
-      // somewhere different from where it started.
-      if (note.startBeat !== origBeat || note.midi !== origMidi) {
-        undo.commit(undo.moveCommand(note.id, { startBeat: origBeat, midi: origMidi }, { startBeat: note.startBeat, midi: note.midi }));
-      }
-    };
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseup", onUp);
-  });
+  el.addEventListener("pointerdown", (e) => startNoteMoveDrag(note, el, e));
 
   pr.appendChild(el);
+}
+
+/**
+ * Start a resize-drag gesture on `note`/`el`'s resize `handle`, from the
+ * pointerdown event `e` that triggered it (Wave C2b, findings 38/39/45).
+ * Pointer events with setPointerCapture (finding 38) — capture replaces
+ * the old window-level mousemove/mouseup pair, so every subsequent event
+ * for this pointerId targets `handle` directly regardless of where the
+ * pointer physically wanders. pointercancel/lostpointercapture roll the
+ * gesture back to its pre-drag duration with no command pushed (finding
+ * 39); Escape does the same via cancelActiveDrag (see the keydown
+ * handler). A touch-driven drag defers grid-snapping to release (finding
+ * 45 — gesture.resolveDragBeats/commitDragBeats); mouse/pen keep the
+ * pre-existing live-snap feel — see startNoteMoveDrag below for the same
+ * shape applied to the move gesture.
+ */
+function startNoteResizeDrag(note: Note, el: HTMLElement, handle: HTMLElement, e: PointerEvent) {
+  e.stopPropagation();
+  // Wave C2b finding 8 — single-gesture policy: see the matching guard in
+  // buildPianoRoll's empty-space pointerdown listener.
+  if (dragActive) return;
+  selectNote(note);
+  dragActive = true; // Wave C1 finding 6 — see this flag's declaration
+  const startX = e.clientX;
+  const startDur = note.durationBeats;
+  const pointerId = e.pointerId;
+  try { handle.setPointerCapture(pointerId); } catch { /* pointer already gone — best-effort */ }
+
+  const cleanup = () => {
+    handle.removeEventListener("pointermove", onMove);
+    handle.removeEventListener("pointerup", onUp);
+    handle.removeEventListener("pointercancel", onCancel);
+    handle.removeEventListener("lostpointercapture", onCancel);
+    try { handle.releasePointerCapture(pointerId); } catch { /* already released — pointerup/pointercancel auto-release */ }
+    dragActive = false;
+    cancelActiveDrag = null;
+  };
+  const onMove = (e2: PointerEvent) => {
+    const rawDur = startDur + (e2.clientX - startX) / PX_PER_BEAT;
+    state.resizeNote(note, resolveDragBeats(rawDur, e2.pointerType));
+    positionNote(el, note);
+  };
+  const onUp = () => {
+    // Final commit (finding 45): re-quantizes whatever the last onMove
+    // tick left in place — a no-op for mouse/pen (already quantized every
+    // tick), the one-time snap-to-grid for a touch drag's fluid, unsnapped
+    // duration.
+    state.resizeNote(note, commitDragBeats(note.durationBeats));
+    positionNote(el, note);
+    cleanup();
+    // Coalesced gesture (Wave C1, finding 2): only the FINAL before/after
+    // delta is committed, and only if the resize actually changed
+    // anything (a pointerdown with no movement must not pollute the undo
+    // stack).
+    if (note.durationBeats !== startDur) {
+      undo.commit(undo.resizeCommand(note.id, startDur, note.durationBeats));
+    }
+  };
+  const onCancel = () => {
+    cleanup();
+    state.resizeNote(note, startDur);
+    positionNote(el, note);
+    // No command pushed — the gesture never happened, as far as undo is
+    // concerned (finding 39).
+  };
+  handle.addEventListener("pointermove", onMove);
+  handle.addEventListener("pointerup", onUp);
+  handle.addEventListener("pointercancel", onCancel);
+  handle.addEventListener("lostpointercapture", onCancel);
+  cancelActiveDrag = onCancel;
+}
+
+/**
+ * Start a move-drag gesture on `note`/`el`, from the pointerdown event `e`
+ * that triggered it — called both from the note's own pointerdown listener
+ * (renderNote above) and from the roll's empty-space handler's near-miss
+ * fallback (buildPianoRoll's findNearbyNoteForDragInit path, finding 41).
+ * Same pointer-capture / pointercancel-rollback / deferred-snap shape as
+ * startNoteResizeDrag above — see its doc comment for the shared
+ * rationale (Wave C2b, findings 38/39/45).
+ */
+function startNoteMoveDrag(note: Note, el: HTMLElement, e: PointerEvent) {
+  // Defensive only — the handle's own pointerdown already stopPropagation()s
+  // before this could ever fire for a handle target (see startNoteResizeDrag);
+  // kept in case a future call site doesn't go through that guard.
+  if ((e.target as HTMLElement).closest(".pr-resize-handle")) return;
+  e.stopPropagation();
+  // Wave C2b finding 8 — single-gesture policy: see the matching guard in
+  // buildPianoRoll's empty-space pointerdown listener. Needed here too
+  // (not just there) since renderNote's own per-note pointerdown listener
+  // calls this function directly, bypassing that one.
+  if (dragActive) return;
+  selectNote(note);
+  dragActive = true; // Wave C1 finding 6 — see this flag's declaration
+  const startX = e.clientX, startY = e.clientY;
+  const origBeat = note.startBeat, origMidi = note.midi;
+  const pointerId = e.pointerId;
+  try { el.setPointerCapture(pointerId); } catch { /* pointer already gone — best-effort */ }
+
+  const cleanup = () => {
+    el.removeEventListener("pointermove", onMove);
+    el.removeEventListener("pointerup", onUp);
+    el.removeEventListener("pointercancel", onCancel);
+    el.removeEventListener("lostpointercapture", onCancel);
+    try { el.releasePointerCapture(pointerId); } catch { /* already released — pointerup/pointercancel auto-release */ }
+    dragActive = false;
+    cancelActiveDrag = null;
+  };
+  const onMove = (e2: PointerEvent) => {
+    const rawBeat = origBeat + (e2.clientX - startX) / PX_PER_BEAT;
+    const newBeat = resolveDragBeats(rawBeat, e2.pointerType);
+    // Deferred-snap (finding 45) is deliberately time-axis only: a MIDI
+    // pitch has no fractional/continuous representation anywhere in this
+    // app's model (Note.midi is always a whole semitone — state.ts's own
+    // clampMidi and every command factory assume that), so there is no
+    // "unsnapped" pitch value to defer TO — ROW_H is the note's actual
+    // representational granularity, not a cosmetic grid layered on top of
+    // a continuous value the way QUANTIZE_GRID_BEATS is. Row-rounding
+    // therefore stays unconditional for both mouse and touch.
+    const newMidi = origMidi - Math.round((e2.clientY - startY) / ROW_H);
+    state.moveNote(note, newBeat, newMidi);
+    applyNoteStyle(el, note);
+    positionNote(el, note);
+    updateInspector();
+  };
+  const onUp = () => {
+    // Final commit (finding 45) — see startNoteResizeDrag's onUp above for
+    // the same rationale.
+    state.moveNote(note, commitDragBeats(note.startBeat), note.midi);
+    applyNoteStyle(el, note);
+    positionNote(el, note);
+    updateInspector();
+    cleanup();
+    // Coalesced gesture — see startNoteResizeDrag's onUp above (finding 2).
+    if (note.startBeat !== origBeat || note.midi !== origMidi) {
+      undo.commit(undo.moveCommand(note.id, { startBeat: origBeat, midi: origMidi }, { startBeat: note.startBeat, midi: note.midi }));
+    }
+  };
+  const onCancel = () => {
+    cleanup();
+    state.moveNote(note, origBeat, origMidi);
+    applyNoteStyle(el, note);
+    positionNote(el, note);
+    updateInspector();
+    // No command pushed — the gesture never happened, as far as undo is
+    // concerned (finding 39).
+  };
+  el.addEventListener("pointermove", onMove);
+  el.addEventListener("pointerup", onUp);
+  el.addEventListener("pointercancel", onCancel);
+  el.addEventListener("lostpointercapture", onCancel);
+  cancelActiveDrag = onCancel;
 }
 
 function positionNote(el: HTMLElement, note: Note) {
@@ -803,6 +1026,234 @@ function updateFirstRunHint() {
   if (hint) hint.style.display = state.getScore().length === 0 ? "" : "none";
 }
 
+// ─── Ruler / Loop Region / Auto-scroll (Wave C2a) ───────────────────────────
+//
+// Time-ruler surface docked above the piano roll, INSIDE the same
+// horizontal scroll context (index.html's #pr-ruler is position:sticky, so
+// it stays pinned to the top of the viewport on vertical scroll while its
+// horizontal position scrolls with the roll's content like every other
+// piano-roll element). Owns three related surfaces: beat/bar ticks (static,
+// built once), click-to-seek + drag-to-define-a-loop-region (one pointerdown
+// handler, disambiguated by movement distance), and the playhead
+// auto-scroll-follow feature (finding 43). The actual math for all of this
+// lives in ruler.ts (pure, DOM-free, unit-tested); this section is DOM glue
+// only. #pr-ruler is a separate DOM element positioned entirely above
+// #piano-roll, so it never intercepts the roll's own click-to-add-note
+// handler — no interaction-conflict guard needed on either side.
+
+function buildRuler() {
+  const ruler = $("pr-ruler");
+  ruler.style.width = PR_WIDTH + "px";
+  ruler.style.height = RULER_HEIGHT_PX + "px";
+
+  // Wave C2b finding 6 (WCAG 2.1.1 — keyboard access): the ruler was
+  // pointer-only. Focusable + role="slider" with a keyboard seek handler
+  // below. Region-SETTING (drag-to-define-a-loop-region) stays pointer-
+  // only this wave — see the keydown handler's own comment — the
+  // shortcuts overlay calls that out explicitly too.
+  ruler.tabIndex = 0;
+  ruler.setAttribute("role", "slider");
+  ruler.setAttribute("aria-label", "Playback position");
+  ruler.setAttribute("aria-valuemin", "0");
+  ruler.setAttribute("aria-valuemax", String(computeScoreEndBeat(state.getScore())));
+  ruler.setAttribute("aria-valuenow", "0");
+
+  for (const tick of computeRulerTicks(SCORE_BEATS, 4)) {
+    const el = document.createElement("div");
+    el.className = "pr-ruler-tick" + (tick.isBar ? " bar" : "");
+    el.style.left = tick.px + "px";
+    ruler.appendChild(el);
+    if (tick.isBar && tick.barNumber !== null) {
+      const lbl = document.createElement("div");
+      lbl.className = "pr-ruler-bar-label";
+      lbl.style.left = tick.px + 3 + "px";
+      lbl.textContent = String(tick.barNumber);
+      ruler.appendChild(lbl);
+    }
+  }
+
+  // Loop-region band (ruler strip) + its clear affordance (>=24px hit zone).
+  const band = document.createElement("div");
+  band.className = "pr-region-band";
+  band.id = "pr-region-band";
+  band.style.display = "none";
+  const clearBtn = document.createElement("button");
+  clearBtn.className = "pr-region-clear";
+  clearBtn.id = "pr-region-clear";
+  clearBtn.setAttribute("aria-label", "Clear loop region");
+  clearBtn.title = "Clear loop region";
+  clearBtn.textContent = "×";
+  clearBtn.addEventListener("pointerdown", (e) => e.stopPropagation()); // don't ALSO start a ruler drag
+  clearBtn.addEventListener("click", (e) => { e.stopPropagation(); setLoopRegion(null); });
+  band.appendChild(clearBtn);
+  ruler.appendChild(band);
+
+  // Optional subtler echo of the region over the roll itself (design note:
+  // "and optionally a subtle band over the roll").
+  const rollBand = document.createElement("div");
+  rollBand.className = "pr-roll-region-band";
+  rollBand.id = "pr-roll-region-band";
+  rollBand.style.display = "none";
+  $("piano-roll").appendChild(rollBand);
+
+  // Click (no movement) -> seek; drag (movement past DRAG_THRESHOLD_PX) ->
+  // define a loop region. Both share one pointerdown/pointermove/pointerup
+  // gesture (Wave C2b: setPointerCapture(e.pointerId) on `ruler` replaces
+  // the old window-level mousemove/mouseup pair — same migration shape as
+  // renderNote's move/resize handles). pointercancel/lostpointercapture
+  // roll back to whatever loopRegion was set BEFORE this gesture started
+  // (finding 39) — this gesture doesn't touch `dragActive`/undo (loopRegion
+  // is transport UI state, never on the undo stack — see its own doc
+  // comment), so "rollback" here just means "don't keep a half-defined
+  // region from an interrupted drag."
+  ruler.addEventListener("pointerdown", (e) => {
+    // Wave C2b finding 8 — single-gesture policy: a second touch point
+    // while a note drag is already active must not ALSO start a ruler
+    // seek/region-drag gesture (this gesture doesn't set dragActive itself
+    // — see the doc comment above — but it must still defer to one).
+    if (dragActive) return;
+    if ((e.target as HTMLElement).closest(".pr-region-clear")) return;
+    // Re-measured on every move (not cached once) so a mid-drag horizontal
+    // scroll of the container can't leave this reading a stale left edge.
+    const rulerPxOf = (ev: PointerEvent) => ev.clientX - ruler.getBoundingClientRect().left;
+    const anchorPx = rulerPxOf(e);
+    const anchorBeat = pxToBeat(anchorPx);
+    const regionBeforeDrag = loopRegion;
+    const pointerId = e.pointerId;
+    let moved = false;
+    try { ruler.setPointerCapture(pointerId); } catch { /* pointer already gone — best-effort */ }
+
+    const cleanup = () => {
+      ruler.removeEventListener("pointermove", onMove);
+      ruler.removeEventListener("pointerup", onUp);
+      ruler.removeEventListener("pointercancel", onCancel);
+      ruler.removeEventListener("lostpointercapture", onCancel);
+      try { ruler.releasePointerCapture(pointerId); } catch { /* already released */ }
+    };
+    const onMove = (e2: PointerEvent) => {
+      const px = rulerPxOf(e2);
+      if (!moved && Math.abs(px - anchorPx) > DRAG_THRESHOLD_PX) moved = true;
+      if (moved) setLoopRegion(normalizeRegion(anchorBeat, pxToBeat(px), MIN_REGION_BEATS, SCORE_BEATS));
+    };
+    const onUp = () => {
+      cleanup();
+      if (!moved) transport.seekTo(quantizeBeats(anchorBeat));
+    };
+    const onCancel = () => {
+      cleanup();
+      setLoopRegion(regionBeforeDrag);
+    };
+    ruler.addEventListener("pointermove", onMove);
+    ruler.addEventListener("pointerup", onUp);
+    ruler.addEventListener("pointercancel", onCancel);
+    ruler.addEventListener("lostpointercapture", onCancel);
+  });
+
+  // Keyboard seek (Wave C2b finding 6): ArrowLeft/Right = +-1 beat,
+  // Shift+Arrow = +-1 bar (4 beats), Home/End = start/score-end. Defining
+  // a loop region from the keyboard is explicitly OUT of scope this wave
+  // — region-set stays pointer-only (drag on the ruler); only seeking is
+  // covered here. stopPropagation() on every key this handler recognizes
+  // keeps the global keydown handler's ArrowLeft/Right note-nudge shortcut
+  // (isRollEditContext() is also true here, since #pr-ruler sits inside
+  // #piano-roll-container) from ALSO firing for the same keypress.
+  ruler.addEventListener("keydown", (e) => {
+    const k = e.key.toLowerCase();
+    const pos = transport.getPositionBeats();
+    let target: number | null = null;
+    if (k === "arrowleft") target = pos - (e.shiftKey ? 4 : 1);
+    else if (k === "arrowright") target = pos + (e.shiftKey ? 4 : 1);
+    else if (k === "home") target = 0;
+    else if (k === "end") target = computeScoreEndBeat(state.getScore());
+    if (target === null) return;
+    e.preventDefault();
+    e.stopPropagation();
+    transport.seekTo(target);
+  });
+}
+
+function setLoopRegion(region: LoopRegion | null): void {
+  loopRegion = region;
+  renderLoopRegionBand();
+}
+
+function renderLoopRegionBand(): void {
+  const band = document.getElementById("pr-region-band") as HTMLElement | null;
+  const rollBand = document.getElementById("pr-roll-region-band") as HTMLElement | null;
+  if (!band) return;
+  if (!loopRegion) {
+    band.style.display = "none";
+    if (rollBand) rollBand.style.display = "none";
+    return;
+  }
+  const left = loopRegion.startBeat * PX_PER_BEAT;
+  const width = (loopRegion.endBeat - loopRegion.startBeat) * PX_PER_BEAT;
+  band.style.display = "block";
+  band.style.left = left + "px";
+  band.style.width = width + "px";
+  if (rollBand) {
+    rollBand.style.display = "block";
+    rollBand.style.left = left + "px";
+    rollBand.style.width = width + "px";
+  }
+}
+
+/** Called from the transport's onTick while playing (see init()). Keeps
+ *  the playhead in view by jump-scrolling the container once it crosses
+ *  ~70% of the visible width — see ruler.ts's computeFollowScroll for the
+ *  threshold/target math; this only supplies live DOM measurements and
+ *  applies the result. */
+function applyFollowScroll(positionBeats: number): void {
+  // Wave C2b finding 8 — a drag in progress must not have the roll's
+  // content jump horizontally underneath it: the drag's own onMove math
+  // reads clientX against the element's CURRENT position, and a follow
+  // jump mid-drag would corrupt that reading (the note would appear to
+  // leap when the container scrolled, not the pointer).
+  if (!followEnabled || !transport.isPlaying() || dragActive) return;
+  const container = $("piano-roll-container");
+  const playheadPx = positionBeats * PX_PER_BEAT;
+  const maxScrollLeft = container.scrollWidth - container.clientWidth;
+  const target = computeFollowScroll(playheadPx, container.scrollLeft, container.clientWidth, maxScrollLeft);
+  if (target === null) return;
+  const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+  programmaticScroll(() => {
+    container.scrollTo({ left: target, behavior: reducedMotion ? "auto" : "smooth" });
+  });
+}
+
+function bindFollowToggle(): void {
+  const btn = $("btn-follow") as HTMLButtonElement;
+  const applyButtonState = () => {
+    btn.classList.toggle("active", followEnabled);
+    btn.setAttribute("aria-pressed", String(followEnabled));
+  };
+  applyButtonState();
+  btn.addEventListener("click", () => {
+    followEnabled = !followEnabled;
+    applyButtonState();
+  });
+
+  // Manual scrolling (wheel/touch/scrollbar) while playing disables follow
+  // until re-toggled — distinguished from our own programmatic scroll()
+  // calls via the grace-window flag (see programmaticScroll() above).
+  const container = $("piano-roll-container");
+  // Wave C2b finding 3 — only a HORIZONTAL move can mean "the user took
+  // over," since follow only ever scrolls horizontally itself; a vertical
+  // (row-browsing) scroll must never disable it. Tracked directly rather
+  // than inspecting the event (a native "scroll" event carries no delta),
+  // so this listener stays the single source of truth for "did scrollLeft
+  // actually change" across every scroll on this container, ours or not.
+  let lastScrollLeft = container.scrollLeft;
+  container.addEventListener("scroll", () => {
+    const left = container.scrollLeft;
+    const movedHorizontally = left !== lastScrollLeft;
+    lastScrollLeft = left;
+    if (!movedHorizontally) return;
+    if (performance.now() < programmaticScrollUntil) return; // our own scroll — ignore
+    if (followEnabled) { followEnabled = false; applyButtonState(); }
+  });
+}
+
 // ─── Keyboard Note Editing (F-B1-002) ────────────────────────────────────────
 //
 // Piano-roll editing without a mouse: reuses the existing selectNote/state.
@@ -823,7 +1274,9 @@ function cycleNoteSelection(dir: 1 | -1) {
   const curIdx = selected ? ordered.indexOf(selected) : -1;
   const nextIdx = curIdx < 0 ? (dir > 0 ? 0 : ordered.length - 1) : (curIdx + dir + ordered.length) % ordered.length;
   selectNote(ordered[nextIdx]);
-  document.querySelector(noteSelector(ordered[nextIdx].id))?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  programmaticScroll(() => {
+    document.querySelector(noteSelector(ordered[nextIdx].id))?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  });
 }
 
 /** ArrowUp/Down (±1 semitone) and ArrowLeft/Right (±1 grid step) on the
@@ -849,6 +1302,27 @@ function nudgeSelectedNote(semitones: number, steps: number) {
   updateInspector();
 }
 
+/** Resize the selected note by one grid step (Wave C2b findings 40/44) —
+ *  Shift+ArrowLeft/Right AND the toolbar's Resize+/- buttons (bindGesture
+ *  AltControls below) both call this, so keyboard and button paths commit
+ *  through the exact same resizeCommand shape a mouse/touch resize-drag
+ *  does. One command per call (no coalescing — same "each keypress/click
+ *  is its own discrete gesture" reasoning as nudgeSelectedNote above).
+ *  gesture.ts's resizeStepTarget supplies the floor-at-one-grid-step math;
+ *  a call that would be a no-op (already at the floor) is skipped for the
+ *  same redo-stack-preservation reason nudgeSelectedNote skips its own
+ *  no-op case. */
+function resizeSelectedNoteByStep(steps: number) {
+  const note = state.getSelectedNote();
+  if (!note) return;
+  const before = note.durationBeats;
+  const after = resizeStepTarget(before, steps);
+  if (after === before) return;
+  undo.execute(undo.resizeCommand(note.id, before, after));
+  const el = document.querySelector<HTMLElement>(noteSelector(note.id));
+  if (el) positionNote(el, note);
+}
+
 /** Enter / Insert — add a new note at the current playhead position. Reuses
  *  the selected note's pitch/vowel as a starting point when one exists, so
  *  rapid keyboard entry (nudge, insert, nudge, insert...) stays musically
@@ -866,7 +1340,99 @@ function insertNoteAtPlayhead() {
   const note = state.getSelectedNote()!; // addNoteCommand.redo() selects the new note
   renderNote(note);
   selectNote(note); // DOM `.selected` class + inspector sync (state.selectNote() re-run inside is a harmless no-op)
-  document.querySelector(noteSelector(note.id))?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  programmaticScroll(() => {
+    document.querySelector(noteSelector(note.id))?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  });
+}
+
+// ─── Move Mode + Resize+/- (Wave C2b finding 40 — WCAG 2.5.7 non-drag
+// single-pointer alternative to a note move/resize drag) ────────────────────
+
+/** Toggle Move mode (toolbar btn-move-mode) on/off. While armed, the NEXT
+ *  pointerdown anywhere on the roll relocates the selected note to the
+ *  tapped beat/pitch (see bindGestureAltControls's capture-phase
+ *  listener) and auto-exits. Requires a selection to arm — the button is
+ *  disabled with none (see updateGestureAltButtons). */
+function toggleMoveMode() {
+  if (!state.getSelectedNote()) return;
+  moveModeActive = !moveModeActive;
+  applyMoveModeButtonState();
+}
+
+function exitMoveMode() {
+  if (!moveModeActive) return;
+  moveModeActive = false;
+  applyMoveModeButtonState();
+}
+
+function applyMoveModeButtonState() {
+  const btn = $("btn-move-mode") as HTMLButtonElement;
+  btn.classList.toggle("active", moveModeActive);
+  btn.setAttribute("aria-pressed", String(moveModeActive));
+}
+
+/** Relocate the currently-selected note to a tapped/clicked pixel position
+ *  within the roll (finding 40) — one undoable command via the SAME
+ *  moveCommand path a mouse/touch move-drag commits through. Quantizes
+ *  the same way click-to-add-note does (gesture.ts's moveModeTarget) and
+ *  clamps via state.ts's clampedMoveTarget, so tapping the note's own
+ *  current cell is a safe no-op (no command, no redo-stack wipe — same
+ *  reasoning as nudgeSelectedNote/resizeSelectedNoteByStep above). */
+function relocateSelectedNoteTo(xPx: number, yPx: number) {
+  const note = state.getSelectedNote();
+  if (!note) return;
+  const target = moveModeTarget(xPx, yPx, ROW_H, MIDI_HI, PX_PER_BEAT);
+  const before: undo.Point = { startBeat: note.startBeat, midi: note.midi };
+  const after = state.clampedMoveTarget(note, target.startBeat, target.midi);
+  if (!after) return;
+  undo.execute(undo.moveCommand(note.id, before, after));
+  const el = document.querySelector<HTMLElement>(noteSelector(note.id));
+  if (el) { applyNoteStyle(el, note); positionNote(el, note); }
+  updateInspector();
+}
+
+/** Enable/disable the Move + Resize+/- toolbar buttons to match whether a
+ *  note is currently selected (all three are no-ops with nothing
+ *  selected). Called from updateInspector() — the existing single
+ *  "selection changed" chokepoint (selectNote, performUndo/performRedo,
+ *  setMode, importScore all already call it) — so this never drifts out
+ *  of sync. Auto-exits Move mode if the selection it was armed for
+ *  disappears (e.g. Del while armed) instead of leaving it stuck active
+ *  with nothing to relocate. */
+function updateGestureAltButtons() {
+  const hasSelection = state.getSelectedNote() !== null;
+  if (!hasSelection) exitMoveMode();
+  ($("btn-move-mode") as HTMLButtonElement).disabled = !hasSelection;
+  ($("btn-resize-dec") as HTMLButtonElement).disabled = !hasSelection;
+  ($("btn-resize-inc") as HTMLButtonElement).disabled = !hasSelection;
+}
+
+/** Wire the Move/Resize+/- toolbar buttons (called once from init()) and
+ *  the capture-phase pointerdown listener that lets Move mode commandeer
+ *  the next tap on the roll ahead of both the roll's own empty-space
+ *  handler AND any note's own move-drag-start handler (both are bubble-
+ *  phase listeners on the roll/its note children — a capture-phase
+ *  listener here runs first and, when armed, stopPropagation()s so
+ *  neither of those ever sees this pointerdown). */
+function bindGestureAltControls() {
+  ($("btn-move-mode") as HTMLButtonElement).addEventListener("click", toggleMoveMode);
+  ($("btn-resize-dec") as HTMLButtonElement).addEventListener("click", () => resizeSelectedNoteByStep(-1));
+  ($("btn-resize-inc") as HTMLButtonElement).addEventListener("click", () => resizeSelectedNoteByStep(1));
+  updateGestureAltButtons(); // initial (all-disabled, nothing selected yet) state
+
+  const pr = $("piano-roll");
+  pr.addEventListener("pointerdown", (e) => {
+    if (!moveModeActive) return;
+    // Wave C2b finding 8 — single-gesture policy: a second touch point
+    // while a note drag is already active must not ALSO relocate the
+    // selected note via Move mode.
+    if (dragActive) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const rect = pr.getBoundingClientRect();
+    relocateSelectedNoteTo(e.clientX - rect.left, e.clientY - rect.top);
+    exitMoveMode();
+  }, { capture: true });
 }
 
 /** Ctrl+Z / toolbar Undo button. Undo/redo traversal doesn't know which
@@ -895,6 +1461,12 @@ function performRedo() {
 // ─── Inspector ───────────────────────────────────────────────────────────────
 
 function updateInspector() {
+  // Wave C2b: the Move/Resize+/- toolbar buttons (finding 40) enable only
+  // with a selection — updateInspector() is the existing single "selection
+  // changed" chokepoint every relevant call site already goes through, so
+  // folding this in here keeps it in sync for free rather than needing a
+  // second call added at every one of those sites.
+  updateGestureAltButtons();
   const insp = $("inspector");
   const note = state.getSelectedNote();
   if (!note) { insp.classList.remove("active"); return; }
@@ -927,6 +1499,31 @@ for (let m = KB_LO; m <= KB_HI; m++) if (!IS_BLACK[m % 12]) KB_WHITES.push(m);
 interface KeyboardKeyRef { el: HTMLElement; midi: number; isBlack: boolean }
 const keyboardKeys: KeyboardKeyRef[] = [];
 
+/**
+ * Wire one on-screen keyboard key's press/release gesture (Wave C2b,
+ * finding 38: pointer events, shared by both the white- and black-key
+ * build loops below — previously two near-identical mousedown/mouseup/
+ * mouseleave triples). setPointerCapture on pointerdown so pointerup
+ * reliably targets THIS key even if released elsewhere; pointerleave is
+ * unaffected by capture per the Pointer Events spec (boundary events keep
+ * reflecting the real hit-test even while another event type is
+ * captured), so it still fires exactly when the old mouseleave did — "a
+ * finger sliding off a key releases the note" (finding 39) — with
+ * pointercancel/lostpointercapture as safety nets for a gesture the OS/
+ * browser interrupts outright.
+ */
+function bindOnScreenKeyPointer(key: HTMLElement, midi: number): void {
+  key.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    try { key.setPointerCapture(e.pointerId); } catch { /* best-effort */ }
+    midiKeyDown(midi);
+  });
+  key.addEventListener("pointerup", () => midiKeyUp(midi));
+  key.addEventListener("pointerleave", () => { if (heldMidi.has(midi)) midiKeyUp(midi); });
+  key.addEventListener("pointercancel", () => { if (heldMidi.has(midi)) midiKeyUp(midi); });
+  key.addEventListener("lostpointercapture", () => { if (heldMidi.has(midi)) midiKeyUp(midi); });
+}
+
 function buildKeyboard() {
   const kb = $("keyboard");
 
@@ -951,9 +1548,7 @@ function buildKeyboard() {
       key.appendChild(sc);
     }
 
-    key.addEventListener("mousedown", (e) => { e.preventDefault(); midiKeyDown(midi); });
-    key.addEventListener("mouseup", () => midiKeyUp(midi));
-    key.addEventListener("mouseleave", () => { if (heldMidi.has(midi)) midiKeyUp(midi); });
+    bindOnScreenKeyPointer(key, midi);
     kb.appendChild(key);
     keyboardKeys.push({ el: key, midi, isBlack: false });
   }
@@ -978,9 +1573,7 @@ function buildKeyboard() {
       key.appendChild(sc);
     }
 
-    key.addEventListener("mousedown", (e) => { e.preventDefault(); midiKeyDown(m); });
-    key.addEventListener("mouseup", () => midiKeyUp(m));
-    key.addEventListener("mouseleave", () => { if (heldMidi.has(m)) midiKeyUp(m); });
+    bindOnScreenKeyPointer(key, m);
     kb.appendChild(key);
     keyboardKeys.push({ el: key, midi: m, isBlack: true });
   }
@@ -1045,7 +1638,26 @@ function buildKeyboard() {
       if (isActivatableControl(document.activeElement)) return;
       e.preventDefault(); transport.togglePlayPause(); return;
     }
-    if (k === "escape") { panic(); return; }
+    if (k === "escape") {
+      // Wave C2b finding 39 — Esc-cancel takes precedence over panic while
+      // a note drag is active: rolls the gesture back cleanly (same path
+      // as pointercancel — restore pre-drag geometry, release capture, no
+      // command) instead of only silencing audio. Gated on `dragActive`
+      // (not just cancelActiveDrag != null) to keep this scoped to exactly
+      // the same gestures that flag already guards elsewhere (see its own
+      // doc comment) — the ruler's own drag deliberately never sets it
+      // (see buildRuler), so Esc there still means panic, unchanged.
+      if (dragActive && cancelActiveDrag) { e.preventDefault(); cancelActiveDrag(); return; }
+      // Move mode (finding 40) is likewise a pending gesture worth
+      // escaping out of cleanly rather than leaving armed with no visible
+      // way to cancel it (a touch-only user has no "click elsewhere" this
+      // toolbar's aria-pressed toggle already covers) — this is additive
+      // beyond what any pinned finding requires, called out here in case
+      // it should be reverted.
+      if (moveModeActive) { e.preventDefault(); exitMoveMode(); return; }
+      panic();
+      return;
+    }
     if (k === "delete" || k === "backspace") {
       // Only intercept when there's actually a note to delete — otherwise
       // this stole Backspace/Delete from every other context on the page
@@ -1065,8 +1677,17 @@ function buildKeyboard() {
     }
     if (k === "arrowup") { if (isRollEditContext()) { e.preventDefault(); nudgeSelectedNote(1, 0); } return; }
     if (k === "arrowdown") { if (isRollEditContext()) { e.preventDefault(); nudgeSelectedNote(-1, 0); } return; }
-    if (k === "arrowleft") { if (isRollEditContext()) { e.preventDefault(); nudgeSelectedNote(0, -1); } return; }
-    if (k === "arrowright") { if (isRollEditContext()) { e.preventDefault(); nudgeSelectedNote(0, 1); } return; }
+    // Shift+Left/Right resizes by one grid step (finding 44) instead of
+    // moving — reuses resizeCommand via the same resizeSelectedNoteByStep
+    // path the toolbar's Resize+/- buttons call (finding 40).
+    if (k === "arrowleft") {
+      if (isRollEditContext()) { e.preventDefault(); e.shiftKey ? resizeSelectedNoteByStep(-1) : nudgeSelectedNote(0, -1); }
+      return;
+    }
+    if (k === "arrowright") {
+      if (isRollEditContext()) { e.preventDefault(); e.shiftKey ? resizeSelectedNoteByStep(1) : nudgeSelectedNote(0, 1); }
+      return;
+    }
     if (k === "enter" || k === "insert") {
       if (isRollEditContext()) { e.preventDefault(); insertNoteAtPlayhead(); }
       return;
