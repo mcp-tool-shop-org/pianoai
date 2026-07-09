@@ -58,6 +58,27 @@ export interface PerformanceResult {
     missed: MissedNote[];
     extras: ExtraNote[];
     timingIssues: TimingIssue[];
+    /**
+     * One verdict per expected note (additive — absent only on the
+     * INPUT_LIMIT-guard early return, where it's `[]`). Read-only view on
+     * top of `matched`/`missed`/`extras`/`metrics`; never changes their
+     * shape or values. See `NoteVerdict` for status derivation.
+     */
+    noteVerdicts?: NoteVerdict[];
+    /**
+     * The effective bpm this performance was actually scored at —
+     * `resolveEffectiveBpm(song, options.bpm)`, the SAME value
+     * `flattenSongToExpected` used to compute every `ExpectedNote.time`
+     * (and, transitively, `NoteVerdict.startSec`) in this result. Additive
+     * — always populated by `scorePerformance` (including the
+     * INPUT_LIMIT-guard branch) — but optional here so a hand-built
+     * `PerformanceResult` (e.g. a test fixture) isn't forced to supply it.
+     * Consumers that render/re-derive positions from this result (see
+     * `renderScoredPianoRoll`) should prefer this over independently
+     * re-resolving `song.tempo`, which could silently disagree with
+     * whatever `bpm` this result was actually scored with.
+     */
+    scoredAtBpm?: number;
   };
 
   feedback: string;
@@ -82,6 +103,31 @@ export interface TimingIssue {
   expectedMs: number;
   actualMs: number;
   errorMs: number;
+}
+
+/**
+ * A per-expected-note verdict for the scored piano-roll overlay (Wave S2).
+ * Exactly one verdict is produced per expected note (see `flattenSongToExpected`),
+ * regardless of whether it was matched.
+ *
+ * Status derivation (see `computeVerdictWindows`):
+ *   - "correct": matched, correct pitch, |offsetMs| <= greenMs
+ *   - "timing":  matched, correct pitch, |offsetMs| >  greenMs (still "timing"
+ *                even past orangeMs — matched is matched, it never demotes to "missed")
+ *   - "missed":  unmatched, OR matched to the wrong pitch (finding 33:
+ *                "red = miss/wrong pitch" — a wrong-pitch near-match still counts
+ *                as `matched` for the existing `matches`/`pitchAccuracy`/`completeness`
+ *                bookkeeping above, unchanged; this field just never reports it as
+ *                "correct" or "timing" since the right note didn't sound)
+ */
+export interface NoteVerdict {
+  measure: number;
+  notation: string;
+  midi: number;
+  startSec: number;
+  status: "correct" | "timing" | "missed";
+  /** Signed timing error in ms (played − expected); omitted for "missed". */
+  offsetMs?: number;
 }
 
 // ─── Flatten song to expected notes ─────────────────────────────────────────
@@ -142,24 +188,42 @@ function parseHandTokens(
 /** Fallback tempo used when both the bpm override and song.tempo are invalid (<=0 or non-finite). */
 const DEFAULT_FALLBACK_BPM = 120;
 
-export function flattenSongToExpected(song: SongEntry, bpm?: number): ExpectedNote[] {
-  // Guard bpm<=0 the same way durationToMs already does elsewhere in this
-  // file — an effectiveBpm of 0 or negative would make measureDurationSec
-  // Infinity/negative, poisoning every ExpectedNote.time with
-  // Infinity/NaN and silently producing a 0%-match score instead of a
-  // clear validation error (F-eaa28d23). Falls back to a sane default
-  // tempo rather than throwing, matching flattenSongToExpected's role as
-  // a best-effort scorer rather than a strict validator.
+/**
+ * Resolve the effective BPM used for all timing math in this module:
+ * an explicit override, else the song's own tempo, falling back to
+ * DEFAULT_FALLBACK_BPM when neither is a finite positive number.
+ *
+ * Guards bpm<=0 the same way durationToMs already does elsewhere in this
+ * file — an effectiveBpm of 0 or negative would make measure durations
+ * Infinity/negative, poisoning every ExpectedNote.time with Infinity/NaN
+ * and silently producing a 0%-match score instead of a clear validation
+ * error (F-eaa28d23). Falls back to a sane default tempo rather than
+ * throwing, matching this module's role as a best-effort scorer rather
+ * than a strict validator.
+ *
+ * Exported so callers outside this module (the scored piano-roll renderer)
+ * can resolve the *same* effective bpm a given `scorePerformance`/
+ * `flattenSongToExpected` call used, to keep verdict/extra timing aligned
+ * with the grid.
+ */
+export function resolveEffectiveBpm(song: SongEntry, bpm?: number): number {
   const rawBpm = bpm ?? song.tempo;
-  const effectiveBpm = Number.isFinite(rawBpm) && rawBpm > 0 ? rawBpm : DEFAULT_FALLBACK_BPM;
-  const notes: ExpectedNote[] = [];
-  let measureStartTime = 0;
+  return Number.isFinite(rawBpm) && rawBpm > 0 ? rawBpm : DEFAULT_FALLBACK_BPM;
+}
 
-  // Parse time signature for measure duration
-  const [beatsNum, beatsDen] = song.timeSignature.split("/").map(Number);
+/** Measure duration in seconds for a "N/D" time signature string at `effectiveBpm`. */
+function measureDurationSeconds(timeSignature: string, effectiveBpm: number): number {
+  const [beatsNum, beatsDen] = timeSignature.split("/").map(Number);
   const beatsPerMeasure = beatsNum || 4;
   const beatUnit = beatsDen || 4;
-  const measureDurationSec = (beatsPerMeasure * (4 / beatUnit) * 60) / effectiveBpm;
+  return (beatsPerMeasure * (4 / beatUnit) * 60) / effectiveBpm;
+}
+
+export function flattenSongToExpected(song: SongEntry, bpm?: number): ExpectedNote[] {
+  const effectiveBpm = resolveEffectiveBpm(song, bpm);
+  const notes: ExpectedNote[] = [];
+  let measureStartTime = 0;
+  const measureDurationSec = measureDurationSeconds(song.timeSignature, effectiveBpm);
 
   for (const measure of song.measures) {
     const rh = parseHandTokens(
@@ -177,6 +241,86 @@ export function flattenSongToExpected(song: SongEntry, bpm?: number): ExpectedNo
   return notes;
 }
 
+/**
+ * Each measure's absolute start time in seconds, keyed by 1-based measure
+ * number, using the same tempo/time-signature math as `flattenSongToExpected`
+ * — so times returned here always agree with `ExpectedNote.time` /
+ * `NoteVerdict.startSec` for the same song + bpm. Iteration order matches
+ * `song.measures` array order (chronological), which `secondsToMeasureBeat`
+ * relies on.
+ */
+export function computeMeasureStartTimes(song: SongEntry, bpm?: number): Map<number, number> {
+  const effectiveBpm = resolveEffectiveBpm(song, bpm);
+  const measureDurationSec = measureDurationSeconds(song.timeSignature, effectiveBpm);
+
+  const starts = new Map<number, number>();
+  let t = 0;
+  for (const measure of song.measures) {
+    starts.set(measure.number, t);
+    t += measureDurationSec;
+  }
+  return starts;
+}
+
+/**
+ * Convert an absolute time in seconds to a (measure number, beat-offset
+ * within that measure) pair, given a start-time map from
+ * `computeMeasureStartTimes` and the same tempo used to build it.
+ * `beatOffset` is in quarter-note-beat units (matches piano-roll.ts's
+ * `PlottedNote.startBeat`). Times before the first measure clamp to the
+ * first measure (negative beatOffset); times after the last measure clamp
+ * to the last measure (beatOffset may exceed that measure's beat count) —
+ * both are deliberate soft-clamp behaviors for played notes that fall
+ * outside the song's own timeline (e.g. an early/late extra note), not
+ * hard errors.
+ */
+export function secondsToMeasureBeat(
+  measureStartTimes: Map<number, number>,
+  timeSeconds: number,
+  tempoBpm: number,
+): { measure: number; beatOffset: number } {
+  let chosenMeasure: number | undefined;
+  let chosenStart = 0;
+
+  for (const [measureNum, start] of measureStartTimes) {
+    if (start > timeSeconds) break; // Map iterates in insertion (chronological) order
+    chosenMeasure = measureNum;
+    chosenStart = start;
+  }
+
+  if (chosenMeasure === undefined) {
+    const first = measureStartTimes.entries().next();
+    if (first.done) return { measure: 1, beatOffset: 0 };
+    [chosenMeasure, chosenStart] = first.value;
+  }
+
+  const beatOffset = (timeSeconds - chosenStart) * (tempoBpm / 60);
+  return { measure: chosenMeasure, beatOffset };
+}
+
+/**
+ * Verdict timing windows, scaled as percent-of-beat with floors/caps
+ * (findings 32, 33 — Friberg & Sundberg timing JND ≈2.5% of IOI for
+ * 240-1000ms IOIs; MIR onset-correctness standard ~50ms):
+ *
+ *   greenMs  = max(50, 0.025 * beatDurationMs)  — "correct" window
+ *   orangeMs = min(150, toleranceMs)            — informational upper band
+ *
+ * `orangeMs` does not gate `NoteVerdict.status` on its own — any matched,
+ * correct-pitch note past `greenMs` is "timing" whether or not it's within
+ * `orangeMs` (matched is matched; see `NoteVerdict`). It's exposed for
+ * callers/tests that want the MIR-standard band explicitly.
+ */
+export function computeVerdictWindows(
+  bpm: number,
+  toleranceMs: number,
+): { greenMs: number; orangeMs: number } {
+  const beatDurationMs = durationToMs(1, bpm);
+  const greenMs = Math.max(50, 0.025 * beatDurationMs);
+  const orangeMs = Math.min(150, toleranceMs);
+  return { greenMs, orangeMs };
+}
+
 // ─── Match played notes to expected notes ───────────────────────────────────
 
 export function scorePerformance(
@@ -187,6 +331,13 @@ export function scorePerformance(
   const INPUT_LIMIT = 10_000;
 
   const expected = flattenSongToExpected(song, options.bpm);
+  // Single source of truth for "what bpm was this take scored at" — the
+  // same value flattenSongToExpected(song, options.bpm) resolved
+  // internally for every ExpectedNote.time. Stashed on `details` on EVERY
+  // return path below (including the INPUT_LIMIT guard) so a caller/
+  // renderer never has to separately guess/re-derive it — mispairing
+  // becomes impossible by default (see renderScoredPianoRoll).
+  const scoredAtBpm = resolveEffectiveBpm(song, options.bpm);
 
   // Guard against excessively large inputs that would cause O(N*M) stall
   if (expected.length > INPUT_LIMIT || playedEvents.length > INPUT_LIMIT) {
@@ -194,7 +345,7 @@ export function scorePerformance(
       songId: song.id,
       songTitle: song.title,
       metrics: { overallScore: 0, pitchAccuracy: 0, timingAccuracyMs: 0, completeness: 0, extraNoteCount: 0 },
-      details: { totalExpected: expected.length, totalPlayed: playedEvents.length, matched: 0, missed: [], extras: [], timingIssues: [] },
+      details: { totalExpected: expected.length, totalPlayed: playedEvents.length, matched: 0, missed: [], extras: [], timingIssues: [], noteVerdicts: [], scoredAtBpm },
       feedback: `Input too large for scoring: expected ${expected.length} notes, played ${playedEvents.length} notes. Maximum is ${INPUT_LIMIT} per array.`,
     };
   }
@@ -208,6 +359,10 @@ export function scorePerformance(
   const matches: NoteMatch[] = [];
   const usedPlayed = new Set<number>();
   const matchedExpected = new Set<number>();
+  // Tracks which NoteMatch (if any) each expected-note index resolved to,
+  // purely additive bookkeeping for `noteVerdicts` below — read-only, does
+  // not influence `matches`/`missed`/`extras`/`metrics` in any way.
+  const matchByExpectedIndex = new Map<number, NoteMatch>();
 
   // For each expected note, find best matching played note
   for (let ei = 0; ei < expected.length; ei++) {
@@ -237,12 +392,14 @@ export function scorePerformance(
       const p = played[bestIdx];
       usedPlayed.add(bestIdx);
       matchedExpected.add(ei);
-      matches.push({
+      const match: NoteMatch = {
         expected: exp,
         played: p,
         timingErrorMs: (p.time - exp.time) * 1000,
         pitchCorrect: p.note === exp.note,
-      });
+      };
+      matches.push(match);
+      matchByExpectedIndex.set(ei, match);
     }
   }
 
@@ -312,6 +469,37 @@ export function scorePerformance(
     missed, extras, timingIssues, song,
   );
 
+  // Per-note verdicts (additive — see NoteVerdict doc comment). Reuses
+  // `scoredAtBpm` (resolved once, above) so greenMs scales off the
+  // identical tempo the expected notes' times were computed from.
+  const { greenMs } = computeVerdictWindows(scoredAtBpm, toleranceMs);
+  const noteVerdicts: NoteVerdict[] = expected.map((exp, ei) => {
+    const match = matchByExpectedIndex.get(ei);
+    if (!match || !match.pitchCorrect) {
+      // Unmatched, or matched at the wrong pitch — both read as "missed"
+      // from the performer's perspective (finding 33), even though a
+      // wrong-pitch near-match is still `matched` for pitchAccuracy/
+      // completeness above (unchanged, preserved current scorer behavior).
+      return {
+        measure: exp.measure,
+        notation: exp.notation,
+        midi: exp.note,
+        startSec: exp.time,
+        status: "missed",
+      };
+    }
+    const offsetMs = match.timingErrorMs;
+    const status: NoteVerdict["status"] = Math.abs(offsetMs) <= greenMs ? "correct" : "timing";
+    return {
+      measure: exp.measure,
+      notation: exp.notation,
+      midi: exp.note,
+      startSec: exp.time,
+      status,
+      offsetMs,
+    };
+  });
+
   return {
     songId: song.id,
     songTitle: song.title,
@@ -329,6 +517,8 @@ export function scorePerformance(
       missed: missed.slice(0, 30), // limit output size
       extras: extras.slice(0, 20),
       timingIssues,
+      noteVerdicts,
+      scoredAtBpm,
     },
     feedback,
   };

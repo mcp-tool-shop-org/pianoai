@@ -10,10 +10,17 @@
 //   Blue rectangles = right hand, coral = left hand
 //   Vertical grid lines = beat boundaries (thin) + measure boundaries (thick)
 //   Pitch labels on left axis, measure numbers below
+//
+// Also exports renderScoredPianoRoll (Wave S2), which reuses every shared
+// layout/grid/label/footer helper below and swaps only the note-coloring +
+// legend for a CUD-safe per-note verdict encoding driven by a
+// PerformanceResult (see score-performance.ts).
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { parseNoteToMidi, parseDuration, midiToNoteName, splitChordToken } from "./note-parser.js";
 import type { SongEntry, Measure } from "./songs/types.js";
+import type { PerformanceResult, NoteVerdict } from "./score-performance.js";
+import { computeMeasureStartTimes, secondsToMeasureBeat, resolveEffectiveBpm } from "./score-performance.js";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -36,6 +43,15 @@ export interface PianoRollOptions {
   showTeachingNotes?: boolean;
   /** Note coloring mode. Default: "hand" (blue RH / coral LH). */
   colorMode?: PianoRollColorMode;
+  /**
+   * BPM the performance was scored at (i.e. the `bpm` you passed to
+   * `scorePerformance`). Only consulted by `renderScoredPianoRoll`, to
+   * convert `NoteVerdict.startSec` / extra-note timestamps back into beat
+   * positions on the grid. Default: song.tempo — matches
+   * `scorePerformance`'s own default when its `bpm` option is omitted.
+   * Ignored by `renderPianoRoll`.
+   */
+  scoreBpm?: number;
 }
 
 /** A resolved note ready for rendering. */
@@ -45,6 +61,18 @@ interface PlottedNote {
   durationBeats: number;
   measureIndex: number;   // 0-based index into the rendered measures
   hand: "right" | "left";
+}
+
+/** Options after defaults have been applied. */
+interface ResolvedPianoRollOptions {
+  startMeasure: number;
+  endMeasure: number;
+  pixelsPerBeat: number;
+  pitchRowHeight: number;
+  showMetronome: boolean;
+  showDynamics: boolean;
+  showTeachingNotes: boolean;
+  colorMode: PianoRollColorMode;
 }
 
 // ─── Theme Colors ───────────────────────────────────────────────────────────
@@ -68,6 +96,21 @@ const COLORS = {
   blackKeyBg: "#151526",
   pillBg: "#242440",
   pillBorder: "#3a3a5e",
+};
+
+/**
+ * CUD-safe (Okabe & Ito 2008) verdict triad for the scored overlay
+ * (findings 26, 28, 33, 42): vermilion / orange / bluish-green, chosen so
+ * the three states stay distinguishable for red-green colorblind viewers
+ * (~8% of males, WCAG 1.4.1) — shape redundancy (solid / dashed-hollow /
+ * X-hollow) carries the distinction even with color removed entirely.
+ */
+const VERDICT_COLORS = {
+  correct: "#009E73",       // bluish-green — solid fill
+  correctStroke: "#00614a",
+  timing: "#E69F00",        // orange — dashed hollow
+  missed: "#D55E00",        // vermilion — hollow + X glyph
+  extra: "#999999",         // neutral gray — dotted ghost + "+" marker
 };
 
 // ─── Pitch-Class Colors ─────────────────────────────────────────────────────
@@ -250,19 +293,11 @@ function legendPill(x: number, y: number, color: string, label: string): string 
   ].join("\n");
 }
 
-// ─── Public API ─────────────────────────────────────────────────────────────
+// ─── Options + Layout (shared by renderPianoRoll and renderScoredPianoRoll) ─
 
-/**
- * Render a SongEntry as an SVG piano roll string.
- *
- * Returns a complete SVG document as a string — no file I/O,
- * no DOM, no external dependencies.
- */
-export function renderPianoRoll(
-  song: SongEntry,
-  options?: PianoRollOptions,
-): string {
-  const opts = {
+/** Apply PianoRollOptions defaults — identical for both rendering modes. */
+function resolveOptions(song: SongEntry, options?: PianoRollOptions): ResolvedPianoRollOptions {
+  return {
     startMeasure: options?.startMeasure ?? 1,
     endMeasure: options?.endMeasure ?? song.measures.length,
     pixelsPerBeat: options?.pixelsPerBeat ?? 60,
@@ -272,6 +307,60 @@ export function renderPianoRoll(
     showTeachingNotes: options?.showTeachingNotes ?? false,
     colorMode: options?.colorMode ?? "hand",
   };
+}
+
+/** The small standalone SVG returned for "nothing to render" edge cases. */
+function emptyRollSvg(message: string): string {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="100">
+      <rect width="400" height="100" fill="${COLORS.bg}"/>
+      <text x="200" y="55" text-anchor="middle" fill="${COLORS.text}" font-family="monospace" font-size="14">${esc(message)}</text>
+    </svg>`;
+}
+
+interface RollLayout {
+  opts: ResolvedPianoRollOptions;
+  measures: Measure[];
+  start: number;
+  end: number;
+  allNotes: PlottedNote[];
+  minMidi: number;
+  maxMidi: number;
+  ts: { num: number; den: number };
+  beatsPerMeasureTS: number;
+  headerHeight: number;
+  gridWidth: number;
+  gridHeight: number;
+  measureWidth: number;
+  totalWidth: number;
+  totalHeight: number;
+  gridX: number;
+  gridY: number;
+  measureOpacity: number[];
+}
+
+type RollLayoutResult = { ok: true; layout: RollLayout } | { ok: false; svg: string };
+
+/**
+ * Everything both renderers need before they start drawing mode-specific
+ * note rectangles: resolved options, the filtered measure range, parsed
+ * notes (for pitch range + base-mode plotting), pixel dimensions, and the
+ * per-measure dynamics-opacity ramp.
+ *
+ * `extraPitches` lets a caller (renderScoredPianoRoll, for its "extra
+ * note" ghosts) widen the pitch range beyond the song's own notes without
+ * touching renderPianoRoll's behavior — it defaults to [] there, which is
+ * a no-op identical to the pre-refactor inline computation.
+ *
+ * `headerHeight` lets renderScoredPianoRoll reserve room for the focus
+ * strip above the title; renderPianoRoll always uses the original 50px.
+ */
+function buildRollLayout(
+  song: SongEntry,
+  options: PianoRollOptions | undefined,
+  overrides: { extraPitches?: number[]; headerHeight?: number } = {},
+): RollLayoutResult {
+  const opts = resolveOptions(song, options);
+  const extraPitches = overrides.extraPitches ?? [];
 
   // Clamp measure range
   const start = Math.max(1, opts.startMeasure);
@@ -279,15 +368,12 @@ export function renderPianoRoll(
   const measures = song.measures.filter(m => m.number >= start && m.number <= end);
 
   if (measures.length === 0) {
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="100">
-      <rect width="400" height="100" fill="${COLORS.bg}"/>
-      <text x="200" y="55" text-anchor="middle" fill="${COLORS.text}" font-family="monospace" font-size="14">No measures in range ${start}-${end}</text>
-    </svg>`;
+    return { ok: false, svg: emptyRollSvg(`No measures in range ${start}-${end}`) };
   }
 
   // ── Parse time signature ──
   const ts = parseTimeSig(song.timeSignature);
-  const bpm = beatsPerMeasure(ts.num, ts.den);
+  const beatsPerMeasureTS = beatsPerMeasure(ts.num, ts.den);
 
   // ── Collect all plotted notes ──
   const allNotes: PlottedNote[] = [];
@@ -299,26 +385,24 @@ export function renderPianoRoll(
 
   // ── Find pitch range ──
   const pitched = allNotes.filter(n => n.midi >= 0);
-  if (pitched.length === 0) {
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="100">
-      <rect width="400" height="100" fill="${COLORS.bg}"/>
-      <text x="200" y="55" text-anchor="middle" fill="${COLORS.text}" font-family="monospace" font-size="14">No pitched notes in range ${start}-${end}</text>
-    </svg>`;
+  if (pitched.length === 0 && extraPitches.length === 0) {
+    return { ok: false, svg: emptyRollSvg(`No pitched notes in range ${start}-${end}`) };
   }
 
-  const minMidi = Math.max(0, pitched.reduce((m, n) => Math.min(m, n.midi), Infinity) - 3);
-  const maxMidi = Math.min(127, pitched.reduce((m, n) => Math.max(m, n.midi), -Infinity) + 3);
+  const pitchSources = [...pitched.map(n => n.midi), ...extraPitches];
+  const minMidi = Math.max(0, pitchSources.reduce((m, p) => Math.min(m, p), Infinity) - 3);
+  const maxMidi = Math.min(127, pitchSources.reduce((m, p) => Math.max(m, p), -Infinity) + 3);
   const pitchRange = maxMidi - minMidi + 1;
 
   // ── Layout dimensions ──
   const labelWidth = 50;     // left axis pitch labels
-  const headerHeight = 50;   // top: title + metadata pills
+  const headerHeight = overrides.headerHeight ?? 50;   // top: title + metadata pills
   const footerHeight = 70;   // bottom: measure numbers + metronome + legend pills
   const padding = 10;
 
-  const gridWidth = measures.length * bpm * opts.pixelsPerBeat;
+  const gridWidth = measures.length * beatsPerMeasureTS * opts.pixelsPerBeat;
   const gridHeight = pitchRange * opts.pitchRowHeight;
-  const measureWidth = bpm * opts.pixelsPerBeat;
+  const measureWidth = beatsPerMeasureTS * opts.pixelsPerBeat;
 
   const totalWidth = labelWidth + gridWidth + padding * 2;
   const totalHeight = headerHeight + gridHeight + footerHeight + padding;
@@ -326,23 +410,55 @@ export function renderPianoRoll(
   const gridX = labelWidth + padding;
   const gridY = headerHeight;
 
-  // ── Begin SVG ──
+  // ── Dynamics (pp→ff) carry forward across measures until re-marked ──
+  let currentDynamicOpacity = DEFAULT_NOTE_OPACITY;
+  const measureOpacity: number[] = measures.map((m) => {
+    if (m.dynamics) {
+      const level = DYNAMICS_OPACITY[m.dynamics.trim().toLowerCase()];
+      if (level !== undefined) currentDynamicOpacity = level;
+    }
+    return currentDynamicOpacity;
+  });
+
+  return {
+    ok: true,
+    layout: {
+      opts, measures, start, end, allNotes, minMidi, maxMidi, ts, beatsPerMeasureTS,
+      headerHeight, gridWidth, gridHeight, measureWidth, totalWidth, totalHeight,
+      gridX, gridY, measureOpacity,
+    },
+  };
+}
+
+// ─── Shared rendering pieces ────────────────────────────────────────────────
+
+/** `<svg>` open tag + `<style>` block + background rect. */
+function svgOpenLines(totalWidth: number, totalHeight: number, extraStyleLines: string[] = []): string[] {
   const lines: string[] = [];
   lines.push(`<svg xmlns="http://www.w3.org/2000/svg" width="${totalWidth}" height="${totalHeight}" viewBox="0 0 ${totalWidth} ${totalHeight}">`);
 
-  // Styles
   lines.push(`<style>`);
   lines.push(`  text { font-family: 'Consolas', 'SF Mono', 'Fira Code', monospace; }`);
   lines.push(`  .note-rh { fill: ${COLORS.rhNote}; stroke: ${COLORS.rhNoteStroke}; stroke-width: 0.5; rx: 3; ry: 3; }`);
   lines.push(`  .note-lh { fill: ${COLORS.lhNote}; stroke: ${COLORS.lhNoteStroke}; stroke-width: 0.5; rx: 3; ry: 3; }`);
   lines.push(`  .note-rh:hover { opacity: 0.85; }`);
   lines.push(`  .note-lh:hover { opacity: 0.85; }`);
+  for (const extraLine of extraStyleLines) lines.push(extraLine);
   lines.push(`</style>`);
 
-  // Background
   lines.push(`<rect width="${totalWidth}" height="${totalHeight}" fill="${COLORS.bg}"/>`);
+  return lines;
+}
 
-  // ── Header ──
+/** Title line + metadata pills (key / tempo / time sig / measure range). */
+function renderHeaderLines(
+  song: SongEntry,
+  gridX: number,
+  headerHeight: number,
+  start: number,
+  end: number,
+): string[] {
+  const lines: string[] = [];
   const composerLabel = song.composer ? ` — ${song.composer}` : "";
   const headerText = `${song.title}${composerLabel}`;
   lines.push(`<text x="${gridX}" y="${headerHeight - 26}" fill="${COLORS.headerText}" font-size="16" font-weight="600" letter-spacing="0.2">${esc(headerText)}</text>`);
@@ -361,28 +477,46 @@ export function renderPianoRoll(
     lines.push(`<text x="${(metaX + pillWidth / 2).toFixed(1)}" y="${metaY + metaHeight - 4}" text-anchor="middle" fill="${COLORS.text}" font-size="${metaFontSize}" letter-spacing="0.2">${esc(segment)}</text>`);
     metaX += pillWidth + metaGap;
   }
+  return lines;
+}
 
-  // ── Alternate-measure shading: even measures get a faint white wash so
-  //    musical form (phrase/measure grouping) reads at a glance ──
+/** Faint white wash on even measures so phrase/measure grouping reads at a glance. */
+function renderMeasureShadingLines(
+  measures: Measure[], gridX: number, gridY: number, measureWidth: number, gridHeight: number,
+): string[] {
+  const lines: string[] = [];
   for (let i = 0; i < measures.length; i++) {
     if (measures[i].number % 2 === 0) {
       const x = gridX + i * measureWidth;
       lines.push(`<rect x="${x}" y="${gridY}" width="${measureWidth}" height="${gridHeight}" fill="#ffffff" opacity="0.02"/>`);
     }
   }
+  return lines;
+}
 
-  // ── Grid background: highlight black key rows ──
+/** Black-key row shading behind the grid. */
+function renderPitchGridBackgroundLines(
+  minMidi: number, maxMidi: number, gridX: number, gridY: number, gridWidth: number, pitchRowHeight: number,
+): string[] {
+  const lines: string[] = [];
   for (let midi = minMidi; midi <= maxMidi; midi++) {
-    const y = gridY + (maxMidi - midi) * opts.pitchRowHeight;
+    const y = gridY + (maxMidi - midi) * pitchRowHeight;
     if (isBlackKey(midi)) {
-      lines.push(`<rect x="${gridX}" y="${y}" width="${gridWidth}" height="${opts.pitchRowHeight}" fill="${COLORS.blackKeyBg}" opacity="0.5"/>`);
+      lines.push(`<rect x="${gridX}" y="${y}" width="${gridWidth}" height="${pitchRowHeight}" fill="${COLORS.blackKeyBg}" opacity="0.5"/>`);
     }
   }
+  return lines;
+}
 
-  // ── Grid lines: horizontal (pitch rows) — semitones fade to a whisper,
-  //    C-rows get a warm 0.8px landmark line so octaves read at a glance ──
+/** Horizontal pitch-row lines (C-rows get a warm landmark line) + vertical beat/measure lines. */
+function renderGridLineLines(
+  minMidi: number, maxMidi: number, measures: Measure[], ts: { num: number; den: number },
+  gridX: number, gridY: number, gridWidth: number, gridHeight: number, measureWidth: number, pitchRowHeight: number,
+): string[] {
+  const lines: string[] = [];
+
   for (let midi = minMidi; midi <= maxMidi; midi++) {
-    const y = gridY + (maxMidi - midi) * opts.pitchRowHeight;
+    const y = gridY + (maxMidi - midi) * pitchRowHeight;
     const isC = midi % 12 === 0; // C notes get the warm landmark line
     const color = isC ? COLORS.gridOctave : COLORS.gridLine;
     const width = isC ? 0.8 : 0.3;
@@ -390,7 +524,6 @@ export function renderPianoRoll(
     lines.push(`<line x1="${gridX}" y1="${y}" x2="${gridX + gridWidth}" y2="${y}" stroke="${color}" stroke-width="${width}" opacity="${lineOpacity}"/>`);
   }
 
-  // ── Grid lines: vertical (beats + measures) ──
   for (let i = 0; i <= measures.length; i++) {
     const x = gridX + i * measureWidth;
     // Measure boundary (thick)
@@ -398,9 +531,6 @@ export function renderPianoRoll(
 
     // Beat lines within each measure (thin)
     if (i < measures.length) {
-      // Number of beat lines depends on time signature
-      // For 3/8: we want lines at each eighth note = each beat in our system
-      // For 4/4: we want lines at each quarter note
       const subdivisionsPerMeasure = ts.num;
       for (let b = 1; b < subdivisionsPerMeasure; b++) {
         const beatX = x + (b / subdivisionsPerMeasure) * measureWidth;
@@ -409,37 +539,74 @@ export function renderPianoRoll(
     }
   }
 
-  // ── Pitch labels (left axis) ──
+  return lines;
+}
+
+/** Left-axis pitch labels (naturals + C landmarks only, to avoid clutter). */
+function renderPitchLabelLines(
+  minMidi: number, maxMidi: number, gridX: number, gridY: number, pitchRowHeight: number,
+): string[] {
+  const lines: string[] = [];
   for (let midi = minMidi; midi <= maxMidi; midi++) {
-    const y = gridY + (maxMidi - midi) * opts.pitchRowHeight + opts.pitchRowHeight * 0.7;
+    const y = gridY + (maxMidi - midi) * pitchRowHeight + pitchRowHeight * 0.7;
     const name = midiToNoteName(midi);
     const isC = midi % 12 === 0;
     const color = isC ? COLORS.pitchLabelC : COLORS.pitchLabel;
     const size = isC ? 10 : 9;
     const weight = isC ? "bold" : "normal";
-    // Only label natural notes + C notes to avoid clutter
     if (!isBlackKey(midi) || isC) {
       lines.push(`<text x="${gridX - 4}" y="${y}" text-anchor="end" fill="${color}" font-size="${size}" font-weight="${weight}">${name}</text>`);
     }
   }
+  return lines;
+}
 
-  // ── Dynamics (pp→ff) carry forward across measures until re-marked ──
-  // Maps each rendered measure to a note fill-opacity level. A song with
-  // no dynamics markings at all renders every note at full presence.
-  let currentDynamicOpacity = DEFAULT_NOTE_OPACITY;
-  const measureOpacity: number[] = measures.map((m) => {
-    if (m.dynamics) {
-      const level = DYNAMICS_OPACITY[m.dynamics.trim().toLowerCase()];
-      if (level !== undefined) currentDynamicOpacity = level;
+/** Measure numbers + metronome downbeat dots + dynamics markings (footer band). */
+function renderMeasureFooterLines(
+  measures: Measure[], gridX: number, gridY: number, gridHeight: number, measureWidth: number,
+  opts: { showMetronome: boolean; showDynamics: boolean },
+): string[] {
+  const lines: string[] = [];
+  const footerY = gridY + gridHeight;
+
+  for (let i = 0; i < measures.length; i++) {
+    const x = gridX + i * measureWidth + measureWidth / 2;
+    lines.push(`<text x="${x}" y="${footerY + 16}" text-anchor="middle" fill="${COLORS.text}" font-size="10">${measures[i].number}</text>`);
+  }
+
+  if (opts.showMetronome) {
+    for (let i = 0; i < measures.length; i++) {
+      const x = gridX + i * measureWidth + 4;
+      lines.push(`<circle cx="${x}" cy="${footerY + 28}" r="3" fill="${COLORS.metronome}"/>`);
     }
-    return currentDynamicOpacity;
-  });
+  }
 
-  // ── Note rectangles ──
+  if (opts.showDynamics) {
+    for (let i = 0; i < measures.length; i++) {
+      const m = measures[i];
+      if (m.dynamics) {
+        const x = gridX + i * measureWidth + measureWidth / 2;
+        lines.push(`<text x="${x}" y="${footerY + 38}" text-anchor="middle" fill="${COLORS.dynamics}" font-size="11" font-style="italic">${esc(m.dynamics)}</text>`);
+      }
+    }
+  }
+
+  return lines;
+}
+
+// ─── Base ("hand" / "pitch-class") note rendering ──────────────────────────
+
+/** The base-mode note rectangles (+ onset caps), colored by hand or pitch class. */
+function renderBaseNoteRectLines(
+  allNotes: PlottedNote[], measures: Measure[], measureOpacity: number[],
+  gridX: number, gridY: number, measureWidth: number, beatsPerMeasureTS: number,
+  maxMidi: number, opts: ResolvedPianoRollOptions,
+): string[] {
+  const lines: string[] = [];
   for (const note of allNotes) {
-    const x = gridX + note.measureIndex * measureWidth + (note.startBeat / bpm) * measureWidth;
+    const x = gridX + note.measureIndex * measureWidth + (note.startBeat / beatsPerMeasureTS) * measureWidth;
     const y = gridY + (maxMidi - note.midi) * opts.pitchRowHeight + 1;
-    const w = Math.max(3, (note.durationBeats / bpm) * measureWidth - 1);
+    const w = Math.max(3, (note.durationBeats / beatsPerMeasureTS) * measureWidth - 1);
     const h = opts.pitchRowHeight - 2;
     const noteName = midiToNoteName(note.midi);
     const handLabel = note.hand === "right" ? "RH" : "LH";
@@ -466,63 +633,491 @@ export function renderPianoRoll(
     const capHeight = Math.max(1, h - 2);
     lines.push(`<rect x="${x}" y="${y + 1}" width="${capWidth}" height="${capHeight}" rx="1" ry="1" fill="${lighten(fill, 0.55)}"/>`);
   }
+  return lines;
+}
 
-  // ── Measure numbers (footer) ──
+/** Base-mode legend: hand or pitch-class swatches + optional downbeat pill. */
+function renderBaseLegendLines(
+  allNotes: PlottedNote[], gridX: number, gridY: number, gridHeight: number, gridWidth: number,
+  opts: ResolvedPianoRollOptions,
+): string[] {
+  const lines: string[] = [];
   const footerY = gridY + gridHeight;
-  for (let i = 0; i < measures.length; i++) {
-    const x = gridX + i * measureWidth + measureWidth / 2;
-    lines.push(`<text x="${x}" y="${footerY + 16}" text-anchor="middle" fill="${COLORS.text}" font-size="10">${measures[i].number}</text>`);
-  }
 
-  // ── Metronome dots ──
+  const legendItems: { color: string; label: string }[] =
+    opts.colorMode === "pitch-class"
+      // Chromatic pitch-class legend: only the pitch classes present in the song
+      ? [...new Set(allNotes.map(n => n.midi % 12))]
+          .sort((a, b) => a - b)
+          .map(pc => ({ color: PITCH_CLASS_COLORS[pc].fill, label: PITCH_CLASS_COLORS[pc].name }))
+      : [
+          { color: COLORS.rhNote, label: "Right Hand" },
+          { color: COLORS.lhNote, label: "Left Hand" },
+        ];
   if (opts.showMetronome) {
-    for (let i = 0; i < measures.length; i++) {
-      const x = gridX + i * measureWidth + 4;
-      lines.push(`<circle cx="${x}" cy="${footerY + 28}" r="3" fill="${COLORS.metronome}"/>`);
-    }
+    legendItems.push({ color: COLORS.metronome, label: "Downbeat" });
   }
 
-  // ── Dynamics markings ──
-  if (opts.showDynamics) {
-    for (let i = 0; i < measures.length; i++) {
-      const m = measures[i];
-      if (m.dynamics) {
-        const x = gridX + i * measureWidth + measureWidth / 2;
-        lines.push(`<text x="${x}" y="${footerY + 38}" text-anchor="middle" fill="${COLORS.dynamics}" font-size="11" font-style="italic">${esc(m.dynamics)}</text>`);
+  const legendY = footerY + 46;
+  const legendGap = 6;
+  const pillWidths = legendItems.map(item => legendPillWidth(item.label));
+  const legendTotalWidth = pillWidths.reduce((a, b) => a + b, 0) + legendGap * Math.max(0, legendItems.length - 1);
+  let lx = Math.max(gridX, gridX + gridWidth - legendTotalWidth);
+  for (let i = 0; i < legendItems.length; i++) {
+    lines.push(legendPill(lx, legendY, legendItems[i].color, legendItems[i].label));
+    lx += pillWidths[i] + legendGap;
+  }
+  return lines;
+}
+
+// ─── Public API ─────────────────────────────────────────────────────────────
+
+/**
+ * Render a SongEntry as an SVG piano roll string.
+ *
+ * Returns a complete SVG document as a string — no file I/O,
+ * no DOM, no external dependencies.
+ */
+export function renderPianoRoll(
+  song: SongEntry,
+  options?: PianoRollOptions,
+): string {
+  const layoutResult = buildRollLayout(song, options);
+  if (!layoutResult.ok) return layoutResult.svg;
+  const layout = layoutResult.layout;
+  const {
+    opts, measures, start, end, allNotes, minMidi, maxMidi, ts, beatsPerMeasureTS,
+    headerHeight, gridWidth, gridHeight, measureWidth, totalWidth, totalHeight,
+    gridX, gridY, measureOpacity,
+  } = layout;
+
+  const lines: string[] = [];
+  lines.push(...svgOpenLines(totalWidth, totalHeight));
+  lines.push(...renderHeaderLines(song, gridX, headerHeight, start, end));
+  lines.push(...renderMeasureShadingLines(measures, gridX, gridY, measureWidth, gridHeight));
+  lines.push(...renderPitchGridBackgroundLines(minMidi, maxMidi, gridX, gridY, gridWidth, opts.pitchRowHeight));
+  lines.push(...renderGridLineLines(minMidi, maxMidi, measures, ts, gridX, gridY, gridWidth, gridHeight, measureWidth, opts.pitchRowHeight));
+  lines.push(...renderPitchLabelLines(minMidi, maxMidi, gridX, gridY, opts.pitchRowHeight));
+  lines.push(...renderBaseNoteRectLines(allNotes, measures, measureOpacity, gridX, gridY, measureWidth, beatsPerMeasureTS, maxMidi, opts));
+  lines.push(...renderMeasureFooterLines(measures, gridX, gridY, gridHeight, measureWidth, opts));
+  lines.push(...renderBaseLegendLines(allNotes, gridX, gridY, gridHeight, gridWidth, opts));
+
+  // ── Close SVG ──
+  lines.push(`</svg>`);
+
+  return lines.join("\n");
+}
+
+// ─── Scored piano-roll (Wave S2) ────────────────────────────────────────────
+//
+// Renders a post-take diagnostic overlay: every expected note is drawn at
+// its EXPECTED score position (not shifted to where it was actually played)
+// with a CUD-safe verdict encoding; extra (unscored) played notes are drawn
+// as ghosts at their own actual time/pitch. This matches finding 36
+// ("the piano-roll overlay is a post-take diagnostic, not real-time note
+// guidance") — the grid stays a clean score reference throughout.
+
+const SCORED_HEADER_HEIGHT = 68; // 50 (base) + room for the focus strip
+
+const VERDICT_STYLE_LINES = [
+  `  .verdict-correct:hover { opacity: 0.85; }`,
+  `  .verdict-timing:hover { fill-opacity: 0.55; }`,
+  `  .verdict-missed:hover { stroke-width: 2.5; }`,
+  `  .verdict-extra:hover { opacity: 0.7; }`,
+];
+
+/**
+ * Duration (in quarter-note-beat units) for the tone matching `midi` inside
+ * a (possibly chord) `notation` token, e.g. "C4:q" or "C4+E4:h". Falls back
+ * to a quarter note (1 beat) if the tone or its suffix can't be resolved —
+ * same fallback piano-roll.ts's own parseHand uses for unparseable tokens.
+ */
+function verdictDurationBeats(notation: string, midi: number): number {
+  for (const { noteStr, durSuffix } of splitChordToken(notation)) {
+    let toneMidi: number;
+    try {
+      toneMidi = parseNoteToMidi(noteStr);
+    } catch {
+      continue;
+    }
+    if (toneMidi === midi) {
+      try {
+        return parseDuration(durSuffix);
+      } catch {
+        return 1;
       }
     }
   }
+  return 1;
+}
 
-  // ── Legend: rounded pill chips (color dot + label) instead of bare
-  //    swatches, in their own row so they never collide with measure
-  //    numbers. The downbeat dots get a labeled pill too. ──
-  {
-    const legendItems: { color: string; label: string }[] =
-      opts.colorMode === "pitch-class"
-        // Chromatic pitch-class legend: only the pitch classes present in the song
-        ? [...new Set(allNotes.map(n => n.midi % 12))]
-            .sort((a, b) => a - b)
-            .map(pc => ({ color: PITCH_CLASS_COLORS[pc].fill, label: PITCH_CLASS_COLORS[pc].name }))
-        : [
-            { color: COLORS.rhNote, label: "Right Hand" },
-            { color: COLORS.lhNote, label: "Left Hand" },
-          ];
-    if (opts.showMetronome) {
-      legendItems.push({ color: COLORS.metronome, label: "Downbeat" });
-    }
+/** "32ms late" / "18ms early" — offsetMs > 0 means played after the expected time. */
+function formatOffsetLabel(offsetMs: number): string {
+  const rounded = Math.round(Math.abs(offsetMs));
+  const direction = offsetMs >= 0 ? "late" : "early";
+  return `${rounded}ms ${direction}`;
+}
 
-    const legendY = footerY + 46;
-    const legendGap = 6;
-    const pillWidths = legendItems.map(item => legendPillWidth(item.label));
-    const legendTotalWidth = pillWidths.reduce((a, b) => a + b, 0) + legendGap * Math.max(0, legendItems.length - 1);
-    let lx = Math.max(gridX, gridX + gridWidth - legendTotalWidth);
-    for (let i = 0; i < legendItems.length; i++) {
-      lines.push(legendPill(lx, legendY, legendItems[i].color, legendItems[i].label));
-      lx += pillWidths[i] + legendGap;
-    }
+/**
+ * One verdict note rect, CUD-safe + shape-redundant (WCAG 1.4.1):
+ *   - correct: SOLID bluish-green fill
+ *   - timing:  DASHED orange outline, hollow (fill-opacity 0.35)
+ *   - missed:  HOLLOW vermilion outline (2px) + an X glyph across the rect
+ */
+function renderVerdictRectLines(
+  status: NoteVerdict["status"],
+  x: number, y: number, w: number, h: number,
+  opacity: number, noteName: string, measureNum: number, offsetMs: number | undefined,
+): string[] {
+  const xs = x.toFixed(2);
+  const ys = y.toFixed(2);
+  const ws = w.toFixed(2);
+  const hs = h.toFixed(2);
+
+  if (status === "correct") {
+    const title = `Correct: ${noteName} (m.${measureNum})`;
+    return [
+      `<rect class="verdict-correct" x="${xs}" y="${ys}" width="${ws}" height="${hs}" fill="${VERDICT_COLORS.correct}" fill-opacity="${opacity}" stroke="${VERDICT_COLORS.correctStroke}" stroke-width="0.5" rx="3" ry="3">`,
+      `  <title>${esc(title)}</title>`,
+      `</rect>`,
+    ];
   }
 
-  // ── Close SVG ──
+  if (status === "timing") {
+    const offsetLabel = offsetMs !== undefined ? formatOffsetLabel(offsetMs) : "off tempo";
+    const title = `Timing: ${noteName} (m.${measureNum}) — ${offsetLabel}`;
+    return [
+      `<rect class="verdict-timing" x="${xs}" y="${ys}" width="${ws}" height="${hs}" fill="${VERDICT_COLORS.timing}" fill-opacity="0.35" stroke="${VERDICT_COLORS.timing}" stroke-width="2" stroke-dasharray="4,2" rx="3" ry="3">`,
+      `  <title>${esc(title)}</title>`,
+      `</rect>`,
+    ];
+  }
+
+  // missed
+  const title = `Missed: ${noteName} (m.${measureNum})`;
+  const x2 = (x + w).toFixed(2);
+  const y2 = (y + h).toFixed(2);
+  return [
+    `<rect class="verdict-missed" x="${xs}" y="${ys}" width="${ws}" height="${hs}" fill="none" stroke="${VERDICT_COLORS.missed}" stroke-width="2" rx="2" ry="2">`,
+    `  <title>${esc(title)}</title>`,
+    `</rect>`,
+    `<line class="verdict-missed-x" x1="${xs}" y1="${ys}" x2="${x2}" y2="${y2}" stroke="${VERDICT_COLORS.missed}" stroke-width="1.5"/>`,
+    `<line class="verdict-missed-x" x1="${x2}" y1="${ys}" x2="${xs}" y2="${y2}" stroke="${VERDICT_COLORS.missed}" stroke-width="1.5"/>`,
+  ];
+}
+
+/** A gray dotted ghost rect + "+" marker for a played note that wasn't in the score. */
+function renderExtraGhostLines(x: number, y: number, w: number, h: number, noteName: string, timeSeconds: number): string[] {
+  const xs = x.toFixed(2);
+  const ys = y.toFixed(2);
+  const ws = w.toFixed(2);
+  const hs = h.toFixed(2);
+  const cx = (x + w / 2).toFixed(1);
+  const cy = (y + h / 2 + 2.5).toFixed(1);
+  const title = `Extra: ${noteName} at ${timeSeconds.toFixed(2)}s (not in score)`;
+  return [
+    `<rect class="verdict-extra" x="${xs}" y="${ys}" width="${ws}" height="${hs}" fill="none" stroke="${VERDICT_COLORS.extra}" stroke-width="1" stroke-dasharray="1,2" rx="2" ry="2">`,
+    `  <title>${esc(title)}</title>`,
+    `</rect>`,
+    `<text class="verdict-extra-plus" x="${cx}" y="${cy}" text-anchor="middle" fill="${VERDICT_COLORS.extra}" font-size="8">+</text>`,
+  ];
+}
+
+/**
+ * All verdict note rects (correct/timing/missed, positioned at their
+ * EXPECTED score position) + extra ghost rects (positioned at their own
+ * ACTUAL played time/pitch, per the task spec). Notes/extras whose measure
+ * falls outside the rendered window are skipped, matching how the base
+ * renderer only plots notes within `measures`.
+ */
+function renderVerdictNoteLines(
+  song: SongEntry,
+  result: PerformanceResult,
+  effectiveScoreBpm: number,
+  measures: Measure[],
+  gridX: number, gridY: number, measureWidth: number, beatsPerMeasureTS: number,
+  maxMidi: number, measureOpacity: number[], opts: ResolvedPianoRollOptions,
+): string[] {
+  const lines: string[] = [];
+
+  const measureIndexByNumber = new Map<number, number>();
+  measures.forEach((m, i) => measureIndexByNumber.set(m.number, i));
+
+  const measureStartTimes = computeMeasureStartTimes(song, effectiveScoreBpm);
+  const verdicts = result.details.noteVerdicts ?? [];
+
+  for (const v of verdicts) {
+    const mi = measureIndexByNumber.get(v.measure);
+    if (mi === undefined) continue; // outside the rendered window
+
+    const measureStart = measureStartTimes.get(v.measure) ?? 0;
+    const beatOffset = (v.startSec - measureStart) * (effectiveScoreBpm / 60);
+    const durationBeats = verdictDurationBeats(v.notation, v.midi);
+
+    const x = gridX + mi * measureWidth + (beatOffset / beatsPerMeasureTS) * measureWidth;
+    const y = gridY + (maxMidi - v.midi) * opts.pitchRowHeight + 1;
+    const w = Math.max(3, (durationBeats / beatsPerMeasureTS) * measureWidth - 1);
+    const h = opts.pitchRowHeight - 2;
+    const noteOpacity = measureOpacity[mi] ?? DEFAULT_NOTE_OPACITY;
+    const noteName = midiToNoteName(v.midi);
+
+    lines.push(...renderVerdictRectLines(v.status, x, y, w, h, noteOpacity, noteName, v.measure, v.offsetMs));
+  }
+
+  // Extras: no expected duration exists for them, so use a small fixed
+  // (eighth-note-ish) ghost width rather than inventing one.
+  const extraWidth = Math.max(6, opts.pixelsPerBeat * 0.25);
+  for (const extra of result.details.extras) {
+    const { measure, beatOffset } = secondsToMeasureBeat(measureStartTimes, extra.timeSeconds, effectiveScoreBpm);
+    const mi = measureIndexByNumber.get(measure);
+    if (mi === undefined) continue;
+
+    const x = gridX + mi * measureWidth + (beatOffset / beatsPerMeasureTS) * measureWidth;
+    const y = gridY + (maxMidi - extra.note) * opts.pitchRowHeight + 1;
+    const h = opts.pitchRowHeight - 2;
+    const noteName = midiToNoteName(extra.note);
+
+    lines.push(...renderExtraGhostLines(x, y, extraWidth, h, noteName, extra.timeSeconds));
+  }
+
+  return lines;
+}
+
+/**
+ * Rank measures by (missed count desc, timing count desc, measure asc),
+ * skipping "correct" verdicts entirely — a measure with zero missed/timing
+ * verdicts never appears (finding 26: rank/limit surfaced errors, don't
+ * paint every deviation).
+ */
+function rankWorstMeasures(verdicts: NoteVerdict[], limit: number): number[] {
+  const counts = new Map<number, { missed: number; timing: number }>();
+  for (const v of verdicts) {
+    if (v.status === "correct") continue;
+    const c = counts.get(v.measure) ?? { missed: 0, timing: 0 };
+    if (v.status === "missed") c.missed++; else c.timing++;
+    counts.set(v.measure, c);
+  }
+  return [...counts.entries()]
+    .sort((a, b) => b[1].missed - a[1].missed || b[1].timing - a[1].timing || a[0] - b[0])
+    .slice(0, limit)
+    .map(([measure]) => measure);
+}
+
+/**
+ * Compact "Focus: mm. X, Y, Z" summary strip, top of the SVG under the
+ * header — the up-to-3 worst measures by (missed, then timing) count.
+ * Renders nothing when there's nothing to focus on (a clean take), rather
+ * than inventing praise copy (finding 28: task-focused language only).
+ */
+function renderFocusStripLines(result: PerformanceResult, gridX: number): string[] {
+  const verdicts = result.details.noteVerdicts ?? [];
+  const worst = rankWorstMeasures(verdicts, 3);
+  if (worst.length === 0) return [];
+
+  const label = worst.length === 1 ? `Focus: m. ${worst[0]}` : `Focus: mm. ${worst.join(", ")}`;
+  return [
+    `<text class="verdict-focus" x="${gridX}" y="14" fill="${COLORS.text}" font-size="10" letter-spacing="0.2">${esc(label)}</text>`,
+  ];
+}
+
+/**
+ * Notice line for the INPUT_LIMIT-guard degraded case: when
+ * scorePerformance() bails out of note-by-note scoring (take too large),
+ * `noteVerdicts` is `[]` even though real notes exist
+ * (`details.totalExpected > 0`). Rendering nothing here would look like a
+ * suspiciously perfect take — renderFocusStripLines() already renders
+ * nothing when there's nothing to flag — so this notice replaces it,
+ * occupying the same position/style, to explain why every note below is
+ * plotted uncolored instead of verdict-colored.
+ */
+function renderDegradedNoticeLines(result: PerformanceResult, gridX: number): string[] {
+  const { totalExpected, totalPlayed } = result.details;
+  const label = `Take too large to score note-by-note (${totalExpected} expected / ${totalPlayed} played events) — showing the score unscored`;
+  return [
+    `<text class="verdict-degraded-notice" x="${gridX}" y="14" fill="${COLORS.text}" font-size="10" letter-spacing="0.2">${esc(label)}</text>`,
+  ];
+}
+
+type ScoredLegendStatus = "correct" | "timing" | "missed" | "extra";
+
+const SCORED_LEGEND_ITEMS: { status: ScoredLegendStatus; label: string }[] = [
+  { status: "correct", label: "Correct" },
+  { status: "timing", label: "Timing" },
+  { status: "missed", label: "Missed" },
+  { status: "extra", label: "Extra" },
+];
+
+/** Width (px) of a `verdictLegendSwatch` for `label` — mirrors legendPillWidth. */
+function verdictSwatchWidth(label: string): number {
+  const fontSize = 9;
+  const swatchW = 16;
+  const padLeft = 8;
+  const padRight = 8;
+  const gapSwatchText = 5;
+  return padLeft + swatchW + gapSwatchText + monoTextWidth(label, fontSize) + padRight;
+}
+
+/**
+ * A legend chip whose swatch reproduces the actual per-state shape cue
+ * (solid / dashed-hollow / X-hollow / dotted-ghost) rather than a plain
+ * color dot, so the shape redundancy required by WCAG 1.4.1 is visible in
+ * the legend itself, not just in the note rects.
+ */
+function verdictLegendSwatch(x: number, y: number, status: ScoredLegendStatus, label: string): string {
+  const fontSize = 9;
+  const swatchW = 16;
+  const swatchH = 10;
+  const padLeft = 8;
+  const gapSwatchText = 5;
+  const pillHeight = 16;
+  const width = verdictSwatchWidth(label);
+
+  const swatchX = x + padLeft;
+  const swatchY = y + (pillHeight - swatchH) / 2;
+  const sx = swatchX.toFixed(1);
+  const sy = swatchY.toFixed(1);
+
+  const parts: string[] = [];
+  parts.push(`<rect x="${x.toFixed(1)}" y="${y}" width="${width.toFixed(1)}" height="${pillHeight}" rx="8" ry="8" fill="${COLORS.pillBg}" stroke="${COLORS.pillBorder}" stroke-width="0.5"/>`);
+
+  if (status === "correct") {
+    parts.push(`<rect x="${sx}" y="${sy}" width="${swatchW}" height="${swatchH}" rx="2" ry="2" fill="${VERDICT_COLORS.correct}"/>`);
+  } else if (status === "timing") {
+    parts.push(`<rect x="${sx}" y="${sy}" width="${swatchW}" height="${swatchH}" rx="2" ry="2" fill="${VERDICT_COLORS.timing}" fill-opacity="0.35" stroke="${VERDICT_COLORS.timing}" stroke-width="1.2" stroke-dasharray="3,1.5"/>`);
+  } else if (status === "missed") {
+    const x2 = (swatchX + swatchW).toFixed(1);
+    const y2 = (swatchY + swatchH).toFixed(1);
+    parts.push(`<rect x="${sx}" y="${sy}" width="${swatchW}" height="${swatchH}" rx="1" ry="1" fill="none" stroke="${VERDICT_COLORS.missed}" stroke-width="1.2"/>`);
+    parts.push(`<line x1="${sx}" y1="${sy}" x2="${x2}" y2="${y2}" stroke="${VERDICT_COLORS.missed}" stroke-width="1"/>`);
+    parts.push(`<line x1="${x2}" y1="${sy}" x2="${sx}" y2="${y2}" stroke="${VERDICT_COLORS.missed}" stroke-width="1"/>`);
+  } else {
+    // extra
+    parts.push(`<rect x="${sx}" y="${sy}" width="${swatchW}" height="${swatchH}" rx="1" ry="1" fill="none" stroke="${VERDICT_COLORS.extra}" stroke-width="1" stroke-dasharray="1,1.5"/>`);
+    parts.push(`<text x="${(swatchX + swatchW / 2).toFixed(1)}" y="${(swatchY + swatchH / 2 + 2.5).toFixed(1)}" text-anchor="middle" fill="${VERDICT_COLORS.extra}" font-size="7">+</text>`);
+  }
+
+  parts.push(`<text x="${(swatchX + swatchW + gapSwatchText).toFixed(1)}" y="${y + pillHeight / 2 + 3}" fill="${COLORS.text}" font-size="${fontSize}">${esc(label)}</text>`);
+
+  return parts.join("\n");
+}
+
+/** Scored-mode legend: all four verdict states (shape cue visible) + optional downbeat pill. */
+function renderScoredLegendLines(
+  gridX: number, gridY: number, gridHeight: number, gridWidth: number, opts: ResolvedPianoRollOptions,
+): string[] {
+  const lines: string[] = [];
+  const footerY = gridY + gridHeight;
+
+  type Item =
+    | { kind: "swatch"; status: ScoredLegendStatus; label: string }
+    | { kind: "pill"; color: string; label: string };
+
+  const items: Item[] = SCORED_LEGEND_ITEMS.map(i => ({ kind: "swatch" as const, status: i.status, label: i.label }));
+  if (opts.showMetronome) {
+    items.push({ kind: "pill", color: COLORS.metronome, label: "Downbeat" });
+  }
+
+  const legendY = footerY + 46;
+  const legendGap = 6;
+  const widths = items.map(item => item.kind === "swatch" ? verdictSwatchWidth(item.label) : legendPillWidth(item.label));
+  const totalWidth = widths.reduce((a, b) => a + b, 0) + legendGap * Math.max(0, items.length - 1);
+  let lx = Math.max(gridX, gridX + gridWidth - totalWidth);
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+    lines.push(item.kind === "swatch"
+      ? verdictLegendSwatch(lx, legendY, item.status, item.label)
+      : legendPill(lx, legendY, item.color, item.label));
+    lx += widths[i] + legendGap;
+  }
+
+  return lines;
+}
+
+/**
+ * Render a scored piano roll: the same grid/header/footer as
+ * `renderPianoRoll`, with note coloring replaced by a per-note verdict
+ * encoding (see `NoteVerdict`) plus a worst-measures focus strip.
+ *
+ * Every expected note (correct/timing/missed) draws at its EXPECTED score
+ * position; extra (unscored) played notes draw as ghosts at their own
+ * actual time/pitch. Positions are aligned to whatever bpm `scorePerformance`
+ * actually scored `result` at (`result.details.scoredAtBpm`) automatically —
+ * pass `options.scoreBpm` only to deliberately OVERRIDE that pairing (e.g.
+ * previewing at a different tempo); it is not required for correctness.
+ *
+ * If `result.details.noteVerdicts` is empty despite real expected notes
+ * existing (`scorePerformance`'s INPUT_LIMIT guard — the take was too large
+ * to score note-by-note), this renders a degraded fallback instead: the
+ * plain, not-verdict-colored notes (same as `renderPianoRoll`'s own note
+ * rendering) plus an explicit notice, rather than a silently empty grid.
+ */
+export function renderScoredPianoRoll(
+  song: SongEntry,
+  result: PerformanceResult,
+  options?: PianoRollOptions,
+): string {
+  // Resolve once, up front ("mispairing becomes impossible by default"):
+  // an explicit options.scoreBpm always wins; otherwise fall back to
+  // result.details.scoredAtBpm — the EXACT bpm scorePerformance() actually
+  // used for this result — rather than independently re-deriving
+  // song.tempo, which could silently disagree with whatever `bpm`
+  // scorePerformance() was called with. song.tempo only matters as
+  // resolveEffectiveBpm's own last-resort (e.g. a hand-built
+  // PerformanceResult that left scoredAtBpm unset).
+  const effectiveScoreBpm = resolveEffectiveBpm(song, options?.scoreBpm ?? result.details.scoredAtBpm);
+  const measureStartTimes = computeMeasureStartTimes(song, effectiveScoreBpm);
+
+  // Filter extras to the rendered measure window BEFORE they can widen the
+  // pitch axis: an extra outside the window is already skipped when
+  // actually drawing (renderVerdictNoteLines's own window check below) —
+  // until this fix, its pitch still stretched minMidi/maxMidi regardless,
+  // widening the grid for a note nobody can see on it. This duplicates
+  // buildRollLayout's own start/end clamp (rather than changing its
+  // signature) since extraPitches has to be ready BEFORE calling it.
+  const resolvedForWindow = resolveOptions(song, options);
+  const windowStart = Math.max(1, resolvedForWindow.startMeasure);
+  const windowEnd = Math.min(song.measures.length, resolvedForWindow.endMeasure);
+  const inWindowExtras = result.details.extras.filter((e) => {
+    const { measure } = secondsToMeasureBeat(measureStartTimes, e.timeSeconds, effectiveScoreBpm);
+    return measure >= windowStart && measure <= windowEnd;
+  });
+
+  const layoutResult = buildRollLayout(song, options, {
+    extraPitches: inWindowExtras.map((e) => e.note),
+    headerHeight: SCORED_HEADER_HEIGHT,
+  });
+  if (!layoutResult.ok) return layoutResult.svg;
+  const layout = layoutResult.layout;
+  const {
+    opts, measures, start, end, allNotes, minMidi, maxMidi, ts, beatsPerMeasureTS,
+    headerHeight, gridWidth, gridHeight, measureWidth, totalWidth, totalHeight,
+    gridX, gridY, measureOpacity,
+  } = layout;
+
+  // Degraded fallback: scorePerformance()'s INPUT_LIMIT guard returns
+  // noteVerdicts: [] even when real expected notes exist
+  // (details.totalExpected > 0) — rendering the normal verdict pass in
+  // that state would silently draw an empty grid, indistinguishable from
+  // "nothing to see here." Detect it and fall back to the plain (not
+  // verdict-colored) base notes + an explicit notice instead.
+  const isDegraded = (result.details.noteVerdicts ?? []).length === 0 && result.details.totalExpected > 0;
+
+  const lines: string[] = [];
+  lines.push(...svgOpenLines(totalWidth, totalHeight, VERDICT_STYLE_LINES));
+  lines.push(...renderHeaderLines(song, gridX, headerHeight, start, end));
+  lines.push(...(isDegraded ? renderDegradedNoticeLines(result, gridX) : renderFocusStripLines(result, gridX)));
+  lines.push(...renderMeasureShadingLines(measures, gridX, gridY, measureWidth, gridHeight));
+  lines.push(...renderPitchGridBackgroundLines(minMidi, maxMidi, gridX, gridY, gridWidth, opts.pitchRowHeight));
+  lines.push(...renderGridLineLines(minMidi, maxMidi, measures, ts, gridX, gridY, gridWidth, gridHeight, measureWidth, opts.pitchRowHeight));
+  lines.push(...renderPitchLabelLines(minMidi, maxMidi, gridX, gridY, opts.pitchRowHeight));
+  lines.push(...(isDegraded
+    ? renderBaseNoteRectLines(allNotes, measures, measureOpacity, gridX, gridY, measureWidth, beatsPerMeasureTS, maxMidi, opts)
+    : renderVerdictNoteLines(song, result, effectiveScoreBpm, measures, gridX, gridY, measureWidth, beatsPerMeasureTS, maxMidi, measureOpacity, opts)));
+  lines.push(...renderMeasureFooterLines(measures, gridX, gridY, gridHeight, measureWidth, opts));
+  lines.push(...(isDegraded
+    ? renderBaseLegendLines(allNotes, gridX, gridY, gridHeight, gridWidth, opts)
+    : renderScoredLegendLines(gridX, gridY, gridHeight, gridWidth, opts)));
+
   lines.push(`</svg>`);
 
   return lines.join("\n");

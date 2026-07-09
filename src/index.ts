@@ -110,6 +110,11 @@ export {
 
 export type { SingAlongMode, SingAlongTextOptions } from "./note-parser.js";
 
+// Export scored piano-roll renderer — a post-take diagnostic overlay built
+// from a score-performance.ts PerformanceResult (see NoteVerdict).
+export { renderScoredPianoRoll } from "./piano-roll.js";
+export type { NoteVerdict } from "./score-performance.js";
+
 // Export teaching engine
 export {
   createConsoleTeachingHook,
@@ -143,6 +148,10 @@ export type {
   MidiPlaybackState,
 } from "./playback/midi-engine.js";
 
+// Export metronome engine (click track — count-in + continuous click)
+export { createMetronome } from "./playback/metronome.js";
+export type { MetronomeEngine, MetronomeOptions } from "./playback/metronome.js";
+
 // Export playback timing utilities
 export {
   calculateSchedule,
@@ -166,6 +175,7 @@ export type {
   AnyPlaybackEvent,
   PlaybackListener,
   PlaybackControlOptions,
+  PlaybackControllerOptions,
 } from "./playback/controls.js";
 
 // Export MIDI singing + feedback hooks
@@ -226,6 +236,7 @@ export type {
   AsideDirective,
   AsideSink,
   LiveFeedbackHookOptions,
+  Recording,
 } from "./types.js";
 
 export { DURATION_MAP, NOTE_OFFSETS } from "./types.js";
