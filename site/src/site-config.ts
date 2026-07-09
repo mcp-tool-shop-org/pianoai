@@ -3,7 +3,7 @@ import type { SiteConfig } from '@mcptoolshop/site-theme';
 export const config: SiteConfig = {
   title: 'AI Jam Sessions',
   description: 'An MCP server that teaches AI to play piano and guitar — and sing. 120 songs across 12 genres, six sound engines, browser cockpit, practice journal — and jam-actions-v0, a public 115-record tool-use dataset.',
-  logoBadge: 'JS',
+  logoBadge: '♪',
   brandName: 'AI Jam Sessions',
   repoUrl: 'https://github.com/mcp-tool-shop-org/ai-jam-sessions',
   npmUrl: 'https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions',

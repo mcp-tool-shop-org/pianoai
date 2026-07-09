@@ -1057,7 +1057,10 @@ function play() {
   if (otherCtx && otherCtx.state === "suspended") otherCtx.resume().catch((err) => reportAudioError("resume", err));
 
   isPlaying = true;
-  $("btn-play").textContent = "⏸";
+  // Emoji glyphs were replaced with inline SVG (VD visual pass) — the static
+  // HTML button starts on the play icon; toggling here needs innerHTML since
+  // textContent can't render markup.
+  $("btn-play").innerHTML = '<svg class="icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><rect x="4" y="3" width="2.6" height="10" rx="0.5"/><rect x="9.4" y="3" width="2.6" height="10" rx="0.5"/></svg>';
 
   const audioNow = ctx.currentTime;
   const offset = playPosition;
@@ -1094,7 +1097,7 @@ function stop() {
   // Clear scheduled vowel timers
   for (const t of scheduledVowelTimers) clearTimeout(t);
   scheduledVowelTimers.length = 0;
-  $("btn-play").textContent = "▶";
+  $("btn-play").innerHTML = '<svg class="icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M5 3 L12 8 L5 13 Z"/></svg>';
   if (animFrame) { cancelAnimationFrame(animFrame); animFrame = 0; }
   $("playhead").style.display = "none";
 }
@@ -1302,7 +1305,7 @@ function updateTuningTable() {
       <td class="hz">${entry.hz.toFixed(3)}</td>
       <td class="cents ${centsClass}">${centsStr}¢</td>
       <td>${entry.ratioFromC.toFixed(5)}</td>
-      <td><button class="tt-ref-btn" data-midi="${60 + entry.pc}" title="Play reference tone" aria-label="Play reference tone for ${entry.name}">🔊</button></td>
+      <td><button class="tt-ref-btn" data-midi="${60 + entry.pc}" title="Play reference tone" aria-label="Play reference tone for ${entry.name}"><svg class="icon" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M1.6 6.2h2.3l3.8-3.3v10.2l-3.8-3.3H1.6z" fill="currentColor" stroke="none"/><path d="M10.3 5.7a3 3 0 0 1 0 4.6"/><path d="M12.1 4a5.6 5.6 0 0 1 0 8"/></svg></button></td>
     `;
     tbody.appendChild(tr);
   }

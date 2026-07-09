@@ -53,7 +53,7 @@ const COLORS = {
   bg: "#1a1a2e",
   gridLine: "#2a2a3e",
   gridMeasure: "#3a3a5e",
-  gridOctave: "#3a3a5e",
+  gridOctave: "#7a6a52", // warm landmark tone for C-rows, distinct from the cool grid
   rhNote: "#4a9eff",
   lhNote: "#ff6b8a",
   rhNoteStroke: "#3580cc",
@@ -66,25 +66,51 @@ const COLORS = {
   pitchLabelC: "#aaaacc",
   pitchLabel: "#666688",
   blackKeyBg: "#151526",
+  pillBg: "#242440",
+  pillBorder: "#3a3a5e",
 };
 
 // ─── Pitch-Class Colors ─────────────────────────────────────────────────────
 
-/** 12 chromatic colors, warm-to-cool rainbow. Index = pitch class (C=0). */
+/**
+ * 12 chromatic colors on an OKLCH-even hue wheel (fill L 0.75 C 0.12;
+ * stroke L 0.55 C 0.09 — same 12 hues, a darker/quieter companion).
+ * Every pitch class sits at the same perceptual lightness and chroma, so
+ * no hue "screams louder" than its neighbors. Index = pitch class (C=0).
+ */
 const PITCH_CLASS_COLORS: { fill: string; stroke: string; name: string }[] = [
-  { fill: "#ff4444", stroke: "#cc2222", name: "C" },
-  { fill: "#ff8844", stroke: "#cc6622", name: "C#" },
-  { fill: "#ffcc44", stroke: "#ccaa22", name: "D" },
-  { fill: "#88dd44", stroke: "#66bb22", name: "D#" },
-  { fill: "#44dd44", stroke: "#22bb22", name: "E" },
-  { fill: "#44ddaa", stroke: "#22bb88", name: "F" },
-  { fill: "#44ccdd", stroke: "#22aabb", name: "F#" },
-  { fill: "#4488ff", stroke: "#2266cc", name: "G" },
-  { fill: "#6644ff", stroke: "#4422cc", name: "G#" },
-  { fill: "#aa44ff", stroke: "#8822cc", name: "A" },
-  { fill: "#dd44cc", stroke: "#bb22aa", name: "A#" },
-  { fill: "#ff4488", stroke: "#cc2266", name: "B" },
+  { fill: "#f08e8e", stroke: "#9f5b5c", name: "C" },
+  { fill: "#eb9666", stroke: "#9c613f", name: "C#" },
+  { fill: "#d6a54d", stroke: "#8d6b2d", name: "D" },
+  { fill: "#b3b454", stroke: "#757633", name: "D#" },
+  { fill: "#84c177", stroke: "#547e4b", name: "E" },
+  { fill: "#4fc6a2", stroke: "#2e8269", name: "F" },
+  { fill: "#2ac4cc", stroke: "#118186", name: "F#" },
+  { fill: "#4ebceb", stroke: "#2e7b9c", name: "G" },
+  { fill: "#81aefa", stroke: "#5272a6", name: "G#" },
+  { fill: "#ada0f5", stroke: "#7168a3", name: "A" },
+  { fill: "#d094dd", stroke: "#896092", name: "A#" },
+  { fill: "#e78db9", stroke: "#995b79", name: "B" },
 ];
+
+// ─── Dynamics → Note Opacity ────────────────────────────────────────────────
+
+/**
+ * Dynamics markings ramped to note fill-opacity (pp quietest → ff loudest),
+ * evenly spaced across ~0.55-1.0 so soft passages visibly read soft. A
+ * marking carries forward until the next one (crescendo/decrescendo and
+ * unrecognized text don't reset the level — they ride the current one).
+ * Measures with no marking in effect render at DEFAULT_NOTE_OPACITY.
+ */
+const DYNAMICS_OPACITY: Record<string, number> = {
+  pp: 0.55,
+  p: 0.64,
+  mp: 0.73,
+  mf: 0.82,
+  f: 0.91,
+  ff: 1.0,
+};
+const DEFAULT_NOTE_OPACITY = 1.0;
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -92,6 +118,21 @@ const PITCH_CLASS_COLORS: { fill: string; stroke: string; name: string }[] = [
 function isBlackKey(midi: number): boolean {
   const pc = midi % 12;
   return [1, 3, 6, 8, 10].includes(pc); // C#, D#, F#, G#, A#
+}
+
+/**
+ * Lighten a "#rrggbb" hex color toward white by `amount` (0-1). Used for
+ * the note "onset cap" — a brighter sliver on the note's left edge that
+ * reads as its attack transient.
+ */
+function lighten(hex: string, amount: number): string {
+  const n = hex.replace("#", "");
+  const r = parseInt(n.slice(0, 2), 16);
+  const g = parseInt(n.slice(2, 4), 16);
+  const b = parseInt(n.slice(4, 6), 16);
+  const mix = (c: number) => Math.round(c + (255 - c) * amount);
+  const toHex = (c: number) => c.toString(16).padStart(2, "0");
+  return `#${toHex(mix(r))}${toHex(mix(g))}${toHex(mix(b))}`;
 }
 
 /** Parse time signature string "3/8" → { num, den }. */
@@ -174,6 +215,41 @@ function esc(s: string): string {
     .replace(/"/g, "&quot;");
 }
 
+/**
+ * Estimated text width (px) for `label` at `fontSize`, assuming a ~0.62em
+ * monospace advance width. Generous on purpose — safe for the generic
+ * `monospace` fallback font, which tends to run wider than curated faces
+ * like Consolas/SF Mono on other people's machines.
+ */
+function monoTextWidth(label: string, fontSize: number): number {
+  return label.length * fontSize * 0.62;
+}
+
+/** Width (px) of a `legendPill` for `label` — call before laying out a row. */
+function legendPillWidth(label: string): number {
+  const fontSize = 9;
+  const dotR = 3;
+  const padLeft = 8;
+  const padRight = 8;
+  const gapDotText = 5;
+  return padLeft + dotR * 2 + gapDotText + monoTextWidth(label, fontSize) + padRight;
+}
+
+/** Render a legend chip: a rounded pill with a color dot + label. */
+function legendPill(x: number, y: number, color: string, label: string): string {
+  const fontSize = 9;
+  const dotR = 3;
+  const padLeft = 8;
+  const gapDotText = 5;
+  const height = 16;
+  const width = legendPillWidth(label);
+  return [
+    `<rect x="${x.toFixed(1)}" y="${y}" width="${width.toFixed(1)}" height="${height}" rx="8" ry="8" fill="${COLORS.pillBg}" stroke="${COLORS.pillBorder}" stroke-width="0.5"/>`,
+    `<circle cx="${(x + padLeft + dotR).toFixed(1)}" cy="${y + height / 2}" r="${dotR}" fill="${color}"/>`,
+    `<text x="${(x + padLeft + dotR * 2 + gapDotText).toFixed(1)}" y="${y + height / 2 + 3}" fill="${COLORS.text}" font-size="${fontSize}">${esc(label)}</text>`,
+  ].join("\n");
+}
+
 // ─── Public API ─────────────────────────────────────────────────────────────
 
 /**
@@ -236,12 +312,13 @@ export function renderPianoRoll(
 
   // ── Layout dimensions ──
   const labelWidth = 50;     // left axis pitch labels
-  const headerHeight = 50;   // top: title + metadata
-  const footerHeight = 40;   // bottom: measure numbers + metronome
+  const headerHeight = 50;   // top: title + metadata pills
+  const footerHeight = 70;   // bottom: measure numbers + metronome + legend pills
   const padding = 10;
 
   const gridWidth = measures.length * bpm * opts.pixelsPerBeat;
   const gridHeight = pitchRange * opts.pitchRowHeight;
+  const measureWidth = bpm * opts.pixelsPerBeat;
 
   const totalWidth = labelWidth + gridWidth + padding * 2;
   const totalHeight = headerHeight + gridHeight + footerHeight + padding;
@@ -256,8 +333,8 @@ export function renderPianoRoll(
   // Styles
   lines.push(`<style>`);
   lines.push(`  text { font-family: 'Consolas', 'SF Mono', 'Fira Code', monospace; }`);
-  lines.push(`  .note-rh { fill: ${COLORS.rhNote}; stroke: ${COLORS.rhNoteStroke}; stroke-width: 0.5; rx: 2; ry: 2; }`);
-  lines.push(`  .note-lh { fill: ${COLORS.lhNote}; stroke: ${COLORS.lhNoteStroke}; stroke-width: 0.5; rx: 2; ry: 2; }`);
+  lines.push(`  .note-rh { fill: ${COLORS.rhNote}; stroke: ${COLORS.rhNoteStroke}; stroke-width: 0.5; rx: 3; ry: 3; }`);
+  lines.push(`  .note-lh { fill: ${COLORS.lhNote}; stroke: ${COLORS.lhNoteStroke}; stroke-width: 0.5; rx: 3; ry: 3; }`);
   lines.push(`  .note-rh:hover { opacity: 0.85; }`);
   lines.push(`  .note-lh:hover { opacity: 0.85; }`);
   lines.push(`</style>`);
@@ -268,10 +345,31 @@ export function renderPianoRoll(
   // ── Header ──
   const composerLabel = song.composer ? ` — ${song.composer}` : "";
   const headerText = `${song.title}${composerLabel}`;
-  const subHeader = `${song.key} | ${song.tempo} BPM | ${song.timeSignature} | m.${start}–${end}`;
+  lines.push(`<text x="${gridX}" y="${headerHeight - 26}" fill="${COLORS.headerText}" font-size="16" font-weight="600" letter-spacing="0.2">${esc(headerText)}</text>`);
 
-  lines.push(`<text x="${gridX}" y="${headerHeight - 24}" fill="${COLORS.headerText}" font-size="16" font-weight="bold">${esc(headerText)}</text>`);
-  lines.push(`<text x="${gridX}" y="${headerHeight - 8}" fill="${COLORS.text}" font-size="11">${esc(subHeader)}</text>`);
+  // Metadata as small dim chip-like pills instead of one "|"-joined string
+  const metaSegments = [song.key, `${song.tempo} BPM`, song.timeSignature, `m.${start}–${end}`];
+  const metaFontSize = 10;
+  const metaPadX = 7;
+  const metaGap = 6;
+  const metaHeight = 15;
+  const metaY = headerHeight - 19;
+  let metaX = gridX;
+  for (const segment of metaSegments) {
+    const pillWidth = monoTextWidth(segment, metaFontSize) + metaPadX * 2;
+    lines.push(`<rect x="${metaX.toFixed(1)}" y="${metaY}" width="${pillWidth.toFixed(1)}" height="${metaHeight}" rx="7" ry="7" fill="${COLORS.pillBg}" stroke="${COLORS.pillBorder}" stroke-width="0.5"/>`);
+    lines.push(`<text x="${(metaX + pillWidth / 2).toFixed(1)}" y="${metaY + metaHeight - 4}" text-anchor="middle" fill="${COLORS.text}" font-size="${metaFontSize}" letter-spacing="0.2">${esc(segment)}</text>`);
+    metaX += pillWidth + metaGap;
+  }
+
+  // ── Alternate-measure shading: even measures get a faint white wash so
+  //    musical form (phrase/measure grouping) reads at a glance ──
+  for (let i = 0; i < measures.length; i++) {
+    if (measures[i].number % 2 === 0) {
+      const x = gridX + i * measureWidth;
+      lines.push(`<rect x="${x}" y="${gridY}" width="${measureWidth}" height="${gridHeight}" fill="#ffffff" opacity="0.02"/>`);
+    }
+  }
 
   // ── Grid background: highlight black key rows ──
   for (let midi = minMidi; midi <= maxMidi; midi++) {
@@ -281,17 +379,18 @@ export function renderPianoRoll(
     }
   }
 
-  // ── Grid lines: horizontal (pitch rows) ──
+  // ── Grid lines: horizontal (pitch rows) — semitones fade to a whisper,
+  //    C-rows get a warm 0.8px landmark line so octaves read at a glance ──
   for (let midi = minMidi; midi <= maxMidi; midi++) {
     const y = gridY + (maxMidi - midi) * opts.pitchRowHeight;
-    const isC = midi % 12 === 0; // C notes get brighter lines
+    const isC = midi % 12 === 0; // C notes get the warm landmark line
     const color = isC ? COLORS.gridOctave : COLORS.gridLine;
-    const width = isC ? 1 : 0.3;
-    lines.push(`<line x1="${gridX}" y1="${y}" x2="${gridX + gridWidth}" y2="${y}" stroke="${color}" stroke-width="${width}"/>`);
+    const width = isC ? 0.8 : 0.3;
+    const lineOpacity = isC ? 0.7 : 0.15;
+    lines.push(`<line x1="${gridX}" y1="${y}" x2="${gridX + gridWidth}" y2="${y}" stroke="${color}" stroke-width="${width}" opacity="${lineOpacity}"/>`);
   }
 
   // ── Grid lines: vertical (beats + measures) ──
-  const measureWidth = bpm * opts.pixelsPerBeat;
   for (let i = 0; i <= measures.length; i++) {
     const x = gridX + i * measureWidth;
     // Measure boundary (thick)
@@ -316,7 +415,7 @@ export function renderPianoRoll(
     const name = midiToNoteName(midi);
     const isC = midi % 12 === 0;
     const color = isC ? COLORS.pitchLabelC : COLORS.pitchLabel;
-    const size = isC ? 10 : 8;
+    const size = isC ? 10 : 9;
     const weight = isC ? "bold" : "normal";
     // Only label natural notes + C notes to avoid clutter
     if (!isBlackKey(midi) || isC) {
@@ -324,11 +423,23 @@ export function renderPianoRoll(
     }
   }
 
+  // ── Dynamics (pp→ff) carry forward across measures until re-marked ──
+  // Maps each rendered measure to a note fill-opacity level. A song with
+  // no dynamics markings at all renders every note at full presence.
+  let currentDynamicOpacity = DEFAULT_NOTE_OPACITY;
+  const measureOpacity: number[] = measures.map((m) => {
+    if (m.dynamics) {
+      const level = DYNAMICS_OPACITY[m.dynamics.trim().toLowerCase()];
+      if (level !== undefined) currentDynamicOpacity = level;
+    }
+    return currentDynamicOpacity;
+  });
+
   // ── Note rectangles ──
   for (const note of allNotes) {
     const x = gridX + note.measureIndex * measureWidth + (note.startBeat / bpm) * measureWidth;
     const y = gridY + (maxMidi - note.midi) * opts.pitchRowHeight + 1;
-    const w = Math.max(2, (note.durationBeats / bpm) * measureWidth - 1);
+    const w = Math.max(3, (note.durationBeats / bpm) * measureWidth - 1);
     const h = opts.pitchRowHeight - 2;
     const noteName = midiToNoteName(note.midi);
     const handLabel = note.hand === "right" ? "RH" : "LH";
@@ -344,9 +455,16 @@ export function renderPianoRoll(
       stroke = note.hand === "right" ? COLORS.rhNoteStroke : COLORS.lhNoteStroke;
     }
 
-    lines.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="${stroke}" stroke-width="0.5" rx="2" ry="2">`);
+    const noteOpacity = measureOpacity[note.measureIndex];
+
+    lines.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" fill-opacity="${noteOpacity}" stroke="${stroke}" stroke-width="0.5" rx="3" ry="3">`);
     lines.push(`  <title>${handLabel}: ${noteName} (m.${measures[note.measureIndex].number})</title>`);
     lines.push(`</rect>`);
+
+    // Onset cap — a brighter sliver on the note's left edge, reads as attack
+    const capWidth = Math.min(2, w);
+    const capHeight = Math.max(1, h - 2);
+    lines.push(`<rect x="${x}" y="${y + 1}" width="${capWidth}" height="${capHeight}" rx="1" ry="1" fill="${lighten(fill, 0.55)}"/>`);
   }
 
   // ── Measure numbers (footer) ──
@@ -375,26 +493,33 @@ export function renderPianoRoll(
     }
   }
 
-  // ── Legend ──
-  if (opts.colorMode === "pitch-class") {
-    // Chromatic pitch-class legend: show only the pitch classes present in the song
-    const presentPcs = [...new Set(allNotes.map(n => n.midi % 12))].sort((a, b) => a - b);
-    const legendY = footerY + 16;
-    let lx = gridX + gridWidth - presentPcs.length * 28;
-    for (const pc of presentPcs) {
-      const c = PITCH_CLASS_COLORS[pc];
-      lines.push(`<rect x="${lx}" y="${legendY - 8}" width="8" height="8" fill="${c.fill}" rx="1"/>`);
-      lines.push(`<text x="${lx + 11}" y="${legendY}" fill="${COLORS.text}" font-size="8">${c.name}</text>`);
-      lx += 28;
+  // ── Legend: rounded pill chips (color dot + label) instead of bare
+  //    swatches, in their own row so they never collide with measure
+  //    numbers. The downbeat dots get a labeled pill too. ──
+  {
+    const legendItems: { color: string; label: string }[] =
+      opts.colorMode === "pitch-class"
+        // Chromatic pitch-class legend: only the pitch classes present in the song
+        ? [...new Set(allNotes.map(n => n.midi % 12))]
+            .sort((a, b) => a - b)
+            .map(pc => ({ color: PITCH_CLASS_COLORS[pc].fill, label: PITCH_CLASS_COLORS[pc].name }))
+        : [
+            { color: COLORS.rhNote, label: "Right Hand" },
+            { color: COLORS.lhNote, label: "Left Hand" },
+          ];
+    if (opts.showMetronome) {
+      legendItems.push({ color: COLORS.metronome, label: "Downbeat" });
     }
-  } else {
-    // Hand-based legend (default)
-    const legendY = footerY + 16;
-    const legendX = gridX + gridWidth - 120;
-    lines.push(`<rect x="${legendX}" y="${legendY - 8}" width="8" height="8" fill="${COLORS.rhNote}" rx="1"/>`);
-    lines.push(`<text x="${legendX + 12}" y="${legendY}" fill="${COLORS.text}" font-size="9">Right Hand</text>`);
-    lines.push(`<rect x="${legendX + 70}" y="${legendY - 8}" width="8" height="8" fill="${COLORS.lhNote}" rx="1"/>`);
-    lines.push(`<text x="${legendX + 82}" y="${legendY}" fill="${COLORS.text}" font-size="9">Left Hand</text>`);
+
+    const legendY = footerY + 46;
+    const legendGap = 6;
+    const pillWidths = legendItems.map(item => legendPillWidth(item.label));
+    const legendTotalWidth = pillWidths.reduce((a, b) => a + b, 0) + legendGap * Math.max(0, legendItems.length - 1);
+    let lx = Math.max(gridX, gridX + gridWidth - legendTotalWidth);
+    for (let i = 0; i < legendItems.length; i++) {
+      lines.push(legendPill(lx, legendY, legendItems[i].color, legendItems[i].label));
+      lx += pillWidths[i] + legendGap;
+    }
   }
 
   // ── Close SVG ──

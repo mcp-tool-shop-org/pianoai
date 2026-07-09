@@ -22,6 +22,18 @@ import { config } from '../site-config';
 >
   <Hero {...config.hero} />
 
+  <section id="piano-roll-showcase" style="max-width:960px;margin:0 auto;padding:2rem 1.5rem 0;text-align:center;">
+    <img
+      src={`${import.meta.env.BASE_URL}/fur-elise-m1-8.svg`.replace(/\/\//g, '/')}
+      alt="Piano-roll visualization of Für Elise measures 1–8 — right hand in blue, left hand in coral, on a deep navy grid"
+      style="width:100%;height:auto;border:1px solid #2a2a3e;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,0.4);"
+      loading="lazy"
+    />
+    <p style="color:var(--color-muted,#8888aa);font-size:0.9rem;margin-top:0.75rem;">
+      <em>How the AI sees music.</em> Für Elise, m.1–8 — the piano roll renders any song as SVG the model can read back and verify.
+    </p>
+  </section>
+
   {config.sections.map((s) => (
     <Section id={s.id} title={s.title} subtitle={s.subtitle}>
       {s.kind === 'features' && <FeatureGrid features={s.features} />}
