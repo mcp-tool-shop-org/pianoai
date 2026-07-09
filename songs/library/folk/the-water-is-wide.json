@@ -10,5 +10,28 @@
     "ballad"
   ],
   "composer": "Traditional Scottish",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "'The Water Is Wide' (also known through the related 'O Waly, Waly' and 'The Bonnie Boat' family of ballads) is one of the oldest and most-covered English/Scottish folk songs, its central image — a body of water too wide to cross back over — serving as a metaphor for love and separation across centuries of singers. This arrangement, in C major at a walking 100 BPM in 2/4, runs a substantial 105 measures, and the note data reveals an accompaniment built almost entirely on a single recurring figure: one repeat group alone (matches at measures 10, 14, 18, 34, 42, 62, 66, 70, 86, 90, and 98) accounts for eleven separate measures sharing the same underlying content — clear evidence of a continuously repeating strophic accompaniment vamp carrying the piece.",
+    "structure": "A strophic ballad in C major, built over a single repeating accompaniment cell that outlines the plain C-F-G-C (I-IV-V-I) folk cadence — the eleven-measure group (10, 14, 18, 34, 42, 62, 66, 70, 86, 90, 98) and an even larger near-identical group of thirteen measures sharing the same figure show the same underlying pattern recurring roughly every 4 measures within each verse and then again across every subsequent verse. Density stays gentle and even throughout — among the busiest measures are 7, 23, 31, 47, and 55 (all 11 onsets), spread evenly across the form rather than clustering at a climax, matching the song's plain, walking-tempo accompaniment.",
+    "keyMoments": [
+      "Measure 10, measure 14, measure 18, and measure 34 are the start of an eleven-measure repeat group (also including 42, 62, 66, 70, 86, 90, and 98) — eleven of the piece's 105 measures sharing identical content, direct evidence of one C-F-G accompaniment figure carrying nearly the whole piece.",
+      "That same figure appears in near-identical form across thirteen measures total, including measure 38 and measure 46 alongside the eleven exact matches — meaning across 105 measures, this one accompaniment cell is doing the majority of the harmonic work.",
+      "Among the busiest measures, 7, 23, 31, 47, and 55 (all 11 onsets) are spaced roughly every 8 measures early in the piece — a gentle, regular pulse of slightly increased activity rather than one dramatic peak.",
+      "The right hand's range stays comfortably singable throughout (C4 to G5, just over an octave), appropriate to a ballad meant to be carried by a solo voice.",
+      "Measure 1 opens at just 1 onset, and the left hand doesn't sound until measure 2 — a brief unaccompanied pickup before the recurring C-major accompaniment figure establishes itself."
+    ],
+    "teachingGoals": [
+      "Repeating accompaniment vamp technique: practice the C-F-G figure that recurs at measures 10, 14, 18, 34, 42, 62, 66, 70, 86, 90, and 98 until it's completely automatic — it underpins most of this 105-measure piece.",
+      "Long-form strophic awareness: learn to recognize where the accompaniment cell restarts for each new verse so you can keep your place across a piece this long without losing count.",
+      "Even, walking-tempo phrasing: with density spread gently and evenly (no measure exceeding 11 onsets), practice a steady, unhurried 2/4 pulse rather than reaching for dynamic drama.",
+      "Solo ballad range: use the right hand's comfortably singable octave-plus range to practice supporting a vocal line without ever overpowering it."
+    ],
+    "styleTips": [
+      "Once the recurring C-F-G accompaniment figure is secure, let your attention go entirely to the melody and its long, singing phrases — the accompaniment should feel automatic, not effortful.",
+      "Keep the 2/4 tempo walking and unhurried — this is a ballad about longing and distance, not urgency.",
+      "Give the one-note pickup at measure 1 real space before the accompaniment enters on measure 2 — a small breath that sets the reflective tone for what follows.",
+      "Avoid adding dynamic swells the data doesn't support — with density this evenly distributed, use phrasing and touch, not volume contrast, to carry the expressive weight."
+    ]
+  }
 }

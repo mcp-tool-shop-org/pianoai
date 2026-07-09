@@ -10,5 +10,28 @@
     "new-year"
   ],
   "composer": "Traditional Scottish",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Robert Burns published 'Auld Lang Syne' in 1788, setting new words to a traditional Scottish tune, and it's since become the world's default song for endings — sung at midnight on New Year's Eve, at graduations, and at farewells, usually in a circle with crossed and joined hands. This arrangement, in F major at a moderate 119 BPM, is built almost entirely from repetition: 28 separate groups of exact repeated measures were found across just 68 bars, the highest repetition density relative to length of any piece in this pilot batch, with repeat pairs like measures 4/37, 5/38, 6/39, and 7/40 all sitting exactly 33 measures apart — strong evidence of two full strains (verse and chorus) that share essentially identical material.",
+    "structure": "Two nearly-identical 33-measure strains built on the plain F-Bb-C-F (I-IV-V-I) folk cadence, confirmed directly by the data — measures 4 through roughly 33 repeat almost exactly at measures 37 through 66 (a near-constant 33-measure offset across dozens of paired measures), which maps naturally onto a verse-then-chorus structure using the same melodic material for both, exactly as the song is actually sung. The piece opens with a full measure of silence (measure 1) before the tune begins, and closes with its busiest measure (67, 28 onsets) right at the very end.",
+    "keyMoments": [
+      "Measure 1 is completely silent — a breath or pickup before the familiar tune begins, appropriate for a song traditionally sung a cappella before instruments join.",
+      "Measures 4 through roughly 33 repeat almost exactly 33 measures later (measures 37-66), which demonstrates that the verse and its repeat (or verse-and-chorus sharing the same tune) are essentially the same melodic material twice over, confirmed across more than two dozen matched measure pairs.",
+      "Measure 67, the very last measure, is also the busiest in the entire piece (28 onsets) — the arrangement ends on its most active measure over a firm F cadence rather than winding down, a strong final flourish rather than a fade.",
+      "The right hand's highest note, C6, arrives at measure 34 — right at the seam between the two repeating 33-measure strains, an example of a registral peak marking a structural hinge point.",
+      "Measures 2 and 35 (21 and 20 onsets) are each the busiest measure near the start of their respective strain — the two halves of the form don't just share pitches, they share the same energy contour."
+    ],
+    "teachingGoals": [
+      "Strophic repetition at scale: with the same ~33-measure strain appearing twice, learn the first occurrence thoroughly and practice it until it's secure — you're effectively learning half the piece twice over.",
+      "Recognizing structural seams: the highest note of the piece (C6, measure 34) lands exactly at the boundary between the two repeating strains — practice using registral peaks like this as landmarks when you learn long repetitive forms.",
+      "Ending on energy rather than fading: this piece's busiest measure is also its last — practice bringing a performance to a firm F-major close rather than trailing off.",
+      "Communal, unhurried phrasing: since this melody is traditionally sung by a group linking hands, learn to favor a steady, singable tempo over rhythmic display."
+    ],
+    "styleTips": [
+      "Once you've learned and can play the first strain (roughly measures 4-33) securely, trust that the second (37-66) is nearly identical — don't relearn it from scratch.",
+      "Give the opening silence real weight, like the breath before a group begins singing together.",
+      "Play the final measure (67) with real energy — this piece wants a warm, full-voiced F-major ending, not a diminuendo.",
+      "Keep the tempo steady and singable throughout — this is a communal song built for voices linking arms, not a showcase for rubato."
+    ]
+  }
 }

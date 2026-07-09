@@ -32,7 +32,7 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import { mkdtempSync, rmSync, readFileSync, existsSync, mkdirSync, writeFileSync, chmodSync } from "node:fs";
+import { mkdtempSync, rmSync, readFileSync, existsSync, mkdirSync, writeFileSync, chmodSync, readdirSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -980,10 +980,37 @@ describe("mcp-server.ts — fs-write errors return structured JamError results (
       // startup (initializeFromLibrary only ingests "ready" songs), so
       // registerSong() inside annotate_song won't throw "Duplicate song ID"
       // first — the flow reaches saveSong(), the persist step we want to fail.
-      const RAW_SONG_ID = "blues-in-the-night";
-      const libConfigPath = fileURLToPath(
-        new URL("../songs/library/blues/blues-in-the-night.json", import.meta.url),
-      );
+      // Discover a currently-RAW library song at runtime. Harvest waves flip
+      // whole genres to "ready" over time, so a hardcoded slug rots — the
+      // original choice ("blues-in-the-night") went ready in the 2026-07
+      // pilot and silently changed which code path this test exercised.
+      // If the library ever reaches 120/120 ready, inject a fixture raw
+      // song instead (the throw below is that signal).
+      const libraryRoot = fileURLToPath(new URL("../songs/library", import.meta.url));
+      const rawEntry = (() => {
+        for (const genre of readdirSync(libraryRoot)) {
+          const genreDir = join(libraryRoot, genre);
+          if (!statSync(genreDir).isDirectory()) continue;
+          for (const f of readdirSync(genreDir)) {
+            if (!f.endsWith(".json")) continue;
+            const p = join(genreDir, f);
+            const cfg = JSON.parse(readFileSync(p, "utf-8")) as { id?: string; status?: string };
+            // Sibling .mid required: a config-only entry would make
+            // ingestSong() throw "MIDI file not found" inside the SAME catch
+            // this test asserts on — green text, wrong path again (the .tmp
+            // assertion below would flag it, but don't pick a doomed
+            // candidate when the next one over works).
+            if (cfg.status !== "ready" && typeof cfg.id === "string" && existsSync(p.replace(/\.json$/, ".mid"))) {
+              return { id: cfg.id, path: p };
+            }
+          }
+        }
+        throw new Error(
+          "no raw library song left to exercise the persist-failure path — inject a fixture raw song",
+        );
+      })();
+      const RAW_SONG_ID = rawEntry.id;
+      const libConfigPath = rawEntry.path;
       const originalBytes = readFileSync(libConfigPath);
 
       let iso: Awaited<ReturnType<typeof spawnIsolatedServer>> | undefined;
@@ -1025,6 +1052,16 @@ describe("mcp-server.ts — fs-write errors return structured JamError results (
         expect(text).toContain("[IO_FILE_WRITE]");
         expect(text).toContain(`finish annotating "${RAW_SONG_ID}" (ingest/persist)`);
         expect(text).toContain("Hint:");
+        // Pin the failure to saveSong() itself, not a lookalike routed
+        // through the same catch: fsErrorResult embeds the inner err.message,
+        // and only saveSong's atomic write-temp-then-rename can put a ".tmp"
+        // path in it. The two lookalikes carry other text instead —
+        // registerSong's guard says `Duplicate song ID: "<id>"` (exactly how
+        // this test once went stale-but-green when its hardcoded raw song was
+        // harvest-promoted to ready), and an ingest failure says "MIDI file
+        // not found" / a parse error. Neither can produce ".tmp".
+        expect(text).toContain(".tmp");
+        expect(text).not.toContain("Duplicate song ID");
         // annotate_song's catch appends this note AFTER the JamError string —
         // proves the response came from the ingest/persist catch specifically,
         // not some earlier plain-text isError branch (e.g. the "not found" one).

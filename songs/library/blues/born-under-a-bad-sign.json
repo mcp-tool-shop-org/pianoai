@@ -9,5 +9,28 @@
     "albert-king"
   ],
   "composer": "Albert King",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "'Born Under a Bad Sign' is a 1967 Stax Records classic written by Booker T. Jones and William Bell for Albert King, built on one of the most instantly recognizable syncopated blues riffs in the genre — a hook so distinctive that Booker T. & the M.G.'s treat it as a fixed vamp rather than a walked 12-bar shuffle. The key here, C# minor, is unusual for blues (most standards sit in major or a guitar-friendly major key), and it's exactly the kind of minor-key choice that gives Stax-era soul-blues its darker, grittier edge compared to Delta or Chicago blues in major. This arrangement runs 128 measures at a moderate 126 BPM, and the note data shows real structural repetition underneath: several measure-pairs recur roughly 33 measures apart (49-82, 54-87), consistent with a recurring verse-length blues chorus built on that same riff cycling through the form.",
+    "structure": "The piece is organized around a repeating riff-length unit rather than a plain walked shuffle — measures 49/82 and 54/87 are exact repeats roughly 33 bars apart, and measure 87's material reappears again at measure 115, showing the same riff cycling a third time late in the piece. The densest measures (11, 19, 97, 98, all 26-27 onsets) cluster in two zones — early (11, 19) and in the second half (97, 98) — suggesting the riff intensifies each time it returns. Underneath the riff sits the standard minor-blues i-iv-V skeleton in this key — C#m7 (i), F#m7 (iv), G#7 (V) — even though the riff itself doesn't cycle in a literal 12-bar pattern. The piece opens with a single completely silent measure (measure 1) before the riff enters.",
+    "keyMoments": [
+      "Measure 1 is a full measure of silence in both hands before anything sounds — a held pickup or count-off before the riff hits, not a printing error.",
+      "Measures 11 and 19, two of the busiest in the whole piece (27 onsets each), demonstrate the riff at its most active, early in the form — a good technique benchmark for the rest of the piece.",
+      "Measures 49, 54, 82, and 87 form two exact repeat pairs roughly 33 measures apart — the same riff material returning verse after verse, confirming this is a riff-driven form built on the C#m7-F#m7-G#7 skeleton, not a through-composed one.",
+      "Measure 87's material returns a third time at measure 115 — by the time you've learned this riff once, you've learned roughly a third of the piece.",
+      "Measures 97 and 98 match measures 11 and 19's density almost exactly (27 and 26 onsets), which shows the riff's return in the second half hitting with the same intensity as its first entrance — not a watered-down reprise."
+    ],
+    "teachingGoals": [
+      "Minor-key blues harmony: learn to hear how the same i-iv-V blues skeleton (C#m7-F#m7-G#7) sounds when it's built in C# minor instead of major, and practice each chord separately before connecting them — darker and less swaggering than a major-key blues.",
+      "Riff-based blues form: unlike a walked 12-bar, this piece is built from one repeating hook — practice isolating measures 49 and 54 as the core riff cell before attempting the whole piece.",
+      "Silence as downbeat: practice counting through measure 1's silence with the same internal pulse you'd use if it were full of notes, so the riff's entrance lands exactly on time.",
+      "Syncopation: build the riff's identity from where its accents fall against the beat, not from the notes themselves — practice clapping the rhythm alone before adding pitches."
+    ],
+    "styleTips": [
+      "Commit to the riff's syncopation — this is not a straight-eighths shuffle, and playing it too evenly erases exactly what makes the hook recognizable; feel the accent before you play the note.",
+      "Give the opening measure of silence real space before you play the riff with full commitment — don't ease in.",
+      "Keep the minor-key harmony dark and a little claustrophobic — don't brighten the C#m7-F#m7-G#7 voicings the way you might for a major-key blues.",
+      "When the riff returns at measure 97, play it with the same weight as its first appearance at measure 11 — don't let a returning idea feel like an afterthought."
+    ]
+  }
 }

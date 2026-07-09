@@ -9,5 +9,28 @@
     "slow-blues"
   ],
   "composer": "T-Bone Walker",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "T-Bone Walker's 'Call It Stormy Monday (But Tuesday Is Just as Bad)' (1947) is the quintessential slow blues shuffle and one of the most influential blues recordings for guitarists — it introduced jazz-inflected 9th chords into blues vocabulary decades before that harmonic sophistication became standard. This arrangement, in G major at 174 and notated in 6/8 (spelling out the shuffle's triplet feel explicitly), is enormous: 393 measures, the longest piece in this entire pilot batch, with 55 exact-repeat groups. One repeat pattern recurs six times at an almost perfectly regular 48-measure interval (8, 56, 104, 152, 200, 344) — a spacing that maps naturally onto a 12-bar blues chorus notated across four 6/8 measures per bar.",
+    "structure": "A slow 12-bar blues chorus built on G9-C9-D9 (I9-IV9-V9, T-Bone Walker's signature ninth-chord voicings in place of plain triads), repeated many times across an unusually long, extended arrangement — the recurring pattern at measures 8, 56, 104, 152, 200, and 344 (at regular 48-measure intervals through measure 200, then returning once more at measure 344) marks out the chorus boundary directly in the note data. Energy builds gradually and peaks right at the very end: the five busiest measures (373-388, all 15-18 onsets) all fall in the last 20 measures of the 393-measure form, before the final measure (393) drops to just a single onset — a quiet close after the loudest stretch of the whole piece.",
+    "keyMoments": [
+      "Measures 8, 56, 104, 152, 200, and 344 are exact repeats of each other, at regular 48-measure intervals through measure 200 and then once more at measure 344 — this marks out a recurring G9-C9-D9 blues chorus that the piece cycles through many times, a clear example of chorus-length repetition.",
+      "Measures 373 through 388, the final 20 measures, contain every one of the piece's five busiest measures (15-18 onsets each) — the arrangement saves its highest energy for the very end.",
+      "Measure 393, the final measure, drops to just a single onset — after the loudest stretch in the whole piece, the ending is a quiet release, not a big final chord.",
+      "The right hand's highest note, A#6, arrives at measure 316 — inside the long final buildup, but before the true density peak at measures 373-388.",
+      "The left hand's lowest note, D1, doesn't appear until measure 325 — very late in the piece, suggesting the bass register deepens specifically during that final extended climax."
+    ],
+    "teachingGoals": [
+      "Slow shuffle in 6/8: learn the triplet-based shuffle feel this notation spells out explicitly — practice subdividing each beat into three rather than swinging straight eighths.",
+      "Long-form structural awareness: with the same 12-bar chorus recurring every 48 measures across 393 measures, practice recognizing 'which chorus am I in' rather than treating the piece as one continuous block.",
+      "Delayed climax pacing: the busiest measures don't arrive until the final 20 of 393 — build real patience so the ending doesn't feel like just another chorus.",
+      "9th-chord blues vocabulary: recognize T-Bone Walker's G9-C9-D9 voicings and practice playing them in place of plain triads — this is his signature harmonic innovation."
+    ],
+    "styleTips": [
+      "Commit fully to the 6/8 shuffle lilt — this is not a straight-eighths blues, and the notated 6/8 is telling you exactly how to subdivide the beat.",
+      "Pace the whole 393-measure arc with real patience — since the true climax doesn't arrive until measures 373-388, resist the urge to play every chorus at full intensity.",
+      "Use the G9-C9-D9 voicings where the ear expects plain triads — T-Bone Walker's whole contribution to blues vocabulary was this jazz-tinged richness.",
+      "Play the final measure genuinely quiet — after the loudest 20 measures in the piece, a single soft note is the intended release, not an anticlimax to fix."
+    ]
+  }
 }

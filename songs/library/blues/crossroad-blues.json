@@ -10,5 +10,28 @@
     "delta"
   ],
   "composer": "Robert Johnson",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Robert Johnson recorded 'Cross Road Blues' in San Antonio in 1936, and it became the seed of the most famous legend in American music — that Johnson sold his soul to the devil at a Delta crossroads in exchange for his guitar skill. Musically, what's actually remarkable is the hypnotic, cyclical fingerpicking pattern underneath the melody, and this arrangement's data confirms exactly that: 24 separate groups of exact repeated measures were found across just 103 bars, an extraordinarily high repetition density that reflects the same rolling bass ostinato returning again and again while the melody floats above it. The key here is A major, and the arrangement is dense and continuous — 8,836 notes, over 85 per measure on average — programmed at a brisk 250 in this transcription, consistent with a fast, fine subdivision of that rolling fingerpicked texture.",
+    "structure": "The piece opens with a 4-measure rest in the right hand (measures 1-4) — a solo bass/vamp introduction before the melody enters — and settles into a tightly cyclical form after that: pairs like measures 2/4, 5/17, 7/19, and 10/22 repeat exactly, continuing throughout with 24 total repeat groups in all. Among the busiest measures are 43, 64, 70, 73, and 77 (each 32 onsets), spread through the middle and later sections rather than clustering at one climax, fitting a piece built from a constantly cycling pattern.",
+    "keyMoments": [
+      "Measures 1-4, silence in the right hand while the left hand alone is active from measure 2: the piece opens on the rolling bass pattern by itself, exactly the fingerpicked ostinato this song is famous for.",
+      "Measures 2 and 4 are exact repeats of each other, and this pairing recurs throughout the piece (5/17, 7/19, 10/22, and 20 more pairs) — 24 repeat groups across 103 measures in total, direct evidence of the cyclical ostinato this song is built on.",
+      "Measures 43, 64, 70, 73, and 77 are among the busiest in the piece (32 onsets each) — rather than one climax, the energy stays consistently high across the whole second half.",
+      "The right hand's highest note, D6, arrives at measure 71 — right in the middle of that dense, busy stretch, not at the very end.",
+      "Measure 1 is completely silent while measure 2 is already active in the left hand — the ostinato is already running before the right hand's first note, so anchor your entrance against a bass pulse that's already moving."
+    ],
+    "teachingGoals": [
+      "Ostinato technique: isolate the repeating left-hand bass cell (measures 2/4 and its many repeats) and drill it until it's automatic — the whole piece depends on that pattern staying steady while the right hand moves freely above it.",
+      "Delta blues fingerstyle in a piano context: the exact-repeat density here is a direct fingerprint of fingerpicked guitar technique — practice thinking of the left hand as a fixed picking-hand pattern.",
+      "Reading repeated material efficiently: with 24 repeat groups, learn to recognize 'I've already played this' quickly rather than relearning each recurrence from scratch.",
+      "Sustained energy across a long form: with the busiest measures spread across measures 43-77 rather than one peak, practice maintaining intensity over a long stretch instead of building to a single climax."
+    ],
+    "styleTips": [
+      "Keep the left-hand ostinato relentless and even — it's the hypnotic engine of the whole piece, and any wobble undermines the cyclical, trance-like quality that makes this song work.",
+      "Don't rush the fast tempo into stiffness — the rolling pattern should feel loose and continuous, like a guitarist's picking hand, not a mechanically even piano exercise.",
+      "Let the opening silence in the right hand actually register as an introduction — the bass pattern needs a measure or two to establish itself before the melody has anything to sit on top of.",
+      "Lean into the A major brightness — this is major-key Delta blues, not the darker minor-key sound of a song like Born Under a Bad Sign, so keep the tone open rather than brooding."
+    ]
+  }
 }

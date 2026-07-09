@@ -10,5 +10,28 @@
     "ballad"
   ],
   "composer": "Traditional Irish",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "'Danny Boy' sets English lawyer Frederic Weatherly's 1913 lyric to the traditional Irish melody known as the 'Londonderry Air,' and it's become one of the most emotionally demanding ballads in the folk repertoire, prized for its wide, soaring melodic arc. This arrangement, in Eb major at a gentle 120 BPM across 110 measures, is comparatively sparse for its length — about 11.5 notes per measure on average, the sparest texture-per-measure of any folk piece in this pilot batch — which suits a melody meant to be sung with real space around it. The note data shows a dramatic late climb: the right hand's highest note in the whole arrangement, D7, doesn't arrive until measure 109, one measure before the very end, and the busiest measures in the piece (100-107) cluster in that same final stretch.",
+    "structure": "A long, gradually building arc rather than a repeating verse structure — only one small near-identical pair was found (measures 3 and 43), meaning this piece is much closer to through-composed than the highly repetitive songs elsewhere in this set. Both hands open in near-silence (measure 1 is completely silent), stay sparse and spacious through the middle, and then build steadily toward a genuine climax in the final ten measures (100-109), where density and register both peak together before the piece closes quietly on measure 110.",
+    "keyMoments": [
+      "Measure 1 opens in complete silence — the melody has to establish itself entirely on its own before anything else joins.",
+      "Measures 100 through 107 contain the piece's busiest material (13-16 onsets each) — the arrangement's climax arrives in the final tenth of the piece, not before.",
+      "The arrangement's highest note anywhere, D7, lands at measure 109 — one measure from the very end. This is the arrangement's own registral ceiling, likely an instrumental flourish rather than a literal vocal line, since D7 sits well above a singable range.",
+      "Measure 110, the final measure, drops to just a single onset — after the climb to measure 109's peak, the piece closes on a single quiet gesture rather than a full chord.",
+      "Outside of the measures 3/43 pairing, no other measure repeats anywhere in 110 bars — treat this piece as continuously developing material, closer to a through-composed art song than a repeated folk strain."
+    ],
+    "teachingGoals": [
+      "Long-breath phrasing: with real space between notes throughout (roughly 11.5 notes per measure), practice sustaining a musical line across wide gaps rather than filling every beat.",
+      "Delayed climax across a long form: the true peak doesn't arrive until measures 100-109 of 110 — build the patience to hold back through nearly the entire piece.",
+      "Upper-register control at the extreme: reaching D7 near the very end requires secure, unstrained high-register technique exactly when fatigue is most likely to show.",
+      "Distinguishing through-composed from strophic form: with almost no repeated measures, recognize that this piece rewards continuous attention rather than pattern-recognition shortcuts."
+    ],
+    "styleTips": [
+      "Let the opening silence and the sparse early measures breathe — this is a piece about restraint before release, not continuous sound.",
+      "Save everything for measures 100-109 — with the true climax landing that close to the very end, any earlier peak will undercut the arrangement's own arc.",
+      "Treat the D7 near the close as an instrumental cry rather than a literal vocal note — let it ring rather than trying to make it sound sung.",
+      "Close on measure 110's single quiet gesture with real tenderness — after the climb to D7, the ending should feel like release, not another effort."
+    ]
+  }
 }

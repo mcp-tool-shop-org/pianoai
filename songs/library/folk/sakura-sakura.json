@@ -10,5 +10,28 @@
     "pentatonic"
   ],
   "composer": "Traditional Japanese",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "'Sakura Sakura' ('Cherry Blossoms') is a traditional Japanese folk melody dating to the Edo period, originally a teaching piece for koto students, built on the miyako-bushi ('in scale') — a pentatonic-adjacent scale with a distinctive half-step character that gives Japanese traditional music its instantly recognizable color. That modal fingerprint shows up directly in this arrangement's note data: the melody's lowest right-hand pitch is C#4 rather than a plain diatonic tone, consistent with the in-scale's characteristic raised step. Set in A minor at a gentle 95 BPM across just 38 measures, the piece is built almost entirely from short repeating cells — 12 separate exact-repeat groups packed into a piece this short.",
+    "structure": "A short, highly cyclical form built from a compact melodic cell repeated and re-ordered rather than a long developing melody — measures 1, 2, 20, and 21 are exact repeats of each other, and an even larger group (measures 5, 6, 15, 16, 24, 25, 34, and 35) shows the same short figure recurring eight separate times across just 38 measures. This mirrors the traditional koto teaching-piece structure the song is known for: a small number of melodic cells, reordered and repeated, rather than a through-composed melody.",
+    "keyMoments": [
+      "The right hand's lowest note is C#4, arriving at measure 10 — a raised step rather than a plain C natural, the fingerprint of the miyako-bushi 'in scale' this melody is traditionally built on.",
+      "Measures 1, 2, 20, and 21 are exact repeats of each other — the opening cell returns roughly two-thirds of the way through the piece, essentially restating the opening material.",
+      "Measures 5, 6, 15, 16, 24, 25, 34, and 35 form the largest repeat group in the piece — eight measures sharing identical content, direct evidence that this melody is built from a small number of recombined cells.",
+      "The right hand's highest note, E6, arrives at measure 18 — close to the midpoint of the piece, a modest, unshowy registral peak appropriate to a simple koto teaching melody.",
+      "Measures 19 and 38, both at just 2 onsets, are the sparsest in the piece — the near-silence at measure 38 gives the piece a hushed, incomplete-feeling close rather than a firm cadence."
+    ],
+    "teachingGoals": [
+      "The miyako-bushi 'in scale': listen for the half-step color between scale degrees (audible directly at the C#4 in measure 10) that distinguishes this melody from a Western natural or harmonic minor scale.",
+      "Cell-based melodic construction: with the same short figures recurring at measures 1/2/20/21 and the eight-measure group at 5/6/15/16/24/25/34/35, practice recognizing and naming each recurring cell.",
+      "Koto-idiomatic phrasing on piano: this piece was written for a plucked, resonant instrument — practice letting individual notes ring and decay rather than sustaining them with continuous legato.",
+      "Ending on stillness: the piece closes at just 2 onsets in its final measure — practice trusting quiet, incomplete-feeling endings rather than resolving to a full final gesture."
+    ],
+    "styleTips": [
+      "Bring out the C#4 (and any other 'in scale' color tones) rather than smoothing them into a familiar Western minor sound — that modal color is the whole point of the melody.",
+      "Let individual notes speak and decay rather than blending them with pedal — imagine the plucked resonance of a koto string, not a sustained piano legato.",
+      "Play the repeated cells with small, deliberate variations in touch each time they return, the way a koto player would ornament a repeated phrase.",
+      "Keep dynamics restrained throughout — this is an intimate teaching melody, not a concert showpiece, and the hushed final measure confirms the piece wants to end quietly."
+    ]
+  }
 }

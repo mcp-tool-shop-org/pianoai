@@ -10,5 +10,28 @@
     "standard"
   ],
   "composer": "Harold Arlen",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "'Blues in the Night' is a 1941 Harold Arlen (music) and Johnny Mercer (lyrics) torch song written for the Warner Bros. film of the same name — one of the rare Tin Pan Alley standards built explicitly around 12-bar blues harmony rather than 32-bar pop form, which is why Mercer's lyric famously opens 'My mama done tol' me...' like a field holler before the tune's more sophisticated, through-composed stretches take over. This arrangement sits in Bb major at a brisk 148 BPM and is dense and pianistic throughout — 6,563 notes across 96 measures, more than 68 notes per measure on average — with no exact or near-identical repeated measures anywhere in the piece. That absence of repetition is itself the point: unlike a straight 12-bar blues that cycles the same phrase, this tune keeps developing new material end to end, which is exactly what made it unusual (and Oscar-nominated) among its contemporaries.",
+    "structure": "Through-composed rather than a repeating 12-bar cycle — no measure in this arrangement shares an identical or near-identical pitch-class pattern with any other, confirmed directly by the note data. The texture stays continuously active from measure 3 onward (the first two measures ease in more sparsely, 3 and 10 onsets respectively) through a long central stretch of sustained density, then intensifies again toward the close: four of the five busiest measures land in the final quarter (measures 78-80), right before the music thins to complete silence in the last two measures (95-96).",
+    "keyMoments": [
+      "Measures 1-3, the spare opening (3 and 10 onsets respectively against a piece-wide average above 68): the texture eases in almost bare, mirroring Mercer's spoken-word-like opening line before the full arrangement takes over.",
+      "Measures 78-80, the densest stretch of the entire piece (35-36 onsets each, the top of the whole song's density profile): this is the arrangement's climax, arriving in the final quarter rather than the middle.",
+      "The right hand climbs to its highest note, F#6, at measure 79 — one measure inside that same climactic stretch, so the registral peak and the rhythmic peak land together.",
+      "Measures 95-96, complete silence in both hands: after 94 measures of continuous motion, the piece simply stops rather than resolving to a held final chord.",
+      "No two measures in the entire piece share matching pitch content — practice this piece phrase by phrase rather than relying on 'I've played this bar before,' because you genuinely haven't."
+    ],
+    "teachingGoals": [
+      "Through-composed reading: because no measure repeats, practice this piece as continuous prose, not as a loop of a memorized 4-bar unit the way a 12-bar blues allows.",
+      "Dynamic pacing across a long form: the busiest measures (78-80) arrive three-quarters of the way through a 96-measure piece — practice holding back early so there's somewhere left to go.",
+      "Register control: the right hand ranges from C4 up to F#6, over three octaves — work each octave register separately before connecting them across a phrase.",
+      "12-bar blues harmony inside a pop song: recognize where the underlying I-IV-V blues progression is still driving the harmony even though the melody and figuration never repeat verbatim."
+    ],
+    "styleTips": [
+      "Don't rush the sparse opening measures — the near-silence in measures 1-3 is a held breath before the arrangement fills in, not a place to speed up.",
+      "Build in reserve: with the true climax sitting at measures 78-80, save your loudest dynamic and fullest pedal for that stretch rather than the middle of the piece.",
+      "Let the final two silent measures actually be silent — resist the urge to add a closing flourish the score doesn't ask for.",
+      "This is torch-song blues, not shuffle blues: keep the eighth notes closer to even than swung, and lean on legato phrasing over the sustain pedal rather than staccato comping."
+    ]
+  }
 }

@@ -13,6 +13,7 @@
 
 import {
   getAllSongs,
+  getLibraryProgress,
   getSong,
   getStats,
   searchSongs,
@@ -86,8 +87,14 @@ initializeFromLibrary(libraryDir);
 
 // ─── Test 1: song library loads ─────────────────────────────────────────────
 console.log("song library integration:");
-test("registry loads 24 songs", () => {
-  assert(getAllSongs().length === 24, `expected 24 songs, got ${getAllSongs().length}`);
+test("registry loads every ready song in the library", () => {
+  // Annotation-harvest waves promote songs to "ready" without touching src/**,
+  // so the expected count is read from the library scan rather than hardcoded.
+  // The floor pins the wave-D1 baseline (42) so mass loss still fails.
+  const expected = getLibraryProgress(libraryDir).ready;
+  const actual = getAllSongs().length;
+  assert(actual === expected, `expected ${expected} ready songs, got ${actual}`);
+  assert(actual >= 42, `library shrank below the 42-song baseline, got ${actual}`);
 });
 
 test("all 12 genres covered", () => {

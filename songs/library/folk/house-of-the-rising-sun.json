@@ -10,5 +10,28 @@
     "minor"
   ],
   "composer": "Traditional",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "'House of the Rising Sun' is a traditional American ballad of uncertain authorship, first collected from Appalachian singers in the early 20th century, made globally famous by The Animals' hypnotic 1964 electric arrangement built on a descending Am-C-D-F-Am-E-Am progression. This piano arrangement, in A minor at 75 BPM, captures that hypnotic quality directly in the note data: at roughly 82 notes per measure, it's a dense, continuously arpeggiated piece — the texture holds that density for measure after measure, then thins sharply in the final two bars (53 and 54) as the arpeggio finally lets go. Twelve separate groups of exact repeated measures confirm the same descending arpeggio pattern cycling underneath, verse after verse.",
+    "structure": "A continuously arpeggiated texture built on a repeating chord-progression cycle rather than distinct phrases — the note data shows measures 1, 17, and 41 as exact repeats of each other (a roughly 16-24 measure cycle), and measures 2, 6, 14, 22, 38, and 46 forming an even larger repeat group, confirming the same descending arpeggio figure returns again and again as the harmonic cycle repeats for each verse. Density stays remarkably even for nearly the whole piece — measures like 35, 3, and 8 (23-26 onsets) sit not far below the busiest (32, 33, 4, 12, 20, all around 30) — before the true sparsest measures, 53 and 54 (4 and 2 onsets), thin out dramatically right at the close.",
+    "keyMoments": [
+      "Measures 1, 17, and 41 are exact repeats of each other — the same arpeggio figure opening each pass through the harmonic cycle, roughly 16-24 measures apart.",
+      "Measures 2, 6, 14, 22, 38, and 46 form an even larger repeat group — six separate measures sharing identical content, the clearest evidence that this piece is built from one continuously cycling arpeggio pattern.",
+      "The piece's true sparsest measures are its last two — 53 and 54, dropping to just 4 and 2 onsets right after measure 52 sat at a typical 26 — a dramatic thinning that shows the arpeggio finally letting go at the close, not stopping mid-stride.",
+      "The right hand reaches its highest note, F7, at measure 2 — very early in the piece, meaning the registral ceiling is established almost immediately rather than being saved for a later climax.",
+      "Measures 32 and 33, the busiest pair in the piece (32 onsets each), sit roughly two-thirds of the way through — a gentle intensification rather than a dramatic spike, consistent with the piece's overall evenness."
+    ],
+    "teachingGoals": [
+      "Continuous arpeggio technique: with the arpeggio staying dense for 52 of the piece's 54 measures, practice the hand endurance and evenness to sustain that rolling pattern without tension creeping in — and practice releasing it too, letting the final two measures actually thin out instead of forcing the density to the last bar.",
+      "Descending minor-key harmonic cycle: internalize the Am-C-D-F-Am-E-Am progression this piece is built on, since the same arpeggio figure simply restates it verse after verse.",
+      "Playing evenly at a consistently high density: unlike pieces with dramatic dynamic peaks, this one asks for controlled, unwavering intensity through the body of the piece — practice the discipline to let that intensity go in the final two measures rather than holding on to it.",
+      "Early register establishment: the highest note arrives at measure 2, not near a late climax — practice comfortably reaching that top register right from the start."
+    ],
+    "styleTips": [
+      "Keep the arpeggio rolling and continuous — any gap or hesitation breaks the hypnotic, cyclical quality that defines this song.",
+      "Resist adding dynamic swells the data doesn't support through the body of the piece — density stays remarkably even there, so let the harmonic movement, not volume, carry the emotional weight — then try letting the final two measures genuinely decay rather than forcing that same density all the way to the last note.",
+      "Play the A minor tonality with a haunted, unresolved quality — the famous descending bassline never quite lets the harmony settle.",
+      "Since the same arpeggio figure recurs at least a dozen times, use those repeats as an opportunity for subtle variation in touch or voicing rather than playing every pass identically."
+    ]
+  }
 }

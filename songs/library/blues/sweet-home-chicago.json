@@ -10,5 +10,28 @@
     "standard"
   ],
   "composer": "Robert Johnson",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Robert Johnson recorded 'Sweet Home Chicago' in 1936, and it's since become one of the most-covered blues songs in history — a steady, driving boogie-woogie shuffle built around the migration narrative of heading north to Chicago, later popularized further by the Blues Brothers. This arrangement sits in E major at a walking 121 BPM across 135 measures, and its energy is clearly organized around its ending: the single busiest measure in the whole piece (measure 120, 29 onsets) falls near the close, and a recurring pattern (measures 39/40 repeating at 99/100, a 60-measure interval — likely five 12-bar choruses) shows the boogie bassline cycling steadily underneath.",
+    "structure": "A boogie-woogie 12-bar blues built on E7-A7-B7 (I-IV-V) cycling repeatedly across the form, with the note data confirming the recurring unit directly: measures 39-40 reappear as an exact and near-identical repeat at measures 99-100, 60 measures later (five 12-bar choruses at 12 measures each). Energy climbs steadily and peaks late — measure 120 is the single busiest in the arrangement — before the texture thins dramatically in the final measures: 134 and 135 drop to 0 and 1 onsets respectively, a soft fade after the climax rather than a hard stop.",
+    "keyMoments": [
+      "Measures 39-40 repeat almost exactly at measures 99-100, 60 measures later — five 12-bar boogie choruses apart, confirming the driving E7 bassline cycles through the same figure chorus after chorus.",
+      "Measure 120 is the busiest in the entire piece (29 onsets) and arrives late, in the piece's final quarter — the arrangement saves its highest energy for near the end.",
+      "The right hand's highest note, G6, also arrives at measure 119 — one measure before the density peak, meaning the registral and rhythmic climaxes land right next to each other.",
+      "Measures 134 and 135, the final two measures, drop to 0 and 1 onsets — after the measure-120 peak, the piece fades out rather than ending on a hard final E7 chord.",
+      "Measures 1-2 open at low density (2 and 4 onsets) before the boogie pattern locks in, which demonstrates how a groove can establish itself gradually rather than starting at full strength."
+    ],
+    "teachingGoals": [
+      "Boogie-woogie bassline: practice the recurring left-hand E7 figure that reappears at measures 39-40 and 99-100 until the 60-measure gap between repeats doesn't matter — your hand should already know it.",
+      "12-bar blues chorus counting: with the same E7-A7-B7 unit repeating every 60 measures (five choruses), practice counting choruses rather than measures to keep your place in a long boogie form.",
+      "Late-arriving climax pacing: measure 120's peak comes in the final quarter — build the discipline to keep the groove interesting through 100-plus measures before that payoff arrives.",
+      "Fading endings: the piece dissolves rather than stops — practice a controlled decrescendo and pedal release for the final two measures instead of a cut-off."
+    ],
+    "styleTips": [
+      "Keep the boogie-woogie left hand rock-steady and physical — it's the propulsive engine of the whole 135-measure arrangement and can't be allowed to drift even once the right hand gets busy.",
+      "Save real intensity for measure 120 — with the busiest measure landing that late, resist maxing out the dynamics in the first half.",
+      "Play the ending so it genuinely fades — ease off both hands together through measures 134-135 rather than playing a definitive final chord the data doesn't support.",
+      "Use the first two measures to settle the groove gently (they're noticeably sparser) before you play into full boogie energy."
+    ]
+  }
 }

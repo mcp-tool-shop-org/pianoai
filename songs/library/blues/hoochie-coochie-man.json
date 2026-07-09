@@ -10,5 +10,28 @@
     "chicago"
   ],
   "composer": "Willie Dixon",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Willie Dixon wrote 'Hoochie Coochie Man' for Muddy Waters in 1954, and its signature is a stop-time hook built on a rhythmic figure closer to the 'Bo Diddley beat' than a walked 12-bar shuffle — the song's whole identity lives in that syncopated riff, not in a chord progression that unfolds over many bars. This transcription reflects that directly: it's only 9 measures long, the shortest piece in this pilot batch by a wide margin, in A major at a relaxed 100 BPM in cut time (2/2). With just 104 notes total, this reads as a tight excerpt of the song's central riff rather than a full multi-verse performance — which is musically honest to the song, since Dixon's hook is genuinely that compact and repeatable.",
+    "structure": "A short, riff-focused excerpt rather than a full verse-chorus form — 9 measures with no exact or near-identical repeats detected at the measure level, meaning even within this brief excerpt the rhythmic hook's placement shifts from measure to measure rather than landing on an identical grid each time (consistent with a syncopated, stop-time figure). Density alternates in a clear pattern: measures 2, 4, 6, and 8 are the busiest (8 onsets each) while the odd-numbered measures around them (1, 3, 5, 7, 9) are comparatively sparse (2-6 onsets) — a call-and-response alternation between an active hit and a held gap, riding above the implied A7-D7-E7 (I-IV-V) blues harmony underneath the hook.",
+    "keyMoments": [
+      "Measures 2, 4, 6, and 8 are all tied for busiest (8 onsets each), alternating with sparser odd measures (1, 3, 5, 7, 9) — a clear call-and-response pattern between a rhythmic hit and the space that answers it, which demonstrates stop-time technique in miniature.",
+      "The right hand never moves outside a single octave (C4 to C5) across all 9 measures — the riff's identity comes entirely from rhythm and syncopation, not melodic range, a useful example of rhythm over range.",
+      "At only 9 measures and 104 notes, this excerpt is built almost entirely around repetition of a stop-time rhythmic cell rather than harmonic development — treat every measure as a variation on the same A7-rooted hook.",
+      "Measure 1 (2 onsets) and measure 9 (2 onsets) bookend the excerpt at nearly identical, low density — the phrase both opens and closes with a light touch around a busier core (measures 2-8)."
+    ],
+    "teachingGoals": [
+      "Stop-time / Bo Diddley-beat syncopation: this hook is defined by silence as much as by the notes — practice the rhythm clapped or on a single note before adding the full riff.",
+      "Compact riff internalization: with only 9 measures and a one-octave range, learn this small unit completely from memory before moving to a longer piece.",
+      "Call-and-response phrasing: listen for the alternation between the busy even-numbered measures (2, 4, 6, 8) and the sparser odd ones around them as a musical question-and-answer, not a random rhythm.",
+      "Groove in cut time: at 2/2, practice feeling this in two broad pulses per measure rather than four, which gives the riff its strutting, unhurried character even though individual notes may be quick.",
+      "Underlying A7-D7-E7 harmony: recognize the I-IV-V blues chords implied beneath the riff, even though the hook itself is built to obscure a walked progression."
+    ],
+    "styleTips": [
+      "Commit hard to the syncopation — playing this riff 'straight' removes the exact quality that makes it recognizable as the Hoochie Coochie Man hook; feel where the accent lands before you play it.",
+      "Leave real silence in the sparser measures (1, 3, 5, 7, 9); the gaps are doing as much rhythmic work as the hits that surround them — don't fill them in.",
+      "Stay relaxed at 100 BPM in cut time — this is a strut, not a rush; let the two-feel groove settle rather than pushing forward.",
+      "Because the riff never leaves a single octave, use touch and rhythmic placement, not range or dynamics contrast, to carry the expressive weight."
+    ]
+  }
 }

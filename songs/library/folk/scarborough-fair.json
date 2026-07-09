@@ -10,5 +10,28 @@
     "modal"
   ],
   "composer": "Traditional English",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "'Scarborough Fair' is a traditional English ballad in the 'impossible tasks' tradition (parsley, sage, rosemary, and thyme accompanying a series of riddles a former lover must complete), most famous today through Simon & Garfunkel's 1966 'Scarborough Fair/Canticle.' Musically it's built on the Dorian mode — like Greensleeves, this genre's own exemplar, its minor tonality carries a raised sixth degree that gives it an archaic, modally ambiguous color no purely major or minor piece can replicate. This arrangement, in D minor at a spacious 72 BPM in 6/8, is the shortest folk piece in this pilot batch at just 23 measures, with a correspondingly narrow melodic range — the right hand spans barely more than an octave (C4 to D5) — appropriate to a simple, singable modal ballad.",
+    "structure": "A short strophic ballad built on a repeating opening phrase — measures 1 and 2 are an exact repeat of each other, and that same two-measure cell reappears again (in near-identical form) at measure 12, showing the opening idea returning partway through the piece. The right hand rests for the first two measures (a brief instrumental pickup) before the melody proper enters, and the piece trails off to its sparsest measure (23, just 1 onset) at the very close.",
+    "keyMoments": [
+      "Measures 1 and 2, both silent in the right hand: a brief instrumental opening before the melody itself enters, giving the singer a clear cue to come in.",
+      "Measures 1 and 2 are also an exact repeat of each other as accompaniment material, and that same two-measure cell returns again at measure 12 — the opening idea reappears almost exactly a third of the way through the piece.",
+      "Measures 8, 14, 16, and 21 are all tied for busiest (11 onsets each) — spread evenly across the piece rather than clustering at one climax, matching this ballad's gentle, undulating character.",
+      "The right hand never exceeds D5, and the left hand stays within a single octave (A2 to A3) — both hands operate within genuinely narrow ranges, appropriate to a simple, drone-like modal accompaniment.",
+      "Measure 23, the final measure, drops to just 1 onset — the ballad simply fades rather than closing on a strong final gesture, consistent with its unresolved Dorian character."
+    ],
+    "teachingGoals": [
+      "Dorian mode recognition: listen for the raised sixth degree against the D minor tonic — the same modal ambiguity documented in this genre's own exemplar, Greensleeves.",
+      "Brief instrumental pickups: practice the two silent right-hand measures at the opening as a real cue for an imaginary singer, not just an empty gap to rush through.",
+      "Even-energy strophic phrasing: with the busiest measures spread evenly (8, 14, 16, 21) rather than building to one climax, practice keeping dynamics gentle and consistent across the whole short form.",
+      "Narrow-range modal accompaniment: with the left hand confined to a single octave, practice a simple drone-like accompaniment pattern rather than a harmonically busy one."
+    ],
+    "styleTips": [
+      "The Dorian raised sixth appears only fleetingly in this arrangement — listen for it at those moments rather than expecting it to color the whole piece, and let it stand rather than 'correcting' it toward a more familiar natural minor sound.",
+      "Play the opening two silent measures with real stillness, as if waiting for a singer to draw breath.",
+      "Keep the 6/8 pulse gentle and rocking rather than driving — this is a spacious pastoral ballad, not a dance tune.",
+      "Let the final measure's single note simply fade rather than adding a closing flourish — the unresolved ending is true to the modal character of the piece."
+    ]
+  }
 }

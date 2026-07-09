@@ -10,5 +10,28 @@
     "river"
   ],
   "composer": "Traditional American",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "'Shenandoah' is one of the best-loved American folk melodies, likely originating among voyageurs and rivermen navigating the Missouri River in the early 19th century, its title tracing either to the Oneida chief Shenandoah or the Shenandoah River and Valley. Its wide, arching phrase and the nostalgic refrain 'Away, you rolling river' have made it a standard for choirs, soloists, and sea-shanty revivalists alike. This arrangement, in F major at a gentle 88 BPM across 41 measures, has a remarkably even density profile — the five busiest measures (5, 6, 15, 16, 25) are all tied at exactly 14 onsets each, meaning the piece never really spikes; it simply rolls forward with consistent, undulating energy.",
+    "structure": "A repeated ~10-measure verse melody, confirmed directly by the note data — measures 2, 12, 22, and 32 are exact repeats of each other, as are 3/13/23/33 and 4/14/24/34, all spaced exactly 10 measures apart, showing the same verse melody cycling four times across the piece (matching the song's call-and-response, many-verse sea-shanty tradition). The right hand rests for a full measure at the very opening (measure 1) before the melody enters on measure 2 already at a substantial 12 onsets — a one-measure pickup rather than a gradual fade-in.",
+    "keyMoments": [
+      "Measure 1 is completely silent, and measure 2 immediately follows at 12 onsets — a one-measure pickup rather than a gradual entrance, the melody arrives essentially at full strength right away.",
+      "Measures 2, 12, 22, and 32 are exact repeats of each other, and the same pattern holds for measures 3/13/23/33 and 4/14/24/34 — a ~10-measure verse melody cycling four full times across the piece.",
+      "The five busiest measures in the piece (5, 6, 15, 16, and 25) are all tied at exactly 14 onsets — an unusually flat, even density profile with no single dramatic peak.",
+      "The right hand's range stays modest throughout (C4 to D#5, a bit over an octave), appropriate to a wide-breathed but still singable melody.",
+      "The left hand's lowest note, G1, arrives at measure 7 — inside the first verse cycle, establishing the accompaniment's low register early and consistently rather than saving depth for a later climax."
+    ],
+    "teachingGoals": [
+      "Repeated verse-melody recognition: with the same ~10-measure unit recurring four times (at measures 2, 12, 22, and 32), learn the first verse thoroughly — the other three are the same material.",
+      "Even, wave-like dynamic shaping: since the busiest measures are all tied at the same value rather than building to one peak, practice a gently undulating dynamic contour instead of a single dramatic swell.",
+      "One-measure pickup phrasing: the melody enters at nearly full strength right after a single silent measure — practice that entrance so it feels grounded and confident, not tentative.",
+      "Call-and-response verse structure: this song is traditionally sung with a leader-and-chorus alternation across many verses — let each of the four repeated verse-cycles feel like a fresh telling of the same tune."
+    ],
+    "styleTips": [
+      "Let the melody roll rather than march — think of the 'rolling river' the refrain names, with a gentle, continuous forward motion rather than sharp accents.",
+      "Since dynamics stay even throughout, use subtle touch and voicing changes between the four verse repeats to keep the performance alive rather than mechanically identical.",
+      "Enter confidently after the one-measure opening silence — this melody doesn't ease in, it arrives.",
+      "Keep the tempo unhurried at 88 BPM and resist any urge to add rhythmic drive; this is a nostalgic, longing song, not a work shanty meant to set a rowing pace."
+    ]
+  }
 }

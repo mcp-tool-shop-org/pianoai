@@ -10,5 +10,28 @@
     "american"
   ],
   "composer": "Joseph Brackett",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Elder Joseph Brackett composed 'Simple Gifts' in 1848 as a Shaker dance song, its plain, unadorned melody embodying the Shaker values of humility and functional simplicity it describes — ''tis the gift to be simple, 'tis the gift to be free.' The song reached a much wider audience through Aaron Copland's 1944 ballet score Appalachian Spring, where he built an entire set of variations around it. This arrangement, in F major at 88 BPM across just 34 measures, is the sparest piece in this entire pilot batch — only 360 notes total, about 10.6 per measure — and its right hand never leaves a single octave (C4 to C5) in the whole piece, a remarkably narrow, plain range that is itself a kind of musical honesty about the song's own lyric.",
+    "structure": "A short, plain melody over the simple F-Bb-C-F (I-IV-V-I) folk cadence, with no exact or near-identical repeated measures anywhere in the piece — unlike most other songs in this pilot batch, 'Simple Gifts' shows continuous melodic variation rather than a literal repeated refrain, even though its overall character stays consistently simple and even throughout. Density never rises far above its own baseline: measure 5 and measure 22 (both 9 onsets, the busiest in the piece) are barely higher than measure 1 and measure 34 (both 3 onsets, the sparsest) — a difference of just 6 onsets across the piece's entire dynamic range, confirming there is no dramatic climax anywhere in this melody.",
+    "keyMoments": [
+      "The right hand never leaves a single octave — C4 to C5 — across all 34 measures, an exact one-octave range that is unusually narrow even among the simple folk melodies in this pilot batch, and true to the song's own lyric about simplicity.",
+      "No two measures share identical or near-identical pitch content anywhere in the piece — despite its plainness, the melody keeps quietly varying rather than repeating a fixed refrain, an example closer to Copland's later variation treatment than a rote strophic tune.",
+      "Measure 5 and measure 22 are tied for busiest (9 onsets each), but that's barely above the piece's baseline — the dynamic range from busiest to sparsest measure is only 6 onsets, the flattest energy profile of any piece in this pilot batch.",
+      "Measure 1 and measure 34, the piece's opening and closing measures, are both tied for sparsest (3 onsets each) over the F-major tonic — the piece begins and ends at the same quiet level, framing the whole melody evenly.",
+      "The left hand's range (C2 to A#3) is likewise modest — neither hand ever reaches for a dramatic register, a clear example of the Shaker aesthetic of humility and restraint the lyric itself describes."
+    ],
+    "teachingGoals": [
+      "Expressive simplicity: with only 360 notes and an exact one-octave right-hand range, practice making very few notes count — resist the urge to add ornamentation the melody doesn't ask for.",
+      "Continuous variation without repetition: unlike the highly repetitive pieces elsewhere in this genre, no measure here repeats exactly — practice reading it as continuously (if gently) evolving material.",
+      "Flat dynamic control: with only a 6-onset difference between measure 5 and measure 1, practice sustaining a narrow, even dynamic range rather than reaching for contrast the piece doesn't call for.",
+      "One-octave hand position: since the right hand never leaves C4-C5, practice building a secure, relaxed hand position within a single, fixed span."
+    ],
+    "styleTips": [
+      "Play with plainness as the goal, not a limitation — every added flourish works against what this melody (and its Shaker origin) is actually about.",
+      "Keep the dynamics gentle and nearly level throughout; the data shows almost no contrast between the busiest and sparsest measures, and the performance should honor that evenness.",
+      "Feel the melody breathe simply within its single octave — don't reach outside the hand position the piece itself never asks for.",
+      "If you know Copland's Appalachian Spring variations, avoid borrowing their orchestral grandeur here — this is the plain F-major tune before the variations, and it should stay that way."
+    ]
+  }
 }
