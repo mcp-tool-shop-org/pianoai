@@ -75,20 +75,9 @@ cd apps/cockpit && npm install && npm run dev   # Vite dev server, opens in your
 
 ## The Learning Loop
 
-```
- Read                 Play                See                 Reflect
-┌──────────┐     ┌───────────┐     ┌────────────┐     ┌──────────────┐
-│ Study the │     │ Play the  │     │ View the   │     │ Write what   │
-│ exemplar  │ ──▶ │ song at   │ ──▶ │ piano roll │ ──▶ │ you learned  │
-│ analysis  │     │ any speed │     │ to verify  │     │ in journal   │
-└──────────┘     └───────────┘     └────────────┘     └──────┬───────┘
-                                                             │
-                                                             ▼
-                                                    ┌──────────────┐
-                                                    │ Next session  │
-                                                    │ picks up here │
-                                                    └──────────────┘
-```
+<p align="center">
+  <img src="docs/learning-loop.svg" alt="The learning loop: Read (MIDI + annotations) → Play (six sound engines) → See (piano roll · guitar tab) → Reflect (practice journal), with the journal persisting so the next session picks up where the last left off" width="100%" />
+</p>
 
 ## The Song Library
 

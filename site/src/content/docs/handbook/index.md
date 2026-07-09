@@ -21,6 +21,8 @@ An LLM can read and write text, but it cannot experience music. No ears, no fing
 
 ## The learning loop
 
+![The learning loop: Read → Play → See → Reflect, with the practice journal persisting so the next session picks up where the last left off](/ai-jam-sessions/learning-loop.svg)
+
 The AI follows a structured cycle:
 
 1. **Read** — study the exemplar analysis (historical context, harmonic structure, key moments, teaching goals)
