@@ -1,3 +1,12 @@
+# This repo is a single package, not a multi-package monorepo (site/ and
+# apps/cockpit/ are built separately with npm). The `packages` field is still
+# required: without it, pnpm 9 — the version CI runs — aborts `pnpm store path`
+# (invoked by actions/setup-node's `cache: pnpm`) with "packages field missing
+# or empty". Declaring the root as the sole member keeps the file valid across
+# pnpm 9/10/11 while the build-approval and override keys below take effect.
+packages:
+  - "."
+
 allowBuilds:
   esbuild: true
 onlyBuiltDependencies:
