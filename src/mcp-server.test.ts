@@ -142,26 +142,35 @@ describe("mcp-server.ts — MCP protocol-level tool tests", () => {
       const n = Number(extractText(info).match(/Measures:\**\s*(\d+)/)![1]);
       expect(n).toBeGreaterThan(1);
 
-      // One past the last measure → structured error (proves the > guard fires
-      // at the exact edge, not only for wildly-out-of-range values).
+      // One past the last measure → the range guard rejects it with the
+      // "exceeds … valid range" message (proves the > guard fires at the exact
+      // edge, not only for wildly-out-of-range values).
       const past = (await client.callTool({
         name: "play_song",
         arguments: { id: "fallin", mode: "loop", startMeasure: 1, endMeasure: n + 1 },
       })) as ToolResult;
       expect(past.isError).toBe(true);
-      expect(extractText(past).toLowerCase()).not.toContain("now playing");
+      const pastText = extractText(past).toLowerCase();
+      expect(pastText).not.toContain("now playing");
+      expect(pastText).toMatch(/exceeds|valid range/);
 
-      // Exactly the last measure → must be accepted (a `>=` off-by-one mutation
-      // would reject this and stay green against the 999999 case above). Loop
-      // just the final measure to minimise real playback, then stop it.
+      // Exactly the last measure → the range guard must ACCEPT it. We assert on
+      // the guard's own outcome, not on playback succeeding: a real audio device
+      // isn't available on a headless CI runner, so an in-range request may still
+      // fail later at the engine-connect step ("couldn't start the … engine").
+      // The invariant that matters here is that the *range* check let it through
+      // — i.e. the response is NOT the range-exceeded rejection. Under a `>=`
+      // off-by-one mutation, endMeasure === n would be rejected with that exact
+      // message and this assertion goes red (the 999999 case above cannot catch
+      // that mutation; this one does).
       const edge = (await client.callTool({
         name: "play_song",
         arguments: { id: "fallin", mode: "loop", startMeasure: n, endMeasure: n },
       })) as ToolResult;
-      expect(edge.isError).toBeFalsy();
-      expect(extractText(edge).toLowerCase()).toContain("now playing");
+      expect(extractText(edge).toLowerCase()).not.toMatch(/exceeds|valid range/);
 
-      await client.callTool({ name: "stop_playback", arguments: {} });
+      // Best-effort cleanup in case audio did start (local dev with a device).
+      await client.callTool({ name: "stop_playback", arguments: {} }).catch(() => {});
     },
     25000,
   );

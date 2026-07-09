@@ -920,6 +920,28 @@ registerTool(
       };
     }
 
+    // Validate any requested measure range against the library song BEFORE
+    // starting the audio hardware. This fails fast on bad input, and — because
+    // it no longer sits behind the audio engine's connect() — the range check
+    // stays reachable even where no audio device is present (e.g. a headless
+    // CI runner). Without this ordering, an out-of-range loop request returned
+    // "Now playing" and then crashed the background playback promise once the
+    // loop indexed past the last real measure (F-c969321e).
+    if (librarySong) {
+      if (startMeasure !== undefined && startMeasure > librarySong.measures.length) {
+        return {
+          content: [{ type: "text", text: `startMeasure (${startMeasure}) exceeds "${librarySong.title}"'s length. Valid range: 1-${librarySong.measures.length}.` }],
+          isError: true,
+        };
+      }
+      if (endMeasure !== undefined && endMeasure > librarySong.measures.length) {
+        return {
+          content: [{ type: "text", text: `endMeasure (${endMeasure}) exceeds "${librarySong.title}"'s length. Valid range: 1-${librarySong.measures.length}.` }],
+          isError: true,
+        };
+      }
+    }
+
     // Connect sound engine
     const voiceId = (keyboard ?? "grand") as PianoVoiceId;
     activeVoiceId = voiceId;
@@ -1106,23 +1128,8 @@ registerTool(
 
     const song = librarySong!;
 
-    // Bound startMeasure/endMeasure against the song's actual length before
-    // ever reporting success — mirrors add_section's check. Without this,
-    // an out-of-range loop request returned "Now playing" immediately and
-    // then crashed the background playback promise once the loop indexed
-    // past the last real measure (F-c969321e).
-    if (startMeasure !== undefined && startMeasure > song.measures.length) {
-      return {
-        content: [{ type: "text", text: `startMeasure (${startMeasure}) exceeds "${song.title}"'s length. Valid range: 1-${song.measures.length}.` }],
-        isError: true,
-      };
-    }
-    if (endMeasure !== undefined && endMeasure > song.measures.length) {
-      return {
-        content: [{ type: "text", text: `endMeasure (${endMeasure}) exceeds "${song.title}"'s length. Valid range: 1-${song.measures.length}.` }],
-        isError: true,
-      };
-    }
+    // Measure-range bounds are validated up-front, before the audio engine
+    // connect (see the pre-connect block above, F-c969321e).
 
     const loopRange: [number, number] | undefined =
       startMeasure !== undefined && endMeasure !== undefined ? [startMeasure, endMeasure] : undefined;
