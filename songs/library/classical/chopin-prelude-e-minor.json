@@ -14,22 +14,25 @@
   "source": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
   "status": "ready",
   "musicalLanguage": {
-    "description": "A masterpiece of economy — a simple, descending melody over slowly shifting chords creates profound sadness. Reportedly played at Chopin's own funeral.",
-    "structure": "Through-composed: continuous descending motion with final cadence",
+    "description": "This transcription of Chopin's Prelude in E Minor runs 64 measures at 120 BPM in 4/4 time with 604 notes, and the stated E minor is confirmed by the content (statedKeyFit 0.816; the detected key matches exactly). The piece opens on a fully silent first measure — 0 onsets in either hand — before the famous repeated-chord accompaniment and its slowly descending melody begin. Structurally the piece is through-composed: the repeat detector finds zero identical or near-identical measures anywhere in all 64, confirming the piece never restates a passage outright. The implied chord windows trace a genuinely chromatic descent — Em at measure 3, Cmaj7 at measure 4, B7 at measure 7, Dm at measure 8, C major at measure 13, Cdim at measure 15, D major at measure 17, Bm at measure 18 — a different harmonic color almost every measure. The ending thins out dramatically: measures 56, 58, 60, and 62 are all fully silent, part of a 3-measure rest in both hands at measures 62-64, reportedly the piece Chopin himself asked to have played at his own funeral.",
+    "structure": "Seven structural regions from the section-lens pass, the two sharpest boundaries at measures 60 (novelty 6.877, opening the final silence-punctuated close) and measure 29 (5.108, the heart of the chromatic descent). With zero literal repeats detected anywhere, the pattern lens instead finds short, heavily transposed melodic cells doing the structural work: a 4-note right-hand figure recurs seven times, shifting by different intervals almost every time it returns (measures 2-3, 10-11, 12-13, 14-15, 17-18, 31-32, 36-37), and a 14-note right-hand phrase restates once, untransposed, between measures 3-6 and 31-35. The left hand carries three separate 5-note figures that each recur two to three times with transposition, threading through measures 3-20 and reappearing later in varied form. This is the sound of continuous chromatic voice-leading rather than repeated blocks — the same short gestures reappear constantly, but almost never at the same pitch level twice.",
     "keyMoments": [
-      "Opening: the melody barely moves while harmony shifts beneath",
-      "Chromatic descent creates deepening sadness",
-      "Final measures: cadence resolves the tension"
+      "The fully silent opening measure — 0 onsets in either hand — teaches that a prelude can begin with the room already set by silence, before the first repeated chord ever sounds; the piece's famous hushed character starts before a single note is played.",
+      "Zero identical or near-identical measures anywhere in all 64 bars demonstrates true through-composition: this piece is a skill-building model for chromatic voice leading, where the harmony shifts by step almost every measure rather than settling into any repeating pattern.",
+      "The implied progression from Em (measure 3) through Cmaj7, B7, and Dm (measures 4-8) and onward to C major, Cdim, D major, and Bm (measures 13-18) shows a genuinely mobile harmonic descent — a technique for building the sense of the whole piece slowly sinking.",
+      "The final silence — measures 56, 58, 60, and 62 all fully at rest, closing in a 3-measure joint rest at measures 62-64 — models dynamic shaping through absence: the piece's emotional weight lands in what is not played as much as what is."
     ],
     "teachingGoals": [
-      "Expressive playing with minimal notes",
-      "Chromatic voice leading awareness",
-      "Dynamic shaping over a long phrase"
+      "Practice the 4-note right-hand figure that recurs seven times (measures 2-3 through 36-37) as one flexible shape, and learn to recognize it even as it shifts to a different starting pitch nearly every time.",
+      "Listen for the implied chromatic descent from Em through Cmaj7, B7, Dm, C major, Cdim, D major, and Bm (measures 3-18), and develop the ear to follow a harmony that almost never repeats itself measure to measure.",
+      "Build the discipline of the fully silent opening measure and the closing 3-measure rest (measures 62-64) — recognize silence as a notated, deliberate part of the phrase rather than empty space to fill.",
+      "Understand through-composition by observing that zero measures repeat literally anywhere in the piece — this is a skill for reading music that develops continuously rather than leaning on a chorus or refrain."
     ],
     "styleTips": [
-      "Extremely slow, with deep feeling",
-      "Let the harmonies breathe — no rushing",
-      "The melody is almost whispered"
+      "Play extremely slowly and let the harmonies breathe — this is a piece of deep feeling, not virtuosity; listen for each implied chord (Em, Cmaj7, B7, Dm, and onward) resolving fully before the next one begins.",
+      "Voice the slowly moving top line above the repeated chords so it sings even though it barely moves — listen for the melody staying audible above the steady inner accompaniment.",
+      "Treat the opening silent measure and the closing rests at measures 56-64 as part of the performance, not a pause before it — listen for the room's stillness carrying as much weight as the notes.",
+      "Use pedal to sustain the chromatic descent without blurring adjacent harmonies — listen for each new implied chord arriving cleanly rather than washing into the one before it."
     ]
   }
 }

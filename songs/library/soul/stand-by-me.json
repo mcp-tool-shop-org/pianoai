@@ -10,5 +10,27 @@
     "classic"
   ],
   "composer": "Ben E. King",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Ben E. King's Stand by Me appears as a 100-measure transcription notated at 200 BPM with 4,135 notes, and its stated A major is strongly confirmed (0.821 fit, detection agreeing at a 0.239 margin). The 25 implied windows spell the plainest possible frame: A major at fourteen locations, E major (the V) at eight, D major (the IV) at three — 25% coverage of windows considered — and the sequence repeatedly walks IV into V into I (D at measure 48 into E at 49 into A at 50; D at 64 into E at 65; D at 72 into E at 73), with the final stretch pairing implied E and A windows in adjacent measures (81-82, 89-90, 93-94, 97-98, closing on A at 99). The engine is cellular: a 6-note right-hand figure recurs sixteen times — every measure from 4 through 11, then on an 8-measure grid at measures 16, 24, 32, 40, 48, 64, 72, and 80 — and a 9-note left-hand cell surfaces seven times (measures 4-6 through 84-86). Measure 62 spikes to 32 onsets — the file's densest bar by a wide margin over the next at 20. The right hand's floor is C#4 and its ceiling C#7 (measure 69); the left reaches D2 at measure 8.",
+    "structure": "Nine regions with the entry seam dominant (novelty 9.389 at measure 5) and then a remarkably even rotation — boundaries near 2.4-3.1 every 8-16 measures (measures 14, 30, 38, 54, 62, 78) — a strict cyclic form over one harmonic loop. Verse blocks restate: the 34-note right-hand phrase of measures 14-19 returns at 22-27, 30-35, and 78-83; the 34-note left-hand span of measures 26-32 returns at 50-56 and 82-88; near-identical measure runs pair measures 28-32 with 52-56. The close is a settled vamp — measures 92-93 return byte-identical at 96-97, the final region's novelty flattens to 0.119, and the implied windows alternate E and A to the last labeled bar (measure 99). The file opens from a silent measure and three near-empty ones and ends on a silent measure 100.",
+    "keyMoments": [
+      "The implied windows walk the classic cadence repeatedly: D (IV) at measure 48 into E (V) at measure 49 into A (I) at measure 50 — with the same IV-V step at measures 64-65 and 72-73 — the harmonic engine spelled out by the labels themselves, all hedged as inferred.",
+      "A 6-note right-hand figure recurs sixteen times — every measure from 4 through 11, then riding an 8-measure grid at measures 16, 24, 32, 40, 48, 64, 72, and 80 — a riff that marks the form's pulse at the phrase level.",
+      "Measure 62 carries 32 onsets — the file's densest bar, half again beyond the next-busiest at 20 — a single written surge in an otherwise even texture, and the section lens seats a boundary right there (novelty 2.843).",
+      "The closing vamp settles rather than builds: measures 92-93 return byte-identical at 96-97, the last region's novelty flattens to 0.119, and implied E and A windows pair off in adjacent measures from 81 to 99 (81-82, 89-90, 93-94, 97-98, with a final A at 99)."
+    ],
+    "teachingGoals": [
+      "Learn the 6-note riff and its 8-measure grid first — sixteen appearances from measure 4 to measure 80 make it the form's own metronome.",
+      "Practice the verse phrase of measures 14-19 with its returns at 22-27, 30-35, and 78-83 — four statements of one 34-note line.",
+      "Hear the IV-V-I walk in the window sequence (measures 48-50, 64-65, 72-73) and the closing E-A pairs (measures 81-99) — the file's implied harmony is a complete, hearable loop.",
+      "Build measure 62 as the one deliberate surge: 32 onsets against a 20-onset ceiling elsewhere — plan the approach so the spike lands as intention, not surprise."
+    ],
+    "styleTips": [
+      "Count the notated 200 BPM in a relaxed half-time feel — two broad beats per measure — and listen for the groove breathing at walking pace even though the printed pulse is quick.",
+      "Lay the backbeat slightly behind the pulse once the riff is automatic — the style's pocket sits late against honest bass time; listen for the lean staying constant through the 8-measure cycles.",
+      "Keep the 6-note riff identical at all sixteen appearances — listen for it as a signpost the listener can set their watch by, never louder, never rushed.",
+      "Let the ending settle instead of finishing big: the byte-identical vamp (measures 92-93 at 96-97) and the flat final novelty ask for a fade of attention — listen for the alternating implied E and A colors rocking to rest at measure 99."
+    ]
+  }
 }

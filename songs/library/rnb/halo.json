@@ -10,5 +10,27 @@
     "piano"
   ],
   "composer": "Beyonce",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Beyonce's Halo appears as a 76-measure transcription at 80 BPM with 4,656 notes, densest late (38 onsets at measures 60 and 64) and framed by a silent first measure and a 2-onset final one. The key data reads as a relative pair the content cannot separate: stated A major fits at 0.455 while detection leans F# minor at a weak 0.063 margin — one key signature, two readings. The implied windows are diatonic to both: B minor at ten windows (13% of the windows considered, from measure 6 out to measure 72), plus three deliberately hedged F# diminished colors early (measures 5, 9, 17) and one F# minor at measure 2. No measure repeats literally anywhere; instead a six-note right-hand figure recurs 25 times with most returns lifted an octave (+12 semitones) — the same gesture echoed higher and higher. The right hand peaks at F#6 in measure 57, the left hand reaches down to F1 at measure 13.",
+    "structure": "Eight regions, with the strongest boundary at measure 5 (novelty 2.977) after a four-measure introduction, and later pivots at measures 31 (1.425) and 55 (1.078) opening the long build toward the piece's densest bars at measures 59-65 (36-38 onsets). The repeat detector finds nothing byte-identical in all 76 measures — this arrangement continuously re-voices — but the pattern lens catches the discipline underneath: two left-hand spans restate at 24-measure distance (measures 21-22 at 45-46, and 23-25 at 47-49), and a six-note left-hand cell recurs at twelve measures scattered from measure 4 to measure 75. The implied B minor windows keep returning at wide spacing (measures 6, 8, 16, 28, 36, 44, 48, 60, 64, 72), a slow harmonic pulse under constant surface variation.",
+    "keyMoments": [
+      "A six-note right-hand figure recurs 25 times across the piece with most returns transposed up an octave (+12 semitones — measures 15-17, 21, 26, 33, 35, 45, 49-50, 66 among them): one idea climbing registers instead of repeating in place.",
+      "The implied harmony moves at a slow pulse: B minor windows recur at ten wide-spaced measures (6, 8, 16, 28, 36, 44, 48, 60, 64, 72 — 13% of windows considered), every one hedged as inferred; the analysis deliberately leaves the rest of the harmony unlabeled rather than guessing through the dense voicings.",
+      "The stated A major and the weakly detected F# minor share a key signature — a relative-major/minor pair the whole-song profile cannot separate (0.063 margin, 0.455 stated fit) — and the implied B minor windows are diatonic to both readings, so the annotation asserts neither.",
+      "The build is physical and measurable: from an 11-onset measure 32 the texture climbs to the file's peaks of 38 onsets at measures 60 and 64, then releases to 2 onsets at the final measure 76."
+    ],
+    "teachingGoals": [
+      "Learn the six-note figure once, then practice its octave-lifted returns as one traveling gesture — 25 occurrences, most at +12 semitones, reward thinking in shapes rather than fixed hand positions.",
+      "Practice the two left-hand spans that restate at 24-measure distance (measures 21-25 returning at 45-49) so the second verse's accompaniment is recall, not relearning.",
+      "Build the long crescendo from measure 55 to measure 65 deliberately: the density data climbs from the section boundary into the 38-onset peaks, so plan where each dynamic step lands before playing it.",
+      "Listen to a reference recording and imitate the vocal phrasing by ear — this tradition transmits feel through records, not notation, and the written grid here is the skeleton, not the performance."
+    ],
+    "styleTips": [
+      "Lay the backbeat slightly behind the pulse once the written rhythm is secure — the notation places beats 2 and 4 on the grid, but the style's own practice lets them sit a touch late; listen for the relaxed drag against a steady left hand.",
+      "Play the octave-lifted returns of the six-note figure with increasing openness — same shape, higher floor; listen for the top notes ringing longer as the register climbs toward F#6 at measure 57.",
+      "Keep the early hedged diminished colors (measures 5, 9, 17) soft and unresolved-sounding — the analysis flags them as ambiguous, and the music treats them as passing shadows; listen for how they lean into the B minor arrivals.",
+      "Feel the last measure as an exhale: after the 38-onset peaks at measures 60 and 64, the file closes on 2 onsets — let the sound decay fully rather than placing a firm ending."
+    ]
+  }
 }

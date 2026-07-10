@@ -10,5 +10,27 @@
     "folk"
   ],
   "composer": "Daniel Alomia Robles",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Daniel Alomia Robles's El Condor Pasa is an Andean melody, and this 56-measure transcription at 59 BPM renders it with extraordinary density: 5,895 notes, with measures 3 through 7 each carrying exactly 96 onsets — a written-out roll, the sustained tremolo shimmer of Andean ensemble texture transcribed literally. The staging is stark: two fully silent measures, then the right hand alone from measure 3, with the left hand resting through measure 11 — an 11-measure bass silence — before entering at measure 12. The stated E minor fits the content well (0.681), and the twelve implied windows agree: eleven suggest E minor (seven of them at 0.792 confidence across measures 3-10) and one C major — the VI of that key — at measure 11, at 22% coverage of windows considered. The detected label, G major at a 0.03 noise margin, is simply E minor's relative major: for a pentatonic Andean melody, the Western major/minor binary is a rough fit at best. The right hand peaks at G6 in measure 26; the left hand's lowest note is E1 at measure 17.",
+    "structure": "Seven regions. The lens's biggest boundary lands at measure 5 (novelty 5.999) inside the opening roll, and its second-strongest at measure 13 (3.688), immediately after the bass entry at measure 12 completes the texture. Once the left hand arrives, the accompaniment is cellular: a 30-note figure repeats at measures 25-28, 29-32, 46-49, and 50-53 (four statements, 40% of left-hand onsets), a 13-note cadence figure closes spans at measures 32-33, 44-45, and 53-54, and a short four-note bass cell alternates at two transposition levels through measures 14-24. There are no literal measure repeats anywhere — the roll texture varies continuously — so the pattern lens, not the repeat detector, carries the structural story. The final region (measures 52-56) settles to the file's gentlest boundary (novelty 0.724) and a 20-onset final measure.",
+    "keyMoments": [
+      "Measures 3 through 7 each carry exactly 96 onsets — 24 attacks per beat of the measure's four beats — a written-out tremolo roll sustained across five consecutive measures while the left hand is still silent: the unaccompanied oscillation is the piece's entire opening statement.",
+      "The left hand's longest silence spans measures 1-11; its entry at measure 12 completes the texture for the first time, and the section lens marks its second-strongest boundary right there (novelty 3.688 at measure 13).",
+      "Eleven of the twelve implied windows suggest E minor — seven at 0.792 confidence across measures 3-10, unusually high for a gated genre — a drone-like tonal stillness consistent with the melody's pentatonic character; the single implied C major at measure 11 is the VI of that world.",
+      "The accompaniment is built from one 30-note cell: statements at measures 25-28, 29-32, 46-49, and 50-53 cover 40% of the left hand's onsets, with a 13-note cadence figure sealing phrases at measures 32-33, 44-45, and 53-54."
+    ],
+    "teachingGoals": [
+      "Practice the right-hand roll of measures 3-12 as an unmeasured tremolo rather than counted notes — the file writes 96 onsets per measure, and the skill is a continuous, even shimmer, not arithmetic.",
+      "Learn the 30-note accompaniment cell at measures 25-28 once — it returns at 29-32, 46-49, and 50-53, so four statements flow from one act of learning.",
+      "Recognize the pentatonic, modal character of the melody: whole-song detection blurs to the relative major at a 0.03 noise margin while stated E minor fits at 0.681 — practice hearing the gapped scale on its own terms instead of forcing functional major/minor labels onto it.",
+      "Build the staged opening as theatre: two silent measures, nine measures of unaccompanied right hand (measures 3-11), then the bass entry at measure 12 — feel each layer's arrival as an event."
+    ],
+    "styleTips": [
+      "Play the tremolo passages as rolls — listen for a continuous shimmer in which no individual attack pokes out, the sustained ensemble sound of the Andean tradition this melody comes from.",
+      "Keep the left-hand cell low and even like a strummed drone once it enters — listen for the E minor color holding still underneath while the melody bends and swells above it.",
+      "Honor the 11-measure bass silence: don't sneak the left hand in early — feel the texture visibly widen when it finally lands at measure 12, and let that arrival carry weight.",
+      "Shape the final region (measures 52-56) as a settling: the lens gives it the file's gentlest boundary and measure 56 thins to 20 onsets — let the roll soften gradually into stillness rather than stopping abruptly."
+    ]
+  }
 }

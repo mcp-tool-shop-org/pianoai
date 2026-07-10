@@ -9,5 +9,27 @@
     "otis-redding"
   ],
   "composer": "Otis Redding",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Otis Redding's Sitting on the Dock of the Bay carries an emphatic key confirmation: the stated G major fits the content at 0.899, with detection agreeing at a 0.258 margin. Across its 76 measures at 104 BPM (4,728 notes), the 14 implied windows mix the diatonic — G major itself at measures 7, 10, 11, and 66, B minor (the iii) at measures 21, 23, 37, and 66 — with two recurring non-diatonic colors: a B major at measures 13, 17, 53, and 57 and an E major at measures 43 and 67, bright mediant sonorities outside the key's own set, all hedged as inferred at 18% coverage of windows considered. Structurally nothing repeats byte-identically in the entire file and the pattern lens finds only short, weak-graded cells — this is continuous, conversational variation over a steady groove. The density story spikes once: measure 43 carries 58 onsets and measure 51 carries 53, against a file average far below that. The right hand touches G7 — near the top of the keyboard — at measure 3, inside the near-silent opening.",
+    "structure": "Nine regions. The music enters from two written-silent measures with the file's biggest boundary at measure 5 (novelty 7.118) and a second strong seam at measure 12 (3.414); after that the regions turn over gently every 6-10 measures. With zero literal repeats, the form is carried by the implied-window rhythm — G and B-major colors alternating early (measures 7-17), B minor entering in the 20s, the E major color marking the dense middle at measure 43 — and by density: the spike region at measures 43-51 (58, 36, 36, and 53 onsets at measures 43, 47, 49, and 51) stands out sharply from the surrounding texture. The closing region (measures 60-76) runs 17 measures, the file's longest, easing to 13 onsets at measure 75 and 4 at the final measure.",
+    "keyMoments": [
+      "The stated G major is emphatically confirmed — 0.899 stated fit with agreeing detection at a 0.258 margin — and the implied G windows at measures 7, 10, 11, and 66 sound that home plainly.",
+      "Two non-diatonic colors recur as implied labels: B major at measures 13, 17, 53, and 57 and E major at measures 43 and 67 — bright major sonorities where the key's own set would supply minor ones, hedged as inferred but persistent across the file.",
+      "Measure 43 is the file's outlier: 58 onsets — with a companion spike of 53 at measure 51 — inside an otherwise conversational texture, and the implied E major color lands in the same bar.",
+      "The right hand touches G7 at measure 3, inside the two-measure silent opening's immediate aftermath — the registral ceiling arrives before the groove even settles, then the piece stays far below it."
+    ],
+    "teachingGoals": [
+      "Practice the groove as continuous variation: with zero byte-identical measures in all 76, this file rewards learning the feel and the harmonic rhythm rather than memorizing repeats.",
+      "Recognize the two recurring color chords by ear — the implied B major (measures 13, 17, 53, 57) and E major (measures 43, 67) against the confirmed G major home — and listen for how each brightens the phrase it enters.",
+      "Build the density spike at measures 43-51 as its own project: 58 onsets at measure 43 and 53 at measure 51 are double-handful bars in an otherwise easy texture — isolate them, then re-embed them at tempo.",
+      "Learn the long closing region (measures 60-76) as one 17-measure wind-down, easing from full texture to 4 onsets at measure 76."
+    ],
+    "styleTips": [
+      "Lay the backbeat slightly behind the pulse — this groove's notation is an even 104 BPM grid, but the style's own practice lets beats 2 and 4 sit late; listen for the relaxed lean over a bass that keeps honest time.",
+      "Play the implied B major and E major colors (measures 13, 17, 43, 53, 57, 67) a shade warmer than the diatonic bars — listen for the lift they give the phrase, then let the G home reassert itself.",
+      "Treat the measure-43 spike as a wave, not a wall: 58 onsets flow as one gesture — listen for the crest passing and the texture relaxing again by measure 52.",
+      "Imitate a reference recording by ear for the vocal phrasing and the closing region's easy fade — the tradition transmits this feel through records, and the grid here is only its skeleton."
+    ]
+  }
 }

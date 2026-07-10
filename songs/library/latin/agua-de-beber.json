@@ -11,5 +11,27 @@
   ],
   "composer": "Antonio Carlos Jobim",
   "source": "midisfree.com (full-length transcription, 86 measures, bossa guitar+flute; replaced the 1,855-byte 8-measure bitmidi uploads/4374 fragment — a mislabeled trance track — 2026-07-09 data-audit follow-up)",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Antonio Carlos Jobim's Agua de Beber appears here as an 86-measure bossa nova transcription at 100 BPM, unusually transparent in texture: 1,129 notes in all, with no measure carrying more than 12 onsets — the quiet, conversational density this style favors. The right hand tops out at A5 in measure 21 over a left hand that never drops below E2. The harmony data is dominated by one implied color: 19 of the 32 confidence-gated windows suggest an A minor seventh sonority, with implied C7, C major seventh, and B-rooted windows scattered between — labels cover 36% of the windows the analysis considered, the stated D minor fits the whole-song profile only weakly (0.113), and detection is itself ambiguous (0.045 margin), so every harmonic claim here stays inferred. The large-scale design is generous: the right hand's melodic line of measures 24-43 returns with zero transposition at measures 44-63.",
+    "structure": "The section lens divides the piece into 8 regions, with its strongest interior pivots at measure 26 (novelty 2.48) and measure 80 (novelty 2.19). Inside that frame the repetition is dense: a four-measure phrase at measures 32-35 returns byte-identical at measures 36-39, 40-43, 52-55, 56-59, and 60-63 — six statements in all — while the comping measures of the opening (measures 1-5) resurface at measures 65-80 in a mix of byte-identical and near-identical returns. The pattern lens confirms the big picture: the right hand's 87-note line spanning measures 24-43 restates at 44-63 (47% of right-hand onsets), and the left hand's 91-note line of measures 25-44 restates at 45-64. The final region (measures 80-86) thins steadily to a single left-hand onset at measure 86.",
+    "keyMoments": [
+      "Measures 32-35 form a four-measure vamp that returns byte-identical at measures 36-39, 40-43, 52-55, 56-59, and 60-63 — six statements in all, so learning these four measures once unlocks 24 of the piece's 86 measures.",
+      "The busiest playing in the whole file is just 12 onsets per measure (measures 35, 39, 43, 55, and 59) — a lesson that bossa nova intensity comes from syncopation and placement, never from piling on notes.",
+      "19 of the 32 confidence-gated chord windows suggest an implied A minor seventh color, and the analysis hedges every one of them — with whole-song detection ambiguous (0.045 margin) and the stated D minor fitting weakly (0.113), the harmony here asks to be confirmed by ear rather than read as fact.",
+      "The piece empties out at the close: the right hand's longest rest is the final measure 86 itself, which carries a single left-hand onset — a one-measure dying-away ending after 85 measures of continuous motion."
+    ],
+    "teachingGoals": [
+      "Practice the four-measure vamp at measures 32-35 until it cycles without thought — its six byte-identical statements across measures 32-43 and 52-63 cover 24 of the piece's 86 measures.",
+      "Learn the melodic line of measures 24-43 as one 20-measure arc, then recognize its exact return at measures 44-63 — the pattern lens shows the right hand's line repeating there with zero transposition, covering 47% of the right hand's onsets.",
+      "Hear the implied A minor seventh that dominates the labeled windows (19 of 32) as a resting sonority rather than a functional progression — every window is hedged as inferred, so let your ear confirm what the labels only suggest.",
+      "Build the left hand's short comping cell first: a seven-note figure recurs at ten locations (measures 2-3, 4-5, 10-11, 12-13, and again from measure 64 onward), compressing much of the accompaniment into one learnable shape."
+    ],
+    "styleTips": [
+      "Keep the eighth notes straight, not swung — bossa nova's lilt comes from syncopation against an even pulse; listen for the left hand's steady low A2 anchors holding while the right hand's chords land between the beats.",
+      "Play the whole piece inside a small dynamic envelope — no measure of the 86 exceeds 12 onsets, so shape phrases with touch and timing rather than volume; listen for every chord attack staying soft enough that the melody's longer notes ring over it.",
+      "Let measure 86 genuinely die away: after 85 measures of motion the file ends on one left-hand note — feel the silence around that final onset as part of the piece, not an early release.",
+      "Use the detected section boundaries (new regions open at measures 26, 48, 63, and 80) as breathing points; listen for the texture change at measure 26, the strongest interior pivot the section lens reports (novelty 2.48)."
+    ]
+  }
 }

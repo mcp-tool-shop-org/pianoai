@@ -10,5 +10,27 @@
     "funk"
   ],
   "composer": "James Brown",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "James Brown's I Got You (I Feel Good) appears as a 98-measure funk transcription at 147 BPM with 3,255 notes, and its implied harmony says one thing loudly: D7. Eighteen of the 24 emitted windows suggest a D dominant seventh (18% of all windows considered — measures 3, 12, 15, 27, 42, 44, 48, 51, 54, 56, 60, 63, 78, 80, 84, 87, 91, 95), the funk practice of a dominant-quality home sonority, with an implied G major seventh (the IV) at five measures (14, 26, 50, 62, 86) and a single A major (the V) at measure 39 — all hedged as inferred. The engine underneath is a 15-note left-hand cell recurring 15 times at a 7.5 compression ratio (measures 5-6, 7-8, 10-11, and onward to 82-83), covering 32% of the left hand's onsets: a two-measure bass riff that is the piece. The right hand peaks at E6 in measure 4; verse-scale left-hand spans restate across the form (measures 9-16 at 21-28 and 81-88; measures 35-48 at 71-84).",
+    "structure": "Ten regions turning over every 8-14 measures — boundaries at measures 5 (novelty 5.906, the groove's entry), 17, 29, 39 (3.115), 53, 65, 75, 85, and 94 — a regular sectional rotation over an unchanging engine. The 15-note bass cell threads the whole length; above it, near-identical measures recur on a long cycle (measure 15's content returns re-voiced at 27, 51, 63, 87, 91, and 95 — seven appearances; measure 14's at 62, 86, and 90). Larger left-hand architecture doubles the form: the 50-note span at measures 9-16 restates at 21-28 and 81-88, and a 96-note span at measures 35-48 restates at 71-84. The implied D7 windows recur from the file's opening region to its last (measure 3 to measure 95) — one harmonic floor under a rotating surface.",
+    "keyMoments": [
+      "Eighteen of the 24 implied windows say D7 (measures 3 through 95, 18% of windows considered) — a dominant-quality sonority as home base, the defining funk harmonic move, held for the file's entire length and hedged as inferred throughout.",
+      "A 15-note left-hand cell recurs 15 times at a 7.5 compression ratio (measures 5-6 through 82-83, 32% of the left hand's onsets) — the two-measure bass riff that generates the groove.",
+      "The implied G major seventh windows at measures 14, 26, 50, 62, and 86 mark the recurring move away from the D7 floor — five appearances of the IV color, each arriving mid-region.",
+      "Measure 15's content returns near-identically at measures 27, 51, 63, 87, 91, and 95 — seven appearances across the form — evidence of a strict cyclic design under the varied surface."
+    ],
+    "teachingGoals": [
+      "Master the 15-note bass cell first (measures 5-6): fifteen occurrences covering 32% of the left hand make it the piece's real content — loop it until it grooves without attention.",
+      "Practice hearing D7 as home: the implied windows keep the dominant-seventh color as the resting sonority for 98 measures, so train your ear to hear tension-as-stability, resolved by rhythm rather than cadence.",
+      "Learn the two big left-hand spans (measures 9-16 and 35-48) with their restatements (21-28 and 81-88; 71-84) — most of the accompaniment is these two blocks plus the cell.",
+      "Build sixteenth-note precision at 147 BPM: place each attack of the bass cell exactly on its grid slot before adding any feel — in funk the placement is the content."
+    ],
+    "styleTips": [
+      "Play every note percussively and short — this is funk piano: listen for the left-hand riff hitting like a drum pattern, dry and staccato, with no pedal blur between attacks.",
+      "Lay the backbeat slightly behind the grid once the riff is secure — the notation is quantized, but the style's pocket lets beats 2 and 4 sit a hair late; listen for the lean while the sixteenth grid stays strict.",
+      "Voice the implied G major seventh arrivals (measures 14, 26, 50, 62, 86) as brief openings in the D7 wall — listen for the color change, then snap back to the riff's insistence.",
+      "Imitate a reference recording by ear for the accent pattern — the tradition's ghost-note weighting between the accents lives on the records, not in this grid."
+    ]
+  }
 }

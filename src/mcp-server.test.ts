@@ -32,7 +32,7 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import { mkdtempSync, rmSync, readFileSync, existsSync, mkdirSync, writeFileSync, chmodSync, readdirSync, statSync } from "node:fs";
+import { mkdtempSync, rmSync, readFileSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -965,57 +965,94 @@ describe("mcp-server.ts — fs-write errors return structured JamError results (
   it(
     "annotate_song's ingest/persist catch returns a JamError-shaped result (code/message/hint), not a raw err.message, when the persist step fails",
     async () => {
-      // annotate_song best-effort-writes the library config at entry.configPath
-      // BEFORE its ingest/persist try block. That path is a real, checked-in
-      // repo file that OTHER test files scan from the live library in parallel
-      // vitest workers (piano-roll/teaching/session). Make it read-only so the
-      // best-effort write EPERMs — the documented read-only-package-install
-      // branch (F-a53c900d) — leaving the repo file's CONTENT untouched: no
-      // mutation, no torn-write race. Original bytes captured as a
-      // belt-and-suspenders restore for any environment where read-only does
-      // not block the write (e.g. a root CI user); in that case no concurrent
-      // test asserts on this raw song's content, so a transient swap is inert.
+      // A RAW library song is needed deliberately: raw songs are NOT
+      // registered at startup (initializeFromLibrary only ingests "ready"
+      // songs), so registerSong() inside annotate_song won't throw
+      // "Duplicate song ID" first — the flow reaches saveSong(), the persist
+      // step we want to fail. This test used to DISCOVER a currently-raw
+      // song at runtime (after its original hardcoded slug,
+      // "blues-in-the-night", was harvest-promoted to ready and silently
+      // changed which code path ran) — but the 2026-07 harvest waves took
+      // the shipped library to 120/120 ready, and discovery's own
+      // "no raw library song left — inject a fixture raw song" throw fired.
+      // This is that fixture: a synthetic raw song (minimal valid config +
+      // the same proven one-note MIDI bytes as library.test.ts's writeMidi
+      // helper) written into the LIVE songs/library/ tree for the duration
+      // of this test and deleted in the finally below. It must live in the
+      // live tree — the spawned child server resolves its library dir
+      // relative to mcp-server.ts itself, with no override seam — and inside
+      // a real GENRES dir, because scanLibrary() iterates the fixed genre
+      // list, not arbitrary subdirectories.
       //
-      // A RAW song is used deliberately: raw songs are NOT registered at
-      // startup (initializeFromLibrary only ingests "ready" songs), so
-      // registerSong() inside annotate_song won't throw "Duplicate song ID"
-      // first — the flow reaches saveSong(), the persist step we want to fail.
-      // Discover a currently-RAW library song at runtime. Harvest waves flip
-      // whole genres to "ready" over time, so a hardcoded slug rots — the
-      // original choice ("blues-in-the-night") went ready in the 2026-07
-      // pilot and silently changed which code path this test exercised.
-      // If the library ever reaches 120/120 ready, inject a fixture raw
-      // song instead (the throw below is that signal).
+      // Safety against everything that can observe the fixture:
+      //   - Parallel vitest workers scanning the live library: status "raw"
+      //     keeps it out of every initializeFromLibrary() ingest; a torn
+      //     read of a mid-write config is caught per-file inside
+      //     scanLibrary() (SKIP + continue); and no test asserts on
+      //     live-library totals. annotate_song's best-effort config write
+      //     flipping the fixture to "ready" mid-test is equally inert —
+      //     it's our disposable file, gone in the finally.
+      //   - A crashed/killed run leaving the pair behind: the
+      //     zz-test-fixture-* name is gitignored, so a later bulk `git add`
+      //     (harvest waves do those) can't sweep it into the product
+      //     library, and the rmSync pre-clean below makes reruns
+      //     self-healing.
+      const FIXTURE_SONG_ID = "zz-test-fixture-persist-failure";
       const libraryRoot = fileURLToPath(new URL("../songs/library", import.meta.url));
-      const rawEntry = (() => {
-        for (const genre of readdirSync(libraryRoot)) {
-          const genreDir = join(libraryRoot, genre);
-          if (!statSync(genreDir).isDirectory()) continue;
-          for (const f of readdirSync(genreDir)) {
-            if (!f.endsWith(".json")) continue;
-            const p = join(genreDir, f);
-            const cfg = JSON.parse(readFileSync(p, "utf-8")) as { id?: string; status?: string };
-            // Sibling .mid required: a config-only entry would make
-            // ingestSong() throw "MIDI file not found" inside the SAME catch
-            // this test asserts on — green text, wrong path again (the .tmp
-            // assertion below would flag it, but don't pick a doomed
-            // candidate when the next one over works).
-            if (cfg.status !== "ready" && typeof cfg.id === "string" && existsSync(p.replace(/\.json$/, ".mid"))) {
-              return { id: cfg.id, path: p };
-            }
-          }
-        }
-        throw new Error(
-          "no raw library song left to exercise the persist-failure path — inject a fixture raw song",
-        );
-      })();
-      const RAW_SONG_ID = rawEntry.id;
-      const libConfigPath = rawEntry.path;
-      const originalBytes = readFileSync(libConfigPath);
+      const fixtureConfigPath = join(libraryRoot, "classical", `${FIXTURE_SONG_ID}.json`);
+      const fixtureMidiPath = join(libraryRoot, "classical", `${FIXTURE_SONG_ID}.mid`);
 
       let iso: Awaited<ReturnType<typeof spawnIsolatedServer>> | undefined;
       try {
-        chmodSync(libConfigPath, 0o444);
+        rmSync(fixtureConfigPath, { force: true });
+        rmSync(fixtureMidiPath, { force: true });
+        // Format 0, 1 track, 480 ticks/beat; tempo 120, 4/4, one C4 quarter
+        // note — byte-for-byte the minimal sequence library.test.ts already
+        // proves survives midiToSongEntry.
+        const midiHeader = Buffer.from([
+          0x4d, 0x54, 0x68, 0x64, // MThd
+          0x00, 0x00, 0x00, 0x06, // chunk length = 6
+          0x00, 0x00,             // format 0
+          0x00, 0x01,             // 1 track
+          0x01, 0xe0,             // 480 ticks per beat
+        ]);
+        const midiTrackData = Buffer.from([
+          // Tempo: 500000 microseconds/beat = 120 BPM
+          0x00, 0xff, 0x51, 0x03, 0x07, 0xa1, 0x20,
+          // Time signature: 4/4
+          0x00, 0xff, 0x58, 0x04, 0x04, 0x02, 0x18, 0x08,
+          // Note on: channel 0, C4 (60), velocity 80
+          0x00, 0x90, 0x3c, 0x50,
+          // Wait 480 ticks (one beat = quarter note), then note off
+          0x83, 0x60, 0x80, 0x3c, 0x00,
+          // End of track
+          0x00, 0xff, 0x2f, 0x00,
+        ]);
+        const midiTrackHeader = Buffer.from([
+          0x4d, 0x54, 0x72, 0x6b, // MTrk
+          0x00, 0x00, 0x00, 0x00, // placeholder length
+        ]);
+        midiTrackHeader.writeUInt32BE(midiTrackData.length, 4);
+        writeFileSync(fixtureMidiPath, Buffer.concat([midiHeader, midiTrackHeader, midiTrackData]));
+        writeFileSync(
+          fixtureConfigPath,
+          JSON.stringify(
+            {
+              id: FIXTURE_SONG_ID,
+              title: "Persist-Failure Fixture (synthetic, test-only)",
+              genre: "classical",
+              difficulty: "beginner",
+              key: "C major",
+              tempo: 120,
+              timeSignature: "4/4",
+              tags: ["test-fixture"],
+              status: "raw",
+            },
+            null,
+            2,
+          ) + "\n",
+          "utf-8",
+        );
         iso = await spawnIsolatedServer();
 
         // Plant a FILE where getUserSongsDir() resolves
@@ -1034,7 +1071,7 @@ describe("mcp-server.ts — fs-write errors return structured JamError results (
         const result = (await iso.client.callTool({
           name: "annotate_song",
           arguments: {
-            song_id: RAW_SONG_ID,
+            song_id: FIXTURE_SONG_ID,
             description: "tests-agent B-B1-003 probe annotation — must never persist.",
             structure: "12-bar blues",
             key_moments: ["tests-agent key moment"],
@@ -1050,7 +1087,7 @@ describe("mcp-server.ts — fs-write errors return structured JamError results (
         // JamError shape from
         // fsErrorResult(err, `finish annotating "<id>" (ingest/persist)`):
         expect(text).toContain("[IO_FILE_WRITE]");
-        expect(text).toContain(`finish annotating "${RAW_SONG_ID}" (ingest/persist)`);
+        expect(text).toContain(`finish annotating "${FIXTURE_SONG_ID}" (ingest/persist)`);
         expect(text).toContain("Hint:");
         // Pin the failure to saveSong() itself, not a lookalike routed
         // through the same catch: fsErrorResult embeds the inner err.message,
@@ -1067,11 +1104,12 @@ describe("mcp-server.ts — fs-write errors return structured JamError results (
         // not some earlier plain-text isError branch (e.g. the "not found" one).
         expect(text).toContain("The config was updated at");
       } finally {
-        // Restore the repo file: clear the read-only attribute first, then
-        // rewrite the exact original bytes (a no-op when read-only already
-        // blocked the best-effort mutation).
-        chmodSync(libConfigPath, 0o644);
-        writeFileSync(libConfigPath, originalBytes);
+        // Remove the fixture pair from the live library tree. Config first:
+        // a scanLibrary() racing this delete then sees no .json and never
+        // builds an entry, so the .mid going second can't strand a
+        // config-only entry for anyone.
+        rmSync(fixtureConfigPath, { force: true });
+        rmSync(fixtureMidiPath, { force: true });
         if (iso) await iso.close();
       }
     },

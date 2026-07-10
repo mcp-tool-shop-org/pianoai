@@ -10,5 +10,27 @@
     "piano"
   ],
   "composer": "Alicia Keys",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Alicia Keys's No One appears as a 94-measure transcription at 90 BPM with 3,638 notes, and its stated E major is strongly confirmed: 0.852 stated fit, with detection agreeing at a solid 0.252 margin. The ten implied windows tell two small, clean stories. Through the body, an augmented color recurs at measures 23, 51, and 71 — labeled D# augmented, and since augmented triads divide the octave symmetrically, those same three tones also spell B augmented, a raised-fifth dominant color in E major; the analysis hedges all three. Then the close spells the plainest truth: the final four labeled windows run E (measure 90), B (measure 91), C# minor (measure 92), A (measure 93) — I, V, vi, IV of E major in order — while the pattern lens shows the same bass figure transposed to each root (+7, +9, +5 semitones from the measure-90 statement). The verses recycle wholesale: the left hand of measures 13-34 returns at 41-62 (46% of left-hand onsets), and measures 22-26 return byte-identical at 50-54.",
+    "structure": "Seven regions with boundaries at measures 5 (novelty 2.046), 14, 34, 62 (2.476), 70 (2.214), and 86. The architecture is two long verse spans built from one block — the left hand's 138-note span at measures 13-34 restating at 41-62, corroborated by byte-identical measure groups (measures 22 through 26 recurring at 50 through 54 among them) and a 101-note right-hand restatement (measures 21-33 at 49-61) — followed by a contrasting region from measure 62 (the sparsest interior bars, 8-9 onsets at measures 62-64) that builds into the file's densest stretch: measures 86-90 at 22-24 onsets. An 18-note left-hand vamp cycles three times through the opening (measures 2-6, 6-10, 10-14), and the closing I-V-vi-IV windows at measures 90-93 ride the same transposed seven-interval bass figure.",
+    "keyMoments": [
+      "The last four labeled windows spell E major's plainest progression in order — E at measure 90, B at 91, C# minor at 92, A at 93: I, V, vi, IV — and the pattern lens confirms the left hand plays one figure transposed to each root (+7, +9, +5 semitones from measure 90); the harmony and the hand agree.",
+      "An implied augmented sonority recurs at measures 23, 51, and 71 — labeled D# augmented, and by the symmetry of augmented triads the same tones also read as B augmented, a raised-fifth dominant color in the confirmed E major; all three windows are hedged as inferred.",
+      "The verse block is learned once and heard twice: the left hand of measures 13-34 returns at measures 41-62 (138 notes, 46% of the left hand's onsets), with measures 22-26 returning byte-identical at 50-54.",
+      "The dynamic peak is the coda, not the chorus: measures 86-90 carry the file's densest playing (22-24 onsets per measure) right before the closing I-V-vi-IV windows land at measures 90-93."
+    ],
+    "teachingGoals": [
+      "Learn the verse block (measures 13-34) once, then play its return at measures 41-62 as recognition — the pattern lens and eight byte-identical measure groups guarantee the match.",
+      "Practice the closing bass figure of measure 90, then walk it through its transpositions at measures 91-93 (+7, +9, +5 semitones) — one shape, four roots, spelling I-V-vi-IV.",
+      "Build the contrast between the sparse region at measures 62-64 (8-9 onsets) and the 22-24-onset coda at measures 86-90 — plan the long crescendo across that span rather than arriving loud early.",
+      "Recognize the recurring augmented color at measures 23, 51, and 71 by ear — listen for the raised-fifth tension against the confirmed E major and how the music relaxes out of it."
+    ],
+    "styleTips": [
+      "Lay beats 2 and 4 slightly behind the pulse once the notes are secure — the written grid is even, but this style's pocket lets the backbeat sit late; listen for the relaxed lean against a left hand that never budges from 90 BPM.",
+      "Play the three augmented arrivals (measures 23, 51, 71) with a small dynamic bloom and no pedal change — listen for the raised fifth rubbing against the key before it resolves back into the diatonic frame.",
+      "Keep the opening vamp (the 18-note left-hand cycle at measures 2-14) hypnotic and unaccented — listen for a level, drumlike evenness that makes the vocal-style right hand sound free by contrast.",
+      "Voice the final cadence windows (measures 90-93) so the bass root of each chord speaks first — listen for the I-V-vi-IV floor moving in clean steps under the sustained upper tones."
+    ]
+  }
 }

@@ -14,22 +14,25 @@
   "source": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
   "status": "ready",
   "musicalLanguage": {
-    "description": "Mozart labeled this 'a little keyboard sonata for beginners,' but its simplicity is deceptive. Crystal-clear melodies and Alberti bass patterns make it a cornerstone of the Classical repertoire.",
-    "structure": "Sonata form: Exposition-Development-Recapitulation",
+    "description": "This transcription of Mozart's Piano Sonata No. 16 in C Major, K. 545 (the first movement Allegro Mozart himself called a sonata for beginners) runs 146 measures at 137 BPM in 4/4 time with 2,714 notes, and the stated C major is strongly confirmed by the content (statedKeyFit 0.92; the detected key matches exactly). The form is sonata form with both halves marked to repeat, and the analysis proves it directly: measures 1-28 (the exposition) are byte-identical to measures 29-56 in the right hand and left hand alike, and the much longer span from measure 57 to measure 101 (development and recapitulation together) is likewise byte-identical to measures 102-146 — two full written-out repeats confirmed measure by measure across dozens of matching pairs. The chord windows trace a clean, mostly diatonic story: G major (the dominant) is the most-cited label at 16 windows (10% of measures considered), C major (the tonic) follows at 12 windows, with F major (the subdominant), Am, and Dm rounding out the progression.",
+    "structure": "Sixteen structural regions from the section-lens pass, evenly spaced (mostly 6-14 measures each) in keeping with a piece built from clear, balanced phrases. The exposition spans measures 1-28 and repeats verbatim at measures 29-56 — a 292-interval right-hand span and a 71-interval left-hand span both confirmed as exact, untransposed matches. The development and recapitulation together span measures 57-101 and repeat verbatim at measures 102-146 (a 158-interval left-hand span and a massive 547-interval right-hand span, both exact matches) — together the two repeated halves account for the great majority of the piece's total length. Inside the recapitulation block, the famous scalar right-hand passagework (measures 63-68, restating at 108-113) alternates with the Alberti-bass left hand, and the busiest measures in the piece — 98 and 143, each 40 combined onsets, mirroring each other exactly across the two halves — mark the technical peak both times it occurs.",
     "keyMoments": [
-      "Opening theme: iconic ascending scale passage",
-      "Second theme: lyrical melody in G major",
-      "Development: exploration of earlier material"
+      "The exposition (measures 1-28) is byte-identical to its repeat at measures 29-56 in both hands, and the development-recapitulation block (measures 57-101) is likewise byte-identical to measures 102-146 — this teaches sonata form's most basic structural lesson directly from the data: both large halves really were meant to be played twice.",
+      "G major (the dominant) is cited more often than C major (the tonic) across the whole piece — 16 windows to 12 — which demonstrates how a Classical-era exposition spends much of its time establishing and confirming the dominant key before a Classical era recapitulation restores the tonic.",
+      "Measures 98 and 143 are the two busiest in the piece, each carrying exactly 40 combined onsets, and each sits at the same position within its own repeated half — proof that Mozart placed the technical peak at a matching structural point both times, not by accident.",
+      "The scalar right-hand passagework at measures 63-68 (which restates identically at measures 108-113) demonstrates even scale technique across an octave and more — a foundational skill this famously pedagogical sonata was written to teach."
     ],
     "teachingGoals": [
-      "Sonata form understanding",
-      "Alberti bass pattern (left hand)",
-      "Classical-era touch and articulation"
+      "Learn the exposition (measures 1-28) once and recognize that its repeat at measures 29-56 is genuinely note-for-note — this halves the real learning work despite the score's length.",
+      "Practice the scalar passagework at measures 63-68 (and its identical return at measures 108-113) hands separately first, since even scale technique under the Alberti bass is the core skill this movement teaches.",
+      "Listen for the shift in emphasis from G major (the dominant, 16 windows) toward C major (the tonic, 12 windows) across the piece, and develop the ear to recognize when a Classical-era piece is confirming its home key versus its dominant.",
+      "Build stamina for the densest measures (98 and 143, 40 onsets each) by practicing them slowly first — recognizing that both are the technical peak of their respective repeated half helps target practice time efficiently."
     ],
     "styleTips": [
-      "Clean, even articulation — no pedal abuse",
-      "Alberti bass should be light and even",
-      "Phrasing should be elegant and vocal"
+      "Keep the Alberti bass light and perfectly even under the right hand — listen for the left hand disappearing into the texture while the melody stays in front.",
+      "Use clean, minimal pedal — Classical-era articulation depends on clarity; listen for each note in the scalar passagework at measures 63-68 (and its twin at 108-113) speaking distinctly.",
+      "Play the dominant-leaning material (the G major windows) with a touch more forward energy than the tonic-grounded passages — listen for the harmonic pull toward G resolving satisfyingly when C major returns.",
+      "Shape phrases with an elegant, vocal quality even in fast passagework — listen for the densest measures (98 and 143) staying musical and shaped rather than turning into pure technical display."
     ]
   }
 }

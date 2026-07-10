@@ -11,5 +11,27 @@
   ],
   "composer": "Jorge Ben Jor",
   "source": "freemidi.org (Sergio Mendes feat. Black Eyed Peas 2006 arrangement of the Jorge Ben Jor song, 111 measures, 4:22; replaced the 1,905-byte 21-measure bitmidi uploads/72364 fragment — a mislabeled Mario file — 2026-07-09 data-audit follow-up)",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Jorge Ben Jor's Mas Que Nada appears as a 111-measure samba transcription at 101 BPM carrying 14,306 notes — full-band density rendered onto two staves, peaking at 39 onsets in measures 43, 63, 71, 103, and 107. Like Afro-Cuban clave-based music, samba organizes everything around one repeating rhythmic cell, and the data shows exactly that: a 32-note right-hand figure recurs 34 times (compression ratio 16.485), covering 62% of the right hand's onsets, locked against a 26-note left-hand cell recurring 38 times (compression 15.438, 59% of the left hand's onsets). Both cells span two measures — the groove's true length. Harmony stays almost entirely below the confidence gate: exactly one window in 111 measures, an implied C# major at measure 4, so no progression story is claimable here; the engine is rhythm. The right hand touches G#6 at measure 43; the left hand spans C2 (measure 7) up to B3 (measure 23).",
+    "structure": "Nine regions, but the story is one boundary: the groove cell enters at measure 7 with novelty 7.049 — far above every later pivot in the piece (none exceeds 0.747) — and then the cell simply never leaves. The right-hand form recurs at 34 two-measure spans from measures 7-8 to 101-102; the left-hand form at 38 spans over the same territory. Above the engine, a 78-note right-hand phrase recurs at measures 42-46, 62-66, 70-74, 102-106, and 106-110, and a 30-note left-hand fill punctuates at nine spots (measures 24-25, 44-45, 62-63, 64-65, 70-71, 72-73, 102-103, 104-105, and 108-109). The frame is near-empty: measure 1 is silent, measure 2 carries 2 onsets, and measure 111 closes on a single onset.",
+    "keyMoments": [
+      "The two-measure groove cell enters at measure 7 with the file's overwhelming structural event (novelty 7.049, with no later boundary above 0.747) and never leaves: 34 right-hand and 38 left-hand recurrences carry roughly six tenths of each hand's onsets.",
+      "A longer 78-note right-hand phrase recurs at measures 42-46, 62-66, 70-74, 102-106, and 106-110 — the section-scale hook riding on top of the two-measure engine.",
+      "Exactly one chord window clears the confidence gate in the entire piece — an implied C# major at measure 4 — and the analysis is candid that this reflects the gate holding back dense, blended voicings, not evidence of harmonic emptiness.",
+      "The registral ceiling and a density peak share a bar: the right hand touches G#6 at measure 43, one of the five 39-onset measures (43, 63, 71, 103, 107)."
+    ],
+    "teachingGoals": [
+      "Master the two-measure cell before anything else: practice the right-hand figure of measures 7-8 and the left-hand figure of the same bars separately, then lock them together — 34 and 38 recurrences make this one coordination most of the piece.",
+      "Learn the 78-note phrase at measures 42-46 as the second layer, then recognize its returns at 62-66, 70-74, 102-106, and 106-110 so each arrival is recall rather than sight-reading.",
+      "Practice holding the cell steady at full density — the 39-onset peaks at measures 43, 63, 71, 103, and 107 all arrive while the groove is running, so stamina inside the pattern is the real skill.",
+      "Hear the piece as rhythm-first: with one implied label in 111 measures, listen for how the cell's accent pattern creates the sense of harmonic motion rather than the reverse."
+    ],
+    "styleTips": [
+      "Feel the two-measure cycle as the unit of time — like clave-organized music, samba locks every voice to one repeating cell; listen for which of the two measures carries the heavier accents and keep that weighting identical on every pass.",
+      "Play the left-hand cell with percussive, staccato attacks — it is the surdo-and-bass layer of a samba band on piano; listen for its low C2 (measure 7) landing like a drum: dry, short, exactly in time.",
+      "Don't let the 39-onset peak measures (43, 63, 71, 103, 107) get louder just because they are busier — hold the dynamic ceiling and let density itself supply the intensity.",
+      "Use the near-empty frame to reset: measure 1 is silent and measure 111 carries a single onset — begin from stillness, and cut the final onset cleanly rather than inventing a fadeout the file doesn't write."
+    ]
+  }
 }

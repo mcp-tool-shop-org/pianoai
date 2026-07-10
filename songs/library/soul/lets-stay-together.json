@@ -10,5 +10,27 @@
     "smooth"
   ],
   "composer": "Al Green",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Al Green's Let's Stay Together appears as a 140-measure transcription at 105 BPM with 8,496 notes, and its center of gravity is measured plainly: measure 73 carries 60 onsets, measures 78-79 carry 44 and 50, and the right hand touches its C#7 ceiling at measure 70 — register and density cresting together through measures 69-79. The key picture stays honestly open: stated Ab major fits at essentially zero (-0.061), detection leans B major at a weak 0.096 margin, and the 13 implied windows (8% of windows considered) scatter — most (E, F#, G# minor, D# minor, D# minor seventh, G#7, across measures 6-52) happen to sit inside the weakly detected B-major reading, with two C diminished windows (measures 36 and 52) and one G major seventh outside it — too thin to call, and this annotation calls nothing. Structure is stronger ground: a 27-note left-hand cell recurs nine times from measure 63 onward (6.75 compression), and the late chorus block repeats verbatim — measures 105-108 restating at 113-116 and 123-126.",
+    "structure": "Thirteen regions, front-loaded with the file's violent seams: measure 8 (novelty 9.991), measure 23 (5.749), and measure 29 (4.171) mark the early form, after an opening where the left hand rests through measures 4-7 while the right hand sketches alone. From measure 39 the regions calm (nothing above 1.04 for the rest of the file) and the architecture turns cyclic: a 28-note left-hand figure at measures 38-40 returns at 42-44, 54-56, 58-60, 96-98, and 100-102; the 27-note cell anchors measures 63-118 across nine statements; and the closing third repeats at block scale — the 59-note right-hand phrase of measures 105-108 restates at 113-116 and 123-126, with measures 105-106 returning byte-identical at 113-114 and an 87-note left-hand span (measures 107-112) restating at 115-120. Density fades from the measure-73 peak to the final region at measures 136-140.",
+    "keyMoments": [
+      "Measures 69-79 are the summit: 43 onsets at measures 69-70, the C#7 registral ceiling at measure 70, then the file's densest bar — 60 onsets at measure 73 — and a 50-onset echo at measure 79: range and density crest together in one eleven-measure wave.",
+      "The key is left honestly open: stated Ab major fits at -0.061, detected B major carries only a 0.096 margin, and the 13 implied windows are both scattered and thin (8% of windows considered) — most sit inside the B-major reading (E at measures 15 and 19, F# at 18, G# minor at 27-28, D# minor seventh at 6 and 20), but the annotation asserts no key.",
+      "The closing third is built from blocks: measures 105-108 return at 113-116 and 123-126 (a 59-note right-hand phrase, three statements), with measures 105-106 byte-identical at 113-114 — learn one four-measure unit, own three.",
+      "The opening staggers its entries: the right hand starts over a left hand that rests through measures 4-7, then the file's biggest boundary lands at measure 8 (novelty 9.991) when the full texture arrives."
+    ],
+    "teachingGoals": [
+      "Learn the 27-note left-hand cell at measures 63-64 — nine statements through measure 118 at a 6.75 compression ratio make it the back half's foundation.",
+      "Practice the late chorus block (measures 105-108) once, then place its returns at 113-116 and 123-126 — three statements, one learning cost, byte-identical at its head.",
+      "Build the eleven-measure wave at measures 69-79 as a planned crest: 43 onsets rising to 60 at measure 73, with the C#7 ceiling at measure 70 — decide where the top of your dynamic range sits before you arrive.",
+      "Hear the harmony as color rather than function here: with both key readings weak and 13 scattered implied labels, listen for the recurring E, F#, and G#-minor sonorities as a palette, and let your ear group them."
+    ],
+    "styleTips": [
+      "Lay beats 2 and 4 slightly behind the pulse once the notes are secure — this groove's smoothness comes from a late backbeat over a steady bass; listen for the lean staying constant through all 140 measures.",
+      "Play the staggered opening honestly: right hand alone over the resting left (measures 4-7), no fill-ins — listen for the texture completing itself only at measure 8's big seam.",
+      "Ride the measures 69-79 wave in one gesture — let the 60-onset bar at measure 73 be the crest of a swell that began at measure 63, and listen for the C#7 at measure 70 ringing over it rather than spiking out.",
+      "Imitate a reference recording by ear for the vocal melody's placement — the smoothness this style is named for lives in microtiming the quantized grid cannot notate."
+    ]
+  }
 }

@@ -15,23 +15,25 @@
   "source": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
   "status": "ready",
   "musicalLanguage": {
-    "description": "The piece that opens Bach's monumental Well-Tempered Clavier — a flowing sequence of arpeggiated chords that journey through a rich harmonic landscape.",
-    "structure": "Through-composed: continuous arpeggiated progression",
+    "description": "This transcription of the Prelude that opens Bach's Well-Tempered Clavier runs 62 measures at 74 BPM in 4/4 time, and all 1,284 notes are continuously broken chords rather than a separate melody line — a genuine arpeggiated-harmony study. The stated C major is strongly confirmed by the content (statedKeyFit 0.927, and the detected key matches exactly). Because the texture is arpeggiated rather than block chords, the harmonic-analysis pass hedges most readings as implied, but the windows still trace real harmonic motion: a G major arrival at measures 7 and 11, a D7 (the dominant of that G) at measure 10, C major settling in at measures 15, 20, 25, and 29, and a Cdim color at measure 22 before the harmony returns home. Measure 35 breaks the pattern outright, dropping to just 2 combined onsets — a sudden held breath — right before the busiest stretch of the piece: measures 53, 60, 47, and 55 each carry 25 or more combined onsets in the closing pages.",
+    "structure": "Seven structural regions from the section-lens novelty pass, with the sharpest boundary of the whole piece opening at measure 32 (novelty 6.571) — right where measure 35's near-silence sits. The other boundaries fall at measures 8, 14, 24, 45, and 56, each a natural practice unit alongside the opening measures 1-7. The opening right-hand figure (measures 1-2, 17 intervals) is byte-identical to its restatement at measures 4-5, and measure 1 alone shares its pitch-class content with measures 4 and 19 too. A 12-note right-hand figure recurs three times without transposition at measures 17-18, 26-27, and 30-31 — strong evidence, independently confirmed by the raw repeat detector, which finds measures 18, 27, and 31 byte-identical to each other. A 6-note left-hand figure recurs four times, transposed at three of its four appearances (measures 40-41 untransposed, 45-46 shifted down 5 semitones, 55-56 up 2, and 59 alone), and a separate 10-note left-hand figure returns three times at measures 46-47, 50-51, and 59-60 (the last transposed up 5 semitones).",
     "keyMoments": [
-      "Opening: the iconic C major arpeggio pattern",
-      "Harmonic journey through related keys",
-      "Dominant pedal: tension builds",
-      "Final cadence: resolution back to C major"
+      "Measures 17-18, 26-27, and 30-31 all share one 12-note right-hand figure with no transposition anywhere — strong pattern evidence that teaches how a single arpeggiated cell can anchor three separate passages without the ear noticing the repetition, because the left hand keeps changing underneath it.",
+      "Measure 35's sudden drop to 2 combined onsets, right at the section-lens's biggest boundary (novelty 6.571 opening measure 32), demonstrates that in a texture this continuous, a single held chord functions as a structural landmark — the piece's one true breath before its busiest measures arrive.",
+      "The implied chord windows at measures 7, 10, and 11 (G major, then D7, then G major again) show the harmony leaning toward the dominant before measure 15 resolves back to C major — a compact model of tonic-to-dominant-and-back motion inside a single arpeggiated phrase.",
+      "The busiest measures in the piece — 53, 60, 47, and 55, each 25 or more combined onsets — sit in the last third of the piece, a skill-building target for endurance: the hands must sustain the same even sixteenth-note motion at the piece's densest point that they used at its sparsest."
     ],
     "teachingGoals": [
-      "Even finger technique across arpeggios",
-      "Harmonic awareness within patterns",
-      "Pedal technique for connecting arpeggios"
+      "Practice the 12-note right-hand figure at measures 17-18, 26-27, and 30-31 as one recognized shape — learning it once and recognizing its three appearances saves real practice time.",
+      "Listen for the implied dominant motion at measures 7-11 (G major to D7 back to G major) before resolving to C major at measure 15, and learn to hear that pull toward the dominant even though the analysis only hedges it as implied.",
+      "Build even sixteenth-note technique across the busiest measures (53, 60, 47, 55) at a slow tempo first — 25-plus onsets per measure demands finger evenness, not speed, as the first goal.",
+      "Recognize measure 35's near-total silence as a phrase marker, not a mistake in the score — understanding rests as structural punctuation is a core skill for reading any continuous arpeggiated texture."
     ],
     "styleTips": [
-      "Perfectly even rhythm — each note equal weight",
-      "Let the harmonic changes speak for themselves",
-      "Minimal rubato — the flow is the beauty"
+      "Keep every note the same weight through the 12-note right-hand figure at measures 17-18, 26-27, and 30-31 — listen for the figure sounding identical each time despite the changing harmony under it.",
+      "Use the sustain pedal to blend each broken chord into a single sonority, but change it with every new harmony — listen for the implied G major and D7 windows around measures 7-11 staying clean rather than smearing into each other.",
+      "Let measure 35's two onsets ring fully before moving on — listen for the silence itself as part of the phrase, not a gap to rush through.",
+      "Approach the busiest measures (53, 60, 47, 55) with a relaxed wrist and minimal rubato — Baroque keyboard tradition favors a steady, unhurried pulse here; listen for the sixteenth notes staying perfectly even even as the texture thickens."
     ]
   }
 }

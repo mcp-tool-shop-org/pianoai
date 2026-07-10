@@ -10,5 +10,27 @@
     "jobim"
   ],
   "composer": "Antonio Carlos Jobim",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Antonio Carlos Jobim's Corcovado (Quiet Nights) spans 120 measures at 130 BPM, opening with four fully silent measures in both hands. Its key data carries a loud correction: the stated A minor fits the content negatively (-0.303) while detection lands decisively on B minor (0.213 margin), so every harmony claim here follows the detected key. The 16 implied windows sit cleanly inside B minor — the v (F#m at measures 17, 33, 53, 69, and 105), the i (Bm at measures 7, 43, 106, and 119), the raised-leading-tone V7 (F#7 at measures 22, 25, 58, and 61), F# minor sevenths at measures 5 and 89, and a single B major at measure 109 — at 13% coverage of the windows considered. The structure is a gift to a learner: the right hand's 249-note line of measures 7-40 returns whole at measures 43-76, covering 64% of the right hand's onsets. The right hand peaks at D6 in measure 31; the left hand bottoms at B1 in measure 5.",
+    "structure": "Four silent measures, then the section lens's most violent boundary in the piece at measure 5 (novelty 17.077) — the entry itself is the event. From there the form is two long, nearly identical statements: the pattern lens shows the right hand of measures 7-40 restating at 43-76 and the left hand of measures 7-31 restating at 43-67, corroborated by 25 groups of byte-identical measures (10 and 46, 13 and 49, 15 and 51, 16 and 52, 19 and 55 — each of these pairs sitting 36 apart). Underneath, the left hand runs an eight-note comping cell at forty odd-numbered measures (compression ratio 6.667, 30% of left-hand onsets) with six-note companion cells on the even measures. Late pivots at measures 81 (novelty 4.334) and 116 (6.67) frame a closing region that thins to 2 onsets at measure 120.",
+    "keyMoments": [
+      "The piece begins with four completely silent measures in both hands, then posts its largest structural novelty at measure 5 (17.077, the strongest boundary in the file) — the entry is the event, and the silence before it is written, not optional.",
+      "The right hand's melodic line of measures 7-40 returns intact at measures 43-76 — a 249-note, 34-measure restatement with zero transposition covering 64% of the right hand's onsets; learn the first pass and the second is recognition.",
+      "The left hand rides one eight-note comping cell at forty separate odd-numbered measures (7, 9, 11, and onward to 111; compression ratio 6.667) — the bossa engine of the entire piece compressed into a single hand shape.",
+      "The key data overrules the config: stated A minor fits at -0.303 while B minor detects at a 0.213 margin, and the implied windows agree — Bm, F#m, and F#7 account for 13 of the 16 labels, reading as the i, v, and raised-leading-tone V7 of B minor, all hedged as inferred."
+    ],
+    "teachingGoals": [
+      "Master the left hand's eight-note bossa cell first — forty odd-measure occurrences at a 6.667 compression ratio make this single figure the accompaniment; practice it as a loop before adding the melody.",
+      "Learn measures 7-40 as the complete first statement, then play measures 43-76 as its verbatim return — the pattern lens confirms both hands restate, with 25 groups of byte-identical measures riding the same span.",
+      "Ground your harmonic hearing in B minor per the detected key: listen for the i - v - V7 orbit the implied windows suggest (Bm, F#m, F#7), treating the config's stated A minor as superseded by content.",
+      "Practice the closing region (measures 116-120) as its own unit — the section lens marks measure 116 with the file's second-largest novelty (6.67), and the final measure thins to just 2 onsets."
+    ],
+    "styleTips": [
+      "Play the opening four measures of silence in strict tempo — establish the 130 BPM pulse internally so the measure-5 entry lands as an arrival, not a beginning; listen for your count staying honest through the rests.",
+      "Keep the forty-occurrence left-hand ostinato utterly even and quiet — listen for identical weight on every repetition, letting the melody phrase freely above the comp rather than bending it.",
+      "Voice the F#7 windows (measures 22, 25, 58, 61) with a touch more presence — that raised leading tone is the strongest pull toward B minor the implied harmony offers; listen for the settling when a Bm window follows.",
+      "Use the 34-measure return at measures 43-76 as a chance to play softer and more inwardly the second time — same notes, different story; listen for a real dynamic difference between the two statements."
+    ]
+  }
 }

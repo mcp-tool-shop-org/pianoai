@@ -10,5 +10,27 @@
     "minor"
   ],
   "composer": "Bill Withers",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Bill Withers's Ain't No Sunshine is compact — 41 measures at 77 BPM, 1,819 notes — and its stated A minor is confirmed by content (0.652 fit, detection agreeing at a 0.169 margin). Exactly two windows clear the confidence gate, and they happen to be the key's two pillars: an implied A minor at measure 6 and an implied D minor seventh — the iv7 — at measure 8; beyond that pair the analysis stays silent, 5% coverage of windows considered, so harmony here is hint plus ear. The structure is a two-verse mirror around a dense center: the right hand's 62-note line at measures 10-18 returns at measures 26-34 (39% of the right hand's onsets), with measures 11-15 coming back byte-identical at 27-31, while the middle at measures 18-24 carries the file's densest playing (the five busiest bars — measures 18, 19, 20, 21, and 23 — hold 29-31 onsets each, against single digits at the frame) and its own internal repeat (measures 18-20 restating at 22-24). The piece opens and closes on silent measures (1 and 41); the right hand peaks at B5 in measure 11, the left reaches down to E1 at measure 3.",
+    "structure": "A five-section form: a near-silent 4-measure opening, the first verse span from measure 5 (novelty 2.818), a dense middle section at measures 19-24 (novelty 1.281 at its edge), the verse's return from measure 25 (1.857), and a closing section from measure 33 that leans on a two-measure left-hand ostinato. The mirror is precise: measures 11-15 return byte-identical at 27-31 (five matched pairs), and the 62-note right-hand melodic phrase of measures 10-18 restates at 26-34. The dense middle is its own loop — the 45-note left-hand span at measures 18-20 returns at 22-24. A 27-note left-hand cell recurs seven times (measures 11-12, 13-14, 27-28, 29-30, 33-34, 35-36, 37-38), covering 35% of the left hand's onsets, and carries the closing section almost alone in the low register.",
+    "keyMoments": [
+      "The only two labeled windows are the key's anchor sonorities: an implied A minor at measure 6 and an implied D minor seventh (the iv7) at measure 8 — a two-chord harmonic thesis for a piece whose remaining windows all stay below the gate.",
+      "Measures 11-15 return byte-identical at measures 27-31 — five matched measure pairs inside a 62-note right-hand restatement (measures 10-18 at 26-34) — so the second verse is recognition, not new learning.",
+      "The middle is the peak: the file's five busiest bars all cluster at measures 18-23 (29-31 onsets each at measures 18, 19, 20, 21, and 23) — roughly triple the frame's density — and even this dense span repeats itself (measures 18-20 restating at 22-24), intensity built by insistence rather than new material.",
+      "The frame is silence: measure 1 and measure 41 carry zero onsets, and measure 40 just 4 — the piece surfaces from quiet and sinks back into it."
+    ],
+    "teachingGoals": [
+      "Learn the 27-note left-hand ostinato first (measures 11-12) — its seven occurrences cover 35% of the left hand's onsets and carry the closing section nearly alone.",
+      "Practice the verse line of measures 10-18, then bank its return at measures 26-34 — the byte-identical pairs at measures 11-15 and 27-31 guarantee the match.",
+      "Build the dense middle (measures 18-24, peaking at 29-31 onsets per bar) as a repetition study: the span restates its own left hand (measures 18-20 at 22-24), so drill one three-measure unit and chain it.",
+      "Hear the A minor ground from just two hints — the implied i at measure 6 and iv7 at measure 8 — and listen for how the rest of the harmony orbits those two sonorities without ever being labeled."
+    ],
+    "styleTips": [
+      "Lay beats 2 and 4 a touch behind the downbeat pulse once the notes are learned — at the 77 BPM tempo this groove breathes late; listen for the drag against a left hand that never actually slows.",
+      "Keep the two-measure left-hand ostinato hypnotic and level in dynamics through the closing section (measures 33-38) — listen for a heartbeat evenness that lets the sparse melody above it speak.",
+      "Play the dense middle (measures 18-24) with controlled insistence rather than a forced crescendo — the 29-31-onset peak bars carry their own intensity; listen for the repeated figures staying clean, never blurring.",
+      "Honor the silent frame: begin as if the music was already going somewhere quiet, and after measure 40's 4 onsets, let measure 41's written silence finish the piece with your hands still."
+    ]
+  }
 }

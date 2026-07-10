@@ -14,22 +14,25 @@
   "source": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
   "status": "ready",
   "musicalLanguage": {
-    "description": "An early Debussy masterwork that bridges Romanticism and Impressionism. Flowing triplet arpeggios and a graceful melody create a sense of arabesque ornamentation.",
-    "structure": "ABA: flowing outer sections, contrasting lyrical middle",
+    "description": "This transcription of Debussy's Arabesque No. 1 runs 106 measures at 93 BPM in 4/4 time with 1,392 notes, and its key picture is genuinely unsettled: the stated E major fits the content only weakly (statedKeyFit -0.102), and content-based detection is too ambiguous to trust either (0.04 margin, below the analysis's own confidence floor). Rather than force a single tonic, the honest reading leans on the implied chord windows themselves, which scatter across many different roots without settling on one: Em7 and G major tie as the most-cited labels (4 windows apiece, 3.4% of measures considered), with Am, Bm, D#, Em, and F close behind. What the data does establish cleanly is the piece's architecture: the opening material (the right hand's measures 2-16, the left hand's measures 5-18) returns almost verbatim near the close (measures 72-86 and 75-88), a genuine recapitulation confirmed by two independent pattern groups plus several byte-identical single-measure pairs (10 and 80, 14 and 84, 15 and 85 among them).",
+    "structure": "Eleven structural regions from the section-lens pass, the two sharpest boundaries opening at measure 76 (novelty 5.883) and measure 6 (5.803) — the return of the opening material and the piece's very first structural turn. The recapitulation is the piece's defining structural fact: a 102-note left-hand span (measures 5-18) restates almost exactly at measures 75-88 (moderate evidence, coverage 0.307), and a 79-note right-hand span (measures 2-16) returns the same way at measures 72-86 (coverage 0.277) — independently corroborated by single measures 10, 14, and 15 each matching their counterparts 80, 84, and 85 byte-for-byte. Inside that outer frame, a 13-note right-hand figure recurs three times (measures 17-18, 71-72, 87-88), and a 14-note right-hand cell recurs twice more, transposed, near measures 63-65 and 101-103 — the same rolling triplet-arpeggio material threading through both the opening and closing pages.",
     "keyMoments": [
-      "Opening: triplet arpeggios establish the flowing texture",
-      "Main melody: graceful, almost dance-like",
-      "Middle section: more sustained, singing quality"
+      "The recapitulation at measures 72-88 restates the opening material from measures 2-18 almost exactly, confirmed independently by two pattern groups and three byte-identical measure pairs (10/80, 14/84, 15/85) — a textbook example of how a return of the opening theme creates large-scale unity even in a piece as fluid as this one.",
+      "The stated E major fits the content only weakly (statedKeyFit -0.102) and content detection cannot confidently name a replacement key either — this teaches an important listening skill: not every tonal piece anchors as firmly to its stated key as its title suggests, and the ear must sometimes follow color rather than a single tonic.",
+      "The implied Em7 and G major windows tie as the most frequently cited harmonic colors, with G major sitting a whole step below the stated E major's dominant — a reminder that Debussy's early harmonic language floats between closely related centers rather than locking onto one.",
+      "A 13-note right-hand figure recurring at measures 17-18, 71-72, and 87-88 demonstrates a single rolling triplet shape doing structural work across three widely separated points in the piece — recognizing it once teaches all three appearances at once."
     ],
     "teachingGoals": [
-      "Triplet flow and evenness",
-      "Balancing melody against arpeggiated texture",
-      "Introduction to impressionistic style"
+      "Practice the opening material (measures 2-18) and its recapitulation (measures 72-88) side by side — learning them as the same passage, not two different sections, builds the piece far faster.",
+      "Listen for the implied Em7 and G major colors recurring throughout, and develop comfort with a piece whose harmony floats between centers rather than confirming one tonic the way a Classical-era piece would.",
+      "Recognize the 13-note right-hand triplet figure at measures 17-18, 71-72, and 87-88 as one repeated shape — practice it once and apply it at all three locations.",
+      "Build evenness in the triplet arpeggios throughout, since the piece's flowing character depends on the sixteenth-note and triplet figuration staying smooth rather than metronomic or heavy."
     ],
     "styleTips": [
-      "The triplets should shimmer, not pound",
-      "Melody floats on top of the arpeggiated texture",
-      "Pedal generously but change with the harmony"
+      "Let the triplets shimmer rather than pound — listen for the rolling right-hand figures staying light even as they recur across the recapitulation at measures 72-88.",
+      "Pedal generously but change with each shift in the implied harmony (Em7, G major, Am, Bm, D#) — listen for the color changing smoothly as the analysis's chord windows move between roots.",
+      "Balance the melody so it floats on top of the arpeggiated texture rather than getting buried in it — listen for the top line staying audible through the busiest triplet passages.",
+      "Treat the recapitulation at measures 72-88 as a return, not a repeat — listen for it carrying the memory of everything played since the opening, even though the notes are nearly identical."
     ]
   }
 }

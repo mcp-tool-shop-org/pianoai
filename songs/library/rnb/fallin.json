@@ -4,14 +4,36 @@
   "genre": "rnb",
   "difficulty": "intermediate",
   "key": "E minor",
-  "tags": ["rnb", "alicia-keys", "piano", "classic", "neo-soul"],
+  "tags": [
+    "rnb",
+    "alicia-keys",
+    "piano",
+    "classic",
+    "neo-soul"
+  ],
   "composer": "Alicia Keys",
   "status": "ready",
   "musicalLanguage": {
-    "description": "The debut single that launched Alicia Keys' career — a raw, emotional piano ballad built on a hypnotic two-chord ostinato. The simplicity of the harmonic foundation lets the vocal and piano interplay shine.",
-    "structure": "Intro - Verse - Chorus - Verse - Chorus - Bridge - Chorus - Outro",
-    "keyMoments": ["Bar 1: the haunting Em-Bm piano figure that anchors the entire song", "Verse: the piano holds steady while the vocal builds intensity", "Chorus: 'I keep on fallin'' — the melody soars over the repeating figure"],
-    "teachingGoals": ["Two-chord ostinato patterns with rhythmic variation", "Building intensity through dynamics, not complexity", "Gospel-influenced piano accompaniment"],
-    "styleTips": ["The two-chord pattern must groove, not plod — vary the rhythm subtly each time", "Build dynamics gradually through the verse into the chorus", "The left hand is the heartbeat — keep it absolutely steady"]
+    "description": "This transcription of Alicia Keys's Fallin' is short — 25 measures at 97 BPM in 6/8 time, 394 notes — and reads as the song's opening portion rather than a full multi-chorus arrangement, so the structure described here covers what this specific file actually contains. The stated E minor is reasonably supported by the content (statedKeyFit 0.682); a weak top guess toward G major (E minor's own relative major, same key signature, margin 0.033) is too close to noise to trust and is not asserted. The piece opens on a fully silent measure 1, with the left hand resting for 5 full measures (measures 4-8) before the accompaniment enters. The famous two-chord piano figure the song is known for shows up in the implied windows at measures 9-12: Em at measures 9 and 11, Bm7 at measures 10 and 12 — not at the very opening, but as the first harmonic idea once the accompaniment is fully underway. The right hand's registral ceiling for this excerpt, D6, arrives early at measure 3, while the left hand's floor, A1, doesn't sound until measure 17 — the two hands' extremes are separated by 14 measures.",
+    "structure": "Only two regions clear the section lens's boundary detector here — a silent 4-measure opening (measures 1-4) and one continuous 21-measure body (measures 5-25, the piece's single large novelty boundary at 5.171) — consistent with this being a short excerpt rather than a full verse-chorus-bridge arrangement. Inside that body, a 6-note left-hand figure recurs four times with transposition (measures 2-3, 13-14, and 24-25, the last shifted down 6 semitones), and a 13-note left-hand vamp appears twice without transposition at measures 18-20 and 20-22 — the accompaniment pattern that carries the second half of the excerpt. The Em-Bm7 alternation at measures 9-12 is echoed by a separate 4-note right-hand figure recurring at measures 9-10, 17-18, 19-20, and 21-22, tying the harmonic and melodic repetition together across the same stretch.",
+    "keyMoments": [
+      "Bar 1: this transcription opens on complete silence in both hands — 0 onsets anywhere — before any accompaniment sounds, corroborated by a 2-measure right-hand rest and a 5-measure left-hand rest (measures 4-8) immediately after; the piece's famous piano figure has not entered yet at this point.",
+      "The Em-Bm7 alternation at measures 9-12 — not the silent Bar 1 above — is the piece's anchoring harmonic figure in this transcription; this teaches the value of checking exactly where a repeating figure starts rather than assuming it opens the piece just because it feels foundational.",
+      "The left hand rests for a full 5 measures (measures 4-8) before entering, demonstrating a technique common to this style: let the vocal or right-hand idea establish itself in near-silence before the rhythm section commits to the groove.",
+      "A 13-note left-hand vamp recurring at measures 18-20 and then 20-22 shows the accompaniment settling into a steady, repeating cell exactly where the piece's texture becomes busiest (measures 18-24 all carry 13 or more combined onsets) — the pattern and the density both point to the same structural shift.",
+      "Because this transcription runs only 25 measures, it models a single continuous idea rather than a full song form — a skill in itself: reading a short excerpt honestly, without assuming it contains a chorus or bridge the data doesn't show."
+    ],
+    "teachingGoals": [
+      "Learn the Em-Bm7 alternation at measures 9-12 as the piece's harmonic core, and recognize it as the true starting point of the recurring figure rather than measure 1.",
+      "Practice the 13-note left-hand vamp (measures 18-22) until it locks in as steady muscle memory — it carries the busiest stretch of this excerpt (measures 18-24).",
+      "Listen for the compound 6/8 meter's built-in triplet pulse, and develop the groove-first ear this genre's accompaniment patterns depend on rather than counting straight eighth notes.",
+      "Build dynamic control from the silent opening (measures 1-4) into the entrance of the Em-Bm7 figure — practice the transition from stillness to groove as a single deliberate gesture."
+    ],
+    "styleTips": [
+      "Lay the backbeat slightly behind the pulse once the Em-Bm7 figure (measures 9-12) is secure — the notation sits evenly on the grid, but this style's own practice lets the groove settle a touch late; listen for the relaxed lean against a steady tempo.",
+      "Keep the left hand absolutely steady through the 13-note vamp at measures 18-22 — listen for it functioning like a heartbeat, unchanging while the density around it climbs to the excerpt's busiest measures.",
+      "Play the 5-measure silent opening (measures 4-8) with real patience — listen for the entrance of the Em-Bm7 figure landing with weight precisely because nothing came before it.",
+      "Listen to a reference recording and imitate the vocal phrasing by ear over this accompaniment — this tradition transmits feel through records as much as notation, and the written grid here is the skeleton, not the full performance."
+    ]
   }
 }

@@ -10,5 +10,27 @@
     "anthem"
   ],
   "composer": "Otis Redding",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Respect (Otis Redding) appears as a 76-measure transcription at 116 BPM with 4,594 notes, built on verse-scale left-hand architecture: a 61-note bass line runs four times (measures 7-13, 17-23, 27-33, 45-51 — 34% of the left hand's onsets), the file's single most load-bearing pattern. Harmony stays nearly silent in the labels — exactly two implied windows in 76 measures, an E diminished at measure 1 and a C7 at measure 34 (2% of windows considered), while the stated C major fits moderately (0.438) and detection is pure noise (0.004 margin) — so beyond noting that lone dominant-quality C color, the annotation lets the ear carry the changes. The closing quarter is a loop: the right hand's 37-note phrase cycles three times at measures 61-65, 65-69, and 69-73 over a 41-note left-hand figure cycling at 60-64, 64-68, and 68-72. Both hands hit their registral extremes in the same late bar — C7 at the top and C1 at the bottom, measure 75 — one measure before the end.",
+    "structure": "Eight regions whose boundaries grow through the file — novelty 1.397 at measure 5, 1.683 at 16, 2.659 at 36, 2.708 at 42, and the largest at measure 58 (2.898) opening the outro loop — an arrangement that turns over harder as it goes. Verses recycle literally: measures 12-14 return byte-identical at 22-24, measure 27 at 45, and the 61-note bass line's four statements anchor measures 7-51. A 27-note right-hand figure at measures 12-15 returns at 22-25 and 58-61, bridging verse and outro. The outro itself (measures 58-73) is three passes of a four-measure loop in both hands, and the final region (measures 72-76) drives to the double registral extreme at measure 75 (C1 to C7) before a 3-onset final bar.",
+    "keyMoments": [
+      "One bass line, four statements: the 61-note left-hand span at measures 7-13 returns at 17-23, 27-33, and 45-51, covering 34% of the left hand's onsets — the verse engine of the whole arrangement.",
+      "The outro is a stacked loop: the right hand's 37-note phrase cycles at measures 61-65, 65-69, and 69-73 while a 41-note left-hand figure cycles at 60-64, 64-68, and 68-72 — three synchronized passes closing the form.",
+      "Both hands reach their extremes in measure 75 — C7 at the top of the right hand, C1 at the bottom of the left — one bar from the end: the arrangement's registral climax is its final gesture.",
+      "Only two windows clear the gate in 76 measures: an implied E diminished at the very first bar and an implied C7 — a dominant-quality tonic color — at measure 34; with detection at a 0.004 noise margin, everything else is left to the ear."
+    ],
+    "teachingGoals": [
+      "Master the 61-note bass line first (measures 7-13): four statements covering a third of the left hand make it the piece — loop it until measure 45's return feels automatic.",
+      "Learn the outro as one four-measure unit: right hand from measure 61, left hand from measure 60, cycled three times — practice the join at each cycle seam (measures 65 and 69) until it disappears.",
+      "Build toward measure 75's double extreme deliberately — C1 and C7 in one bar — so the final reach reads as arrival rather than accident.",
+      "Hear the harmony by ear: two implied labels in 76 measures (E diminished at measure 1, C7 at measure 34) cannot sketch a progression, so listen for where the four-fold bass line implies its own cadences."
+    ],
+    "styleTips": [
+      "Play the bass line with percussive insistence — this is a groove engine, not an accompaniment; listen for identical attack weight on all four statements (measures 7-13 through 45-51).",
+      "Lay the backbeat slightly behind the pulse once the riff is secure — the notation's grid is even, but the style's pocket sits beats 2 and 4 a touch late; listen for the lean against strict bass time.",
+      "Drive the outro loop (measures 58-73) with cumulative energy — same notes three times, so the growth must come from touch; listen for each pass landing a shade more emphatic than the last.",
+      "Imitate a reference recording by ear for the vocal-style accents — the tradition's call-and-response weighting lives on the records, and this grid is only its floor plan."
+    ]
+  }
 }

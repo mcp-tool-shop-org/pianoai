@@ -15,23 +15,25 @@
   "source": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
   "status": "ready",
   "musicalLanguage": {
-    "description": "A strikingly modern piece from 1888 — spare, floating, and meditative. The simple waltz-like accompaniment and wandering melody anticipated ambient music by nearly a century.",
-    "structure": "A-A'-B: two statements of the theme with a contrasting section",
+    "description": "This transcription of Satie's Gymnopedie No. 1 runs 79 measures at 89 BPM in 3/4 time with 454 notes, and the stated D major is confirmed by the content (statedKeyFit 0.754; the detected key matches exactly). The piece is essentially one idea stated twice: an 80%-coverage right-hand span (measures 1-32) restates almost verbatim at measures 40-71, bridged by a short, more harmonically active transition (measures 32-39) that itself returns to close the piece (measures 74-77 reuse the same material). The opening's famous 7th-chord vamp is the piece's most literal repetition — the same two alternating chords recur six to eight times each across the whole piece (measures 1, 3, 11, 40, 42, and 50 share one chord; measures 2, 4, 10, 12, 41, 43, 49, and 51 share the other) — while the implied Gmaj7 window, the single most-cited harmonic label (4 windows), keeps returning at measures 7, 15, 46, and 54, always in the same spot relative to the vamp.",
+    "structure": "Seven structural regions from the section-lens pass, evenly spaced across the piece's slow, unhurried pulse. The dominant structural fact is the near-total repeat: an 80%-coverage right-hand span (measures 1-32) restates at measures 40-71, and a separate 32-note left-hand span (measures 5-21) restates at measures 44-60 — together these two pattern groups cover the great majority of the piece. The short transition at measures 32-39 (built on Am7 and D major implied windows) is itself a self-contained idea, reused note-for-note to close the piece at measures 71-79 (the raw repeat detector confirms measures 38 and 77 as byte-identical). The famous opening vamp — alternating D-major-family and C#-minor-family 7th chords — anchors both large statements: it opens the piece at measure 1 and reopens the second statement at measure 40, always in the identical two-chord pattern.",
     "keyMoments": [
-      "Bar 1: the iconic 7th chords set the dreamy mood",
-      "Bar 5: melody enters — floating, unresolved, unhurried",
-      "Bars 7-8: the phrase resolves before repeating",
-      "B section: subtle shift in harmony deepens the mood"
+      "Bar 1: the opening 7th-chord vamp (measures 1-2, alternating with measures 3-4's own chord) recurs six to eight times across the whole piece, at measures 1, 3, 11, 40, 42, and 50 for the first chord and measures 2, 4, 10, 12, 41, 43, 49, and 51 for the second — this teaches the piece's central lesson: an unresolved, floating harmony can anchor an entire structure just by returning unchanged.",
+      "Bar 5: this measure opens the section lens's second structural region and also starts a 17-measure left-hand span (measures 5-21) that restates note-for-note at measures 44-60 — demonstrating that a new phrase can begin exactly where independent structural analysis detects a shift in the music's character, not by coincidence.",
+      "Bars 7-8: this 2-measure unit recurs three more times as a paired block, at measures 15-16, 46-47, and 54-55 — each measure independently confirmed byte-identical to its counterpart eight, thirty-nine, and forty-seven measures later — a technique for hearing repetition as matched pairs of bars rather than isolated moments, anchored by an implied Gmaj7 window at measure 7 itself.",
+      "The short transition at measures 32-39 returns note-for-note to close the piece at measures 71-79, confirmed by measures 38 and 77 matching byte-for-byte — a technique for building a satisfying ending out of material the listener has already half-forgotten from earlier."
     ],
     "teachingGoals": [
-      "Expressive simplicity — making few notes count",
-      "Waltz bass pattern (bass note + chord)",
-      "Sustain pedal for blending"
+      "Learn the opening 7th-chord vamp (measures 1-4) as the piece's harmonic and rhythmic anchor, then recognize its five later returns rather than relearning them.",
+      "Practice the right hand's measures 1-32 thoroughly, since they restate at measures 40-71 with 80% coverage — this is the most efficient place to invest practice time in the whole piece.",
+      "Listen for the implied Gmaj7 window returning at measures 7, 15, 46, and 54, and develop the ear to recognize this specific harmonic color each time it reappears in the same relative position.",
+      "Recognize the transition at measures 32-39 and its reuse as the closing material at measures 71-79 — understanding that connection makes the ending feel inevitable rather than arbitrary."
     ],
     "styleTips": [
-      "Extremely slow and unhurried — this is meditation music",
-      "The 7th chords should be soft and blended",
-      "Never accent anything — let gravity do the work"
+      "Play extremely slowly and unhurried — this is meditative music; listen for the opening vamp's two alternating chords settling fully before moving on, each of their six-to-eight returns treated with the same patience.",
+      "Keep the 7th chords soft and blended with generous pedal, but lift and change with the implied Gmaj7 arrivals at measures 7, 15, 46, and 54 — listen for the color shifting gently rather than accenting the change.",
+      "Never accent anything — let gravity do the work, especially through the near-identical second statement at measures 40-71; listen for it landing with the same weightless quality as its first appearance at measures 1-32.",
+      "Treat the closing measures 71-79 as a memory of the transition at measures 32-39 returning — listen for the material feeling familiar rather than new, letting the piece settle rather than build toward an ending."
     ]
   }
 }

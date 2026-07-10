@@ -10,5 +10,27 @@
     "power-ballad"
   ],
   "composer": "Dolly Parton",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Dolly Parton's I Will Always Love You appears as a 62-measure transcription at 67 BPM with 2,344 notes, and its stated A major is confirmed by content (0.659 fit, detection agreeing on A major). The six implied windows sketch a diatonic opening — A major at measures 1, 2, and 4, D major (the IV) at measure 8, C# minor (the iii) at measure 9 — and then one late outlier: a G# minor seventh at measure 54 that does not belong to A major's diatonic set, arriving just where the section lens posts its two largest structural breaks (novelty 4.523 at measure 41 and 4.825 at measure 58). The most striking bar is measure 41: it carries only 3 onsets yet contains the file's highest note, B6 — an exposed summit with almost nothing around it. The piece then empties to a completely silent final measure 62. The left hand descends to C#1 at measure 30; the busiest bars are measures 37 and 49 at 31 onsets each.",
+    "structure": "Five regions: an 8-measure opening, a verse region from measure 9 (novelty 3.481), a long middle at measures 23-40, and two late regions opening at measures 41 (novelty 4.523) and 58 (4.825) — the file's two biggest boundaries stacked at the end, consistent with a closing lift the harmony data also hints at via the non-diatonic G# minor seventh window at measure 54. The pattern lens shows verse-scale recycling: a 44-note left-hand span at measures 27-31 returns at 35-39, a 28-note span at 25-27 returns at 33-35, and a late 8-note left-hand cell cycles four times through measures 42-53 (42-43, 46-47, 50-51, 52-53). No measure repeats byte-identically anywhere — the restatements are always re-voiced. The final region dies away: measure 61 holds 5 onsets, and measure 62 is written silence.",
+    "keyMoments": [
+      "Measure 41 pairs the file's highest note, B6, with near-emptiness — just 3 onsets in the whole bar — an exposed registral summit the section lens marks as a major boundary (novelty 4.523), so the peak stands isolated in both range and texture.",
+      "The implied windows open diatonically — A major at measures 1, 2, and 4, D major at measure 8, C# minor at measure 9 — then a G# minor seventh at measure 54 falls outside A major's diatonic set just as the closing regions arrive: a hedged hint of late harmonic elevation, offered as inference only.",
+      "The two largest structural breaks in the file stack at the end (novelty 4.523 at measure 41 and 4.825 at measure 58) — the form saves its strongest turns for the final third.",
+      "The piece ends in written silence: measure 61 thins to 5 onsets and measure 62 carries none at all — the left hand's longest rest (measures 61-62) is the ending itself."
+    ],
+    "teachingGoals": [
+      "Practice the left-hand spans of measures 25-31 together with their returns at measures 33-39 — two verse accompaniments for one learning cost, 44 and 28 notes respectively.",
+      "Learn the late 8-note left-hand cell (first at measures 42-43) and its three returns (46-47, 50-51, 52-53) as the closing vamp's engine.",
+      "Build measure 41 as a moment of controlled exposure: only 3 onsets, but one of them is B6 — practice placing that high note gently and confidently with nothing to hide behind.",
+      "Hear the confirmed A major ground (0.659 stated fit, windows at measures 1-9 all diatonic) and then listen for how the music's character shifts across the big boundaries at measures 41 and 58 — let your ear, not a chart, track what changes."
+    ],
+    "styleTips": [
+      "Play the ballad behind the beat once the rhythm is learned — at 67 BPM the style asks the melody to sit a breath late against a steady bass; listen for the pull between the two without letting the pulse actually slow.",
+      "Treat measure 41's B6 as a vocal high note: prepare the hand early, play it softer than instinct suggests, and listen for it floating over the near-empty bar rather than punching through it.",
+      "Shape the last five measures (58-62) as a long exhale — the data thins from the measure-58 boundary to total silence at 62; feel the final silent measure as part of the performance and keep your hands on the keys through it.",
+      "Imitate a reference recording's phrasing by ear for the melody's timing — the notation's even grid is a skeleton, and this tradition's rubato lives on the records, not the page."
+    ]
+  }
 }

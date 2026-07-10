@@ -20,3 +20,8 @@ experiments/jam-actions-v0-lora/.venv/
 
 # Dogfood-swarm worktrees + local eval checkpoints (never committed)
 .eval-checkpoints/
+
+# Synthetic raw-song fixture injected at runtime by src/mcp-server.test.ts's
+# annotate_song persist-failure test (created + deleted per run; ignored so a
+# crashed run can't leak it into a bulk harvest commit)
+songs/library/**/zz-test-fixture-*

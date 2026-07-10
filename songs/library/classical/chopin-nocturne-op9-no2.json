@@ -15,22 +15,25 @@
   "source": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
   "status": "ready",
   "musicalLanguage": {
-    "description": "Perhaps the most famous nocturne ever written. A dreamy, ornamental melody floats over a gentle left-hand waltz pattern.",
-    "structure": "A-A'-A''-Coda with progressive ornamentation",
+    "description": "This transcription of Chopin's Nocturne in Eb Major runs 123 measures at 120 BPM in 4/4 time with 1,299 notes, and the stated Eb major is strongly confirmed (statedKeyFit 0.894; the content detects D# major, the same pitches spelled with sharps instead of flats, at a 0.258 margin). The left hand carries a waltz-like accompaniment figure that recurs four separate times without transposition — at measures 5-14, 18-28, 45-55, and 72-83 — while the right hand grows steadily more ornamented above it. The chord windows spell out Eb major's own diatonic family under its sharp-spelled names: the tonic D# ties as the most-cited label (15 windows, 12% of measures considered) with G# (the IV) and D#m7 close behind, alongside implied touches of Cm and A#7. The piece's real drama arrives at measure 112: 28 onsets, every one of them in the right hand alone, while the left hand rests through a five-measure silence (measures 110-114) — a written-out free cadenza before the piece settles into near-total silence at its final two measures.",
+    "structure": "Twelve structural regions from the section-lens pass, the two sharpest boundaries opening at measure 62 (novelty 7.558) and measure 116 (6.092) — the approach to the cadenza and the final closing gesture. The same 31-note left-hand waltz figure anchors four regions of the piece (measures 5-14, 18-28, 45-55, 72-83, strong pattern evidence, compression ratio 3.543), and an even larger 88-note left-hand span covers nearly half the piece across just two occurrences (measures 20-47 and 47-75). Above that steady foundation, the right hand's ornamentation keeps changing — the piece never repeats the same melodic figure as literally as the bass repeats its waltz pattern, which is exactly how progressive variation over a fixed accompaniment works. The free cadenza at measure 112 (28 onsets, right hand only) sits inside the longest left-hand silence in the piece (measures 110-114, 5 measures), and the piece closes with two fully silent measures (122-123) after the sparsest passage in its final ten bars.",
     "keyMoments": [
-      "Opening theme: simple, singing melody",
-      "Second statement: added grace notes and turns",
-      "Third statement: virtuosic ornamentation"
+      "The left-hand waltz figure at measures 5-14 restates without transposition three more times — at measures 18-28, 45-55, and 72-83 — which teaches the core nocturne technique: a fixed, steady accompaniment frees the right hand to grow more ornamented with every return, rather than the harmony itself changing.",
+      "Measure 112's 28 onsets, every single one in the right hand while the left hand sits silent, demonstrates a written-out free cadenza — the analysis's densest measure in the entire piece is also its most soloistic, a skill that separates florid rubato playing from strict-tempo playing.",
+      "The chord windows confirm Eb major's own diatonic family under the tool's sharp spelling — D# (the tonic) as the single most-cited label, G# (the IV) not far behind, and A#7 (the dominant seventh) appearing near the cadenza — showing tonic-subdominant-dominant motion holding the piece together even through heavy ornamentation.",
+      "The piece closes on total silence at measures 122-123, the endpoint of a section that opens with the sharpest novelty boundary outside the cadenza (measure 116, novelty 6.092) — a model for how a nocturne can end by simply stopping rather than through a loud final cadence."
     ],
     "teachingGoals": [
-      "Bel canto singing style on piano",
-      "Left-hand waltz accompaniment pattern",
-      "Ornamental playing (turns, trills, grace notes)"
+      "Learn the 31-note left-hand waltz figure once (measures 5-14) and practice recognizing its three later returns (18-28, 45-55, 72-83) as the same shape wearing different right-hand ornamentation.",
+      "Practice the measure 112 cadenza as its own unit, completely free of the left hand's steady pulse — build the freedom to stretch time when no accompaniment is anchoring the beat.",
+      "Recognize the implied D#-G#-A#7 harmonic family (the tonic, subdominant, and dominant seventh under sharp spelling) by ear, and listen for how it keeps returning under increasingly ornamented melodic lines.",
+      "Develop control over the transition into total silence at measures 122-123 — practice letting a phrase fully decay rather than cutting it off, since the piece's ending is an absence of sound, not a final chord."
     ],
     "styleTips": [
-      "Rubato is essential — push and pull the tempo",
-      "Left hand must be absolutely steady",
-      "Melody should float above the accompaniment"
+      "Keep the left-hand waltz figure absolutely steady through all four of its appearances (measures 5-14, 18-28, 45-55, 72-83) — listen for it staying identical in rhythm even as the right hand above it grows more ornamented each time.",
+      "Use rubato freely in the right hand, especially through the measure 112 cadenza where the left hand rests entirely — listen for the phrase breathing like a singer taking a free, unmeasured breath.",
+      "Pedal generously through the ornamented returns, but lift and change with every new harmony implied by the D#-G#-A#7 family — listen for the bass notes staying clear under the florid right hand rather than blurring together.",
+      "Let the final two silent measures (122-123) actually happen — don't fill them with sound or rush to a bow; listen for the room going quiet after the sparsest closing bars."
     ]
   }
 }

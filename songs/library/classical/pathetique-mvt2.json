@@ -15,22 +15,25 @@
   "source": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
   "status": "ready",
   "musicalLanguage": {
-    "description": "One of the most beautiful slow movements in the piano repertoire. A serene, singing melody over a gently rocking accompaniment.",
-    "structure": "Rondo: A-B-A-C-A",
+    "description": "This transcription of the second movement (Adagio cantabile) of Beethoven's Pathetique Sonata runs 153 measures at 120 BPM in 4/4 time with 1,625 notes, and the stated Ab major is strongly confirmed by the content (statedKeyFit 0.873; the detected key, reported as G# major under the tool's sharps-only spelling, matches exactly). The famous rondo returns are visible directly in the pattern data: a 15-note right-hand figure recurs three times without transposition at measures 1-13, 59-71, and 99-111 — the A theme's three appearances. The busiest measures in the piece — 84, 86, and 85, all 20 or more combined onsets and dominated by the left hand (17-18 onsets each) — mark a dramatic contrast section, where the implied chord windows shift from the G#/D# (Ab/Eb, tonic/dominant) frame of the opening theme toward G#m (the parallel minor, at measures 77-83) just before that climax, then further into an E major color at measures 87-92 — a genuinely darker harmonic detour right where the texture is thickest.",
+    "structure": "Fourteen structural regions from the section-lens pass, with novelty scores climbing steadily higher through the middle of the piece — the sharpest boundary of all opens at measure 56 (novelty 11.854), right before the dramatic left-hand-heavy passage at measures 84-86. The A theme (measures 1-13) returns twice more in exactly the same 15-note right-hand shape, at measures 59-71 and 99-111, confirmed as strong pattern evidence — the clearest structural spine in the piece. A second recurring idea, a 26-note left-hand figure at measures 2-7, restates at measures 59-65 (moderate evidence), overlapping with the start of the A theme's second return. Around the climax at measures 84-86, the harmony itself becomes the structural marker: G#m windows cluster at measures 77, 80, 82, and 83 immediately before the loudest passage, and E major windows take over right after it at measures 87-92 — a harmonic detour that the section lens also flags as a boundary at measure 85 within the climax itself.",
     "keyMoments": [
-      "Opening melody: one of music's great singing themes",
-      "B section: modulation to darker territory",
-      "Return of A theme with ornamental variations"
+      "The 15-note right-hand figure that opens the piece (measures 1-13) returns twice more, untransposed, at measures 59-71 and 99-111 — this is the rondo's A theme made visible in the data, and recognizing the shape once teaches all three of its appearances at once.",
+      "Measures 84-86 are the busiest in the piece, 20 or more combined onsets each and dominated by the left hand (17-18 onsets), arriving right after a run of implied G# minor windows at measures 77-83 — demonstrating how a shift to the parallel minor can set up a climax before the loudest measures even begin.",
+      "The implied harmony pivots to an E major color at measures 87-92, immediately after the loudest passage — a chromatic third relationship to the stated Ab major that teaches how Romantic-era harmony can pull toward an unexpected, remote key right at a moment of maximum intensity.",
+      "The section lens's single sharpest boundary in the entire piece opens at measure 56 (novelty 11.854), well before the climax itself — showing that the buildup to a dramatic passage often begins several measures earlier than the loudest bar."
     ],
     "teachingGoals": [
-      "Cantabile (singing) touch",
-      "Voicing melody over accompaniment",
-      "Sustain pedal technique for legato"
+      "Learn the 15-note right-hand A theme (measures 1-13) thoroughly, since it returns note-for-note at measures 59-71 and 99-111 — three appearances for one piece of learning.",
+      "Practice the left-hand-dominant climax at measures 84-86 hands separately first, building control over 17-18 left-hand onsets per measure before adding the right hand back in.",
+      "Listen for the implied shift from G# minor (measures 77-83) into E major (measures 87-92) around the climax, and develop the ear to recognize a chromatic-third modulation arriving at a moment of high intensity.",
+      "Recognize the section boundary at measure 56 (the sharpest novelty shift in the piece) as the true start of the buildup toward the climax — practice the transition into that region deliberately rather than treating measures 84-86 as an isolated event."
     ],
     "styleTips": [
-      "Let the melody sing above everything",
-      "Gentle, even accompaniment in the left hand",
-      "Use rubato at phrase endings"
+      "Let the melody sing above everything in the A theme's three appearances (measures 1-13, 59-71, 99-111) — listen for the same singing line coming through clearly each time despite the surrounding material changing.",
+      "Use the sustain pedal for a full legato through the cantabile theme, but change it with each new implied harmony — listen for the G#-D# tonic-dominant frame staying clear rather than blurring together.",
+      "Build real weight and intensity into the left hand through measures 84-86 — listen for the implied G# minor color at measures 77-83 already signaling the darker turn before the loudest bars arrive.",
+      "Take rubato at phrase endings as a tradition of this style, especially around the E major detour at measures 87-92 — listen for the harmony's chromatic pull justifying a small give in tempo rather than a strict, metronomic pulse."
     ]
   }
 }

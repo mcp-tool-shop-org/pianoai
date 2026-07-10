@@ -10,5 +10,27 @@
     "classic"
   ],
   "composer": "Alberto Dominguez",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Alberto Dominguez's Perfidia is a 73-measure bolero transcription at 105 BPM with 5,843 notes and a genuinely unsettled key picture: the stated G minor fits the content at only 0.118, detection prefers C major with a 0.169 margin — a disagreement loud enough that the analysis flags it — and yet not one chord window clears the confidence gate, so there are no labeled harmonies at all to arbitrate with. What the data does establish is craft in the accompaniment: a seven-note left-hand cell recurs at thirteen scattered measures (7, 15, 17, 31, 33, 35, 37, 41, 45, 47, 49, 65, 69), a 22-note left-hand phrase returns at measures 15-17, 43-45, and 67-69, and a four-note right-hand cell surfaces 37 times. No measure repeats literally anywhere — the variation is continuous. The right hand reaches B6 as early as measure 6, while the left hand descends to E1 at measure 55; the melody starts from C4 at measure 2.",
+    "structure": "Eight regions open at measures 5 (novelty 2.089), 18, 27 (1.375), 40, 49 (1.01), 62, and 69, after a silent first measure. The repeat detector finds zero identical or near-identical measures across all 73 — this arrangement never restates a bar exactly — but the pattern lens exposes the underlying discipline: the 22-note left-hand phrase stakes out the same ground once in each third of the piece (measures 15-17, 43-45, 67-69), two further left-hand spans restate once each (measures 14-16 at 30-32, and 36-38 at 64-66), and the seven-note cell threads through thirteen measures. Density crests early-middle: measure 11 carries 38 onsets and measure 27 the file's peak of 39, with a secondary rise to 31 at measure 59 before the final region relaxes to 5 onsets at measure 73.",
+    "keyMoments": [
+      "The key evidence points two directions at once: stated G minor fits at just 0.118 while whole-song detection prefers C major (0.169 margin, flagged loud by the analysis) — yet zero windows clear the confidence gate to settle it, making this piece an honest exercise in ear-led harmony.",
+      "No measure repeats literally in all 73, but the left hand keeps returning to one seven-note cell at thirteen locations from measure 7 to measure 69 — constancy hidden inside continuous variation.",
+      "The right hand hits B6 at measure 6 — its ceiling for the entire file — inside the opening phrase, while the density peaks arrive later, at measure 11 (38 onsets) and measure 27 (39 onsets): register and density crest at different moments.",
+      "The 22-note left-hand phrase at measures 15-17 returns at measures 43-45 and 67-69, staking the same ground in each third of the piece — a structural landmark the section lens corroborates with boundaries at measures 5, 27, and 49."
+    ],
+    "teachingGoals": [
+      "Learn the seven-note left-hand cell as a movable anchor: thirteen occurrences between measures 7 and 69 make it the accompaniment's most reliable landmark.",
+      "Practice the 22-note left-hand phrase of measures 15-17 together with its returns at 43-45 and 67-69 — three statements for one learning cost.",
+      "Develop ear-first harmony here: with a flagged key disagreement (stated G minor at 0.118 fit, detected C major at 0.169 margin) and zero labeled windows, listen for where the cadences actually land and let that — not the config — name the key for you.",
+      "Build the early climb to B6 at measure 6 with care: the registral peak arrives before the density peaks at measures 11 and 27, so tone quality at the top comes first, speed second."
+    ],
+    "styleTips": [
+      "Play this as a bolero: unhurried and songful at 105 BPM, with the left hand's cells rocking evenly — listen for the seven-note figure keeping an identical shape at every one of its thirteen appearances.",
+      "Shape measure 27 — the file's densest bar at 39 onsets — as the passionate center: feel the buildup through the measures before it and listen for every voice in the thick texture speaking rather than smearing.",
+      "Sing the melody line mentally as you play — with the harmony unlabeled and the key contested, the tune is the truth here; listen for the right hand's phrases breathing like a vocalist between gestures.",
+      "Avoid over-pedaling the dense bars — 5,843 notes across 73 measures rewards clarity; change the pedal with the bass cells and listen for the low E1 at measure 55 staying distinct instead of blooming into wash."
+    ]
+  }
 }

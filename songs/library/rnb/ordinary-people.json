@@ -10,5 +10,27 @@
     "piano"
   ],
   "composer": "John Legend",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "John Legend's Ordinary People appears as a 111-measure solo-piano-style transcription at a brisk-notated 162 BPM with 7,088 notes. Its defining event is a nine-measure right-hand silence at measures 13-21 — the melody drops out entirely and the left hand carries the music alone, and the section lens marks the start of that dropout with the file's largest boundary (novelty 7.284 at measure 13). Harmony stays almost entirely below the confidence gate: exactly one window in 111 measures, an implied F# dominant seventh at measure 1, so no progression story is claimable — the annotation leans on structure instead, and the structure is generous. A 90-note right-hand phrase recurs three times (measures 26-36, 50-60, 98-108), a giant 174-note span at measures 37-60 restates at 85-108, and 25 byte-identical measure groups (26/50/98, 27/51/99, 28/52/100 among them) confirm the chorus returns literally. A seven-note left-hand cell recurs 57 times, covering 48% of the left hand's onsets. The right hand climbs to E7 at measure 34; the piece ends on two silent measures (110-111).",
+    "structure": "Thirteen regions, with boundaries at measures 5 (novelty 2.608), 13 (7.284, the right-hand dropout), 21 (3.619, the melody's re-entry), 26 (4.995, the first chorus), then 62, 73, 85, and 107. The three chorus statements (measures 26-36, 50-60, 98-108; 90 notes each, byte-identical at the measure level in 25 groups) alternate with verse spans, and the bridge territory at measures 61-84 restates its own left hand once (measures 61-72 at 73-84). The final region closes with written silence: measures 110 and 111 carry zero onsets, the left hand's longest rest. Density peaks are even and moderate — 23 onsets at measures 30, 54, 66, and 102 — one peak inside each chorus statement plus the bridge.",
+    "keyMoments": [
+      "Measures 13-21 are a nine-measure right-hand silence — the melody vanishes and the left hand plays alone — and the section lens marks measure 13 with the file's largest structural novelty (7.284): the dropout is the piece's defining formal gesture.",
+      "The chorus is literal: a 90-note right-hand phrase at measures 26-36 returns at 50-60 and again at 98-108, backed by 25 byte-identical measure groups — three statements, one learning cost.",
+      "Exactly one chord window clears the confidence gate in 111 measures — an implied F# dominant seventh at measure 1 — so the harmony here is a by-ear subject; the analysis says so plainly rather than reconstructing a progression it cannot support.",
+      "A seven-note left-hand cell recurs 57 times at a 6.234 compression ratio, covering 48% of the left hand's onsets — the accompaniment is one small figure worked continuously from measure 8 to measure 108."
+    ],
+    "teachingGoals": [
+      "Master the seven-note left-hand cell early — 57 occurrences covering 48% of the left hand's onsets make it the piece's true accompaniment; practice it until the nine-measure solo stretch (measures 13-21) feels exposed but easy.",
+      "Learn the chorus phrase (measures 26-36) once and bank its returns at measures 50-60 and 98-108 — the byte-identical measure groups mean the second and third statements are recall, not new reading.",
+      "Practice the re-entry at measure 21: after nine measures of left hand alone, the right hand must land exactly in the groove — count the silence honestly and listen for a seamless join.",
+      "Hear the harmony by ear — with a single implied label (F# dominant seventh, measure 1) in the whole file, listen for where the bass cell's root moves and let that, not a chart, sketch the changes."
+    ],
+    "styleTips": [
+      "Lay the backbeat slightly behind the pulse once the written rhythm is secure — the style's pocket places beats 2 and 4 a touch late over a steady bass; listen for the lean while the left-hand cell keeps strict time.",
+      "Play the nine-measure left-hand solo (measures 13-21) like a spotlight moment: keep the cell utterly even and let its quiet confidence carry the silence above — listen for the absence of the melody as a texture, not a gap.",
+      "Shape each chorus peak (23 onsets at measures 30, 54, and 102) identically so the three statements rhyme — listen for the same crest arriving three times, then let the final silent measures 110-111 end the piece without a struck ending.",
+      "Imitate a reference recording by ear for the melody's rubato and vocal phrasing — the tradition transmits its feel through records; the notated grid here is the frame, not the performance."
+    ]
+  }
 }

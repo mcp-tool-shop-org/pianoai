@@ -4,14 +4,35 @@
   "genre": "rnb",
   "difficulty": "intermediate",
   "key": "E major",
-  "tags": ["rnb", "stevie-wonder", "groove", "harmonica-intro"],
+  "tags": [
+    "rnb",
+    "stevie-wonder",
+    "groove",
+    "harmonica-intro"
+  ],
   "composer": "Stevie Wonder",
   "status": "ready",
   "musicalLanguage": {
-    "description": "A joyful celebration of the birth of Stevie Wonder's daughter Aisha. The infectious chromatic harmonica riff and syncopated groove make it one of the most uplifting songs ever recorded.",
-    "structure": "Intro (harmonica riff) - Verse - Chorus - Verse - Chorus - Solo - Verse - Outro",
-    "keyMoments": ["Harmonica intro: the iconic chromatic riff that defines the song", "Verse groove: syncopated rhythm with major 7th and 9th chords", "Chorus lift: the melody soars on 'Isn't she lovely'"],
-    "teachingGoals": ["Syncopated R&B rhythm patterns", "Major 7th and 9th chord voicings", "Groove feel and swing-16ths"],
-    "styleTips": ["Keep a bouncy, swinging feel throughout", "The left hand drives the groove — keep it tight and rhythmic", "Let the joy come through — this is a celebration"]
+    "description": "This transcription of Stevie Wonder's Isn't She Lovely runs 46 measures at 119 BPM in 4/4 time with 2,993 notes — a dense, left-hand-heavy arrangement throughout. The stated E major is reasonably supported by the content (statedKeyFit 0.653); the content's weak secondary pull toward B major (E major's own dominant, margin 0.072, well below the analysis's loud-mismatch threshold) reads as ordinary V-of-I color rather than a true key conflict. Even so, zero chord windows clear the confidence gate anywhere in the piece, so no specific harmony is asserted — the recording's famous chromatic riff intro is well documented, and this transcription's own opening shows a matching signature: a melodic-rhythmic cell at measures 4-5 recurs in near-identical form at measures 8-9, the arrangement's own version of that opening hook. From there the piece stays consistently dense and left-hand-driven — the busiest measures (39, 23, 22, 34, and 11, all 37 or more combined onsets) each carry more left-hand onsets than right, and a 10-note left-hand cell recurs six separate times across measures 4 through 42, the clearest evidence of a steady, driving groove foundation. Registrally, the right hand tops out at B5 (measure 23, inside the densest stretch) and the left hand bottoms out at F1 (measure 21) — a wide span that matches the arrangement's thick, orchestral texture even without a confirmed chord vocabulary to name it by.",
+    "structure": "Six structural regions from the section lens, with by far the sharpest boundary opening at measure 5 (novelty 4.433) — right where the opening riff's repeat begins — after which the piece settles into consistently low novelty scores (0.09 to 0.36), meaning the groove and texture stay stable rather than shifting through contrasting sections. The clearest structural evidence is a 10-note left-hand cell recurring six times with strong evidence (measures 4, 8, 12, 32, 36, and 42, compression ratio 3.75) — a single bass-and-rhythm shape threading from the opening riff area all the way to near the piece's close. A 32-note left-hand span (measures 23-24) restates at measures 39-40, directly linking two of the piece's five busiest measures as parts of the same repeating 2-measure figure, and a 48-note left-hand phrase (measures 3-5) restates at measures 7-9, matching the near-identical single-measure pairs found at measures 4/8 and 5/9.",
+    "keyMoments": [
+      "A 10-note left-hand cell recurs six times across the piece (measures 4, 8, 12, 32, 36, and 42) with strong pattern evidence — this teaches how a single short bass-and-rhythm figure, returned to again and again, can drive an entire groove-based song without the right hand needing to repeat anything at all.",
+      "The opening's melodic-rhythmic cell at measures 4-5 returns in near-identical form at measures 8-9, right where the section lens marks its single sharpest boundary in the whole piece (novelty 4.433 at measure 5) — a skill in recognizing that a signature riff can be both a repeating idea and a structural marker at the same time.",
+      "Measures 23-24 and 39-40 share the same 32-note left-hand figure, directly linking two of the five busiest measures in the piece (each 37 or more combined onsets) as the same driving pattern recurring 16 measures apart.",
+      "Zero chord windows clear the confidence gate anywhere in this piece despite its density — this demonstrates why deterministic harmonic analysis has honest limits, and why a player's own ear, trained on the recording, is the real authority on the harmony here."
+    ],
+    "teachingGoals": [
+      "Master the 10-note left-hand cell first (its six occurrences span measures 4 through 42) — with this much repetition, it is the single most efficient practice target in the piece.",
+      "Learn the opening riff cell at measures 4-5 and recognize its return at measures 8-9 as the same idea, not new material — this is the arrangement's own version of the song's signature hook.",
+      "Practice the two structurally linked busy measures (23-24 and their return at 39-40) together, since they share one 32-note left-hand figure — the coordination lesson from one location transfers directly to the other.",
+      "Develop ear-first harmony by listening to a reference recording rather than relying on any single labeled chord — with zero windows clearing the gate here, active listening is the primary path to the piece's harmony, whether that harmony ultimately resolves toward E major or leans on its dominant, B major.",
+      "Practice the melody with attention to dynamics across the wide four-octave-plus span between the right hand's B5 peak and the left hand's F1 floor — a texture this wide needs deliberate shaping, not uniform volume."
+    ],
+    "styleTips": [
+      "Lay the backbeat slightly behind the pulse once the 10-note left-hand cell is secure — the notation sits evenly on the grid, but this style's own groove lets it settle a touch late; listen for the relaxed pocket against a steady 119 BPM.",
+      "Keep the left hand driving and consistent through all six appearances of its 10-note cell (measures 4-42) — listen for it functioning as the piece's rhythmic engine rather than a background line.",
+      "Bring energy to the busiest measures (39, 23, 22, 34, and 11) without letting the left hand overpower the melody — listen for both hands staying present even when the left carries more onsets, and let the phrase breathe with a touch of syncopation in this style's own tradition.",
+      "Listen to a reference recording for the phrasing this piece is known for — with no chord windows to lean on, ear-imitation of the recording is this tradition's own transmission method, more than the written grid."
+    ]
   }
 }

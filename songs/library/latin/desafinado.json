@@ -10,5 +10,27 @@
     "jobim"
   ],
   "composer": "Antonio Carlos Jobim",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Antonio Carlos Jobim's Desafinado runs 144 measures at 160 BPM, and its left hand is astonishingly economical: measures 20-71 return note-for-note at measures 88-139 — a 589-note bass restatement covering 74% of the left hand's onsets — while the remaining left-hand span (measures 4-19) likewise returns at measures 72-87. The entire accompaniment is two passes of one 68-measure sequence. Harmony is where honesty rules: the stated F major fits negatively (-0.276), detection lands on F# minor at a noise-level 0.013 margin, and only five windows clear the confidence gate — every one an implied F# minor seventh (measures 32, 36, 41, 100, 104), 3% coverage of the windows considered. Meanwhile a four-note right-hand cell recurs 31 times, drifting through transpositions of one, two, and three semitones downward — chromatic slippage built into the tune's own material, apt for a title that is Portuguese for 'out of tune.' The right hand climbs from C4 to a D7 peak at measure 126; the left hand starts from B1 at measure 4.",
+    "structure": "Three silent measures open the file, and the section lens fires its largest boundary at measure 5 (novelty 11.54) when the music enters. Thirteen regions in total shape the piece, with interior pivots at measures 32 (2.026), 100 (1.614), and 120 (1.479) — the measure-100 boundary landing just as the great left-hand restatement (measures 88-139) gets underway. Nine groups of byte-identical measures track the two-pass form (7 and 75, 11 and 79, 15 and 83, 23 and 91, 27 and 95 — each of these pairs 68 apart), with 32 more near-identical groups shadowing the same design. The busiest bars are measure 99 (29 onsets) and measures 63 and 131 (27 each), one in each pass of the sequence; the final measure thins to 2 onsets.",
+    "keyMoments": [
+      "The left hand of measures 20-71 returns note-for-note at measures 88-139 — a 52-measure, 589-note restatement covering 74% of the left hand's onsets; with measures 4-19 also returning at 72-87, the whole bass line is one 68-measure sequence played twice.",
+      "A four-note right-hand cell recurs 31 times, many returns transposed down one, two, or three semitones (measures 18-19, 39, 62-63, 86-87, and 130-131 among them) — stepwise chromatic drift as a compositional principle in a song titled, in Portuguese, 'out of tune.'",
+      "Only five chord windows clear the confidence gate in 144 measures, and all five suggest the same implied F# minor seventh (measures 32, 36, 41, 100, 104) — with stated F major fitting negatively (-0.276) and detection at a 0.013 noise margin, the key is genuinely undecidable from this data, and the annotation says so rather than guessing.",
+      "The right hand touches its D7 ceiling at measure 126, late in the second pass, while the density peaks sit at measure 99 (29 onsets) and measures 63 and 131 (27 onsets each) — one peak per pass of the 68-measure sequence."
+    ],
+    "teachingGoals": [
+      "Learn the bass line as one 68-measure sequence played twice: master measures 4-71 and the pattern lens guarantees measures 72-139 — the largest single practice dividend in this transcription.",
+      "Practice the four-note chromatic cell in isolation, then chain its transposed returns (down one, two, and three semitones) so the drift sounds intentional rather than accidental.",
+      "Hear the harmony by ear rather than by label — five implied F# minor seventh windows are the only labels in 144 measures, so listen for how the dense bossa voicings resist simple naming and let the recurring cells anchor you instead.",
+      "Build stamina for the long unbroken regions the lens finds — measures 100-119 run 20 measures and 84-99 run 16, at a brisk 160 BPM."
+    ],
+    "styleTips": [
+      "Play the eighth notes dead straight at 160 BPM — bossa syncopation only speaks against an even grid; listen for the bass restatement from measure 88 onward locking to exactly the groove of its first pass.",
+      "Let the chromatic cell slide: when the four-note figure returns a semitone lower, connect it legato and listen for the pitch drift registering as color, not as error.",
+      "Keep the dynamics conversational — the ceiling is 29 onsets at measure 99, so save your fullest voicing for that neighborhood and thin out toward the 2-onset close at measure 144.",
+      "Try marking the section boundaries at measures 32, 100, and 120 with a slight breath — listen for the texture change at each, then re-enter without breaking the tempo."
+    ]
+  }
 }

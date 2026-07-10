@@ -10,5 +10,27 @@
     "film"
   ],
   "composer": "Luiz Bonfa",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Luiz Bonfa's Manha de Carnaval (Black Orpheus) runs 133 measures at 170 BPM, and its stated A minor is genuinely confirmed by content: the stated-key fit is 0.738 and detection lands on the same A minor. The 14 confidence-gated windows — every one hedged as implied — trace an all-diatonic minor palette: Am at six windows plus Dm, Bdim, E7, Em (once as Em7), F major, and C major, reading as the i, iv, ii-diminished, V7, v, VI, and III of A minor, though labels cover just 10% of the windows considered. Structurally the piece never repeats a measure literally — zero identical or near-identical repeat groups — and develops instead by transposition: a five-note right-hand cell recurs sixteen times, most returns shifted up a fifth (+7 semitones). The right hand peaks at B7 in measure 44 and then falls silent for measures 45-46, straight into the file's largest structural break; the left hand reaches down to A1 at measure 17.",
+    "structure": "The section lens carves 14 regions from the 133 measures — the most articulated form in this genre set — with its overwhelming peak at measure 45 (novelty 10.664), exactly where the right hand sits silent for two measures after touching B7 at measure 44. Secondary pivots open measures 30 (4.033), 5 (3.589), 36 (3.487), and 128 (2.912). The piece is framed in near-silence: measures 1 and 133 carry zero onsets and measures 2 and 7 a single onset each, while the interior sustains real density (31 onsets at measures 60, 90, and 92). With no literal measure repeats anywhere, continuity comes from the transposed five-note cell threading through measures 21-22, 59-64, 79-80, 95-96, 101-103, 112, 120, and 131-132.",
+    "keyMoments": [
+      "The right hand climbs to B7 at measure 44 — near the top of the keyboard — then falls completely silent for measures 45-46, its longest rest in the piece; the section lens marks measure 45 as the file's single largest structural pivot (novelty 10.664), so the peak, the silence, and the formal break all coincide in one gesture.",
+      "Zero measures repeat literally anywhere in the 133, yet a five-note right-hand cell recurs sixteen times, most occurrences transposed up a fifth (+7 semitones — measures 59-60, 79-80, 95-96, 101-102 among them): variation by transposition instead of restatement.",
+      "The implied windows spell a compact A minor vocabulary: i at measures 12-13, 17, 19, and 130-131, iv (Dm) at measures 25 and 32, ii-diminished (Bdim) at measure 37, V7 (E7) at measure 42, VI (F major) at measure 18, and III (C major) at measure 127 — every label hedged as inferred, at 10% coverage of the windows considered.",
+      "The file opens and closes in near-silence: measures 1 and 133 carry zero onsets, measures 2 and 7 one each — bookend stillness around an interior that sustains 30-31 onsets per measure at its densest (measures 60, 90, 92)."
+    ],
+    "teachingGoals": [
+      "Recognize the diatonic minor chord family as it passes: the analysis suggests i, iv, ii-diminished, v, V7, VI, and III of A minor across its 14 implied windows — practice naming each sonority by ear when it arrives rather than reading a chart.",
+      "Learn the five-note cell at measures 21-22 first, then track its transposed returns up a fifth through the piece's second half — one shape, many registers, sixteen appearances.",
+      "Practice the approach to measure 44's B7 peak and the two-measure silence after it as a single musical sentence: the climb, the summit, and the emptiness belong together.",
+      "Build endurance for the long middle regions the lens finds — measures 90-106 run 17 measures and 113-127 run 15, containing the piece's busiest bars (31 onsets at measures 90 and 92)."
+    ],
+    "styleTips": [
+      "Play the bossa accompaniment with straight, even eighth notes at the quick 170 BPM pulse — listen for the syncopated right-hand attacks floating over a bass that never rushes.",
+      "Treat the B7 peak at measure 44 as the emotional summit: let it ring, then honor the written silence of measures 45-46 completely — listen for the decay in those two empty measures instead of filling them.",
+      "Since nothing repeats literally, avoid autopilot: think in transposed shapes and feel each +7-semitone return of the recurring cell as the same idea in a new register, voiced a shade brighter as it climbs.",
+      "Keep the frame genuinely sparse — measures 1-2 and 133 hold almost nothing; imagine the tune emerging from silence and returning to it, and let your dynamics trace that arch."
+    ]
+  }
 }

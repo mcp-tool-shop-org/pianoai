@@ -10,5 +10,27 @@
     "jobim"
   ],
   "composer": "Antonio Carlos Jobim",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Antonio Carlos Jobim's Wave is a 51-measure bossa nova transcription at 120 BPM whose form the data lays bare: an 82-note right-hand melodic span recurs three times — measures 5-17, 17-29, and 38-50 — covering 76% of the right hand's onsets. Three statements of one thirteen-measure tune. The single chord window that clears the confidence gate is an implied D major seventh at the very first measure (0.749 confidence), sounding over the left hand's deepest note, C#1 — the major seventh itself placed in the bass — a lush opening color consistent with the stated D major, though whole-song detection is pure noise here (0.018 margin) and the stated key's own fit is nearly zero (0.027), so nothing stronger is claimed. The accompaniment is cellular: two left-hand figures of 29 and 25 notes each recur five times, and a five-note bass cell appears across 23 two-measure spans. The right hand tops out at A5 in measure 9.",
+    "structure": "Six regions with gentle seams — the strongest boundary is only novelty 0.839 (measure 5) — because the piece flows as three statements of one melody: measures 5-17, an immediate restatement at 17-29, and a return at 38-50 after a contrasting stretch through the 30s. Twelve groups of byte-identical measures confirm the design: measure 6 recurs at 18 and 39, measure 7 at 19 and 40, measure 8 at 20 and 41, measure 11 at 23 and 44, measure 12 at 24 and 45 — the later statements sitting 12 and 33 measures after the first. The two five-times-recurring left-hand figures (measures 10-13, 22-25, 26-29, 43-46, 47-50; and measures 5-8, 17-20, 21-24, 38-41, 42-45) tile the accompaniment almost completely, and the five-note bass cell ticks underneath at 23 two-measure spans from measures 3-4 to 48-49.",
+    "keyMoments": [
+      "One thirteen-measure melody, three statements: measures 5-17, 17-29, and 38-50 carry the same 82-note right-hand line with zero transposition — 76% of the right hand's onsets flow from one tune learned once.",
+      "The file's only confidence-gated window is its very first measure: an implied D major seventh at 0.749 confidence, voiced over C#1 — the chord's own major seventh sitting at the bottom of the piano — announcing the piece's color once before leaving harmony to the ear.",
+      "Twelve groups of byte-identical measures lock in the form: measure 6 recurs at measures 18 and 39, measure 7 at 19 and 40, measure 8 at 20 and 41 — the second statement lands 12 measures after the first, the third 33 measures after.",
+      "The dynamics live in a narrow band: the busiest measures (5, 15, 27, and 48) carry just 16 onsets each, and the sparsest interior bar (measure 30) still holds 12 — evenness rendered as data."
+    ],
+    "teachingGoals": [
+      "Learn the thirteen-measure melody of measures 5-17 once, then recognize its immediate restatement at 17-29 and its return at 38-50 — the entire melodic architecture from a single practice unit.",
+      "Practice the five-note bass cell that underpins 23 two-measure spans (from measures 3-4 to 48-49) until it walks by itself — it is the pulse-keeper of the whole accompaniment.",
+      "Hear the opening implied D major seventh (measure 1, with C#1 in the bass) as the piece's tonal thesis; with detection at noise level everywhere else, listen for how that first sonority colors what follows.",
+      "Build the two five-times-recurring left-hand figures (29 and 25 notes — first stated at measures 10-13 and 5-8) as interchangeable modules: the accompaniment assembles from them like sentences from stock phrases."
+    ],
+    "styleTips": [
+      "Play straight, even eighths at the gentle 120 BPM pulse — listen for the syncopated right-hand attacks floating between the bass notes without ever dragging them.",
+      "Voice the very first chord with intention: the analysis hears an implied D major seventh with C#1 deep in the bass — let that low note hum and listen for the soft major-seventh shimmer it makes against the harmony above.",
+      "Try terraced dynamics across the three statements of the melody (measures 5-17, 17-29, 38-50): first statement at a speaking level, second softer, third warmest — and listen for whether the difference you intend actually sounds.",
+      "Don't overdrive the peaks — 16 onsets in a measure is this file's maximum (measures 5, 15, 27, 48); the music lives in a small dynamic room, so let evenness of touch carry it rather than volume."
+    ]
+  }
 }

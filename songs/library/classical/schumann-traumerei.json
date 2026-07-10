@@ -15,22 +15,25 @@
   "source": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
   "status": "ready",
   "musicalLanguage": {
-    "description": "A tender, nostalgic reverie — perhaps the most famous character piece of the Romantic era. The melody rises and falls like gentle breathing.",
-    "structure": "ABA': two statements of the theme with a contrasting middle",
+    "description": "This transcription of Schumann's Traumerei from Kinderszenen runs 64 measures at 120 BPM in 4/4 time with 475 notes, and the stated F major is strongly confirmed by the content (statedKeyFit 0.907; the detected key matches exactly). The piece opens with a single right-hand note over a silent left hand — the gentlest possible entrance — before the rising, breathing melody the piece is known for takes shape. A 30-note right-hand phrase (measures 6-13) restates at measures 20-28, and the opening idea itself returns near the close: a 25-note right-hand span (measures 5-11) reappears at measures 50-57, confirming the ABA' shape directly in the data. The implied chord windows trace F major's own diatonic family throughout — F major itself is the most-cited label (6 windows, 9% of measures considered), with Am (the iii) and Dm (the ii) following, and an Fmaj7 color adding warmth at measures 3 and 18.",
+    "structure": "Six structural regions from the section-lens pass, the two sharpest boundaries opening at measure 24 (novelty 5.691) and measure 50 (5.463) — the contrasting middle material and the return of the opening idea. The clearest structural evidence is the return itself: a 25-note right-hand phrase from the opening (measures 5-11) restates at measures 50-57, confirming a genuine ABA' shape rather than continuous through-composition. Inside that frame, a 30-note right-hand phrase (measures 6-13) restates once at measures 20-28, and a 7-note figure recurs five separate times (measures 8-11, 23-26, 30-33, 45-48, 53-56) — the piece's most persistent recurring gesture, evidence-graded strong. The busiest measures — 7, 14, 36, and 61, each 12 combined onsets — are spread evenly across the piece rather than clustering at one climax, consistent with a piece that breathes in gentle waves rather than building to a single dramatic peak.",
     "keyMoments": [
-      "Opening: the rising melody reaches upward like a sigh",
-      "Peak: the melody reaches its highest point",
-      "Return: the dream resumes, fading to a peaceful close"
+      "The opening right-hand phrase (measures 5-11) returns at measures 50-57 — this is the ABA' form made visible directly in the data, and it teaches how a return of the opening idea near the close can resolve a piece emotionally without literally repeating everything that came between.",
+      "A 7-note figure recurs five times across the piece (measures 8-11, 23-26, 30-33, 45-48, 53-56), evidence-graded strong — demonstrating how a single short gesture, distributed evenly through a piece, can hold it together the way a single breath pattern holds together a long musical phrase.",
+      "The implied F major, Am, and Dm windows (the I, iii, and ii of the stated key) recur throughout without ever settling into a fixed cycle, showing how Romantic-era harmony can wander gently through closely related chords while always circling back to the tonic.",
+      "The busiest measures (7, 14, 36, and 61, all 12 onsets) are spread evenly rather than concentrated at one climax — a technique for shaping a piece that rises and falls in gentle waves, matching the 'dreaming' character the title describes."
     ],
     "teachingGoals": [
-      "Voicing a melody within chordal texture",
-      "Inner voice awareness",
-      "Rubato and phrase shaping"
+      "Learn the opening phrase (measures 5-11) carefully, since it returns at measures 50-57 to close the piece — mastering it once pays off twice.",
+      "Practice the 7-note figure that recurs five times (measures 8-11 through 53-56) as one consistent shape, building the muscle memory to play it identically at every appearance.",
+      "Listen for the implied F major, Am, and Dm family recurring throughout, and develop the ear to follow the harmony's gentle wandering without expecting a fixed repeating cycle.",
+      "Build inner-voice awareness by identifying which notes carry the melody versus the supporting harmony in the denser measures (7, 14, 36, 61) — the melody must stay audible even at the piece's busiest points."
     ],
     "styleTips": [
-      "The melody must float above the inner voices",
-      "Imagine a child daydreaming — unhurried, gentle",
-      "Subtle rubato at phrase peaks and endings"
+      "Let the melody float above the inner voices throughout, especially through the busiest measures (7, 14, 36, 61) — listen for the top line staying clear even when the texture thickens.",
+      "Use subtle rubato at phrase peaks and at the return of the opening material (measures 50-57) — listen for the return feeling like a warm recognition rather than a mechanical repeat.",
+      "Imagine a child daydreaming — unhurried and gentle — through the recurring 7-note figure (measures 8-56); listen for it staying tender at each of its five appearances rather than growing mechanical with repetition.",
+      "Pedal to connect the phrase rather than to add volume, and lift cleanly at the implied Dm and Am arrivals — listen for the harmony breathing in and out rather than blurring into a continuous wash."
     ]
   }
 }

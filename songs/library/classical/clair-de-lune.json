@@ -15,23 +15,25 @@
   "source": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
   "status": "ready",
   "musicalLanguage": {
-    "description": "Debussy's most beloved work — a shimmering, impressionistic evocation of moonlight. Rich arpeggiated textures and floating harmonies create an otherworldly atmosphere.",
-    "structure": "A-B-A': contemplative opening, flowing middle, ethereal return",
+    "description": "This transcription of Debussy's Clair de Lune runs 72 measures at 100 BPM in 9/8 time with 1,491 notes, and the stated Db major is strongly confirmed (statedKeyFit 0.872; the content detects C# major — the identical pitches under the tool's sharps-only spelling — at a 0.059 margin). The chord windows spell out Db major's own diatonic family under that sharp spelling: C# (the tonic) ties with D#m (the ii chord) as the most-cited labels at 5 windows apiece, with F# (the IV) and D#m7 (a ii7 color) close behind. The climax arrives at measures 45-46, the two busiest measures in the piece at 26 combined onsets each, driven overwhelmingly by the left hand (17 onsets in each measure) rolling through wide arpeggios. Right after that climax, the left hand falls silent for 7 measures (measures 49-55) — the longest rest in the piece — as the music recedes from its loudest point toward the closing measures.",
+    "structure": "Eight structural regions from the section-lens pass, with the sharpest boundary of the whole piece opening at measure 51 (novelty 7.394) — precisely where the post-climax left-hand silence begins — and a second strong boundary at measure 25 (5.994) leading into the climax itself. A 6-note left-hand figure at the climax (measures 42-44) recurs with transposition at strong evidence grading, and a 10-note left-hand figure (measures 26-27) returns at measures 65-67, corroborated by the raw repeat detector finding measures 10 and 60 byte-identical, along with 31 and 32, and 47 and 48. A 9-note right-hand figure (measures 35-36) restates at measures 68-69, and the harmonic pattern circles back too: the D#m7 windows at measures 47-48 return again at measure 64, tracing the same ii7 color across both the climax's approach and the music's retreat from it.",
     "keyMoments": [
-      "Opening: gentle chords establish the moonlit mood",
-      "Middle section: flowing arpeggios cascade across the keyboard",
-      "Climax: the fullest, richest harmonies",
-      "Return: the moonlight fades to silence"
+      "Measures 45-46 are the two busiest in the piece — 26 combined onsets each, 17 of them in the left hand alone — demonstrating how Debussy builds a climax through sheer arpeggiated density rather than a single loud chord; this is the technique of gradual accumulation, not sudden impact.",
+      "The 7-measure left-hand silence immediately following the climax (measures 49-55), the longest rest anywhere in the piece, teaches that a musical retreat needs real space — the loudest moment is followed by the emptiest, not a gradual fade.",
+      "The implied chord windows tie the tonic C# with the ii chord D#m as the most-cited labels, showing that even a harmonically rich, atmospheric piece like this one still leans on a recognizable diatonic skeleton underneath its floating surface.",
+      "A 6-note left-hand figure recurring with transposition through the climax (measures 42-44) shows how a single rolling shape, shifted to different pitch levels, can generate an entire passage of sweeping arpeggios without needing new material."
     ],
     "teachingGoals": [
-      "Impressionistic pedaling (blending harmonies)",
-      "Arpeggiated voicing across wide ranges",
-      "Dynamic control in layered textures"
+      "Practice building the climax at measures 45-46 gradually — the left hand's 17 onsets per measure there demand a controlled crescendo from the surrounding quieter material, not a sudden jump in volume.",
+      "Listen for the implied C#-D#m-F# family (the tonic, ii, and IV under sharp spelling) recurring across the piece, and learn to hear this diatonic thread underneath the piece's dense, floating texture.",
+      "Practice the 7-measure left-hand silence at measures 49-55 as a controlled release — build the skill of shaping a diminuendo into genuine silence rather than an abrupt stop.",
+      "Recognize the 6-note transposed left-hand figure at measures 42-44 as one shape moved to different pitches — this is a core technique for playing sweeping arpeggios accurately under pressure at a climax."
     ],
     "styleTips": [
-      "Generous pedal, but change with harmonies",
-      "Let notes ring and blend — this is not about clarity",
-      "Think of painting with sound, not playing notes"
+      "Use generous pedal through the climax at measures 45-46, but be ready to change it quickly as the harmony shifts — listen for the wash of sound staying warm rather than muddy under all those left-hand onsets.",
+      "Let the 7-measure left-hand silence at measures 49-55 register as real quiet, not just a technical rest — listen for the right hand floating alone, unsupported, in the space that follows the climax.",
+      "Half-pedal through the implied C#-D#m-F# harmonic areas to blur the edges between chords without losing the underlying diatonic shape — listen for the color changing smoothly rather than in sharp cuts.",
+      "Think in terms of light and shadow rather than clear articulation — this is not about clarity of individual notes; listen for the overall sonority breathing at the climax and receding again through the silence that follows."
     ]
   }
 }

@@ -4,14 +4,35 @@
   "genre": "rnb",
   "difficulty": "intermediate",
   "key": "G major",
-  "tags": ["rnb", "alicia-keys", "piano", "ballad", "neo-soul"],
+  "tags": [
+    "rnb",
+    "alicia-keys",
+    "piano",
+    "ballad",
+    "neo-soul"
+  ],
   "composer": "Alicia Keys",
   "status": "ready",
   "musicalLanguage": {
-    "description": "A stunning piano-driven ballad that showcases Alicia Keys' classical training. The cascading intro arpeggios and rich chord voicings make it a masterclass in modern R&B piano.",
-    "structure": "Intro (piano solo) - Verse - Pre-chorus - Chorus - Verse - Pre-chorus - Chorus - Bridge - Chorus - Outro",
-    "keyMoments": ["Piano intro: the cascading descending arpeggios that define the song", "Verse: gospel-influenced chord voicings with passing tones", "Chorus: powerful melodic arc on 'If I ain't got you'"],
-    "teachingGoals": ["Arpeggiated intro patterns across wide range", "Neo-soul chord voicings (9ths, 11ths, sus chords)", "Gospel-influenced left-hand patterns"],
-    "styleTips": ["The intro must flow like water — smooth and connected", "Use the sustain pedal generously in the intro, sparingly in the verse", "The verse groove should be understated to let the voice breathe"]
+    "description": "This transcription of Alicia Keys's If I Ain't Got You runs 73 measures at 75 BPM in 4/4 time with 4,943 notes — a dense, chord-heavy arrangement — and its key picture is a loud, flagged disagreement: the stated G major and the content-detected E minor share the same key signature (a relative major/minor pair), with detection favoring E minor at a 0.223 margin against a moderate 0.526 fit for the stated G major. Despite that flagged disagreement, zero chord windows clear the confidence gate anywhere in the piece, so no specific harmony is asserted in either direction — the repeated-chord fingerprints show dense stacks of 6 to 8 simultaneous pitches throughout, consistent with a rich, extended-chord piano style, but the analysis's triad-and-seventh vocabulary cannot safely label them. Measure 1 is fully silent in both hands before the piano enters, and the piece's busiest measures — 37, 38, 39, and 46, all 28 combined onsets — sit inside a long block (measures 19-35) that restates nearly identically at measures 53-69, accounting for over 40% of both hands' total content. The right hand's ceiling for the piece, D6, arrives at measure 23 (inside that repeated block), while the left hand descends all the way to E1 at measure 3, in the arrangement's dense opening.",
+    "structure": "Six structural regions from the section lens, the two sharpest boundaries opening at measures 59 (novelty 4.674) and 25 (4.64). The piece's defining structural fact is a massive repeat: a 159-note right-hand span and a 135-note left-hand span, both spanning measures 19-35, restate almost identically at measures 53-69 — independently confirmed by nine consecutive single measures (26 through 34) each byte-identical to their counterpart eight measures later (60 through 68), and five more identical pairs earlier still (measures 19-23 matching 53-57). A separate 73-note left-hand figure recurs three times (measures 3-9, 11-17, and 45-51, strong evidence, coverage 0.333) — the intro's own dense arpeggiated pattern returning again well into the second half. The near-identical single-measure pairs at measures 3 and 11, 4 and 12, and 5 and 13 confirm that even the opening's own figure repeats within the first dozen measures, before the larger structural repeat begins.",
+    "keyMoments": [
+      "Measures 19-35 restate almost identically at measures 53-69 in both hands — nine consecutive measures (26 through 34) are byte-identical to their counterparts eight measures later — demonstrating how a full verse or chorus block can return nearly unchanged even in a piece this harmonically dense.",
+      "The flagged key disagreement (stated G major against a detected E minor, a relative pair sharing one key signature) together with zero chord windows clearing the gate teaches an important lesson: even a confident-sounding analysis has limits, and the honest response is to let the ear — not an unconfirmed label — settle ambiguous harmony.",
+      "The dense chord fingerprints (6 to 8 simultaneous pitches per stack) show this arrangement leaning on rich, full voicings throughout, a hallmark of piano-forward writing in this style, even though the specific chord qualities sit outside what triad-and-seventh analysis can confirm.",
+      "The intro's own 73-note left-hand figure (measures 3-9) returns at measures 11-17 and again at measures 45-51 — a skill in recognizing that opening material can resurface well into a piece's second half, not just at structural landmarks like a final return."
+    ],
+    "teachingGoals": [
+      "Learn the block at measures 19-35 thoroughly, since it restates almost identically at measures 53-69 — nine measures of that repeat are proven byte-identical, so mastering the first statement teaches the second for free.",
+      "Practice the intro's 73-note left-hand figure (measures 3-9) as a single unit, then recognize its returns at measures 11-17 and 45-51 rather than treating each as new material.",
+      "Develop ear-first harmony here: with a flagged G-major-versus-E-minor disagreement and zero labeled chord windows, listen for where the bass line actually resolves and let that guide your reading of the key, not the config alone.",
+      "Build endurance and voicing control for the densest measures (37, 38, 39, and 46, all 28 combined onsets) — practice the full chord stacks slowly to keep every voice speaking before playing at tempo."
+    ],
+    "styleTips": [
+      "Lay the backbeat slightly behind the pulse once the repeated block at measures 19-35 is secure — the written grid is even, but this style's own practice lets the pocket sit a touch late; listen for the relaxed lean against a steady 75 BPM.",
+      "Voice the dense chord stacks so the top note and the bass note both speak clearly, even when 6 to 8 pitches sound together — listen for the inner voices supporting rather than crowding the outer ones.",
+      "Play the silent opening measure with real stillness before the piano enters — listen for the first chord landing with full weight precisely because nothing preceded it.",
+      "Listen to a reference recording and let the vocal phrasing guide your rubato — this tradition transmits feel through records as much as notation, and the dense written chords here are the harmonic bed, not the whole performance."
+    ]
   }
 }

@@ -10,5 +10,27 @@
     "mexican"
   ],
   "composer": "Consuelo Velazquez",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Consuelo Velazquez's Besame Mucho appears as a 74-measure bolero transcription at 125 BPM, thick with chordal writing: 4,467 notes, peaking at 40 onsets in measures 34, 58, and 62, with the right hand reaching A#5 as early as measure 3 over a left hand that descends to G1 at measure 7. The harmony analysis is fully candid here — not a single chord window cleared the confidence gate in all 74 measures (dense, blended bolero voicings are exactly the texture the gate is built to hold back), so this annotation makes no specific chord claims at all. What the data does establish is a strongly recycled structure: the left hand's line of measures 12-20 returns at measures 28-36 and again at 52-60, and the right hand's 123-note line of measures 20-28 returns at measures 44-52. The tonal center reads as D either way, with the mode genuinely blurred — stated D minor fits at 0.521 while detection leans D major at a weak 0.111 margin.",
+    "structure": "The section lens finds 8 regions, with its two strongest interior boundaries at measure 23 (novelty 2.039) and measure 7 (novelty 1.842), and a late pivot at measure 70 (1.241) opening the closing region. Whole measures return byte-identical across large spans — measure 8 recurs at 24 and 48, measure 12 at 52, measures 19-20 at 35-36, measure 22 at 46 — the fingerprint of a strophic song form restated with ornament. The pattern lens quantifies it: the left hand's 99-note span (measures 12-20) is stated three times in all (also 28-36 and 52-60, 32% of left-hand onsets), and two right-hand spans of 103 and 123 notes each restate once. The final region (measures 70-74) closes on a 12-onset solo right-hand final measure.",
+    "keyMoments": [
+      "Measures 34, 58, and 62 each stack 40 onsets — the densest bars in the file — and each sits inside a span the pattern lens marks as a restatement, so practicing one passage well covers all three peaks.",
+      "The left hand's longest rest is the final measure 74 itself, leaving the right hand's 12 onsets to close the piece alone — an exposed solo ending after 73 measures of two-hand texture.",
+      "Whole measures return byte-identical at long range — measure 8 recurs at measures 24 and 48, measure 12 at 52, measure 19 at 35 — so each return can be practiced as recognition rather than relearning.",
+      "Zero chord windows cleared the confidence gate across all 74 measures — dense bolero voicing is the documented hard case for template matching — so harmony here is a by-ear subject; the whole-song profile centers on D with the mode blurred between minor (stated, 0.521 fit) and major (detected, 0.111 margin)."
+    ],
+    "teachingGoals": [
+      "Learn the left hand of measures 12-20 as the piece's core accompaniment span — the pattern lens shows it returning at measures 28-36 and 52-60, three statements covering 32% of the left hand's onsets.",
+      "Practice the right hand of measures 20-28 with its return at measures 44-52 in mind — a 123-note melodic span stated twice; mark both passages with identical fingering so the second statement costs nothing new.",
+      "Build dynamic pacing from the density map: the file rises to 40-onset peaks at measures 34, 58, and 62 and thins to 12-13 onsets across measures 72-74, so place the bolero's surge and retreat exactly where the data puts them.",
+      "Hear the tonal center as D while leaving the major-versus-minor question open — neither reading clears a confident margin and no labeled chords exist to settle it, so listen to the thirds of the sonorities under your hands and let the music's own shading register."
+    ],
+    "styleTips": [
+      "Play the accompaniment as a bolero: keep the left hand steady and unhurried at the 125 BPM pulse, and listen for the bass landing evenly under the right hand's freer, denser chording.",
+      "Shape measures 34, 58, and 62 — the 40-onset peaks — as arrivals rather than hurdles: feel the crescendo into each one and listen for all the chord tones speaking together instead of smearing.",
+      "Treat measure 74's solo right hand as a spoken final phrase: with the left hand resting, let the last 12 onsets relax in tempo slightly and listen for the final sonority's decay before you release the keys.",
+      "Avoid forcing a functional analysis while learning — with no confidence-gated labels anywhere in the 74 measures, use your ear to track where the harmony brightens toward major and darkens toward minor, and weight your voicing accordingly."
+    ]
+  }
 }

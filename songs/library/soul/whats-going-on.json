@@ -11,5 +11,27 @@
   ],
   "composer": "Marvin Gaye",
   "source": "freemidi.org (full-length transcription, 50 measures, 3:52; replaced the 1,879-byte 8-measure bitmidi uploads/72668 fragment — a mislabeled unrelated track — 2026-07-09 data-audit follow-up)",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Marvin Gaye's What's Going On appears as a 50-measure transcription at a slow 51 BPM carrying 9,893 notes — nearly 200 sounded pitches per measure, a full-band arrangement compressed onto two staves, where even the sparsest sounding bars hold 24-26 onsets (measures 1 and 49) and five separate bars (20, 21, 23, 37, 43) crest at 51-52. Its key data carries a loud correction the labels cannot arbitrate: stated E major fits at 0.517, but detection lands on A major with a 0.167 margin — flagged as a genuine mismatch — while zero chord windows clear the confidence gate in the entire file, dense blended voicings defeating the template pass completely; this annotation therefore claims no chords at all. Structure compensates: the left hand is essentially two long recurring spans — a 156-note line at measures 20-26 returning at 37-43 and 43-49 (41% of left-hand onsets) and a 119-note line at measures 3-9 returning at 9-15 and 26-32 (32%) — and an 8-note right-hand cell recurs 51 times across the file (37% of right-hand onsets). The right hand peaks at G#6 in measure 31; the left anchors from E1 at measure 1.",
+    "structure": "Seven nominal regions, but the section lens's honest finding is seamlessness: no interior boundary scores above 0.695 — the arrangement flows as one unbroken texture from its first sounding bar to the silent final measure 50. The recycling is at span scale: measures 21-25 return near-identically at 38-42 and 44-48 (with measures 38-42 byte-identical to 44-48 — the closing pass repeats its own predecessor exactly), and the two great left-hand lines tile measures 3-49 almost completely between them. The 8-note right-hand cell — 51 occurrences at a 6.915 compression ratio — is the connective tissue, appearing in all but a handful of measures. Density is the only large-scale shape: broad crests at measures 20-25 and 37-48, a slight relaxation through the 30s, and a floor that never drops below 24 onsets until the final written silence.",
+    "keyMoments": [
+      "Zero chord windows clear the confidence gate in all 50 measures — despite 9,893 notes — while the key data flags a loud mismatch (stated E major at 0.517 fit, detected A major at a 0.167 margin): the harmony is real, dense, and genuinely beyond this analysis's vocabulary, and the honest response is to learn it by ear.",
+      "The left hand is two long lines worked three times each: a 156-note span (measures 20-26, returning at 37-43 and 43-49) and a 119-note span (measures 3-9, returning at 9-15 and 26-32) — together covering roughly three quarters of the left hand's onsets.",
+      "Measures 38-42 return byte-identical at 44-48 — the closing pass restates its own immediate predecessor exactly — so the file's final page is a written echo.",
+      "The texture never breathes below 24 onsets per measure until the final silence: five bars crest at 51-52 onsets (measures 20, 21, 23, 37, 43), and the section lens finds no seam stronger than 0.695 anywhere — one continuous fabric."
+    ],
+    "teachingGoals": [
+      "Learn the two left-hand spans as the piece's skeleton: the 119-note line (measures 3-9) and the 156-note line (measures 20-26) each return twice, so two long passages unlock nearly the whole accompaniment.",
+      "Practice the 8-note right-hand cell in isolation, then spot its 51 appearances — at a 6.915 compression ratio it is the connective tissue of the entire right hand.",
+      "Build stamina for unbroken density: with no sounding measure below 24 onsets and no structural seam above 0.695 novelty, this file is one continuous paragraph — practice long spans, not bar-by-bar fragments.",
+      "Hear the harmony by ear against the flagged key mismatch: with zero labeled windows, listen for whether the bass's long lines pull toward the detected A center or the stated E, and let your ear rule."
+    ],
+    "styleTips": [
+      "Lay the groove far back at 51 BPM — this style's pocket is a deep, late-sitting backbeat over an unhurried bass; listen for beats 2 and 4 landing a breath behind a pulse that never drags.",
+      "Play the dense texture in layers, not all at once: bring the two long bass lines forward, let the 8-note cell murmur, and listen for the middle voices blending into wash by design.",
+      "Treat the byte-identical closing echo (measures 38-42 returning at 44-48) as a fade in intensity — same notes, less insistence; listen for the second pass sounding like memory.",
+      "Imitate a reference recording by ear for the phrasing across the seamless form — with no structural seams stronger than 0.695, the records' breathing, not the barlines, should shape your phrases."
+    ]
+  }
 }

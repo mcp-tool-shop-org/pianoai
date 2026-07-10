@@ -10,5 +10,27 @@
     "civil-rights"
   ],
   "composer": "Sam Cooke",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Sam Cooke's A Change Is Gonna Come appears as a 127-measure transcription at a notated 140 BPM with 6,880 notes, and its most honest headline is continuity: after the opening region, the section lens never finds a boundary stronger than 0.82 novelty anywhere in the remaining 120-plus measures — the piece reads as one unbroken flow rather than sharply cut sections. Harmony stays almost entirely below the confidence gate: three implied windows in total (an E major at measure 2, a G# diminished at measure 4, a D7 at measure 124), 2% of windows considered, while the stated Bb major fits the content poorly (-0.467) and detection is itself too weak to trust (0.063 margin) — so this annotation makes no key claim and no progression claim. What the data does show is a left hand built from a family of recurring figures: a 31-note figure at six verse locations (measures 11-14, 15-18, 45-48, 49-52, 79-82, 83-86), a 22-note figure at six more, and a 15-note cell at seven — most of the accompaniment assembles from a small kit. The right hand peaks early at D6 in measure 4.",
+    "structure": "Twelve regions on paper, but the novelty scores tell the real story: after measure 5 (novelty 3.25, the entry), no boundary exceeds 0.82 — the form flows continuously, with verses recycling as near-identical rather than byte-identical measures (measure 12 returns re-voiced at 46 and 80, measure 13 at 47, 51, and 85, measure 45 at 79) on a roughly 34-measure cycle. The left hand's figure family carries the continuity: seven separate strong-graded patterns, led by the 31-note verse figure (six statements, 19% of left-hand onsets) and a 22-note companion (six statements from measure 31 to measure 121). The close is a fade into stillness: measure 124 carries a late 22-onset flourish and the piece's one implied D7 window, then measures 126-127 thin to 2 and 0 onsets.",
+    "keyMoments": [
+      "The section lens finds no boundary stronger than 0.82 novelty after the opening — across 120-plus measures the music never breaks, it only evolves: a long-breath continuity that is itself the piece's defining structural fact.",
+      "Verses return re-voiced, never copied: measure 12 comes back near-identically at measures 46 and 80, measure 13 at 47, 51, and 85, and measure 45 at 79 — a roughly 34-measure verse cycle in which nothing is ever byte-identical.",
+      "Only three chord windows clear the confidence gate in 127 measures — an implied E major at measure 2, a G# diminished at measure 4, and a D7 at measure 124 (2% of windows considered) — and with the stated Bb major fitting at -0.467, the honest position is that this file's key is unresolved by the data.",
+      "The ending empties by degrees: a 22-onset surge at measure 124 (carrying the lone late D7 window), then 2 onsets at measure 126, then written silence at measure 127."
+    ],
+    "teachingGoals": [
+      "Learn the left hand as a kit of figures, not a through-read: the 31-note verse figure (measures 11-14 and five returns), the 22-note figure (measures 31-33 and five returns), and the 15-note cell (seven locations) together cover most of the accompaniment.",
+      "Practice the 34-measure verse cycle as variation work: play measure 12, then its returns at measures 46 and 80, and notice exactly what changed — the re-voicings are the arrangement's expressive content.",
+      "Build one continuous dynamic arc instead of sectional terraces — the novelty data (nothing above 0.82 after the entry) says this piece flows; shape it in long paragraphs, not stanzas.",
+      "Hear the harmony by ear: with three implied labels in 127 measures and both key readings weak, listen for where the bass figures land and let cadences reveal themselves — the data honestly cannot name them for you."
+    ],
+    "styleTips": [
+      "Lay the backbeat slightly behind the pulse once the written rhythm is secure — this style's pocket sits a touch late over a steady bass; listen for the unhurried lean while the left-hand figures keep strict time.",
+      "Play the verse figure identically enough to be a foundation and differently enough to breathe — listen for the re-voiced returns (measures 46 and 80 against measure 12) as gentle shifts of light, not new material.",
+      "Shape the final page as a slow exhale: feel the measure-124 surge crest and then let measures 126-127 genuinely empty — keep the pedal's decay honest instead of manufacturing a firm ending the file does not write.",
+      "Imitate a reference recording by ear for the melody's phrasing — the long unbroken form lives in the singing, and the records carry a rubato the notation's even grid cannot."
+    ]
+  }
 }

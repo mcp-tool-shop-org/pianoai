@@ -10,5 +10,27 @@
     "motown"
   ],
   "composer": "Smokey Robinson",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "My Girl (Smokey Robinson) appears as a 73-measure transcription at 104 BPM with 3,118 notes, and it opens with its most famous texture rendered plainly in the data: the right hand rests for the first five measures while the bass walks alone — the file's longest right-hand silence — and when the melody enters at measure 6 the section lens posts a 12.344 novelty, the largest boundary in the file. The bass-intro figure of measures 4-5 returns byte-identical at measures 40-41, restarting the cycle mid-song. The stated C major fits well (0.723); only three windows clear the confidence gate — an implied E minor (the iii) at measure 50 and two implied B minor sevenths at measures 54 and 58, 4% coverage of windows considered — so harmony past those hints is an ear subject. The accompaniment is deeply cyclic: a 27-note left-hand figure recurs six times (measures 8-11, 12-15, 24-27, 28-31, 52-55, 56-59; 28% of left-hand onsets), and a 6-note cell surfaces ten times. The right hand peaks at G6 in measure 53; the left reaches E1 at measure 66.",
+    "structure": "Five regions with two towering seams: the melody's entry at measure 6 (novelty 12.344) and a second great pivot at measure 44 (10.025) — with the byte-identical bass-intro return at measures 40-41 sitting just before it, the form audibly restarts and then lifts. The 27-note left-hand figure carries verses in paired statements (8-11 with 12-15, 24-27 with 28-31, 52-55 with 56-59); a 25-note figure covers the spans between (measures 19-22, 35-38, 44-47), and a 33-note left-hand stretch at measures 4-8 restates at 40-44, binding the restart to the opening. The closing region (measures 65-73) introduces its own paired figure (measures 64-67 restating at 68-71) plus a small transposed cell (the shape of measures 2-3 returning at measures 67, 71, and 72 shifted by -2 and +4 semitones), and the final measure thins to 4 onsets.",
+    "keyMoments": [
+      "The right hand is silent for measures 1-5 — the bass carries the opening alone — and the melody's entry at measure 6 posts the file's largest structural novelty (12.344): the texture change is the event the whole form pivots on.",
+      "The bass-intro measures 4-5 return byte-identical at measures 40-41, restarting the song's cycle mid-file, and the second-largest boundary follows at measure 44 (novelty 10.025) — a built-in da-capo moment.",
+      "Only three implied windows exist: an E minor (the iii of the well-fitting stated C major) at measure 50 and B minor sevenths at measures 54 and 58 — all three landing in the region after the restart, where the arrangement reaches its G6 ceiling at measure 53.",
+      "The verse accompaniment is one figure worked in pairs: the 27-note left-hand pattern plays twice in a row at three separate locations (measures 8-15, 24-31, 52-59), covering 28% of the left hand's onsets."
+    ],
+    "teachingGoals": [
+      "Learn the bass intro (measures 1-5) as a solo statement — the right hand's five-measure silence is written, and the return of measures 4-5 at 40-41 means the intro is also the song's hinge.",
+      "Practice the 27-note verse figure in its natural pairs (measures 8-11 into 12-15) — three paired statements cover the verses, so one four-measure unit unlocks 24 measures.",
+      "Recognize the three implied labels by ear — E minor at measure 50, B minor seventh at measures 54 and 58 — as the data's only harmonic hints, clustered where the piece crests at G6 (measure 53).",
+      "Build the two great seams (measures 6 and 44) as arrival moments: count the silence honestly into measure 6, and treat the measure 40-41 bass return as a true restart with the same weight as the opening."
+    ],
+    "styleTips": [
+      "Play the opening bass line with a walking, unhurried swagger — listen for perfectly even quarter-pulse placement, because for five measures there is nothing else for the listener to hold.",
+      "Lay the backbeat slightly behind the pulse once the groove settles — the style places beats 2 and 4 a touch late over honest bass time; listen for the lean without any actual slowing.",
+      "Voice the melody's entry at measure 6 as sunrise, not interruption — the 12.344 seam is the file's biggest event; listen for the right hand arriving inside the bass's established time.",
+      "Imitate a reference recording by ear for the melody's phrasing and the little turn figures — this tradition's sweetness is in timing the grid cannot carry, and the records are its true notation."
+    ]
+  }
 }
