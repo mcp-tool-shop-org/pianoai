@@ -10,5 +10,27 @@
     "classic"
   ],
   "composer": "Henry Mancini",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Henry Mancini's Moon River is an 80-measure waltz at 85 BPM, and its key is cleanly confirmed: the stated C major fits the content strongly (statedKeyFit 0.697), matching the harness's own content-based detection exactly. Forty percent of windows considered clear the confidence gate, and the harmony is genuinely built on two pillars — C major and F major are tied as the most-cited labels at 11 windows each — with F# diminished, B minor, and B diminished supplying real secondary color. The piece opens with a 2-measure silence in the right hand (the left hand enters alone at measure 2), and its main melodic idea, a 21-note phrase, restates five separate times across the piece (measures 3, 19, 41, 57, and 78) at a perfect 1.0 compactness — essentially a refrain that opens every verse. A shorter left-hand cell recurs an exceptional 15 times across the piece, giving the waltz's accompaniment its steady, songlike regularity.",
+    "structure": "A brief opening (right hand tacet for measures 1-2, left hand entering alone) leads into a long first verse (measures 5-18) that introduces the main melodic phrase, first heard complete at measure 3 and again at measure 19. The piece's two busiest measures, 19 and 41 (38 onsets each), mark the start of the second and third verse statements, and measures 57 and 78 carry that same opening phrase a fourth and fifth time before the piece settles into its final measures, which — like the opening — end in complete silence at measure 80.",
+    "keyMoments": [
+      "C major and F major are exactly tied as the most-cited chord labels, 11 windows apiece — this is a clean, textbook I-IV alternation at the harmonic core of the piece, confirmed independently by the strong statedKeyFit of 0.697.",
+      "The piece's main 21-note melodic phrase restates five separate times, at measures 3, 19, 41, 57, and 78, each occurrence identical (1.0 compactness) — recognizing this one phrase means recognizing the opening of every verse in the piece.",
+      "A short left-hand cell recurs 15 separate times across the piece (measures 7, 9, 13, 23, 25, 29, 31, 33, 35, 39, 40, 67, 69, 76, and 77) — this single accompaniment shape, learned once, covers a meaningful share of the whole left-hand part.",
+      "The piece opens and closes in matching silence: the right hand rests through measures 1-2 while the left hand enters alone, and measure 80, the final measure, carries zero onsets in either hand."
+    ],
+    "teachingGoals": [
+      "Learn the 21-note opening phrase thoroughly — it recurs at measures 3, 19, 41, 57, and 78, so mastering it once secures the return of the main idea five separate times across the piece.",
+      "Practice recognizing C major and F major as the piece's two harmonic pillars, tied exactly at 11 windows each, before layering in the F# diminished and B minor color that appears more sparingly.",
+      "Master the recurring left-hand cell (15 occurrences) as its own unit, separate from the melody, since it is the single most economical piece of material to learn in the whole arrangement.",
+      "Build the piece's two busiest measures, 19 and 41 (38 onsets each), with enough control that the 3/4 waltz pulse stays steady even as the onset count roughly doubles the surrounding measures."
+    ],
+    "styleTips": [
+      "Play the opening two measures of left-hand-alone material with a clear waltz lilt — since the right hand hasn't entered yet, the pulse has to live entirely in that left hand until measure 3.",
+      "Pedal in one-measure waltz units, lifting and re-catching on beat 1 of each new harmony — with C and F trading off as the two main chords, clean pedal changes keep the alternation audible instead of blurred.",
+      "Listen for the recurring left-hand cell settling into your hand as muscle memory across its 15 appearances — by the second half it should feel automatic, freeing your attention for the melody's small variations.",
+      "Try letting the final measure's silence land as a genuine close, not a trail-off — both hands are marked as complete rests at measure 80, echoing the hushed left-hand-alone opening."
+    ]
+  }
 }

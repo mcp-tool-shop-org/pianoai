@@ -10,5 +10,27 @@
     "titanic"
   ],
   "composer": "James Horner",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "James Horner's My Heart Will Go On is a long piece at 169 measures, and its key story is a relative-key ambiguity rather than a wrong guess: the harness's content-based detection leans toward E major (margin 0.257), and E major is C# minor's own relative major — the two keys share an identical key signature, exactly the kind of pair a whole-song pitch-class profile struggles to tell apart. The stated C# minor also fits reasonably well on its own (statedKeyFit 0.42), and the labeled chord windows include the tonic C# minor chord directly, alongside B major (the most-cited label at 8 windows) — B major functions as both the dominant of E major and the natural flat-seven of C# minor, so it doesn't resolve the ambiguity either way. The arrangement uses an unusually wide range, from A#0 in the left hand up to B7 in the right hand — a spread of just over 7 octaves, close to the full range of an 88-key piano. Most striking: the final 20 measures (150-169) are completely silent in both hands, by far the longest rest gap anywhere in this piece, and the section lens's single largest novelty spike in the entire piece (18.931) marks the exact moment that silence begins.",
+    "structure": "The piece's busiest stretch arrives well past its midpoint, at measures 63-113, including the single busiest measure in the piece (95, with 20 onsets). A long buildup through measures 30-59 (multiple section boundaries, novelty scores from roughly 2 to 7) leads into that dense middle stretch, and a second climb through measures 120-149 (peaking at novelty 8.746, opening measure 143) carries the piece toward its final measure of actual sound, 149. The last 20 measures, 150-169, are complete silence in both hands — the section lens still reports internal boundaries inside this silent span, but a flat, repeating novelty score there is a mathematical artifact of comparing silence to silence, not evidence of further musical development.",
+    "keyMoments": [
+      "The final 20 measures (150-169) are completely silent in both hands — the longest rest gap anywhere in this piece by a wide margin — and the section lens's single largest novelty spike in the whole piece, 18.931, marks the exact measure (150) where that silence begins.",
+      "B major is the most-cited chord label (8 windows) and it functions as the connective tissue between two valid readings of this piece's key — the dominant of the content-detected E major, and the natural flat-seven of the stated C# minor — while the tonic C# minor chord itself appears directly in 2 further windows, confirming the minor reading is real even as the whole-song correlation leans toward its relative major.",
+      "This arrangement spans nearly the full range of the piano, from A#0 in the left hand up to B7 in the right hand — a spread of just over 7 octaves — teaching that a convincing performance has to commit fully to both registers rather than staying in a comfortable middle range.",
+      "The left hand almost never repeats a shape without transposing it — the pattern pass finds several small left-hand cells (3 to 5 notes long) that recur many times each, but nearly every recurrence carries a different transposition, following the harmony as it moves rather than staying fixed in one hand position."
+    ],
+    "teachingGoals": [
+      "Practice recognizing a relative-key ambiguity: understand that content-based detection leaning toward E major doesn't contradict the stated C# minor, since the two keys share a key signature and the tonic C# minor chord genuinely appears in the labeled windows.",
+      "Build the confidence to sustain measures 63-113, the piece's busiest stretch and home to its single busiest measure (95, 20 onsets), as the structural and emotional core of the performance.",
+      "Learn the left hand's small recurring cells as transposable shapes, not fixed hand positions — since most of their repetitions shift to a new transposition, practice moving the same shape to a new starting pitch rather than relearning it each time.",
+      "Practice committing to the piece's full range, from A#0 up to B7, recognizing this near-7-octave span as a deliberate expressive choice rather than an extreme to minimize."
+    ],
+    "styleTips": [
+      "Play the final 20 measures of written silence as a real ending, not a performance error — pedal and hands should be fully at rest, letting the preceding measure 149 be the last sound a listener actually hears.",
+      "Pedal generously through the dense measures 63-113, changing with each new harmonic window rather than the beat, since the extreme low range in play there needs a clean bottom end, not a muddy wash.",
+      "Listen for B major functioning two different ways in this piece — sometimes pulling toward E major like a dominant, sometimes sitting as a modal color against the C# minor tonic — and let your ear decide how to voice it in the moment.",
+      "Try tracking the left hand's transposed repeats by feel: once a shape is under your fingers, moving it to a new pitch should feel like sliding the same hand shape, not learning a new one from scratch."
+    ]
+  }
 }

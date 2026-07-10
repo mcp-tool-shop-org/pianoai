@@ -10,5 +10,27 @@
     "orchestral"
   ],
   "composer": "Ludovico Einaudi",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Ludovico Einaudi's Divenire is a 72-measure piece at 71 BPM, and its harmony resists a confident single-key reading: the stated A minor has only modest support (statedKeyFit 0.296), and the harness's own content-based guess, C minor, is barely above its usability floor (margin 0.055) — essentially noise. Only 11 chord windows clear the confidence gate across the whole piece (15% of windows considered), scattered across seven different labels with D dominant seventh the most-cited at just 3 windows; this is not enough evidence to assert a confirmed progression, so the annotation below leans on structure instead. And the structure is unusually rich for an advanced-level piece: a 26-note left-hand figure recurs 7 separate times (measures 42-44, 46-48, 50-51, 54-55, 61-63, 65-67, and 69-70), covering 38.9% of all left-hand events at an exceptional 5.515 compression ratio — the single most economical piece of material in the whole arrangement. The piece is also remarkably continuous: the longest rest gaps are single measures in the left hand — measure 22 plus four more scattered left-hand rests at measures 24, 26, 28, and 30, with the right hand never resting at all — so there is essentially no written silence to rely on for recovery.",
+    "structure": "An opening right-hand theme (measures 1-19, itself built from a 24-note figure restated three times) leads into the section lens's most active stretch, measures 21-45, where three of the piece's largest novelty spikes cluster (measure 21 at 4.765, measure 33 at 5.472, measure 38 at 4.664) alongside several of the piece's busiest measures (23, 34, and 35). From measure 46 onward, the recurring 26-note left-hand figure identified by the pattern pass takes over as the piece's main structural thread, carrying through to the close at measures 69-70.",
+    "keyMoments": [
+      "A 26-note left-hand figure recurs 7 separate times across the piece (measures 42-44, 46-48, 50-51, 54-55, 61-63, 65-67, and 69-70), covering 38.9% of all left-hand events at a 5.515 compression ratio — learning this one figure secures more than a third of the entire left-hand part.",
+      "Only 11 chord windows clear the confidence gate in the whole piece (15% of windows considered), and no single label dominates — D dominant seventh is the most-cited at just 3 windows; with evidence this scattered, resist the temptation to fill in a confident progression the data doesn't support.",
+      "The longest rest gaps in these 72 measures are single left-hand measures — measure 22 and four more like it at measures 24, 26, 28, and 30, with the right hand never resting at all — this piece asks for genuinely continuous playing, with almost no written pause to recover in, teaching real physical stamina alongside its notes.",
+      "Measure 23 is the busiest in the piece by a wide margin (28 right-hand onsets plus 16 left-hand onsets, 44 total) — nearly 30% busier than the next-busiest measures (34 and 70, both at 34 total onsets), marking a genuine, isolated peak rather than a sustained plateau."
+    ],
+    "teachingGoals": [
+      "Learn the recurring 26-note left-hand figure (7 occurrences, 38.9% coverage) as the piece's structural backbone — once secure, it carries a large share of the left-hand part across measures 42 through 70.",
+      "Practice sustaining continuous motion through 72 measures with only single-measure written rests scattered through the left hand (measures 22, 24, 26, 28, and 30) and none at all in the right — build the stamina to keep the texture alive without relying on built-in recovery points.",
+      "Build toward measure 23, the piece's clear density peak (44 onsets, well above every other measure), as a genuine isolated climax rather than one moment in a sustained plateau.",
+      "Practice listening for the scattered chord colors (D dominant seventh, F minor, G major, and others) as individual, thinly-evidenced moments rather than assuming they connect into one confirmed progression."
+    ],
+    "styleTips": [
+      "Pedal for resonance through the continuous texture — since the piece almost never rests, let the pedal, not silence, create the breathing room between phrases, changing it deliberately rather than holding it static for long stretches.",
+      "Play the recurring left-hand figure with total consistency across all 7 of its appearances — since it's the piece's main structural anchor, small unevenness here will be more noticeable than in less-repeated material.",
+      "Listen for measure 23's isolated density peak and let your dynamic shape genuinely single it out — don't let the surrounding measures 34, 35, 70, and 71 compete with it for prominence.",
+      "Try building real endurance for this piece specifically: with essentially no written rest across 72 measures, practice in shorter segments first, then gradually connect them into the full continuous span."
+    ]
+  }
 }

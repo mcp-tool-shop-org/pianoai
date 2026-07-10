@@ -4,32 +4,41 @@
   "genre": "new-age",
   "difficulty": "intermediate",
   "key": "A major",
-  "tags": ["new-age", "yiruma", "arpeggiated", "romantic", "korean", "pop-canon", "gateway-piece"],
+  "tags": [
+    "new-age",
+    "yiruma",
+    "arpeggiated",
+    "romantic",
+    "korean",
+    "pop-canon",
+    "gateway-piece"
+  ],
   "composer": "Yiruma",
+  "source": "freemidi.org (full-length solo-piano transcription, 47 measures, 2:45; replaced the 617-byte 19-measure bitmidi uploads/62390 excerpt, 2026-07-09 data-audit follow-up)",
   "status": "ready",
   "musicalLanguage": {
-    "description": "Written in 2001 by Yiruma (Lee Ru-ma), a Korean-born, London-trained pianist, 'River Flows in You' became the most-searched piano piece on the internet and the gateway drug for an entire generation of self-taught pianists. Its massive online popularity stems from a perfect storm: the piece sounds impressive but is achievable by intermediate players, the melody is instantly singable, and the visual spectacle of flowing arpeggios looks dazzling on camera. Harmonically, it is built on the I-V-vi-IV progression in A major (A-E-F#m-D) — the same four chords that underpin thousands of pop hits from 'Let It Be' to 'Someone Like You.' The genius is in the texture: the left hand plays continuous flowing arpeggios (broken chords) that create a shimmering bed of sound, while the right hand floats a lyrical melody above. The piece teaches that keyboard music can be simultaneously simple (four chords, stepwise melody) and magical (through texture, pedaling, and touch). For vocalists, hum or sing the right-hand melody while playing the arpeggios — this develops the critical skill of maintaining an independent vocal line over a busy accompaniment.",
-    "structure": "Intro (bars 1–8): sparse, single notes in the right hand establishing the key of A major with minimal harmony — like a voice testing the silence before committing to a phrase. A section (bars 9–24): the main melody enters over the flowing arpeggio pattern, cycling through A-E-F#m-D. The melody is built from stepwise motion and small intervals, making it effortlessly singable. B section (bars 25–40): the texture thickens — both hands are now active with arpeggios, the dynamic rises to mf, and the melody occupies a higher register. This is the emotional peak. A' return (bars 41–56): the main melody returns, now slightly decorated with passing notes and octave doublings, showing how to vary a theme on repetition. Coda (bars 57–end): a gradual diminuendo and ritardando, the arpeggios thinning back to single notes, the piece dissolving rather than concluding.",
+    "description": "Written in 2001 by the Korean pianist Yiruma, 'River Flows in You' became the internet era's gateway piano piece — hugely searched, endlessly covered, and beloved because it sounds harder than it is. This library carries a full-length solo-piano transcription: 47 measures of 4/4 at 72 BPM, 814 notes across about two and three-quarter minutes. The content-based analysis confirms the stated A major emphatically — statedKeyFit 0.856, with A major also the detected key at a 0.276 margin — and the confidence-gated chord windows certify A major on 18% of measures, E major on 8%, and a single F#m window: the I, V, and vi of the key. The rest of the piece's famous four-chord loop stays below the confidence gate in this flowing arpeggiated texture, so the certified windows are deliberately read with restraint. The piece is built from a handful of recurring cells — a 10-note left-hand figure alone accounts for five separate statements — which is exactly why it rewards pattern-first practice over bar-by-bar grinding.",
+    "structure": "An arch. Measures 1-4 are a bare right-hand introduction (measures 2 and 4 carry just 2 onsets each, and measure 2 is the left hand's only full-measure rest); the main statement runs 5-20, opened by the section lens's strongest interior boundary (novelty 2.969 at measure 5, where the left-hand arpeggios enter); a restatement spans 21-29, opened by measure 21 returning identical to measures 2 and 4 — the intro gesture reused as a section pivot; the climax zone is 30-37, holding the file's busiest measures (31 and 33 at 26 onsets; 17, 30, and 32 at 25); a wind-down covers 38-42; and the coda, 43-47, thins to a single onset in each hand at measure 47.",
     "keyMoments": [
-      "Bars 1–8, the sparse intro: single right-hand notes without accompaniment — this silence-into-sound moment teaches that a piece's opening gesture sets an emotional contract with the listener. Starting sparse means you have somewhere to go.",
-      "Bars 9–12, the first full arpeggio cycle (A-E-F#m-D): the left hand's flowing broken-chord pattern begins and suddenly the piece has depth, motion, and warmth. This is the I-V-vi-IV progression — recognizing this pattern unlocks the harmonic DNA of most modern pop music.",
-      "Bars 25–28, the B section climax: both hands are now arpeggiated, the dynamic is at its peak, and the melody reaches its highest notes. The intensity comes entirely from texture and register — the harmony hasn't changed. This teaches that emotional peaks can be built from articulation and dynamics alone.",
-      "The hidden melody in the arpeggio tops: the highest note of each left-hand arpeggio group traces a slow-moving counter-melody beneath the right hand's main theme. Two melodies coexist, an acoustic illusion created by the arpeggio texture.",
-      "The coda's dissolution: instead of a triumphant final chord, the piece retreats to silence — the arpeggios slow, thin, and disappear. This teaches that an ending can be a question mark rather than an exclamation point."
+      "Measures 1-4: the piece opens as near-solo right-hand gestures — measures 2 and 4 hold only 2 onsets — and they teach that an opening can be a whispered contract with the listener rather than a statement of full texture.",
+      "Measure 5: the left hand enters and the section lens registers its strongest interior novelty score (2.969) anywhere in the piece — a clean demonstration that texture change, not harmony change, is what articulates this music's form.",
+      "The 10-note left-hand cell first heard at measures 6-8 returns at 10-12, 23-25, 27-29, and 43-45 — five statements covering roughly a quarter of the left hand's content, a model example of how minimal materials sustain a whole piece.",
+      "Measures 30-37, the climax: the 27-note left-hand span from measures 17-20 returns at 30-33 and again at 34-37 while the right hand peaks the piece's density at measures 31 and 33 (26 onsets) — intensity built by stacking familiar cells, not by new material.",
+      "Measure 47 closes the piece with one onset per hand — after the m43-45 return of the opening left-hand cell, the music dissolves rather than cadencing emphatically, a model of an ending as a release of texture instead of a final exclamation."
     ],
     "teachingGoals": [
-      "I-V-vi-IV progression recognition: the four chords that govern modern pop music. Once you can hear this progression, you can decode thousands of songs — from Adele to U2 to this piece. It's the Rosetta Stone of pop harmony.",
-      "Flowing left-hand arpeggio technique: maintaining absolute evenness across three or four notes per beat while shifting chord shapes every two bars. The fingers must be independent; the wrist must be relaxed; the arm must float.",
-      "Melody projection over accompaniment: making the right-hand melody sing at a slightly higher dynamic level than the busier left hand. This 'foreground/background' balance is the most important textural skill in piano playing.",
-      "Sustain pedal management: the pedal must change on each new chord (every 2 bars) to sustain the arpeggio without harmonies bleeding together. Learning to lift, redepless, and catch the new harmony cleanly is a pedal technique milestone.",
-      "Rubato — controlled tempo flexibility: this piece thrives on subtle push-and-pull with the beat. Slightly rushing toward emotional peaks and relaxing away from them gives the music a breathing, human quality that distinguishes musical playing from mechanical typing."
+      "Recognize the I-V-vi skeleton the analysis actually certifies — A major (18% of measures), E major (8%), and one F#m window — and practice hearing those three functions as the gravitational centers of the whole piece.",
+      "Master the two recurring left-hand spans before anything else: the 10-note cell (measures 6-8, five statements in all) and the 27-note span (measures 17-20, returning at 30-33 and 34-37) — together they are most of the accompaniment.",
+      "Practice absolute evenness in the arpeggiated texture: at 72 BPM the sixteenth-note flow must run like water, and any lump in the rhythm is instantly audible in music this transparent.",
+      "Learn the section map as practice units — boundaries at measures 5, 21, 30, 38, and 43 — and treat each unit as one gesture, since the section lens shows the piece thinks in these spans.",
+      "Build dynamic pacing directly from the density profile: 2-onset opening measures, a 26-onset peak at measures 31 and 33, and a 1-onset-per-hand final measure — the dynamic arc is written into the note counts."
     ],
     "styleTips": [
-      "The left hand is a river — the name is literal. The arpeggios should flow with absolutely even rhythm, like water over stones. Any unevenness breaks the spell. Practice the left hand alone with a metronome until it's automatic.",
-      "The right hand floats above the river — it should always be slightly louder than the left, as if lit by a spotlight. Use arm weight on the melody fingers and lightness on the arpeggio fingers. This differential touch is the core technique.",
-      "Use pedal generously but change it precisely. Half-pedal (lifting only partway) can create a beautiful shimmering sustain without full-pedal muddiness. Experiment with pedal depth.",
-      "The tempo should be around 66-72 BPM for the quarter note — patient, unhurried, like an evening walk. If the arpeggios feel frantic, slow down. Yiruma's own recordings are more spacious than most covers.",
-      "This is music for midnight, not midday. The dynamic range should stay between pp and mf — never forte, never percussive. Think of the piano as emitting light rather than sound. If singing along, use a falsetto or head voice, barely more than a hum — the vocal should blend into the texture, not dominate it."
+      "Change the sustain pedal with each harmony and never let adjacent chords blur — this texture shimmers when the pedal is clean and turns to mud when it isn't.",
+      "Float the right-hand melody above the arpeggios with a touch differential: arm weight into melody fingers, feather-light accompaniment, so the tune sings from C#4 territory up to its E6 peak at measure 14, riding above the left hand's E2 foundation.",
+      "Keep the tempo patient at 72 BPM — this piece is a slow river, and rushing the sixteenth notes collapses the calm that makes it work.",
+      "Cap the dynamics around mezzo-forte even at the measure 31-33 climax; the piece lives between pianissimo and mf, and its intensity should come from texture density, not a forced crescendo.",
+      "Let measure 47 truly dissolve: play the final onsets as if the music continues somewhere out of earshot — don't place a firm final accent, and let the pedal carry the last sound into silence."
     ]
   }
 }

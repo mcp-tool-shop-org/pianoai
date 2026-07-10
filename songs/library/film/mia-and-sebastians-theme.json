@@ -10,5 +10,27 @@
     "jazz-piano"
   ],
   "composer": "Justin Hurwitz",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Justin Hurwitz's Mia & Sebastian's Theme from La La Land runs 122 measures at a brisk 140 BPM, and its most striking feature is structural rather than harmonic: the pattern pass finds a single right-hand melodic passage spanning measures 5-61 that recurs measure-for-measure at measures 65-121 (100% of the right hand's total events fall inside one occurrence or the other), and the left hand shows the same shape across measures 3-61 and 63-121 (96.8% coverage). The raw repeat detector independently confirms this at the measure level: dozens of individual measure pairs are byte-identical, and almost every one of them (52 of 55 groups) is separated by exactly 60 measures — measure 5 matches measure 65, measure 6 matches measure 66, and so on straight through to measure 61 matching measure 121. In effect, this piece states its material once and then repeats nearly the entire thing a second time. Harmonically, both the stated A minor and the harness's best content-based guess (F# minor, margin 0.077) are weak (statedKeyFit 0.223), and only 10% of windows considered clear the confidence gate at all — with evidence this thin, and dominated by unusual color (C# augmented is the single most-cited label at just 4 windows), this annotation leans on the piece's exceptionally well-confirmed structure rather than its harmony.",
+    "structure": "A short 4-measure opening (right hand tacet, matching the piece's longest right-hand rest gap) leads into the first full statement of the main material at measure 5. That statement runs, with only small internal section breaks, all the way to measure 61 — including a striking 3-measure silence in both hands at measures 40-42, exactly where the section lens finds one of its two tied-largest novelty spikes (15.646, matched again at measure 99) anywhere in the piece. A brief 2-measure transition at measure 62 (which shares its exact content with the opening measures 1-2) leads into a nearly identical second statement of the entire passage, measures 65-121, whose own internal section boundaries and novelty scores mirror the first statement's almost exactly, each landing precisely 60 measures later.",
+    "keyMoments": [
+      "A single right-hand passage spanning measures 5-61 recurs measure-for-measure at measures 65-121 — the pattern pass reports 100% of the right hand's onsets fall inside this one repeating idea, and the raw measure-by-measure repeat detector confirms dozens of individual measure pairs, almost every one of them (52 of 55) exactly 60 measures apart, teaching that this entire piece is built from essentially one large idea stated twice.",
+      "Measures 40-42 are completely silent in both hands — one of only two 3-measure silences in the piece — recurring at measures 100-102, again offset by exactly 60 measures; the section lens marks the start of both silences (measures 39 and 99) as tied for the largest novelty spike in the whole piece (15.646 each).",
+      "Measure 62 shares its exact content with the piece's opening measures 1 and 2 — a brief return of the very first sound in the piece, functioning as a hinge that announces the second full statement is about to begin at measure 65.",
+      "Only 10% of windows considered clear the confidence gate, and the top label is C# augmented (4 windows) rather than a plain triad — recognize that this piece's harmonic color leans unusually chromatic even in its most-confirmed moments, and resist forcing a simple diatonic story onto it."
+    ],
+    "teachingGoals": [
+      "Learn measures 5-61 as the entire piece's core material — once secured, measures 65-121 add almost nothing new to learn, since the pattern pass confirms they restate the same passage nearly note for note.",
+      "Practice recognizing the 3-measure silence at measures 40-42 as a real structural event, not a memory slip — it is tied for the section lens's largest novelty spike in the piece (matched again at measure 99), and it recurs on schedule at measures 100-102.",
+      "Build the transition at measure 62 deliberately, since it briefly returns the piece's opening material before launching into the second full statement at measure 65 — treat it as a signpost, not a throwaway measure.",
+      "Listen for and identify the augmented chord color (C# augmented is the most-cited labeled chord) as this piece's harmonic fingerprint, rather than expecting plain major or minor triads throughout."
+    ],
+    "styleTips": [
+      "Play the second statement (measures 65-121) with a deliberately different color than the first, even though the notes are nearly identical — since the material itself doesn't change, the performance has to supply the sense of development.",
+      "Pedal through the 3-measure silences at measures 40-42 and 100-102 with total commitment to the quiet — lift cleanly rather than half-pedaling through them, so the silence reads as intentional.",
+      "Listen for the augmented harmony as a deliberate unsettled quality — don't resolve it in your ear or your touch the way you would a plain major triad, since the harness's own data shows this piece favors that ambiguity.",
+      "Try using the measure 62 return of the opening material as a physical and emotional reset — briefly relax your touch the way you did at measure 1, before building back into the second full statement."
+    ]
+  }
 }

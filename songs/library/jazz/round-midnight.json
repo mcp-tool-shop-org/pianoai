@@ -10,5 +10,27 @@
     "monk"
   ],
   "composer": "Thelonious Monk",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Thelonious Monk's Round Midnight runs 117 measures at 100 BPM, and its key is confirmed with unusual strength: the stated Eb minor fits the content very well (statedKeyFit 0.868), matching the harness's content-based detection, D# minor, the same pitch class spelled with sharps. Even with the key this solidly confirmed, only 9 chord windows clear the confidence gate (7% of windows considered, all hedged as inferred) — but D# minor seventh at measure 43 directly confirms the tonic minor seventh, and A# major appears twice (A# minor appears once more), consistent with Monk's famously chromatic, unsettled harmonic language rather than a simple diatonic story. The piece's register is extraordinary: the right hand reaches C8 at measure 115 — literally the highest note on an 88-key piano — near the very end of the piece, and the left hand separately reaches down to C1 elsewhere, giving the arrangement an unusually wide expressive range for a solo jazz ballad.",
+    "structure": "After a 2-measure silent opening in both hands, the section lens marks its largest structural pivot at measure 5 (novelty 7.344), opening a single 25-measure span (5-29), the longest continuous section in the piece, before shorter, more frequent structural turns follow through the remainder. The piece's busiest measures are right-hand-dominant throughout: 56 (24 right-hand onsets against just 2 in the left), 96 (23 against 3), 58 (21 against 4), and 81 (18 against 5) all show the melody carrying dramatically more activity than the accompaniment, a texture that persists right up to the extreme register reached at measure 115 near the close.",
+    "keyMoments": [
+      "The right hand reaches C8 at measure 115, literally the highest note available on an 88-key piano, near the very end of the piece — teaching that this arrangement asks for a real command of the instrument's extreme upper register at its most expressive moment.",
+      "D# minor seventh at measure 43 directly confirms the tonic minor seventh chord, and the stated Eb minor fits the content with unusual strength (statedKeyFit 0.868) — a genuinely confirmed key center, even though only 9 total chord windows clear the confidence gate across the whole piece.",
+      "The piece's busiest measures are consistently right-hand-dominant: 56 (24 onsets against 2), 96 (23 against 3), 58 (21 against 4), and 81 (18 against 5), teaching that the technical demand here concentrates almost entirely in the melodic line, with the left hand staying comparatively sparse even at the piece's most active moments.",
+      "The section lens finds its single largest structural pivot at measure 5 (novelty 7.344), opening a 25-measure span that runs without another major internal break until measure 30 — the longest continuously-developing stretch in the piece."
+    ],
+    "teachingGoals": [
+      "Build real command of the extreme upper register for measure 115's C8, the highest note on the piano, recognizing it as this arrangement's most demanding expressive peak.",
+      "Practice hearing D# minor seventh as the confirmed tonic-seventh sonority of this piece's strongly established Eb minor key center, even while treating the rest of the sparse chord data with appropriate restraint.",
+      "Master right-hand independence for the piece's busiest measures (56, 96, 58, and 81), where the melody carries far more activity than the accompaniment — build the right hand's stamina separately from the left's.",
+      "Learn the long 25-measure span opening at measure 5 as one continuous developmental arc, since the section lens finds no further major internal break until measure 30."
+    ],
+    "styleTips": [
+      "Play the opening 2 measures of silence with genuine stillness — this music often depends on the space around the notes as much as the notes themselves, and this pause sets that expectation immediately.",
+      "Pedal with real restraint given how chromatic and unsettled this harmony reads — let dissonant color, the diminished and minor chords scattered through the piece, ring honestly rather than smoothing it into a more conventional sound.",
+      "Listen for the extreme register reached at measure 115 as the arrangement's emotional peak, and commit fully to the top of the keyboard rather than pulling back from its unfamiliar territory.",
+      "Try keeping the left hand light and sparse through the busiest right-hand measures (56, 96, 58, 81), matching the real onset imbalance the data shows rather than thickening the accompaniment to match the melody's activity."
+    ]
+  }
 }

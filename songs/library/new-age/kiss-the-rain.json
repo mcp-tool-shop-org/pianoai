@@ -10,5 +10,27 @@
     "peaceful"
   ],
   "composer": "Yiruma",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Yiruma's Kiss the Rain runs 96 measures at 130 BPM, and the content strongly contradicts the stated Db major (statedKeyFit -0.594) while the harness's best content-based guess, G major, stays just below the loud-mismatch threshold (margin 0.127) — but the actual chord windows settle the question: C major, E minor, G major, C major seventh, and D major, the most-cited labels among the 28% of windows considered that clear the gate, are exactly the IV, vi, I, IVmaj7, and V of G major, a clean diatonic set. There is no written rest anywhere in these 96 measures. Structurally the piece is built largely from two enormous repeating blocks: a 161-note right-hand passage covers 49.2% of all right-hand events across measures 41-64 and 65-88, while a 178-note left-hand passage covers 41.8% of left-hand events across measures 10-30 and 30-50. On top of those large blocks, a shorter cell recurs 8-9 times in both hands together (for example measures 1-3, 5-7, 9-11, 25-27, and 29-31), each hand's version compressing at an identical 6.545 ratio.",
+    "structure": "A brief 4-measure opening leads into a long developmental span (measures 5-32) built from the 8-9-times-recurring short cell shared by both hands. From measure 41, the piece settles into its two largest structural blocks: the right hand's 161-note passage spans measures 41-64 and repeats measure-for-measure at measures 65-88 (49.2% of all right-hand events), overlapping with the left hand's own 178-note repeating passage across measures 10-30 and 30-50. The section lens's sharpest pivots — measure 81 (novelty 3.268) and measure 57 (2.877) — sit inside this large repeating structure, marking real internal turns even while the pattern pass shows the broader material recurring.",
+    "keyMoments": [
+      "The most-cited chord labels — C major (12 windows), E minor (5), G major (4), C major seventh (3), and D major (3) — are exactly the IV, vi, I, IVmaj7, and V of G major, a clean diatonic set that contradicts the stated Db major even though the whole-song key-detection margin alone (0.127) falls just under the harness's loud-mismatch threshold.",
+      "A 161-note right-hand passage covers 49.2% of all right-hand events in the piece, appearing complete at measures 41-64 and again at measures 65-88 — nearly half the right hand's total material lives inside this one repeated block.",
+      "A short cell recurs 8 times in the left hand and 9 times in the right hand, largely at the same starting measures in both (for example measures 1-3, 5-7, 9-11, 25-27, and 29-31), each hand's version compressing at an identical 6.545 ratio — this is the piece's true recurring building block, more frequent than either of the two large blocks.",
+      "There is no written rest anywhere in the piece's 96 measures — every measure sounds in both hands, so any sense of breathing space has to come from touch and pedaling rather than from silence."
+    ],
+    "teachingGoals": [
+      "Learn to hear C major, E minor, G major, and D major as this piece's true diatonic core (the IV, vi, I, and V of G major), rather than trying to relate the harmony back to the stated Db major.",
+      "Master the 161-note right-hand passage that covers nearly half of all right-hand material — since it appears complete at both measures 41-64 and 65-88, learning it once handles a huge share of the piece.",
+      "Practice the short 8-9-times-recurring cell shared by both hands as the piece's real building block, recognizing it at each of its many appearances rather than relearning it as new material each time.",
+      "Build genuine stamina for continuous playing — with no written rest across 96 measures, practice sustaining consistent touch and pedaling from start to finish rather than relying on built-in recovery points."
+    ],
+    "styleTips": [
+      "Pedal for resonance in the absence of written rests — since the piece never actually stops, the pedal has to create every sense of phrase-breath the performer wants the listener to feel.",
+      "Play the repeated 8-9-times cell with small, deliberate variations in touch across its many appearances — a shape this frequent risks sounding mechanical if played completely identically every time.",
+      "Listen for the diatonic C-Em-G-D cycle as the real harmonic home of the piece, and let your ear settle into G major rather than reaching for the stated Db major.",
+      "Try building the piece's two large repeating blocks with real endurance in mind — since so much of the piece is these two extended blocks, pace yourself across their full length rather than only the shorter opening material."
+    ]
+  }
 }

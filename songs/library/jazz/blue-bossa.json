@@ -10,5 +10,27 @@
     "latin-jazz"
   ],
   "composer": "Kenny Dorham",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Kenny Dorham's Blue Bossa, in this transcription, runs an unusually long 319 measures at a brisk 198 BPM — far beyond the tune's familiar 16-bar form, consistent with a performance capturing many choruses of playing rather than a single reading of the head. Only 11 chord windows clear the confidence gate across the whole piece (3% of windows considered, every one hedged as inferred harmony), so this annotation deliberately says very little about specific chords — C minor and G dominant seventh do each appear once, directly confirming the stated tonic and its dominant, but beyond that the honest reading is restraint, not invention. What the pattern pass finds instead is remarkable: an 11-note right-hand figure recurs 40 separate times across the piece at an 8.673 compression ratio, reading like a signature melodic-rhythmic lick reused across many choruses of playing. And a 46-note left-hand phrase first heard at measures 19-26 returns, largely intact, twice more near the very end, at measures 275-282 and 291-298 — the head returning after roughly 250 measures of other material in between.",
+    "structure": "The piece opens and closes on genuine silence — 2 measures of complete rest at the very start (measures 1-2) and 3 measures at the very end (measures 317-319) — bookending a long, harmonically active middle built from repeated choruses. The section lens's two largest novelty spikes bracket the piece almost symmetrically, at measure 5 (5.855) and measure 315 (5.894, the single largest in the piece) — and that final spike lands right where the left hand delivers a dense closing flourish: measures 314 and 315 are both among the piece's busiest, with the left hand alone carrying 25 onsets at measure 315 (and 25 again at measure 314, where the right hand is completely silent). Register stays fairly contained throughout — the right hand runs from C4 up to D6, the left hand from a low D#1 up to B3 — a comfortable range that leaves the extreme density late in the piece to rhythm and repetition rather than register extremes.",
+    "keyMoments": [
+      "An 11-note right-hand figure recurs 40 separate times across the piece — by far the most frequently repeated single figure, at an 8.673 compression ratio — functioning like a signature lick a player returns to across many choruses rather than a one-time melodic statement.",
+      "A 46-note left-hand phrase first heard at measures 19-26 returns largely intact twice more, at measures 275-282 and 291-298, near the very end of the piece — the head returning after roughly 250 measures of different material in between, a real head-then-head-again arc that demonstrates the pattern pass's own value.",
+      "Only 11 chord windows clear the confidence gate across all 319 measures (3% of windows considered) — but C minor and G dominant seventh each appear once, directly and safely confirming the stated key even though almost nothing else about the harmony can be asserted with confidence.",
+      "Measures 314 and 315 are both among the piece's busiest and both left-hand-dominant — 25 onsets in the left hand at each, against 0 and 2 in the right — a closing bass flourish that gives way to measure 316 (9 right-hand onsets, just 1 in the left) before the final 3 measures, 317-319, fall completely silent."
+    ],
+    "teachingGoals": [
+      "Learn the 40-times-recurring 11-note right-hand figure as the single highest-value piece of material in the piece — mastering this one lick is the single best practice investment here.",
+      "Practice recognizing the return of the opening 46-note left-hand phrase (measures 19-26) when it comes back at measures 275-282 and 291-298, rather than treating the piece's ending as entirely new material.",
+      "Build comfort playing with minimal harmonic guidance — with only 11 confidence-gated windows across 319 measures, trust the melodic and rhythmic figures the pattern pass actually confirms rather than reaching for an invented chord chart.",
+      "Practice the left-hand-dominant closing flourish at measures 314-315 as a deliberate final gesture, distinct in character from the more hand-balanced texture through most of the piece."
+    ],
+    "styleTips": [
+      "Play the 40-times-recurring right-hand lick with the same rhythmic feel every time it returns — its sheer frequency means consistency here shapes the character of the whole performance.",
+      "Feel a straight-eighth bossa pulse underneath, not a swung one — this tune's Latin-jazz character calls for an even, grounded rhythmic feel rather than the long-short lilt of a swing tune, even at a brisk 198 BPM.",
+      "Listen for the return of the opening phrase at measures 275 and 291 as a genuine homecoming after a long stretch of different material — let your touch mark the recognition.",
+      "Try building the closing left-hand flourish at measures 314-315 with real physical commitment, then carry through measure 316's brief right-hand return before letting the final 3 measures (317-319) of silence land as a full, deliberate stop."
+    ]
+  }
 }

@@ -9,5 +9,27 @@
     "standard"
   ],
   "composer": "Jerome Kern",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Jerome Kern's All the Things You Are runs 71 measures at 92 BPM, and this is a case where the harmony genuinely resists any confident reading: the stated Ab major is strongly contradicted by the content (statedKeyFit -0.728), and the harness's own content-based guess, F# minor, carries essentially no signal (margin 0.016, below its own usability floor). What the 16 confidence-gated windows do show — every single one hedged as inferred harmony, and every one of the 16 different chord labels appearing exactly once, with none repeating — is a piece that moves through an unusually wide spread of harmonic color rather than settling on any tonal center; that scattering is itself the honest finding here, not a progression to be reconstructed. Structurally, the piece is genuinely through-composed: the raw repeat detector finds zero literal repeats anywhere, and even the transposition-aware pattern pass turns up only modest, heavily-transposed fragments. The left hand rests for a full 4 measures in the middle of the piece (measures 44-47) — the longest silence of either hand — while the piece as a whole opens and closes on complete rests (measures 1 and 71).",
+    "structure": "The section lens finds 8 regions across the piece, with its three largest novelty spikes at measures 5, 30, and 53 (3.637, 3.507, and 3.964) roughly dividing the piece into thirds. The busiest measures — 30 (24 onsets), 61 (23), 21 (21), and 53 (21) — sit right at or near those same structural pivots, so the piece's harmonic and melodic activity intensifies exactly where the section lens marks a real turn. The 4-measure left-hand silence at measures 44-47 falls inside the section spanning measures 41-52, a comparatively still stretch between two of the piece's busier regions.",
+    "keyMoments": [
+      "Every one of the 16 confidence-gated chord windows carries the inferred-harmony hedge, and every one of the 16 distinct labels appears exactly once, with none repeating; this scattering, not a hidden progression, is the honest harmonic picture the data supports and it teaches real caution about over-reading thin evidence.",
+      "Neither the stated Ab major (statedKeyFit -0.728) nor the content-detected F# minor (margin 0.016, below the tool's own usability floor) is trustworthy here — this teaches an important skill: recognizing when a piece's harmony is genuinely too fluid for either the stated key or a whole-song correlation to capture.",
+      "The left hand rests for a full 4 measures at measures 44-47 — the single longest rest gap of either hand in the piece — right in the middle of the harmonically busiest stretch, a deliberate textural clearing rather than a structural edge.",
+      "The piece opens and closes on complete silence (measure 1 and measure 71 both carry zero onsets in either hand), bookending 69 measures of continuous harmonic motion with matching stillness."
+    ],
+    "teachingGoals": [
+      "Practice recognizing genuinely scattered, wide-ranging harmony as a real musical feature — with 16 different implied chord colors each appearing only once, resist forcing this piece into a single memorized progression.",
+      "Learn to identify structural pivots by density: the busiest measures (30, 61, 21, and 53) line up with the section lens's largest novelty spikes, so build technical control at those specific measures first.",
+      "Practice the 4-measure left-hand rest at measures 44-47 as a real musical event — recognize where the right hand carries the texture alone and plan the hand's re-entry deliberately.",
+      "Build a sense of the piece's overall arc from silence to silence (measure 1 to measure 71), understanding the harmonic restlessness in between as the substance of the piece, not a puzzle to resolve into one key."
+    ],
+    "styleTips": [
+      "Play each of the many implied chord colors for its own character rather than trying to resolve them into a single tonal center — this piece's harmonic language moves too quickly and too widely for that approach to serve the music.",
+      "Listen for the moments where the harmony briefly turns dark (the diminished and augmented colors scattered through measures 10, 36, 37, 43, 57, and 63) as color, not error — voice them with the same commitment as the more familiar major and minor sonorities around them.",
+      "Try letting the right hand carry real weight alone through the 4-measure left-hand rest at measures 44-47, using the silence in the lower register to your advantage rather than treating it as a gap to fill.",
+      "Think of the piece's overall shape as silence-to-silence: use the complete rests at measures 1 and 71 to frame everything in between as one continuous harmonic journey."
+    ]
+  }
 }

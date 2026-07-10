@@ -10,5 +10,27 @@
     "nostalgic"
   ],
   "composer": "Ennio Morricone",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Ennio Morricone's Cinema Paradiso Theme runs 85 measures at 116 BPM in a fast 2/4, and the harness's key-detection pass finds the stated F major poorly supported by the actual content (statedKeyFit -0.679) — the best content-based read, F# major, is itself only weakly established (margin 0.095), so this annotation treats harmony as evidence from individual chord windows rather than a confirmed key. Texture is unusually continuous for a film piece: the right hand plays around 12 onsets in nearly every one of the first 65 measures, and the longest rest gap in the whole piece is a single measure (right hand, measure 85; left hand, measure 36) — there is almost nowhere to breathe until the very end. A 7-measure phrase that opens the piece (measures 1-7) restates twice more, at measures 9-15 and again at measures 49-55, giving the piece a clear refrain-and-return shape across its otherwise continuous surface. The final measures pivot from that arpeggiated texture into dense two-handed block chords, and the piece's true climax — its busiest measure, 83, with 11 right-hand and 10 left-hand onsets — sits inside that block-chord stretch, just before the music thins rapidly to a single note in the final measure.",
+    "structure": "The piece opens with a spare 4-measure gesture (measures 1-4) before the section lens marks a new region beginning at measure 5, itself the start of the first 7-measure statement of the main idea. A denser structural region runs measures 15-36, where the section lens finds its sharpest pivot in the piece (novelty 3.088, opening measure 25) — the most harmonically active stretch of the piece — immediately followed by its second-sharpest pivot (novelty 2.599) at measure 37. From measure 37 the material eases into a long 18-measure span (37-54) that carries the phrase's second and third restatements, and the final two sections (65-76, 77-85) hold the transition into and through the closing block-chord climax at measures 80-83 before the piece thins to near silence.",
+    "keyMoments": [
+      "The opening 7-measure phrase (measures 1-7) restates twice more, at measures 9-15 and again at measures 49-55 — three appearances of the same idea, confirmed by the pattern pass at a 2.889 compression ratio and near-perfect 0.992 compactness, teaching how a single idea can frame both the start and the late return of a through-composed piece.",
+      "Only 24 chord windows clear the confidence gate across the whole piece — 26% of windows considered, per the harness's own summary — and F# major is the most-cited label (6 windows), followed by D# minor seventh (5 windows); with evidence this thin, the safest reading names those specific windows rather than asserting a continuous progression the data doesn't support.",
+      "The five chord windows at measures 81-84 are the only ones in the piece NOT flagged as inferred harmony — F# major, then D# minor seventh three times in a row, then F# major again at measure 84 — because the texture shifts from arpeggiated figuration to struck block chords right at the climax, clearing the harness's confidence gate without needing the hedge every earlier window carries.",
+      "The busiest measure in the piece, measure 83 (11 right-hand onsets plus 10 left-hand onsets, 21 total), sits inside that same block-chord stretch, immediately before the music thins to a single left-hand note in the final measure — teaching that this piece's loudest moment and its quietest both live in the last handful of bars."
+    ],
+    "teachingGoals": [
+      "Learn the 7-measure opening phrase (measures 1-7) as the piece's core material — it recurs at measures 9-15 and 49-55, so mastering it once pays off three times across the piece.",
+      "Practice sustaining continuous motion: the longest rest anywhere in the piece is a single measure per hand (right hand at measure 85, left hand at measure 36), so plan your own breathing points instead of relying on written rests.",
+      "Build toward the block-chord climax at measures 80-84 with real physical weight, then practice the rapid thinning that follows — from 21 onsets at measure 83 to a single note by measure 85 is one of the fastest dynamic collapses in the piece.",
+      "Listen for and identify F# major and D# minor seventh as the two most-cited chord colors in the windows that do clear the confidence gate, rather than trying to hear a single continuous key across the whole piece."
+    ],
+    "styleTips": [
+      "Pedal this piece by ear, not by habit: change the pedal with each new harmonic window rather than holding it through the dense passing motion — the near-total absence of rests means blurred pedaling will smear the whole texture together.",
+      "Feel the shift from flowing arpeggios into struck block chords at measures 80-84 as a change in touch, not just volume — play the block chords with full arm weight, then let your hand go light again as the final measures thin toward silence.",
+      "Listen for the return of the opening phrase at measure 49 as a genuine homecoming — it's the same material that opened the piece, now arriving after 48 measures of development, so let it land with a touch of recognition.",
+      "Try practicing measures 25-36 (home to the section lens's single sharpest pivot in the piece, at measure 25) as their own unit before connecting them to the surrounding material — isolating the piece's most harmonically active stretch makes the rest of the piece feel comparatively steady."
+    ]
+  }
 }

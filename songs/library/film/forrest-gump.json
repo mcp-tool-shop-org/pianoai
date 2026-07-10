@@ -10,5 +10,27 @@
     "americana"
   ],
   "composer": "Alan Silvestri",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Alan Silvestri's Forrest Gump Suite is a short, 43-measure piece at 100 BPM in 4/4, and its key story is a genuine ambiguity rather than an error: the stated C major fits the content reasonably well (statedKeyFit 0.522), but the harness's content-based read leans toward G major (margin 0.173) — G major being C major's own dominant, this reads as a tonic/dominant pull rather than a wrong key, and the annotation below cites the specific windows rather than picking a side. The most striking structural fact is in the left hand: it is completely silent for the first 17 measures (the longest rest gap in the piece), so the opening is a genuinely unaccompanied right-hand melody before the bass ever enters at measure 18. The section lens finds its single sharpest pivot by far at measure 9 (novelty 14.968, nearly twice the next-highest boundary at measure 37), separating that solo opening from the section that follows. All five of the piece's busiest measures cluster tightly between measures 21 and 36, and the piece ends the way it began — in silence, with measure 43 carrying zero onsets in either hand, echoing measure 2's own complete rest.",
+    "structure": "A solo right-hand opening (measures 1-8, left hand entirely tacet) gives way at the section lens's sharpest boundary in the piece (measure 9, novelty 14.968) to a second region (9-20) where the left hand finally enters. A third section (21-29) and fourth (30-36) together contain every one of the piece's five busiest measures — 24 and 27 in the third section, 32, 34, and 35 in the fourth, topped by measure 35's 18 onsets — before a final section (37-43) closes with the same G4-D5 melodic fragment that opened it, now landing on a fully silent final measure.",
+    "keyMoments": [
+      "The left hand is silent for the piece's first 17 measures — the single longest rest gap anywhere in this piece — so the opening is a genuinely unaccompanied melody; the bass enters for the first time at measure 18.",
+      "The section lens marks its sharpest pivot in the piece by far at measure 9 (novelty 14.968, nearly twice the next-highest boundary at measure 37's 7.998) — this is where the solo opening gives way to fuller material, nine measures before the left hand physically enters.",
+      "Only 6 chord windows clear the confidence gate across the whole piece (14% of windows considered, per the harness's own summary): E minor (3 windows), A minor (2), and D major (1) — with evidence this thin, learn the piece by its melodic shape and left-hand entrance rather than by an assumed chord progression.",
+      "The piece opens and closes on complete silence in the same melodic fragment — measure 2 (right hand rest) and measure 43 (both hands rest) bookend the piece, and the G4-into-D5 figure at measures 3-5 returns nearly verbatim at measures 41-42 just before that final silence."
+    ],
+    "teachingGoals": [
+      "Practice the opening 8 measures as a true solo — no left hand to lean on for timing, so internalize the pulse before measure 9 arrives with its dramatic structural shift.",
+      "Learn to recognize a tonic/dominant key ambiguity: this piece's stated C major and its content's own lean toward G major (the dominant) aren't a contradiction to resolve, but two sides of the same harmonic coin worth hearing both ways.",
+      "Build toward the piece's busiest measures, all five of which cluster within measures 21-36 (topped by measure 35's 18 onsets) — the right hand carries 11-15 onsets at each of these measures while the left hand ranges from completely silent (measure 27) to a modest 4 onsets, so this concentration, not an even spread, is where the technical demand lives.",
+      "Practice landing the final measure as genuine silence, not a fade — measure 43 carries zero onsets in either hand, matching the same complete rest heard back at measure 2."
+    ],
+    "styleTips": [
+      "Play the opening 8 bars with total rhythmic independence — there's no bass to lock onto, so a steady internal pulse is essential here, since no other passage in the piece leaves the right hand this exposed.",
+      "Pedal sparingly through the unaccompanied opening; with only a single melodic line sounding, a light touch of pedal for warmth is enough, and heavier pedaling only earns its keep once the left hand enters at measure 18.",
+      "Listen for the G4-to-D5 melodic fragment at measures 3-5 as a fingerprint — when it returns at measures 41-42, let your ear and your dynamic choice mark it as a recognizable close, not new material.",
+      "Try shaping measures 21-36 as the emotional high point given how much of the piece's busiest material actually concentrates there — don't spend all your dynamic range early."
+    ]
+  }
 }

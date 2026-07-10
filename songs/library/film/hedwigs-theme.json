@@ -10,5 +10,31 @@
     "harry-potter"
   ],
   "composer": "John Williams",
-  "status": "raw"
+  "source": "freemidi.org (full concert-length transcription, 409 measures in 3/8, 5:01; replaced the 870-byte 13-measure bitmidi uploads/55202 fragment, 2026-07-09 data-audit follow-up)",
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "John Williams wrote Hedwig's Theme for the first Harry Potter film in 2001, and its celesta melody became one of the most recognized film themes ever composed. This library carries a full concert-length transcription: 409 measures of 3/8 (opening at 87 BPM), 12,849 notes across roughly five minutes. The famous opening is preserved exactly as Williams staged it — the left hand is silent for the first 33 measures, the file's longest rest gap, leaving the theme as an unaccompanied single line before the texture arrives at measure 34. The stated E minor fits the content solidly (statedKeyFit 0.652); the detection's best guess, C major (margin 0.143), is E minor's relative major — the same pitch collection — and the 230 confidence-gated windows are overwhelmingly minor in quality: Am leads with 55 windows (13% of measures), Em follows with 32 (8%), then Dm, Cm, A#m, F#m, and Gm trail behind as the piece sequences through shifting minor centers. That chromatic drift through minor keys, rather than one settled progression, is the real harmonic story of the piece.",
+    "structure": "A through-composed concert arc articulated by silence. The section lens finds 39 regions, and the piece's three great punctuation marks are written rests: single silent measures at 112 and 180, and a full three-measure silence at 404-406 that scores the sharpest novelty break in the file (18.7) just before the close. The opening statement (measures 1-33, right hand alone) seeds cells that echo across the whole span — measure 8 returns identically at 16 and 32, and measure 6 returns near-identically at measure 334, a 328-measure echo. A 48-note right-hand flight figure at measures 145-153 restates at 169-177 transposed down an octave, the finale builds on a 17-note left-hand ostinato stated three times back-to-back at 369-371, 372-374, and 375-377, and the climax lands at measures 342-344: three consecutive measures of 48 onsets each, inside the file's densest stretch (measures 351-400 average 18.8 onsets per measure).",
+    "keyMoments": [
+      "Measures 1-33: the left hand never sounds — the theme is a genuinely unaccompanied line, and learning it as pure melody before the accompaniment arrives at measure 34 teaches phrasing that no amount of two-hand practice can substitute for.",
+      "Measure 8 returns identically at measures 16 and 32, and measure 6 echoes near-identically all the way out at measure 334 — these long-range returns demonstrate how Williams binds a five-minute concert piece to a few opening cells.",
+      "The 48-note right-hand figure at measures 145-153 restates at 169-177 transposed down an octave (the pattern pass grades the match moderate) — a clear example of register, not new material, creating drama.",
+      "Measures 342-344 carry 48 onsets each (24 per hand), the file's tremolo climax, and open its densest span — measures 351-400 average 18.8 onsets per measure, nearly double the piece-wide norm — showing intensity built by sheer onset density.",
+      "Measures 404-406 are complete written silence, scoring the sharpest structural break anywhere in the file (novelty 18.7) — a grand pause before the final measures that teaches silence as an event, not an absence."
+    ],
+    "teachingGoals": [
+      "Learn the harmonic drift as drift: Am (55 windows) and Em (32) anchor the labeled harmony, with Dm, Cm, A#m, F#m, and Gm following as the music sequences — practice hearing each new minor center arrive rather than forcing one key onto the whole piece; the stated E minor fits well (0.652) and detected C major is simply its relative-major reading.",
+      "Master the 3/8 lilt by feeling one pulse per measure — the theme should swing in single-beat bars like a waltz seen from above, not in counted eighth notes.",
+      "Practice the piece's map by its silences: the rests at measures 112 and 180 and the grand pause at 404-406 divide the arc into large spans — learn each span as a chapter with its own shape.",
+      "Build the finale from its ostinato: the 17-note left-hand cell stated three times at measures 369-377 is the engine of the closing pages — automate it before layering the right hand.",
+      "Identify the recurring cells of the opening (measures 8, 16, and 32; measure 6 and its measure 334 echo) so that most of the piece reads as return and transformation rather than 409 measures of new material."
+    ],
+    "styleTips": [
+      "Play the opening 33 measures with celesta lightness — think glassy, detached touch with the softest possible attack, and use pedal sparingly so the unaccompanied line stays crystalline; the right hand never dips below C4 anywhere in the file, and it first touches that floor only at measure 37.",
+      "Feel the 3/8 in one — don't count three eighth notes per bar or the theme stiffens; let each measure be a single lilting gesture.",
+      "Use the registral extremes as colors: the right hand glitters up at G#7 in measure 383 and the left hand anchors down at C1 in measure 246 — treat those outer octaves as orchestration, brass depth below and celesta sparkle above.",
+      "Give the measure 404-406 silence its full written length — resist the urge to shorten a grand pause; the close lands harder when the silence truly empties the room.",
+      "Think orchestrally throughout: imagine which instrument owns each line — celesta for the opening, strings for the flight figures around measures 145-177, full ensemble at the 342-344 climax — and vary your touch to match the imagined instrument."
+    ]
+  }
 }

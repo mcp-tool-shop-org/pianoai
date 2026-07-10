@@ -10,5 +10,27 @@
     "ray-charles"
   ],
   "composer": "Hoagy Carmichael",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Hoagy Carmichael's Georgia on My Mind is a 44-measure piece at 111 BPM, and its harmony data is close to silent: only 1 chord window clears the confidence gate in the entire piece — C major, at measure 1, hedged as inferred harmony — so beyond noting that single labeled color (which functions as the dominant of the stated F major, a plausible opening gesture), this annotation says nothing further about chords, because the data supports nothing further. What the piece does have is an extraordinary density outlier: measure 31 carries 91 total onsets (29 in the right hand, 62 in the left) — far beyond any other measure in the piece, with the next-busiest, measure 29, at 59. Measure 34 is nearly as dense (58 onsets, 52 of them in the right hand alone) and is also where the pattern pass finds right-hand figures transposed by as much as 29 semitones, consistent with a fast, wide-ranging melodic run rather than a repeated fixed shape. A 30-note phrase heard together in both hands at measures 19-22 returns essentially intact roughly 20 measures later, at measures 39-42.",
+    "structure": "The section lens finds only 4 broad regions in this short piece (measures 1-6, 7-15, 16-28, and 29-44), with the final region — home to the extreme density at measures 29, 31, and 34 — carrying the largest novelty score (2.564). The matched phrase at measures 19-22 and 39-42, confirmed by both the pattern pass and the raw repeat detector's near-identical matches at measures 20/40 and 21/41, straddles the boundary between the third and fourth regions, giving the piece's second half a genuine large-scale echo of its first.",
+    "keyMoments": [
+      "Measure 31 carries 91 total onsets (29 right-hand, 62 left-hand) — an extraordinary outlier even against the piece's own busiest neighbors (59 at measure 29, 58 at measures 23 and 34) — teaching that this passage demands a level of two-hand density and control far beyond anything else in the piece.",
+      "Only 1 chord window clears the confidence gate in the whole piece — a single C major at measure 1 — so harmony here is best learned by ear against the stated F major rather than from any labeled progression the data can support.",
+      "A 30-note phrase heard together in both hands at measures 19-22 returns essentially intact at measures 39-42, roughly 20 measures later — confirmed independently by the raw repeat detector's own near-identical matches at measures 20/40 and 21/41, a genuine large-scale echo worth recognizing as one idea learned twice.",
+      "Measure 34's right-hand material shows transposed repetition of a short figure across a span as wide as 29 semitones, nearly two and a half octaves — evidence of a fast, register-spanning melodic run rather than a fixed hand shape repeated in place."
+    ],
+    "teachingGoals": [
+      "Build serious two-hand independence and stamina specifically for measure 31, the piece's extraordinary density peak at 91 onsets, nearly double its nearest neighbors.",
+      "Practice trusting the ear over the data for harmony here — with only 1 labeled chord window in the whole piece, this is a case where listening has to do the work a confidence-gated progression can't.",
+      "Learn the 30-note phrase at measures 19-22 once, recognizing it returns at measures 39-42 — two appearances from one act of learning, confirmed independently by both the pattern pass and the raw repeat detector.",
+      "Practice measure 34's wide-ranging right-hand run across its full register span, since the pattern pass shows the same short shape recurring transposed by up to 29 semitones — think in terms of a traveling gesture, not a fixed hand position."
+    ],
+    "styleTips": [
+      "Approach measure 31 as its own dedicated technical project — with 91 onsets packed into one measure, this is not something to sight-read at tempo; isolate it and build it up slowly.",
+      "Pedal with real restraint through the extreme density at measures 29-34 — this much simultaneous activity in both hands needs clarity, not a wash of sustain, or the effect will collapse into mud.",
+      "Listen for the C major color at measure 1 functioning as a dominant pickup into the stated F major, then let your ear carry the rest of the harmony — the data has almost nothing more to offer here.",
+      "Try feeling the return of the measures 19-22 phrase at measures 39-42 as a moment of recognition and release after the intervening development, giving it a slightly different color the second time."
+    ]
+  }
 }

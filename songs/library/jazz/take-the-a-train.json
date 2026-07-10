@@ -10,5 +10,27 @@
     "ellington"
   ],
   "composer": "Billy Strayhorn",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Billy Strayhorn's Take the A Train runs 136 measures at a brisk swing tempo of 150 BPM, and its most extraordinary feature is the final quarter of the piece: measures 110 through 134 are built from an 8-measure phrase that repeats three times almost contiguously, confirmed independently by the pattern pass (a 53-note left-hand passage spanning measures 110-118, 118-126, and 126-134; a matching 32-note right-hand passage at 111-117, 119-125, and 127-133) and by the raw repeat detector, which finds seven separate exact-measure matches all spaced precisely 8 measures apart. The chord windows corroborate the same regularity: D# augmented appears at measures 113, 121, and 129, each exactly 8 measures apart, and B diminished at measures 55 and 63, also 8 apart. Earlier in the piece, C augmented clusters at measures 5, 6, 13, and 14, consistent with the tune's famous chromatic opening gesture. Only 13 chord windows clear the confidence gate overall (9% of windows considered, all hedged as inferred), and the whole-song key detection carries almost no signal (margin 0.005) even though it happens to land on the stated C major, so the key here rests on the moderate statedKeyFit (0.566) alone, not on a meaningful content confirmation. The left hand voices some of its chords densely, for example a 5-note stack at measure 111 (B1, D#2, A#2, A3, A#3), real evidence of full block-chord left-hand voicing rather than a single bass line.",
+    "structure": "After a brief 4-measure opening, the section lens's two largest early novelty spikes, at measures 5 (4.986) and 15 (4.284), mark the piece's initial structural development. The middle of the piece, roughly measures 51-80, carries its own 3-times-repeating 36-note left-hand phrase (measures 51-56, 59-64, and 75-80), before the piece's real structural signature emerges in its final quarter: the 8-measure-cycle phrase repeating three times across measures 110-134, confirmed by both hands' pattern matches and seven separate exact-repeat pairs from the raw detector, all exactly 8 measures apart.",
+    "keyMoments": [
+      "Measures 110 through 134 are built from an 8-measure phrase repeating three times almost contiguously, confirmed by matching left-hand and right-hand pattern-pass results and by seven separate exact-measure matches from the raw repeat detector, every single one spaced precisely 8 measures apart, making this the most thoroughly corroborated structural finding anywhere in the piece.",
+      "D# augmented appears at measures 113, 121, and 129, each exactly 8 measures apart, and B diminished at measures 55 and 63, also 8 apart — the chord-window evidence independently confirms the same 8-measure periodicity the pattern pass and repeat detector both find in the notes themselves.",
+      "C augmented clusters at measures 5, 6, 13, and 14, right at the start of the piece: 4 of the 13 total confidence-gated chord windows concentrated in the opening, consistent with this tune's famously chromatic opening gesture.",
+      "The left hand voices some chords with 4 or 5 simultaneous notes, for example B1, D#2, A#2, A3, and A#3 stacked together at measure 111, real, directly observable evidence of full block-chord left-hand voicing rather than a single-note bass line, worth naming as a concrete technique to build."
+    ],
+    "teachingGoals": [
+      "Learn the 8-measure phrase that repeats three times across measures 110-134 as a single unit — mastering one 8-measure block secures nearly a fifth of the entire piece.",
+      "Practice recognizing D# augmented and B diminished's exact 8-measure spacing as confirmation of the same structural cycle the notes themselves repeat, harmony and structure telling the same story here.",
+      "Build the left hand's block-chord voicing technique specifically for passages like measure 111, where 4-5 simultaneous notes need to sound together cleanly, not as a rolled or smeared cluster.",
+      "Master the 3-times-repeating 36-note left-hand phrase in the piece's middle section (measures 51-56, 59-64, and 75-80) as its own learning unit, separate from the later 8-measure-cycle material."
+    ],
+    "styleTips": [
+      "Feel the swing at this piece's brisk 150 BPM as closer to even eighths than to an exaggerated long-short lilt — tempo-scaled swing narrows as the tempo rises, and over-swinging here will drag against the piece's forward drive.",
+      "Play the left hand's dense chord stacks, like the 5-note voicing at measure 111, with a firm, together attack — practice them slowly as a single unit before bringing them up to tempo, since a ragged stack reads as a mistake, not a color.",
+      "Listen for the 8-measure cycle in the piece's final quarter (measures 110-134) as a repeating unit you can anticipate — once you feel where each 8-measure block starts, the whole passage becomes far more predictable to play.",
+      "Try voicing the C augmented color at the very opening (measures 5-6 and 13-14) with real commitment to its unsettled character — it's this tune's signature harmonic gesture, not a passing accident."
+    ]
+  }
 }

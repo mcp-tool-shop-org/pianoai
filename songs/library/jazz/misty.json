@@ -10,5 +10,27 @@
     "standard"
   ],
   "composer": "Erroll Garner",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Erroll Garner's Misty runs 147 measures at 124 BPM, and its key is confirmed: the stated Eb major fits the content strongly (statedKeyFit 0.734), matching the harness's content-based detection, D# major, the same pitch class spelled with sharps. Only 8 chord windows clear the confidence gate across the whole piece (6% of windows considered, all hedged as inferred) — but two of them are safely readable in textbook terms: A# dominant seventh at measure 34 is the dominant seventh of the tonic Eb major, and C minor at measure 135 is its relative minor, so those two moments are grounded in real functional harmony even though the rest stays too thin to assert. By far the most striking structural fact is the ending: the piece's final 9 measures (139-147) are complete silence in both hands — the longest rest gap in the piece — and the section lens's single largest novelty spike anywhere (17.647, dwarfing every other boundary in the piece) marks the exact measure that silence begins.",
+    "structure": "The piece's busiest measures cluster loosely across its second half rather than building to one clear peak — 116 (31 onsets, the highest in the piece), 94 (27), 124 (27), 91 (25), and 82 (24) are spread across measures 82 through 124. After that stretch, the section lens's dominant feature is the transition into silence at measure 139 (novelty 17.647) — by a wide margin the sharpest structural change anywhere in the piece — opening a final 9-measure span (139-147) of complete rest that closes the piece.",
+    "keyMoments": [
+      "The piece's final 9 measures (139-147) are completely silent in both hands — the longest rest gap in the piece by a wide margin — and the section lens's single largest novelty spike anywhere in the piece (17.647) marks the exact measure, 139, where that silence begins, confirming this is the most abrupt structural change the harness finds in the whole arrangement.",
+      "A# dominant seventh at measure 34 is, in textbook terms, the dominant seventh of the tonic Eb major, and C minor at measure 135 is its relative minor — two of only 8 labeled chord windows in the whole piece, but both safely readable as real functional harmony rather than arbitrary color.",
+      "The piece's busiest measures — 116, 94, 124, 91, and 82 — spread across measures 82 through 124 rather than concentrating in one place, teaching that this piece's technical demands build gradually across its second half rather than arriving in one isolated peak.",
+      "The stated Eb major and the content-detected D# major agree, since they are the same pitch class spelled differently, at a strong 0.734 fit — a genuinely confirmed key, even though the individual chord windows that do clear the gate stay thin at just 6% of windows considered."
+    ],
+    "teachingGoals": [
+      "Practice the final 9 measures of written silence (139-147) as a real, deliberate ending — recognize measure 139 as the sharpest structural turn the harness finds anywhere in the piece, not an afterthought.",
+      "Learn to hear A# dominant seventh (measure 34) and C minor (measure 135) as genuine functional harmony, the dominant seventh and relative minor of the confirmed Eb major tonic, even while treating the rest of the piece's thin chord data with appropriate restraint.",
+      "Build stamina gradually across measures 82 through 124, where the piece's busiest material spreads rather than concentrating in one climactic bar.",
+      "Practice trusting the strongly confirmed Eb major key center even when individual labeled chords stay sparse — a confident key doesn't require a fully labeled progression to teach from."
+    ],
+    "styleTips": [
+      "Play the final 9 measures of silence with your hands and pedal fully at rest — let measure 138 be the true last sound the listener hears, and treat the silence that follows as the piece's actual ending, not empty space.",
+      "Pedal generously through the ballad's harmonic movement, changing with each new chord rather than the beat, and reserve extra sustain for the A# dominant seventh at measure 34 as it resolves toward the tonic.",
+      "Listen for the C minor color at measure 135, near the piece's close, as a genuine emotional shift toward the relative minor before the final silence — voice it with real intention.",
+      "Try building the gradual density increase across measures 82-124 as a long, patient arc rather than several separate small peaks — let the energy accumulate across more than 40 measures."
+    ]
+  }
 }

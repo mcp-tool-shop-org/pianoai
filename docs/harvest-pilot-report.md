@@ -170,4 +170,64 @@ Separately — not a scoring failure, a self-caught accuracy issue — an intern
 - **`CHORD_SYMBOL_PATTERN` doesn't match glued minor/major-seventh shorthand.** `Am7`, `Gmaj7`, `Cm7` (a digit immediately after `m`/`maj`/`min`, no space) fail the regex's trailing `\b` and don't count as chord citations at all — confirmed empirically (`node -e` regex probe), not documented anywhere. `C7`, `Cm`/`Cdim` (bare, space-terminated), and `C major`/`C minor` (spelled out) all match fine. Cost two songs their first-pass score. Sub-wave B/C should spell out "minor seventh"/"major seventh" or use bare forms, not glued shorthand — or run the same diagnostic before drafting.
 - **Low window coverage needs active restraint, not padding.** a-thousand-years (19%), someone-you-loved (22%), solace (26%) all triggered the brief's own low-coverage caveat; the temptation is to still write a full confident progression around the few real windows. Budget extra care for jazz/latin/soul/rnb (the hard-gated genres) — expect coverage this low or lower there per findings 48/51, and the pilot's own bulk-wave projection already flagged this.
 - **`PatternGroup.length` is interval count, not note count** (`length + 1` = notes). Mistakenly called a 36-interval/37-note figure "six-note" twice before catching it — worth stating explicitly for the next drafting sessions rather than re-discovering it.
-- **Source-data quality, not harness quality:** viva-la-vida's `.mid` is 552 bytes / 4 measures / 38 notes against 12-64KB for every other pop song — almost certainly a truncated or placeholder source file, out of this wave's ownership (raw `.json` only) to fix. Annotated honestly as a short excerpt rather than inventing full-song verse/chorus content; flagging here for a future data-audit pass in case siblings elsewhere in the library have the same problem.
+- **Source-data quality, not harness quality:** viva-la-vida's `.mid` is 552 bytes / 4 measures / 38 notes against 12-64KB for every other pop song — almost certainly a truncated or placeholder source file, out of this wave's ownership (raw `.json` only) to fix. Annotated honestly as a short excerpt rather than inventing full-song verse/chorus content; flagging here for a future data-audit pass in case siblings elsewhere in the library have the same problem. *(Resolved 2026-07-09: the audit ran, traced the fragment to bitmidi's own source upload, replaced it with a full 140-measure transcription, and re-annotated it (score 100); five sibling fragments were found and prioritized — see `docs/library-data-audit.md`.)*
+
+---
+
+# Wave D2-B — bulk harvest, sub-wave B (film + new-age + jazz)
+
+**Scope:** film (9 raw → ready) + new-age (9 raw → ready) + jazz (9 raw → ready), 27 songs. Jazz is one of the hard-gated genres named in findings 48/51 — every chord window in every jazz song is confidence-gated at the high (0.5) bar and carries the `implied` hedge; this sub-wave is the harness's first real test of that discipline at scale.
+
+## Result
+
+27/27 candidates written and promoted to `status: "ready"`. `--report film`, `--report new-age`, and `--report jazz` all show **10/10 ready** (the pre-existing exemplar in each genre — comptine-dun-autre-ete, river-flows-in-you, autumn-leaves — was not touched). `pnpm smoke` 48/48. `vitest run src/songs scripts/annotate-batch.test.ts`: 303/303 passed.
+
+## Per-song table
+
+| Slug | Genre | Score | Grade | What the annotation teaches |
+|---|---|---|---|---|
+| cinema-paradiso | film | 91 | A | A 7-measure phrase reprised 3x; the only non-implied windows sit inside the closing block-chord climax where texture shifts from arpeggios to struck chords |
+| forrest-gump | film | 92 | A | Left hand tacet for 17 measures (unaccompanied opening); tonic/dominant key ambiguity (C vs. its own V, G) handled as two readings, not an error |
+| hedwigs-theme | film | 91 | A | A 13-measure right-hand-only excerpt (left hand never sounds) built from 3 interlocking recurring cells |
+| mia-and-sebastians-theme | film | 86 | B | Measures 5-61 repeat measure-for-measure at 65-121 — dozens of exact pairs, almost every one (52 of 55) exactly 60 measures apart |
+| moon-river | film | 88 | B | Confirmed C major (0.697 fit); a 5x-recurring opening phrase and a 15x-recurring left-hand cell |
+| my-heart-will-go-on | film | 91 | A | Relative-key pair (C# minor / its major, E) resolved via the tonic chord's direct presence; 20 measures of trailing silence, the piece's largest novelty spike |
+| nuvole-bianche | film | 91 | A | LOUD mismatch (Em stated, G#/Ab detected) confirmed by a clean I-IV-V-vi diatonic set at 56% coverage; an immediate 6-measure echo |
+| pink-panther | film | 91 | A | Left hand tacet for 10 measures (ostinato-alone opening); every labeled window is F#-rooted, quality-shifting color, honestly read as chromatic riff, not function |
+| schindlers-list-theme | film | 86 | B | Relative-key pair (D minor / F major) resolved by chord *quality* (overwhelmingly minor) where the whole-song profile couldn't decide; zero literal repeats, all development by transposition |
+| divenire | new-age | 84 | B | A 26-note left-hand ostinato recurring 7x at 5.515 compression; longest written rests are single measures — 5 of them scattered through the left hand only, right hand never rests — across 72 measures |
+| experience | new-age | 92 | A | The entire 44-measure piece is one 22-measure idea stated exactly twice (100% pattern coverage both hands); zero written rests |
+| kiss-the-rain | new-age | 92 | A | Stated key contradicted (-0.594 fit); the 5 most-cited windows are exactly G major's I-IV-V-vi-IVmaj7 set |
+| may-be | new-age | 89 | B | Source-MIDI tempo defect (512 BPM) found and fixed with an explicit 72 BPM config fallback — see below; per-window evidence (A#/Gm alternation) salvaged where the whole-song margin was noise |
+| metamorphosis-two | new-age | 94 | A | Zero literal repeats, but 8 interlocking transposed cells in 17 dense measures — the "no repeats ≠ no structure" lesson in miniature |
+| nuvole-bianche-na | new-age | 98 | A | Same clean diatonic G#/Ab confirmation as the film pairing, reframed around ostinato compression ratios and resonance pedaling per the genre brief |
+| opening-glassworks | new-age | 89 | B | LOUD mismatch; the only 5 windows are diatonic sevenths (vi7, ii7) of the detected key at genuinely low confidence — named as thin, not confirmed |
+| una-mattina | new-age | 89 | B | 4 independent pattern families every one exactly 44 measures apart (script-verified); harmony left genuinely open in both directions |
+| watermark | new-age | 89 | B | LOUD mismatch; 4 of 5 labels diatonic to the detected key; an 18x-recurring 4-note cell |
+| all-the-things-you-are | jazz | 92 | A | 16 windows, 16 distinct labels, none repeating — the scattering itself is the reported finding, not a reconstructed progression |
+| blue-bossa | jazz | 88 | B | 319-measure multi-chorus transcription; an 11-note lick recurring 40x (8.673 compression); the head returns intact ~250 measures later |
+| fly-me-to-the-moon | jazz | 91 | A | Confirmed C major (0.856); right hand tacet 6 measures (left-hand-alone opening) marks the piece's single largest novelty spike |
+| georgia-on-my-mind | jazz | 84 | B | Only 1 chord window in 44 measures; measure 31's 91-onset outlier (vs. 59 next-highest) is the real story |
+| misty | jazz | 91 | A | Confirmed Eb major (0.734); 9 measures of trailing silence mark the piece's largest novelty spike (17.647) |
+| my-funny-valentine | jazz | 89 | B | Relative-key pair (C minor / its major) resolved by the tonic's direct presence; abrupt silence at measure 123 |
+| round-midnight | jazz | 91 | A | Very strong key confirmation (0.868); right hand reaches C8 (top of the keyboard) near the close; right-hand-dominant density throughout |
+| summertime | jazz | 88 | B | 5 independent pattern matches every one exactly 18 measures apart (script-verified), corroborated by tied-busiest-measure pairs |
+| take-the-a-train | jazz | 89 | B | The final quarter (measures 110-134) is an 8-measure phrase repeated 3x, confirmed by 3 independent evidence sources all landing on the same 8-measure period; direct fingerprint evidence of 4-5-note left-hand block-chord voicing |
+
+**Grade split: 14 A, 13 B, 0 C/D/F.**
+
+## Key pre-flight (all 27, stated vs. detected)
+
+**8 LOUD mismatches** (margin ≥ 0.15): forrest-gump, my-heart-will-go-on, nuvole-bianche (film); metamorphosis-two, nuvole-bianche-na, opening-glassworks, watermark (new-age); my-funny-valentine (jazz). Of these, **2 are genuine relative-major/minor pairs** (identical key signature: my-heart-will-go-on's C# minor/E major, my-funny-valentine's C minor/Eb major) rather than errors; grounded via chord *quality*, not just the winning label. The other 6 (forrest-gump, nuvole-bianche, metamorphosis-two, nuvole-bianche-na, opening-glassworks, watermark) are genuinely contradicted keys, not relative pairs, and are grounded in the detected key's own chord-window evidence instead — schindlers-list-theme is a relative pair too (D minor/F major) but its weak 0.091 margin keeps it out of the loud-mismatch count, and pink-panther's 0.01 margin is closer to noise than a real mismatch. **~11 more** show a clearly negative or near-zero statedKeyFit without a loud detected margin (cinema-paradiso, hedwigs-theme, kiss-the-rain, may-be, all-the-things-you-are, una-mattina among them) — grounded in specific windows, never a reconstructed key. **8 confirmed** at strong fit (moon-river 0.697, fly-me-to-the-moon 0.856, misty 0.734, round-midnight 0.868, schindlers 0.669, summertime/take-the-a-train weak-margin-but-agreeing).
+
+## First-pass failure rate
+
+**1 of 27 (3.7%)** failed first pre-score: metamorphosis-two (79 → 94, thin bar/pitch/vocabulary density from an extremely short, dense excerpt — fixed by citing the already-verified register span and measure numbers already in the brief, not new claims). Below D1's 44–55.6% and D2-A's 7.4%.
+
+## Where jazz's implied-harmony discipline bit, and how I handled it
+
+Confirmed empirically: **every single confidence-gated window across all 9 jazz songs carries `implied: true`** — the hard-gate from findings 48/51 fires unconditionally for this genre, texture notwithstanding. Coverage ranged from 2% (georgia-on-my-mind: **1 window in 44 measures**) to 21% (all-the-things-you-are — but all 16 labels unique, none repeating). Per the dispatch brief's own instruction ("a jazz annotation with no chord letters is better than one with wrong ones"), I leaned on structure/density/register wherever harmony was too thin to say more than one sentence about: georgia's 91-onset outlier measure, blue-bossa's 40x-recurring lick and 250-measure head return, all-the-things' scattering-as-finding. I only asserted concrete left-hand voicing devices (block chords, per finding 63) for take-the-a-train and blue-bossa, where raw fingerprint strings I'd actually read showed genuine 4-5-note stacks — not for the other 7, where I lacked that direct evidence. Swing language was tied to actual tempo/genre-tag (150 BPM swing tune vs. bossa's straight-eighth feel), never asserted as "swing = triplets."
+
+## Data-quality bug found and fixed (in-ownership)
+
+Promoting `may-be` to ready triggered a **real, pre-existing registry-load failure**: its source MIDI's raw tempo meta-event is 512 BPM, outside `registry.ts`'s 20–300 validation bound, so `registerSong()` silently dropped it from the loaded library (`pnpm smoke` caught this: 47/48, "expected 96 ready songs, got 95"). The bug was dormant while `may-be` was `raw` and only surfaces on promotion. Fix: `ingest.ts` resolves `effectiveTempo = config.tempo ?? tempoFromEvents(...)` — so I added an explicit `"tempo": 72` to the config (a schema-compliant, genre-plausible fallback), which overrides the corrupt MIDI value without touching the binary `.mid`. Annotation prose updated to describe the fix honestly (raw MIDI event unchanged at 512; config now overrides it for playback). `pnpm smoke` back to 48/48. Flagging for the coordinator: worth an audit pass across the other 8 genres' raw songs for the same 20–300 bound violation, since it's silent until promotion.

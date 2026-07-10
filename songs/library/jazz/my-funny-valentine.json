@@ -10,5 +10,27 @@
     "standard"
   ],
   "composer": "Richard Rodgers",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Richard Rodgers' My Funny Valentine runs 127 measures at 110 BPM, and its key story is a relative-key ambiguity, not an error: the content-detected D# major (margin 0.245, a loud mismatch by the harness's own threshold) is the same key as Eb major, the relative major of the stated C minor, and the two share an identical key signature. The stated C minor also fits the content strongly on its own (statedKeyFit 0.666), and the labeled windows support both readings at once: C minor is the single most-cited chord (4 of the 17 confidence-gated windows, all hedged as inferred), directly confirming the tonic, while D# major, D# major seventh, and G# major seventh, the tonic, tonic-seventh, and subdominant of the relative major, round out the picture. The piece's final 4 to 5 measures (roughly 123-127) are complete silence in both hands, and the section lens's largest novelty spike in the piece (14.05) opens exactly at measure 123 — a decisive, abrupt close after 122 measures of continuous material.",
+    "structure": "An early structural pivot at measure 5 (novelty 10.075, the second-largest in the piece) opens a long developmental span running through the piece's middle, where the busiest measures cluster tightly together: 66, 74, 75, and 76 (19 to 21 onsets each) sit within a few measures of one another, followed by another dense measure at 86. From there the piece continues developing without another major structural break until measure 123, where the section lens's single largest novelty spike (14.05) marks the sudden turn into the closing silence at measures 124-127.",
+    "keyMoments": [
+      "C minor is the single most-cited chord label (4 of 17 confidence-gated windows), directly confirming the tonic, while D# major, D# major seventh, and G# major seventh, the tonic, tonic-seventh, and subdominant of C minor's relative major, round out the harmonic picture, teaching that a minor-key standard's harmony often lives partly in its relative major's territory.",
+      "The content-detected D# major and the stated C minor are not in real conflict — D# major is spelled-with-sharps Eb major, the exact relative major of C minor, sharing an identical key signature — so this loud key mismatch is a relative-key relationship to understand, not a contradiction to resolve.",
+      "The piece's final measures, roughly 123-127, are complete silence in both hands, and the section lens's single largest novelty spike in the piece (14.05) marks the exact turn into that silence at measure 123 — the most abrupt structural change anywhere in the arrangement.",
+      "The piece's busiest measures — 66, 74, 75, and 76 — cluster tightly together within a ten-measure span, all in the 19-to-21-onset range, teaching that this piece's technical peak is a concentrated stretch, not several scattered spikes."
+    ],
+    "teachingGoals": [
+      "Learn to hear C minor as the confirmed tonic, the most-cited chord label, while also recognizing D# major, D# major seventh, and G# major seventh as its relative-major territory, not a contradictory key.",
+      "Build focused technical control for the tightly clustered busy measures 66 and 74-76, recognizing this ten-measure span as the piece's real concentration of demand.",
+      "Practice the abrupt turn into silence at measure 123, understanding it as the section lens's single largest structural event in the piece rather than a gradual fade.",
+      "Master the long developmental stretch following measure 5's early structural pivot as one continuous arc, since no further major structural break occurs until the ending at measure 123."
+    ],
+    "styleTips": [
+      "Voice C minor and its relative-major color (D# major, D# major seventh, G# major seventh) with a consistent tonal center in your ear, even as the harmony visits the relative major's territory — let C minor stay the gravitational home.",
+      "Pedal generously through the clustered busy measures 66 and 74-76, changing with the harmony's real motion rather than the beat, since this concentrated stretch is where the piece's harmonic rhythm moves fastest.",
+      "Listen for the structural pivot at measure 5 as the true start of the piece's main development, distinct from the brief 4-measure opening that precedes it.",
+      "Try landing the closing silence at measures 124-127 with real finality — after the section lens's largest novelty spike in the piece marks measure 123 as the sharpest turn anywhere in the arrangement, let the silence that follows feel earned, not abrupt."
+    ]
+  }
 }

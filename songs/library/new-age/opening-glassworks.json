@@ -10,5 +10,27 @@
     "minimalist"
   ],
   "composer": "Philip Glass",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Philip Glass's Opening (from Glassworks) appears here as a 22-measure excerpt at 122 BPM, and the harness flags a loud key mismatch: the stated A minor is poorly supported (statedKeyFit -0.341), while the content-based read, B major, clears a real margin (0.162). The 5 labeled chord windows (23% of windows considered) don't name B major directly, but they do support it diatonically — G# minor seventh (4 windows, the vi7 of B major) and C# minor seventh (1 window, the ii7 of B major) — though their confidence values are genuinely low (0.171 to 0.262), so this is honest, thin evidence rather than a confirmed progression. The piece's real strength is its ostinato construction: a 29-note left-hand figure recurs 4 times at a 3.515 compression ratio (measures 2-3, 4-5, 6-7, and 8-9), covering 41.3% of all left-hand events in the piece's first half, while several shorter right-hand cells layer on top through the second half. There is no written rest anywhere in these 22 measures, and five measures — 11, 13, 15, 20, and 22 — are exactly tied as the busiest, each carrying 26 onsets.",
+    "structure": "The section lens finds only two internal boundaries across the excerpt (opening measures 6 and 16, the second carrying the piece's largest novelty at 3.462), dividing it into three brief regions. The first (measures 1-5) and second (6-15) regions are dominated by the 4-times-recurring 29-note left-hand ostinato, while a second, adjacent 53-note left-hand figure (measures 9-12 and 13-16) and its matching 29-note right-hand counterpart (measures 10-12 and 14-16) carry the piece into its third region (16-22), where the busiest, most tightly tied measures (20 and 22) sit.",
+    "keyMoments": [
+      "The stated A minor is actively contradicted by the content (statedKeyFit -0.341), and while the content-based B major clears a real margin (0.162), the actual labeled windows support it only diatonically — G# minor seventh (the vi7 of B major, 4 windows) and C# minor seventh (the ii7, 1 window) — at genuinely low confidence (0.171 to 0.262), so treat B major as the best available reading, not a firmly confirmed one.",
+      "A 29-note left-hand ostinato recurs 4 times in immediate succession (measures 2-3, 4-5, 6-7, and 8-9) at a 3.515 compression ratio, covering 41.3% of all left-hand events — this single figure is the backbone of the excerpt's first half.",
+      "Five measures — 11, 13, 15, 20, and 22 — are exactly tied as the busiest in the piece, each carrying 26 onsets, spread across the second and third regions rather than concentrated in one spot.",
+      "There is no written rest anywhere in these 22 measures — every measure sounds in both hands, so this brief excerpt still demands sustained, continuous control from its very first bar."
+    ],
+    "teachingGoals": [
+      "Master the 29-note left-hand ostinato (4 occurrences, 3.515 compression, 41.3% coverage) first — it is the single highest-value piece of material in this short excerpt.",
+      "Practice recognizing G# minor seventh and C# minor seventh as low-confidence but diatonically consistent support for the content-detected B major, rather than expecting a fully confirmed progression from such thin evidence.",
+      "Build even control across the tied-busiest measures (11, 13, 15, 20, and 22, all at 26 onsets), understanding this excerpt's intensity as spread rather than concentrated in one climax.",
+      "Learn the second-half material (the 53-note left-hand figure and its 29-note right-hand counterpart) as a related but distinct layer from the opening ostinato, since the pattern pass finds them in different, later measures."
+    ],
+    "styleTips": [
+      "Pedal for resonance across the repeating left-hand ostinato — let the sustain accumulate a warm wash under the figure's four appearances rather than clearing it fully between repeats.",
+      "Play the tied-busiest measures with genuinely even weight — resist the instinct to build toward just one of them, since the data shows all five carry identical intensity.",
+      "Listen for the low-confidence G# minor seventh and C# minor seventh chords as color, not certainty — voice them lightly, matching the honestly thin evidence behind them.",
+      "Try building stamina for continuous playing from the very first measure, since there is no written rest anywhere in this short excerpt to rely on for recovery."
+    ]
+  }
 }

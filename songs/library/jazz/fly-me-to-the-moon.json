@@ -10,5 +10,27 @@
     "sinatra"
   ],
   "composer": "Bart Howard",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Bart Howard's Fly Me to the Moon runs 78 measures at 120 BPM, and its key is cleanly confirmed: the stated C major fits the content very strongly (statedKeyFit 0.856), matching the harness's own content-based detection exactly. Even so, only 6 chord windows clear the confidence gate (7% of windows considered, every one hedged as inferred) — D major, G major seventh, C# diminished, D# dominant seventh, A# diminished, and A# major — a scatter of secondary-dominant and diminished passing color rather than a stable, confirmable progression, so this annotation grounds itself in the confirmed key without asserting more than the specific windows show. The right hand is completely silent for the first 6 measures — the longest rest gap in the piece — so the piece opens as a left-hand-alone introduction, and the section lens marks the entrance of the right hand at measure 7 as by far the sharpest structural pivot in the piece (novelty 14.203, more than five times the next-largest boundary).",
+    "structure": "A 6-measure left-hand-alone introduction (measures 1-6) gives way at measure 7 to the piece's single largest structural turn (novelty 14.203) as the right hand enters and the piece opens into a long 19-measure span (7-25). The busiest measures that follow — 55 (30 onsets, the piece's peak), 43 (25, with the left hand alone carrying 23), 68 (25), 17 (23), and 33 (22) — are spread fairly evenly across the rest of the piece rather than clustering in one region, and several, measure 43 especially, are left-hand-dominant moments where the bass carries far more activity than the melody.",
+    "keyMoments": [
+      "The right hand is completely silent for the piece's first 6 measures — the longest rest gap anywhere — so the piece genuinely opens as a left-hand-alone introduction, and the section lens marks the moment the right hand enters, measure 7, as its single largest structural pivot in the piece by a wide margin (novelty 14.203).",
+      "The stated C major is strongly confirmed by the content (statedKeyFit 0.856), matching the detected key exactly — a case where the whole-song correlation and the stated key fully agree, even though the individual labeled chords stay thin at just 6 windows.",
+      "Measure 43 carries 23 left-hand onsets against just 2 in the right hand — one of several moments in the piece where the bass, not the melody, is doing the harmonic work, teaching that density and melodic interest don't always live in the same hand.",
+      "Measure 55 is the busiest in the piece (30 onsets total), arriving well past the midpoint — a real, isolated late climax rather than an early peak the piece coasts away from."
+    ],
+    "teachingGoals": [
+      "Practice the 6-measure left-hand-alone introduction with total rhythmic confidence, since the right hand has nothing to lean on until measure 7's dramatic entrance.",
+      "Learn to trust the confirmed C major key center (statedKeyFit 0.856) even where individual chord windows stay thin and scattered — a stable key doesn't require a fully labeled progression to teach from.",
+      "Build independent left-hand strength for measures like 43, where the bass carries 23 onsets against the right hand's 2 — recognize these as bass-driven moments requiring their own technical focus.",
+      "Practice building toward measure 55, the piece's true density peak, as a genuine late climax rather than front-loading all the piece's energy into its earlier, more moderately busy measures."
+    ],
+    "styleTips": [
+      "Play the opening left-hand introduction with a clear, singing tone even in a low register — it's carrying the entire piece alone for 6 measures, so it needs to establish the mood by itself.",
+      "Listen for the moment the right hand enters at measure 7 as a real arrival — the section lens marks this as the sharpest turn in the whole piece, so let your touch mark it as clearly as the data does.",
+      "Feel the swing at this piece's brisk-but-relaxed 120 BPM as a moderate lilt — not the exaggerated long-short of a slow ballad, and not the near-even eighths of a very fast tune, but genuinely in between.",
+      "Try giving measure 55's density peak real dynamic weight, since it arrives more than two-thirds of the way through the piece — save your biggest sound for there rather than the earlier, comparably busy measures."
+    ]
+  }
 }

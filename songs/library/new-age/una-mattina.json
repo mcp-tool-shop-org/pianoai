@@ -10,5 +10,27 @@
     "film"
   ],
   "composer": "Ludovico Einaudi",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Ludovico Einaudi's Una Mattina is an extremely dense piece — 6,954 notes across 85 measures, with individual measures reaching as high as 51 right-hand onsets alone (measure 68). The harmony resists a confident reading in either direction: the stated C minor has weak support (statedKeyFit -0.246), and the harness's own best content guess, E major, is barely above its usability floor (margin 0.063) — worth noting that E major is not C minor's relative key (that would be Eb major), so this is a genuine, unresolved ambiguity rather than a simple relative-key mix-up. What the data does confirm clearly is a large-scale structural echo: four separate recurring figures, independently discovered by the pattern pass, each land with a gap of exactly 44 measures between their two occurrences — a right-hand figure at measures 30 and 74, another at measures 32 and 76, another at measures 24 and 68, and a left-hand figure at measures 20-21 and 64-65. Measures 24 and 68 are not just part of that 44-measure echo family — they are also two of the piece's five busiest measures.",
+    "structure": "The piece opens with a single silent measure in both hands (measure 1) before launching into a long developmental first half. The section lens's two largest novelty spikes, at measures 17 (5.474) and 5 (4.127), sit early in the piece, while the busiest material — measures 23, 24, 46, 67, and 68, all in the 64-to-67-onset range — arrives later, including the exact 67-onset tie between measures 67 and 68. The consistent 44-measure echo (measures 20/24/30/32 answered at 64/68/74/76) spans across this structure, linking the piece's first half to material in its second half without literal repetition — the pattern pass's transposition-aware layer is what makes this echo visible at all, since the raw repeat detector finds zero identical measures anywhere in the piece.",
+    "keyMoments": [
+      "Four separate recurring figures, independently found by the pattern pass, each show an identical gap of exactly 44 measures between their two occurrences: a right-hand figure at measures 30 and 74, another at measures 32 and 76, another at measures 24 and 68, and a left-hand figure at measures 20-21 and 64-65 — this consistent spacing is strong, multiply-corroborated evidence of a genuine large-scale echo, not a coincidence.",
+      "Measures 24 and 68 — both part of that 44-measure echo family — are also two of the piece's five busiest measures (66 and 67 onsets respectively), teaching that this piece's structural echo and its density peaks are the same events, not separate phenomena.",
+      "The raw repeat detector finds zero identical measures anywhere in these 85 measures, yet the transposition-aware pattern pass finds real, consistent structure — a clear demonstration that no literal repeats does not mean no structure, just that the structure isn't byte-for-byte identical.",
+      "Neither the stated C minor nor the content-detected E major is well supported (statedKeyFit -0.246 and detection margin 0.063), and E major shares no special relationship with C minor (its relative major would be Eb major) — this is a genuinely open harmonic question, best answered by citing specific windows rather than committing to either key."
+    ],
+    "teachingGoals": [
+      "Learn to recognize the 44-measure echo (figures at measures 24/68, 30/74, 32/76, and 20-21/64-65) as this piece's real large-scale organizing structure, since the raw repeat detector alone would show nothing — only the transposition-aware pattern pass reveals it.",
+      "Build serious stamina and control for measures 67-68, the piece's absolute density peak (67 onsets each), recognizing that measure 68 alone carries 51 right-hand onsets.",
+      "Practice treating the harmony as genuinely open rather than forcing a confident key — both the stated C minor and the detected E major have weak support, and the two keys share no special relationship to lean on.",
+      "Master measures 23-24 and 67-68 together as a linked pair, since both are part of the same 44-measure echo family and among the piece's busiest material."
+    ],
+    "styleTips": [
+      "Pedal with real care through the extreme density at measures 67-68 — resonance here needs to support clarity, not just volume, so favor precise, frequent pedal changes over long washes.",
+      "Play the 44-measure-apart echoed figures with a sense of recognition on their second appearance — even without literal repetition elsewhere, these specific figures genuinely do return.",
+      "Listen for the E major color in the labeled windows without committing to it as a confirmed key change — let your ear stay open to the harmony's genuine ambiguity rather than resolving it prematurely.",
+      "Try building endurance specifically for this piece's extreme note density — with individual measures running into the 60s for onset count, physical stamina is as much a technical requirement here as accuracy."
+    ]
+  }
 }

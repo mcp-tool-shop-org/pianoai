@@ -10,5 +10,27 @@
     "violin-piano"
   ],
   "composer": "John Williams",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "John Williams' Schindler's List Theme opens with a full 2-measure silence in both hands before the melody enters at measure 3 — a properly held pause, not a performance gap. The harness's whole-song key detection leans weakly toward F major (margin 0.091), but F major is D minor's own relative major, sharing an identical key signature, and the actual chord evidence resolves the question cleanly: D minor is the most-cited label by a wide margin (11 windows, 22% of windows considered), followed by A minor (7, 14%) and G minor (4, 8%) — overwhelmingly minor-quality chords that confirm the stated D minor despite the whole-song correlation's lean toward its relative. Coverage is strong here, with 62% of windows considered clearing the confidence gate. Structurally, the raw repeat detector finds zero literal repeated measures anywhere in the piece — genuinely through-composed rather than built from restated blocks — and the pattern pass's own strongest finding is a modest, transposed 13-note figure that appears at measures 18-19 and returns transposed up a fifth at measures 36-37, real melodic development rather than mechanical repetition.",
+    "structure": "A 2-measure silence opens the piece in both hands before the melody enters at measure 3, launching a single long section (measures 5-27, 23 measures) that the section lens marks as the largest continuous span in the piece (novelty 6.222 opening it). A shorter section (28-33) holds the piece's real climax — four of its five busiest measures (29, 30, 32, and 33, each 26-28 onsets) — before two further sections (34-42, 43-47) carry the material through its transposed restatement, and a final section (48-52) closes the piece back into silence at measure 52.",
+    "keyMoments": [
+      "D minor is the most-cited chord label by a wide margin (11 windows, 22% of windows considered), with A minor (7, 14%) and G minor (4, 8%) close behind — three minor-quality chords that together confirm the stated D minor even though the whole-song key detection leans weakly toward its relative major, F major (margin only 0.091).",
+      "The piece opens with a full 2-measure silence in both hands — a written pause, not a gap in the data — before the melody enters at measure 3, and this same silence returns to close the piece: measure 52, the final measure, is also a complete rest.",
+      "Measures 29, 30, 32, and 33 hold four of the piece's five busiest measures (26 to 28 onsets each) — a sustained climax block roughly three-fifths of the way through the piece's 52 measures, the clearest concentration of intensity anywhere in the arrangement.",
+      "The raw repeat detector finds zero literal repeated measures anywhere in this piece — every recurring idea the pattern pass does find comes transposed, such as the 13-note figure at measures 18-19 that returns a fifth higher at measures 36-37, teaching that development-by-transposition, not literal repetition, is this piece's main structural technique."
+    ],
+    "teachingGoals": [
+      "Practice holding the opening 2-measure silence with real stillness — both hands are marked as complete rests, so the pause itself is part of the performance, not empty time before the piece begins.",
+      "Learn to hear D minor, A minor, and G minor as the confirmed harmonic core of the piece, understanding that the whole-song key detection's weak lean toward F major reflects the two keys' shared key signature, not a contradiction of the minor-quality evidence.",
+      "Build real dynamic weight into measures 29-33, the piece's clearest concentration of its busiest material, recognizing this stretch as the structural and emotional peak.",
+      "Practice recognizing transposed restatement — such as the figure at measures 18-19 returning a fifth higher at measures 36-37 — as this piece's primary developmental technique, since it contains no literal repeated measures at all."
+    ],
+    "styleTips": [
+      "Play the opening 2 measures of silence with your hands genuinely at rest, not poised to strike — the stillness is written into the piece, and a tense wait undercuts the entrance at measure 3.",
+      "Pedal generously through the D minor material, changing with the harmony rather than the beat, and reserve extra sustain for the climax block at measures 29-33 where the onset count nearly doubles the surrounding measures.",
+      "Listen for the transposed return of the measure 18-19 figure at measures 36-37, a fifth higher — recognize it as the same idea revisited from a new vantage point, and let your touch acknowledge that relationship.",
+      "Try closing the final measure into true silence, matching the stillness of the opening — measure 52 is a complete rest in both hands, the same gesture the piece began with."
+    ]
+  }
 }

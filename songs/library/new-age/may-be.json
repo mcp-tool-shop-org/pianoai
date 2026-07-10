@@ -4,10 +4,33 @@
   "genre": "new-age",
   "difficulty": "beginner",
   "key": "A major",
+  "tempo": 72,
   "tags": [
     "new-age",
     "yiruma"
   ],
   "composer": "Yiruma",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Yiruma's May Be is a 58-measure piece. Its source MIDI's own tempo meta-event reported an extreme, unplayable 512 BPM — almost certainly an artifact of how the source file encoded its pulse rather than the piece's real, felt tempo — so the song's config now carries an explicit fallback tempo of 72 BPM (a gentle, ballad-appropriate pace) so the piece loads and plays at a reasonable speed; the raw MIDI's own tempo event is unchanged and still reads 512, a data-quality fact worth knowing even though the config value now overrides it for playback. Harmonically, the whole-song key detection is close to pure noise (statedKeyFit -0.541 for the stated A major; the best content guess, A# major, sits at margin 0.048, barely above the tool's own usability floor) — but the individual chord windows tell a clean, consistent story the noisy whole-song margin misses: 57% of windows considered clear the confidence gate, and A# major (14 windows) alternates steadily with G minor (12 windows) and its seventh-chord form (6 windows), a real and well-supported harmonic pattern even though the whole-song correlation can't confirm it. The piece opens with a full 2-measure silence in both hands, and its main melodic idea — a 52-note phrase — bookends the piece, appearing at measures 3-10, again at measures 19-26, and a third time at measures 51-58.",
+    "structure": "After the 2-measure silent opening, the main 52-note melodic phrase states at measures 3-10 and restates at measures 19-26, framing a middle section built from the piece's other recurring left-hand material (a 25-note figure at measures 3-11 and 11-19). The piece's busiest measures — five of them, 36, 37, 38, 44, and 45, all tied at 26 onsets — cluster in a dense middle stretch built from two overlapping large blocks (a 52-note left-hand passage across measures 24-35 and 39-51, and a 127-note right-hand passage across measures 35-42 and 43-50), before the opening 52-note phrase returns a third time to close the piece at measures 51-58.",
+    "keyMoments": [
+      "The source MIDI's own tempo meta-event reported an unplayable 512 BPM; the config now sets an explicit 72 BPM fallback so the piece loads and plays at a reasonable pace, while the raw MIDI event itself is left untouched and still reads 512 — a data-quality artifact worth knowing about, not a literal historical performance instruction.",
+      "A# major and G minor alternate steadily through the piece (14 and 12 windows respectively, more than a third of windows considered combined) — a real, well-supported harmonic pattern that the noisy whole-song key-detection margin (0.048) completely fails to capture on its own.",
+      "The main 52-note melodic phrase bookends the entire piece, appearing at measures 3-10, again at measures 19-26, and a third time at measures 51-58 — recognizing this one phrase means recognizing both how the piece opens and how it closes.",
+      "Five measures — 36, 37, 38, 44, and 45 — are exactly tied as the busiest in the piece, each carrying 26 onsets, marking a sustained dense plateau in the piece's second half rather than one isolated climax."
+    ],
+    "teachingGoals": [
+      "Practice this piece at the config's corrected 72 BPM fallback, not the source file's raw 512 BPM tempo event — recognize the original as a data artifact the config now overrides for playback.",
+      "Learn the main 52-note phrase thoroughly, since it opens the piece at measure 3, returns at measure 19, and closes the piece a third time at measure 51 — three appearances from one act of learning.",
+      "Build confidence hearing the A# major to G minor alternation as the piece's true harmonic pulse, trusting the well-supported per-window evidence over the noisy whole-song key-detection margin.",
+      "Practice sustaining the dense plateau at measures 36-38 and 44-45 (all tied at 26 onsets) evenly, understanding this stretch as the piece's structural core rather than a single peak."
+    ],
+    "styleTips": [
+      "Play the opening 2 measures of silence with genuine stillness before entering — both hands are marked as complete rests, so the pause itself sets the character for everything that follows.",
+      "Pedal generously through the A#-to-G-minor alternation, changing with each harmonic shift rather than the beat, to give the resonance room to bloom the way this style asks for.",
+      "Listen for the returning 52-note phrase at measures 19 and 51 as recognizable homecomings rather than new material — let your touch acknowledge each return.",
+      "Try leaning into the corrected 72 BPM fallback as a genuine, unhurried ballad pace — the original source data's 512 BPM was never usable as written, so this gentler speed is what actually serves the piece's character."
+    ]
+  }
 }

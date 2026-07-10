@@ -10,5 +10,27 @@
     "minimalist"
   ],
   "composer": "Ludovico Einaudi",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Ludovico Einaudi's Nuvole Bianche is a slow, 149-measure piece at 40 BPM, and the harness's key detection makes a strong case against the stated E minor: statedKeyFit is clearly negative (-0.418), while the content-based read, G# major, is confirmed with a real margin (0.187). G# major respells enharmonically as Ab major (the more familiar spelling for a pianist), whose relative minor is F minor — and F minor is in fact the second-most-cited label in the piece's chord windows (21 windows, 13%), right behind G# major itself (32 windows, 19%). D# major (the dominant, 20 windows, 12%) and C# major (the subdominant, 15 windows, 9%) round out a clean, textbook I-IV-V-vi set — the four most-cited labels in the piece are exactly the four core diatonic chords of G#/Ab major, and 56% of windows considered clear the confidence gate, rich enough coverage that the harmony here can be learned with real confidence. Structurally, the piece is built largely from two large repeating blocks: measures 1-29 recur closely at measures 87-116/87-115 (roughly 30% coverage of each hand's own events), while a separate 168-note right-hand passage recurs at measures 65-85 and again at measures 118-141 (38% coverage, the single highest-coverage pattern in the piece).",
+    "structure": "The piece opens with a spare 4-measure gesture before a long first block (measures 1-29) whose right-hand and left-hand material each recur closely at measures 87-116 and 87-115 — the piece's two large-scale halves. Within the first block, a striking immediate echo occurs at measures 62-73: a 6-measure right-hand figure (62-67) repeats note for note in the very next 6 measures (68-73), one of four occurrences of that same 48-note figure (the others at measures 115-121 and 121-127). The section lens marks its largest novelty spike in the piece (6.328) at measure 86, right where the music briefly falls completely silent, separating the first large block from the second.",
+    "keyMoments": [
+      "The stated E minor is actively contradicted by the content (statedKeyFit -0.418), while G# major is confirmed with a real margin (0.187) — G# major respells as the more familiar Ab major, and its relative minor, F minor, is in fact the second-most-cited chord label in the piece (21 windows), right behind G# major itself (32 windows).",
+      "The four most-cited chord labels — G# major (32 windows, 19%), F minor (21, 13%), D# major (20, 12%), and C# major (15, 9%) — are exactly the tonic, relative-minor, dominant, and subdominant of G#/Ab major, a clean diatonic set that leaves little doubt about where this piece's harmony actually lives.",
+      "A 6-measure right-hand figure at measures 62-67 repeats note for note in the immediately following 6 measures, 68-73 — an exact, back-to-back restatement rather than a returning idea separated by development, a recognizably different kind of repetition to practice.",
+      "Five of the piece's busiest measures — 56, 57, 61, 62, and 63 — are all exactly tied at 16 onsets each, so rather than one clear climax, this piece holds a sustained plateau of intensity across a short stretch, which changes how a performer should shape its dynamic arc."
+    ],
+    "teachingGoals": [
+      "Learn to ground this piece's harmony in G# major (respelled Ab major for reading convenience) rather than the stated E minor — recognize the tonic-relative minor-dominant-subdominant set (G#, F minor, D#, C#) as the piece's true diatonic core.",
+      "Practice the 6-measure figure at measures 62-67, then immediately repeat it at measures 68-73 exactly as written — recognizing this as a deliberate immediate echo, not a memory slip, is part of learning this minimalist technique.",
+      "Build even control across the tied-busiest measures 56-63, understanding that this piece's intensity peak is a plateau rather than a single climactic bar.",
+      "Master the piece's two large-scale halves (measures 1-29 and 87-116/87-115) as one unit learned twice, since the pattern pass confirms roughly a third of each hand's material is shared between them."
+    ],
+    "styleTips": [
+      "Pedal by harmony, not by habit, through the G#-F minor-D#-C# cycle — since these four chords repeat so often, let each pedal change mark a genuine harmonic shift rather than blurring across the boundary.",
+      "Play the immediate echo at measures 68-73 with a slightly different dynamic shading than its twin at 62-67 — the notes repeat exactly, so the performance has to supply the sense of variation.",
+      "Listen for the tied-busiest measures (56-63) as a sustained wash of sound rather than a single peak — avoid over-accenting any one bar in that stretch, since the data shows a plateau, not a spike.",
+      "Try using the brief silence at measure 86 as a full stop, not a breath — it's the section lens's largest novelty spike in the piece, and treating it as a genuine pause helps mark the turn into the second half."
+    ]
+  }
 }

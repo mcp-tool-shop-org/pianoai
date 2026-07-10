@@ -10,5 +10,27 @@
     "spy"
   ],
   "composer": "Henry Mancini",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Henry Mancini's The Pink Panther Theme opens with the left hand entirely alone: the right hand is silent for the first 10 measures — the longest rest gap in the piece — so the famous bass ostinato has to establish the groove by itself before the melody enters at measure 11. Harmonically, the content-based key detection is essentially inconclusive here (margin just 0.01, well below a usable signal), so the stated E minor (statedKeyFit 0.351) remains the working key, but every one of the 24 chord windows that clears the confidence gate is rooted on F# — F# major (13 windows), F# dominant seventh (7 windows), and F# major seventh (4 windows) — at generally modest confidence (mostly between 0.155 and 0.528). None of these windows needed the harness's inferred-harmony hedge (this piece's texture is struck block chords, not arpeggios), but the confidence values themselves are honest about real ambiguity — this reads as a genuinely chromatic, riff-driven harmonic language rather than a clean functional progression. Structurally the piece is remarkably cyclical: a single 59-note right-hand passage covers 78.7% of all right-hand events across two long occurrences (measures 11-40 and 51-80), and a 61-note left-hand bass figure recurs four times on an exact 20-measure cycle (measures 20-29, 40-49, 60-69, and 80-89).",
+    "structure": "A 10-measure left-hand-only introduction (measures 1-10) establishes the bass ostinato before the melody enters at measure 11, opening a long first statement that runs to measure 40. A second, nearly identical statement follows at measures 51-80 (the same 59-note right-hand passage, 78.7% coverage of all right-hand events), with the left hand's 20-measure bass cycle repeating underneath at measures 20-29, 40-49, 60-69, and 80-89. The section lens's two sharpest pivots, at measures 29 (novelty 8.114) and 69 (novelty 7.841), mark real structural turns inside those two long statements, and the piece closes with 2 measures of complete silence at measures 90-91.",
+    "keyMoments": [
+      "The right hand is completely silent for the piece's first 10 measures — the longest rest gap anywhere in the piece — so the opening groove belongs entirely to the left hand's bass ostinato before the melody ever enters at measure 11.",
+      "Every labeled chord window in the piece is rooted on F#, cycling between F# major (13 windows), F# dominant seventh (7 windows), and F# major seventh (4 windows) at generally modest confidence (0.155 to 0.528) — this single-root, shifting-quality pattern is consistent with a chromatic riff rather than a functional chord progression.",
+      "A single 59-note right-hand passage accounts for 78.7% of all right-hand events in the piece, appearing complete at measures 11-40 and again at measures 51-80 — learning this one passage secures the overwhelming majority of the melodic material in the entire arrangement.",
+      "The left-hand bass figure repeats on an exact 20-measure cycle four separate times (measures 20-29, 40-49, 60-69, and 80-89) — recognizing this regular period turns what looks like 91 measures of new material into one bass line, restated on a metronomic schedule."
+    ],
+    "teachingGoals": [
+      "Practice the 10-measure left-hand-only introduction until the groove is completely internalized — the entire character of the piece depends on this bass ostinato before any melody arrives.",
+      "Learn the single 59-note right-hand passage that covers 78.7% of the piece's right-hand content — since it appears at measures 11-40 and 51-80, mastering it once handles most of the melodic material outright.",
+      "Recognize the 20-measure left-hand cycle (measures 20-29, 40-49, 60-69, 80-89) as one repeating unit rather than four separate passages to learn independently.",
+      "Understand the F#-rooted, quality-shifting chord windows (major, dominant seventh, major seventh) as a chromatic riff language — listen for the shifting color rather than expecting a functional cadence to resolve it."
+    ],
+    "styleTips": [
+      "Play the opening 10 measures with a locked, unwavering groove — since there's no melody yet to carry attention, rhythmic precision in the left hand alone has to hold the listener.",
+      "Pedal lightly, if at all, through the dense block chords built on F# — with confidence values this modest in the harness's own chord analysis, avoid using heavy pedal to imply a harmonic certainty the data doesn't support.",
+      "Listen for the shifting quality on the F# root — major, then dominant seventh, then major seventh — as the source of this piece's sly, chromatic character, and let your touch highlight that color shift rather than smoothing it over.",
+      "Try landing the final two measures of complete silence (90-91) as a clean, deliberate stop — after 89 measures built largely from two repeating cycles, the ending should read as a sudden full stop, not a fade."
+    ]
+  }
 }

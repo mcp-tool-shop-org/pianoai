@@ -310,7 +310,15 @@ const POP: LibraryImport[] = [
   { midiFile: "piano-man.mid", downloadUrl: "https://bitmidi.com/uploads/17583.mid", config: raw("piano-man", "Piano Man", "pop", { composer: "Billy Joel", key: "C major", tags: ["pop", "billy-joel", "classic"] }) },
   { midiFile: "a-thousand-years.mid", downloadUrl: "https://bitmidi.com/uploads/22452.mid", config: raw("a-thousand-years", "A Thousand Years", "pop", { composer: "Christina Perri", key: "Bb major", tags: ["pop", "film", "romantic"], difficulty: "beginner" }) },
   { midiFile: "all-of-me.mid", downloadUrl: "https://bitmidi.com/uploads/63296.mid", config: raw("all-of-me", "All of Me", "pop", { composer: "John Legend", key: "Ab major", tags: ["pop", "ballad", "wedding"] }) },
-  { midiFile: "viva-la-vida.mid", downloadUrl: "https://bitmidi.com/uploads/24946.mid", config: raw("viva-la-vida", "Viva la Vida", "pop", { composer: "Coldplay", key: "Ab major", tags: ["pop", "coldplay", "orchestral"] }) },
+  // bitmidi's only Viva la Vida upload (uploads/24946.mid) is a 552-byte /
+  // 4-measure fragment — caught by the Wave D2-A data audit (2026-07-09) and
+  // replaced with freemidi.org's full-length transcription (140 measures,
+  // 56,559 bytes, SHA256 767cbbd3...). freemidi's getter URL requires a
+  // browser session (bare fetch → HTTP 500), so an unattended re-download of
+  // this entry fails loudly instead of silently re-fetching the fragment; the
+  // library .mid is canonical. Manual re-fetch: open
+  // https://freemidi.org/download3-11651-viva-la-vida-coldplay, then getter-11651.
+  { midiFile: "viva-la-vida.mid", downloadUrl: "https://freemidi.org/getter-11651", config: raw("viva-la-vida", "Viva la Vida", "pop", { composer: "Coldplay", key: "Ab major", tags: ["pop", "coldplay", "orchestral"] }) },
   { midiFile: "someone-you-loved.mid", downloadUrl: "https://bitmidi.com/uploads/69257.mid", config: raw("someone-you-loved", "Someone You Loved", "pop", { composer: "Lewis Capaldi", key: "C major", tags: ["pop", "ballad", "piano"] }) },
 ];
 
@@ -325,7 +333,13 @@ const BLUES: LibraryImport[] = [
   { midiFile: "red-house.mid", downloadUrl: "https://bitmidi.com/uploads/62099.mid", config: raw("red-house", "Red House", "blues", { composer: "Jimi Hendrix", key: "B major", tags: ["blues", "hendrix", "rock-blues"] }) },
   { midiFile: "born-under-a-bad-sign.mid", downloadUrl: "https://bitmidi.com/uploads/5810.mid", config: raw("born-under-a-bad-sign", "Born Under a Bad Sign", "blues", { composer: "Albert King", key: "C# minor", tags: ["blues", "albert-king"] }) },
   { midiFile: "blues-in-the-night.mid", downloadUrl: "https://bitmidi.com/uploads/18375.mid", config: raw("blues-in-the-night", "Blues in the Night", "blues", { composer: "Harold Arlen", key: "Bb major", tags: ["blues", "jazz-blues", "standard"] }) },
-  { midiFile: "hoochie-coochie-man.mid", downloadUrl: "https://bitmidi.com/uploads/56938.mid", config: raw("hoochie-coochie-man", "Hoochie Coochie Man", "blues", { composer: "Willie Dixon", key: "A major", tags: ["blues", "muddy-waters", "chicago"], difficulty: "beginner" }) },
+  // bitmidi uploads/56938.mid ("him511.mid", unidentified) was a 783-byte /
+  // 9-measure fragment — replaced by the 2026-07-09 data-audit follow-up with
+  // bitmidi's other upload, uploads/58185.mid ("hoochie.mid"): a full-length
+  // 51-measure 12/8 band transcription (vocal/harmonica/guitars/piano/bass/
+  // drums, track meta names "Hoochie Coochie Man" / "Muddy Waters"; 20,267
+  // bytes, SHA256 8fda33e3...). This one IS directly re-fetchable unattended.
+  { midiFile: "hoochie-coochie-man.mid", downloadUrl: "https://bitmidi.com/uploads/58185.mid", config: raw("hoochie-coochie-man", "Hoochie Coochie Man", "blues", { composer: "Willie Dixon", key: "A major", tags: ["blues", "muddy-waters", "chicago"], difficulty: "beginner" }) },
   { midiFile: "crossroad-blues.mid", downloadUrl: "https://bitmidi.com/uploads/87408.mid", config: raw("crossroad-blues", "Crossroad Blues", "blues", { composer: "Robert Johnson", key: "A major", tags: ["blues", "robert-johnson", "delta"] }) },
 ];
 
@@ -365,7 +379,16 @@ const SOUL: LibraryImport[] = [
   { midiFile: "lean-on-me.mid", downloadUrl: "https://bitmidi.com/uploads/14680.mid", config: raw("lean-on-me", "Lean on Me", "soul", { composer: "Bill Withers", key: "C major", tags: ["soul", "bill-withers", "piano", "gospel"], difficulty: "beginner" }) },
   { midiFile: "aint-no-sunshine.mid", downloadUrl: "https://bitmidi.com/uploads/4424.mid", config: raw("aint-no-sunshine", "Ain't No Sunshine", "soul", { composer: "Bill Withers", key: "A minor", tags: ["soul", "bill-withers", "minor"], difficulty: "beginner" }) },
   { midiFile: "a-change-is-gonna-come.mid", downloadUrl: "https://bitmidi.com/uploads/91653.mid", config: raw("a-change-is-gonna-come", "A Change Is Gonna Come", "soul", { composer: "Sam Cooke", key: "Bb major", tags: ["soul", "sam-cooke", "civil-rights"] }) },
-  { midiFile: "whats-going-on.mid", downloadUrl: "https://bitmidi.com/uploads/72668.mid", config: raw("whats-going-on", "What's Going On", "soul", { composer: "Marvin Gaye", key: "E major", tags: ["soul", "marvin-gaye", "protest"] }) },
+  // bitmidi uploads/72668.mid was a 1,879-byte 8-measure fragment of a
+  // DIFFERENT song entirely (bitmidi names it "Mat ft Jay P - Take Me High");
+  // caught by the 2026-07-09 data-audit follow-up and replaced with
+  // freemidi.org's full-length transcription (50 measures, 3:52 — matching
+  // the record's 3:53; 63,189 bytes, SHA256 3a230387...). freemidi's getter
+  // URL requires a browser session (bare fetch → HTTP 500), so an unattended
+  // re-download fails loudly; the library .mid is canonical. Manual re-fetch:
+  // open https://freemidi.org/download3-5012-whats-goin-on-marvin-gaye,
+  // then getter-5012.
+  { midiFile: "whats-going-on.mid", downloadUrl: "https://freemidi.org/getter-5012", config: raw("whats-going-on", "What's Going On", "soul", { composer: "Marvin Gaye", key: "E major", tags: ["soul", "marvin-gaye", "protest"] }) },
   { midiFile: "dock-of-the-bay.mid", downloadUrl: "https://bitmidi.com/uploads/83369.mid", config: raw("dock-of-the-bay", "Sitting on the Dock of the Bay", "soul", { composer: "Otis Redding", key: "G major", tags: ["soul", "otis-redding"], difficulty: "beginner" }) },
   { midiFile: "stand-by-me.mid", downloadUrl: "https://bitmidi.com/uploads/17038.mid", config: raw("stand-by-me", "Stand by Me", "soul", { composer: "Ben E. King", key: "A major", tags: ["soul", "ben-e-king", "classic"], difficulty: "beginner" }) },
   { midiFile: "respect.mid", downloadUrl: "https://bitmidi.com/uploads/7522.mid", config: raw("respect", "Respect", "soul", { composer: "Otis Redding", key: "C major", tags: ["soul", "aretha-franklin", "anthem"] }) },
@@ -383,8 +406,28 @@ const LATIN: LibraryImport[] = [
   { midiFile: "corcovado.mid", downloadUrl: "https://bitmidi.com/uploads/25662.mid", config: raw("corcovado", "Corcovado (Quiet Nights)", "latin", { composer: "Antonio Carlos Jobim", key: "A minor", tags: ["latin", "bossa-nova", "jobim"], difficulty: "beginner" }) },
   { midiFile: "wave.mid", downloadUrl: "https://bitmidi.com/uploads/109131.mid", config: raw("wave", "Wave", "latin", { composer: "Antonio Carlos Jobim", key: "D major", tags: ["latin", "bossa-nova", "jobim"] }) },
   { midiFile: "black-orpheus.mid", downloadUrl: "https://bitmidi.com/uploads/71782.mid", config: raw("black-orpheus", "Black Orpheus (Manha de Carnaval)", "latin", { composer: "Luiz Bonfa", key: "A minor", tags: ["latin", "bossa-nova", "film"] }) },
-  { midiFile: "mas-que-nada.mid", downloadUrl: "https://bitmidi.com/uploads/72364.mid", config: raw("mas-que-nada", "Mas Que Nada", "latin", { composer: "Jorge Ben Jor", key: "E minor", tags: ["latin", "samba", "brazilian"] }) },
-  { midiFile: "agua-de-beber.mid", downloadUrl: "https://bitmidi.com/uploads/4374.mid", config: raw("agua-de-beber", "Agua de Beber", "latin", { composer: "Antonio Carlos Jobim", key: "D minor", tags: ["latin", "bossa-nova", "jobim"] }) },
+  // bitmidi uploads/72364.mid was a 1,905-byte 21-measure fragment of a
+  // DIFFERENT song (bitmidi names it "mario2.mid"); caught by the 2026-07-09
+  // data-audit follow-up and replaced with freemidi.org's full-length
+  // transcription of the Sergio Mendes feat. Black Eyed Peas 2006 arrangement
+  // of the Jorge Ben Jor song (111 measures, 4:22; 121,103 bytes, SHA256
+  // 4459fb37...). freemidi's getter URL requires a browser session (bare
+  // fetch → HTTP 500), so an unattended re-download fails loudly; the library
+  // .mid is canonical. Manual re-fetch: open
+  // https://freemidi.org/download3-8898-mas-que-nada-black-eyed-peas,
+  // then getter-8898.
+  { midiFile: "mas-que-nada.mid", downloadUrl: "https://freemidi.org/getter-8898", config: raw("mas-que-nada", "Mas Que Nada", "latin", { composer: "Jorge Ben Jor", key: "E minor", tags: ["latin", "samba", "brazilian"] }) },
+  // bitmidi uploads/4374.mid was a 1,855-byte 8-measure fragment of a
+  // DIFFERENT song entirely (bitmidi names it "Ahmed Romel - Only For You
+  // (Arctic Moon Remix)" — a trance track); caught by the 2026-07-09
+  // data-audit follow-up and replaced with midisfree.com's full-length
+  // transcription (86 measures, 3:25, bossa guitar+flute instrumentation;
+  // 10,147 bytes, SHA256 9cee7d14...). midisfree serves the file behind a
+  // WordPress Download Manager link (?wpdmdl=53718 + an ephemeral refresh
+  // token), so a bare fetch of the page URL below returns HTML and fails the
+  // MThd magic check loudly; the library .mid is canonical. Manual re-fetch:
+  // open the page and click Download.
+  { midiFile: "agua-de-beber.mid", downloadUrl: "https://midisfree.com/download/jobim-antonio-carlos-agua-de-beber-mid/", config: raw("agua-de-beber", "Agua de Beber", "latin", { composer: "Antonio Carlos Jobim", key: "D minor", tags: ["latin", "bossa-nova", "jobim"] }) },
   { midiFile: "perfidia.mid", downloadUrl: "https://bitmidi.com/uploads/52654.mid", config: raw("perfidia", "Perfidia", "latin", { composer: "Alberto Dominguez", key: "G minor", tags: ["latin", "bolero", "classic"] }) },
   { midiFile: "el-condor-pasa.mid", downloadUrl: "https://bitmidi.com/uploads/42920.mid", config: raw("el-condor-pasa", "El Condor Pasa", "latin", { composer: "Daniel Alomia Robles", key: "E minor", tags: ["latin", "andean", "folk"], difficulty: "beginner" }) },
 ];
@@ -396,7 +439,16 @@ const FILM: LibraryImport[] = [
   { midiFile: "schindlers-list-theme.mid", downloadUrl: "https://bitmidi.com/uploads/102996.mid", config: raw("schindlers-list-theme", "Schindler's List Theme", "film", { composer: "John Williams", key: "D minor", tags: ["film", "williams", "violin-piano"] }) },
   { midiFile: "cinema-paradiso.mid", downloadUrl: "https://bitmidi.com/uploads/23826.mid", config: raw("cinema-paradiso", "Cinema Paradiso Theme", "film", { composer: "Ennio Morricone", key: "F major", tags: ["film", "morricone", "nostalgic"] }) },
   { midiFile: "mia-and-sebastians-theme.mid", downloadUrl: "https://bitmidi.com/uploads/66253.mid", config: raw("mia-and-sebastians-theme", "Mia & Sebastian's Theme (La La Land)", "film", { composer: "Justin Hurwitz", key: "A minor", tags: ["film", "la-la-land", "jazz-piano"] }) },
-  { midiFile: "hedwigs-theme.mid", downloadUrl: "https://bitmidi.com/uploads/55202.mid", config: raw("hedwigs-theme", "Hedwig's Theme (Harry Potter)", "film", { composer: "John Williams", key: "E minor", tags: ["film", "williams", "harry-potter"] }) },
+  // bitmidi uploads/55202.mid ("harrypotter.mid") was an 870-byte 13-measure
+  // fragment of the opening phrase; caught by the 2026-07-09 data-audit
+  // follow-up and replaced with freemidi.org's full concert-length
+  // transcription (409 measures in 3/8, 5:01; 132,372 bytes, SHA256
+  // 7b5392f0...). freemidi's getter URL requires a browser session (bare
+  // fetch → HTTP 500), so an unattended re-download fails loudly; the
+  // library .mid is canonical. Manual re-fetch: open
+  // https://freemidi.org/download3-22658-chamber-of-secrets-hedwigs-theme-harry-potter,
+  // then getter-22658.
+  { midiFile: "hedwigs-theme.mid", downloadUrl: "https://freemidi.org/getter-22658", config: raw("hedwigs-theme", "Hedwig's Theme (Harry Potter)", "film", { composer: "John Williams", key: "E minor", tags: ["film", "williams", "harry-potter"] }) },
   { midiFile: "pink-panther.mid", downloadUrl: "https://bitmidi.com/uploads/85208.mid", config: raw("pink-panther", "The Pink Panther Theme", "film", { composer: "Henry Mancini", key: "E minor", tags: ["film", "mancini", "spy"] }) },
   { midiFile: "forrest-gump.mid", downloadUrl: "https://bitmidi.com/uploads/29307.mid", config: raw("forrest-gump", "Forrest Gump Suite", "film", { composer: "Alan Silvestri", key: "C major", tags: ["film", "silvestri", "americana"], difficulty: "beginner" }) },
   { midiFile: "my-heart-will-go-on.mid", downloadUrl: "https://bitmidi.com/uploads/76975.mid", config: raw("my-heart-will-go-on", "My Heart Will Go On (Titanic)", "film", { composer: "James Horner", key: "C# minor", tags: ["film", "horner", "titanic"], difficulty: "beginner" }) },
@@ -423,7 +475,15 @@ const RAGTIME: LibraryImport[] = [
 
 const NEW_AGE: LibraryImport[] = [
   { midiFile: "kiss-the-rain.mid", downloadUrl: "https://bitmidi.com/uploads/64090.mid", config: raw("kiss-the-rain", "Kiss the Rain", "new-age", { composer: "Yiruma", key: "Db major", tags: ["new-age", "yiruma", "peaceful"], difficulty: "beginner" }) },
-  { midiFile: "river-flows-in-you.mid", downloadUrl: "https://bitmidi.com/uploads/62390.mid", config: raw("river-flows-in-you", "River Flows in You", "new-age", { composer: "Yiruma", key: "A major", tags: ["new-age", "yiruma", "arpeggiated"] }) },
+  // bitmidi uploads/62390.mid was a 617-byte 19-measure excerpt (the right
+  // song, but ~1/3 of it); caught by the 2026-07-09 data-audit follow-up and
+  // replaced with freemidi.org's full-length solo-piano transcription (47
+  // measures, 2:45; 7,654 bytes, SHA256 7b1097a6...). freemidi's getter URL
+  // requires a browser session (bare fetch → HTTP 500), so an unattended
+  // re-download fails loudly; the library .mid is canonical. Manual re-fetch:
+  // open https://freemidi.org/download3-15836-river-flows-in-you-yiruma,
+  // then getter-15836.
+  { midiFile: "river-flows-in-you.mid", downloadUrl: "https://freemidi.org/getter-15836", config: raw("river-flows-in-you", "River Flows in You", "new-age", { composer: "Yiruma", key: "A major", tags: ["new-age", "yiruma", "arpeggiated"] }) },
   { midiFile: "may-be.mid", downloadUrl: "https://bitmidi.com/uploads/110784.mid", config: raw("may-be", "May Be", "new-age", { composer: "Yiruma", key: "A major", tags: ["new-age", "yiruma"], difficulty: "beginner" }) },
   { midiFile: "nuvole-bianche-na.mid", downloadUrl: "https://bitmidi.com/uploads/70390.mid", config: raw("nuvole-bianche-na", "Nuvole Bianche", "new-age", { composer: "Ludovico Einaudi", key: "E minor", tags: ["new-age", "einaudi", "minimalist"] }) },
   { midiFile: "una-mattina.mid", downloadUrl: "https://bitmidi.com/uploads/38413.mid", config: raw("una-mattina", "Una Mattina", "new-age", { composer: "Ludovico Einaudi", key: "C minor", tags: ["new-age", "einaudi", "film"] }) },

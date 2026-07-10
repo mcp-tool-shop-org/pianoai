@@ -10,5 +10,27 @@
     "climactic"
   ],
   "composer": "Ludovico Einaudi",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Ludovico Einaudi's Experience is a tightly constructed 44-measure piece at 76 BPM, and its most striking feature is that it is, almost exactly, one 22-measure idea stated twice: the pattern pass reports 100% of the right hand's events and 100% of the left hand's events fall inside two occurrences, measures 1-22 and 23-44. There is no written rest anywhere in the piece — every measure sounds in both hands — and five separate measures (3, 5, 7, 13, and 15) are exactly tied as the busiest in the piece, each carrying 13 onsets, so the intensity here is a sustained plateau rather than a single peak. Harmonically the evidence is thin (statedKeyFit -0.063 for the stated D minor; the best content guess, B minor, is weak at margin 0.082) but clean where it does appear: only F# major and A# minor seventh clear the confidence gate, tied exactly at 4 windows each (9% of windows considered), alternating steadily through the piece rather than mixing with other colors.",
+    "structure": "The piece divides almost exactly in half at measure 22 (the section lens's largest novelty spike in the piece, 2.194) — measures 1-22 form the first statement, and measures 23-44 restate it, confirmed by the pattern pass's 100% coverage finding for both hands. The section lens's boundary novelty scores echo this two-part symmetry: the boundary opening measure 9 and the boundary opening measure 31 — one in each half — carry the identical score of 1.712. Within each half, a smaller cycle also repeats: the alternating F# major and A# minor seventh chord windows land on an evenly spaced schedule (measures 6, 16, 28, and 38 for F# major; measures 12, 22, 34, and 44 for A# minor seventh), giving the piece a nested, two-layer periodicity.",
+    "keyMoments": [
+      "The pattern pass finds that 100% of the right hand's onsets and 100% of the left hand's onsets fall inside just two occurrences of the same passage, measures 1-22 and 23-44 — this 44-measure piece is, in effect, one 22-measure idea stated exactly twice.",
+      "Five separate measures — 3, 5, 7, 13, and 15 — are exactly tied as the busiest in the piece, each carrying 13 onsets; rather than one clear climax, the intensity here is a sustained plateau spread across the piece's first half.",
+      "F# major and A# minor seventh are the only two chord labels that clear the confidence gate, tied exactly at 4 windows each (9% of windows considered) — F# major lands at measures 6, 16, 28, and 38, and A# minor seventh at measures 12, 22, 34, and 44, an evenly spaced alternation rather than a mix of many colors.",
+      "There is no written rest anywhere in these 44 measures — both hands sound in every single measure, which, combined with the piece's exact two-statement structure, makes stamina and consistency across the repeat the real technical challenge, not new material to learn."
+    ],
+    "teachingGoals": [
+      "Learn measures 1-22 as the entire piece — the pattern pass confirms measures 23-44 restate the same material in both hands at 100% coverage, so there is no new content in the second half to separately master.",
+      "Practice sustaining the plateau at measures 3, 5, 7, 13, and 15 (all tied at 13 onsets) evenly, understanding that this piece's intensity is spread rather than concentrated in one climactic bar.",
+      "Recognize the evenly alternating F# major and A# minor seventh windows as the piece's harmonic pulse, and listen for how consistently they space themselves through the piece rather than drifting.",
+      "Build genuine stamina for continuous, non-stop playing — with zero written rests across 44 measures, practice maintaining consistent tone and pulse for the full length before attempting it at performance tempo."
+    ],
+    "styleTips": [
+      "Pedal with real resonance in mind: since both hands sound in every measure with no written rest, the pedal's job is to shape phrase breathing that the notation itself doesn't provide — lift and recatch at the natural seams between the F# and A# minor seventh windows.",
+      "Play the second statement (measures 23-44) with a different color than the first, even though the pattern pass confirms the notes are essentially identical — since nothing in the material itself changes, the performance has to supply the sense of arrival.",
+      "Listen for the alternation between F# major and A# minor seventh as the piece's true pulse, and let your ear track its evenly spaced return rather than treating each appearance as a surprise.",
+      "Try pacing your endurance across the full 44 measures from the first attempt, even slowly — since there's no written rest to recover in, building stamina at a manageable tempo matters more here than isolating short passages."
+    ]
+  }
 }

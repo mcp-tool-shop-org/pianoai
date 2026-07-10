@@ -10,5 +10,27 @@
     "minimalist"
   ],
   "composer": "Philip Glass",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Philip Glass's Metamorphosis Two appears here as a brief but extremely dense 17-measure excerpt at 94 BPM, spanning register from C4 up to B6 in the right hand and down to G#1 in the left hand — a span of roughly 5 octaves inside just 17 measures. The excerpt packs 1,359 total notes between measure 1 and measure 17, an average of roughly 80 notes per measure, and there is no written rest anywhere in that span. The stated A minor has essentially zero support from the content (statedKeyFit -0.01), and the harness's content-based detection instead points to B major (margin 0.235, a loud mismatch); the actual labeled chord windows, at measures 1, 4, 6, 14, and 15, all say E major specifically — E major is the IV chord of B major, so this 25%-of-windows-considered sample supports the detected key's diatonic world without directly confirming its tonic triad. Structurally, the raw repeat detector finds zero literal repeated measures between measure 1 and measure 17 — the two-voice counterpoint develops too continuously for byte-identical matches — but the transposition-aware pattern pass demonstrates a completely different, contrapuntal story: a 7-note left-hand cell recurs 10 separate times from measure 5 to measure 16 (31.8% coverage), and seven more distinct recurring cells layer on top of it in close polyphonic imitation, several carrying a transposed interval rather than repeating at fixed pitch.",
+    "structure": "The section lens finds only two internal boundaries in this short excerpt, opening at measure 5 and measure 10 (both with modest novelty under 1.0), so the piece reads as three brief regions: measures 1-4, measures 5-9, and measures 10-17. The real structural story is the pattern pass's dense contrapuntal layering: the 7-note left-hand cell recurring 10 times covers the largest share of any single pattern, but a second 7-note cell (5 occurrences), an 8-note left-hand figure spanning measures 11-15 (3 occurrences), and multiple transposed right-hand cells all interlock across the same 17 measures, with the piece's busiest measures — 9, 10, 11, 13, and 14, all in the 30-31 onset range — sitting right at the point where the most voices overlap.",
+    "keyMoments": [
+      "The raw repeat detector finds zero literal repeated measures between measure 1 and measure 17, but the transposition-aware pattern pass reveals the opposite story and teaches an important lesson: a 7-note left-hand cell recurs 10 separate times (31.8% of left-hand events), demonstrating that a piece with no exact repeats can still be built almost entirely from recurring material — the absence of one kind of repetition is not evidence of continuous new content.",
+      "Every one of the 5 labeled chord windows (at measures 1, 4, 6, 14, and 15) says E major specifically — not the detected B major itself, but its IV chord — which illustrates why the honest reading names the actual labeled harmony rather than asserting the whole-song tonic directly.",
+      "This 17-measure excerpt spans roughly 5 octaves in register (C4 to B6 in the right hand, down to G#1 in the left) and packs 1,359 notes with no written rest between measure 1 and measure 17 — an average of roughly 80 notes per measure, showing why density this extreme demands the two hands move as one continuous contrapuntal mechanism.",
+      "Measures 9 through 14 hold five of this short excerpt's busiest measures (9 and 11 tied at 31 onsets; 10, 13, and 14 tied at 30) — a skill worth building on its own, since this is the exact stretch where the most independent recurring voices overlap at once."
+    ],
+    "teachingGoals": [
+      "Learn the 7-note left-hand cell that recurs 10 times between measure 5 and measure 16 first — at nearly a third of all left-hand events, it is the single most valuable piece of material to master in this short excerpt.",
+      "Practice recognizing transposed repetition as real repetition: several of this piece's recurring cells shift to a new pitch or interval on each appearance, so identify the shape, not just the fixed notes.",
+      "Build the physical stamina and hand independence for measures 9 through 14, where the piece's busiest material concentrates and several contrapuntal voices overlap at once.",
+      "Understand E major as this piece's confirmed harmonic color at measures 1, 4, 6, 14, and 15, even though it functions as a IV chord within the larger B major context the whole-song detection points toward."
+    ],
+    "styleTips": [
+      "Pedal very carefully across measures 1 to 17 in a piece this dense — with roughly 80 notes per measure and no written rest, indiscriminate pedaling will blur the constantly-shifting contrapuntal voices into noise; use short, precise pedal touches instead.",
+      "Play the 10-times-recurring left-hand cell with complete physical consistency — it is the single most-repeated shape in the piece, so your hand keeps coming back to it between measure 5 and measure 16.",
+      "Listen for the transposed cells landing on a new interval without losing their shape — think of them as the same gesture relocated in register, not new material to sight-read each time.",
+      "Try isolating measures 9 through 14 as their own dedicated practice unit, since this is where the piece's density, register span, and contrapuntal complexity all peak at once."
+    ]
+  }
 }
