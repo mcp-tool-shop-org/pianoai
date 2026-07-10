@@ -10,5 +10,27 @@
     "glam"
   ],
   "composer": "Elton John",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "\"Bennie and the Jets\" (1973) is one of Elton John's most theatrical glam-rock singles, and its transcription bookends the whole piece in silence: both hands rest completely for the first two measures, and the final measure (74) also reads zero onsets — consistent with (though not proof of) the recording's famous simulated live-audience intro before the piano riff begins. The stated G major is confirmed by the harness's key-detection pass (statedKeyFit 0.714), and the confidence-gated windows spell mostly diatonic G-major harmony, by coverage of windows considered: C as IV (13%), Em7 as vi7 (6%), Am as ii (5%), G itself (5%) — with one glam-rock signature borrowed chord: F, the flat-VII, coloring the progression outside G major's own key signature. At a moderate 66 BPM in 4/4 over 74 measures, the piece has one unusually sharp density peak: measure 48 reaches 51 onsets, well above the already-busy 36-41 range of its neighboring measures.",
+    "structure": "A silent two-measure intro (measures 1-2) gives way to the main riff at measure 5, which the section lens marks as the piece's single largest structural pivot (novelty 6.273). The G-C-Em7-Am progression governs the verse material through measure 38, a second block (measures 39-56) contains the piece's sharpest density spike (measure 48), and a closing section (measures 57-74) settles back toward G before ending, like it began, in silence.",
+    "keyMoments": [
+      "Both hands rest completely for the first two measures, and the final measure (74) also reads zero onsets — the transcription bookends the whole performance in silence, consistent with the recording's famous simulated live-audience intro.",
+      "Measure 48 reaches 51 onsets, sharply above the already-busy 36-41 range of the measures around it — a single, sudden density spike rather than a gradual build.",
+      "The flat-VII chord (F, outside G major's own key signature) appears among the confidence-gated windows — a classic glam and hard-rock color, and a good example of a chord that is 'wrong' by strict diatonic rules but exactly right for the style.",
+      "The section lens finds its largest single structural pivot right at measure 5 (novelty 6.273), the moment the main riff enters after the two measures of silence — confirming by evidence what the ear already hears as the real start of the song."
+    ],
+    "teachingGoals": [
+      "Practice the silent opening measures as genuine, timed silence rather than rushing into the riff — the transcription gives two full measures of nothing before the music starts, and that pause is part of the performance.",
+      "Learn to hear a flat-VII chord (F in this G-major piece) as a deliberate rock color choice, not a wrong note — recognizing borrowed chords outside the home key's own signature is a skill this piece rewards directly.",
+      "Build control for a sudden density spike (measure 48's 51 onsets against a 36-41 neighboring range) rather than a gradual crescendo — practice the measure in isolation so the jump in activity doesn't destabilize the tempo.",
+      "Recognize the true entrance of a song's main material (measure 5, the piece's largest structural pivot) as distinct from its intro — treat the silent measures 1-2 as a real formal section, not a warm-up."
+    ],
+    "styleTips": [
+      "Listen for genuine silence in measures 1-2 and again at measure 74 — resist the temptation to fill these with pedal noise or anticipatory movement; the stillness is the effect.",
+      "Play the flat-VII (F) chord with a bit of theatrical weight — glam rock likes its borrowed chords to announce themselves, not slip by unnoticed.",
+      "Feel measure 48's density spike as a deliberate accent moment, not a technical hurdle to survive — let the extra onsets translate into a genuine surge in energy.",
+      "Try counting the two silent opening measures out loud in practice — an internal pulse through the silence is what lets you enter exactly on time at measure 5."
+    ]
+  }
 }

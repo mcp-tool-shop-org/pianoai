@@ -11,5 +11,27 @@
     "piano"
   ],
   "composer": "Guns N' Roses",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "\"November Rain\" (1991) is Guns N' Roses' sprawling 171-measure piano epic, and its harmony sits well outside its stated C major: the harness's fit score for C major is -0.041, essentially no correlation, while the confidence-gated windows spell a clean, strongly diatonic B major instead — B itself accounts for 26% of windows considered, the most dominant single label anywhere in this piece, alongside C#m (ii, 5%), E (IV, 4%), G#m7 (vi7, 4%), and F# (V, 3%). This annotation follows that B-major content rather than the stated key. At a moderate 80 BPM in 4/4, the piece is also structured around a single dramatic pause: measure 133 falls completely silent (both hands), and the section lens finds its two largest structural pivots anywhere in the piece immediately afterward (measures 133-141 and 142-149) — the harness's own fingerprint for this song's famous mid-piece shift into its extended climactic final section.",
+    "structure": "The B-major verse material (measures 1-124) is built from a recurring 4-measure-interval cell (identical measures at 26, 30, 34, 38, 42, 54, 58, 120). A brief but complete silence at measure 133 (both hands tacet) marks the transition into the piece's most structurally novel territory (measures 133-149). The closing section (measures 150-171) sustains the piece's highest density (30 onsets in measures 150, 151, 160, 161, and 165) over a strong, repeating 42-interval left-hand figure (measures 150-154, 155-159, 160-164, 165-169) that drives the climax to its end.",
+    "keyMoments": [
+      "The harness's fit score for the stated C major is -0.041 — essentially no correlation — while B accounts for 26% of windows considered, the most dominant single harmonic label in the piece. This annotation is grounded in that B-major content, not the config's C major.",
+      "Measure 133 falls completely silent in both hands — a deliberate written pause — immediately followed by the two largest structural novelty spikes anywhere in the piece (measures 133-141 and 142-149), the harness's own evidence for this song's famous shift into its extended final section.",
+      "The closing measures (150, 151, 160, 161, 165) all reach exactly 30 onsets, the densest sustained plateau in the piece, and they sit directly on top of a strong, repeating 42-interval left-hand figure — density and structure agreeing on where the climax lives.",
+      "A 4-measure-interval melodic cell recurs eight times across the verse (measures 26, 30, 34, 38, 42, 54, 58, 120) — a long-range structural thread tying the piece's first two-thirds together before the climactic final section breaks from it."
+    ],
+    "teachingGoals": [
+      "Practice checking a piece's stated key against its actual harmonic content — this piece's C major label fits its own content at -0.041, while the B-major reading this annotation uses is strongly, cleanly supported at 26% coverage.",
+      "Learn to use a written silence (measure 133) as a real structural marker, not a page-turn — the piece's own biggest formal shift happens immediately after it.",
+      "Build toward the climactic final section (measures 150-171) knowing it is both the densest (30-onset measures) and the most repetitively driven (a strong 3.66-compression left-hand ostinato) part of the piece — technical endurance and rhythmic consistency both matter most here.",
+      "Recognize a long-range recurring cell (measures 26, 30, 34, 38, 42, 54, 58, 120) as a structural anchor threading through the verse — naming it makes an otherwise very long form easier to hold in memory."
+    ],
+    "styleTips": [
+      "Listen for B major resolving with real finality, even though the stated key claims C — trust the confidence-gated evidence (26% of windows considered) over the config field.",
+      "Play measure 133's silence as a complete, committed stop — the structural pivot that follows depends on that pause actually registering as empty space first.",
+      "Feel the climactic left-hand ostinato (measures 150-169) as the engine driving the ending, not just an accompaniment — its own internal repetition is what gives the final section its sense of inevitability.",
+      "Try tracking the recurring 4-measure cell (measures 26 onward) consciously during practice — recognizing it by ear turns a 171-measure piece into a much shorter set of ideas to actually learn."
+    ]
+  }
 }

@@ -9,5 +9,27 @@
     "joplin"
   ],
   "composer": "Scott Joplin",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Pineapple Rag (1908) is a later Joplin rag written for a Tin Pan Alley publisher, and its harmonic content sits well outside its stated D major: the config's fit score for D major is -0.426, strongly negative, while the confidence-gated chord windows spell out Bb major territory instead — Bb (12% of windows considered), Eb (10%, the IV), F7 (8%, the dominant seventh). Per the harness's own honesty gate, this annotation grounds its harmony claims in that Bb reading, not the stated D major. At 148 measures and a brisk 100 BPM in 2/4, the piece opens with unusual density for its own form — 14 onsets in measure 1 alone, well above the piece's own typical range — before settling into a more moderate rhythmic pace.",
+    "structure": "The A strain (measures 5-36, an 8-measure cell repeating at measures 5, 13, 21, 29) establishes the Bb-Eb-F7 progression, restated at measures 69-84. A contrasting B-strain section (measures 37-66) adds Dm-Ab alternation. The back half of the piece (measures 116-148) shifts into an alternating B-major/Eb color patch (measures 117-144) before a final Eb cadence at measure 148.",
+    "keyMoments": [
+      "The stated key is D major, but the harness's fit score for it is -0.426 — strongly negative. The confidence-gated windows instead spell Bb-Eb-F7, and this annotation follows that content rather than the config field.",
+      "Measure 1 opens with 14 onsets, well above this piece's own typical measure density — an assertive, dense opening statement rather than a gradual entrance.",
+      "Measure 4, immediately after that dense opening, is comparatively sparse (5 onsets) — a written breath directly after the piece's most demanding bar.",
+      "Measures 117-144 settle into an alternating B-major/Eb color patch, a harmonic area distinct from the Bb/Eb/F7 vocabulary of the piece's first half — evidence that the back half of Pineapple Rag deliberately shifts harmonic ground."
+    ],
+    "teachingGoals": [
+      "Practice grounding harmonic analysis in what the notes actually spell rather than a stated key signature — Pineapple Rag's D major label fits this piece's content at -0.426, strongly negative.",
+      "Learn the dense opening bar (measure 1, 14 onsets) hands-separately at a slow tempo first — it is well above this piece's own typical density and rewards deliberate, unhurried practice before it rewards speed.",
+      "Recognize the harmonic shift between the piece's first half (Bb-Eb-F7) and back half (B-major/Eb color, measures 117 onward) — treating the whole piece as one harmonic block will miss this change.",
+      "Practice the recurring right-hand figure (measures 5-10, 13-18, 21-26, 29-34, 69-74, 77-82) that the pattern pass grades strong with an unusually high 5.16 compression ratio — learning one occurrence of this six-measure-per-repeat figure pays off across all six statements."
+    ],
+    "styleTips": [
+      "Listen for the opening measure's density without rushing it — 14 onsets in one bar at 100 BPM is a lot of information, and Joplin's own instruction against playing ragtime fast applies most urgently right here.",
+      "Play measure 4's relative sparseness as a genuine release of tension after the dense opening, not a dip in energy — let the texture audibly thin out.",
+      "Feel the harmonic ground shift around measure 117 — the B-major/Eb color of the piece's back half should sound like a change of scenery, not a continuation of the opening Bb material.",
+      "Try isolating the right-hand figure starting at measure 5 alone until it is completely automatic — with a 5.16 compression ratio across six statements, it is one of the most economical practice investments in this piece."
+    ]
+  }
 }

@@ -10,5 +10,27 @@
     "piano"
   ],
   "composer": "Aerosmith",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "\"Dream On\" (1973) is Aerosmith's breakthrough power ballad, built on a minor-key rock cadence the harness's chord windows confirm cleanly: the stated F minor is strongly supported (statedKeyFit 0.739), and the confidence-gated windows are dominated by the tonic Fm (25% of windows considered) moving to C# (Db, the bVI, 9%) and D# (Eb, the bVII, 9%) — the classic i-bVI-bVII shape that gives countless rock ballads their brooding, unresolved color. At 70 measures and 78 BPM in 4/4, the piece's most technically demanding stretch (measures 38-50, all in the 21-30 onset range) arrives well into the second half, matching the song's famous mid-song intensification. A left-hand figure first heard at measures 19-26 returns a full octave higher at measures 55-61 — the pattern pass's transposition-aware layer catching that register lift directly.",
+    "structure": "An opening section (measures 1-20) establishes the Fm-C#-D# progression at a moderate density. A contrasting middle section (measures 21-36) introduces the piece's harmonic movement away from the tonic, and the busiest stretch (measures 37-52) carries both the highest onset counts in the piece and, at measures 55-61, the octave-transposed return of the left-hand figure first heard at measures 19-26. A closing section (measures 53-70) settles the harmony back toward Fm.",
+    "keyMoments": [
+      "The tonic Fm accounts for 25% of chord windows considered, well ahead of the bVI (C#/Db, 9%) and bVII (D#/Eb, 9%) that follow it — a clear i-bVI-bVII minor-key rock cadence, not an ambiguous harmonic area.",
+      "Measures 38-50 hold the piece's busiest stretch (21-30 onsets per measure) — arriving well past the midpoint, matching this ballad's famous intensification into its second half.",
+      "A left-hand figure at measures 19-26 returns transposed a full octave higher at measures 55-61 — the pattern pass's transposition-aware layer catching a genuine register lift that simple pitch-matching would read as unrelated material.",
+      "The single busiest measure in the piece, measure 50 (30 onsets), sits at the tail end of that dense middle stretch — the technical demand peaks just before the piece begins settling back toward its opening character."
+    ],
+    "teachingGoals": [
+      "Learn the i-bVI-bVII minor-key cadence (Fm-C#-D#) that anchors this piece — one of the most common rock progressions, and this piece is a clean, strongly-confirmed (0.739 fit) place to build fluency with it.",
+      "Practice the octave-transposed left-hand echo (measures 19-26 versus 55-61) as the same musical gesture at a different register, not new material to relearn from scratch.",
+      "Build the stamina and control to sustain measures 38-50, the piece's busiest stretch, without rushing — this is where the real technical demand of the piece lives.",
+      "Practice returning the harmony to a settled tonic feel across measures 53-70 after the piece's busiest, most harmonically active stretch — knowing how a rock ballad de-escalates is as important as knowing how it builds."
+    ],
+    "styleTips": [
+      "Listen for the bVI and bVII chords (C#/Db and D#/Eb) as color, not detours — they never abandon the Fm tonic's gravity, they just darken the path back to it.",
+      "Play the octave-transposed left-hand figure at measures 55-61 with more weight than its first appearance at measures 19-26 — the register lift itself is already an intensification, and the touch should match it.",
+      "Feel measures 38-50 as the emotional and technical peak of the piece — let the increase in onset density translate into real dynamic growth, not just faster fingers.",
+      "Try easing the touch back down through measures 53-70 — after the piece's busiest stretch, a deliberate return to a calmer touch mirrors the harmony's own return toward Fm."
+    ]
+  }
 }

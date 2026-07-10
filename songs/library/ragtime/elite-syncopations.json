@@ -9,5 +9,27 @@
     "joplin"
   ],
   "composer": "Scott Joplin",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Elite Syncopations (1902) is one of Joplin's more rhythmically intricate rags, its 148 measures built at a deceptively unhurried tempo (quarter note around 60) in 2/4. The stated key is Bb major, and the harness's chord-window pass backs that up strongly (statedKeyFit 0.84) even though the single most common label across the piece is F, the dominant — a rag that vamps hard on V before resolving to I is completely normal ragtime harmonic language, not a sign the stated key is wrong. A pair of windows at measures 43 and 59 flag an implied E-natural, a pitch foreign to Bb major's own key signature, hedged by the harness's confidence gate rather than asserted outright — exactly the kind of passing chromatic color that gives this rag its fancier, \"elite\" reputation among Joplin's catalog.",
+    "structure": "The A strain (an 8-measure cell repeating at measures 5, 13, 21, 29) establishes the F-C7-Bb vamp. That same material recurs in full at measures 68-84 (the pattern pass grades this repeat strong, covering roughly 30% of both hands' content), and a second large block of material governs measures 84-148, itself built from repeating 16-measure cells (measures 44-59/60-67, 85-100/101-116, 115-131/131-147).",
+    "keyMoments": [
+      "Measures 43 and 59 each carry an implied E-natural window, hedged and low-confidence, sitting a half-step outside Bb major's own key signature — a passing chromatic color, not a stable chord, and a good ear-training test for telling implied harmony from a real cadence.",
+      "The busiest measures in the piece (12 onsets each) cluster at measures 11, 19, 27, and 35 — all inside the opening A strain, meaning the rag front-loads its rhythmic density instead of building to it.",
+      "Measure 92, one of the sparsest bars (3 onsets), sits right where the left hand dips to its lowest note in the piece (A#1, measure 93) — a rare excursion to the bottom of the keyboard that a thin texture makes room for.",
+      "The A strain's material (measures 4-36) returns note for note at measures 68-84 — the harness's pattern pass grades this a strong, 93-interval right-hand match, confirming by evidence what the form suggests: a full strain repeat, not just a similar-sounding phrase."
+    ],
+    "teachingGoals": [
+      "Learn the F7-to-Bb resolution by ear before worrying about fancier chords — the piece's most common harmonic event is dominant-to-tonic motion, and everything else is decoration on top of that basic move.",
+      "Practice telling implied harmony from confirmed harmony: the brief flags measures 43 and 59 as low-confidence E-natural color tones rather than stable chords. Train your ear to hear the difference between a passing note and a real chord change.",
+      "Recognize a repeated strain by feel, not just by ear: measures 68-84 restate measures 4-20 in full. Once a strain is secure the first time, its second appearance should require recall, not new learning.",
+      "Practice keeping the left hand rhythmically identical across repeats of the same strain — any drift in the oom-pah pattern between measure 5 and its measure 69 restatement will be audible."
+    ],
+    "styleTips": [
+      "Listen for the dominant-seventh vamp (F7 resolving to Bb) settling rather than rushing — at 60 BPM there is room to let each resolution land before the next phrase begins.",
+      "Play the implied E-natural color tones at measures 43 and 59 lightly, almost as a grace note — they are hedged, passing color for a reason, and playing them as stable chords will make the phrase sound lost.",
+      "Feel the oom-pah left hand as perfectly even eighth-to-quarter spacing under the syncopated right hand — any unevenness in the bass undercuts the rhythmic complexity above it.",
+      "Try isolating the right hand alone through measures 11-35, the piece's busiest stretch, at half speed first — the density of onsets there means finger substitutions matter more than anywhere else in the piece."
+    ]
+  }
 }

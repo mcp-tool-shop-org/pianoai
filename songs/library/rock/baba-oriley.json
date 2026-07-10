@@ -10,5 +10,27 @@
     "synth"
   ],
   "composer": "The Who",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "\"Baba O'Riley\" (1971) opens The Who's album Who's Next with a famous continuously arpeggiated pattern — originally built on a Lowrey organ run through an early synthesizer sequencer — and this piano transcription's own right-hand figure echoes that same restless, perpetual-motion character: the pattern pass finds a short right-hand figure recurring from measures 1-2 through measures 61-70 and again at 109-120, graded strong with an unusually high 8.38 compression ratio. The stated F major is confirmed by the harness's key-detection pass (statedKeyFit 0.682), and the confidence-gated windows spell mostly diatonic F-major harmony — F itself dominates at 27% of windows considered — with one notable borrowed chord, A#m (Bbm, the minor iv), coloring the progression alongside the plain Bb and C7/C dominant motion. At 158 measures and a driving 115 BPM in 4/4, the left hand stays completely silent for the first sixteen measures, letting that arpeggiated figure establish itself alone before the bass enters.",
+    "structure": "The right-hand ostinato opens the piece alone (left hand tacet, measures 1-16) and is literally identical between measure 1 and measure 62 — the same figure returning as the piece's structural refrain. The chord progression settles into F-A#m-A#-C7 territory through measures 20-121, and a second, distinct left-hand figure (graded strong, 4.04 compression ratio) takes over measures 123-144, before the piece closes with a two-measure fade to silence at measures 157-158.",
+    "keyMoments": [
+      "The left hand rests completely for the first sixteen measures (measures 1-16) — the piece's famous perpetual arpeggio carries the opening entirely in the right hand before the bass ever enters.",
+      "Measure 1 and measure 62 are byte-for-byte identical — the harness's exact-repeat detection confirms the opening figure returns as a structural refrain partway through the piece, not just a vague echo.",
+      "The busiest measures (36-38 onsets each: measures 24, 40, 48, 86, 90) are spread across the whole piece rather than clustering at one climax — this arrangement sustains high density throughout instead of building toward a single peak.",
+      "A#m (Bbm), the minor iv borrowed from F minor, colors the otherwise major-key F-A#-C7 progression — recognizing a borrowed chord like this, sitting right next to its major-key neighbors, is a core rock harmony skill."
+    ],
+    "teachingGoals": [
+      "Practice the right-hand ostinato completely alone for the first sixteen measures before adding the left hand — the piece itself is written this way, and the two hands should be secure independently before combining them.",
+      "Learn to recognize a borrowed minor iv chord (A#m in this F-major piece) next to its major-key neighbors (A#, C7) — modal mixture like this is common rock vocabulary, not a mistake in the changes.",
+      "Build the stamina to sustain a consistently busy texture (36-38 onsets in the busiest measures) across the full 158-measure arrangement rather than pacing for a single climax.",
+      "Recognize a literal repeat by ear: measure 1 and measure 62 are identical. Once the opening figure is secure, its later return needs only recall, not new learning."
+    ],
+    "styleTips": [
+      "Listen for the right-hand figure staying perfectly even at 115 BPM — any rushing or dragging in a repeating ostinato this exposed (no left hand for the first sixteen measures) will be immediately audible.",
+      "Play the A#m borrowed chord with a slightly darker touch than its major-chord neighbors — let your ear and your fingers both register the shift into minor color.",
+      "Feel the return of the opening figure at measure 62 as a genuine structural landmark, not just more of the same texture — it is the exact same music you played at measure 1.",
+      "Try sustaining full dynamic commitment across the piece's many busy measures (24, 40, 48, 86, 90) rather than saving energy — this arrangement doesn't build toward one big climax, so consistency matters more than contrast."
+    ]
+  }
 }

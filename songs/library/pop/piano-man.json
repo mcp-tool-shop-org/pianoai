@@ -10,5 +10,27 @@
     "classic"
   ],
   "composer": "Billy Joel",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "\"Piano Man\" (1973) is Billy Joel's autobiographical waltz, famous for its 3/4 time signature (unusual for a pop single) and its strophic, many-verses-one-tune structure — and the harness's data confirms that structure with remarkable precision: the section lens's novelty-score sequence repeats every 64 measures, four times across the piece's full 273 measures (for example, a novelty score of 3.146 recurs at measures 25-30, 89-94, 153-158, and 217-222), and the harness's exact-repeat detection finds one single-measure figure recurring identically ten separate times (measures 8, 12, 30, 76, 94, 140, 158, 204, 222, and 268). The stated C major is confirmed decisively (statedKeyFit 0.943), and the confidence-gated windows spell a clean, entirely diatonic C-major vocabulary: C itself (28% of windows considered), F as IV (16%), Em as iii (9%), Fmaj7 (9%), and G as V (4%). At a brisk 147 BPM in 3/4, the piece is also comparatively sparse in texture — its busiest measures (5, 56, 120, 184, 248) reach only 7 onsets each, all five of those measure numbers themselves spaced exactly 64 apart.",
+    "structure": "The piece is built from a single roughly 64-measure verse-and-chorus unit, restated four times in full across measures 1-273 — confirmed independently by the section lens's repeating novelty sequence and by dozens of identical-measure groups recurring at that same 64-measure interval (one figure alone recurs at measures 8, 12, 30, 76, 94, 140, 158, 204, 222, and 268). The C-F-Em-Fmaj7-G progression governs the harmony throughout all four statements, and the piece closes with a fully silent final measure, 273.",
+    "keyMoments": [
+      "The section lens's novelty-score sequence repeats every 64 measures, four times across the piece — a novelty score of 3.146 recurs at measures 25-30, 89-94, 153-158, and 217-222, independent structural evidence of this song's famous one-tune-many-verses form.",
+      "A single figure recurs identically ten separate times (measures 8, 12, 30, 76, 94, 140, 158, 204, 222, and 268) — confirmed by the harness's exact-repeat detection, clear evidence of just how strophic this piece's structure really is.",
+      "The busiest measures in the piece (5, 56, 120, 184, 248) reach only 7 onsets each — a genuinely sparse texture throughout, and notably, those five measure numbers are themselves spaced almost exactly 64 apart, landing at the same structural point in each verse cycle.",
+      "The stated C major fits this piece's content at a very strong 0.943, confirmed with a clean C-F-Em-Fmaj7-G vocabulary and no chromatic surprises."
+    ],
+    "teachingGoals": [
+      "Learn the roughly 64-measure verse-and-chorus unit as the real content of this piece — with four confirmed repetitions across 273 measures, mastering that one unit is mastering roughly the whole arrangement.",
+      "Practice the C-F-Em-Fmaj7-G progression until it is completely secure — confirmed at a very strong 0.943 fit, it is clean, safe diatonic ground with no chromatic surprises to navigate.",
+      "Build a genuine 3/4 waltz feel at this brisk 147 BPM — the piece's unusual-for-pop triple meter is central to its character, not incidental.",
+      "Practice maintaining a light, sparse touch throughout — even this piece's busiest measures reach only 7 onsets, and playing with more density or weight than the arrangement calls for will work against its narrative, conversational character."
+    ],
+    "styleTips": [
+      "Listen for the roughly 64-measure unit landing the same way each of its four times through — since the structure repeats this precisely, differences in your performance across verses should be deliberate storytelling choices, not accidents.",
+      "Play the C-F-Em-Fmaj7-G progression simply and directly — this piece's charm comes from its plain-spoken, waltz-time clarity, not harmonic complexity.",
+      "Feel the 3/4 pulse as a genuine waltz lilt, not a disguised 4/4 — let the triple meter's lean-and-release shape come through in your phrasing.",
+      "Try keeping your touch light even in the piece's busiest measures (5, 56, 120, 184, 248) — with only 7 onsets at their peak, this arrangement never asks for a heavy hand."
+    ]
+  }
 }

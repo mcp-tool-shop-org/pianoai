@@ -10,5 +10,27 @@
     "waltz"
   ],
   "composer": "Scott Joplin",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Bethena is Scott Joplin's 1905 concert waltz, subtitled \"A Concert Waltz\" — a slower, harmonically ambitious cousin to his 2/4 rags, and the piece critics point to when arguing Joplin wanted ragtime taken seriously as art music rather than novelty. The 219-measure form (3/4 time, tempo marking equivalent to roughly 50 measures per minute felt in one) moves through several distinct waltz strains rather than settling on a single tonal center: the harness's own key-detection pass finds no single dominant tonic across the whole piece — the best whole-song match is G major at only a 0.124 correlation margin, and the stated Bb major correlates just as modestly at 0.347 — because Bethena genuinely modulates strain to strain the way a real concert waltz suite does. The opening waltz idea, first stated at measures 5-27, is substantial enough that Joplin brings it back twice more, note for note, at measures 68-88 and again at 195-219 — a structural refrain that ties an otherwise wandering set of strains back to one memorable idea.",
+    "structure": "A four-bar introduction (measures 1-4) opens the piece, its own internal figure restated near-identically bar to bar. The main waltz strain (measures 5-27) establishes G major/E minor territory (Am7-D7-G-A7-Em chord windows) before a modulatory sequence (measures 28-61) settles into the stated Bb major (A#-D#-Gm7-F7 windows match the config key here). A chromatic bridge (measures 82-97) passes through E7-G#m-C#7-Fm before landing in F/C major (measures 93-121). A further shift to B minor/D major (measures 127-190) precedes the final return of the opening strain (measures 195-219), which restates measures 5-27 in full.",
+    "keyMoments": [
+      "Measure 67, the sparsest bar in the piece (a single onset), is a written breath immediately before the opening strain returns note for note at measure 68 through measure 88. Hearing that silence as preparation, not emptiness, is what this passage teaches.",
+      "Measures 28-45 are the piece's busiest stretch (10-11 onsets in measures 29, 31, 37, and 39 alone) — the chord windows here read A#-D#-Gm7-F7, the one passage where the stated Bb major key signature is actually confirmed by the content, not just asserted.",
+      "Measures 82-97 move through E7-G#m-C#7-Fm, four chords in a row with no two sharing a diatonic key — Bethena's most harmonically restless passage, and recognizing it as a deliberate modulatory bridge rather than a mistake is the reward for following the harmony window by window.",
+      "The final return at measures 195-219 closes the piece by restating its own opening: the harness's pattern pass independently tracks a 46-interval left-hand figure (evidence grade: strong) recurring at measures 8-24, 67-83, and 195-211 — Joplin gives Bethena a genuine recapitulation, unusual for a rag-adjacent form."
+    ],
+    "teachingGoals": [
+      "Practice each waltz strain as its own harmonic island before trying to connect them — measures 5-27, 28-61, 82-97, and 127-190 each live in different key areas, and treating the whole piece as one key will misread the harmony.",
+      "Learn to play a true one-beat-per-bar waltz pulse at this tempo (roughly 50 measures per minute) rather than counting three separate beats — the left hand's job is to make the barline, not the individual beat, the unit of motion.",
+      "Recognize a chromatic mediant bridge by ear: measures 82-97 move root to root in thirds rather than the fourths and fifths of a normal cadence. Identify where a passage stops behaving like a cadence and starts behaving like a sequence.",
+      "Build the stamina to hold a 219-measure form in memory by leaning on the recap — once you know measures 5-27 return whole at 68-88 and 195-219, you have effectively memorized three sections by learning one."
+    ],
+    "styleTips": [
+      "Listen for the left hand disappearing almost entirely at measure 67 — that one-onset bar is a written silence, not a mistake in the score. Let it actually go quiet before the recap re-enters at measure 68.",
+      "Play the modulatory bridge at measures 82-97 with a slight give in tempo — a hair of rubato on each new chord lets the ear register the key shift instead of blurring past it.",
+      "Feel the waltz pulse in one, not three: listen for whether your downbeat lands like a dancer's single decisive step per bar rather than three equal ticks.",
+      "Voice the left-hand waltz bass so the low root (as deep as D#1 at measure 218) actually rings under the chord above it — a thin, undersupported bass makes the harmonic modulations impossible to follow by ear."
+    ]
+  }
 }

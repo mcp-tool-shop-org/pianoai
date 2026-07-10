@@ -10,5 +10,27 @@
     "riff"
   ],
   "composer": "Coldplay",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "\"Clocks\" (2002) built Coldplay's reputation on a single, instantly recognizable repeating piano figure, and the harness's pattern pass finds overwhelming evidence of exactly that: a 13-interval left-hand figure recurs so often it earns a 9.64 compression ratio (the strongest of this arrangement's own repeated figures), alongside two more strong, high-coverage figures (an 8.21-ratio left-hand pattern and a 7.62-ratio right-hand pattern) — this arrangement really is built from a small number of relentlessly repeated cells, not continuously new material. The stated Eb major is confirmed by the harness's key-detection pass (statedKeyFit 0.677), and the confidence-gated windows show something distinctive within that confirmed key: A#m (Bbm, a minor v) is cited exactly as often as the D# (Eb) tonic itself — 36 of the 119 labeled windows each (30%) — well ahead of the diatonic G# (Ab, IV, 25 of 119 labeled windows, 21%) — a piece that colors its dominant minor as often as it states its tonic, a real source of the song's famously suspended, uneasy quality despite sitting in a major key. At 170 measures and a driving 131 BPM in 4/4, both hands rest completely at the very first and very last measures.",
+    "structure": "The piece opens and closes in matching silence (both hands tacet at measure 1 and measure 170). Within that frame, the repeating ostinato material (the 13-interval left-hand figure, appearing dozens of times across nearly the whole piece) underlies a progression that alternates the Eb tonic with its minor v, Bbm, in roughly equal measure. The busiest measures (39, 42, 104, 139, 143, all 18 onsets) are spread across several different structural regions rather than one climax.",
+    "keyMoments": [
+      "A#m (Bbm), a minor v chord, is cited exactly as often as the D# (Eb) tonic itself — 36 of the 119 labeled windows each (30%) — an unusual harmonic balance that colors this major-key piece with a persistent minor-dominant shadow.",
+      "A 13-interval left-hand figure recurs so often across the piece that the pattern pass grades it a 9.64 compression ratio — real, measurable evidence behind this song's famous reliance on one relentless ostinato.",
+      "Both hands rest completely at measure 1 and again at measure 170, the piece's very first and very last bars — the arrangement is bookended in matching silence despite its otherwise near-constant activity everywhere in between.",
+      "The busiest measures (39, 42, 104, 139, 143, each 18 onsets) recur at scattered points rather than building to one climax — this arrangement sustains a fairly constant technical demand rather than saving its hardest moment for one place."
+    ],
+    "teachingGoals": [
+      "Learn the repeating 13-interval left-hand ostinato thoroughly first — with a 9.64 compression ratio, it is the backbone of the entire arrangement, and everything else is built around it.",
+      "Practice hearing A#m (Bbm) and D# (Eb) as equally weighted harmonic centers — this piece cites its minor v as often as its own tonic, and treating Bbm as a rare visitor rather than a co-equal partner will misread the harmony.",
+      "Practice the silent opening and closing measures (1 and 170) with the same deliberate stillness — a matching silence at both ends of a piece this rhythmically relentless is a real structural choice.",
+      "Build even technical control across the piece's several busy measures (39, 42, 104, 139, 143) rather than treating any single one as the piece's hardest moment — the demand is spread out, not concentrated."
+    ],
+    "styleTips": [
+      "Listen for the left-hand ostinato staying perfectly metronomic across its many repetitions — at 131 BPM with a 9.64 compression ratio behind it, this figure IS the pulse of the piece, and any drift will be immediately audible.",
+      "Play the A#m (Bbm) chord with the same weight and commitment as the D# (Eb) tonic — resist treating it as a passing color when the data shows it carries equal harmonic weight.",
+      "Feel the matching silences at measures 1 and 170 as a deliberate frame around the piece's relentless energy — the stillness at both ends makes the constant motion in between feel even more continuous.",
+      "Try sustaining the same intensity across all five of the piece's busiest measures (39, 42, 104, 139, 143) rather than saving energy for just one — this arrangement asks for consistency, not a single dramatic peak."
+    ]
+  }
 }

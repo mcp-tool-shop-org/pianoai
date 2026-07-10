@@ -10,5 +10,27 @@
     "slow"
   ],
   "composer": "Scott Joplin",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Weeping Willow (1903) is one of Joplin's slower, more deliberately unhurried rags. The harness's key-detection pass confirms the stated C major strongly (statedKeyFit 0.803), and the confidence-gated windows spell a clean C-major vocabulary — but the single most-cited label is G, the dominant (15% of windows considered), well ahead of the C tonic itself (8%), alongside F as IV (8%), D7 as a secondary dominant (7%) resolving to G, and Am7 as vi7 (4%). A piece that names its own dominant almost twice as often as its tonic is leaning hard on V-to-I motion rather than sitting still on I. At 148 measures and 70 BPM in 2/4, the piece's back half (measures 84-115) alternates busy and sparse measures roughly every eight bars — a genuine antiphonal, call-and-response texture rather than a steady density.",
+    "structure": "An A strain (measures 4-36, an 8-measure cell recurring at measures 5, 13, 21, 29) restates in full at measures 68-84, establishing the G-C-F progression (dominant, tonic, subdominant). A middle section (measures 37-67) introduces D7-G7 secondary-dominant turnarounds. The back half (measures 84-130) alternates a dense right-hand cell (measures 85-90, 93-99, 101-106, 109-115, graded strong with a 3.57 compression ratio) against comparatively sparse neighboring bars (84, 92, 108), before a closing section (measures 131-148) resolves to a final C cadence.",
+    "keyMoments": [
+      "The G dominant accounts for 15% of chord windows considered, nearly double the C tonic's own 8% — a piece that spends more labeled time announcing its dominant than sitting on its tonic, an unusual balance worth listening for directly.",
+      "Measures 85, 93, 101, and 109 (each 12 onsets) alternate with sparser neighbors at 84, 92, and 108 (4-5 onsets) — a genuine call-and-response density pattern across the piece's back half, not a steady buildup.",
+      "Measures 4-20 restate in full at measures 68-84 — the pattern pass grades this an 83-interval, strong right-hand match, confirming a literal A-strain repeat.",
+      "The D7-to-G secondary-dominant motion (windows at measures 37, 45, 53, 61) recurs four times in the middle section alone — a single harmonic gesture worth isolating and drilling on its own before attempting the full passage."
+    ],
+    "teachingGoals": [
+      "Learn the C-major tonic-IV-dominant vocabulary (C-F-G) that anchors this piece, confirmed at a strong 0.803 fit — but notice the dominant (G) actually outweighs the tonic in label frequency, and let your ear register that emphasis.",
+      "Practice alternating between dense and sparse measures with real dynamic contrast (measures 85 versus 84, 93 versus 92) — the call-and-response texture in the back half is a written instruction, not incidental.",
+      "Recognize a literal strain repeat (measures 4-20 restating at 68-84) and use it to halve your memorization work — once the first statement is secure, the second needs only review.",
+      "Practice playing a rag slowly, at 70 BPM, without letting the rhythm go slack — the tempo removes speed as a source of energy, so the syncopation has to carry the momentum instead."
+    ],
+    "styleTips": [
+      "Listen for the G dominant landing solidly and often — it is this piece's most repeated single harmonic label, more common than the C tonic itself, and a clear ear for it makes the eventual tonic resolutions land harder.",
+      "Play the alternating dense and sparse measures (85 vs. 84, 93 vs. 92) with a visible give and take in volume — treat it as a real musical conversation between phrases, not uniform playing.",
+      "Feel the D7 pulling toward G each time it recurs (measures 37, 45, 53, 61) — repetition of a secondary dominant is a chance to make the resolution more expressive each time, not just correct.",
+      "Try a slow, unhurried practice tempo even once the notes are secure — at 70 BPM, rushing is the easiest way to lose Weeping Willow's gentler character."
+    ]
+  }
 }

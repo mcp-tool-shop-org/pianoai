@@ -10,5 +10,27 @@
     "piano"
   ],
   "composer": "Elton John",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "\"Tiny Dancer\" (1971) is one of Elton John's most beloved piano ballads. The harness's key-detection pass confirms its stated C major decisively, with a statedKeyFit of 0.888. The confidence-gated windows spell a clean, entirely diatonic C major vocabulary: the tonic C major itself (10% of windows considered), F major as IV (6%), G major as V (6%), A minor seventh as vi7 (3%), and Bdim as vii° (2%) — a textbook harmonic palette with no borrowed or chromatic surprises. The harness's literal repeat detection finds no identical or near-identical measures anywhere in the piece's 114 measures, so this annotation leans on the section lens for structure instead. The arrangement bookends itself in silence: both hands rest completely at measure 1 and again at the final measure, 114. The left hand's own lowest note in the piece, E1, arrives much later, at measure 77.",
+    "structure": "A silent opening measure (measure 1) gives way to the main material, with the section lens marking nine distinct structural regions across the piece, the largest spanning measures 42-66 (25 measures, novelty 2.238). The C-F-G-Am7 progression governs the harmony throughout, with the busiest measures (94, 59, 49, 51, 29, all 36-40 onsets) distributed across several of those sections rather than concentrated in one. The piece closes, as it opened, in silence at measure 114.",
+    "keyMoments": [
+      "The stated C major fits this piece's content at 0.888, a very strong correlation, and the confidence-gated windows confirm a clean, entirely diatonic vocabulary — tonic, IV, V, vi7, and vii° with no chromatic surprises.",
+      "Both hands rest completely at measure 1 and again at measure 114, the piece's very first and very last bars — the arrangement bookends its 114 measures in matching silence.",
+      "No identical or near-identical measures exist anywhere in this piece — a reminder that 'no literal repeats' describes what the strictest repeat test can find, not a judgment that the piece lacks structure; the section lens finds nine distinct regions instead.",
+      "The busiest measures (94, 59, 49, 51, 29, each 36-40 onsets) are spread across several different structural sections rather than clustering in one — this piece distributes its technical demand instead of saving it for a single climax."
+    ],
+    "teachingGoals": [
+      "Learn the C-F-G-Am7 progression (I-IV-V-vi7) that anchors this piece — confirmed at a very strong 0.888 fit, it is safe, clean diatonic ground for building basic pop-piano harmony.",
+      "Practice using the section lens's nine structural regions to organize learning this piece, since no literal repeated measures exist to lean on — treat each region, the largest spanning measures 42-66, as its own practice unit.",
+      "Build even technical control across multiple busy passages (measures 29, 49, 51, 59, 94) rather than expecting one obvious hardest section — this piece spreads its demands out.",
+      "Practice the silent opening and closing measures (1 and 114) with real intentionality — a matching silence at both ends is a deliberate structural choice, not empty space to rush past."
+    ],
+    "styleTips": [
+      "Listen for the clean C-F-G-Am7 progression resolving simply and directly — this piece doesn't need chromatic tension to be effective, and adding some would work against its character.",
+      "Play the opening and closing silent measures (1 and 114) as a matched pair — let the ending genuinely echo the stillness of the beginning.",
+      "Feel each of the section lens's nine structural regions as its own small arc — with no literal repeats to lean on, treating each region as a distinct musical idea makes the piece easier to hold in memory.",
+      "Try pacing your dynamic energy across all five busy measures (29, 49, 51, 59, 94) evenly rather than saving your loudest playing for just one of them — the piece itself distributes its demands this way."
+    ]
+  }
 }

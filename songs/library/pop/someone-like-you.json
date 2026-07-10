@@ -10,5 +10,27 @@
     "ballad"
   ],
   "composer": "Adele Adkins",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "\"Someone Like You\" (2011) is Adele's spare, piano-and-vocal ballad, and the harness's data confirms just how minimal and repetitive its accompaniment really is: a 47-interval right-hand figure recurs seven separate times (measures 1-8, 9-16, 17-24, 25-32, 63-70, 71-78, and 79-86), earning a strong 6.11 compression ratio, and the harness's exact-repeat detection independently confirms the same pattern — measures 1, 9, 17, 25, 63, 71, and 79 are all identical. The stated A major is confirmed strongly (statedKeyFit 0.84), and the confidence-gated windows show D major, the IV chord, as the single most common label (22% of windows considered) — more common than the A tonic itself (11%) — alongside F#m (vi, 12%), C#m (iii, 8%), and E major (V, 5%). At a gentle 80 BPM in 2/4, the piece's single busiest measure (125, 9 onsets) is immediately followed by its sparsest sustained stretch (measures 127-130, all tied at just 2 onsets) — a genuine climax-then-release captured directly in the density data. The right hand's lowest note in the entire piece, C#4, occurs right at the opening (measure 1), while the left hand's own lowest note, D1, does not arrive until measure 45.",
+    "structure": "A repeating right-hand figure (measures 1-8, restated identically at 9-16, 17-24, 25-32, 63-70, 71-78, and 79-86) carries most of the piece's accompaniment, confirmed by both the pattern pass (6.11 compression ratio) and exact-repeat detection. A second, similarly strong repeating figure (measures 42-49, 50-57, 97-104, 105-112, 143-150, 151-158) governs a contrasting middle stretch. The piece builds to its single busiest measure (125, 9 onsets) immediately before its clearest sustained low point (measures 127-130), then closes in silence at measure 168.",
+    "keyMoments": [
+      "D, the IV chord, is the single most common label in the piece (22% of windows considered) — more common than the A tonic itself (11%) — an accompaniment that leans on its subdominant more than its home chord.",
+      "A 47-interval right-hand figure recurs seven times (measures 1-8, 9-16, 17-24, 25-32, 63-70, 71-78, 79-86), confirmed independently by exact-repeat detection (measures 1, 9, 17, 25, 63, 71, and 79 are all identical) — this piece's accompaniment really is built from one repeated cell, not continuously varied material.",
+      "Measure 125, the piece's single busiest bar (9 onsets), is immediately followed by measures 127-130, its clearest sustained low point (2 onsets each) — a real climax-then-release shape, not a general impression of dynamic contrast.",
+      "The piece closes in complete silence at measure 168 — the final bar of a piece that, even at its busiest, never exceeds 9 onsets in a single measure."
+    ],
+    "teachingGoals": [
+      "Learn the repeating right-hand figure (measures 1-8) until it is completely automatic — it recurs seven times across the piece, so fluency here covers a large share of the total arrangement.",
+      "Practice hearing D (IV) as the piece's real harmonic center of gravity as often as A (I) itself — the labeled windows show IV cited twice as often as the tonic, an accompaniment style worth recognizing rather than assuming standard I-centered harmony.",
+      "Build toward measure 125, the piece's genuine dynamic peak, then practice releasing into the sustained quiet of measures 127-130 — the contrast between these two specific spots is the piece's clearest written dynamic event.",
+      "Practice keeping touch light throughout — even this piece's busiest measure reaches only 9 onsets, and any added density or weight works against its spare, intimate character."
+    ],
+    "styleTips": [
+      "Listen for the repeating right-hand figure staying gentle and even across all seven of its appearances — a minimal accompaniment like this depends on consistency, not increasing intensity, to hold interest.",
+      "Play the D (IV) chord with real harmonic weight each time it recurs — the data shows it functioning as a true center of gravity, not a passing detour from A.",
+      "Feel measure 125 as the true emotional peak, then let measures 127-130 go genuinely quiet immediately after — the release is as important as the build, and the data shows it happening fast.",
+      "Try letting the final measure (168) dissolve into real silence rather than a sudden stop — this piece's whole character is spare and unhurried, and the ending should match."
+    ]
+  }
 }

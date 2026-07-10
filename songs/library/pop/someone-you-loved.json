@@ -10,5 +10,27 @@
     "piano"
   ],
   "composer": "Lewis Capaldi",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "\"Someone You Loved\" (2018) is Lewis Capaldi's breakout piano ballad, and the harness's pattern pass finds an extraordinarily dominant repeating figure underneath it: a short left-hand cell recurs 30 separate times across the piece (for example at measures 5-6, 7-8, and 9-10), earning an exceptional 17.5 compression ratio and covering more than half of all left-hand content — a steady, insistent pulse running under most of the arrangement. The stated C major has only a modest fit to the content (statedKeyFit 0.297), and only 22% of measures clear the confidence gate for any chord label at all, so this annotation stays cautious about harmony: the handful of real windows (C, Gmaj7, F#dim, Cmaj7, Bm, Daug) include a diminished chord and an augmented chord, more chromatic color than the thin sample can fully support drawing firm conclusions from. At 123 BPM in 4/4 over 114 measures, the piece's density builds dramatically: measure 68 reaches 50 onsets, by far the busiest bar in the piece, arriving well past its quieter opening (measure 1, 0 onsets).",
+    "structure": "A repeating two-measure left-hand cell (appearing 30 times, from measures 5-6 through 109-110) forms the rhythmic backbone under nearly the entire piece. A longer-scale repeating figure (measures 26-34, 46-54, 74-82) organizes the piece into larger sections on top of that pulse. The density climbs steadily from a silent opening (measure 1) to a sharp peak at measure 68 (50 onsets), before settling toward a quieter close (measure 114, 3 onsets).",
+    "keyMoments": [
+      "A short left-hand cell recurs 30 separate times across the piece (for example at measures 5-6, 7-8, and 9-10), earning an exceptional 17.5 compression ratio and covering more than half of all left-hand content — a steady pulse that almost never lets up.",
+      "Only 22% of this piece's measures clear the confidence gate for a chord label — with evidence this thin, the handful of real windows (C, Gmaj7, F#dim, Cmaj7, Bm, Daug) should be read as scattered data points, not a continuous confirmed progression.",
+      "Measure 68 reaches 50 onsets, by far the busiest bar in the piece — arriving well past the silent opening (measure 1) and confirming this arrangement's real, measurable build toward its climax.",
+      "The final measure (114) carries 3 onsets — quieter than the piece's dense middle section, but not complete silence; the ending here settles rather than vanishes."
+    ],
+    "teachingGoals": [
+      "Learn the repeating two-measure left-hand cell first and thoroughly — with 30 confirmed occurrences and a 17.5 compression ratio, it is the single most important piece of material in the whole arrangement.",
+      "Practice working confidently from thin harmonic evidence — with only 22% of measures carrying a confidence-gated label, resist the urge to fill in a complete progression the data doesn't actually support.",
+      "Build a genuine, measured crescendo toward measure 68, the piece's real density peak (50 onsets) — the climb from the silent opening is gradual and sustained, not sudden.",
+      "Practice a settled, not vanished, ending — measure 114 still carries 3 onsets, so the final gesture should land somewhere, not fade to nothing."
+    ],
+    "styleTips": [
+      "Listen for the repeating left-hand cell staying steady and unwavering across all 30 of its appearances — this pulse is the piece's foundation, and it should feel inevitable, not effortful.",
+      "Play the diminished and augmented color chords (F#dim, Daug) that do appear with real intention — even though the surrounding harmonic evidence is thin, these specific labeled moments are worth voicing deliberately.",
+      "Feel the long build toward measure 68 as continuous — let the density increase translate into a genuine, sustained rise in intensity rather than holding back until the last possible moment.",
+      "Try landing the final measure (114) with quiet resolve rather than letting it disappear — three onsets is enough to end with intention, not just trail off."
+    ]
+  }
 }

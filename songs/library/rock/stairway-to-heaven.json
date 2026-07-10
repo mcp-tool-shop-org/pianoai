@@ -10,5 +10,27 @@
     "epic"
   ],
   "composer": "Led Zeppelin",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "\"Stairway to Heaven\" (1971) builds across 156 measures from a quiet fingerpicked opening to a famously loud climax and back down to near silence — and the harness's own data traces that exact arc. The stated A minor is confirmed strongly (statedKeyFit 0.692), and the confidence-gated windows show a real modal color: alongside the Am tonic (12%) and Am7 (10%), a D major chord appears just as often as Am7 (10%) — a raised, major-quality iv rather than the plain Dm a strict natural minor would produce, a recognizable modal device rather than a plain diatonic accident. The piece's busiest measures (measures 98, 122, 126, 130, 132, all 32-35 onsets) cluster late in the form, matching the song's famous long build. Then, after that sustained density, the final five measures (152-156) fall almost completely silent (0-1 onsets each) — the section lens flags this exact spot with an enormous novelty score, its checkerboard detector reacting to real, sustained silence following real, sustained activity. The left hand's own lowest note in the entire piece, a very low C0, arrives right there at measure 152, deep below the register the rest of the piece uses.",
+    "structure": "A verse section (measures 42-63) repeats extensively and near-literally — the harness's exact-repeat detection finds measures 42-46 identical to measures 59-63, one of sixteen such repeat groups pairing measures 42-57 with 59-74 (a seventeenth repeat group exists in the piece, but it covers the closing silence at measures 152-155, not this section). Two long, moderately-graded recurring passages (a 195-interval right-hand figure across measures 41-75, and a 129-interval left-hand figure across measures 46-80) carry the famous fingerpicked accompaniment through the piece's middle stretch. The busiest, most harmonically active material arrives late (measures 98-132), and the piece closes with a near-total silence at measures 152-156.",
+    "keyMoments": [
+      "A D major chord (10% of windows considered) appears almost as often as the Am7 tonic-seventh (also 10%) — a raised, major-quality iv rather than the Dm a strict natural minor scale would produce, a real modal color worth hearing as deliberate rather than incidental.",
+      "Measures 42-46 are identical to measures 59-63 — one of sixteen exact-repeat groups pairing measures 42-57 with 59-74, confirming the famous fingerpicked verse pattern really does repeat close to verbatim, not just in a general impression.",
+      "The busiest measures in the piece (98, 122, 126, 130, 132, each 32-35 onsets) all arrive after measure 98 — more than three-fifths of the way through the form, matching this piece's well-known long build toward its climax.",
+      "The final five measures (152-156) drop to 0-1 onsets each, and the section lens flags this exact span with an enormous novelty score — sustained silence following sustained density registers as the single largest structural event the checkerboard detector can find."
+    ],
+    "teachingGoals": [
+      "Learn to hear a raised, major iv chord (D major, appearing as often as Am7 in the labeled windows) as a modal color choice — recognizing when a minor-key piece borrows a chord from a related mode is a skill that transfers well beyond this piece.",
+      "Practice the fingerpicked verse pattern (measures 42-46) until it is completely secure, then trust that measures 59-63 require only recall — the harness confirms these measures are identical.",
+      "Build technical and dynamic stamina for measures 98-132, the piece's genuine climax zone (32-35 onsets per measure) — this is where the long build actually pays off, and it deserves dedicated late-stage practice focus.",
+      "Practice letting the final five measures (152-156) actually go still — after a piece this dense, under-committing to the silence is as much a mistake as under-committing to the climax."
+    ],
+    "styleTips": [
+      "Listen for the D major chord's brightness against the surrounding A minor — it should sound like a genuine lift, not a wrong note, each time it appears.",
+      "Play the repeating fingerpicked verse pattern (measures 42-63) with the same touch each time it recurs — consistency here is the whole point of a pattern this literally repeated.",
+      "Feel the climb toward measures 98-132 as continuous, not sudden — the density increase is real and sustained, and the build should be audible well before the loudest measures actually arrive.",
+      "Try practicing the final silence (measures 152-156) as its own event, separate from the climax before it — a great ending needs its quiet to be as intentional as its loud."
+    ]
+  }
 }

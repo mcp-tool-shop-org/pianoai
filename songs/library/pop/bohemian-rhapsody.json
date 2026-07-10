@@ -10,5 +10,27 @@
     "epic"
   ],
   "composer": "Freddie Mercury",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "\"Bohemian Rhapsody\" (1975) is Queen's suite-form epic, structured across a cappella harmony, ballad, mock-operatic chorus, hard rock, and a reflective coda — and this 242-measure piano transcription's own data traces real evidence of that dramatic sectional writing. The stated Bb major is confirmed by the harness's key-detection pass (statedKeyFit 0.691), and the confidence-gated windows include an unusually wide chord-quality vocabulary: alongside the core Bb-F-Eb-Cm-Gm diatonic set, diminished chords (Cdim, Ddim, F#dim, Edim) and even an augmented chord (Daug, at measure 92) appear among the labels — real evidence of this piece's famously adventurous harmonic language. The section lens finds an unusually large number of high-novelty structural boundaries scattered across the piece (for example, measures 10-30, 170-175, 201-205, 206-220, and 238-242 all score above 6), and most of the detected repeated patterns are only weakly or moderately graded with many transposed occurrences — evidence of music that develops and varies its material continuously rather than settling into a repeating verse-chorus form. At a moderate 78 BPM in 2/4, the piece opens with ten full measures of left-hand silence and closes with three more measures of right-hand silence.",
+    "structure": "A long silent opening (left hand tacet through measure 10) leads into the piece's early ballad material. The section lens marks a dense sequence of major structural pivots throughout the piece's middle and later stretches (novelty scores above 6 at measures 10-30, 170-175, 201-205, 206-220, and 238-242) — far more such pivots than a simple verse-chorus song would produce, consistent with the real song's famous shifts between ballad, mock-operatic, and hard-rock sections. The busiest measures (100, 101, 103, 147, 148, 18-25 onsets) cluster around measures 100-148, and the piece closes with a three-measure right-hand silence at measures 240-242.",
+    "keyMoments": [
+      "Diminished chords (Cdim at measure 89, Ddim at measure 98, F#dim at measure 121, Edim at measure 173) and an augmented chord (Daug at measure 92) all appear among the confidence-gated windows — a wider chord-quality vocabulary than most pop harmony uses, real evidence of this piece's adventurous writing.",
+      "The left hand rests completely for the first ten measures — an unusually long silent opening that gives the right hand's early material room to establish itself alone.",
+      "The section lens finds five separate boundaries scoring above 6 in novelty (measures 10-30, 170-175, 201-205, 206-220, 238-242) — an unusually dense concentration of major structural pivots for a single piece, each one a candidate practice-segment boundary.",
+      "The busiest measures in the piece (100, 101, 103, 147, 148, all 18-25 onsets) cluster together around measures 100-148 — the piece's clearest concentrated technical demand, rather than a single isolated peak."
+    ],
+    "teachingGoals": [
+      "Learn to recognize diminished and augmented chords (Cdim, Ddim, F#dim, Edim, Daug) by ear as they appear in this piece — a chord-quality range wider than most pop harmony uses, and a real ear-training opportunity.",
+      "Practice the ten-measure silent opening with real internal pulse-counting — a silence this long needs to be tracked precisely so the entrance afterward lands exactly on time.",
+      "Use the section lens's five major structural pivots (measures 10-30, 170-175, 201-205, 206-220, 238-242) as practice-segment boundaries — learning this piece section by section matches both its own analysis and its famous compositional structure.",
+      "Build focused technical endurance for measures 100-148, the piece's clearest zone of concentrated density, rather than assuming the demand is spread evenly across all 242 measures."
+    ],
+    "styleTips": [
+      "Listen for the diminished and augmented chords to sound like genuine harmonic surprises, not smoothed-over passing tones — this piece uses them deliberately for dramatic effect.",
+      "Play the opening ten measures of left-hand silence with real stillness, then commit fully to the entrance afterward — a long silence followed by a tentative entrance undercuts the drama the transcription sets up.",
+      "Feel each of the section lens's major structural pivots as a genuine change of scene, not a continuation — matching the character shift makes the transitions land the way the source material intends.",
+      "Try pacing your energy so measures 100-148, the piece's densest zone, gets your fullest technical commitment — arriving there under-prepared will show more than anywhere else in the piece."
+    ]
+  }
 }

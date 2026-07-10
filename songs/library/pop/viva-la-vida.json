@@ -10,5 +10,27 @@
     "orchestral"
   ],
   "composer": "Coldplay",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "This config's MIDI source is unusually short: just 4 measures and 38 total notes, a brief excerpt or motif fragment rather than a full arrangement of Coldplay's 2008 hit \"Viva la Vida\" (from the album Viva la Vida or Death and All His Friends; the song itself won the Grammy Award for Song of the Year in 2009) — a song otherwise known for its lush string orchestration, a persistently repeating ostinato figure, and lyrics narrating a deposed king's fall from power. Within the 4 measures that are present, the harness's key-detection pass confirms the stated Ab major strongly (statedKeyFit 0.883; the best-fit detected key, G# major, is the identical pitch center spelled with sharps). The single chord window the confidence gate clears is Fm (the vi of Ab major) at measure 3. Because there is so little material to analyze, this annotation focuses on what the brief actually shows rather than describing sections (verse, chorus, bridge) that this short excerpt does not contain.",
+    "structure": "The section lens finds no internal boundary across these 4 measures — its own honest assessment is to treat measures 1-4, the whole excerpt, as one practice unit, or subdivide by ear. That flat reading is corroborated by the pattern pass: a short right-hand figure, transposed across its repetitions, covers 90% of all right-hand content in just these 4 measures (occurrences touching measures 1, 3, and 4), and a similarly short left-hand figure covers 89% of left-hand content — this excerpt is, almost in its entirety, one repeated-and-transposed motif rather than a sequence of distinct phrases.",
+    "keyMoments": [
+      "The right-hand figure that opens measure 1 recurs, transposed, through measures 3 and 4 — the pattern pass grades this coverage at 90% of all right-hand content in the excerpt, meaning nearly everything the right hand plays here is a variation on one short idea.",
+      "The left-hand figure shows the same behavior (89% coverage, transposed occurrences across measures 1, 3, and 4) — both hands are built from the same kind of short, repeated-and-shifted cell, not independent lines.",
+      "Measure 3 carries the excerpt's only confidence-gated chord label, Fm, the vi of the stated Ab major — with just one labeled window in four measures, this is a genuinely thin harmonic sample, and no claim beyond that single label should be treated as confirmed.",
+      "The right hand's highest note in the excerpt, D#4, and the left hand's highest, G#3, both occur in measure 1 — the excerpt opens at its registral peak rather than building toward one."
+    ],
+    "teachingGoals": [
+      "Practice recognizing a short motif that recurs transposed rather than assuming new material has to be learned in every measure — measures 1, 3, and 4 here are almost entirely built from the same few-note shape at different pitch levels.",
+      "Learn to work confidently from a short, incomplete excerpt: with only one confidence-gated chord label (Fm, measure 3) in the whole sample, practice building a reading from what is actually present rather than filling gaps with assumption.",
+      "Build fluency transposing a short right-hand figure across the pitch levels it actually appears at in this excerpt, rather than treating each occurrence as unrelated new material.",
+      "Recognize the difference between a full song's structure and a short representative fragment — this 4-measure excerpt is a motif study, not a verse-chorus form, and should be practiced as one."
+    ],
+    "styleTips": [
+      "Listen for the transposed right-hand figure landing on the same rhythmic placement each time it shifts pitch — consistency in timing is what makes a transposed repeat still sound like the same idea.",
+      "Play the Fm chord at measure 3 with a clear sense of its vi-chord color relative to the stated Ab major — even a single labeled chord is worth voicing deliberately rather than passing through.",
+      "Feel measure 1's registral peak (D#4 in the right hand, G#3 in the left) as the excerpt's high point — with everything that follows sitting no higher, there's no need to hold dynamic reserve back for later.",
+      "Try treating this whole 4-measure excerpt as a single practice unit, exactly as the section lens itself suggests, rather than searching for internal divisions the harness found no evidence for."
+    ]
+  }
 }

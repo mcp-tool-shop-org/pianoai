@@ -9,5 +9,27 @@
     "joplin"
   ],
   "composer": "Scott Joplin",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Published in 1899, Maple Leaf Rag is the piece that made ragtime a national craze — the first instrumental sheet music to sell over a million copies, and the template (a strict multi-strain march form) for most of Joplin's own rag output. The harness's key-detection pass confirms the stated Ab major decisively (statedKeyFit 0.826; the best-fit detected key, G# major, is the identical pitch center spelled with sharps rather than flats). At a brisk 120 BPM in 2/4 over 144 measures, the harmony leans on a signature chromatic mediant color: alongside the Ab tonic (10% of windows considered), the confidence gate flags an implied Emaj7 color (4%, hedged rather than asserted outright) — a chord with no diatonic relationship to Ab major at all, landing a chromatic third away. That unresolved, glinting color, even hedged, is one reason this rag still sounds harmonically sophisticated more than a century later.",
+    "structure": "A strains (measures 1-16, repeated identically at 17-32, and again at 65-80) alternate Ab (G#) tonic harmony with an implied Emaj7 color chord (measures 5-6, 21-22, 69-70, all hedged by the confidence gate). A contrasting B strain (measures 33-48) repeats identically at measures 49-64, forming the AABB core, before A returns once more at 65-80. A new C strain follows (measures 81-96, repeating at 97-112), and a closing D strain (measures 113-128, repeating at 129-144) leads to a final G#maj7 cadence at measure 144 — the classic Joplin AABBACCDD march form.",
+    "keyMoments": [
+      "Measures 5-6, and their restatements at 21-22 and 69-70: the confidence-gated windows there suggest an implied Emaj7 color with no diatonic connection to the Ab tonic around it — a chromatic mediant shift, hedged by the harness but still Maple Leaf Rag's most famous harmonic fingerprint.",
+      "The busiest measures (12 onsets each) are spread evenly across the form — measures 14, 30, 78, 83, 87 — meaning the rag maintains a consistent rhythmic density rather than building toward one climax.",
+      "Measure 144, the final bar, resolves to a G#maj7 (Ab major seventh) rather than a plain triad — a soft, unresolved seventh closing a piece this famous for its energy, a quietly sophisticated choice.",
+      "The A strain (measures 1-16) restates in full at measures 17-32 and again at measures 65-80 — the pattern pass grades this an 88-interval, strong-evidence right-hand match, confirming three literal repeats of the same 16-bar idea."
+    ],
+    "teachingGoals": [
+      "Learn to hear the Ab tonic's implied chromatic-mediant shift toward Emaj7 (measures 5-6) — recognizing a hedged, confidence-gated color that shares no key signature with its neighbor, yet still resolves smoothly, is a skill that transfers well past ragtime.",
+      "Practice the strict AABB opening (measures 1-16 and 17-32 are the same material, so build fluency once and apply it twice) before moving to new material at measure 33 — the form then continues A-C-C-D-D across the rest of the piece.",
+      "Build a consistent rhythmic density across the whole piece rather than saving energy for a climax — the busiest measures (12 onsets) are scattered evenly through the form, and the performance should match that even distribution.",
+      "Recognize a seventh-chord cadence: the piece closes on G#maj7 (Ab major seventh), not a plain triad. Practice hearing the difference between a triad close and a seventh-chord close."
+    ],
+    "styleTips": [
+      "Listen for the implied Emaj7 color at measures 5-6 to sound like a genuine shift, not a wrong note — even hedged by the confidence gate, lean into its brightness rather than smoothing it over.",
+      "Keep tempo honest at a brisk-but-not-rushed 120 BPM — Joplin's own published warning against playing ragtime too fast applies here as much as anywhere.",
+      "Play the final G#maj7 cadence at measure 144 with the seventh, the color tone, audible in the voicing rather than buried — a plain-triad ending would flatten Joplin's own choice.",
+      "Try the left-hand oom-pah alone through measures 33-64, the contrasting B strain, before adding the right hand — its internal repeats (measures 33-48 restating at 49-64) reward hands-separate practice."
+    ]
+  }
 }

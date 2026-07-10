@@ -10,5 +10,27 @@
     "wedding"
   ],
   "composer": "John Legend",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "\"All of Me\" (2013) is John Legend's Grammy-winning wedding ballad, and the harness's key-detection pass flags an explicit mismatch worth reading carefully: the stated Ab major still fits the content fairly well on its own terms (statedKeyFit 0.733), but the detected best guess, D# (Eb) major, edges it out with a 0.151 margin — just past the harness's loud-mismatch threshold. Given Eb is the dominant of the stated Ab, and the confidence-gated windows show both D# (18% of windows considered, the most common single label) and G# (Ab, 4%, plus G#maj7 at another 4%) appearing meaningfully alongside Fm and Cm (diatonic to both readings), this piece genuinely moves between a tonic and its own dominant rather than sitting in one unambiguous key — this annotation follows the harness's own instruction and grounds its primary chord reading in the D# (Eb) content, while noting the Ab-major color remains real and audible too. At 140 measures and 124 BPM in 4/4, a repeating structural unit (identical measures 22-26 restated at 70-74, 48 measures later) organizes the piece's verse material.",
+    "structure": "A verse-based section (measures 20-50) built on the D#-Fm-Cm-A# progression restates in full 48 measures later (measures 68-98) — confirmed by five consecutive identical-measure pairs (22/70, 23/71, 24/72, 25/73, 26/74) and by the section lens, whose two largest novelty spikes (measures 31-54 and 79-98) land exactly 48 measures apart. A three-measure left-hand rest (measures 30-32) marks a brief pause inside that first verse statement. The piece closes quietly, with measure 140 among the sparsest in the whole arrangement (2 onsets).",
+    "keyMoments": [
+      "The harness's key-detection pass flags an explicit mismatch: stated Ab major, content indicates D# (Eb) major at a 0.151 margin — just past the loud-mismatch threshold. But the stated Ab major's own fit score (0.733) is still fairly strong, and G# (Ab) chords appear meaningfully in the windows too (4% of windows considered, plus G#maj7 at another 4%) — this piece moves between a key and its own dominant rather than committing to one.",
+      "Measures 22-26 are identical to measures 70-74, exactly 48 measures apart — one of five consecutive identical-measure pairs at that same 48-measure offset, confirming a genuine large-scale structural repeat, not a coincidental resemblance.",
+      "A three-measure left-hand rest (measures 30-32) interrupts the first verse statement — the only extended left-hand silence in the piece, worth learning as a deliberate gap rather than smoothing over.",
+      "Measure 140, the final bar, is among the sparsest in the whole piece (2 onsets) — this arrangement closes quietly rather than with a written flourish."
+    ],
+    "teachingGoals": [
+      "Practice recognizing when a stated key and a detected key are both partially right — this piece's Ab major (0.733 fit) and its detected Eb major (0.151 margin) are dominant and tonic of each other, and the real skill is hearing both as legitimate, related centers of gravity rather than picking one as correct.",
+      "Learn the verse material (measures 20-50) as reusable across the whole piece — the confirmed 48-measure-offset repeat at measures 68-98 means you are learning this material twice, not once.",
+      "Practice the three-measure left-hand rest (measures 30-32) as a real, timed silence — count through it deliberately rather than losing the pulse during the only extended gap in the piece.",
+      "Build toward a genuinely quiet final measure (140, 2 onsets) — practice the ending at a dynamic level distinctly softer than the piece's verse material, matching what the density data shows."
+    ],
+    "styleTips": [
+      "Listen for D# (Eb) and G# (Ab) both resolving convincingly at different moments — this piece's harmonic center is genuinely mobile between the two, and forcing a single fixed key by ear will fight the music.",
+      "Play the repeated verse material (measures 20-50, echoed at 68-98) with small, deliberate interpretive differences the second time through — the notes are confirmed identical, so any change in feel should be a conscious choice.",
+      "Feel the three-measure left-hand rest (measures 30-32) as genuine stillness, not a gap to fill with pedal — let the right hand carry the material alone through that stretch.",
+      "Try tapering all the way down through measure 140 — the written density there is as low as anywhere in the piece, and the performance should commit fully to that quiet close."
+    ]
+  }
 }

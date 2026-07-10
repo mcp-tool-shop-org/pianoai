@@ -9,5 +9,27 @@
     "joplin"
   ],
   "composer": "Scott Joplin",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Peacherine Rag (1901) is one of Joplin's earlier published rags, and the harness's own key-detection pass flags an explicit mismatch here: the config lists C major, but content-based key detection finds Eb major (D# in the tool's sharp-only spelling) with a strong 0.228 margin, while the stated C major actually fits the content negatively (-0.233). This annotation follows the harness's own instruction and grounds every harmony claim in Eb major, not the stated key. The confidence-gated windows back this up cleanly: Eb (13% of windows considered), Ab (12%, the IV), Bb7 (7%, the dominant seventh), Bb (6%, the plain dominant), and F7 (6%, a secondary dominant common in rag turnarounds) — a textbook I-IV-V7 vocabulary, just not in the key the config file names. At a compact 89 measures and a moderate 80 BPM in 2/4, it moves through this progression at a brisker structural pace than a longer rag would.",
+    "structure": "The A strain (measures 1-21) establishes the Eb-Ab-Bb7 progression; within it, a 2-measure cell at measures 5-6 repeats identically at measures 13-14 (measure 7, by contrast, matches measure 41 rather than continuing that local repeat). A contrasting section (measures 22-54) leans on F7-Bb7-Eb turnarounds, and a closing block (measures 55-89) introduces the piece's one confirmed transposed pattern: a 12-interval left-hand figure (measures 22-25, 26-29) recurs transposed down two semitones at measures 59-62.",
+    "keyMoments": [
+      "The harness's key-detection pass flags an explicit mismatch here: stated C major, content indicates Eb major at a strong 0.228 margin. Every chord name in this annotation follows that Eb reading, not the config's C major.",
+      "Measures 59-62 restate a left-hand figure first heard at measures 22-25 and 26-29, transposed down two semitones — the pattern pass's transposition-aware layer catching a variation that simple pitch-matching would miss entirely.",
+      "Measure 72, the sparsest bar (4 onsets), coincides with the left hand's lowest note in the piece (Ab1) — a brief excursion to the bottom of the keyboard framed by otherwise thin texture.",
+      "The busiest measures (12 onsets) are measures 3, 55, 59, 60, and 63 — clustered in the piece's second half, meaning Peacherine Rag builds rhythmic density across the form rather than front-loading it."
+    ],
+    "teachingGoals": [
+      "Practice checking a piece's actual harmonic content against its stated key rather than assuming the label is correct — the harness flags this piece's key explicitly, at a strong 0.228 detection margin favoring Eb major over the stated C major.",
+      "Learn the Eb-Ab-Bb7 (I-IV-V7) vamp that governs most of the piece — once secure, the F7 secondary-dominant turnarounds in the second half are a small addition on top of it.",
+      "Practice recognizing a transposed repeat by ear: the left-hand figure at measures 22-25 returns down a whole step at measures 59-62. Train your ear to hear the same shape at a different pitch level.",
+      "Build density gradually across the form — the busiest measures cluster in the second half (55-63), so pace your energy to arrive there rather than peaking early."
+    ],
+    "styleTips": [
+      "Listen for Bb7 resolving to Eb, not to C — trusting your ear over the stated key here will actually make the harmony easier to predict, not harder.",
+      "Play the transposed left-hand echo at measures 59-62 with the same touch and weight as its first appearance at measures 22-25 — a transposed repeat should still feel like the same gesture, just shifted.",
+      "Keep the moderate 80 BPM pulse steady through the sparse measure 72 — a brief thin texture is a place to lighten touch, not to slow down.",
+      "Try building volume gradually from measure 55 to measure 63, the piece's busiest stretch — let the rhythmic density itself carry the sense of arrival rather than adding an artificial accent."
+    ]
+  }
 }

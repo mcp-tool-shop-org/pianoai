@@ -10,5 +10,27 @@
     "unplugged"
   ],
   "composer": "Eric Clapton",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "This is the 1992 MTV Unplugged rendition of \"Layla,\" Eric Clapton's reworking of the 1970 Derek and the Dominos original into a slower, intimate acoustic arrangement — the version famous in music history for pairing a minor-key verse with a contrasting major-key closing passage (an echo of the original's celebrated piano coda). The harness's own key-detection pass finds this piece's harmony genuinely hard to pin to one tonic: the stated D minor fits only weakly (statedKeyFit 0.11), and the best content-based guess, G major, is even weaker (margin 0.027, below the harness's own usability floor). The confidence-gated windows show a real mix — Dm and Dm7 alongside B, C, E, C#m, and F#m — consistent with (though not confirmed by, since the harness only measures whole-song correlation) a piece that moves between more than one tonal area rather than sitting in a single key throughout. At 86 measures and 116 BPM in 4/4, the piece opens in near silence and does not fade out the same way at the close: the final measure (86) carries more onsets (13) than the quiet opening measures.",
+    "structure": "A quiet two-measure opening (measures 1-2, both hands largely tacet) leads into the main material at measure 5, which the section lens marks as the piece's single largest structural pivot (novelty 5.763). One left-hand accompaniment figure, graded strong with an extraordinary 13.3 compression ratio, recurs so consistently that it covers close to 59% of all left-hand content across the piece — a single pattern carrying most of the accompaniment from measures 8-9 through 82-86.",
+    "keyMoments": [
+      "The harness's fit score for the stated D minor is a weak 0.11, and its own best content-based guess (G major) is weaker still, at a 0.027 margin below the tool's own usability floor — this piece resists a single confident key reading, and the annotation cites windows directly rather than forcing one key onto the whole piece.",
+      "The final measure (86) carries 13 onsets, more than the near-silent opening measures (1-2) — this arrangement opens quietly but does not fade out the same way at the close.",
+      "A single left-hand accompaniment figure, graded strong with an extraordinary 13.3 compression ratio, covers close to 59% of all left-hand content in the piece — one recurring pattern carries almost the entire accompaniment.",
+      "The section lens finds its largest structural pivot at measure 5 (novelty 5.763), right where the quiet two-measure opening gives way to the main material — confirming by evidence what the ear registers as the real start of the performance."
+    ],
+    "teachingGoals": [
+      "Practice recognizing when a piece's harmony genuinely resists a single confident key — this piece's own detection evidence is weak in both directions (0.11 stated fit, 0.027 best-guess margin), and forcing a confident key label onto it would misrepresent the actual evidence.",
+      "Learn the dominant left-hand accompaniment figure thoroughly — with a 13.3 compression ratio covering close to 59% of all left-hand content, mastering it once secures most of the piece's accompaniment.",
+      "Practice the quiet two-measure opening with real hand control at low volume — both hands are largely tacet here, and what little sounds needs to be deliberate, not tentative.",
+      "Build toward a full-toned final measure (86, 13 onsets) rather than assuming a piece that opens quietly must also close quietly — check the actual ending against the opening rather than assuming symmetry."
+    ],
+    "styleTips": [
+      "Listen for the mixed harmonic color (Dm alongside B, C#m, and F#m) without forcing it into one key by ear — let the ambiguity itself be part of what you're listening for.",
+      "Play the recurring left-hand accompaniment figure with small, deliberate variations in touch across its many repetitions — a pattern this dominant risks sounding mechanical if played completely uniformly.",
+      "Feel the quiet opening (measures 1-2) as genuinely still, not just quiet — a true silence-adjacent dynamic, matching the unplugged, intimate character of this arrangement.",
+      "Try building the final measure (86) to real fullness rather than trailing off — the written density there is higher than the opening, and the performance should honor that rather than assuming a fade."
+    ]
+  }
 }

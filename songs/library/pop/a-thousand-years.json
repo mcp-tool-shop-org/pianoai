@@ -10,5 +10,27 @@
     "romantic"
   ],
   "composer": "Christina Perri",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "\"A Thousand Years\" (2011) is Christina Perri's ballad written for the Twilight Saga: Breaking Dawn film series, and this 92-measure arrangement (a flowing 3/4 at 120 BPM) turns out to be built from a single 46-measure musical unit stated twice in full: the harness's pattern pass finds a left-hand figure covering 97.7% of all left-hand content (measures 2-46 and 48-92) and a right-hand figure covering 98.1% of all right-hand content (measures 1-46 and 47-92) — independently confirmed by dozens of identical-measure repeat groups spaced precisely 46 measures apart (for example, measures 1, 5, 47, and 51 are all identical). The harness's key-detection pass finds this piece's harmony genuinely thin to analyze: only 19% of measures clear the confidence gate at all, the stated Bb major fits the content weakly (statedKeyFit -0.418), and the best content-based guess, F# minor, falls just short of the harness's own threshold for a loud mismatch flag (margin 0.148, just under the 0.15 bar). Given how little harmonic evidence exists, this annotation stays modest about chord claims and leans on the strongly-confirmed structural finding instead.",
+    "structure": "The piece is built from one 46-measure unit (measures 1-46) restated in full at measures 47-92 — the section lens's novelty-score sequence for measures 59-92 exactly mirrors the sequence for measures 13-46, and dozens of identical-measure groups confirm specific pairs (measures 1 and 47, 2 and 48, and so on) are byte-for-byte the same. Within that 46-measure unit, four consecutive measures (41-44) form the piece's clearest sustained low point, all tied at 7 onsets each, before the next structural boundary at measure 47 (or its repeat at measure 87).",
+    "keyMoments": [
+      "Measures 1 and 47 are identical, as are measures 5 and 51 — the harness's exact-repeat detection confirms that the piece's two halves (1-46 and 47-92) share far more than a similar feel; large stretches are literally the same notes.",
+      "Measures 41 through 44 are the piece's clearest sustained valley, all four tied at exactly 7 onsets each — a real, measured lull rather than a general impression of quietness.",
+      "Only 19% of this piece's measures clear the harness's confidence gate for a chord label at all — with evidence this thin, only a handful of labels (Bm, G#, A#m, Amaj7, C#m) should be treated as reasonably confirmed, and no full harmonic narrative should be built on top of them.",
+      "The stated Bb major fits the content only weakly (statedKeyFit -0.418), and the best alternative guess (F# minor) misses the harness's own loud-mismatch threshold by just 0.002 — a genuinely borderline case that this annotation treats with appropriate caution rather than picking a side."
+    ],
+    "teachingGoals": [
+      "Practice recognizing when a long piece is actually built from a much shorter repeated unit — 92 measures here reduce to essentially one 46-measure passage learned twice, which should change how you budget practice time.",
+      "Learn to work with thin harmonic evidence honestly: with only 19% of measures carrying a confidence-gated chord label, practice building your harmonic understanding from the handful of real data points rather than assuming a complete, continuous progression.",
+      "Build a genuine dynamic dip through measures 41-44, the piece's clearest sustained low-density stretch, rather than playing through it at the same intensity as the surrounding material.",
+      "Practice both halves of the piece (measures 1-46 and 47-92) as literally the same material once you've learned one — confirmed identical-measure pairs mean the second half is review, not new learning."
+    ],
+    "styleTips": [
+      "Listen for the second half (measures 47-92) landing exactly like the first (measures 1-46) — since large stretches are confirmed identical, any difference you hear should be a deliberate interpretive choice, not a different set of notes.",
+      "Play measures 41-44 with real restraint — four measures tied at the lowest onset count in the piece is a clear, written invitation to pull back.",
+      "Feel free to trust your ear over a firm key label here — the harness's own evidence is genuinely ambiguous (a weak stated fit and a near-miss alternative), so listen for what actually resolves rather than assuming either reading is definitively correct.",
+      "Try practicing the 46-measure unit as a single complete idea rather than as 'the first half of a 92-measure piece' — once you can play it once, you have effectively learned the whole arrangement."
+    ]
+  }
 }

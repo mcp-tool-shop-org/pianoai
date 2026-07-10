@@ -9,5 +9,27 @@
     "joplin"
   ],
   "composer": "Scott Joplin",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "The Easy Winners (1901) was one of the few rags Joplin published himself, subtitled \"A Ragtime Two Step,\" and its subject — horse racing — gives it a jaunty, forward-leaning character. The harness's key-detection pass confirms the stated Ab major decisively (statedKeyFit 0.86), and the confidence-gated windows spell out a clean Ab-major vocabulary: the tonic (12% of windows considered), Db as IV (8%), a Bbm7 ii7 chord (4%), and an Ab7 secondary dominant (3%) leading into that Db. At 152 measures and a relaxed 60 BPM in 2/4, the piece's second half (measures 88-152) is built almost entirely from a fast-cycling four-measure vamp, repeating at measures 89, 93, 97, 101, 105, 109, and 113 — an unusually tight ostinato even by ragtime standards.",
+    "structure": "An A strain (measures 5-36, an 8-measure cell recurring at measures 5, 9, 21, 25, 69, 73) establishes the Ab-Db-Bbm7 progression. A contrasting B section (measures 37-84) leads into a trio-like closing block (measures 84-152) dominated by the tight four-measure vamp, resolving through a G#7-Bbm7-Db7 turnaround cycle (measures 121-152) to a final Db cadence.",
+    "keyMoments": [
+      "Measures 89 through 113, all near-identical: a four-measure vamp cycles seven times in a row — the pattern pass grades the underlying figure strong, with a 114-interval right-hand match spanning measures 88-119.",
+      "Measures 3, 7, 15, 17, and 23 are the busiest in the piece (12 onsets each), all inside the opening A strain — this rag front-loads its rhythmic density into the first strain rather than building toward it.",
+      "Measures 50 and 66 are the sparsest bars (4 onsets), matching a two-measure rest gap in the left hand at measures 50-51 — a genuine quiet pocket, not just a low-density passage.",
+      "The G#7-Bbm7-Db7 turnaround cycle governing measures 121-152 (secondary dominant into ii7 into the real V7) is the harmonic engine driving the piece toward its Db-centered close — recognizing this three-chord cycle by ear unlocks the entire closing section."
+    ],
+    "teachingGoals": [
+      "Learn the Ab-Db-Bbm7 progression (I-IV-ii7) that anchors the A strain — confirmed strongly by the harness's own key-fit score (0.86), a safe harmonic foundation to build technique on.",
+      "Practice a tight, fast-cycling ostinato (measures 89-113) for endurance and evenness — once the four-measure vamp is secure, the challenge shifts from learning notes to maintaining consistency across seven repetitions.",
+      "Recognize a secondary-dominant turnaround cycle (G#7-Bbm7-Db7, measures 121-152) as a repeating unit rather than a string of unrelated chords — naming the pattern makes it far easier to memorize.",
+      "Practice sustaining rhythmic density at the very start of a piece (measures 3-23) rather than warming up into it — this rag asks for full commitment from the first phrase."
+    ],
+    "styleTips": [
+      "Listen for the ostinato vamp (measures 89-113) staying rhythmically identical across all seven cycles — any drift in the left hand's oom-pah timing will be very audible over that many repetitions.",
+      "Play the sparse pocket at measures 50-51 with a genuinely lighter touch, matching the written rest gap in the left hand — resist the urge to fill the silence.",
+      "Feel the G#7-Bbm7-Db7 turnaround (measures 121-152) as one continuous harmonic gesture pulling toward Db, not three separate chords to land on individually.",
+      "Try starting at full rhythmic commitment from measure 3 rather than easing in — the busiest measures arrive early here, and a tentative start will undersell them."
+    ]
+  }
 }

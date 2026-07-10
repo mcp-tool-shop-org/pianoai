@@ -9,5 +9,27 @@
     "joplin"
   ],
   "composer": "Scott Joplin",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Gladiolus Rag (1907) is one of Joplin's later, more harmonically adventurous rags — and it is a clean demonstration of why this harvest wave's key-detection pass exists at all. The stated key is Bb major, but the harness's own fit score for that key is -0.057, essentially no correlation, and the confidence-gated chord windows tell a different story: labels cluster on G# (Ab), C# (Db), A#m (Bbm), and Fm — an Ab-minor/Db-major tonal world, not Bb major. This annotation follows that content rather than the stated key field, per the harness's own honesty gate. At 149 measures and a moderate tempo (69 BPM quarter note, 2/4), the piece is also unusual in where it puts its energy: measures 146-148 are the busiest in the score (14-15 onsets each), but the true final bar (measure 149) drops back to just 4 onsets — a loud flourish that still resolves into a quieter close rather than ending at full volume.",
+    "structure": "A single-note pickup (measure 1, the sparsest bar in the piece) opens onto an A strain built from a repeating cell (identical measures at 2, 4, 18, 20, 66, 68). The harmony settles into A#m-Fm-G#-Cm windows through measures 6-32, a contrasting D#-G#maj7-Fm passage governs measures 35-64, and a C#-centered closing section (measures 83-145) leads into a dense written-out flourish at measures 146-148 that settles back to just 4 onsets by the final bar, measure 149.",
+    "keyMoments": [
+      "The harness's own statedKeyFit for the config's Bb major is -0.057 — essentially no correlation — while the confidence-gated windows show G#, C#, A#m, and Fm labels throughout. This annotation is grounded in that content, not the stated key field.",
+      "Measures 146-148 are the busiest in the piece (14-15 onsets each), but the actual final bar (measure 149) drops back to just 4 onsets — the loud flourish resolves into a quieter close rather than ending at maximum density.",
+      "Measure 1, the sparsest bar (a single onset), functions as a pickup into the A strain proper — listen for it as an upbeat gesture, not a false start.",
+      "Measures 91-119 repeat a C#-A#m7-C# cell (windows at measures 91, 93, 99, 107, 109) that the pattern pass finds without needing transposition — a literal, non-transposed repeat, the harness's most basic and most reliable kind of evidence."
+    ],
+    "teachingGoals": [
+      "Practice checking a piece's actual harmonic content against its stated key rather than assuming the label is correct — the config's Bb major fits this piece's content at -0.057, essentially no correlation at all.",
+      "Learn the Ab-minor/Db-major chord vocabulary (G#, C#, A#m, Fm in the harness's sharp-only spelling) that this piece actually uses, rather than practicing it as if it were in Bb major.",
+      "Recognize a written flourish that still tapers: measures 146-148 are the densest in the score, then measure 149 drops to 4 onsets. Practice bringing genuine dynamic weight to the flourish without losing the final measure's release.",
+      "Practice a single-note pickup measure (measure 1) as a rhythmic upbeat into the strain that follows, not an isolated fragment to be rushed through."
+    ],
+    "styleTips": [
+      "Listen for the minor-key color (A#m, Fm) under the surface syncopation — this rag sits in a darker harmonic world than the brighter Bb major its config key suggests, and major-key brightness will fight the actual chords.",
+      "Play measures 146-148 with real weight and volume, the busiest bars in the score, then let measure 149 actually settle — Joplin writes a decisive flourish here, not a fade, but the true last bar still releases the tension.",
+      "Try the opening pickup (measure 1) as a quiet upbeat gesture, almost a breath before the downbeat of measure 2 — a single-onset measure should not be played at full weight.",
+      "Feel the C#-A#m7 cell that repeats through measures 91-119 as a settled, recurring landmark — once your ear locks onto it, the piece's back half becomes much easier to navigate."
+    ]
+  }
 }

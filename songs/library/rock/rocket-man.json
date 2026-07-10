@@ -10,5 +10,27 @@
     "space"
   ],
   "composer": "Elton John",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "\"Rocket Man\" (1972) is one of Elton John's most enduring hits, and its harmony is unusually balanced: the stated Bb major is confirmed decisively (statedKeyFit 0.854), and the confidence-gated windows show the tonic (A#/Bb, 25%) and the subdominant (D#/Eb, 25%) tied for the most common label in the piece — a progression that spends as much time on IV as it does on I. The harness's literal repeat detection finds no identical or near-identical measures anywhere in this piece's 83 measures — not evidence the piece lacks structure, only that its melody varies enough in exact pitch content to avoid that strictest repeat test, so this annotation leans on the section lens instead. At a moderate 70 BPM in 4/4, the arrangement is consistently dense, averaging well over 80 notes per measure across its own 83 measures, with measure 27 alone reaching 58 onsets — the piece's own single busiest bar.",
+    "structure": "A silent two-measure opening (both hands tacet, measures 1-2) leads into the main material at measure 5, which the section lens marks as the piece's largest structural pivot (novelty 5.93). The A#-D#-F-Gm7 progression (I-IV-V-vi7) governs the body of the piece through several further section changes (measures 15-83), with a second notable pivot at measures 35-50 (novelty 3.081) marking the piece's densest stretch, before a quiet four-onset close at measure 83.",
+    "keyMoments": [
+      "The tonic (A#/Bb) and subdominant (D#/Eb) are exactly tied at 25% of windows considered each — a progression that gives its IV chord as much weight as its I, an unusually even harmonic balance.",
+      "No identical or near-identical measures exist anywhere in this piece's 83 measures — the harness's strictest repeat test finds nothing, a reminder that 'no literal repeats' describes the detection method, not the piece's actual structure.",
+      "Measure 27 reaches 58 onsets, the busiest single bar in the piece, arriving early in the form rather than at a late climax — this arrangement front-loads its technical demand.",
+      "The section lens finds its two largest pivots at measure 5 (the true entrance after a silent two-measure intro) and measures 35-50 (the piece's densest stretch) — two independently-derived structural landmarks that agree with what the ear would pick out unaided."
+    ],
+    "teachingGoals": [
+      "Learn the Bb-Eb (I-IV) alternation that anchors this piece — with both chords tied at 25% of windows considered, neither should be treated as more 'home' than the other.",
+      "Practice using section boundaries, not repeat detection, to structure your learning of this piece — with zero literal repeats found, the section lens is the more useful map here.",
+      "Build technical control for measure 27 (58 onsets) specifically, since it is this piece's busiest bar and arrives relatively early — isolate it for slow practice before attempting the full passage at tempo.",
+      "Recognize a silent two-measure intro (measures 1-2) as a real formal element, then treat measure 5, the section lens's largest pivot, as the true start of the piece's main material."
+    ],
+    "styleTips": [
+      "Listen for the Bb and Eb chords carrying equal harmonic weight — resist the urge to treat IV as a passing detour from a supposedly more important I.",
+      "Play the silent opening measures (1-2) as genuine stillness before entering decisively at measure 5 — the section lens confirms this is where the real structural weight begins.",
+      "Feel measure 27's density (58 onsets) as a real technical event, not a smudge to get through — slow, deliberate practice here pays off more than anywhere else in the piece.",
+      "Try letting the final measure (83, just 4 onsets) actually taper — after a consistently dense arrangement, this is the one clear release point, and it should sound like one."
+    ]
+  }
 }

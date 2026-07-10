@@ -10,5 +10,27 @@
     "piano"
   ],
   "composer": "Lennon/McCartney",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "\"Let It Be\" (1970) is the title track of the Beatles' final studio album, written by Paul McCartney in a hymn-like, gospel-influenced style, and the harness's chord windows confirm just how simple its harmonic foundation is: the stated C major is strongly supported (statedKeyFit 0.8), and the confidence-gated windows are dominated almost entirely, by coverage of windows considered, by C (20%), F (17%), and Am (12%) — a textbook I-IV-vi vocabulary with only a small amount of G7 (V7) coloring the cadences. At 72 measures and a gentle 70 BPM in 4/4, the piece's busiest stretch (measures 40-45, all in the 30-36 onset range) arrives roughly in the second half, and the arrangement opens and closes in matching silence at measures 1 and 72.",
+    "structure": "The C-F-Am progression governs the piece almost entirely, with measures 27 and 59 confirmed identical by the harness's exact-repeat detection — a 32-measure-apart structural echo, corroborated by a left-hand figure the pattern pass tracks across the same two spans (measures 26-30 and 58-62). The busiest material (measures 40-45) arrives past the midpoint, and the piece opens and closes with both hands silent.",
+    "keyMoments": [
+      "The C-F-Am progression accounts for the overwhelming majority of windows considered (C 20%, F 17%, Am 12%), with only a small amount of G7 (1%) providing dominant-seventh color — about as simple and stable a harmonic foundation as a pop ballad gets.",
+      "Measure 27 is identical to measure 59, 32 measures later — a structural echo the pattern pass independently corroborates with a matching left-hand figure spanning measures 26-30 and 58-62.",
+      "Measures 40-45 hold the piece's busiest stretch (30-36 onsets per measure), arriving past the midpoint of the 72-measure form rather than at the very end or very beginning.",
+      "Both hands rest completely at measure 1 and again at measure 72 — the piece's very first and very last bars — framing the whole arrangement in matching silence."
+    ],
+    "teachingGoals": [
+      "Learn the C-F-Am progression until it is completely automatic — it accounts for the overwhelming majority of this piece's harmony, and fluency here covers nearly the whole arrangement.",
+      "Practice recognizing a 32-measure-apart structural echo (measure 27 and measure 59) as the same material returning, not new material to relearn — the harness confirms these measures are identical.",
+      "Build technical control for measures 40-45, the piece's busiest stretch, without disturbing the gentle, hymn-like character the surrounding material establishes.",
+      "Practice the silent opening and closing measures (1 and 72) with genuine stillness — a hymn-like piece like this one benefits from real, deliberate quiet at its edges."
+    ],
+    "styleTips": [
+      "Listen for the C-F-Am progression resolving simply and warmly — this piece doesn't need embellishment to be effective, and its gospel-hymn character comes from restraint, not complexity.",
+      "Play the echoed material at measures 27 and 59 with the same warmth both times — confirmed identical notes don't require a different touch to feel like they're building somewhere.",
+      "Feel measures 40-45 as a genuine but gentle intensification, not a dramatic climax — the increase in onset density should read as conviction, not volume for its own sake.",
+      "Try letting the opening and closing measures (1 and 72) breathe as real silence — the matching stillness at both ends is part of what gives this piece its hymn-like, meditative frame."
+    ]
+  }
 }

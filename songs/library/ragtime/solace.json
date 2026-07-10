@@ -10,5 +10,27 @@
     "slow"
   ],
   "composer": "Scott Joplin",
-  "status": "raw"
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Solace, subtitled \"A Mexican Serenade,\" is one of Joplin's few slow rags — tagged \"slow\" in this library, and known to a modern audience through Marvin Hamlisch's use of it alongside The Entertainer in the 1973 film The Sting. Written in a gentle habanera-adjacent rhythm rather than the usual bright 2/4 stride, it trades syncopated brightness for a langorous, intimate character. The harness's fit score for the stated G major is a modest 0.28 — not a flagged mismatch, but not a strong confirmation either — and the confidence-gated windows lean toward a Dm-C-F-Am-G7 progression that reads at least as naturally around C/F major as around G, so this annotation cites those windows directly rather than assuming G major governs every bar. At 148 measures and a slow 72 BPM in 2/4, its texture is often quite sparse, with several measures (18, 34, 82) thinning to just 3 onsets.",
+    "structure": "A gentle, left-hand-tacet opening (measures 1-2) leads into the main strain (measures 4-32), which the pattern pass tracks as a strong, highly repetitive right-hand figure recurring six times (measures 4-8, 12-16, 20-24, 28-32, 68-72, 76-80). A contrasting middle section (measures 36-83) is the piece's busiest, with four measures (37, 41, 53, 57) reaching 16 onsets each. A closing section (measures 84-148) settles into a sparser, Am/F-centered close.",
+    "keyMoments": [
+      "Measures 1-2 open with the left hand tacet — a bare-melody entrance that sets Solace's more intimate, art-song character apart from its livelier 2/4 stride from the very first bar.",
+      "Measures 37, 41, 53, and 57 each carry 16 onsets, the densest bars in the piece — a real contrast against Solace's otherwise sparse texture, where measures 18, 34, and 82 thin to just 3 onsets apiece.",
+      "The chord windows here (Dm-C-F-Am-G7) read comfortably in C/F major territory, not a strong G major cadence — a reminder that a stated key and a piece's confirmed harmonic center are two different, separately checkable things.",
+      "The same right-hand figure recurs six times (measures 4-8, 12-16, 20-24, 28-32, 68-72, 76-80), graded strong with a 5.05 compression ratio — a tightly repetitive backbone underneath the piece's overall languid character."
+    ],
+    "teachingGoals": [
+      "Learn to play a rag slowly and still keep it rhythmically alive — Solace's 72 BPM tempo removes speed as a source of energy entirely, so the syncopation itself has to carry the momentum.",
+      "Practice a bare left-hand-tacet opening (measures 1-2) with real control over touch and voicing — with no bass support, every imperfection in the right hand's tone is exposed.",
+      "Recognize when a stated key is only a loose fit for the actual harmony (statedKeyFit 0.28 here) and let the chord windows, not the key signature, guide your reading of a passage.",
+      "Build dynamic contrast between the piece's sparse outer sections and its dense middle (measures 37-57, 16 onsets per bar) — match Solace's own written contrast in density with an audible contrast in volume."
+    ],
+    "styleTips": [
+      "Listen for the habanera-adjacent lilt in the rhythm rather than a straight 2/4 stride feel — Solace asks for a gentler, more rubato-friendly pulse than its rag siblings.",
+      "Play the bare opening (measures 1-2) with the sustain pedal used sparingly and deliberately — with no left hand yet sounding, pedal blur is far more audible than in a fuller texture.",
+      "Feel the shift into the dense middle section (measures 37-57) as a genuine emotional swell, not just a rhythmic thickening — let the extra onsets translate into more sound, not just more notes.",
+      "Try listening for whether your own ear hears C major or G major more strongly in the middle section — the harness itself found this ambiguous (0.28 fit), and forming your own opinion by ear is exactly what this piece rewards."
+    ]
+  }
 }
