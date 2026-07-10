@@ -27,7 +27,7 @@
     "logo-banner.png"
   ],
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.0.0"
   },
   "scripts": {
     "build": "tsc",
@@ -60,21 +60,21 @@
     "url": "https://github.com/mcp-tool-shop-org/ai-jam-sessions.git"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.96.0",
+    "@anthropic-ai/sdk": "^0.109.1",
     "@modelcontextprotocol/sdk": "^1.26.0",
-    "ajv": "^8.18.0",
+    "ajv": "^8.20.0",
     "jzz": "^1.8.0",
     "midi-file": "^1.2.4",
-    "node-web-audio-api": "^1.0.8",
+    "node-web-audio-api": "^2.0.0",
     "pink-trombone-mod": "^0.1.0",
     "vocal-synth-engine": "github:mcp-tool-shop-org/vocal-synth-engine#7269cd539b20907743601f66812b3d904d43508e",
-    "zod": "^4.3.6"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@types/node": "^22.19.11",
-    "@vitest/coverage-v8": "^3.2.4",
-    "tsx": "^4.19",
-    "typescript": "^5.9.3",
-    "vitest": "^3.2.4"
+    "@types/node": "^26.1.0",
+    "@vitest/coverage-v8": "^4.1.9",
+    "tsx": "^4.23.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
   }
 }

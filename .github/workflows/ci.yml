@@ -37,7 +37,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20, 22]
+        # Floor is 22: node-web-audio-api 2.0 (napi v3) requires Node >= 22,
+        # and package.json's engines field matches. 24 covers current LTS —
+        # the same line release.yml publishes from.
+        node-version: [22, 24]
 
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
