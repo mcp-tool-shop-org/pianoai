@@ -14,12 +14,12 @@ import { defineConfig } from "vitest/config";
 // its token requires a `CODECOV_TOKEN` repo secret, which is an operator
 // action outside this fix's scope, not something a config file can supply.
 //
-// `all: true` is v8's own default (confirmed against the installed
-// @vitest/coverage-v8@3.2.4 types) and is set explicitly here anyway: it's
-// what makes the gate meaningful. Without it, a file with zero tests simply
-// wouldn't appear in the report instead of dragging the average down — which
-// is exactly the "a large new module lands at 10% coverage and nobody
-// notices" failure mode C-B1-001 called out.
+// Vitest 4 removed `coverage.all`; the explicit `include` below is its
+// replacement — every file matching `include` appears in the report even
+// with zero tests, instead of silently dropping out and inflating the
+// average. That inclusion is what makes the gate meaningful against the
+// "a large new module lands at 10% coverage and nobody notices" failure
+// mode C-B1-001 called out.
 //
 // Threshold floor: 30% statements/lines/functions, 20% branches. This is a
 // conservative *static estimate*, not a measured baseline — this fix was
@@ -50,7 +50,6 @@ export default defineConfig({
   test: {
     coverage: {
       provider: "v8",
-      all: true,
       include: ["src/**/*.ts"],
       exclude: [
         "src/**/*.test.ts",
