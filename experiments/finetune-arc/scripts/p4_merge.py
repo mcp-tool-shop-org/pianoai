@@ -25,7 +25,10 @@ def main() -> None:
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
 
-    base = AutoModelForCausalLM.from_pretrained(args.model, torch_dtype=torch.bfloat16)
+    try:
+        base = AutoModelForCausalLM.from_pretrained(args.model, dtype=torch.bfloat16)
+    except TypeError:
+        base = AutoModelForCausalLM.from_pretrained(args.model, torch_dtype=torch.bfloat16)
     model = PeftModel.from_pretrained(base, args.adapter)
     merged = model.merge_and_unload()
     merged.save_pretrained(str(out), safe_serialization=True)

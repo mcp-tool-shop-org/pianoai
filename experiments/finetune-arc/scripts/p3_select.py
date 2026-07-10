@@ -249,9 +249,14 @@ def main() -> None:
     tokenizer = AutoTokenizer.from_pretrained(args.model, padding_side="left")
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
-    base = AutoModelForCausalLM.from_pretrained(
-        args.model, torch_dtype=torch.bfloat16, device_map="cuda"
-    )
+    try:
+        base = AutoModelForCausalLM.from_pretrained(
+            args.model, dtype=torch.bfloat16, device_map="cuda"
+        )
+    except TypeError:
+        base = AutoModelForCausalLM.from_pretrained(
+            args.model, torch_dtype=torch.bfloat16, device_map="cuda"
+        )
     base.eval()
 
     results: dict[str, dict] = {}

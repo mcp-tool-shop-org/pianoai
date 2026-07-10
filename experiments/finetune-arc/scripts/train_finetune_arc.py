@@ -278,9 +278,15 @@ def main() -> None:
     if args.smoke:
         print("[smoke] render/span assertions passed for all examples")
 
-    model = AutoModelForCausalLM.from_pretrained(
-        args.model, torch_dtype=torch.bfloat16, device_map="cuda"
-    )
+    # transformers 5.x renamed torch_dtype -> dtype; support both.
+    try:
+        model = AutoModelForCausalLM.from_pretrained(
+            args.model, dtype=torch.bfloat16, device_map="cuda"
+        )
+    except TypeError:
+        model = AutoModelForCausalLM.from_pretrained(
+            args.model, torch_dtype=torch.bfloat16, device_map="cuda"
+        )
     model.config.use_cache = False
     lora = LoraConfig(
         r=16,
