@@ -119,9 +119,21 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
   content: ""; position: absolute; top: 0; bottom: 0; left: 50%;
   width: 24px; transform: translateX(-50%);
 }
+/* Velocity bar (Wave C5 — wires up this previously-dead class, index.html
+   history: zero TS refs before this wave): a thin bottom strip per note
+   whose WIDTH (set inline from apps/cockpit/src/velocity-visual.ts's
+   velocityBarWidthPct) encodes velocity 1-127 — near-empty = quiet,
+   full-width = loud. Fixed low-alpha black fill + a 3px height (a small
+   fraction of ROW_H=14's 13px rendered note height) keeps it subtle enough
+   not to fight the pitch-class/vowel background fill or the selection
+   outline. `right` is deliberately NOT set here (unlike most of this
+   file's other bottom strips) — the element's WIDTH is the whole point,
+   and pairing left:0 with an inline width is what lets JS treat it as a
+   left-anchored fill meter. pointer-events:none so it never steals a note
+   click/drag the way .pr-vowel-label's own overlay doesn't either. */
 .pr-note .vel-bar {
-  position: absolute; bottom: 0; left: 0; right: 0; border-radius: 0 0 2px 2px;
-  background: rgba(0,0,0,0.3);
+  position: absolute; bottom: 0; left: 0; height: 3px; border-radius: 0 0 2px 2px;
+  background: rgba(0,0,0,0.45); pointer-events: none;
 }
 .pr-key-label {
   /* opacity:0.6 previously dropped contrast vs var(--bg) to ~2.97:1 (WCAG AA
@@ -549,6 +561,15 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
   text-align: center; opacity: 0; transition: opacity 0.15s ease;
 }
 #toast.show { opacity: 1; }
+/* Wave C5 (prefers-reduced-motion sweep) — an instant appear/dismiss
+   instead of the 0.15s fade for anyone who's asked for reduced motion.
+   The rest of this rule's opacity-based show/hide (not display:none) is
+   untouched — see the file header above for why that specific choice is
+   load-bearing for aria-live; only the ANIMATED transition between the two
+   states goes away here. */
+@media (prefers-reduced-motion: reduce) {
+  #toast { transition: none; }
+}
 
 /* ─── Responsive Layout (F-B1-003) ───
    Desktop assumes a fixed 320px right sidebar + 240px controls column inside
@@ -819,7 +840,7 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
     <li><kbd>Space</kbd> Play / pause</li>
     <li><kbd>Del</kbd> Delete selected note(s)</li>
     <li><kbd>Tab</kbd> Select next note (Shift+Tab: previous)</li>
-    <li><kbd>&uarr;</kbd><kbd>&darr;</kbd> Nudge pitch &nbsp; <kbd>&larr;</kbd><kbd>&rarr;</kbd> Nudge time &mdash; moves the WHOLE selection</li>
+    <li><kbd>&uarr;</kbd><kbd>&darr;</kbd> Nudge pitch (plays a brief preview) &nbsp; <kbd>&larr;</kbd><kbd>&rarr;</kbd> Nudge time &mdash; moves the WHOLE selection</li>
     <li><kbd>Shift</kbd>+<kbd>&larr;</kbd><kbd>&rarr;</kbd> Resize by one grid step (single note only — kept as-is; see below)</li>
     <li><kbd>Enter</kbd> Add note at playhead</li>
     <li><kbd>Ctrl</kbd>+<kbd>Z</kbd> Undo &nbsp; <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd> Redo</li>

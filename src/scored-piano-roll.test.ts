@@ -182,6 +182,51 @@ describe("renderScoredPianoRoll — focus strip", () => {
   });
 });
 
+describe("renderScoredPianoRoll — focus strip prominence (pill)", () => {
+  // Visual review judged the bare-text focus strip too subtle — it now
+  // renders inside a filled, bordered pill (Wave C5).
+  it("renders the focus label inside a filled, bordered pill rather than bare text", () => {
+    const song = makeSong({ measures: [{ number: 1, rightHand: "C4:q", leftHand: "" }], tempo: 120 });
+    const result = scorePerformance(song, []); // one missed note -> a focus strip
+    const svg = renderScoredPianoRoll(song, result);
+
+    expect(svg).toContain('class="verdict-focus-pill"');
+    // Panel color + border (the neutral pill treatment shared by every
+    // other legend/metadata pill in this renderer), not a status color.
+    expect(svg).toContain('fill="#242440"');
+    expect(svg).toContain('stroke="#3a3a5e"');
+    // Still task-focused wording — only the visual weight changed.
+    expect(svg).toContain("Focus: m. 1");
+    expect(svg).not.toMatch(/Grade|Excellent|Great job|Well done|Poor|Bad/);
+  });
+
+  it("uses a larger font-size than the pre-pill 10px baseline", () => {
+    const song = makeSong({ measures: [{ number: 1, rightHand: "C4:q", leftHand: "" }], tempo: 120 });
+    const result = scorePerformance(song, []);
+    const svg = renderScoredPianoRoll(song, result);
+    const m = svg.match(/class="verdict-focus" x="[\d.]+" y="[\d.]+" fill="[^"]+" font-size="(\d+)"/);
+    expect(m).toBeTruthy();
+    expect(parseInt(m![1], 10)).toBeGreaterThan(10);
+  });
+
+  it("truncates (never wraps or breaks layout) a focus label at a narrow measure window", () => {
+    // Many worst-measures + a narrow single-measure render window forces
+    // the pill's available width down near its floor.
+    const song = makeSong({
+      measures: Array.from({ length: 12 }, (_, i) => ({ number: i + 1, rightHand: "C4:q", leftHand: "" })),
+      tempo: 120,
+    });
+    const result = scorePerformance(song, []); // every measure missed
+    const svg = renderScoredPianoRoll(song, result, { startMeasure: 1, endMeasure: 1 });
+
+    expect(svg).toContain('class="verdict-focus-pill"');
+    // The pill's own width never exceeds the SVG's declared width.
+    const svgWidth = parseFloat(svg.match(/<svg[^>]*width="([\d.]+)"/)![1]);
+    const pillWidth = parseFloat(svg.match(/class="verdict-focus-pill"[^>]*width="([\d.]+)"/)![1]);
+    expect(pillWidth).toBeLessThanOrEqual(svgWidth);
+  });
+});
+
 describe("renderScoredPianoRoll — task-focused language", () => {
   it("never uses grade letters, praise, or ability language anywhere in the SVG", () => {
     const song = makeSong({ measures: [{ number: 1, rightHand: "C4:q E4:q", leftHand: "" }], tempo: 120 });
@@ -407,5 +452,21 @@ describe("renderScoredPianoRoll — extras outside the render window don't widen
     expect(svg).toContain("Extra: C8"); // drawn
     // Pitch label for C8 should appear given the widened axis
     expect(svg).toMatch(/>C8</);
+  });
+});
+
+describe("renderScoredPianoRoll — long title clipping (shares the base renderer's fix)", () => {
+  const LONG_TITLE = "Piano Sonata No. 14 in C-sharp minor, Quasi una fantasia (Moonlight)";
+
+  it("ellipsizes an overflowing title, keeping the full title in a <title> hover element", () => {
+    const song = makeSong({ title: LONG_TITLE, measures: [{ number: 1, rightHand: "C4:q", leftHand: "" }], tempo: 120 });
+    const result = scorePerformance(song, [makeEvent(60, 0)]);
+    const svg = renderScoredPianoRoll(song, result);
+
+    expect(svg).toContain(`<title>${LONG_TITLE}</title>`);
+    const m = svg.match(/<text x="[\d.]+" y="[\d.]+" fill="#ddddee"[^>]*>([^<]*)<title>/);
+    expect(m).toBeTruthy();
+    expect(m![1].length).toBeLessThan(LONG_TITLE.length);
+    expect(m![1].endsWith("…")).toBe(true);
   });
 });

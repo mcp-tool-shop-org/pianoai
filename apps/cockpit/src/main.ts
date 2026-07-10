@@ -64,6 +64,10 @@ import {
   notesInMarquee, notesInTimeRange, pasteAtBeat, duplicateNotes,
   createClipboardStore,
 } from "./clipboard.js";
+import { velocityBarWidthPct } from "./velocity-visual.js";
+import {
+  shouldPreviewPitchChange, previewSuppressed, PITCH_PREVIEW_MS, type PreviewGate,
+} from "./preview.js";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -810,6 +814,28 @@ function activeNoteOff(midi: number, time?: number) {
   else synth.noteOff(midi, time);
 }
 
+/** Current playback/recording context for preview.ts's gating decisions
+ *  (Wave C5 — "never during playback or recording"). Read fresh at every
+ *  call site rather than cached, same reasoning as every other live
+ *  recordPhase/transport.isPlaying() read in this file. */
+function previewGate(): PreviewGate {
+  return { isPlaying: transport.isPlaying(), isRecording: recordPhase === "recording" };
+}
+
+/** Fire a short (PITCH_PREVIEW_MS) blind-edit audio preview through the
+ *  active engine — same activeNoteOn-then-setTimeout(activeNoteOff) shape
+ *  the click-to-add-note preview has always used (see buildPianoRoll's
+ *  empty-space pointerdown handler), just parameterized on the edited
+ *  note's own pitch/velocity instead of a hardcoded (midi, 100). Callers
+ *  are responsible for the shouldPreviewPitchChange/previewSuppressed gate
+ *  check themselves — this function always sounds when called. Deliberately
+ *  never touches state.ts or undo.ts (Wave C5 brief: "keep it out of the
+ *  score/undo path entirely"). */
+function previewPitch(midi: number, velocity: number): void {
+  activeNoteOn(midi, velocity);
+  setTimeout(() => activeNoteOff(midi), PITCH_PREVIEW_MS);
+}
+
 /** Silence both engines immediately — the shared body behind both panic()
  *  (which additionally clears live-performance held-key UI state) and
  *  transport's pause()/stop() (which must NOT touch held-key state, since
@@ -1060,6 +1086,16 @@ function renderNote(note: Note) {
   vlbl.textContent = note.vowel ? VOWEL_LABELS[note.vowel] : "";
   el.appendChild(vlbl);
 
+  // ── Velocity bar (Wave C5 — wires index.html's .vel-bar CSS) ── initial
+  // width set directly here (same "set it now, applyNoteStyle re-syncs it
+  // later" idiom the vowel label above already uses); applyNoteStyle is
+  // the single place every SUBSEQUENT velocity change (inspector slider,
+  // group drag/nudge, undo/redo) re-applies it.
+  const velBar = document.createElement("div");
+  velBar.className = "vel-bar";
+  velBar.style.width = velocityBarWidthPct(note.velocity) + "%";
+  el.appendChild(velBar);
+
   // ── Resize handle on right edge ── (finding 41: .pr-resize-handle's CSS
   // gives it a >=24px invisible hit zone — see index.html)
   const handle = document.createElement("div");
@@ -1224,6 +1260,15 @@ function startGroupDrag(el: HTMLElement, e: PointerEvent): void {
   const pointerId = e.pointerId;
   try { el.setPointerCapture(pointerId); } catch { /* pointer already gone — best-effort */ }
 
+  // Wave C5 — blind-edit audible preview (preview.ts): only the PRIMARY
+  // dragged note (the one the pointer actually grabbed, `el`) previews on
+  // a row-crossing, not every member of a larger group — a big chord drag
+  // firing N simultaneous previews per tick would be noise, not feedback.
+  // Falls back to the first group member if none matches `el` (defensive
+  // only — every real call site's `el` is one of the group's own elements).
+  const primary = group.find((g) => g.el === el) ?? group[0];
+  let lastPreviewedMidi = primary.origMidi;
+
   const cleanup = () => {
     el.removeEventListener("pointermove", onMove);
     el.removeEventListener("pointerup", onUp);
@@ -1260,6 +1305,15 @@ function startGroupDrag(el: HTMLElement, e: PointerEvent): void {
       if (clamped) state.moveNote(target, clamped.startBeat, clamped.midi);
       applyNoteStyle(g.el, target);
       positionNote(g.el, target);
+      // Wave C5 — preview a row-crossing on the primary note only (see
+      // `primary`/`lastPreviewedMidi` above). shouldPreviewPitchChange
+      // itself is what makes this "one preview per row-crossing" — a tick
+      // where target.midi still equals lastPreviewedMidi (pointer lingers
+      // mid-row) returns false and nothing re-fires.
+      if (g.id === primary.id && shouldPreviewPitchChange(lastPreviewedMidi, target.midi, previewGate())) {
+        previewPitch(target.midi, target.velocity);
+        lastPreviewedMidi = target.midi;
+      }
     }
   };
 
@@ -1368,6 +1422,14 @@ function applyNoteStyle(el: HTMLElement, note: Note) {
     const lbl = el.querySelector<HTMLElement>(".pr-vowel-label");
     if (lbl) lbl.textContent = "";
   }
+  // Wave C5 — velocity bar width. Single re-sync point for every path that
+  // already calls applyNoteStyle to refresh a note's visual: creation,
+  // group-drag ticks, group-nudge, undo/redo's rerenderAllNotes, and the
+  // inspector velocity slider (wired below) — so the bar stays correct
+  // whether the edit came from the single-note inspector or a multi-select
+  // group operation, without a second call site to keep in sync.
+  const bar = el.querySelector<HTMLElement>(".vel-bar");
+  if (bar) bar.style.width = velocityBarWidthPct(note.velocity) + "%";
 }
 
 /** Remove + re-render every note (called on mode switch) */
@@ -1893,8 +1955,16 @@ function nudgeSelection(semitones: number, steps: number) {
   if (notes.length === 0) return;
   const entries: undo.GroupMoveEntry[] = [];
   let anyMoved = false;
+  // Wave C5 — audible preview target: a multi-note nudge only ever
+  // previews ONE representative note (the anchor, when there is a group)
+  // rather than every selected note at once — see preview.ts's file header
+  // for why sounding every member would be noise, not feedback.
+  const anchor = state.getAnchor();
+  const previewNoteId = anchor ? anchor.id : notes[0].id;
+  let previewBeforeMidi = notes[0].midi;
   for (const note of notes) {
     const before: undo.Point = { startBeat: note.startBeat, midi: note.midi };
+    if (note.id === previewNoteId) previewBeforeMidi = note.midi;
     const rawBeat = steps !== 0 ? quantizeBeats(note.startBeat + QUANTIZE_GRID_BEATS * steps) : note.startBeat;
     const clamped = state.clampedMoveTarget(note, rawBeat, note.midi + semitones);
     if (clamped) anyMoved = true;
@@ -1909,6 +1979,16 @@ function nudgeSelection(semitones: number, steps: number) {
     if (el) { applyNoteStyle(el, note); positionNote(el, note); }
   }
   updateInspector();
+  // Wave C5 — never for a time-only Left/Right nudge (semitones===0): the
+  // representative note's pitch never changed in that case, so this would
+  // no-op via shouldPreviewPitchChange anyway, but the semitones check
+  // skips the lookup entirely for the common "just moving in time" case.
+  if (semitones !== 0) {
+    const previewNote = state.getNoteById(previewNoteId);
+    if (previewNote && shouldPreviewPitchChange(previewBeforeMidi, previewNote.midi, previewGate())) {
+      previewPitch(previewNote.midi, previewNote.velocity);
+    }
+  }
 }
 
 /** Resize the selected note by one grid step (Wave C2b findings 40/44) —
@@ -2005,6 +2085,12 @@ function relocateSelectedNoteTo(xPx: number, yPx: number) {
   const el = document.querySelector<HTMLElement>(noteSelector(note.id));
   if (el) { applyNoteStyle(el, note); positionNote(el, note); }
   updateInspector();
+  // Wave C5 — preview the relocated pitch; never for a time-only relocate
+  // (before.midi === note.midi there, so shouldPreviewPitchChange filters
+  // it — same guard shape as nudgeSelection's own preview above).
+  if (shouldPreviewPitchChange(before.midi, note.midi, previewGate())) {
+    previewPitch(note.midi, note.velocity);
+  }
 }
 
 /** Enable/disable the Move + Resize+/- toolbar buttons to match whether a
@@ -3248,12 +3334,23 @@ function bindControls() {
     const v = safeNumber(e.target as HTMLInputElement, note.velocity);
     state.setVelocity(note, v);
     $("insp-vel-val").textContent = String(note.velocity);
+    // Wave C5 — live vel-bar width sync (every other tick-by-tick visual
+    // field this file drags/nudges live already re-applies via
+    // applyNoteStyle; velocity's own slider never had a DOM touch-point at
+    // all before this wave, since it only ever wrote state + the numeric
+    // label).
+    const el = document.querySelector<HTMLElement>(noteSelector(note.id));
+    if (el) applyNoteStyle(el, note);
     onStateChanged();
   });
   $("insp-vel").addEventListener("change", () => {
     const note = state.getSelectedNote();
     if (note && velGestureBefore !== null && velGestureBefore !== note.velocity) {
       undo.commit(undo.velocityCommand(note.id, velGestureBefore, note.velocity));
+      // Wave C5 — audible preview at the new velocity, on release (never
+      // mid-drag — "on release" per the wave brief, matching how the
+      // undo command itself only commits once here too).
+      if (!previewSuppressed(previewGate())) previewPitch(note.midi, note.velocity);
     }
     velGestureBefore = null;
   });

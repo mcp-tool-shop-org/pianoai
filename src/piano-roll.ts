@@ -268,6 +268,34 @@ function monoTextWidth(label: string, fontSize: number): number {
   return label.length * fontSize * 0.62;
 }
 
+/** Fixed right-margin (px) reserved past the last drawn glyph of a
+ *  header-row text — mirrors buildRollLayout's own `padding` local (kept
+ *  as a separate named constant rather than plumbing that one through,
+ *  since only the header-row helpers below need it). */
+const HEADER_TEXT_RIGHT_MARGIN = 10;
+
+/**
+ * Ellipsize `label` to fit within `maxWidthPx` at `fontSize`, estimating
+ * glyph width via monoTextWidth — the same monospace-advance approximation
+ * every other width calc in this renderer already uses (the whole SVG sets
+ * `font-family: monospace`-family fonts on every `<text>`, see
+ * svgOpenLines's `<style>` block, so one width estimator is valid
+ * everywhere). Returns `label` unchanged when it already fits. Never
+ * returns an empty string — even a `maxWidthPx` too small for a single
+ * character plus the ellipsis glyph still returns the bare ellipsis, so a
+ * pathologically narrow render degrades to "still shows something" rather
+ * than a blank header.
+ */
+function ellipsizeToWidth(label: string, fontSize: number, maxWidthPx: number): string {
+  if (monoTextWidth(label, fontSize) <= maxWidthPx) return label;
+  const ellipsis = "…"; // "…"
+  for (let len = label.length - 1; len > 0; len--) {
+    const candidate = label.slice(0, len).trimEnd() + ellipsis;
+    if (monoTextWidth(candidate, fontSize) <= maxWidthPx) return candidate;
+  }
+  return ellipsis;
+}
+
 /** Width (px) of a `legendPill` for `label` — call before laying out a row. */
 function legendPillWidth(label: string): number {
   const fontSize = 9;
@@ -491,11 +519,22 @@ function renderHeaderLines(
   headerHeight: number,
   start: number,
   end: number,
+  totalWidth: number,
 ): string[] {
   const lines: string[] = [];
   const composerLabel = song.composer ? ` — ${song.composer}` : "";
   const headerText = `${song.title}${composerLabel}`;
-  lines.push(`<text x="${gridX}" y="${headerHeight - 26}" fill="${COLORS.headerText}" font-size="16" font-weight="600" letter-spacing="0.2">${esc(headerText)}</text>`);
+  const titleFontSize = 16;
+  // Long titles overflowed the SVG's own width at narrow measure windows
+  // (visual review: "…Ludwig van Beethove" running past the right edge) —
+  // ellipsize to the available header width, same monospace glyph-width
+  // estimate every other layout calc in this file already uses. The FULL
+  // (untruncated) text always survives in a <title> child so hovering the
+  // header still shows it — nothing is actually lost, only visually
+  // shortened when it wouldn't fit.
+  const titleMaxWidth = Math.max(0, totalWidth - gridX - HEADER_TEXT_RIGHT_MARGIN);
+  const displayText = ellipsizeToWidth(headerText, titleFontSize, titleMaxWidth);
+  lines.push(`<text x="${gridX}" y="${headerHeight - 26}" fill="${COLORS.headerText}" font-size="${titleFontSize}" font-weight="600" letter-spacing="0.2">${esc(displayText)}<title>${esc(headerText)}</title></text>`);
 
   // Metadata as small dim chip-like pills instead of one "|"-joined string
   const metaSegments = [song.key, `${song.tempo} BPM`, song.timeSignature, `m.${start}–${end}`];
@@ -727,7 +766,7 @@ export function renderPianoRoll(
 
   const lines: string[] = [];
   lines.push(...svgOpenLines(totalWidth, totalHeight));
-  lines.push(...renderHeaderLines(song, gridX, headerHeight, start, end));
+  lines.push(...renderHeaderLines(song, gridX, headerHeight, start, end, totalWidth));
   lines.push(...renderMeasureShadingLines(measures, gridX, gridY, measureWidth, gridHeight));
   lines.push(...renderPitchGridBackgroundLines(minMidi, maxMidi, gridX, gridY, gridWidth, opts.pitchRowHeight));
   lines.push(...renderGridLineLines(minMidi, maxMidi, measures, ts, gridX, gridY, gridWidth, gridHeight, measureWidth, opts.pitchRowHeight));
@@ -943,14 +982,35 @@ function rankWorstMeasures(verdicts: NoteVerdict[], limit: number): number[] {
  * Renders nothing when there's nothing to focus on (a clean take), rather
  * than inventing praise copy (finding 28: task-focused language only).
  */
-function renderFocusStripLines(result: PerformanceResult, gridX: number): string[] {
+// Visual review judged the bare-text focus strip too subtle to register as
+// "the one thing to work on next" — it now renders inside a filled,
+// bordered pill (the same neutral panel color + border every other pill in
+// this file already uses — CUD-safe, since it's a fixed background rather
+// than a status color) at a slightly larger size than the pre-pill 10px.
+// Wording stays exactly as task-focused as before (finding 28) — only the
+// visual weight changed.
+const FOCUS_STRIP_FONT_SIZE = 11;
+const FOCUS_STRIP_PAD_X = 8;
+const FOCUS_STRIP_PILL_HEIGHT = 18;
+const FOCUS_STRIP_PILL_Y = 3;
+
+function renderFocusStripLines(result: PerformanceResult, gridX: number, totalWidth: number): string[] {
   const verdicts = result.details.noteVerdicts ?? [];
   const worst = rankWorstMeasures(verdicts, 3);
   if (worst.length === 0) return [];
 
-  const label = worst.length === 1 ? `Focus: m. ${worst[0]}` : `Focus: mm. ${worst.join(", ")}`;
+  const fullLabel = worst.length === 1 ? `Focus: m. ${worst[0]}` : `Focus: mm. ${worst.join(", ")}`;
+  // Truncate (never wrap — SVG has no reflow) at narrow measure windows,
+  // same ellipsis approach as the title fix above, so the pill can never
+  // push past the SVG's own right edge.
+  const availableTextWidth = Math.max(0, totalWidth - gridX - HEADER_TEXT_RIGHT_MARGIN - FOCUS_STRIP_PAD_X * 2);
+  const label = ellipsizeToWidth(fullLabel, FOCUS_STRIP_FONT_SIZE, availableTextWidth);
+  const pillWidth = FOCUS_STRIP_PAD_X * 2 + monoTextWidth(label, FOCUS_STRIP_FONT_SIZE);
+  const textY = FOCUS_STRIP_PILL_Y + FOCUS_STRIP_PILL_HEIGHT / 2 + 3.5;
+
   return [
-    `<text class="verdict-focus" x="${gridX}" y="14" fill="${COLORS.text}" font-size="10" letter-spacing="0.2">${esc(label)}</text>`,
+    `<rect class="verdict-focus-pill" x="${gridX}" y="${FOCUS_STRIP_PILL_Y}" width="${pillWidth.toFixed(1)}" height="${FOCUS_STRIP_PILL_HEIGHT}" rx="9" ry="9" fill="${COLORS.pillBg}" stroke="${COLORS.pillBorder}" stroke-width="0.75"/>`,
+    `<text class="verdict-focus" x="${(gridX + FOCUS_STRIP_PAD_X).toFixed(1)}" y="${textY.toFixed(1)}" fill="${COLORS.textBright}" font-size="${FOCUS_STRIP_FONT_SIZE}" font-weight="600" letter-spacing="0.2">${esc(label)}<title>${esc(fullLabel)}</title></text>`,
   ];
 }
 
@@ -1141,8 +1201,8 @@ export function renderScoredPianoRoll(
 
   const lines: string[] = [];
   lines.push(...svgOpenLines(totalWidth, totalHeight, VERDICT_STYLE_LINES));
-  lines.push(...renderHeaderLines(song, gridX, headerHeight, start, end));
-  lines.push(...(isDegraded ? renderDegradedNoticeLines(result, gridX) : renderFocusStripLines(result, gridX)));
+  lines.push(...renderHeaderLines(song, gridX, headerHeight, start, end, totalWidth));
+  lines.push(...(isDegraded ? renderDegradedNoticeLines(result, gridX) : renderFocusStripLines(result, gridX, totalWidth)));
   lines.push(...renderMeasureShadingLines(measures, gridX, gridY, measureWidth, gridHeight));
   lines.push(...renderPitchGridBackgroundLines(minMidi, maxMidi, gridX, gridY, gridWidth, opts.pitchRowHeight));
   lines.push(...renderGridLineLines(minMidi, maxMidi, measures, ts, gridX, gridY, gridWidth, gridHeight, measureWidth, opts.pitchRowHeight));

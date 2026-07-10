@@ -198,6 +198,60 @@ describe("renderPianoRoll — windowed sub-song (non-1-based measure numbers)", 
   });
 });
 
+describe("renderPianoRoll — long title clipping", () => {
+  // Wave C5 fix — visual review found a long title running past the SVG's
+  // own right edge at a narrow (single-measure) window ("…Ludwig van
+  // Beethove"). A single measure keeps totalWidth near its minimum, which
+  // is exactly the failure condition.
+  const LONG_TITLE = "Piano Sonata No. 14 in C-sharp minor, Quasi una fantasia (Moonlight)";
+
+  function headerTextAndTitle(svg: string): { displayed: string; hoverTitle: string } | null {
+    const m = svg.match(/<text x="[\d.]+" y="[\d.]+" fill="#ddddee"[^>]*>([^<]*)<title>([^<]+)<\/title><\/text>/);
+    if (!m) return null;
+    return { displayed: m[1], hoverTitle: m[2] };
+  }
+
+  it("ellipsizes an overflowing title to fit the header width", () => {
+    const song = makeSong({ title: LONG_TITLE, measures: [{ number: 1, rightHand: "C4:q", leftHand: "" }] });
+    const svg = renderPianoRoll(song);
+
+    const header = headerTextAndTitle(svg);
+    expect(header).toBeTruthy();
+    expect(header!.displayed.length).toBeLessThan(LONG_TITLE.length);
+    expect(header!.displayed.endsWith("…")).toBe(true);
+    // The SVG's declared width is never exceeded by the (estimated) title.
+    const declaredWidth = parseFloat(svg.match(/<svg[^>]*width="([\d.]+)"/)![1]);
+    expect(header!.displayed.length * 16 * 0.62).toBeLessThanOrEqual(declaredWidth);
+  });
+
+  it("keeps the FULL untruncated title in a <title> hover element", () => {
+    const song = makeSong({ title: LONG_TITLE, measures: [{ number: 1, rightHand: "C4:q", leftHand: "" }] });
+    const svg = renderPianoRoll(song);
+    expect(svg).toContain(`<title>${LONG_TITLE}</title>`);
+  });
+
+  it("does not truncate a short title that already fits", () => {
+    const song = makeSong({
+      title: "Short Title",
+      measures: Array.from({ length: 8 }, (_, i) => ({ number: i + 1, rightHand: "C4:q", leftHand: "" })),
+    });
+    const svg = renderPianoRoll(song);
+    const header = headerTextAndTitle(svg);
+    expect(header).toEqual({ displayed: "Short Title", hoverTitle: "Short Title" });
+  });
+
+  it("appends the composer to the title before measuring/truncating", () => {
+    const song = makeSong({
+      title: LONG_TITLE,
+      composer: "Ludwig van Beethoven",
+      measures: [{ number: 1, rightHand: "C4:q", leftHand: "" }],
+    });
+    const svg = renderPianoRoll(song);
+    const header = headerTextAndTitle(svg);
+    expect(header!.hoverTitle).toBe(`${LONG_TITLE} — Ludwig van Beethoven`);
+  });
+});
+
 // ─── Library Integration ────────────────────────────────────────────────────
 //
 // Library songs are ingested from real MIDI, where nearly every song contains
