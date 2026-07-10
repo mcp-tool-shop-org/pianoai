@@ -33,7 +33,7 @@
 
 import type { Note } from "./state.js";
 import type { VowelId } from "./vocal-synth.js";
-import { beatsToSeconds, secondsToBeats, clampBpm, type LoopRegion } from "./time.js";
+import { beatsToSeconds, secondsToBeats, clampBpm, SCORE_BEATS, type LoopRegion } from "./time.js";
 
 // ─── Scheduler tuning ────────────────────────────────────────────────────────
 
@@ -218,6 +218,35 @@ export interface TransportCallbacks {
   /** Fired whenever play/pause/stop changes the playing flag — main.ts
    *  uses this to swap the play/pause button icon. */
   onPlayStateChange?(isPlaying: boolean): void;
+  /** Fired exactly once per loop wrap (region OR whole-score), AFTER
+   *  onTick has already reported the new lap's start position — Wave C3
+   *  (record-arm capture): a cycle boundary is a distinct EVENT a capture
+   *  engine needs to react to (finalize the pass that just ended, start
+   *  the next one), which onTick's plain position stream can't
+   *  distinguish from an ordinary seek landing on the same beat. Passes
+   *  the just-STARTED lap's own `[cycleStartBeat, cycleEndBeat)` bounds
+   *  (== the just-ENDED lap's bounds too, for a steady loop region) so a
+   *  listener never has to re-derive them from `getLoopRegion()` at a
+   *  slightly different instant. Never fired for a plain (non-looping)
+   *  playthrough or a seek. */
+  onLoopWrap?(cycleStartBeat: number, cycleEndBeat: number): void;
+  /** True while record-capture is actively running (Wave C3) — changes two
+   *  things, both in service of "the transport must keep rolling while the
+   *  performer records":
+   *    - play() no longer refuses an EMPTY score (recording INTO an empty
+   *      score is the primary capture use case; the empty-score bail
+   *      remains for ordinary playback, where playing nothing is
+   *      meaningless).
+   *    - Without a loop region, the end-of-playback boundary extends from
+   *      the last note's end to the full canvas (SCORE_BEATS) — otherwise
+   *      a linear take would auto-stop the instant the playhead passed the
+   *      existing material (or instantly, on an empty score) instead of
+   *      letting the performer keep playing. A loop REGION is unaffected:
+   *      its cycle length must stay stable for pass-per-cycle capture, and
+   *      the region already defines exactly where the cycle wraps
+   *      (finding 77 — the loop region IS the punch region).
+   *  Optional so existing callers/test fakes need no stub. */
+  isCapturing?(): boolean;
 }
 
 export interface Transport {
@@ -234,6 +263,19 @@ export interface Transport {
   seekTo(beat: number): void;
   isPlaying(): boolean;
   getPositionBeats(): number;
+  /** Resolve the beat position that corresponds to a given (past-or-
+   *  present) AudioContext `audioTime`, under whatever anchor is
+   *  CURRENTLY live (Wave C3 — the record-capture seam). A captured
+   *  note's `event.timeStamp` maps to an audio-clock instant that's
+   *  typically a few ms older than "now" by the time its handler runs;
+   *  resolving it against the live anchor — rather than
+   *  getPositionBeats()'s last-tick-cached value — is what keeps a
+   *  captured note's beat position accurate to the ORIGINAL event
+   *  instant instead of rounding down to the last ~25ms scheduler tick.
+   *  Falls back to getPositionBeats() when nothing is currently playing
+   *  (no live anchor) — capture only ever runs while playing, so this is
+   *  a defensive default, not a real code path. */
+  beatAtAudioTime(audioTime: number): number;
 }
 
 export function createTransport(cb: TransportCallbacks): Transport {
@@ -285,7 +327,17 @@ export function createTransport(cb: TransportCallbacks): Transport {
   function loopBounds(notes: readonly Note[], looping: boolean) {
     const region = looping ? cb.getLoopRegion?.() ?? null : null;
     const wholeEndBeat = computeScoreEndBeat(notes);
-    return { region, wholeEndBeat, endBeat: region ? region.endBeat : wholeEndBeat, wrapStart: region ? region.startBeat : 0 };
+    let endBeat = region ? region.endBeat : wholeEndBeat;
+    // Wave C3 — while capturing without a region, run to the full canvas
+    // instead of stopping at the last existing note (see isCapturing's doc
+    // comment above). Math.max (not plain SCORE_BEATS) so a score that
+    // somehow extends past the canvas still plays out in full, same as it
+    // would un-captured. Deliberately NOT keyed on wholeEndBeat alone: a
+    // whole-score LOOP while capturing also uses the canvas as its cycle
+    // (otherwise the cycle length would CHANGE mid-recording as committed
+    // passes grow wholeEndBeat — a moving loop boundary mid-take).
+    if (cb.isCapturing?.() && !region) endBeat = Math.max(endBeat, SCORE_BEATS);
+    return { region, wholeEndBeat, endBeat, wrapStart: region ? region.startBeat : 0 };
   }
 
   /** The boundary beat notes scheduled from position `atBeat` should have
@@ -357,6 +409,10 @@ export function createTransport(cb: TransportCallbacks): Transport {
       // scheduleBoundaryAt).
       scheduleNotes(notes, anchor, now, now + SCHEDULE_AHEAD_SEC, endBeat);
       cb.onTick?.(wrapStart);
+      // Wave C3 — fired AFTER onTick (position already reflects the new
+      // lap) so a listener that reads getPositionBeats() from inside its
+      // own onLoopWrap handler sees the post-wrap value, not a stale one.
+      cb.onLoopWrap?.(wrapStart, endBeat);
     };
 
     if (region) {
@@ -393,7 +449,11 @@ export function createTransport(cb: TransportCallbacks): Transport {
   function play(): void {
     if (playing) return;
     const notes = cb.getScore();
-    if (notes.length === 0) return;
+    // An empty score refuses to play for ordinary playback (nothing to
+    // hear), but MUST play while capturing (Wave C3 — recording into an
+    // empty score is the primary record-arm use case; see isCapturing's
+    // doc comment on TransportCallbacks).
+    if (notes.length === 0 && !cb.isCapturing?.()) return;
     cb.resumeContexts();
     const ctx = cb.getContext();
     if (!ctx) return;
@@ -495,5 +555,6 @@ export function createTransport(cb: TransportCallbacks): Transport {
     seekTo,
     isPlaying: () => playing,
     getPositionBeats: () => positionBeats,
+    beatAtAudioTime: (audioTime) => (anchor ? currentBeat(anchor, audioTime) : positionBeats),
   };
 }

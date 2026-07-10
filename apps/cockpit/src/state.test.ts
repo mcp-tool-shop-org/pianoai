@@ -169,6 +169,23 @@ describe("moveNote", () => {
     expect(state.getSelectedNote()!.startBeat).toBe(3);
     expect(state.getScore()[0].midi).toBe(64);
   });
+
+  it("clears rawStartBeat/rawDurationBeats on a captured note (Lens-I finding 5 — a manual move supersedes recorded performance timing)", () => {
+    const note = state.addNote({
+      midi: 60, startBeat: 0, durationBeats: 1, velocity: 100,
+      rawStartBeat: 0.12, rawDurationBeats: 0.88,
+    });
+    state.moveNote(note, 4, 67);
+    expect(note.rawStartBeat).toBeUndefined();
+    expect(note.rawDurationBeats).toBeUndefined();
+  });
+
+  it("is a no-op on raw* for a hand-placed note that never had them", () => {
+    const note = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    state.moveNote(note, 4, 67);
+    expect(note.rawStartBeat).toBeUndefined();
+    expect(note.rawDurationBeats).toBeUndefined();
+  });
 });
 
 describe("clampMidi", () => {
@@ -196,6 +213,59 @@ describe("resizeNote", () => {
     expect(note.durationBeats).toBeGreaterThan(0);
     state.resizeNote(note, -10);
     expect(note.durationBeats).toBeGreaterThan(0);
+  });
+
+  it("clears rawStartBeat/rawDurationBeats on a captured note (Lens-I finding 5 — same rationale as moveNote)", () => {
+    const note = state.addNote({
+      midi: 60, startBeat: 0, durationBeats: 1, velocity: 100,
+      rawStartBeat: 0.12, rawDurationBeats: 0.88,
+    });
+    state.resizeNote(note, 3.5);
+    expect(note.rawStartBeat).toBeUndefined();
+    expect(note.rawDurationBeats).toBeUndefined();
+  });
+});
+
+describe("raw* timing fields survive non-timing edits (Lens-I finding 5)", () => {
+  it("setVelocity leaves raw* untouched", () => {
+    const note = state.addNote({
+      midi: 60, startBeat: 0, durationBeats: 1, velocity: 100,
+      rawStartBeat: 0.12, rawDurationBeats: 0.88,
+    });
+    state.setVelocity(note, 80);
+    expect(note.rawStartBeat).toBe(0.12);
+    expect(note.rawDurationBeats).toBe(0.88);
+  });
+
+  it("setVowel leaves raw* untouched", () => {
+    const note = state.addNote({
+      midi: 60, startBeat: 0, durationBeats: 1, velocity: 100, vowel: "a",
+      rawStartBeat: 0.12, rawDurationBeats: 0.88,
+    });
+    state.setVowel(note, "u");
+    expect(note.rawStartBeat).toBe(0.12);
+    expect(note.rawDurationBeats).toBe(0.88);
+  });
+
+  it("setBreathiness leaves raw* untouched", () => {
+    const note = state.addNote({
+      midi: 60, startBeat: 0, durationBeats: 1, velocity: 100,
+      rawStartBeat: 0.12, rawDurationBeats: 0.88,
+    });
+    state.setBreathiness(note, 0.5);
+    expect(note.rawStartBeat).toBe(0.12);
+    expect(note.rawDurationBeats).toBe(0.88);
+  });
+
+  it("only a timing edit (moveNote/resizeNote) clears raw* — a velocity edit right after a move stays cleared, not re-populated", () => {
+    const note = state.addNote({
+      midi: 60, startBeat: 0, durationBeats: 1, velocity: 100,
+      rawStartBeat: 0.12, rawDurationBeats: 0.88,
+    });
+    state.moveNote(note, 2, 62);
+    state.setVelocity(note, 50);
+    expect(note.rawStartBeat).toBeUndefined();
+    expect(note.rawDurationBeats).toBeUndefined();
   });
 });
 

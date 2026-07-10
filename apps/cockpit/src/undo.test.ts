@@ -663,3 +663,274 @@ describe("resolveNote loud-miss warning (Wave C1 finding 1)", () => {
     warnSpy.mockRestore();
   });
 });
+
+// ─── Wave C3: captureCommand (record-arm capture — see capture.ts) ────────
+//
+// One command per recorded pass (a loop cycle, or a linear take).
+// captureCommand is commit()-only (see its doc comment): main.ts mutates
+// the score LIVE (replace-clear at cycle start via state.deleteNote;
+// captured notes added at cycle end via state.addNote) and then commits ONE
+// command holding id-carrying snapshots of both sides. `commitPass` below
+// simulates exactly that live flow. The "Ctrl+Z during recording peels the
+// last COMPLETED pass without stopping the transport" behavior (finding
+// 78) is exercised at the STACK level in the "peel-last-pass" describe
+// block further down.
+
+/** Simulate main.ts's live pass-commit flow: delete `removed` live, add
+ *  each init live (minting real ids), then commit ONE captureCommand.
+ *  Returns the added live notes. */
+function commitPass(
+  added: readonly { midi: number; startBeat: number; durationBeats: number; velocity: number; rawStartBeat?: number; rawDurationBeats?: number }[],
+  removed: readonly Note[] = [],
+): Note[] {
+  const removedSnap = removed.map((n) => ({ ...n }));
+  for (const n of removed) state.deleteNote(n);
+  const liveNotes = added.map((init) => state.addNote(init));
+  undo.commit(undo.captureCommand(liveNotes, removedSnap));
+  return liveNotes;
+}
+
+describe("captureCommand", () => {
+  it("commit() records the pass without re-applying — net live state is exactly the added notes", () => {
+    commitPass([
+      { midi: 60, velocity: 100, startBeat: 0, durationBeats: 1 },
+      { midi: 64, velocity: 90, startBeat: 1, durationBeats: 1 },
+    ]);
+    expect(state.getScore()).toHaveLength(2);
+    expect(state.getScore().map((n) => n.midi)).toEqual([60, 64]);
+    expect(undo.canUndo()).toBe(true);
+  });
+
+  it("preserves raw* fields on the added notes (capture.ts's reversibility contract)", () => {
+    commitPass([{ midi: 60, velocity: 100, startBeat: 0, durationBeats: 1, rawStartBeat: 0.1, rawDurationBeats: 0.9 }]);
+    expect(state.getScore()[0].rawStartBeat).toBe(0.1);
+    expect(state.getScore()[0].rawDurationBeats).toBe(0.9);
+  });
+
+  it("undo() removes every note this pass added", () => {
+    commitPass([
+      { midi: 60, velocity: 100, startBeat: 0, durationBeats: 1 },
+      { midi: 64, velocity: 90, startBeat: 1, durationBeats: 1 },
+    ]);
+    undo.undo();
+    expect(state.getScore()).toHaveLength(0);
+  });
+
+  it("redo() after undo() restores every note under its ORIGINAL id (Wave C1 finding 1 parity)", () => {
+    const [live] = commitPass([{ midi: 60, velocity: 100, startBeat: 0, durationBeats: 1 }]);
+    const firstId = live.id;
+    undo.undo();
+    undo.redo();
+    expect(state.getScore()[0].id).toBe(firstId);
+    expect(state.getScore()[0].rawStartBeat).toBe(live.rawStartBeat);
+  });
+
+  it("REPLACE-mode: the live clear+add flow leaves only the new pass's notes; redo() replays both", () => {
+    const existing = state.addNote({ midi: 71, startBeat: 0, durationBeats: 1, velocity: 80 });
+    commitPass([{ midi: 60, velocity: 100, startBeat: 0, durationBeats: 1 }], [existing]);
+    expect(state.getScore()).toHaveLength(1);
+    expect(state.getScore()[0].midi).toBe(60);
+    undo.undo();
+    undo.redo(); // replays: delete replaced, restore added
+    expect(state.getScore()).toHaveLength(1);
+    expect(state.getScore()[0].midi).toBe(60);
+  });
+
+  it("REPLACE-mode: undo() removes the new pass's notes AND restores the replaced ones under their original id", () => {
+    const existing = state.addNote({ midi: 71, startBeat: 0, durationBeats: 1, velocity: 80 });
+    const originalId = existing.id;
+    commitPass([{ midi: 60, velocity: 100, startBeat: 0, durationBeats: 1 }], [existing]);
+    undo.undo();
+    expect(state.getScore()).toHaveLength(1);
+    expect(state.getScore()[0].id).toBe(originalId);
+    expect(state.getScore()[0].midi).toBe(71);
+  });
+
+  it("a REPLACE pass that captured nothing still cleanly clears the region (removed non-empty, added empty)", () => {
+    const existing = state.addNote({ midi: 71, startBeat: 0, durationBeats: 1, velocity: 80 });
+    commitPass([], [existing]);
+    expect(state.getScore()).toHaveLength(0);
+    undo.undo();
+    expect(state.getScore()).toHaveLength(1);
+    expect(state.getScore()[0].midi).toBe(71);
+  });
+
+  it("snapshots defensively — mutating a live added note AFTER commit doesn't change what redo() restores", () => {
+    const [live] = commitPass([{ midi: 60, velocity: 100, startBeat: 0, durationBeats: 1 }]);
+    live.midi = 99; // rogue direct mutation after commit
+    undo.undo();
+    undo.redo();
+    expect(state.getScore()[0].midi).toBe(60);
+  });
+
+  it("fires the onChange callback exactly once per commit()", () => {
+    const spy = vi.fn();
+    undo.setOnChange(spy);
+    commitPass([{ midi: 60, velocity: 100, startBeat: 0, durationBeats: 1 }]);
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+});
+
+// ─── Wave C3, finding 78: "Ctrl+Z during recording peels the LAST
+// completed pass without stopping the transport" ───────────────────────────
+//
+// Each commitPass() call below is one completed loop cycle, exactly as
+// main.ts's onLoopWrap handler commits them mid-recording.
+describe("peel-last-pass (Wave C3 finding 78)", () => {
+  it("undo() after three completed cycles removes only the THIRD cycle's notes", () => {
+    commitPass([{ midi: 60, velocity: 100, startBeat: 0, durationBeats: 1 }]); // cycle 1
+    commitPass([{ midi: 62, velocity: 100, startBeat: 4, durationBeats: 1 }]); // cycle 2
+    commitPass([{ midi: 64, velocity: 100, startBeat: 8, durationBeats: 1 }]); // cycle 3
+
+    expect(state.getScore().map((n) => n.midi)).toEqual([60, 62, 64]);
+    undo.undo(); // peel cycle 3 — the transport is NOT touched by undo.ts at all
+    expect(state.getScore().map((n) => n.midi)).toEqual([60, 62]);
+  });
+
+  it("peeling stacks: a second undo() peels cycle 2, leaving only cycle 1", () => {
+    commitPass([{ midi: 60, velocity: 100, startBeat: 0, durationBeats: 1 }]);
+    commitPass([{ midi: 62, velocity: 100, startBeat: 4, durationBeats: 1 }]);
+    commitPass([{ midi: 64, velocity: 100, startBeat: 8, durationBeats: 1 }]);
+
+    undo.undo();
+    undo.undo();
+    expect(state.getScore().map((n) => n.midi)).toEqual([60]);
+  });
+
+  it("a hand-placed note added BETWEEN two recorded passes is untouched by peeling the later pass", () => {
+    commitPass([{ midi: 60, velocity: 100, startBeat: 0, durationBeats: 1 }]); // cycle 1
+    undo.execute(undo.addNoteCommand({ midi: 71, startBeat: 2, durationBeats: 1, velocity: 100 })); // manual click-to-add
+    commitPass([{ midi: 64, velocity: 100, startBeat: 4, durationBeats: 1 }]); // cycle 2
+
+    undo.undo(); // peels cycle 2 only
+    expect(state.getScore().map((n) => n.midi).sort()).toEqual([60, 71]);
+  });
+
+  it("REPLACE cycles: peeling the last pass brings back the pass it replaced, cycle by cycle", () => {
+    const [pass1Note] = commitPass([{ midi: 60, velocity: 100, startBeat: 0, durationBeats: 1 }]); // cycle 1
+    // Cycle 2 (replace): clears cycle 1's note at its start, records a new one.
+    commitPass([{ midi: 62, velocity: 100, startBeat: 0, durationBeats: 1 }], [pass1Note]);
+    expect(state.getScore().map((n) => n.midi)).toEqual([62]);
+
+    undo.undo(); // peel cycle 2: its note goes, cycle 1's note returns
+    expect(state.getScore().map((n) => n.midi)).toEqual([60]);
+    undo.undo(); // peel cycle 1 too
+    expect(state.getScore()).toHaveLength(0);
+  });
+
+  it("redo() after peeling the last pass re-applies exactly that pass's notes", () => {
+    commitPass([{ midi: 60, velocity: 100, startBeat: 0, durationBeats: 1 }]);
+    commitPass([{ midi: 62, velocity: 100, startBeat: 4, durationBeats: 1 }]);
+    undo.undo();
+    undo.redo();
+    expect(state.getScore().map((n) => n.midi)).toEqual([60, 62]);
+  });
+
+  it("an earlier pass's note can still be moved (a new command) AFTER a later pass is peeled, and that move survives its own undo/redo", () => {
+    commitPass([{ midi: 60, velocity: 100, startBeat: 0, durationBeats: 1 }]);
+    commitPass([{ midi: 62, velocity: 100, startBeat: 4, durationBeats: 1 }]);
+    undo.undo(); // peel the second pass — redo stack now holds it
+
+    const firstPassNote = state.getScore()[0];
+    // Pushing a NEW command (the move) must clear the peeled pass from redo
+    // (no branching history — Q1 finding 3).
+    undo.execute(undo.moveCommand(firstPassNote.id, { startBeat: 0, midi: 60 }, { startBeat: 1, midi: 61 }));
+    expect(undo.canRedo()).toBe(false);
+    undo.undo();
+    expect(state.getScore()[0].midi).toBe(60);
+  });
+
+  it("a new edit pushed after peeling clears the peeled pass from the redo stack (no branching history)", () => {
+    commitPass([{ midi: 60, velocity: 100, startBeat: 0, durationBeats: 1 }]);
+    commitPass([{ midi: 62, velocity: 100, startBeat: 4, durationBeats: 1 }]);
+    undo.undo();
+    expect(undo.canRedo()).toBe(true);
+    undo.execute(undo.addNoteCommand({ midi: 71, startBeat: 8, durationBeats: 1, velocity: 100 }));
+    expect(undo.canRedo()).toBe(false);
+  });
+});
+
+// ─── Lens-I finding 1: mid-record undo refusal ─────────────────────────────
+//
+// REPLACE mode's live cycle-boundary sweep (main.ts's removeNotesInSpan,
+// called from beginCapturePass at every new pass's start) deletes notes
+// DIRECTLY — outside any command — ahead of the command that will eventually
+// own that removal (the pass currently in flight only commits its own
+// captureCommand once IT ends). Undoing an OLDER, already-committed pass
+// during that gap corrupts later undo/redo interleavings. The fix
+// (main.ts's performUndo(), gated by capture.ts's
+// shouldRefuseUndoWhileRecording — see capture.test.ts) refuses EVERY undo
+// attempt while recordPhase === "recording"; these tests exercise the
+// state/undo-stack consequences of respecting vs. ignoring that gate,
+// without needing main.ts itself (which is never imported by tests — see
+// its own file header).
+describe("mid-record undo refusal keeps REPLACE cycle history clean (Lens-I finding 1)", () => {
+  it("reproduces the lens's exact interleaving — pass1 -> cycle2 live sweep -> undo refused (not called) -> cycle2 commits -> stop -> undo, undo -> clean empty score, no orphans", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    // REPLACE pass 1 (cycle 1) commits — nothing existed to replace yet.
+    const [pass1Note] = commitPass([{ midi: 60, velocity: 100, startBeat: 0, durationBeats: 1 }]);
+
+    // Cycle 2 begins: beginCapturePass's REPLACE live-clear sweeps pass 1's
+    // note out of the score immediately — a plain state.ts mutation, NOT
+    // yet wrapped in any command (cycle 2's own captureCommand doesn't
+    // exist until cycle 2 itself commits, below).
+    state.deleteNote(pass1Note);
+    expect(state.getScore()).toHaveLength(0);
+
+    // "attempt undo pass1 -> refused": main.ts's performUndo() gate refuses
+    // this outright while recording, so undo.undo() is deliberately NEVER
+    // called here — see the companion "without the gate" test below for
+    // what calling it anyway would do to the stack.
+    expect(undo.canUndo()).toBe(true); // the stack itself is untouched by the refusal
+
+    // Cycle 2 commits: its REPLACE removed-side is exactly the note the
+    // live sweep above already took out.
+    commitPass([{ midi: 62, velocity: 100, startBeat: 0, durationBeats: 1 }], [pass1Note]);
+    expect(state.getScore().map((n) => n.midi)).toEqual([62]);
+
+    // "stop": recording ends. Nothing further was captured, so production's
+    // finishCaptureTake would push no additional command (commitCapturePass
+    // skips the commit when added/removed are both empty) — nothing to
+    // simulate at the state/undo layer.
+
+    // "undo undo": full depth is available again now that recording has
+    // stopped — first undo peels cycle 2, second peels cycle 1.
+    undo.undo();
+    expect(state.getScore().map((n) => n.id)).toEqual([pass1Note.id]); // cycle 2 undone: pass1's note back under its ORIGINAL id
+    undo.undo();
+    expect(state.getScore()).toHaveLength(0); // cycle 1 undone too — clean empty score
+
+    expect(warnSpy).not.toHaveBeenCalled(); // no orphaned note ids anywhere in this interleaving
+    warnSpy.mockRestore();
+  });
+
+  it("without the gate, undoing pass1 during the cycle-2 gap orphans history — exactly the corruption the gate exists to prevent", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    const [pass1Note] = commitPass([{ midi: 60, velocity: 100, startBeat: 0, durationBeats: 1 }]);
+    state.deleteNote(pass1Note); // cycle 2's live sweep, uncommitted
+
+    // Undoing HERE (what the gate refuses in production) pops
+    // captureCommand_1: its "added" side (pass1Note) is already gone from
+    // the score, so resolveNote can't find it — a loud warning instead of
+    // a clean removal.
+    undo.undo();
+    expect(warnSpy).toHaveBeenCalled();
+    expect(undo.canUndo()).toBe(false); // the stack is now empty — one bad pop consumed it
+
+    // Cycle 2 now commits, carrying pass1Note as its "removed" snapshot —
+    // exactly as it would have regardless of the premature undo above.
+    // commit()'s pushAndClearRedo wipes the redo stack, so the just-undone
+    // captureCommand_1 (briefly sitting there) is discarded for good.
+    commitPass([{ midi: 62, velocity: 100, startBeat: 0, durationBeats: 1 }], [pass1Note]);
+
+    undo.undo(); // peels cycle 2 — restores pass1Note under its original id
+    expect(state.getScore().map((n) => n.id)).toEqual([pass1Note.id]);
+    undo.undo(); // no-op: there is no command left that can remove it
+    expect(undo.canUndo()).toBe(false);
+    expect(state.getScore().map((n) => n.id)).toEqual([pass1Note.id]); // STUCK — orphaned, matching finding 1's "no command can remove" description
+
+    warnSpy.mockRestore();
+  });
+});

@@ -281,6 +281,51 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
   font-family: var(--mono); font-size: 12px; color: var(--text-muted); min-width: 50px; text-align: center;
 }
 
+/* ─── Record arm (Wave C3) ─── the arm button + its ALWAYS-VISIBLE mode
+   badge (finding 74: buried/invisible record modes are the documented
+   failure — the active mode must be readable at the point of recording).
+   The badge doubles as the mode TOGGLE (finding 73: Reaper's
+   overdub/replace-as-modes-on-the-arm-control). Both are ≥24px targets
+   (WCAG 2.5.8, same bar as the rest of the transport). */
+#btn-record { color: var(--danger); min-width: 26px; min-height: 24px; }
+#btn-record .rec-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: currentColor; }
+#btn-record.armed { background: var(--danger-dim); border-color: var(--danger); }
+/* Recording (post-count-in) pulses the dot; count-in blinks it hard on/off
+   — two visibly distinct phases. Both respect reduced-motion (a static
+   armed tint remains either way). */
+@media (prefers-reduced-motion: no-preference) {
+  #btn-record.recording .rec-dot { animation: rec-pulse 1.2s ease-in-out infinite; }
+  #btn-record.counting .rec-dot { animation: rec-blink 0.5s steps(1) infinite; }
+}
+@keyframes rec-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+@keyframes rec-blink { 0% { opacity: 1; } 50% { opacity: 0.15; } }
+#btn-record-mode {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.04em;
+  min-height: 24px; padding: 4px 5px;
+  color: var(--text-muted);
+}
+#btn-record-mode.replace { color: var(--danger); border-color: var(--danger-border); }
+
+/* Subtle REC wash across the ruler while actually capturing (finding 74's
+   "visible at the point of recording" applied to the timeline itself) —
+   an inset top glow, full ruler width, no layout shift, no animation. */
+#pr-ruler.recording { box-shadow: inset 0 3px 0 var(--danger); }
+
+/* Ghost notes (Wave C3): live-captured notes render immediately as
+   outlined "ghosts" (input monitoring feedback) and solidify into ordinary
+   .pr-note elements when their pass commits. Non-interactive by design —
+   they're preview, not yet score. Open (still-held) ghosts pulse gently;
+   reduced-motion keeps them static. */
+.pr-note-ghost {
+  position: absolute; border-radius: 3px; min-width: 4px;
+  border: 1px dashed var(--danger); background: var(--danger-dim);
+  pointer-events: none; z-index: 4;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .pr-note-ghost.open { animation: ghost-pulse 0.8s ease-in-out infinite; }
+}
+@keyframes ghost-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+
 /* ─── Scrollbar ─── */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
@@ -574,6 +619,17 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
 
   <!-- ─── Transport (floating) ─── -->
   <div id="transport">
+    <!-- Wave C3 — record arm + its always-visible mode badge (finding 74).
+         Arm while stopped: 1-bar count-in, then capture begins (findings
+         24/25). Arm while playing: capture punches in/out live without
+         stopping the transport (finding 71). The badge button toggles
+         OVERDUB (accumulate per loop cycle — findings 71/72) vs REPLACE
+         (clear the region each cycle — finding 73); its text IS the mode
+         indicator, and its aria-label restates it for AT (a11y note in the
+         wave brief). -->
+    <button class="ctrl-btn" id="btn-record" data-tip="Record — 1-bar count-in, then capture" aria-label="Record arm — mode: overdub" title="Record — 1-bar count-in, then capture" aria-pressed="false"><span class="rec-dot" aria-hidden="true"></span></button>
+    <button class="ctrl-btn" id="btn-record-mode" data-tip="Recording mode — click to switch" aria-label="Recording mode: overdub (accumulates per loop cycle) — click to switch to replace" title="Recording mode — click to switch">OVERDUB</button>
+    <div class="sep" style="height:18px"></div>
     <button class="ctrl-btn" id="btn-play" data-tip="Play (Space)" aria-label="Play (Space)" title="Play (Space)"><svg class="icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><path d="M5 3 L12 8 L5 13 Z"/></svg></button>
     <button class="ctrl-btn" id="btn-stop" data-tip="Stop" aria-label="Stop" title="Stop"><svg class="icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><rect x="4" y="4" width="8" height="8" rx="1"/></svg></button>
     <button class="ctrl-btn" id="btn-loop" data-tip="Loop" aria-label="Loop" title="Loop" aria-pressed="false"><svg class="icon" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2.5 9.5 V7 a3 3 0 0 1 3-3 H11"/><path d="M8.5 1 L11.5 4 L8.5 7"/><path d="M13.5 6.5 V9 a3 3 0 0 1-3 3 H5"/><path d="M7.5 15 L4.5 12 L7.5 9"/></svg></button>
@@ -716,6 +772,9 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
     <li><kbd>Z</kbd>&ndash;<kbd>M</kbd> / <kbd>Q</kbd>&ndash;<kbd>U</kbd> Play keyboard</li>
     <li>Ruler (focus it first): <kbd>&larr;</kbd><kbd>&rarr;</kbd> Seek &plusmn;1 beat &nbsp; <kbd>Shift</kbd>+<kbd>&larr;</kbd><kbd>&rarr;</kbd> &plusmn;1 bar &nbsp; <kbd>Home</kbd>/<kbd>End</kbd> Start/score end</li>
     <li>Loop region: drag on the ruler (pointer only — no keyboard equivalent yet)</li>
+    <li>Record: toolbar <b>&#9679;</b> while stopped &mdash; 1-bar count-in, then capture from QWERTY / on-screen keys / MIDI. Click <b>&#9679;</b> again (or Stop/Esc) to finish the take.</li>
+    <li>Record while playing: <b>&#9679;</b> punches capture in/out without stopping playback. With a loop region, each cycle commits one pass &mdash; <kbd>Ctrl</kbd>+<kbd>Z</kbd> peels the last pass mid-record.</li>
+    <li>Recording mode badge: <b>OVERDUB</b> layers passes across loop cycles; <b>REPLACE</b> clears the region each cycle. Click the badge to switch.</li>
     <li><kbd>?</kbd> Toggle this help</li>
   </ul>
 </div>

@@ -140,6 +140,77 @@ describe("serializeCockpitState / deserializeCockpitState round-trip (pins F-B1-
   });
 });
 
+// Wave C3 (record-arm capture): captured notes carry OPTIONAL raw
+// (unquantized) timing fields — rawStartBeat/rawDurationBeats — through the
+// same v3 schema WITHOUT a version bump (see PersistedNote's doc comment in
+// persistence.ts for the compatibility argument). These pin the round-trip,
+// the absent-by-default behavior for ordinary notes, and the sanitizer's
+// drop-the-pair-keep-the-note policy for corrupt raw fields.
+describe("persistence — Wave C3 raw capture-timing fields (schema v3, no bump)", () => {
+  const base = {
+    bpm: 120, engine: "grand", voice: "kokoro-af-heart",
+    tuning: "equal", refPitch: 440, mode: "instrument" as const,
+  };
+
+  it("round-trips rawStartBeat/rawDurationBeats on a captured note", () => {
+    const json = serializeCockpitState({
+      ...base,
+      score: [{ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100, rawStartBeat: 0.13, rawDurationBeats: 0.87 }],
+    });
+    const restored = deserializeCockpitState(json);
+    expect(restored?.score[0].rawStartBeat).toBe(0.13);
+    expect(restored?.score[0].rawDurationBeats).toBe(0.87);
+  });
+
+  it("a hand-placed note (no raw fields) restores without them — not as 0/NaN", () => {
+    const json = serializeCockpitState({
+      ...base,
+      score: [{ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 }],
+    });
+    const restored = deserializeCockpitState(json);
+    expect(restored?.score[0].rawStartBeat).toBeUndefined();
+    expect(restored?.score[0].rawDurationBeats).toBeUndefined();
+  });
+
+  it("drops a corrupt raw pair but KEEPS the note itself (quantized view is self-sufficient)", () => {
+    const raw = JSON.stringify({
+      v: CURRENT_SCHEMA_VERSION, ...base,
+      score: [
+        { midi: 60, startBeat: 0, durationBeats: 1, velocity: 100, rawStartBeat: NaN, rawDurationBeats: 0.5 },
+        { midi: 62, startBeat: 1, durationBeats: 1, velocity: 100, rawStartBeat: -3, rawDurationBeats: 0.5 },
+        { midi: 64, startBeat: 2, durationBeats: 1, velocity: 100, rawStartBeat: "0.4", rawDurationBeats: 0.5 },
+      ],
+    });
+    const restored = deserializeCockpitState(raw);
+    expect(restored?.score).toHaveLength(3);
+    for (const n of restored!.score) {
+      expect(n.rawStartBeat).toBeUndefined();
+      expect(n.rawDurationBeats).toBeUndefined();
+    }
+  });
+
+  it("drops a HALF-present raw pair (rawStartBeat without rawDurationBeats) as a pair", () => {
+    const raw = JSON.stringify({
+      v: CURRENT_SCHEMA_VERSION, ...base,
+      score: [{ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100, rawStartBeat: 0.25 }],
+    });
+    const restored = deserializeCockpitState(raw);
+    expect(restored?.score).toHaveLength(1);
+    expect(restored?.score[0].rawStartBeat).toBeUndefined();
+  });
+
+  it("legacy v1/v2 seconds-shaped notes never grow raw fields through migration", () => {
+    const raw = JSON.stringify({
+      v: 2, ...base,
+      score: [{ midi: 60, startSec: 0.5, durationSec: 0.5, velocity: 100 }],
+    });
+    const restored = deserializeCockpitState(raw);
+    expect(restored?.score).toHaveLength(1);
+    expect(restored?.score[0].rawStartBeat).toBeUndefined();
+    expect(restored?.score[0].rawDurationBeats).toBeUndefined();
+  });
+});
+
 describe("serializeCockpitState / deserializeCockpitState — custom-cents tuning persistence (pins F-A1-004)", () => {
   const CUSTOM_CENTS = [0, 12, -7, 3, 9, -15, 0, 6, -11, 18, -4, 10];
   const v3Sample = {

@@ -31,6 +31,17 @@ export interface Note {
   vowel?: VowelId;
   breathiness?: number; // 0–1
   lyric?: string;       // free-text syllable label (future)
+  // ── Live-capture raw timing (Wave C3 — present only on notes recorded via
+  //    the record-arm capture path; see capture.ts's file header). startBeat/
+  //    durationBeats above are always the QUANTIZED view (what plays/renders);
+  //    these two are the original, unquantized performance timing, kept
+  //    forever so quantization stays reversible (findings 22/23 — "record
+  //    raw; the quantized score is a derived view" / "non-destructive
+  //    quantize with original timing recallable"). Absent on every
+  //    hand-placed/imported note — this module itself never reads or
+  //    derives these fields, only stores whatever capture.ts computed.
+  rawStartBeat?: number;
+  rawDurationBeats?: number;
 }
 
 /** Input to addNote()/replaceScore() — everything but the id, which this
@@ -164,17 +175,34 @@ export function deleteSelectedNote(): Note | null {
  *  quantizing `startBeat` first (via time.ts's quantizeBeats) — this
  *  function only clamps to valid bounds (>= 0 beats, MIDI_LO..MIDI_HI), it
  *  doesn't impose an opinion about grid snapping, since not every caller
- *  wants it (e.g. a future free-drag mode). */
+ *  wants it (e.g. a future free-drag mode).
+ *
+ *  Clears rawStartBeat/rawDurationBeats when present (Lens-I finding 5).
+ *  Those two fields exist so a CAPTURED note's original, unquantized
+ *  performance timing survives for a future re-quantize at a different
+ *  strength (see capture.ts's file header, "raw + quantize-as-view") — but
+ *  a manual move declares a NEW position outright, superseding whatever
+ *  performance the raw pair remembers. Leaving them in place would let a
+ *  future re-quantize silently snap the note back toward a performance it
+ *  no longer resembles. Discrete edits that don't touch timing (velocity,
+ *  vowel, breathiness — setVelocity/setVowel/setBreathiness below) have no
+ *  such clear; only a timing change supersedes the recorded timing. */
 export function moveNote(note: Note, startBeat: number, midi: number): void {
   note.startBeat = Math.max(0, startBeat);
   note.midi = clampMidi(midi);
+  delete note.rawStartBeat;
+  delete note.rawDurationBeats;
 }
 
 /** Resize a note's duration. Floored at one quantize step (a zero or
  *  negative duration would render an invisible/unplayable note — same
- *  floor main.ts's old resize-handle drag enforced with `60 / bpm / 4`). */
+ *  floor main.ts's old resize-handle drag enforced with `60 / bpm / 4`).
+ *  Clears raw* fields too, for the same reason moveNote does — see its doc
+ *  comment (Lens-I finding 5). */
 export function resizeNote(note: Note, durationBeats: number): void {
   note.durationBeats = Math.max(QUANTIZE_GRID_BEATS, durationBeats);
+  delete note.rawStartBeat;
+  delete note.rawDurationBeats;
 }
 
 export function setVelocity(note: Note, velocity: number): void {

@@ -38,7 +38,7 @@ import {
   type TransportAnchor, type TransportCallbacks,
 } from "./transport.js";
 import type { Note } from "./state.js";
-import type { LoopRegion } from "./time.js";
+import { SCORE_BEATS, type LoopRegion } from "./time.js";
 
 /** Build a minimal fake Note for scheduler tests — id + the fields
  *  computeScheduleWindow/computeScoreEndBeat actually read. */
@@ -64,7 +64,7 @@ interface RecordedNoteOff { midi: number; time: number }
 
 function createFakeTransportEnv(opts: {
   score: Note[]; bpm?: number; looping?: boolean; vocalMode?: boolean;
-  region?: LoopRegion | null;
+  region?: LoopRegion | null; capturing?: boolean;
 }) {
   const state = { currentTime: 0 };
   const ctx = state as unknown as AudioContext;
@@ -73,12 +73,14 @@ function createFakeTransportEnv(opts: {
   const noteOffs: RecordedNoteOff[] = [];
   const onTicks: number[] = [];
   const playStateChanges: boolean[] = [];
+  const loopWraps: { cycleStartBeat: number; cycleEndBeat: number }[] = [];
   let allNotesOffCalls = 0;
   let resumeContextsCalls = 0;
   let score = opts.score;
   let bpm = opts.bpm ?? 120;
   let looping = opts.looping ?? false;
   let region: LoopRegion | null = opts.region ?? null;
+  let capturing = opts.capturing ?? false;
 
   const cb: TransportCallbacks = {
     getContext: () => ctx,
@@ -99,10 +101,12 @@ function createFakeTransportEnv(opts: {
     getLoopRegion: () => region,
     onTick: (p) => onTicks.push(p),
     onPlayStateChange: (p) => playStateChanges.push(p),
+    onLoopWrap: (cycleStartBeat, cycleEndBeat) => { loopWraps.push({ cycleStartBeat, cycleEndBeat }); },
+    isCapturing: () => capturing,
   };
 
   return {
-    cb, noteOns, noteOffs, onTicks, playStateChanges,
+    cb, noteOns, noteOffs, onTicks, playStateChanges, loopWraps,
     get allNotesOffCalls() { return allNotesOffCalls; },
     get resumeContextsCalls() { return resumeContextsCalls; },
     setTime: (sec: number) => { state.currentTime = sec; },
@@ -111,6 +115,7 @@ function createFakeTransportEnv(opts: {
     setLooping: (v: boolean) => { looping = v; },
     setScore: (s: Note[]) => { score = s; },
     setLoopRegion: (r: LoopRegion | null) => { region = r; },
+    setCapturing: (v: boolean) => { capturing = v; },
   };
 }
 
@@ -809,6 +814,178 @@ describe("createTransport — loop region (Wave C2a)", () => {
     vi.advanceTimersByTime(LOOKAHEAD_MS);
     expect(transport.getPositionBeats()).toBeCloseTo(region.startBeat + 0.1, 5);
 
+    transport.stop();
+  });
+});
+
+// ─── Wave C3: record-capture transport seams ────────────────────────────────
+
+describe("beatAtAudioTime (Wave C3)", () => {
+  afterEach(() => { vi.useRealTimers(); });
+
+  it("falls back to the current position when nothing is playing", () => {
+    const env = createFakeTransportEnv({ score: [note("a", 0, 1)] });
+    const transport = createTransport(env.cb);
+    transport.seekTo(3);
+    expect(transport.beatAtAudioTime(123.45)).toBe(3);
+  });
+
+  it("maps an audio-clock instant through the LIVE anchor while playing", () => {
+    vi.useFakeTimers();
+    const env = createFakeTransportEnv({ score: [note("a", 0, 8)], bpm: 120 }); // 2 beats/sec
+    const transport = createTransport(env.cb);
+    transport.play(); // anchor: audioTime 0, beat 0
+    expect(transport.beatAtAudioTime(0.5)).toBeCloseTo(1, 10);
+    expect(transport.beatAtAudioTime(1.25)).toBeCloseTo(2.5, 10);
+    transport.stop();
+  });
+
+  it("resolves an instant EARLIER than 'now' correctly (the capture case — event.timeStamp predates handler run)", () => {
+    vi.useFakeTimers();
+    const env = createFakeTransportEnv({ score: [note("a", 0, 8)], bpm: 120 });
+    const transport = createTransport(env.cb);
+    transport.play();
+    env.setTime(1.0); // "now" = beat 2
+    vi.advanceTimersByTime(LOOKAHEAD_MS);
+    expect(transport.getPositionBeats()).toBeCloseTo(2, 10);
+    // A 100ms-old input event's audio instant resolves to where playback
+    // WAS, not the current tick-cached position.
+    expect(transport.beatAtAudioTime(0.9)).toBeCloseTo(1.8, 10);
+    transport.stop();
+  });
+
+  it("tracks a live bpm rebase — instants after the rebase resolve at the new bpm", () => {
+    vi.useFakeTimers();
+    const env = createFakeTransportEnv({ score: [note("a", 0, 32)], bpm: 120 });
+    const transport = createTransport(env.cb);
+    transport.play();
+    env.setTime(1.0); // beat 2 under 120bpm
+    env.setBpm(60);   // next tick rebases to {audioTime: 1, beat: 2, bpm: 60}
+    vi.advanceTimersByTime(LOOKAHEAD_MS);
+    expect(transport.beatAtAudioTime(2.0)).toBeCloseTo(3, 5); // +1s at 60bpm = +1 beat
+    transport.stop();
+  });
+});
+
+describe("onLoopWrap (Wave C3)", () => {
+  afterEach(() => { vi.useRealTimers(); });
+
+  it("fires exactly once per region wrap, with the region's own bounds", () => {
+    vi.useFakeTimers();
+    const region = { startBeat: 4, endBeat: 8 };
+    const env = createFakeTransportEnv({ score: [note("a", 4, 1)], looping: true, region });
+    const transport = createTransport(env.cb);
+    transport.seekTo(4);
+    transport.play();
+    env.setTime(2.0); // 4 beats at 120bpm — crosses endBeat 8
+    vi.advanceTimersByTime(LOOKAHEAD_MS);
+    expect(env.loopWraps).toEqual([{ cycleStartBeat: 4, cycleEndBeat: 8 }]);
+    transport.stop();
+  });
+
+  it("fires AFTER onTick has already reported the new lap's start position", () => {
+    vi.useFakeTimers();
+    const region = { startBeat: 4, endBeat: 8 };
+    const env = createFakeTransportEnv({ score: [note("a", 4, 1)], looping: true, region });
+    const transport = createTransport(env.cb);
+    transport.seekTo(4);
+    transport.play();
+    env.setTime(2.0);
+    vi.advanceTimersByTime(LOOKAHEAD_MS);
+    expect(env.loopWraps).toHaveLength(1);
+    // By the time onLoopWrap fired, the position stream had already been
+    // told about the wrapped-to start (wrap() calls onTick first).
+    expect(env.onTicks[env.onTicks.length - 1]).toBe(4);
+    expect(transport.getPositionBeats()).toBe(4);
+    transport.stop();
+  });
+
+  it("does not fire on a seek, nor on a linear playthrough reaching the end", () => {
+    vi.useFakeTimers();
+    const env = createFakeTransportEnv({ score: [note("a", 0, 1)] });
+    const transport = createTransport(env.cb);
+    transport.play();
+    transport.seekTo(0.5);
+    env.setTime(2); // way past score end (beat 1) — auto-stops
+    vi.advanceTimersByTime(LOOKAHEAD_MS);
+    expect(transport.isPlaying()).toBe(false);
+    expect(env.loopWraps).toHaveLength(0);
+  });
+
+  it("whole-score loop (no region) also reports its bounds", () => {
+    vi.useFakeTimers();
+    const env = createFakeTransportEnv({ score: [note("a", 0, 2)], looping: true });
+    const transport = createTransport(env.cb);
+    transport.play();
+    env.setTime(1.0); // beat 2 = score end -> wrap
+    vi.advanceTimersByTime(LOOKAHEAD_MS);
+    expect(env.loopWraps).toEqual([{ cycleStartBeat: 0, cycleEndBeat: 2 }]);
+    transport.stop();
+  });
+});
+
+describe("isCapturing (Wave C3 — record-capture transport behavior)", () => {
+  afterEach(() => { vi.useRealTimers(); });
+
+  it("play() starts on an EMPTY score while capturing", () => {
+    vi.useFakeTimers();
+    const env = createFakeTransportEnv({ score: [], capturing: true });
+    const transport = createTransport(env.cb);
+    transport.play();
+    expect(transport.isPlaying()).toBe(true);
+    transport.stop();
+  });
+
+  it("play() still refuses an empty score when NOT capturing (pre-C3 behavior preserved)", () => {
+    const env = createFakeTransportEnv({ score: [] });
+    const transport = createTransport(env.cb);
+    transport.play();
+    expect(transport.isPlaying()).toBe(false);
+  });
+
+  it("a linear capture keeps rolling past the last note's end instead of auto-stopping", () => {
+    vi.useFakeTimers();
+    const env = createFakeTransportEnv({ score: [note("a", 0, 1)], capturing: true });
+    const transport = createTransport(env.cb);
+    transport.play();
+    env.setTime(1.0); // beat 2 — past wholeEndBeat (1)
+    vi.advanceTimersByTime(LOOKAHEAD_MS);
+    expect(transport.isPlaying()).toBe(true);
+    transport.stop();
+  });
+
+  it("a linear capture auto-stops at the canvas end (SCORE_BEATS)", () => {
+    vi.useFakeTimers();
+    const env = createFakeTransportEnv({ score: [], capturing: true });
+    const transport = createTransport(env.cb);
+    transport.play();
+    env.setTime(SCORE_BEATS / 2 + 0.1); // just past 64 beats at 120bpm (32s)
+    vi.advanceTimersByTime(LOOKAHEAD_MS);
+    expect(transport.isPlaying()).toBe(false);
+  });
+
+  it("a loop REGION's cycle length is unaffected by capturing (stable pass-per-cycle boundary)", () => {
+    vi.useFakeTimers();
+    const region = { startBeat: 0, endBeat: 4 };
+    const env = createFakeTransportEnv({ score: [], capturing: true, looping: true, region });
+    const transport = createTransport(env.cb);
+    transport.play();
+    env.setTime(2.0); // 4 beats — crosses the region end
+    vi.advanceTimersByTime(LOOKAHEAD_MS);
+    expect(env.loopWraps).toEqual([{ cycleStartBeat: 0, cycleEndBeat: 4 }]);
+    expect(transport.isPlaying()).toBe(true);
+    transport.stop();
+  });
+
+  it("whole-score loop while capturing cycles over the full canvas — the cycle length can't drift as passes commit", () => {
+    vi.useFakeTimers();
+    const env = createFakeTransportEnv({ score: [], capturing: true, looping: true });
+    const transport = createTransport(env.cb);
+    transport.play();
+    env.setTime(SCORE_BEATS / 2 + 0.05);
+    vi.advanceTimersByTime(LOOKAHEAD_MS);
+    expect(env.loopWraps).toEqual([{ cycleStartBeat: 0, cycleEndBeat: SCORE_BEATS }]);
+    expect(transport.isPlaying()).toBe(true);
     transport.stop();
   });
 });

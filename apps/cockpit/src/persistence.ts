@@ -83,6 +83,19 @@ export interface PersistedNote {
   vowel?: PersistedVowelId;
   breathiness?: number;
   lyric?: string;
+  /** Live-capture raw (unquantized) timing (Wave C3 — see state.ts's
+   *  Note.rawStartBeat/rawDurationBeats and capture.ts's file header) —
+   *  present only on notes recorded via the record-arm path. Optional
+   *  fields ADDED to the existing v3 shape, deliberately WITHOUT a schema
+   *  version bump: a v3 blob with these fields loads fine in a pre-C3
+   *  reader (its sanitizer simply drops unknown fields — the note itself,
+   *  with its quantized startBeat/durationBeats view, restores intact,
+   *  which is the "old readers unaffected" compensator policy), and a
+   *  pre-C3 v3 blob loads fine here (both fields absent). Bumping to v4
+   *  would have REJECTED the blob outright in old readers for zero
+   *  data-shape need. */
+  rawStartBeat?: number;
+  rawDurationBeats?: number;
 }
 
 export interface CockpitPersistedState {
@@ -175,6 +188,21 @@ function sanitizeNoteBeats(raw: unknown): PersistedNote | null {
   const breathiness = sanitizeBreathiness(r.breathiness);
   if (breathiness !== undefined) note.breathiness = breathiness;
   if (typeof r.lyric === "string") note.lyric = r.lyric;
+  // Wave C3 — raw capture timing rides along when BOTH fields are present
+  // and valid (same finite/non-negative guard as the view fields above; a
+  // half-present or corrupt pair is dropped as a PAIR — a rawStartBeat
+  // without a rawDurationBeats can't reconstruct anything, and keeping one
+  // stray field would make deriveQuantizeView read undefined). The note
+  // itself is NEVER rejected over bad raw* fields: the quantized view is
+  // self-sufficient, losing recallable raw timing beats losing the note.
+  const rawStartBeat = r.rawStartBeat, rawDurationBeats = r.rawDurationBeats;
+  if (
+    typeof rawStartBeat === "number" && Number.isFinite(rawStartBeat) && rawStartBeat >= 0 &&
+    typeof rawDurationBeats === "number" && Number.isFinite(rawDurationBeats) && rawDurationBeats >= 0
+  ) {
+    note.rawStartBeat = rawStartBeat;
+    note.rawDurationBeats = rawDurationBeats;
+  }
   return note;
 }
 

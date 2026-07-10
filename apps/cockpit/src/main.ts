@@ -53,6 +53,13 @@ import {
   resolveDragBeats, commitDragBeats, moveModeTarget, resizeStepTarget,
   findNearbyNoteForDragInit,
 } from "./gesture.js";
+import {
+  createCaptureEngine, capturedNoteToInit, computeCountInClicks,
+  sampleClockOffset, createHeldPitchTracker, hasPendingCountIn,
+  shouldRefuseUndoWhileRecording,
+  type CaptureEngine, type CaptureSource, type RecordMode, type RecordPhase,
+  type CarryOverNote, type HeldPitchTracker,
+} from "./capture.js";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -153,7 +160,14 @@ let mode: "instrument" | "vocal" = "instrument";
 let looping = false;
 let bpm = DEFAULT_BPM;
 const heldKeys = new Set<string>();
-const heldMidi = new Set<number>();
+/** Which live source (qwerty/onscreen/midi) currently holds each pitch —
+ *  Lens-I finding 2. Was a plain `Set<number>` (pitch-only) before this
+ *  fix; a cross-source release (e.g. a MIDI note-off arriving while the
+ *  SAME pitch is still physically held on QWERTY) used to close heldMidi
+ *  under the wrong key entirely, stranding the actual opener's open
+ *  capture note forever — see createHeldPitchTracker's doc comment in
+ *  capture.ts for the full mechanism. */
+const heldMidi: HeldPitchTracker = createHeldPitchTracker();
 let intervalRoot = 60; // C4
 /** True for the duration of a resize-handle or move-drag gesture
  *  (pointerdown → pointerup/pointercancel — Wave C2b migrated this off
@@ -194,6 +208,50 @@ let loopRegion: LoopRegion | null = null;
 /** Playhead auto-scroll-follow (finding 43) — defaults ON so a score wider
  *  than the viewport keeps the playhead visible without an extra click. */
 let followEnabled = true;
+// ─── Record-arm capture state (Wave C3 — see capture.ts's file header) ──────
+/** The capture engine instance — constructed in init() right after the
+ *  transport (it needs transport.beatAtAudioTime injected). */
+let captureEngine: CaptureEngine;
+/** OVERDUB (default — findings 71/72: both major DAWs' loop-record default
+ *  is merge/accumulate) vs REPLACE (finding 73). Toggled by the mode badge
+ *  button; read at each pass boundary, so switching mid-recording takes
+ *  effect from the NEXT cycle. */
+let recordMode: RecordMode = "overdub";
+/** True from arm until the take/punch-out ends — drives the arm button's
+ *  aria-pressed + .armed styling. Distinct from recordPhase: armed is the
+ *  user-facing toggle, phase is where the machine actually is. */
+let recordArmed = false;
+/** idle → counting-in → recording (capture.ts's RecordPhase; canCapture()
+ *  gates event capture on it — findings 24/25: nothing played during the
+ *  count-in is ever captured). */
+let recordPhase: RecordPhase = "idle";
+/** Pending count-in completion timer — cleared by cancelCountIn(). */
+let countInTimer: ReturnType<typeof setTimeout> | undefined;
+/** REPLACE mode's live-cleared notes for the CURRENT pass (snapshotted with
+ *  ids at pass start, consumed into the pass's ONE captureCommand at
+ *  commit) — see undo.ts's captureCommand doc comment for the two-instant
+ *  mutation this bridges. Always empty in overdub mode. */
+let replaceClearedThisPass: Note[] = [];
+/** Beat the current pass started at — the linear-take REPLACE span's left
+ *  edge ("a linear re-record clears only the time span it covers") and
+ *  endPass's floor. */
+let recordPassStartBeat = 0;
+/** The loop-cycle span of the CURRENT pass, or null for a linear take —
+ *  set by beginCapturePass; finishCaptureTake uses null to know a REPLACE
+ *  take should clear its own covered span at commit rather than a region
+ *  span at start. */
+let passLoopSpan: { start: number; end: number } | null = null;
+/** Last position onTick reported — read by the capture-stop path instead of
+ *  transport.getPositionBeats() because stop() resets position to 0 BEFORE
+ *  onPlayStateChange(false) fires (pause() doesn't; this covers both). */
+let lastTickPositionBeats = 0;
+/** One coarse-timestamp warning per session (finding 19) — the engine
+ *  reports newlyDegraded exactly once per source; this collapses that to
+ *  one visible toast total so a 3-source session can't triple-toast. */
+let coarseWarned = false;
+/** Live ghost-note DOM elements, keyed by capture.ts's stable ghostId —
+ *  diffed (not rebuilt) every tick while recording. */
+const ghostEls = new Map<string, HTMLElement>();
 /** Wall-clock deadline (performance.now()-based) until which the next
  *  #piano-roll-container "scroll" event should be treated as OUR OWN
  *  programmatic scroll (see programmaticScroll() below), not a
@@ -454,6 +512,7 @@ async function init() {
     isLooping: () => looping,
     getLoopRegion: () => loopRegion,
     onTick: (positionBeats) => {
+      lastTickPositionBeats = positionBeats; // Wave C3 — see its declaration
       const ph = $("playhead") as HTMLElement;
       // Visible whenever playing OR paused mid-score (position > 0) — hidden
       // only once stop() has driven position all the way back to 0.
@@ -461,6 +520,9 @@ async function init() {
       ph.style.left = positionBeats * PX_PER_BEAT + "px";
       updateTransportTime(positionBeats);
       applyFollowScroll(positionBeats);
+      // Wave C3 — live ghost-note preview while capturing (input
+      // monitoring's visual half; the synth already sounds the notes).
+      if (recordPhase === "recording") renderGhostNotes(positionBeats);
       // Wave C2b finding 6 — keep the ruler's role="slider" ARIA state in
       // sync with every position change (playback tick, pause/stop, or any
       // seek — onTick is the one chokepoint all of those already share).
@@ -472,8 +534,39 @@ async function init() {
     },
     onPlayStateChange: (isPlayingNow) => {
       $("btn-play").innerHTML = isPlayingNow ? PAUSE_ICON_SVG : PLAY_ICON_SVG;
+      // Lens-I finding 6 — refresh the record button's title on EVERY
+      // play/pause/stop transition, not just recording-related ones:
+      // whether pressing Record right now would count-in or punch-in
+      // depends on transport.isPlaying() (see updateRecordUI). Harmless to
+      // call again a second time below when finishCaptureTake() also
+      // calls it at the end of ending a take.
+      updateRecordUI();
+      // Wave C3 — ANY transition to not-playing while capturing (pause
+      // button, stop button, Esc/panic, blur, end-of-canvas auto-stop)
+      // finishes the take: commit whatever the current pass captured as
+      // its one command and disarm. Uses lastTickPositionBeats, not
+      // getPositionBeats() — stop() resets the latter to 0 before this
+      // callback runs (see the variable's doc comment).
+      if (!isPlayingNow && recordPhase === "recording") {
+        finishCaptureTake(lastTickPositionBeats);
+      }
     },
+    onLoopWrap: (cycleStartBeat, cycleEndBeat) => {
+      // Wave C3 — one undoable command per completed loop cycle (finding
+      // 78), committed at the wrap without stopping anything (finding 76:
+      // no mid-loop interruptions). OVERDUB accumulates (findings 71/72);
+      // REPLACE clears the region's notes at the NEW cycle's start
+      // (finding 73) — beginCapturePass handles that live-clear. A note
+      // still physically held across the wrap carries over into the new
+      // pass (endPass force-closed it at the boundary; startPass re-opens
+      // it at the new cycle's start — see capture.ts).
+      if (recordPhase !== "recording") return;
+      const carry = commitCapturePass(cycleEndBeat, null);
+      beginCapturePass(cycleStartBeat, { start: cycleStartBeat, end: cycleEndBeat }, carry, true);
+    },
+    isCapturing: () => recordPhase === "recording",
   });
+  captureEngine = createCaptureEngine((audioTime) => transport.beatAtAudioTime(audioTime));
   // A construction/connect failure (rare, but possible if the browser
   // refuses to hand out an AudioContext at all) used to reject init()
   // silently — boot()'s top-level .catch(console.error) only logs to the
@@ -500,6 +593,7 @@ async function init() {
   bindMidi();
   bindUndoRedo();
   bindGestureAltControls();
+  bindRecordControls();
   buildTuningAudit();
   updateTuningTable();
   updateTelemetry();
@@ -1137,7 +1231,10 @@ function buildRuler() {
     };
     const onUp = () => {
       cleanup();
-      if (!moved) transport.seekTo(quantizeBeats(anchorBeat));
+      // transportSeek (not transport.seekTo — Wave C3): while recording,
+      // a seek commits the in-flight pass first so capture never spans
+      // the discontinuity.
+      if (!moved) transportSeek(quantizeBeats(anchorBeat));
     };
     const onCancel = () => {
       cleanup();
@@ -1168,7 +1265,7 @@ function buildRuler() {
     if (target === null) return;
     e.preventDefault();
     e.stopPropagation();
-    transport.seekTo(target);
+    transportSeek(target); // Wave C3 — see the pointer-seek comment above
   });
 }
 
@@ -1444,6 +1541,19 @@ function bindGestureAltControls() {
  *  handles the button-disabled-state refresh and onStateChanged(); this
  *  only needs to handle the DOM-note-sync afterUndoStackChange can't. */
 function performUndo() {
+  // Lens-I finding 1 — REPLACE mode's live cycle-boundary sweep can delete
+  // notes an OLDER, already-committed pass's captureCommand still expects
+  // to find (see shouldRefuseUndoWhileRecording's doc comment in
+  // capture.ts for the full corruption mechanism); refusing every undo
+  // attempt while actively recording kills that corruption class without
+  // needing to prove which particular older command would still be safe.
+  // Full depth returns the instant recording stops — Ableton's own
+  // "remove the last take" convention then falls straight out of the
+  // existing linear stack with no special-casing.
+  if (shouldRefuseUndoWhileRecording(recordPhase)) {
+    showToast("Stop recording to undo earlier edits");
+    return;
+  }
   if (!undo.undo()) return;
   rerenderAllNotes();
   updateInspector();
@@ -1513,15 +1623,21 @@ const keyboardKeys: KeyboardKeyRef[] = [];
  * browser interrupts outright.
  */
 function bindOnScreenKeyPointer(key: HTMLElement, midi: number): void {
+  // Wave C3 — every handler forwards its own event's timeStamp so a
+  // captured on-screen press is stamped at the event's system-receipt
+  // time, not handler-run time (finding 18; source "onscreen" for
+  // per-source calibration, finding 20).
+  const live = (e: Event): { source: CaptureSource; timeStampMs: number } =>
+    ({ source: "onscreen", timeStampMs: e.timeStamp });
   key.addEventListener("pointerdown", (e) => {
     e.preventDefault();
     try { key.setPointerCapture(e.pointerId); } catch { /* best-effort */ }
-    midiKeyDown(midi);
+    midiKeyDown(midi, 100, live(e));
   });
-  key.addEventListener("pointerup", () => midiKeyUp(midi));
-  key.addEventListener("pointerleave", () => { if (heldMidi.has(midi)) midiKeyUp(midi); });
-  key.addEventListener("pointercancel", () => { if (heldMidi.has(midi)) midiKeyUp(midi); });
-  key.addEventListener("lostpointercapture", () => { if (heldMidi.has(midi)) midiKeyUp(midi); });
+  key.addEventListener("pointerup", (e) => midiKeyUp(midi, live(e)));
+  key.addEventListener("pointerleave", (e) => { if (heldMidi.has(midi)) midiKeyUp(midi, live(e)); });
+  key.addEventListener("pointercancel", (e) => { if (heldMidi.has(midi)) midiKeyUp(midi, live(e)); });
+  key.addEventListener("lostpointercapture", (e) => { if (heldMidi.has(midi)) midiKeyUp(midi, live(e)); });
 }
 
 function buildKeyboard() {
@@ -1636,7 +1752,11 @@ function buildKeyboard() {
       // hijack it for play/pause when focus isn't on one of those
       // (F-A1: keyboard-editing scope regression).
       if (isActivatableControl(document.activeElement)) return;
-      e.preventDefault(); transport.togglePlayPause(); return;
+      e.preventDefault();
+      // Wave C3 — during a count-in, Space means "abort the pending
+      // record start," not "also start playback under the count-in."
+      if (recordPhase === "counting-in") { cancelCountIn(); return; }
+      transport.togglePlayPause(); return;
     }
     if (k === "escape") {
       // Wave C2b finding 39 — Esc-cancel takes precedence over panic while
@@ -1696,14 +1816,18 @@ function buildKeyboard() {
     const code = e.code;
     if (QWERTY[code] !== undefined && !heldKeys.has(code)) {
       heldKeys.add(code);
-      midiKeyDown(QWERTY[code]);
+      // Wave C3 — e.timeStamp (system-receipt time, finding 18) +
+      // e.repeat (finding 21; belt-and-suspenders — the heldKeys guard
+      // above already stops repeats reaching here, and the handler's own
+      // `if (e.repeat) return` bail sits further up still).
+      midiKeyDown(QWERTY[code], 100, { source: "qwerty", timeStampMs: e.timeStamp, repeat: e.repeat });
     }
   });
 
   window.addEventListener("keyup", (e) => {
     if (isTypingTarget(e)) return;
     const code = e.code;
-    if (QWERTY[code] !== undefined) { heldKeys.delete(code); midiKeyUp(QWERTY[code]); }
+    if (QWERTY[code] !== undefined) { heldKeys.delete(code); midiKeyUp(QWERTY[code], { source: "qwerty", timeStampMs: e.timeStamp }); }
   });
 }
 
@@ -1793,17 +1917,58 @@ function toggleShortcutsOverlay() {
   el.setAttribute("aria-hidden", String(!open));
 }
 
-function midiKeyDown(midi: number) {
+/** What a live-input call site knows about the ORIGINATING DOM/MIDI event
+ *  (Wave C3) — the capture engine needs the event's own high-resolution
+ *  timeStamp (finding 18: system-receipt time, not handler-run time), which
+ *  source produced it (per-source calibration/degradation, findings 19/20),
+ *  and keydown's `repeat` flag (finding 21). Optional end to end: a caller
+ *  with no event in hand (none exist today) simply captures nothing. */
+interface LiveEventInfo {
+  source: CaptureSource;
+  timeStampMs: number;
+  repeat?: boolean;
+}
+
+/** The one live-input seam (QWERTY keydown, on-screen keys, Web MIDI all
+ *  converge here — same as before Wave C3, which is exactly why capture
+ *  taps THIS function rather than three call sites). Monitoring first:
+ *  activeNoteOn sounds the note on the existing path regardless of
+ *  recording state, so capture adds zero latency to what the player hears
+ *  (finding 17). Capture is gated on recordPhase === "recording" —
+ *  count-in notes are deliberately never captured (findings 24/25 via
+ *  capture.ts's canCapture contract). */
+function midiKeyDown(midi: number, velocity = 100, live?: LiveEventInfo) {
   if (heldMidi.has(midi)) return;
-  heldMidi.add(midi);
-  activeNoteOn(midi, 100);
+  heldMidi.open(midi, live?.source);
+  activeNoteOn(midi, velocity);
+  if (live && recordPhase === "recording") {
+    const res = captureEngine.noteOn(live.source, midi, velocity, live.timeStampMs, live.repeat ?? false);
+    // Firefox resistFingerprinting coarsens timestamps to 100ms buckets
+    // (finding 19) — one visible warning, then capture continues with
+    // fully-quantized (degraded) timing instead of writing garbage onsets.
+    if (res.newlyDegraded && !coarseWarned) {
+      coarseWarned = true;
+      showToast("Input timestamps are coarse (privacy setting?) — captured notes will snap fully to the grid");
+    }
+  }
   updateKeyVisuals();
 }
 
-function midiKeyUp(midi: number) {
+function midiKeyUp(midi: number, live?: LiveEventInfo) {
   if (!heldMidi.has(midi)) return;
-  heldMidi.delete(midi);
+  // Lens-I finding 2 — close() resolves the OPENER's source, which may
+  // differ from `live.source` (this event's own source) when a different
+  // input triggered the release than the one that pressed it. Routing the
+  // capture engine's noteOff through the opener's key is what keeps
+  // capture.ts's "source:midi"-keyed open-note map in sync with heldMidi;
+  // routing it through the releasing event's own source instead (the old
+  // behavior) silently no-ops against a note that was never opened under
+  // that key, stranding the real one open forever.
+  const openerSource = heldMidi.close(midi);
   activeNoteOff(midi);
+  if (live && recordPhase === "recording") {
+    captureEngine.noteOff(openerSource ?? live.source, midi, live.timeStampMs);
+  }
   updateKeyVisuals();
 }
 
@@ -1838,6 +2003,14 @@ function updateKeyVisuals() {
  *  including from setMode()'s panic() call on every mode switch, and from
  *  blur/visibilitychange when nothing was playing to begin with. */
 function panic() {
+  // Wave C3 — a pending count-in dies with everything else (no capture has
+  // started yet, so there's nothing to commit); an ACTIVE recording is
+  // ended by the transport.pause() below via onPlayStateChange(false) →
+  // finishCaptureTake, which commits the partial take as one undoable
+  // command — "stop capture cleanly and silence," with Ctrl+Z as the
+  // recovery path if the take wasn't wanted (finding 6: recovery beats
+  // prevention).
+  if (recordPhase === "counting-in") cancelCountIn();
   transport.pause();
   silenceEngines();
   heldMidi.clear();
@@ -1847,31 +2020,401 @@ function panic() {
 
 // ─── MIDI Input ──────────────────────────────────────────────────────────────
 
+/** Shared Web MIDI message handler (Wave C3 refactor: the initial-bind and
+ *  hot-plug paths carried two byte-identical inline copies of this; they
+ *  now share one, routed through midiKeyDown/midiKeyUp — the same seam
+ *  QWERTY and the on-screen keys already used — so MIDI input reaches the
+ *  capture engine with the event's own `timeStamp`, which the Web MIDI
+ *  spec defines as system-receipt time on the performance.now() timebase
+ *  (finding 18: trust it; never re-stamp at handler-run time). Routing
+ *  through midiKeyDown also gives MIDI the same heldMidi retrigger guard
+ *  the other two sources always had. */
+function handleMidiMessage(e: MIDIMessageEvent) {
+  if (!e.data || e.data.length < 3) return;
+  const [status, note, vel] = e.data;
+  if ((status & 0xf0) === 0x90 && vel > 0) {
+    midiKeyDown(note, vel, { source: "midi", timeStampMs: e.timeStamp });
+  } else if ((status & 0xf0) === 0x80 || ((status & 0xf0) === 0x90 && vel === 0)) {
+    midiKeyUp(note, { source: "midi", timeStampMs: e.timeStamp });
+  }
+}
+
 function bindMidi() {
   if (!navigator.requestMIDIAccess) return;
   navigator.requestMIDIAccess().then((access) => {
     for (const input of access.inputs.values()) {
-      input.onmidimessage = (e: MIDIMessageEvent) => {
-        if (!e.data || e.data.length < 3) return;
-        const [status, note, vel] = e.data;
-        if ((status & 0xf0) === 0x90 && vel > 0) { activeNoteOn(note, vel); heldMidi.add(note); updateKeyVisuals(); }
-        else if ((status & 0xf0) === 0x80 || ((status & 0xf0) === 0x90 && vel === 0)) { activeNoteOff(note); heldMidi.delete(note); updateKeyVisuals(); }
-      };
+      input.onmidimessage = handleMidiMessage;
     }
     // Handle hot-plug
     access.onstatechange = () => {
       for (const input of access.inputs.values()) {
         if (!input.onmidimessage) {
-          input.onmidimessage = (e: MIDIMessageEvent) => {
-            if (!e.data || e.data.length < 3) return;
-            const [status, note, vel] = e.data;
-            if ((status & 0xf0) === 0x90 && vel > 0) { activeNoteOn(note, vel); heldMidi.add(note); updateKeyVisuals(); }
-            else if ((status & 0xf0) === 0x80 || ((status & 0xf0) === 0x90 && vel === 0)) { activeNoteOff(note); heldMidi.delete(note); updateKeyVisuals(); }
-          };
+          input.onmidimessage = handleMidiMessage;
         }
       }
     };
   }).catch(() => { /* MIDI not available */ });
+}
+
+// ─── Record-arm capture (Wave C3) ────────────────────────────────────────────
+//
+// The DOM/transport half of the capture feature — capture.ts owns all the
+// pure math (timestamps, quantize-view, pass bookkeeping); this section owns
+// the arm/mode buttons, the count-in click, the pass lifecycle against the
+// transport (start / loop-wrap / stop / seek), ghost-note DOM, and the ONE
+// undo.commit(captureCommand(...)) per completed pass (finding 78).
+
+const COUNT_IN_BARS = 1;            // finding 25 — 1 bar is the DAW default
+const COUNT_IN_BEATS_PER_BAR = 4;   // 4/4, same hardcoded meter as the ruler
+const COUNT_IN_ACCENT_MIDI = 88;    // E6 — accented beat 1 (finding 25)
+const COUNT_IN_TICK_MIDI = 76;      // E5 — plain beats
+const COUNT_IN_CLICK_SEC = 0.06;
+
+/** Mode frozen at pass start — a badge toggle mid-pass takes effect from
+ *  the NEXT pass boundary instead of retroactively changing what the
+ *  in-flight pass will do at commit (least-surprise; DAWs likewise apply
+ *  record mode at record start). */
+let passRecordMode: RecordMode = "overdub";
+
+/** The AudioContext the transport is CURRENTLY anchoring against (mode-
+ *  dependent, mirroring init()'s getContext callback) — the clock-offset
+ *  sample MUST come from this same context or every captured timestamp
+ *  would carry the constant skew between the two engines' clocks. */
+function captureClockContext(): AudioContext | null {
+  return mode === "vocal" ? vocalSynth.getContext() : synth.getContext();
+}
+
+function bindRecordControls(): void {
+  $("btn-record").addEventListener("click", toggleRecordArm);
+  $("btn-record-mode").addEventListener("click", toggleRecordMode);
+  updateRecordUI(); // initial badge/label state
+}
+
+/** The arm button (finding 71: toggles live against a running transport).
+ *  Stopped: arm + count-in + record as ONE action ("arm+play as one
+ *  action" per the wave brief — there is no separate armed-idle limbo to
+ *  discover). Playing: punch capture in/out without touching playback.
+ *  Counting-in: a second press cancels the pending record start. */
+function toggleRecordArm(): void {
+  if (recordPhase === "counting-in") { cancelCountIn(); return; }
+  if (recordPhase === "recording") {
+    // Punch OUT — commit the in-flight pass, keep the transport rolling.
+    finishCaptureTake(transport.isPlaying() ? transport.getPositionBeats() : lastTickPositionBeats);
+    return;
+  }
+  recordArmed = true;
+  if (transport.isPlaying()) {
+    // Punch IN against the running transport (finding 71) — no count-in:
+    // the already-sounding playback IS the reference interval a count-in
+    // exists to provide (finding 24).
+    beginRecording();
+  } else {
+    startCountInThenRecord();
+  }
+}
+
+/** The mode badge (findings 73/74): OVERDUB <-> REPLACE, always visible,
+ *  usable at any time — mid-recording it applies from the next pass. */
+function toggleRecordMode(): void {
+  recordMode = recordMode === "overdub" ? "replace" : "overdub";
+  updateRecordUI();
+}
+
+/** 1-bar count-in click from the cockpit's own instrument synth (findings
+ *  24/25 — the count-in is functional: a performer needs reference
+ *  intervals before the first captured beat; nothing played during it is
+ *  captured, see midiKeyDown's recordPhase gate). Clicks are scheduled on
+ *  the audio clock up front; the phase flip to actual recording rides a
+ *  wall-clock timer of the same duration. */
+function startCountInThenRecord(): void {
+  // Same belt-and-suspenders resume as transport.play()'s resumeContexts.
+  const c1 = synth.getContext();
+  const c2 = vocalSynth.getContext();
+  if (c1 && c1.state === "suspended") c1.resume().catch((err) => reportAudioError("resume", err));
+  if (c2 && c2.state === "suspended") c2.resume().catch((err) => reportAudioError("resume", err));
+
+  recordPhase = "counting-in";
+  updateRecordUI();
+
+  const totalSec = beatsToSeconds(COUNT_IN_BARS * COUNT_IN_BEATS_PER_BAR, bpm);
+  const PAD_SEC = 0.08; // small offset so the first click never lands in the past
+  if (c1) {
+    const startAt = c1.currentTime + PAD_SEC;
+    for (const click of computeCountInClicks(COUNT_IN_BARS, COUNT_IN_BEATS_PER_BAR)) {
+      const t = startAt + beatsToSeconds(click.beat, bpm);
+      const midi = click.accented ? COUNT_IN_ACCENT_MIDI : COUNT_IN_TICK_MIDI;
+      synth.noteOn(midi, click.accented ? 120 : 90, t);
+      synth.noteOff(midi, t + COUNT_IN_CLICK_SEC);
+    }
+  }
+  countInTimer = setTimeout(() => {
+    countInTimer = undefined;
+    beginRecording();
+  }, (totalSec + PAD_SEC) * 1000);
+}
+
+/** Abort a pending count-in (second arm press, Space/play, Esc/panic) —
+ *  no capture happened yet, so there is nothing to commit. allNotesOff
+ *  also cancels the scheduled-but-not-yet-audible clicks (same mechanism
+ *  transport.seekTo relies on — see synth.ts's killVoice). */
+function cancelCountIn(): void {
+  if (countInTimer !== undefined) { clearTimeout(countInTimer); countInTimer = undefined; }
+  synth.allNotesOff();
+  recordPhase = "idle";
+  recordArmed = false;
+  updateRecordUI();
+}
+
+/** transport.stop() wrapper for every call site that represents a HARD
+ *  RESET of playback/score state — Clear, Reset, importScore, and
+ *  window.__cockpit.stop (Lens-I finding 3). Plain transport.stop() alone
+ *  only resets playback position/scheduling; it has no way to know a
+ *  count-in timer is ticking toward its own beginRecording() call seconds
+ *  later, because the transport isn't "playing" yet during a count-in
+ *  (startCountInThenRecord doesn't call transport.play() until that timer
+ *  fires) — so transport.stop()'s onPlayStateChange(false) callback, which
+ *  DOES already end an ACTIVE recording via finishCaptureTake, never runs
+ *  for a merely-PENDING one. Every caller that needs a hard stop should
+ *  route through this instead of calling transport.stop() directly, so it
+ *  automatically inherits the same count-in safety net. btn-stop's own
+ *  click handler is deliberately NOT migrated to this — it already refuses
+ *  to call transport.stop() at all during a count-in (there's nothing to
+ *  stop yet), a narrower behavior this wrapper doesn't need to replicate. */
+function stopTransportForReset(): void {
+  if (hasPendingCountIn(recordPhase)) cancelCountIn();
+  transport.stop();
+}
+
+/** Flip into actual capture — from count-in completion (transport stopped,
+ *  we start it) or a live punch-in (already rolling). Samples the
+ *  performance.now()<->AudioContext.currentTime correspondence ONCE per
+ *  recording session (findings 16/18 — a stable mapping beats a fresh,
+ *  jittery one per event), from the same context the transport anchors on. */
+function beginRecording(): void {
+  recordPhase = "recording"; // before play() — isCapturing() must already be true
+  if (!transport.isPlaying()) transport.play();
+  if (!transport.isPlaying()) {
+    // play() refused (no AudioContext at all) — abort cleanly instead of
+    // "recording" into a stopped transport.
+    recordPhase = "idle";
+    recordArmed = false;
+    updateRecordUI();
+    return;
+  }
+  const ctx = captureClockContext();
+  if (ctx) captureEngine.setClockOffset(sampleClockOffset(performance.now(), ctx.currentTime));
+  const startBeat = transport.getPositionBeats();
+  const loopSpan = looping && loopRegion
+    ? { start: loopRegion.startBeat, end: loopRegion.endBeat }
+    : null;
+  beginCapturePass(startBeat, loopSpan, [], true);
+  updateRecordUI();
+}
+
+/** Snapshot + live-remove every note overlapping [startBeat, endBeat) —
+ *  REPLACE mode's clear (finding 73), used at a loop-cycle start and for a
+ *  linear take's covered span at commit. Returns id-carrying snapshots for
+ *  captureCommand's `removed` side. */
+function removeNotesInSpan(startBeat: number, endBeat: number): Note[] {
+  if (!(endBeat > startBeat)) return [];
+  const overlapping = state.getScore().filter(
+    (n) => n.startBeat < endBeat && n.startBeat + n.durationBeats > startBeat,
+  );
+  const snapshots = overlapping.map((n) => ({ ...n }));
+  for (const n of overlapping) {
+    document.querySelector(noteSelector(n.id))?.remove();
+    state.deleteNote(n);
+  }
+  if (snapshots.length > 0) updateInspector(); // deleting can clear selection
+  return snapshots;
+}
+
+/** Start a capture pass at `startBeat`. `loopSpan` non-null marks a
+ *  loop-cycle pass (its span drives REPLACE's cycle-start clear when
+ *  `doReplaceClear` — false only after a mid-record seek, where the
+ *  region was already cleared for this logical cycle and clearing again
+ *  would eat the PREVIOUS pass's committed notes). `carryOver` re-opens
+ *  notes still held across the previous pass boundary. */
+function beginCapturePass(
+  startBeat: number,
+  loopSpan: { start: number; end: number } | null,
+  carryOver: readonly CarryOverNote[],
+  doReplaceClear: boolean,
+): void {
+  recordPassStartBeat = startBeat;
+  passLoopSpan = loopSpan;
+  passRecordMode = recordMode;
+  replaceClearedThisPass =
+    passRecordMode === "replace" && loopSpan && doReplaceClear
+      ? removeNotesInSpan(loopSpan.start, loopSpan.end)
+      : [];
+  captureEngine.startPass(startBeat, carryOver);
+}
+
+/** Finish the CURRENT pass: pull its captured notes out of the engine,
+ *  apply them to the score live (this is where ghosts solidify into
+ *  ordinary notes), and commit everything — REPLACE's cleared notes
+ *  included — as ONE captureCommand (finding 78). Skips the commit
+ *  entirely for a pass where nothing happened (no dialog, no toast, no
+ *  empty undo entry — finding 76). Returns the still-held notes for the
+ *  next pass's carryOver. */
+function commitCapturePass(
+  endBeat: number,
+  linearReplaceSpan: { start: number; end: number } | null,
+): CarryOverNote[] {
+  const result = captureEngine.endPass(endBeat);
+  const removed = [...replaceClearedThisPass];
+  replaceClearedThisPass = [];
+  // Linear REPLACE clears at COMMIT time (the span isn't known until the
+  // take ends) — and must run BEFORE the new notes land so it can never
+  // sweep up the very notes this pass just recorded.
+  if (linearReplaceSpan) removed.push(...removeNotesInSpan(linearReplaceSpan.start, linearReplaceSpan.end));
+  const strength = captureEngine.getQuantizeStrength();
+  // Vocal-mode parity with the click-to-add path: a note recorded while in
+  // vocal mode carries the currently-selected vowel + breathiness, so it
+  // plays back through the vocal engine exactly like a hand-placed note
+  // (capture.ts knows nothing about vocal metadata — it's stamped here, at
+  // the same layer click-to-add stamps it).
+  const vocalMeta = mode === "vocal"
+    ? { vowel: vocalSynth.getVowel(), breathiness: getCurrentBreathiness() }
+    : {};
+  const added: Note[] = [];
+  for (const captured of result.notes) {
+    const note = state.addNote({ ...capturedNoteToInit(captured, strength), ...vocalMeta });
+    renderNote(note);
+    added.push(note);
+  }
+  clearGhostNotes();
+  if (added.length > 0 || removed.length > 0) {
+    undo.commit(undo.captureCommand(added, removed));
+  }
+  // Lens-I finding 2 — defensive floor: only carry a stillHeld entry into
+  // the NEXT pass if heldMidi (this file's own ground truth for which
+  // pitches are physically held right now) agrees the pitch is still
+  // down. These normally agree by construction (every noteOn/noteOff
+  // routes through midiKeyDown/midiKeyUp, which keep both in lockstep —
+  // see heldMidi's own doc comment above), but a stale/duplicate
+  // stillHeld entry must never be allowed to seed a phantom full-cycle
+  // note into the next pass. The PRIMARY fix is routing noteOff through
+  // the opener's source key (see midiKeyUp) — this is a backstop, not a
+  // substitute for it.
+  return result.stillHeld.filter((n) => heldMidi.has(n.midi));
+}
+
+/** End the take entirely (stop/pause/Esc/panic/punch-out/auto-stop):
+ *  commit the in-flight pass and return to idle. For a linear REPLACE
+ *  take, this is where "a linear re-record clears only the time span it
+ *  covers" (finding 77's re-record-over-punch model) happens. */
+function finishCaptureTake(endBeat: number): void {
+  const end = Math.max(endBeat, recordPassStartBeat);
+  const linearSpan =
+    passRecordMode === "replace" && passLoopSpan === null
+      ? { start: recordPassStartBeat, end }
+      : null;
+  commitCapturePass(end, linearSpan);
+  recordPhase = "idle";
+  recordArmed = false;
+  passLoopSpan = null;
+  updateRecordUI();
+}
+
+/** Seek wrapper for while-recording (ruler click / keyboard seek): a seek
+ *  is a discontinuity a pass must never span — commit what's captured so
+ *  far as its own pass, jump, then start a fresh pass at the target (no
+ *  repeat replace-clear — see beginCapturePass). Plain transport.seekTo
+ *  when not recording. */
+function transportSeek(targetBeat: number): void {
+  if (recordPhase !== "recording") { transport.seekTo(targetBeat); return; }
+  const from = transport.getPositionBeats();
+  const linearSpan =
+    passRecordMode === "replace" && passLoopSpan === null
+      ? { start: recordPassStartBeat, end: Math.max(from, recordPassStartBeat) }
+      : null;
+  const carry = commitCapturePass(Math.max(from, recordPassStartBeat), linearSpan);
+  transport.seekTo(targetBeat);
+  const loopSpan = looping && loopRegion
+    ? { start: loopRegion.startBeat, end: loopRegion.endBeat }
+    : null;
+  beginCapturePass(transport.getPositionBeats(), loopSpan, carry, false);
+}
+
+// ─── Ghost notes (live capture preview) ─────────────────────────────────────
+
+/** Render/refresh the current pass's ghost notes (outlined, pulsing while
+ *  held — see index.html's .pr-note-ghost). Diffed against capture.ts's
+ *  stable ghostIds rather than rebuilt, so a long pass doesn't churn DOM
+ *  on every ~25ms tick. Ghosts are pointer-events:none and never part of
+ *  the score — they solidify via commitCapturePass's renderNote calls. */
+function renderGhostNotes(nowBeat: number): void {
+  const pr = $("piano-roll");
+  const seen = new Set<string>();
+  for (const g of captureEngine.getGhostNotes(nowBeat)) {
+    seen.add(g.ghostId);
+    let el = ghostEls.get(g.ghostId);
+    if (!el) {
+      el = document.createElement("div");
+      el.className = "pr-note-ghost";
+      ghostEls.set(g.ghostId, el);
+      pr.appendChild(el);
+    }
+    el.classList.toggle("open", g.open);
+    el.style.left = g.startBeat * PX_PER_BEAT + "px";
+    el.style.top = (MIDI_HI - g.midi) * ROW_H + "px";
+    el.style.width = Math.max(4, g.durationBeats * PX_PER_BEAT) + "px";
+    el.style.height = ROW_H - 1 + "px";
+  }
+  for (const [id, el] of ghostEls) {
+    if (!seen.has(id)) { el.remove(); ghostEls.delete(id); }
+  }
+}
+
+function clearGhostNotes(): void {
+  for (const el of ghostEls.values()) el.remove();
+  ghostEls.clear();
+}
+
+/** Reflect arm/phase/mode onto the two buttons + the ruler's REC wash
+ *  (finding 74: the ACTIVE mode must be visible at the point of
+ *  recording; aria-labels restate everything the color/badge conveys). */
+function updateRecordUI(): void {
+  const btn = $("btn-record") as HTMLButtonElement;
+  const modeBtn = $("btn-record-mode") as HTMLButtonElement;
+  const armed = recordArmed || recordPhase !== "idle";
+  btn.classList.toggle("armed", armed);
+  btn.classList.toggle("recording", recordPhase === "recording");
+  btn.classList.toggle("counting", recordPhase === "counting-in");
+  btn.setAttribute("aria-pressed", String(armed));
+  btn.setAttribute(
+    "aria-label",
+    recordPhase === "recording"
+      ? `Stop recording (mode: ${recordMode}) — playback continues`
+      : recordPhase === "counting-in"
+        ? "Cancel count-in"
+        : `Record arm — mode: ${recordMode}`,
+  );
+  // Lens-I finding 6 (nit) — the title used to be a static HTML string
+  // ("Record — 1-bar count-in, then capture") that overclaimed a count-in
+  // even while the transport is already playing: toggleRecordArm() punches
+  // straight in with NO count-in whenever transport.isPlaying() is already
+  // true (finding 71 — "the already-sounding playback IS the reference
+  // interval a count-in exists to provide"). Kept accurate here instead.
+  btn.title =
+    recordPhase === "recording"
+      ? `Stop recording (mode: ${recordMode}) — playback continues`
+      : recordPhase === "counting-in"
+        ? "Cancel count-in"
+        : transport.isPlaying()
+          ? "Record — punch in now (no count-in; playback already rolling)"
+          : "Record — 1-bar count-in, then capture";
+  modeBtn.textContent = recordMode === "overdub" ? "OVERDUB" : "REPLACE";
+  modeBtn.classList.toggle("replace", recordMode === "replace");
+  modeBtn.setAttribute(
+    "aria-label",
+    recordMode === "overdub"
+      ? "Recording mode: overdub (accumulates per loop cycle) — click to switch to replace"
+      : "Recording mode: replace (clears the region each cycle) — click to switch to overdub",
+  );
+  document.getElementById("pr-ruler")?.classList.toggle("recording", recordPhase === "recording");
 }
 
 // ─── Undo/Redo ───────────────────────────────────────────────────────────────
@@ -1915,8 +2458,16 @@ function bindControls() {
   let velGestureBefore: number | null = null;
   let breathGestureBefore: number | null = null;
 
-  $("btn-play").addEventListener("click", () => transport.togglePlayPause());
-  $("btn-stop").addEventListener("click", () => transport.stop());
+  $("btn-play").addEventListener("click", () => {
+    // Wave C3 — same count-in-abort rule as the Space shortcut.
+    if (recordPhase === "counting-in") { cancelCountIn(); return; }
+    transport.togglePlayPause();
+  });
+  $("btn-stop").addEventListener("click", () => {
+    // Wave C3 — Stop during a count-in just aborts it (nothing to stop).
+    if (recordPhase === "counting-in") { cancelCountIn(); return; }
+    transport.stop();
+  });
   $("btn-loop").addEventListener("click", () => {
     looping = !looping;
     $("btn-loop").classList.toggle("active", looping);
@@ -1929,7 +2480,7 @@ function bindControls() {
     // skipped when already empty so clearing a blank score is a true no-op
     // (and doesn't push a pointless undo entry).
     if (state.getScore().length === 0) return;
-    transport.stop();
+    stopTransportForReset(); // Lens-I finding 3 — also cancels a pending count-in
     undo.execute(undo.clearScoreCommand());
     document.querySelectorAll(".pr-note").forEach((el) => el.remove());
     updateInspector();
@@ -1939,7 +2490,7 @@ function bindControls() {
   $("btn-reset").addEventListener("click", () => {
     const hasSaved = !!safeLoadRaw();
     if ((state.getScore().length > 0 || hasSaved) && !confirm("Reset the cockpit and clear the saved session? This cannot be undone.")) return;
-    transport.stop();
+    stopTransportForReset(); // Lens-I finding 3 — also cancels a pending count-in
     state.clearScore();
     document.querySelectorAll(".pr-note").forEach((el) => el.remove());
     updateInspector();
@@ -2442,6 +2993,19 @@ function validateImportedNote(n: unknown, index: number, snapshotBpm: number): N
   if (r.vowel !== undefined) note.vowel = r.vowel as VowelId;
   if (r.breathiness !== undefined) note.breathiness = r.breathiness as number;
   if (typeof r.lyric === "string") note.lyric = r.lyric;
+  // Wave C3 — raw capture timing round-trips through export/import JSON
+  // (exportScore already includes it via its rest-spread over Note). Same
+  // accept-as-a-valid-pair-or-drop-the-pair policy as persistence.ts's
+  // sanitizeNoteBeats: never reject the NOTE over bad raw fields — the
+  // quantized view is self-sufficient.
+  const rawStartBeat = r.rawStartBeat, rawDurationBeats = r.rawDurationBeats;
+  if (
+    typeof rawStartBeat === "number" && Number.isFinite(rawStartBeat) && rawStartBeat >= 0 &&
+    typeof rawDurationBeats === "number" && Number.isFinite(rawDurationBeats) && rawDurationBeats >= 0
+  ) {
+    note.rawStartBeat = rawStartBeat;
+    note.rawDurationBeats = rawDurationBeats;
+  }
   return { ok: true, note };
 }
 
@@ -2528,6 +3092,23 @@ function importScore(snap: ScoreSnapshot, recordUndo = true) {
     cleaned.push(result.note);
   }
 
+  // Lens-I findings 3/4 — stop the transport (cancelling any pending
+  // count-in) BEFORE snapshotting "before" state below, not after.
+  // transport.stop() can itself finish an in-flight capture pass (via
+  // onPlayStateChange -> finishCaptureTake, when recordPhase ===
+  // "recording"), which commits that pass's notes into the score AND
+  // pushes its own captureCommand. The old order snapshotted beforeNotes
+  // FIRST, so it missed those just-committed notes — undoing THIS import
+  // later then restored a score that predated the pass commit too, and a
+  // later undo of that same pass's captureCommand couldn't resolve ids
+  // the import's own undo had already erased, producing console.warn
+  // spam on the interleaving. Stopping first means beforeNotes already
+  // reflects the fully-committed score, same as every other
+  // snapshot-then-mutate call site in this file (Clear, e.g., already
+  // stops the transport before building its command for the identical
+  // reason).
+  stopTransportForReset();
+
   // Capture the "before" NOTES (with their real ids) and the "before"
   // SETTINGS now, prior to any mutation below (Wave C1 findings 1/5). The
   // Command itself is built further down, AFTER the settings/notes
@@ -2538,8 +3119,6 @@ function importScore(snap: ScoreSnapshot, recordUndo = true) {
   // comment for recordUndo.
   const beforeNotes = recordUndo ? state.getScore().map((n) => ({ ...n })) : null;
   const beforeSettings = recordUndo ? captureSettings() : null;
-
-  transport.stop();
 
   // Clear existing
   state.clearScore();
@@ -2655,7 +3234,7 @@ async function boot() {
     exportScore,
     importScore,
     play: () => transport.play(),
-    stop: () => transport.stop(),
+    stop: () => stopTransportForReset(), // Lens-I finding 3 — also cancels a pending count-in
     panic,
     setMode,
     getScore: () => [...state.getScore()],

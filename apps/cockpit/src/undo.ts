@@ -352,3 +352,60 @@ export function importScoreCommand<S>(
     },
   };
 }
+
+/**
+ * A completed record-capture pass (Wave C3 — see capture.ts's file header)
+ * as ONE undo unit: every note captured during a single loop cycle, or a
+ * whole linear take, batched into one command so Ctrl+Z during an ACTIVE
+ * multi-cycle overdub recording peels exactly the last COMPLETED pass —
+ * without stopping the transport or touching any earlier pass — for free
+ * (Ableton Live 12 Manual, "Recording New Clips": loop-record undo
+ * granularity is one recorded pass, removable mid-record; finding 78). That
+ * falls straight out of the existing linear stack (undo() just pops the
+ * most recently pushed command); this factory's only job is grouping the
+ * right notes into that one unit.
+ *
+ * commit()-only, like the drag/slider gesture commands (see the file
+ * header's execute()/commit() split) — the score has ALREADY been mutated
+ * live by the time this is constructed, and necessarily at two different
+ * instants: REPLACE mode clears the region's notes at the CYCLE START
+ * (live, so the performer doesn't spend the whole cycle hearing the
+ * material they're replacing — "REPLACE mode clears the region's notes at
+ * each cycle start before writing the new pass"), while the pass's
+ * captured notes are added at the CYCLE END (live via state.addNote, which
+ * is also what mints their real ids and lets main.ts render them as solid
+ * notes). One command still covers both mutations because both snapshots
+ * carry real ids: `added` (this pass's just-added notes — quantize-view
+ * already baked into startBeat/durationBeats by capture.ts's
+ * capturedNoteToInit, raw* fields riding along) and `removed` (REPLACE's
+ * cleared notes; empty for overdub) both restore via state.ts's
+ * id-preserving restoreNote (Wave C1 finding 1), exactly like
+ * deleteNoteCommand's captured original above. Both arrays are copied
+ * defensively at construction.
+ *
+ * Order matters inside redo(): the replace-clear runs BEFORE the new notes
+ * are restored, so a REPLACE pass that captured nothing still cleanly
+ * empties the region (removed non-empty + added empty is a valid, real
+ * command — main.ts only skips pushing a captureCommand when BOTH are
+ * empty, i.e. nothing happened at all this pass).
+ */
+export function captureCommand(added: readonly Note[], removed: readonly Note[]): Command {
+  const addedSnap = added.map((n) => ({ ...n }));
+  const removedSnap = removed.map((n) => ({ ...n }));
+  return {
+    redo() {
+      for (const n of removedSnap) {
+        const target = resolveNote(n.id, "captureCommand.redo(replace-clear)");
+        if (target) state.deleteNote(target);
+      }
+      for (const n of addedSnap) state.restoreNote({ ...n });
+    },
+    undo() {
+      for (const n of addedSnap) {
+        const target = resolveNote(n.id, "captureCommand.undo(remove-pass)");
+        if (target) state.deleteNote(target);
+      }
+      for (const n of removedSnap) state.restoreNote({ ...n });
+    },
+  };
+}
