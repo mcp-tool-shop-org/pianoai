@@ -36,16 +36,17 @@ jobs:
       - name: Verify tarball contents
         run: pnpm pack && ls -la *.tgz
 
-      # TODO(PR #12): migrate this step to OIDC Trusted Publishing once a
-      # Trusted Publisher is configured for @mcptoolshop/ai-jam-sessions on
-      # npmjs.com (owner=mcp-tool-shop-org, repo=ai-jam-sessions,
-      # workflow=release.yml). Until then, publish-docker below `needs:`
-      # this job so an invalid/expired NPM_TOKEN can't leave a Docker image
-      # published under a version that was never actually shipped to npm.
-      - name: Publish to npm
-        run: pnpm publish --no-git-checks --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # OIDC Trusted Publishing (configured on npmjs.com 2026-07-10:
+      # owner=mcp-tool-shop-org, repo=ai-jam-sessions, workflow=release.yml).
+      # Auth is the workflow's OIDC identity — intentionally NO NODE_AUTH_TOKEN.
+      # OIDC publishing requires npm >= 11.5.1; Node 22 bundles npm 10.9.x,
+      # so upgrade the global npm before the publish call. (Adopted from
+      # PR #12, applied directly after it conflicted with the pnpm-10 CI work.)
+      - name: Upgrade npm for OIDC trusted publishing (>= 11.5.1)
+        run: npm install -g npm@latest
+
+      - name: Publish to npm with Sigstore provenance
+        run: npm publish --provenance --access public
 
   publish-docker:
     needs: publish-npm
