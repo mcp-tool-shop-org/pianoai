@@ -27,7 +27,7 @@
     "logo-banner.png"
   ],
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.0.0"
   },
   "scripts": {
     "build": "tsc",
@@ -65,7 +65,7 @@
     "ajv": "^8.20.0",
     "jzz": "^1.8.0",
     "midi-file": "^1.2.4",
-    "node-web-audio-api": "^1.0.8",
+    "node-web-audio-api": "^2.0.0",
     "pink-trombone-mod": "^0.1.0",
     "vocal-synth-engine": "github:mcp-tool-shop-org/vocal-synth-engine#7269cd539b20907743601f66812b3d904d43508e",
     "zod": "^4.4.3"
