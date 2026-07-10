@@ -10,6 +10,10 @@ on:
       - "src/**"
       - "apps/**"
       - "scripts/**"
+      # songs/library configs are shipped runtime data (package.json "files"),
+      # validated by the registry, tests, and smoke — library edits must run
+      # CI. Gap found 2026-07-10: a key-corrections PR drew no CI without this.
+      - "songs/**"
       - "Dockerfile"
       - "plugin/**"
       - ".github/workflows/**"
@@ -23,6 +27,7 @@ on:
       - "src/**"
       - "apps/**"
       - "scripts/**"
+      - "songs/**"
       - "Dockerfile"
       - "plugin/**"
       - ".github/workflows/**"

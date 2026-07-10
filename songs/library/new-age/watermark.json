@@ -3,7 +3,7 @@
   "title": "Watermark",
   "genre": "new-age",
   "difficulty": "beginner",
-  "key": "Ab major",
+  "key": "E major",
   "tags": [
     "new-age",
     "enya",
@@ -12,16 +12,16 @@
   "composer": "Enya",
   "status": "ready",
   "musicalLanguage": {
-    "description": "Enya's Watermark is a 49-measure piece at 106 BPM, and the harness flags a loud key mismatch: the stated Ab major is not supported by the content (statedKeyFit -0.184), while the content-based read, E major, clears a real margin (0.225). Four of the five labels are diatonic to E major — E major itself (5 windows, the tonic), B major (2, the dominant), A major (1, the subdominant), and G# minor (1, the relative minor) — with only D major standing outside that set; 20% of windows considered clear the gate, thin but consistent. Structurally the piece favors small, frequently-reused cells over large blocks: an 11-note left-hand figure recurs 6 times (24.6% of left-hand events), a 4-note left-hand cell recurs 18 separate times, several of the piece's cells carry a transposition rather than repeating at fixed pitch, and the piece closes with a full 2-measure silence in both hands (measures 48-49) after 47 measures of continuous material.",
+    "description": "Enya's Watermark is a 49-measure piece at 106 BPM, and its key field was corrected to E major to match the content: the Ab major label this transcription originally carried is not supported by the content (fits at -0.184), while the content-based read, E major, clears a real margin (0.225). Four of the five labels are diatonic to E major — E major itself (5 windows, the tonic), B major (2, the dominant), A major (1, the subdominant), and G# minor (1, the relative minor) — with only D major standing outside that set; 20% of windows considered clear the gate, thin but consistent. Structurally the piece favors small, frequently-reused cells over large blocks: an 11-note left-hand figure recurs 6 times (24.6% of left-hand events), a 4-note left-hand cell recurs 18 separate times, several of the piece's cells carry a transposition rather than repeating at fixed pitch, and the piece closes with a full 2-measure silence in both hands (measures 48-49) after 47 measures of continuous material.",
     "structure": "The section lens finds relatively even novelty across the piece's seven sections (mostly in the 3.7-4.6 range, with no single dramatic spike), suggesting a gradually, continuously evolving texture rather than one sharp structural turn. The recurring 11-note left-hand figure (measures 3-5, 5-7, 12-13, 30-31, 32-33, and 40-42) and the 18-times-recurring 4-note cell thread through nearly the whole piece, before the piece's busiest measure (30, 17 onsets) gives way to a gradual thinning toward the final silence at measures 48-49.",
     "keyMoments": [
-      "Four of the five labels — E major (5 windows, the tonic), B major (2, the dominant), A major (1, the subdominant), and G# minor (1, the relative minor) — are diatonic to the content-detected E major, directly contradicting the stated Ab major even though only 20% of windows considered clear the gate at all.",
+      "Four of the five labels — E major (5 windows, the tonic), B major (2, the dominant), A major (1, the subdominant), and G# minor (1, the relative minor) — are diatonic to the content-detected E major, directly contradicting the Ab major label this transcription originally carried (the key field has since been corrected to E major) even though only 20% of windows considered clear the gate at all.",
       "An 11-note left-hand figure recurs 6 separate times (measures 3-5, 5-7, 12-13, 30-31, 32-33, and 40-42), covering close to a quarter of all left-hand events — the most economical single piece of material in the whole arrangement.",
       "A 4-note left-hand cell recurs 18 separate times across the piece, one occurrence transposed — this tiny shape is the single most-reused figure in the piece, teaching that small, repeatable gestures can carry as much structural weight as large blocks.",
       "The piece closes with a full 2-measure silence in both hands (measures 48-49) — the left hand plays continuously across all 47 measures before that (the right hand rests briefly at measures 1 and 19), so this ending silence is a deliberate, isolated event worth performing with real intention."
     ],
     "teachingGoals": [
-      "Learn to hear E major, B major, A major, and G# minor as the piece's real diatonic core, since four of the five labeled chords support that reading directly against the stated Ab major.",
+      "Learn to hear E major, B major, A major, and G# minor as the piece's real diatonic core, since four of the five labeled chords support that reading directly against the Ab major label this transcription originally carried.",
       "Master the 11-note left-hand figure (6 occurrences, nearly a quarter of left-hand events) as the single highest-value piece of material to learn first.",
       "Practice recognizing the 18-times-recurring 4-note cell by shape, including its one transposed appearance, rather than expecting it to sit at a single fixed pitch every time.",
       "Build a deliberate, controlled approach to the final 2-measure silence (measures 48-49), understanding it as the piece's only two-handed written rest (the right hand also rests briefly and separately at measures 1 and 19) and therefore a genuinely marked event, not an afterthought."
@@ -29,7 +29,7 @@
     "styleTips": [
       "Pedal for a gradually evolving resonance rather than one big arc — the section lens finds fairly even novelty across the piece's seven sections, so match your dynamic and pedal planning to that gradual, continuous unfolding rather than building toward one climax.",
       "Play the 18-times-recurring 4-note cell lightly and consistently, letting its frequent return function as connective tissue between the piece's more substantial recurring figures.",
-      "Listen for the E-B-A-G# minor diatonic color as the piece's harmonic home, rather than listening for the stated Ab major, which the labeled windows don't actually support.",
+      "Listen for the E-B-A-G# minor diatonic color as the piece's harmonic home, rather than listening for the Ab major label this transcription originally carried, which the labeled windows don't actually support.",
       "Try landing the final 2-measure silence with real intention — the left hand has played continuously since measure 1, so let the ending actually register as a stop, not a trail-off."
     ]
   }
