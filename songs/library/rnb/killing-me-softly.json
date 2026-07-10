@@ -3,7 +3,7 @@
   "title": "Killing Me Softly",
   "genre": "rnb",
   "difficulty": "beginner",
-  "key": "Eb major",
+  "key": "Db major",
   "tags": [
     "rnb",
     "roberta-flack",
@@ -12,10 +12,10 @@
   "composer": "Charles Fox",
   "status": "ready",
   "musicalLanguage": {
-    "description": "Killing Me Softly (Charles Fox) runs 143 measures at 118 BPM with 4,491 notes, and its key data carries the loudest correction in this transcription's own analysis: stated Eb major fits at just 0.204 while detection lands on C# major with a 0.345 margin — Db major in flats, a genuinely different key, so all harmony claims here follow the detected content. The 35 implied windows sit largely inside that Db reading: F minor — its iii — is the most-cited label (6% of windows considered), with C# (the tonic, measures 9, 43, 69, 95, 137), F# and F# major seventh (the IV, e.g. measures 37, 45, 63, 71, 73, 97), G#7 (the V7, measures 70 and 96), and A# minor (the vi, measure 3) around it; a recurring F major color (4%) sits outside the diatonic set — mixture the analysis flags only as implied. One structural signature stands out: the file marks its turns with silence — measures 15, 49, and 101 are empty or nearly so, each adjacent to a major section boundary (16, 50, 100).",
+    "description": "Killing Me Softly (Charles Fox) runs 143 measures at 118 BPM with 4,491 notes, and its key field has been corrected to Db major: the Eb major label this transcription originally carried fits at just 0.204 while detection lands on C# major with a 0.345 margin — Db major in flats, a genuinely different key — so all harmony claims here follow the detected content. The 35 implied windows sit largely inside that Db reading: F minor — its iii — is the most-cited label (6% of windows considered), with C# (the tonic, measures 9, 43, 69, 95, 137), F# and F# major seventh (the IV, e.g. measures 37, 45, 63, 71, 73, 97), G#7 (the V7, measures 70 and 96), and A# minor (the vi, measure 3) around it; a recurring F major color (4%) sits outside the diatonic set — mixture the analysis flags only as implied. One structural signature stands out: the file marks its turns with silence — measures 15, 49, and 101 are empty or nearly so, each adjacent to a major section boundary (16, 50, 100).",
     "structure": "Ten regions, and the biggest boundary in the file (novelty 7.615) opens measure 16 directly after the silent measure 15 — the same silence-then-pivot pattern recurs at measure 49 (silent) into the measure-50 boundary (novelty 4.197) and at measure 101 (1 onset) after the measure-100 boundary (4.245). Measure 48 returns byte-identical at measure 100 — the file's only literal measure repeat — and the pattern lens widens that into a 25-note right-hand phrase at measures 43-48 restating at 95-100. Underneath, a six-note left-hand cell is the accompaniment's pulse: 60 occurrences at compression ratio 5.455, covering 35% of the left hand's onsets, threading from measure 16 to measure 138. The right hand saves its ceiling, F6, for measure 140 in the closing region.",
     "keyMoments": [
-      "The stated key loses to the content decisively: Eb major fits at 0.204 while C# major detects at a 0.345 margin — the analysis's own summary instructs that harmony claims follow the detected key, and the windows oblige, centering on an implied F minor (iii of the Db-major reading, 6% of windows considered) with the tonic C# cited at measures 9, 43, 69, 95, and 137.",
+      "The key field has been corrected to Db major, retiring the Eb major label this transcription originally carried: the old label fits at 0.204 while C# major detects at a 0.345 margin — the analysis's own summary instructs that harmony claims follow the detected key, and the windows oblige, centering on an implied F minor (iii of the Db-major reading, 6% of windows considered) with the tonic C# cited at measures 9, 43, 69, 95, and 137.",
       "Silence is structural here: measures 15, 49, and 101 are written empty or nearly empty, and each sits against one of the file's largest section boundaries (novelty 7.615 at measure 16, 4.197 at measure 50, 4.245 at measure 100) — the arrangement breathes before every big turn.",
       "Measure 48 returns byte-identical at measure 100 — the only literal measure repeat in all 143 — and the pattern lens extends it to a 25-note right-hand phrase (measures 43-48) restating at measures 95-100: the refrain's landing, twice.",
       "A six-note left-hand cell recurs at 60 measures (compression ratio 5.455, 35% of the left hand's onsets) from measure 16 to measure 138 — one small shape is the groove's entire foundation."
@@ -24,7 +24,7 @@
       "Master the six-note left-hand cell first — with 60 occurrences covering 35% of the left hand's onsets, this single figure carries the accompaniment; loop it until it needs no attention.",
       "Learn the refrain phrase at measures 43-48 with its return at measures 95-100 in the same sitting — the byte-identical measure pair (48 and 100) guarantees the landing is the same both times.",
       "Practice the silence-into-pivot moments (measures 15 into 16, 49 into 50, 101 out of 100) as single gestures: stop fully, count honestly, re-enter exactly in tempo.",
-      "Ground your harmonic ear in the detected Db-major world — listen for the implied F minor color that keeps returning (the most-cited label at 6% of windows considered) and treat the stated Eb major as superseded by content."
+      "Ground your harmonic ear in the detected Db-major world — listen for the implied F minor color that keeps returning (the most-cited label at 6% of windows considered); the Eb major label this transcription originally carried has been corrected in the key field to match."
     ],
     "styleTips": [
       "Lay the backbeat a touch behind the pulse once the written rhythm is internalized — the groove tradition this song lives in places beats 2 and 4 slightly late against a steady bass; listen for the unhurried lean without losing the 118 BPM grid.",

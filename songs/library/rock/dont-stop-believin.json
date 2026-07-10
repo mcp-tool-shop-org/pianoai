@@ -3,7 +3,7 @@
   "title": "Don't Stop Believin'",
   "genre": "rock",
   "difficulty": "intermediate",
-  "key": "E major",
+  "key": "Db major",
   "tags": [
     "rock",
     "journey",
@@ -12,22 +12,22 @@
   "composer": "Journey",
   "status": "ready",
   "musicalLanguage": {
-    "description": "\"Don't Stop Believin'\" (1981) opens with one of rock's most recognizable piano vamps, and the harness's exact-repeat detection confirms just how literal that repetition is: measures 2-6 recur byte for byte at measures 10-14, again at 18-22, and again at 34-38 — the same figure restated four times before the song moves on. The harness's key-detection pass flags an explicit mismatch: the config states E major, but the content strongly indicates C# major instead (margin 0.181, while the stated E major actually fits the content negatively at -0.099). This annotation follows that content rather than the stated key: the confidence-gated windows are dominated by C#, F#, and F#maj7, with C#maj7, Fm7, G#, and Fm appearing as secondary colors. At 130 measures and a driving 118 BPM in 4/4, the piano part does something unusual at the very end: after measures of steady activity, it drops to complete silence for the final four measures (127-130) — the piano's own written part stops before the transcription's measure count does.",
+    "description": "\"Don't Stop Believin'\" (1981) opens with one of rock's most recognizable piano vamps, and the harness's exact-repeat detection confirms just how literal that repetition is: measures 2-6 recur byte for byte at measures 10-14, again at 18-22, and again at 34-38 — the same figure restated four times before the song moves on. The key field here has a corrected history: this transcription originally carried an E major label, but the content strongly indicates C# major instead (margin 0.181, while the old E major label actually fits the content negatively at -0.099), so the key field has been corrected to Db major — the flat respelling of that same detected C# major. This annotation follows that corrected key, keeping the windows' sharp spellings: the confidence-gated windows are dominated by C#, F#, and F#maj7, with C#maj7, Fm7, G#, and Fm appearing as secondary colors. At 130 measures and a driving 118 BPM in 4/4, the piano part does something unusual at the very end: after measures of steady activity, it drops to complete silence for the final four measures (127-130) — the piano's own written part stops before the transcription's measure count does.",
     "structure": "The opening vamp (measures 2-38, an 8-measure cell) repeats four times, each occurrence identical to the last. A busier middle stretch (measures 28-32) reaches the piece's highest density (23-32 onsets per measure). A second riff-based block (measures 60-123) is built almost entirely from short, strongly repeating right- and left-hand figures (graded strong, compression ratios above 4.4). The final four measures (127-130) fall completely silent in this transcription.",
     "keyMoments": [
-      "The harness's key-detection pass flags an explicit mismatch: stated E major, content indicates C# major at a 0.181 margin. Every chord name in this annotation follows that C# reading, not the config's E major.",
+      "The key field here has a corrected history: this transcription originally carried an E major label, but content indicates C# major at a 0.181 margin, and the field has been corrected to Db major (enharmonically the same key detection found). Every chord name in this annotation follows that C# reading.",
       "Measures 2-6 recur identically at measures 10-14, 18-22, and 34-38 — the harness's exact-repeat detection confirms the famous opening piano vamp really is repeated four times note for note, not just similar-sounding.",
       "Measures 28-32 are the busiest in the piece (23-32 onsets each), a genuine density peak inside the vamp-based opening section rather than at the song's later riff-driven passages.",
       "The section lens flags measures 126-130 with by far the largest novelty score anywhere in this piece (17.3) — the piano drops to total silence for the final four measures right after sustained activity, and sudden silence registers as maximal structural change."
     ],
     "teachingGoals": [
-      "Practice verifying a stated key against the actual content before trusting it — this piece's own detection margin (0.181) strongly favors C# major over the stated E major.",
+      "Practice verifying a key label against the actual content before trusting it — this piece is its own worked example: its detection margin (0.181) strongly favors C# major over the E major label the transcription originally carried, and the key field has since been corrected to Db major.",
       "Learn the opening vamp (measures 2-6) until it is completely automatic — it repeats four times in a row through measure 38, so fluency here pays off across more than a quarter of the piece's total length.",
       "Practice sustaining the busiest measures (28-32, 23-32 onsets) without losing tempo — this is the piece's real technical peak, arriving early rather than at the end.",
       "Recognize when a written part actually falls silent (measures 127-130) rather than assuming a transcription gap — practice the piece knowing exactly where the piano stops, so the ending doesn't come as a surprise."
     ],
     "styleTips": [
-      "Listen for C# and F#maj7 resolving the way a tonic and subdominant would, even though the stated key claims otherwise — trust what your ear and the confidence-gated windows agree on.",
+      "Listen for C# and F#maj7 resolving the way a tonic and subdominant would — the E major label this transcription originally carried claimed otherwise, and the key field has since been corrected to Db major. Trust what your ear and the confidence-gated windows agree on.",
       "Play the repeating opening vamp (measures 2-38) with subtle variation in touch across its four repetitions — mechanically identical notes don't have to sound mechanically identical.",
       "Feel the density peak at measures 28-32 as a genuine arrival, not just more notes to get through — let the extra onsets register as intensity, not just busyness.",
       "Try letting your hands actually stop at measure 127 rather than fading out gradually — the piano part's silence here is total and immediate, not a decrescendo."
