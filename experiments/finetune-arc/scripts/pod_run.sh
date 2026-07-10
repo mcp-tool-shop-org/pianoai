@@ -11,6 +11,7 @@ RUNS=$ARC/runs
 ART=$ARC/artifacts
 SEEDS=(13 42 271)
 export HF_HOME=/workspace/hf
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
 mkdir -p "$RUNS" "$ART"
 echo "=== [stage0] environment ==="
@@ -30,7 +31,8 @@ for SEED in "${SEEDS[@]}"; do
   echo "--- seed $SEED ---"
   python "$SCRIPTS/train_finetune_arc.py" \
     --data "$DATA/sft-train.jsonl" --tools "$DATA/tools.json" \
-    --out "$RUNS/seed$SEED" --seed "$SEED"
+    --out "$RUNS/seed$SEED" --seed "$SEED" \
+    --per-device-batch 1 --grad-accum 8
   cp "$RUNS/seed$SEED/run-config.json" "$ART/run-config-seed$SEED.json"
 done
 

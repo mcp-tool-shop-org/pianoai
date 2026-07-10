@@ -38,7 +38,11 @@ from transformers import (
 from peft import LoraConfig, get_peft_model
 
 CHECKPOINT_EPOCHS = {2, 4, 8, 16, 32}
-MAX_SEQ_LEN = 8192
+# 12288, not 8192: the 41-tool system block alone renders to ~8.6k tokens, and
+# the longest record hits ~9.3k (caught by the fail-fast render assertion on
+# the first launch, before any gradient step). Capacity constant only — see
+# P0-LOCK.md §5 amendment A1.
+MAX_SEQ_LEN = 12288
 PROMPT_LOSS_WEIGHT = 0.1
 
 
@@ -181,22 +185,33 @@ class PadCollator:
 
 
 class WeightedTrainer(Trainer):
+    # CE computed in sequence chunks: a full-width fp32 CE over the 152k Qwen
+    # vocab at 12k context is a >10 GiB single allocation (OOMed the L40S on
+    # step 1). Chunking bounds the CE workspace while keeping gradients exact.
+    CE_CHUNK = 1024
+
     def compute_loss(self, model, inputs, return_outputs=False, **kwargs):
         weights = inputs.pop("loss_weights")
         labels = inputs.pop("labels")
         outputs = model(**inputs)
         logits = outputs.logits
-        shift_logits = logits[..., :-1, :].contiguous()
-        shift_labels = labels[..., 1:].contiguous()
-        shift_weights = weights[..., 1:].contiguous()
-        loss_fct = CrossEntropyLoss(reduction="none")
-        per_token = loss_fct(
-            shift_logits.view(-1, shift_logits.size(-1)),
-            shift_labels.view(-1),
-        ).view(shift_labels.size())
-        valid = (shift_labels != -100).float()
-        w = shift_weights * valid
-        loss = (per_token * w).sum() / w.sum().clamp(min=1.0)
+        shift_labels = labels[..., 1:]
+        shift_weights = weights[..., 1:]
+        seq = logits.size(1) - 1
+        vocab = logits.size(-1)
+        loss_fct = CrossEntropyLoss(reduction="none", ignore_index=-100)
+        total = torch.zeros((), dtype=torch.float32, device=logits.device)
+        wsum = torch.zeros((), dtype=torch.float32, device=logits.device)
+        for s in range(0, seq, self.CE_CHUNK):
+            e = min(s + self.CE_CHUNK, seq)
+            lg = logits[:, s:e, :].float()
+            lb = shift_labels[:, s:e]
+            wt = shift_weights[:, s:e]
+            per_token = loss_fct(lg.reshape(-1, vocab), lb.reshape(-1)).reshape(lb.size())
+            w = wt * (lb != -100).float()
+            total = total + (per_token * w).sum()
+            wsum = wsum + w.sum()
+        loss = total / wsum.clamp(min=1.0)
         return (loss, outputs) if return_outputs else loss
 
 
@@ -279,6 +294,10 @@ def main() -> None:
         ],
     )
     model = get_peft_model(model, lora)
+    # Required with gradient checkpointing on a PEFT model: the frozen
+    # embedding output must carry requires_grad or every checkpointed
+    # segment detaches from the graph.
+    model.enable_input_require_grads()
     model.print_trainable_parameters()
 
     steps_per_epoch = math.ceil(
@@ -297,6 +316,7 @@ def main() -> None:
         max_grad_norm=1.0,
         bf16=True,
         gradient_checkpointing=True,
+        gradient_checkpointing_kwargs={"use_reentrant": False},
         logging_steps=1,
         save_strategy="no",
         report_to=[],
