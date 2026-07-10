@@ -135,6 +135,35 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
   z-index: 10; pointer-events: none; display: none;
 }
 
+/* ─── Select/Draw tool (Wave C4, findings 82/86) ─── persistent visible
+   indicator (the toolbar button's own .active/aria-pressed state, styled
+   via the shared .ctrl-btn.active rule already used for Loop/Follow/Move
+   mode) PLUS a distinct cursor over the roll itself, so the active tool is
+   legible even without looking at the toolbar. DRAW keeps a crosshair
+   ("click to place a note" — matches the pre-Wave-C4 default feel); SELECT
+   switches to a cell cursor ("click/drag to select," a spreadsheet-style
+   affordance distinct from both crosshair and the browser default). */
+#piano-roll-container.tool-draw #piano-roll { cursor: crosshair; }
+#piano-roll-container.tool-select #piano-roll { cursor: cell; }
+/* Lens-J finding 8 — WCAG 2.5.8 ≥24px touch target, same bar #btn-record/
+   #btn-record-mode already meet. The toolbar's inline style="min-width:44px"
+   on this button only ever set the horizontal minimum; .ctrl-btn's own
+   font-size/padding falls a couple px short of 24px tall on its own. */
+#btn-tool-select { min-height: 24px; }
+/* Notes themselves stay their own .pr-note cursor (pointer) in either
+   tool — only EMPTY-SPACE cursor changes; a note is always click/drag-able
+   regardless of tool (Wave C4 spec: "In SELECT mode clicking a note still
+   selects; dragging a note still moves"). */
+#piano-roll-container .pr-note { cursor: pointer; }
+
+/* Marquee rectangle (findings 79/80) — SELECT tool's empty-space drag.
+   Non-interactive (pointer-events:none): the drag gesture itself is owned
+   by #piano-roll's own pointer-capture, not this element. */
+.pr-marquee {
+  position: absolute; z-index: 6; pointer-events: none;
+  background: var(--accent-dim); border: 1px solid var(--accent);
+}
+
 /* ─── Time Ruler (Wave C2a) ─── docked above the roll, INSIDE the same
    horizontal scroll context: sticky vertically (stays pinned to the top of
    the viewport as the roll scrolls vertically) but scrolls normally
@@ -185,9 +214,18 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
   display: none; gap: 8px; align-items: center; font-size: 11px;
 }
 #inspector.active { display: flex; }
+/* Wave C4 — single-note detail vs. multi-selection summary; main.ts's
+   updateInspector() toggles which one is visible via inline style.display,
+   same pattern #insp-vocal already used pre-Wave-C4. */
+#insp-single, #insp-multi { display: flex; gap: 8px; align-items: center; }
 #inspector label { color: var(--text-muted); display: flex; align-items: center; gap: 3px; }
 #inspector input[type=range] { width: 60px; accent-color: var(--accent); }
 #inspector .note-name { font-family: var(--mono); font-weight: 600; color: var(--accent); min-width: 32px; }
+/* Lens-J finding 8 — WCAG 2.5.8 ≥24px touch target, same bar #btn-record/
+   #btn-record-mode already meet. insp-del-multi is new (Wave C4) and, unlike
+   #btn-record, never picked up an explicit min-height — plain .ctrl-btn.danger
+   padding/font-size falls a couple px short of 24px tall on its own. */
+#insp-del-multi { min-height: 24px; }
 
 /* ─── Keyboard ─── */
 #keyboard-area {
@@ -590,17 +628,28 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
     <div class="sep"></div>
 
     <div id="inspector">
-      <span class="note-name" id="insp-name">—</span>
-      <label>Vel <input type="range" id="insp-vel" min="1" max="127" value="100"> <span class="val" id="insp-vel-val">100</span></label>
-      <button class="ctrl-btn danger" id="insp-del" data-tip="Delete note (Del)" aria-label="Delete note (Del)" title="Delete note (Del)"><svg class="icon" width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M3.6 3.6l8.8 8.8M12.4 3.6l-8.8 8.8"/></svg></button>
-      <!-- Vocal note inspector -->
-      <div id="insp-vocal">
-        <button class="insp-vowel-btn" data-vowel="a">/a/</button>
-        <button class="insp-vowel-btn" data-vowel="e">/e/</button>
-        <button class="insp-vowel-btn" data-vowel="i">/i/</button>
-        <button class="insp-vowel-btn" data-vowel="o">/o/</button>
-        <button class="insp-vowel-btn" data-vowel="u">/u/</button>
-        <label>Br <input type="range" id="insp-breath" min="0" max="100" value="15" style="width:50px"> <span class="val" id="insp-breath-val">15</span></label>
+      <!-- Single-note detail (Wave C4: shown only when exactly one note is
+           selected — see main.ts's updateInspector). -->
+      <div id="insp-single">
+        <span class="note-name" id="insp-name">—</span>
+        <label>Vel <input type="range" id="insp-vel" min="1" max="127" value="100"> <span class="val" id="insp-vel-val">100</span></label>
+        <button class="ctrl-btn danger" id="insp-del" data-tip="Delete note (Del)" aria-label="Delete note (Del)" title="Delete note (Del)"><svg class="icon" width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M3.6 3.6l8.8 8.8M12.4 3.6l-8.8 8.8"/></svg></button>
+        <!-- Vocal note inspector -->
+        <div id="insp-vocal">
+          <button class="insp-vowel-btn" data-vowel="a">/a/</button>
+          <button class="insp-vowel-btn" data-vowel="e">/e/</button>
+          <button class="insp-vowel-btn" data-vowel="i">/i/</button>
+          <button class="insp-vowel-btn" data-vowel="o">/o/</button>
+          <button class="insp-vowel-btn" data-vowel="u">/u/</button>
+          <label>Br <input type="range" id="insp-breath" min="0" max="100" value="15" style="width:50px"> <span class="val" id="insp-breath-val">15</span></label>
+        </div>
+      </div>
+      <!-- Multi-selection summary (Wave C4: "multi shows count + common
+           ops" — count + one group-delete button, never an arbitrary
+           member's single-note fields). -->
+      <div id="insp-multi" style="display:none">
+        <span class="note-name" id="insp-multi-count">0 notes selected</span>
+        <button class="ctrl-btn danger" id="insp-del-multi" data-tip="Delete selected notes (Del)" aria-label="Delete selected notes" title="Delete selected notes (Del)"><svg class="icon" width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M3.6 3.6l8.8 8.8M12.4 3.6l-8.8 8.8"/></svg></button>
       </div>
     </div>
 
@@ -634,6 +683,14 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
     <button class="ctrl-btn" id="btn-stop" data-tip="Stop" aria-label="Stop" title="Stop"><svg class="icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false"><rect x="4" y="4" width="8" height="8" rx="1"/></svg></button>
     <button class="ctrl-btn" id="btn-loop" data-tip="Loop" aria-label="Loop" title="Loop" aria-pressed="false"><svg class="icon" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2.5 9.5 V7 a3 3 0 0 1 3-3 H11"/><path d="M8.5 1 L11.5 4 L8.5 7"/><path d="M13.5 6.5 V9 a3 3 0 0 1-3 3 H5"/><path d="M7.5 15 L4.5 12 L7.5 9"/></svg></button>
     <button class="ctrl-btn active" id="btn-follow" data-tip="Follow playhead" aria-label="Follow playhead" title="Follow playhead" aria-pressed="true"><svg class="icon" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="2.6"/><path d="M8 1.2 V4 M8 12 V14.8 M1.2 8 H4 M12 8 H14.8"/></svg></button>
+    <div class="sep" style="height:18px"></div>
+    <!-- Wave C4 (findings 82/86) — Select/Draw tool toggle. DRAW (default,
+         unpressed) = click empty space adds a note; SELECT (pressed) =
+         click/drag empty space marquee-selects. Key: A, momentary latch on
+         hold — see main.ts's beginToolHold for why "A" and not the wave's
+         pinned "B" (bare B already plays a note via the QWERTY musical
+         keyboard). -->
+    <button class="ctrl-btn" id="btn-tool-select" style="min-width:44px" data-tip="Select tool (A) — drag empty space to marquee-select; hold A to switch temporarily" aria-label="Select tool" title="Select tool (A) — click empty space to add a note in Draw, drag to marquee-select in Select; hold A to switch temporarily, click to toggle" aria-pressed="false">Draw</button>
     <div class="sep" style="height:18px"></div>
     <!-- Wave C2b (finding 40 — WCAG 2.5.7 single-pointer alternative to a
          move/resize DRAG): select a note, then Move a single tap on the
@@ -760,15 +817,20 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
   <h2>Keyboard Shortcuts</h2>
   <ul>
     <li><kbd>Space</kbd> Play / pause</li>
-    <li><kbd>Del</kbd> Delete selected note</li>
+    <li><kbd>Del</kbd> Delete selected note(s)</li>
     <li><kbd>Tab</kbd> Select next note (Shift+Tab: previous)</li>
-    <li><kbd>&uarr;</kbd><kbd>&darr;</kbd> Nudge pitch &nbsp; <kbd>&larr;</kbd><kbd>&rarr;</kbd> Nudge time</li>
-    <li><kbd>Shift</kbd>+<kbd>&larr;</kbd><kbd>&rarr;</kbd> Resize by one grid step</li>
+    <li><kbd>&uarr;</kbd><kbd>&darr;</kbd> Nudge pitch &nbsp; <kbd>&larr;</kbd><kbd>&rarr;</kbd> Nudge time &mdash; moves the WHOLE selection</li>
+    <li><kbd>Shift</kbd>+<kbd>&larr;</kbd><kbd>&rarr;</kbd> Resize by one grid step (single note only — kept as-is; see below)</li>
     <li><kbd>Enter</kbd> Add note at playhead</li>
     <li><kbd>Ctrl</kbd>+<kbd>Z</kbd> Undo &nbsp; <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd> Redo</li>
     <li>Toolbar <b>Move</b> button — tap the roll to relocate the selected note (no drag needed)</li>
     <li>Toolbar <b>&minus;</b> / <b>+</b> — resize selected note by one grid step</li>
-    <li><kbd>Esc</kbd> Panic (all notes off) &mdash; cancels an active drag or Move mode first</li>
+    <li><kbd>Esc</kbd> Panic (all notes off) &mdash; cancels an active drag or Move mode first, or clears a multi-selection instead of panicking</li>
+    <li><b>Multi-select (click a note):</b> plain click replaces selection &nbsp; <kbd>Shift</kbd>+click extends a range from the anchor &nbsp; <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+click toggles one note</li>
+    <li>Toolbar <b>Draw</b>/<b>Select</b> tool (<kbd>A</kbd>, hold to switch temporarily, click to toggle) — Select: drag empty space to marquee-select (<kbd>Shift</kbd>+drag adds to the selection); Draw: click empty space adds a note (default)</li>
+    <li><kbd>Ctrl</kbd>+<kbd>A</kbd> Select all &nbsp; <kbd>Ctrl</kbd>+<kbd>C</kbd> Copy &nbsp; <kbd>Ctrl</kbd>+<kbd>X</kbd> Cut &nbsp; <kbd>Ctrl</kbd>+<kbd>V</kbd> Paste at playhead &nbsp; <kbd>Ctrl</kbd>+<kbd>D</kbd> Duplicate (shifts by the selection's own length)</li>
+    <li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>&larr;</kbd><kbd>&rarr;</kbd> Extend selection range from the anchor, one note at a time &mdash; a deliberate deviation from the usual grid-widget Shift+Arrow: plain Shift+Arrow was already this app's single-note RESIZE shortcut (kept, see above), so range extension uses Ctrl+Shift+Arrow instead</li>
+    <li>Group drag/nudge move the WHOLE selection together as one undo step; group delete/paste/duplicate are likewise one step each</li>
     <li><kbd>Z</kbd>&ndash;<kbd>M</kbd> / <kbd>Q</kbd>&ndash;<kbd>U</kbd> Play keyboard</li>
     <li>Ruler (focus it first): <kbd>&larr;</kbd><kbd>&rarr;</kbd> Seek &plusmn;1 beat &nbsp; <kbd>Shift</kbd>+<kbd>&larr;</kbd><kbd>&rarr;</kbd> &plusmn;1 bar &nbsp; <kbd>Home</kbd>/<kbd>End</kbd> Start/score end</li>
     <li>Loop region: drag on the ruler (pointer only — no keyboard equivalent yet)</li>

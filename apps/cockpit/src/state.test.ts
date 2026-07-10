@@ -96,6 +96,226 @@ describe("selection", () => {
   });
 });
 
+describe("multi-select (Wave C4)", () => {
+  it("selectOnly replaces the whole selection with exactly one note and anchors it", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    state.selectOnly(a);
+    state.selectOnly(b);
+    expect(state.getSelection()).toEqual([b]);
+    expect(state.selectionSize()).toBe(1);
+    expect(state.getAnchor()).toBe(b);
+  });
+
+  it("selectOnly(null) clears the selection and anchor", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    state.selectOnly(a);
+    state.selectOnly(null);
+    expect(state.getSelection()).toEqual([]);
+    expect(state.getAnchor()).toBeNull();
+  });
+
+  it("selectNote/getSelectedNote still round-trip exactly as before (backward compat)", () => {
+    const note = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    expect(state.getSelectedNote()).toBeNull();
+    state.selectNote(note);
+    expect(state.getSelectedNote()).toBe(note);
+    state.selectNote(null);
+    expect(state.getSelectedNote()).toBeNull();
+  });
+
+  it("toggleSelect adds a note not yet selected, and makes it the anchor", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    state.selectOnly(a);
+    state.toggleSelect(b);
+    expect(state.getSelection().map((n) => n.id).sort()).toEqual([a.id, b.id].sort());
+    expect(state.getAnchor()).toBe(b);
+  });
+
+  it("toggleSelect removes a note already selected, without touching the rest", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    state.selectOnly(a);
+    state.toggleSelect(b);
+    state.toggleSelect(b);
+    expect(state.getSelection()).toEqual([a]);
+  });
+
+  it("toggleSelect re-anchors to a remaining member when the anchor itself is toggled off", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    state.selectOnly(a);
+    state.toggleSelect(b); // b is now anchor, {a, b} selected
+    state.toggleSelect(b); // remove b (the anchor) -> re-anchor to a
+    expect(state.getAnchor()).toBe(a);
+    expect(state.getSelection()).toEqual([a]);
+  });
+
+  it("toggleSelect down to zero members leaves a null anchor", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    state.selectOnly(a);
+    state.toggleSelect(a);
+    expect(state.getSelection()).toEqual([]);
+    expect(state.getAnchor()).toBeNull();
+  });
+
+  it("addRange unions notes into the selection without replacing it", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    const c = state.addNote({ midi: 64, startBeat: 2, durationBeats: 1, velocity: 100 });
+    state.selectOnly(a);
+    state.addRange([b, c]);
+    expect(state.getSelection().map((n) => n.id)).toEqual([a.id, b.id, c.id]);
+  });
+
+  it("addRange preserves a disjoint toggled note already in the selection (Lens-J finding 5 — keyboard Ctrl+Shift+Arrow range extension must stay union-like, matching mouse Shift+click, instead of collapsing to just the new range)", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    const disjoint = state.addNote({ midi: 71, startBeat: 20, durationBeats: 1, velocity: 100 });
+    state.selectOnly(a);
+    state.toggleSelect(disjoint); // Ctrl+click a far-away note — {a, disjoint} selected, disjoint is anchor
+    // The fixed extendSelectionRange calls addRange(...) directly from the
+    // CURRENT anchor — no selectOnly(anchor) first — so a prior disjoint
+    // member must survive a range extension exactly like it survives a
+    // mouse Shift+click (see handleNotePointerDown's Shift branch, which
+    // has always called addRange() alone).
+    state.addRange([a, b]);
+    expect(state.getSelection().map((n) => n.id).sort()).toEqual([a.id, b.id, disjoint.id].sort());
+  });
+
+  it("addRange does NOT move the anchor (repeated Shift+clicks measure from the same fixed anchor)", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    state.selectOnly(a);
+    state.addRange([b]);
+    expect(state.getAnchor()).toBe(a);
+  });
+
+  it("getSelection returns notes in SCORE order, not click order", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    const c = state.addNote({ midi: 64, startBeat: 2, durationBeats: 1, velocity: 100 });
+    state.selectOnly(c);
+    state.toggleSelect(a);
+    state.toggleSelect(b);
+    expect(state.getSelection()).toEqual([a, b, c]);
+  });
+
+  it("isSelected/selectedIds reflect current membership", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    state.selectOnly(a);
+    expect(state.isSelected(a.id)).toBe(true);
+    expect(state.isSelected(b.id)).toBe(false);
+    expect(state.getSelectedIds().has(a.id)).toBe(true);
+  });
+
+  it("clearSelection empties the set and the anchor", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    state.selectOnly(a);
+    state.clearSelection();
+    expect(state.getSelection()).toEqual([]);
+    expect(state.getAnchor()).toBeNull();
+    expect(state.selectionSize()).toBe(0);
+  });
+
+  it("selectAll selects every note in the score and anchors the last one", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    const c = state.addNote({ midi: 64, startBeat: 2, durationBeats: 1, velocity: 100 });
+    state.selectAll();
+    expect(state.getSelection()).toEqual([a, b, c]);
+    expect(state.getAnchor()).toBe(c);
+  });
+
+  it("selectAll on an empty score selects nothing and anchors null", () => {
+    state.selectAll();
+    expect(state.getSelection()).toEqual([]);
+    expect(state.getAnchor()).toBeNull();
+  });
+
+  it("getSelectedNote returns null when more than one note is selected", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    state.selectOnly(a);
+    state.toggleSelect(b);
+    expect(state.getSelectedNote()).toBeNull();
+  });
+
+  it("restoreSelection sets the exact ids given and anchors the last one", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    state.restoreSelection([a.id, b.id]);
+    expect(state.getSelection().map((n) => n.id)).toEqual([a.id, b.id]);
+    expect(state.getAnchor()).toBe(b);
+  });
+
+  it("restoreSelection silently drops ids no longer present in the score", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    state.restoreSelection([a.id, "gone"]);
+    expect(state.getSelection()).toEqual([a]);
+    expect(state.getAnchor()).toBe(a);
+  });
+
+  describe("restoreSelection anchorHint (Lens-J finding 6 — 'anchor not restored by undo of group ops')", () => {
+    it("honors an explicit anchorHint when it survives in the restored set, even when it is not the last id", () => {
+      const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+      const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+      state.restoreSelection([a.id, b.id], a.id); // a is FIRST, not last — only the hint should win
+      expect(state.getAnchor()).toBe(a);
+    });
+
+    it("falls back to the last-surviving-id default when anchorHint is not among the restored ids", () => {
+      const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+      const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+      state.restoreSelection([a.id, b.id], "does-not-exist");
+      expect(state.getAnchor()).toBe(b);
+    });
+
+    it("falls back to the last-surviving-id default when anchorHint is explicitly null", () => {
+      const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+      const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+      state.restoreSelection([a.id, b.id], null);
+      expect(state.getAnchor()).toBe(b);
+    });
+
+    it("omitting anchorHint entirely keeps the pre-existing last-id behavior (backward compatible with every pre-Lens-J call site)", () => {
+      const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+      const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+      state.restoreSelection([a.id, b.id]);
+      expect(state.getAnchor()).toBe(b);
+    });
+  });
+
+  it("deleteNote drops a multi-selected note from the selection without disturbing the rest", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    state.selectOnly(a);
+    state.toggleSelect(b);
+    state.deleteNote(a);
+    expect(state.getSelection()).toEqual([b]);
+  });
+
+  it("deleteNote of the anchor re-anchors to a remaining selected note", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    state.selectOnly(a);
+    state.toggleSelect(b); // b is anchor
+    state.deleteNote(b);
+    expect(state.getAnchor()).toBe(a);
+  });
+
+  it("replaceScore/replaceScoreWithIds/clearScore all clear a multi-selection too", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    state.selectOnly(a);
+    state.toggleSelect(b);
+    state.clearScore();
+    expect(state.selectionSize()).toBe(0);
+  });
+});
+
 describe("deleteNote / deleteSelectedNote", () => {
   it("deleteNote removes the note from the score and returns true", () => {
     const note = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });

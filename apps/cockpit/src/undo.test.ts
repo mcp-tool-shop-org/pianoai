@@ -654,6 +654,127 @@ describe("boundary nudge guard (Wave C1 finding 2)", () => {
   });
 });
 
+// ─── Lens-J finding 1: drag-shaped live-mutation no-op guard ──────────────
+//
+// main.ts's startGroupDrag applyDelta (live drag ticks) and onUp (final
+// commit-snap) both used to call state.moveNote() UNCONDITIONALLY on every
+// group member, every tick — and state.moveNote() always clears
+// rawStartBeat/rawDurationBeats (see its own doc comment). That silently
+// stripped raw* from a member that was only ever boundary-clamped to a
+// no-op (e.g. already at MIDI_HI while the rest of the group dragged
+// upward), and a true zero-movement gesture (a plain click landing on an
+// already-selected group member) stripped raw* from the ENTIRE selection
+// with no undo entry to recover it — groupMoveCommand's own no-op skip
+// (see "a no-op entry ... keeps its raw* timing fields intact" above) only
+// ever protected the discrete nudge/commit path, never this live tick.
+//
+// The fix makes both call sites compute each member's CLAMPED target via
+// state.clampedMoveTarget FIRST and skip state.moveNote() entirely when
+// it's null — the exact same shape nudgeSelection/the "boundary nudge
+// guard" block above already used. These tests exercise that composition
+// directly (main.ts itself is never imported by tests — see this file's
+// own header) by mirroring the fixed applyDelta/onUp shape locally.
+describe("drag-shaped live-mutation no-op guard (Lens-J finding 1)", () => {
+  /** Mirrors main.ts's FIXED startGroupDrag applyDelta exactly: for each
+   *  group member, compute the clamped target from its ORIGINAL position +
+   *  this tick's delta, and skip state.moveNote() entirely when the result
+   *  is null (identical to where the note already sits). */
+  function applyGroupDeltaLikeMainTs(
+    group: readonly { note: Note; origBeat: number; origMidi: number }[],
+    dBeatRaw: number, dMidi: number,
+  ): void {
+    for (const g of group) {
+      const clamped = state.clampedMoveTarget(g.note, g.origBeat + dBeatRaw, g.origMidi + dMidi);
+      if (clamped) state.moveNote(g.note, clamped.startBeat, clamped.midi);
+    }
+  }
+
+  it("a group member clamped to a no-op (already at MIDI_HI) keeps raw* while another member genuinely moves in the same tick", () => {
+    const stuck = state.addNote({
+      midi: state.MIDI_HI, startBeat: 4, durationBeats: 1, velocity: 100,
+      rawStartBeat: 0.12, rawDurationBeats: 0.88,
+    });
+    const moved = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const group = [
+      { note: stuck, origBeat: 4, origMidi: state.MIDI_HI },
+      { note: moved, origBeat: 0, origMidi: 60 },
+    ];
+    // Whole group nudged up a semitone — `stuck` is already at the ceiling
+    // so its clamped target is identical to where it sits; `moved` isn't.
+    applyGroupDeltaLikeMainTs(group, 0, 1);
+    expect(stuck.midi).toBe(state.MIDI_HI);
+    expect(stuck.rawStartBeat).toBe(0.12);
+    expect(stuck.rawDurationBeats).toBe(0.88);
+    expect(moved.midi).toBe(61);
+  });
+
+  it("a zero-delta application (a plain click — no real movement this tick) mutates NOTHING in the group, raw* included", () => {
+    const a = state.addNote({
+      midi: 60, startBeat: 4, durationBeats: 1, velocity: 100,
+      rawStartBeat: 0.2, rawDurationBeats: 0.7,
+    });
+    const b = state.addNote({
+      midi: 65, startBeat: 8, durationBeats: 1, velocity: 100,
+      rawStartBeat: 0.05, rawDurationBeats: 0.95,
+    });
+    const group = [
+      { note: a, origBeat: 4, origMidi: 60 },
+      { note: b, origBeat: 8, origMidi: 65 },
+    ];
+    applyGroupDeltaLikeMainTs(group, 0, 0);
+    expect(a.startBeat).toBe(4); expect(a.midi).toBe(60);
+    expect(b.startBeat).toBe(8); expect(b.midi).toBe(65);
+    expect(a.rawStartBeat).toBe(0.2); expect(a.rawDurationBeats).toBe(0.7);
+    expect(b.rawStartBeat).toBe(0.05); expect(b.rawDurationBeats).toBe(0.95);
+  });
+
+  it("a zero-delta group gesture (plain click) pushes NO undo command — mirrors onUp's anyMoved-gated commit tail", () => {
+    const a = state.addNote({ midi: 60, startBeat: 4, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 65, startBeat: 8, durationBeats: 1, velocity: 100 });
+    const group = [
+      { note: a, origBeat: 4, origMidi: 60 },
+      { note: b, origBeat: 8, origMidi: 65 },
+    ];
+    // Live tick(s): zero delta throughout, exactly like onMove either never
+    // firing at all or firing with a sub-threshold movement on a true click.
+    applyGroupDeltaLikeMainTs(group, 0, 0);
+    // onUp's tail, reproduced exactly: build one entry per group member,
+    // track whether ANYTHING actually moved, and only commit when it did
+    // (main.ts's startGroupDrag onUp / undo.ts's own file-header note on
+    // why a vacuous command is never pushed).
+    const entries: undo.GroupMoveEntry[] = [];
+    let anyMoved = false;
+    for (const g of group) {
+      const after = { startBeat: g.note.startBeat, midi: g.note.midi };
+      if (after.startBeat !== g.origBeat || after.midi !== g.origMidi) anyMoved = true;
+      entries.push({ noteId: g.note.id, before: { startBeat: g.origBeat, midi: g.origMidi }, after });
+    }
+    expect(anyMoved).toBe(false);
+    if (anyMoved) undo.commit(undo.groupMoveCommand(entries));
+    expect(undo.undoDepth()).toBe(0);
+    expect(undo.canUndo()).toBe(false);
+  });
+
+  it("onUp's final commit-snap guard is also a no-op for an already-settled mouse-dragged note, leaving raw* intact", () => {
+    // Mirrors onUp's per-member tail exactly: state.clampedMoveTarget(target,
+    // commitDragBeats(target.startBeat), target.midi) — for a mouse/pen
+    // drag, commitDragBeats is a no-op (gesture.ts: "a no-op in practice"
+    // since resolveDragBeats already quantized every live tick), so this
+    // must resolve to null and never touch raw* again at commit time.
+    const note = state.addNote({
+      midi: 60, startBeat: 4, durationBeats: 1, velocity: 100,
+      rawStartBeat: 0.33, rawDurationBeats: 0.5,
+    });
+    const commitDragBeatsNoOp = (b: number) => b; // mouse/pen: already quantized every tick
+    const clamped = state.clampedMoveTarget(note, commitDragBeatsNoOp(note.startBeat), note.midi);
+    expect(clamped).toBeNull();
+    if (clamped) state.moveNote(note, clamped.startBeat, clamped.midi);
+    expect(note.startBeat).toBe(4);
+    expect(note.rawStartBeat).toBe(0.33);
+    expect(note.rawDurationBeats).toBe(0.5);
+  });
+});
+
 describe("resolveNote loud-miss warning (Wave C1 finding 1)", () => {
   it("warns via console.warn when a command's note id can't be resolved (should only happen on a genuine bug)", () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
@@ -661,6 +782,279 @@ describe("resolveNote loud-miss warning (Wave C1 finding 1)", () => {
     expect(warnSpy).toHaveBeenCalledTimes(1);
     expect(String(warnSpy.mock.calls[0][0])).toContain("does-not-exist");
     warnSpy.mockRestore();
+  });
+});
+
+// ─── Wave C4: group commands (multi-select + clipboard) ───────────────────
+
+describe("groupMoveCommand", () => {
+  it("redo() moves every note to its own after-position and reselects the group", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    const cmd = undo.groupMoveCommand([
+      { noteId: a.id, before: { startBeat: 0, midi: 60 }, after: { startBeat: 4, midi: 64 } },
+      { noteId: b.id, before: { startBeat: 1, midi: 62 }, after: { startBeat: 5, midi: 66 } },
+    ]);
+    undo.execute(cmd);
+    expect(a.startBeat).toBe(4);
+    expect(a.midi).toBe(64);
+    expect(b.startBeat).toBe(5);
+    expect(b.midi).toBe(66);
+    expect(state.getSelection().map((n) => n.id).sort()).toEqual([a.id, b.id].sort());
+  });
+
+  it("undo() restores every note's exact prior position and reselects the group", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    const cmd = undo.groupMoveCommand([
+      { noteId: a.id, before: { startBeat: 0, midi: 60 }, after: { startBeat: 4, midi: 64 } },
+      { noteId: b.id, before: { startBeat: 1, midi: 62 }, after: { startBeat: 5, midi: 66 } },
+    ]);
+    undo.execute(cmd);
+    undo.undo();
+    expect(a.startBeat).toBe(0);
+    expect(a.midi).toBe(60);
+    expect(b.startBeat).toBe(1);
+    expect(b.midi).toBe(62);
+    expect(state.getSelection().map((n) => n.id).sort()).toEqual([a.id, b.id].sort());
+  });
+
+  it("is a single stack entry regardless of how many notes are in the group", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    const c = state.addNote({ midi: 64, startBeat: 2, durationBeats: 1, velocity: 100 });
+    undo.execute(undo.groupMoveCommand([
+      { noteId: a.id, before: { startBeat: 0, midi: 60 }, after: { startBeat: 1, midi: 61 } },
+      { noteId: b.id, before: { startBeat: 1, midi: 62 }, after: { startBeat: 2, midi: 63 } },
+      { noteId: c.id, before: { startBeat: 2, midi: 64 }, after: { startBeat: 3, midi: 65 } },
+    ]));
+    expect(undo.undoDepth()).toBe(1);
+  });
+
+  it("round-trips through undo() then redo()", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const cmd = undo.groupMoveCommand([
+      { noteId: a.id, before: { startBeat: 0, midi: 60 }, after: { startBeat: 4, midi: 64 } },
+    ]);
+    undo.execute(cmd);
+    undo.undo();
+    undo.redo();
+    expect(a.startBeat).toBe(4);
+    expect(a.midi).toBe(64);
+  });
+
+  it("a no-op entry (after === before, e.g. a boundary-clamped group member) keeps its raw* timing fields intact", () => {
+    const stuck = state.addNote({
+      midi: state.MIDI_HI, startBeat: 4, durationBeats: 1, velocity: 100,
+      rawStartBeat: 0.12, rawDurationBeats: 0.88,
+    });
+    const moved = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    undo.execute(undo.groupMoveCommand([
+      { noteId: stuck.id, before: { startBeat: 4, midi: state.MIDI_HI }, after: { startBeat: 4, midi: state.MIDI_HI } },
+      { noteId: moved.id, before: { startBeat: 0, midi: 60 }, after: { startBeat: 1, midi: 61 } },
+    ]));
+    expect(stuck.rawStartBeat).toBe(0.12);
+    expect(stuck.rawDurationBeats).toBe(0.88);
+    expect(moved.startBeat).toBe(1);
+  });
+
+  it("a no-op entry still keeps its note in the reselected group after undo/redo", () => {
+    const stuck = state.addNote({ midi: state.MIDI_HI, startBeat: 4, durationBeats: 1, velocity: 100 });
+    const moved = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const cmd = undo.groupMoveCommand([
+      { noteId: stuck.id, before: { startBeat: 4, midi: state.MIDI_HI }, after: { startBeat: 4, midi: state.MIDI_HI } },
+      { noteId: moved.id, before: { startBeat: 0, midi: 60 }, after: { startBeat: 1, midi: 61 } },
+    ]);
+    undo.execute(cmd);
+    expect(state.getSelection().map((n) => n.id).sort()).toEqual([stuck.id, moved.id].sort());
+    undo.undo();
+    expect(state.getSelection().map((n) => n.id).sort()).toEqual([stuck.id, moved.id].sort());
+  });
+
+  it("skips (does not throw) a note that no longer exists, and still moves the rest", () => {
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    const cmd = undo.groupMoveCommand([
+      { noteId: "does-not-exist", before: { startBeat: 0, midi: 60 }, after: { startBeat: 4, midi: 64 } },
+      { noteId: b.id, before: { startBeat: 1, midi: 62 }, after: { startBeat: 5, midi: 66 } },
+    ]);
+    expect(() => undo.execute(cmd)).not.toThrow();
+    expect(b.startBeat).toBe(5);
+  });
+
+  it("redo() and undo() both restore the ORIGINAL anchor, not just the last id in the group (Lens-J finding 6)", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    state.selectOnly(b);
+    state.toggleSelect(a); // a becomes anchor; {a, b} selected
+    expect(state.getAnchor()).toBe(a);
+    // `a` is listed FIRST in the entries below (b is "last id in the
+    // group") — a stale "anchor = last restored id" fallback would wrongly
+    // report b as the anchor instead of the real pivot, a.
+    const cmd = undo.groupMoveCommand([
+      { noteId: a.id, before: { startBeat: 0, midi: 60 }, after: { startBeat: 4, midi: 64 } },
+      { noteId: b.id, before: { startBeat: 1, midi: 62 }, after: { startBeat: 5, midi: 66 } },
+    ]);
+    undo.execute(cmd);
+    expect(state.getAnchor()).toBe(a);
+    undo.undo();
+    expect(state.getAnchor()).toBe(a);
+  });
+});
+
+describe("groupDeleteCommand", () => {
+  it("redo() (execute) deletes every note in the group", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    state.addNote({ midi: 64, startBeat: 2, durationBeats: 1, velocity: 100 }); // untouched
+    undo.execute(undo.groupDeleteCommand([a, b]));
+    expect(state.getScore().map((n) => n.midi)).toEqual([64]);
+  });
+
+  it("is a single stack entry for the whole group", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    undo.execute(undo.groupDeleteCommand([a, b]));
+    expect(undo.undoDepth()).toBe(1);
+  });
+
+  it("undo() restores every note under its ORIGINAL id and reselects the group (finding 86)", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    const idA = a.id, idB = b.id;
+    undo.execute(undo.groupDeleteCommand([a, b]));
+    undo.undo();
+    expect(state.getScore().map((n) => n.id).sort()).toEqual([idA, idB].sort());
+    expect(state.getSelection().map((n) => n.id).sort()).toEqual([idA, idB].sort());
+  });
+
+  it("redo() after undo() re-deletes the restored group (id churn handled)", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    undo.execute(undo.groupDeleteCommand([a, b]));
+    undo.undo();
+    undo.redo();
+    expect(state.getScore()).toHaveLength(0);
+  });
+
+  it("a leftover selected note from BEFORE the group delete is untouched by undo's reselect", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    const untouched = state.addNote({ midi: 64, startBeat: 2, durationBeats: 1, velocity: 100 });
+    undo.execute(undo.groupDeleteCommand([a, b]));
+    undo.undo();
+    // Reselecting the restored group replaces whatever was selected, same as
+    // every other command's selection contract — `untouched` was never part
+    // of this group, so it's correctly NOT in the restored selection.
+    expect(state.getSelection().map((n) => n.id)).not.toContain(untouched.id);
+  });
+
+  it("undo() restores the anchor active BEFORE the delete, not just the last restored id (Lens-J finding 6)", () => {
+    const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const b = state.addNote({ midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 });
+    const idA = a.id, idB = b.id;
+    state.selectOnly(b);
+    state.toggleSelect(a); // a becomes anchor; {a, b} selected — a is passed FIRST below, b LAST
+    expect(state.getAnchor()?.id).toBe(idA);
+    undo.execute(undo.groupDeleteCommand([a, b]));
+    undo.undo();
+    expect(state.getAnchor()?.id).toBe(idA);
+    expect(state.getSelection().map((n) => n.id).sort()).toEqual([idA, idB].sort());
+  });
+});
+
+describe("pasteCommand", () => {
+  it("execute() adds every pasted note and selects the whole new group", () => {
+    const cmd = undo.pasteCommand([
+      { midi: 60, startBeat: 4, durationBeats: 1, velocity: 100 },
+      { midi: 64, startBeat: 5, durationBeats: 1, velocity: 100 },
+    ], []);
+    undo.execute(cmd);
+    expect(state.getScore()).toHaveLength(2);
+    expect(state.getSelection()).toHaveLength(2);
+    expect(state.getSelection().map((n) => n.midi).sort()).toEqual([60, 64]);
+  });
+
+  it("is a single stack entry regardless of how many notes were pasted", () => {
+    undo.execute(undo.pasteCommand([
+      { midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 },
+      { midi: 62, startBeat: 1, durationBeats: 1, velocity: 100 },
+      { midi: 64, startBeat: 2, durationBeats: 1, velocity: 100 },
+    ], []));
+    expect(undo.undoDepth()).toBe(1);
+  });
+
+  it("undo() removes every pasted note", () => {
+    undo.execute(undo.pasteCommand([
+      { midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 },
+      { midi: 64, startBeat: 1, durationBeats: 1, velocity: 100 },
+    ], []));
+    undo.undo();
+    expect(state.getScore()).toHaveLength(0);
+  });
+
+  it("undo() restores whatever was selected BEFORE the paste", () => {
+    const preExisting = state.addNote({ midi: 71, startBeat: 8, durationBeats: 1, velocity: 100 });
+    state.selectOnly(preExisting);
+    const cmd = undo.pasteCommand(
+      [{ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 }],
+      [preExisting.id],
+    );
+    undo.execute(cmd);
+    undo.undo();
+    expect(state.getSelection()).toEqual([preExisting]);
+  });
+
+  it("redo() after undo() restores the SAME ids (Wave C1 finding 1 parity)", () => {
+    undo.execute(undo.pasteCommand([{ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 }], []));
+    const firstId = state.getScore()[0].id;
+    undo.undo();
+    undo.redo();
+    expect(state.getScore()[0].id).toBe(firstId);
+  });
+
+  it("a later command's undo still resolves after a paste's own undo/redo cycle (id stability)", () => {
+    undo.execute(undo.pasteCommand([{ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 }], []));
+    undo.undo();
+    undo.redo();
+    const pastedId = state.getScore()[0].id;
+    undo.execute(undo.moveCommand(pastedId, { startBeat: 0, midi: 60 }, { startBeat: 4, midi: 67 }));
+    undo.undo();
+    expect(state.getScore()[0].startBeat).toBe(0);
+  });
+
+  it("preserves vowel/breathiness/lyric fields from the pasted NoteInit", () => {
+    undo.execute(undo.pasteCommand(
+      [{ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100, vowel: "u", breathiness: 0.3 }],
+      [],
+    ));
+    expect(state.getScore()[0].vowel).toBe("u");
+    expect(state.getScore()[0].breathiness).toBe(0.3);
+  });
+
+  it("mutating the source inits array after construction does not affect the recorded command", () => {
+    const inits = [{ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 }];
+    const cmd = undo.pasteCommand(inits, []);
+    inits[0].midi = 1;
+    undo.execute(cmd);
+    expect(state.getScore()[0].midi).toBe(60);
+  });
+
+  it("undo() restores the anchor active BEFORE the paste, not just the last id in selectionBefore (Lens-J finding 6)", () => {
+    const p = state.addNote({ midi: 71, startBeat: 8, durationBeats: 1, velocity: 100 });
+    const q = state.addNote({ midi: 74, startBeat: 9, durationBeats: 1, velocity: 100 });
+    state.selectOnly(q);
+    state.toggleSelect(p); // p becomes anchor; {p, q} selected
+    expect(state.getAnchor()).toBe(p);
+    // selectionBefore lists q LAST — a stale "anchor = last id" fallback
+    // would wrongly restore q as the anchor instead of the real pivot, p.
+    const cmd = undo.pasteCommand(
+      [{ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 }],
+      [p.id, q.id],
+    );
+    undo.execute(cmd);
+    undo.undo();
+    expect(state.getAnchor()).toBe(p);
+    expect(state.getSelection().map((n) => n.id).sort()).toEqual([p.id, q.id].sort());
   });
 });
 

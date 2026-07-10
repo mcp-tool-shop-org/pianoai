@@ -298,6 +298,33 @@ export function shouldRefuseUndoWhileRecording(phase: RecordPhase): boolean {
   return phase === "recording";
 }
 
+/** True when marquee-select and score-mutating selection operations
+ *  (marquee drag start, Delete/Backspace + both inspector delete buttons,
+ *  Ctrl+X/V/D) must be REFUSED while actively recording (Wave C4 interplay
+ *  guard — "recording active -> marquee/clipboard disabled, consistent with
+ *  refuse-undo-while-recording"). Corrected under Lens-J finding 4: this
+ *  comment previously listed Ctrl+C (copy) among the refused operations,
+ *  which never matched reality — main.ts's copySelection() has never called
+ *  this predicate. That's deliberate, not an oversight: copying only reads
+ *  the current selection into the clipboard store, it never mutates the
+ *  score, so it can't race the capture engine's live writes the way the
+ *  operations actually gated here can — there is nothing here for Ctrl+C to
+ *  be refused FROM. Same gating condition as shouldRefuseUndoWhileRecording
+ *  above (recording, not merely armed or counting-in — a pending count-in
+ *  has captured nothing yet, so there's nothing for a marquee/delete/
+ *  clipboard-paste op to race), kept as its OWN named predicate rather than
+ *  reusing that one directly: the two guard DIFFERENT call sites for
+ *  DIFFERENT reasons (that one protects undo-stack consistency against
+ *  REPLACE's live cycle-boundary sweep; this one keeps a marquee drag or a
+ *  score mutation from racing the capture engine's own live score writes —
+ *  ghost notes solidifying into real notes, REPLACE's live clear —
+ *  mid-gesture). Two named predicates means a future wave that needs the
+ *  two to diverge doesn't have to first disentangle one overloaded name's
+ *  call sites. */
+export function shouldRefuseSelectionOpWhileRecording(phase: RecordPhase): boolean {
+  return phase === "recording";
+}
+
 // ─── Held-pitch source tracking (Lens-I finding 2) ───────────────────────────
 //
 // main.ts's heldMidi needs to remember not just WHICH pitches are currently

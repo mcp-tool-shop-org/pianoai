@@ -18,7 +18,7 @@ import {
   COARSE_BUCKET_MS, COARSE_DETECT_WINDOW,
   blendTowardGrid, deriveQuantizeView, capturedNoteToInit,
   computeCountInClicks, canCapture, hasPendingCountIn,
-  shouldRefuseUndoWhileRecording, createHeldPitchTracker,
+  shouldRefuseUndoWhileRecording, shouldRefuseSelectionOpWhileRecording, createHeldPitchTracker,
   createCaptureEngine,
   DEFAULT_CALIBRATION, DEFAULT_QUANTIZE_STRENGTH,
   type CapturedNote, type SourceCalibration,
@@ -285,6 +285,24 @@ describe("shouldRefuseUndoWhileRecording (Lens-I finding 1)", () => {
   });
   it("false during the count-in — nothing has been captured yet, so nothing to corrupt", () => {
     expect(shouldRefuseUndoWhileRecording("counting-in")).toBe(false);
+  });
+});
+
+describe("shouldRefuseSelectionOpWhileRecording (Wave C4 interplay guard)", () => {
+  it("true while actively recording — marquee/clipboard ops must not race live capture writes", () => {
+    expect(shouldRefuseSelectionOpWhileRecording("recording")).toBe(true);
+  });
+  it("false while idle", () => {
+    expect(shouldRefuseSelectionOpWhileRecording("idle")).toBe(false);
+  });
+  it("false during the count-in — capture hasn't started writing to the score yet", () => {
+    expect(shouldRefuseSelectionOpWhileRecording("counting-in")).toBe(false);
+  });
+  it("agrees with shouldRefuseUndoWhileRecording on every phase (same gating condition, named separately)", () => {
+    const phases = ["idle", "counting-in", "recording"] as const;
+    for (const phase of phases) {
+      expect(shouldRefuseSelectionOpWhileRecording(phase)).toBe(shouldRefuseUndoWhileRecording(phase));
+    }
   });
 });
 

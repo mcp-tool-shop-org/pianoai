@@ -67,7 +67,14 @@ export function clampMidi(midi: number): number {
 // ─── Score state ─────────────────────────────────────────────────────────────
 
 let score: Note[] = [];
-let selected: Note | null = null;
+/** Wave C4 — the selection is a SET of note ids (JS Set — insertion-
+ *  ordered) plus an ANCHOR id that range operations pivot from. Single-note
+ *  selection (every wave before this one) is just the size-1 case — see the
+ *  "Selection" section below for the full multi-select API and why
+ *  selectNote()/getSelectedNote() keep every pre-Wave-C4 call site working
+ *  completely unchanged. */
+let selection = new Set<string>();
+let anchorId: string | null = null;
 let nextId = 1;
 
 /** Read-only view of the current score. Callers must go through the
@@ -83,21 +90,170 @@ export function getNoteById(id: string): Note | undefined {
   return score.find((n) => n.id === id);
 }
 
-export function getSelectedNote(): Note | null {
-  return selected;
+// ─── Selection (Wave C4 — multi-select) ─────────────────────────────────────
+//
+// The selection is a SET of note ids plus an ANCHOR id that Shift+click/
+// Ctrl+Shift+Arrow range operations pivot from [finding 81 — the platform
+// canon: plain click replaces, Shift+click extends a contiguous range from
+// the anchor, Ctrl/Cmd+click toggles]. Single-note selection is simply the
+// size-1 case: selectNote()/getSelectedNote() are kept as thin wrappers over
+// this same Set so every pre-Wave-C4 call site (undo.ts's per-note command
+// factories; main.ts's inspector/vowel/velocity/Move-mode paths) keeps
+// working completely unchanged — "single-select behavior preserved as the
+// default interaction" isn't a special case bolted on, it falls straight out
+// of selectOnly() always being what a plain click means.
+
+/** Drop `id` from the selection set, re-anchoring to whatever remains if it
+ *  was the anchor — shared by deleteNote() (Mutations, below) and
+ *  toggleSelect()'s remove branch so the "anchor always points at a
+ *  still-selected note, or nothing" invariant can't drift between the two
+ *  call sites. No-ops (including leaving anchorId untouched) when `id`
+ *  wasn't actually selected. */
+function removeFromSelection(id: string): void {
+  if (!selection.delete(id)) return;
+  if (anchorId === id) {
+    const rest = [...selection];
+    anchorId = rest.length > 0 ? rest[rest.length - 1] : null;
+  }
+}
+
+/** Every currently-selected note, in SCORE order (not click/insertion
+ *  order) — deterministic for rendering/inspector "N selected" display and
+ *  group-op iteration (group drag/delete/nudge/duplicate), independent of
+ *  the order notes were clicked or Set-inserted in. */
+export function getSelection(): readonly Note[] {
+  return score.filter((n) => selection.has(n.id));
+}
+
+export function getSelectedIds(): ReadonlySet<string> {
+  return selection;
+}
+
+export function selectionSize(): number {
+  return selection.size;
+}
+
+export function isSelected(id: string): boolean {
+  return selection.has(id);
+}
+
+/** The anchor note — the FIXED end a Shift+click/Shift+range measures from
+ *  [81]. Null when nothing is selected. Resolved by id (never a dangling
+ *  reference) — same defensive "gone from the score => null" contract
+ *  getSelectedNote() has always had. */
+export function getAnchor(): Note | null {
+  return anchorId === null ? null : getNoteById(anchorId) ?? null;
+}
+
+/** Plain click / single-select — replace the WHOLE selection with exactly
+ *  `note` (or clear it with null), and make it the new anchor [81]. This is
+ *  selectNote()'s real body now; selectNote is kept as a same-behavior
+ *  alias purely so every call site written before Wave C4 (which only ever
+ *  meant "select exactly this one note") keeps reading naturally. */
+export function selectOnly(note: Note | null): void {
+  selection = new Set();
+  anchorId = note ? note.id : null;
+  if (note) selection.add(note.id);
 }
 
 /** Select a note (or clear selection with null). Does not validate that
  *  `note` is actually in the current score — callers (main.ts) always pass
  *  a note that just came from getScore()/addNote(), and a defensive lookup
- *  here would just be extra work for no real safety gain. */
+ *  here would just be extra work for no real safety gain. Backward-
+ *  compatible alias for selectOnly() (see this section's header) — every
+ *  pre-Wave-C4 call site keeps this exact single-note-replace meaning. */
 export function selectNote(note: Note | null): void {
-  selected = note;
+  selectOnly(note);
 }
 
 export function selectNoteById(id: string | null): Note | null {
-  selected = id === null ? null : getNoteById(id) ?? null;
-  return selected;
+  const note = id === null ? null : getNoteById(id) ?? null;
+  selectOnly(note);
+  return note;
+}
+
+/** Ctrl/Cmd+click — toggle one note's membership without disturbing the
+ *  rest of the selection [81]. Becomes the new anchor when ADDED. When
+ *  REMOVED and it was the anchor, the anchor falls back to whatever note is
+ *  now the Set's last remaining member (or null) so a following Shift+click
+ *  still has a well-defined pivot instead of silently measuring from a
+ *  no-longer-selected note (see removeFromSelection above). */
+export function toggleSelect(note: Note): void {
+  if (selection.has(note.id)) {
+    removeFromSelection(note.id);
+  } else {
+    selection.add(note.id);
+    anchorId = note.id;
+  }
+}
+
+/** Shift+click / Ctrl+Shift+Arrow — ADD every note in `notes` to the
+ *  selection (union, never a replace). Callers resolve the actual
+ *  time-ordered range from the anchor to a target note themselves (see
+ *  clipboard.ts's notesInTimeRange — a pure helper, independently testable
+ *  without this module) before calling addRange(). The anchor is
+ *  deliberately left UNCHANGED here: repeated Shift+clicks all measure from
+ *  the SAME fixed anchor, not a rolling one — "extends a CONTIGUOUS range
+ *  FROM THE ANCHOR" [81] would otherwise make a sequence of Shift+clicks
+ *  accumulate a path-dependent range instead of always spanning
+ *  anchor..latest-target. A caller with no anchor yet (nothing selected)
+ *  should fall back to selectOnly() instead of calling this — see main.ts's
+ *  Shift+click handler. */
+export function addRange(notes: readonly Note[]): void {
+  for (const n of notes) selection.add(n.id);
+}
+
+export function clearSelection(): void {
+  selection = new Set();
+  anchorId = null;
+}
+
+/** Ctrl+A — select every note currently in the score [85]. Anchor becomes
+ *  the LAST note in score order, so a following Shift+click extends
+ *  backward from the end, consistent with every note already being
+ *  selected. */
+export function selectAll(): void {
+  selection = new Set(score.map((n) => n.id));
+  anchorId = score.length > 0 ? score[score.length - 1].id : null;
+}
+
+/** Restore a selection to an EXACT set of ids (undo.ts's group commands —
+ *  finding 86: "selection state in undo"). Silently drops any id no longer
+ *  present in the score (defensive — mirrors selectNoteById's unknown-id
+ *  handling) rather than leaving a dangling reference in the Set.
+ *
+ *  `anchorHint` (Lens-J finding 6 — "anchor not restored by undo of group
+ *  ops") is an OPTIONAL id to prefer as the restored anchor, for callers
+ *  that captured the REAL pre-gesture anchor (undo.ts's group/paste
+ *  commands snapshot `state.getAnchor()` at construction time) rather than
+ *  accepting "last id in the list" as a stand-in. Honored only when it's
+ *  actually a member of the surviving set — a hint pointing at a note that
+ *  didn't survive (or the omitted/undefined/null default) falls back to the
+ *  pre-existing "anchor = LAST surviving id in `ids`'s own order" behavior,
+ *  matching selectAll's "anchor = last" convention, so every call site that
+ *  predates this parameter (and every call site that doesn't have a
+ *  meaningful prior anchor to restore) keeps working unchanged. */
+export function restoreSelection(ids: readonly string[], anchorHint?: string | null): void {
+  const surviving = ids.filter((id) => getNoteById(id) !== undefined);
+  selection = new Set(surviving);
+  anchorId = (anchorHint != null && surviving.includes(anchorHint))
+    ? anchorHint
+    : (surviving.length > 0 ? surviving[surviving.length - 1] : null);
+}
+
+/** Legacy single-note read — returns the selected note only when EXACTLY
+ *  one is selected (the pre-Wave-C4 selection model could never represent
+ *  anything else); null for zero OR more than one. Deliberately does NOT
+ *  return an arbitrary member of a larger selection — that would silently
+ *  pick one note out of a multi-selection for single-note-only UI
+ *  (inspector vowel/velocity/breathiness sliders, Move mode) to operate on
+ *  without the user ever having chosen that member specifically. Callers
+ *  that need "is there a multi-selection" should check selectionSize()
+ *  instead. */
+export function getSelectedNote(): Note | null {
+  if (selection.size !== 1) return null;
+  const [id] = selection;
+  return getNoteById(id) ?? null;
 }
 
 // ─── Mutations ───────────────────────────────────────────────────────────────
@@ -156,7 +312,7 @@ export function deleteNote(note: Note): boolean {
   const i = score.indexOf(note);
   if (i < 0) return false;
   score.splice(i, 1);
-  if (selected === note) selected = null;
+  removeFromSelection(note.id);
   return true;
 }
 
@@ -165,8 +321,8 @@ export function deleteNote(note: Note): boolean {
  *  note (or null if nothing was selected) so callers can still react to
  *  what got removed (e.g. remove its DOM element) without a second lookup. */
 export function deleteSelectedNote(): Note | null {
-  if (!selected) return null;
-  const note = selected;
+  const note = getSelectedNote();
+  if (!note) return null;
   deleteNote(note);
   return note;
 }
@@ -225,7 +381,7 @@ export function setBreathiness(note: Note, value: number): void {
  *  about-to-import). */
 export function clearScore(): void {
   score.length = 0;
-  selected = null;
+  clearSelection();
 }
 
 /**
@@ -237,7 +393,7 @@ export function clearScore(): void {
  */
 export function replaceScore(notes: readonly NoteInit[]): readonly Note[] {
   score = [];
-  selected = null;
+  clearSelection();
   for (const init of notes) {
     score.push({ ...init, id: "n" + nextId++ });
   }
@@ -256,7 +412,7 @@ export function replaceScore(notes: readonly NoteInit[]): readonly Note[] {
  */
 export function replaceScoreWithIds(notes: readonly Note[]): readonly Note[] {
   score = notes.map((n) => ({ ...n }));
-  selected = null;
+  clearSelection();
   for (const n of score) bumpNextIdPast(n.id);
   return score;
 }

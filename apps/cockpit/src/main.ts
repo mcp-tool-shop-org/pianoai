@@ -56,10 +56,14 @@ import {
 import {
   createCaptureEngine, capturedNoteToInit, computeCountInClicks,
   sampleClockOffset, createHeldPitchTracker, hasPendingCountIn,
-  shouldRefuseUndoWhileRecording,
+  shouldRefuseUndoWhileRecording, shouldRefuseSelectionOpWhileRecording,
   type CaptureEngine, type CaptureSource, type RecordMode, type RecordPhase,
   type CarryOverNote, type HeldPitchTracker,
 } from "./capture.js";
+import {
+  notesInMarquee, notesInTimeRange, pasteAtBeat, duplicateNotes,
+  createClipboardStore,
+} from "./clipboard.js";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -199,6 +203,30 @@ let cancelActiveDrag: (() => void) | null = null;
  *  one use, on Escape, or if the selection is lost while armed (see
  *  updateGestureAltButtons). */
 let moveModeActive = false;
+// ─── Select/Draw tool + clipboard (Wave C4) ──────────────────────────────────
+/** DRAW (default — click empty space adds a note, existing behavior
+ *  unchanged) vs SELECT (click empty space starts a marquee) [82, 86]. Notes
+ *  themselves stay click/drag-able in EITHER tool — only what an EMPTY-
+ *  SPACE gesture means changes; see buildPianoRoll's pointerdown handler. */
+type EditTool = "draw" | "select";
+let editTool: EditTool = "draw";
+/** Non-null exactly while the tool-toggle KEY is physically held down —
+ *  captures whatever tool was active the instant the key went down, so
+ *  keyup can restore it (the "momentary latch on hold" behavior [82]).
+ *  Deliberately distinct from the persistent toolbar-button toggle (see
+ *  toggleEditTool): tapping/holding the KEY only ever produces a temporary
+ *  override for the duration of the physical hold, never a lasting switch —
+ *  only clicking the toolbar button itself changes the tool "for real."
+ *  This is the simplest reading of "momentary latch on hold: hold-B
+ *  temporarily flips, release restores" that doesn't require guessing a
+ *  tap-vs-hold duration threshold nowhere specified. Bound to bare "A", not
+ *  the wave's pinned "B" — see beginToolHold's own doc comment for why. */
+let toolBeforeHold: EditTool | null = null;
+/** Internal clipboard (module state, not the system clipboard — findings
+ *  82/83). Constructed once in init(); Ctrl+C/Ctrl+X/Ctrl+V all share this
+ *  one instance. Ctrl+D (duplicate) deliberately does NOT go through this —
+ *  see clipboard.ts's duplicateNotes doc comment. */
+let clipboardStore: ReturnType<typeof createClipboardStore>;
 /** Current loop region (Wave C2a) — ruler drag-to-define UI state, read by
  *  the transport's getLoopRegion callback (see init()). Deliberately NOT
  *  persisted (persistence.ts's schema has no field for it) and NOT routed
@@ -567,6 +595,7 @@ async function init() {
     isCapturing: () => recordPhase === "recording",
   });
   captureEngine = createCaptureEngine((audioTime) => transport.beatAtAudioTime(audioTime));
+  clipboardStore = createClipboardStore();
   // A construction/connect failure (rare, but possible if the browser
   // refuses to hand out an AudioContext at all) used to reject init()
   // silently — boot()'s top-level .catch(console.error) only logs to the
@@ -593,6 +622,7 @@ async function init() {
   bindMidi();
   bindUndoRedo();
   bindGestureAltControls();
+  bindEditToolControls();
   bindRecordControls();
   buildTuningAudit();
   updateTuningTable();
@@ -835,6 +865,15 @@ function buildPianoRoll() {
     // the first gesture's Escape-cancel/Ctrl+Z-guard still depend on.
     if (dragActive) return;
     if ((e.target as HTMLElement).closest(".pr-note")) return;
+
+    // Wave C4 — SELECT tool: empty-space drag starts a marquee instead of
+    // adding a note [79, 82]. DRAW (default) falls through to the existing
+    // click-to-add-note behavior below, byte-for-byte unchanged.
+    if (editTool === "select") {
+      startMarqueeDrag(e);
+      return;
+    }
+
     const rect = pr.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -872,6 +911,128 @@ function buildPianoRoll() {
   });
 }
 
+/**
+ * Marquee select (Wave C4, findings 79/80) — SELECT tool's empty-space
+ * pointer-drag rectangle. Selects every intersecting note on release, with
+ * a LIVE highlight preview during the drag (clipboard.ts's notesInMarquee
+ * is pure geometry; this owns the DOM: the visible rectangle element,
+ * pointer capture, and applying the result). Shift+marquee is ADDITIVE —
+ * the pre-drag selection is preserved as a base and the drag's hits are
+ * unioned into it (finding 80: "additive marquee (Shift+drag union)");
+ * an unmodified marquee REPLACES the selection outright, including
+ * clearing it to nothing on a marquee (or plain click) over truly empty
+ * space — a deliberate, visibly-indicated SELECT-mode convention, not the
+ * "invisible mode error" finding 86 warns about (this app always shows
+ * which tool is active — see applyEditToolUI). Marquee never replaces
+ * click/modifier-click selection on a note itself (finding 79) — this is
+ * ONLY reachable from empty-space pointerdowns, see buildPianoRoll.
+ * Touch-friendly: pointer events + setPointerCapture + pointercancel/
+ * lostpointercapture rollback, same conventions as every other drag
+ * gesture in this file (Wave C2b, findings 38/39). Refused outright while
+ * actively recording (interplay guard — a marquee mid-capture would race
+ * ghost notes solidifying into real ones).
+ */
+function startMarqueeDrag(e: PointerEvent): void {
+  if (dragActive) return;
+  if (shouldRefuseSelectionOpWhileRecording(recordPhase)) {
+    showToast("Stop recording to select notes");
+    return;
+  }
+  const pr = $("piano-roll");
+  // Re-measured on every call (not cached once) so a mid-drag scroll of the
+  // container can't leave this reading a stale rect — same rationale as
+  // buildRuler's own rulerPxOf helper ("a mid-drag horizontal scroll of the
+  // container can't leave this reading a stale left edge"). `start` below
+  // is still computed only ONCE, from the rect AT pointerdown time, but
+  // that's fine: once converted to content-space beat/midi it's scroll-
+  // invariant — only the LIVE conversion on each later event needs a fresh
+  // rect.
+  const toBeatMidiRow = (ev: PointerEvent) => {
+    const r = pr.getBoundingClientRect();
+    return {
+      beat: (ev.clientX - r.left) / PX_PER_BEAT,
+      midi: MIDI_HI - Math.floor((ev.clientY - r.top) / ROW_H),
+    };
+  };
+  const start = toBeatMidiRow(e);
+  const additive = e.shiftKey; // finding 80
+  const baseSelection = additive ? [...state.getSelectedIds()] : [];
+  const pointerId = e.pointerId;
+  dragActive = true;
+  try { pr.setPointerCapture(pointerId); } catch { /* pointer already gone — best-effort */ }
+
+  const marqueeEl = document.createElement("div");
+  marqueeEl.className = "pr-marquee";
+  pr.appendChild(marqueeEl);
+
+  const renderMarqueeRect = (cur: { beat: number; midi: number }) => {
+    const x1 = Math.min(start.beat, cur.beat) * PX_PER_BEAT;
+    const x2 = Math.max(start.beat, cur.beat) * PX_PER_BEAT;
+    const rowOf = (midi: number) => MIDI_HI - midi;
+    const y1 = Math.min(rowOf(start.midi), rowOf(cur.midi)) * ROW_H;
+    const y2 = (Math.max(rowOf(start.midi), rowOf(cur.midi)) + 1) * ROW_H;
+    marqueeEl.style.left = x1 + "px";
+    marqueeEl.style.top = y1 + "px";
+    marqueeEl.style.width = Math.max(1, x2 - x1) + "px";
+    marqueeEl.style.height = Math.max(1, y2 - y1) + "px";
+  };
+
+  /** Live highlight (finding 79: "live highlight during drag") — preview
+   *  only, never touches state.ts until release. */
+  const applyLiveHighlight = (cur: { beat: number; midi: number }) => {
+    const hitIds = notesInMarquee(state.getScore(), { beatA: start.beat, midiA: start.midi, beatB: cur.beat, midiB: cur.midi });
+    const previewIds = new Set([...baseSelection, ...hitIds]);
+    document.querySelectorAll<HTMLElement>(".pr-note").forEach((el) => {
+      const id = el.dataset.noteId;
+      applySelectedVisual(el, !!id && previewIds.has(id));
+    });
+  };
+
+  const cleanup = () => {
+    pr.removeEventListener("pointermove", onMove);
+    pr.removeEventListener("pointerup", onUp);
+    pr.removeEventListener("pointercancel", onCancel);
+    pr.removeEventListener("lostpointercapture", onCancel);
+    try { pr.releasePointerCapture(pointerId); } catch { /* already released */ }
+    marqueeEl.remove();
+    dragActive = false;
+    cancelActiveDrag = null;
+  };
+
+  const onMove = (e2: PointerEvent) => {
+    const cur = toBeatMidiRow(e2);
+    renderMarqueeRect(cur);
+    applyLiveHighlight(cur);
+  };
+
+  const onUp = (e2: PointerEvent) => {
+    const cur = toBeatMidiRow(e2);
+    const hitIds = notesInMarquee(state.getScore(), { beatA: start.beat, midiA: start.midi, beatB: cur.beat, midiB: cur.midi });
+    cleanup();
+    const finalIdSet = new Set(additive ? [...baseSelection, ...hitIds] : hitIds);
+    // Order by SCORE order (not Set-union iteration order) so
+    // restoreSelection's own "anchor = last id in the array" rule lands on
+    // a predictable, stable note.
+    const orderedIds = state.getScore().map((n) => n.id).filter((id) => finalIdSet.has(id));
+    state.restoreSelection(orderedIds);
+    refreshSelectionUI();
+  };
+
+  const onCancel = () => {
+    cleanup();
+    // state.ts was never mutated during the drag (only the DOM preview) —
+    // resync the DOM back to whatever selection was ACTUALLY true before
+    // this gesture started (finding 39).
+    refreshSelectionUI();
+  };
+
+  pr.addEventListener("pointermove", onMove);
+  pr.addEventListener("pointerup", onUp);
+  pr.addEventListener("pointercancel", onCancel);
+  pr.addEventListener("lostpointercapture", onCancel);
+  cancelActiveDrag = onCancel;
+}
+
 function drawBeatLines() {
   document.querySelectorAll(".pr-beat-line").forEach((el) => el.remove());
   const pr = $("piano-roll");
@@ -889,6 +1050,7 @@ function renderNote(note: Note) {
   const el = document.createElement("div");
   el.className = "pr-note";
   el.dataset.noteId = note.id;
+  el.dataset.selected = "false"; // Wave C4 finding 85 — resynced by applySelectedVisual/applySelectionVisuals; see applySelectedVisual's own doc comment for why this is data-selected, not aria-selected (Lens-J finding 7)
   applyNoteStyle(el, note);
   positionNote(el, note);
 
@@ -906,8 +1068,8 @@ function renderNote(note: Note) {
 
   handle.addEventListener("pointerdown", (e) => startNoteResizeDrag(note, el, handle, e));
 
-  // ── Drag to move ──
-  el.addEventListener("pointerdown", (e) => startNoteMoveDrag(note, el, e));
+  // ── Click / modifier-click / drag ── (Wave C4 — see handleNotePointerDown)
+  el.addEventListener("pointerdown", (e) => handleNotePointerDown(note, el, e));
 
   pr.appendChild(el);
 }
@@ -983,15 +1145,22 @@ function startNoteResizeDrag(note: Note, el: HTMLElement, handle: HTMLElement, e
 }
 
 /**
- * Start a move-drag gesture on `note`/`el`, from the pointerdown event `e`
- * that triggered it — called both from the note's own pointerdown listener
- * (renderNote above) and from the roll's empty-space handler's near-miss
- * fallback (buildPianoRoll's findNearbyNoteForDragInit path, finding 41).
- * Same pointer-capture / pointercancel-rollback / deferred-snap shape as
- * startNoteResizeDrag above — see its doc comment for the shared
- * rationale (Wave C2b, findings 38/39/45).
+ * Entry point for a pointerdown that lands on a SPECIFIC note `note`/`el`
+ * (Wave C4) — dispatches on modifier keys per the platform canon [81]:
+ * Ctrl/Cmd toggles this note's selection membership, Shift extends a range
+ * from the anchor, and a plain click/drag either collapses the selection to
+ * just this note (the default — "single-select behavior preserved") or,
+ * when this note is already part of a LARGER selection, keeps the whole
+ * group selected and drags it together ("group drag ... works from any
+ * selected note"). Works identically in either edit tool — DRAW vs SELECT
+ * only changes what an EMPTY-SPACE gesture means (see buildPianoRoll/
+ * startMarqueeDrag); clicking/dragging an existing note is unaffected by
+ * the tool. Only the plain-click path ever starts a drag — a modifier
+ * click adjusts selection and stops there (finding 86: an invisible mode
+ * where a modifier-click also silently moved the note is exactly the kind
+ * of mode error that finding warns against).
  */
-function startNoteMoveDrag(note: Note, el: HTMLElement, e: PointerEvent) {
+function handleNotePointerDown(note: Note, el: HTMLElement, e: PointerEvent): void {
   // Defensive only — the handle's own pointerdown already stopPropagation()s
   // before this could ever fire for a handle target (see startNoteResizeDrag);
   // kept in case a future call site doesn't go through that guard.
@@ -999,13 +1168,59 @@ function startNoteMoveDrag(note: Note, el: HTMLElement, e: PointerEvent) {
   e.stopPropagation();
   // Wave C2b finding 8 — single-gesture policy: see the matching guard in
   // buildPianoRoll's empty-space pointerdown listener. Needed here too
-  // (not just there) since renderNote's own per-note pointerdown listener
-  // calls this function directly, bypassing that one.
+  // since renderNote's own per-note pointerdown listener calls this
+  // function directly, bypassing that one.
   if (dragActive) return;
-  selectNote(note);
+
+  if (e.ctrlKey || e.metaKey) {
+    state.toggleSelect(note);
+    refreshSelectionUI();
+    return;
+  }
+  if (e.shiftKey) {
+    const anchor = state.getAnchor();
+    if (!anchor) {
+      selectNote(note); // no anchor yet — nothing to extend a range FROM
+    } else {
+      const ids = notesInTimeRange(state.getScore(), anchor.startBeat, note.startBeat);
+      state.addRange(ids.map((id) => state.getNoteById(id)).filter((n): n is Note => !!n));
+      refreshSelectionUI();
+    }
+    return;
+  }
+  // Plain click/drag: keep an existing multi-selection intact when this
+  // note is already a member of it ("works from any selected note");
+  // otherwise a plain click always collapses to just this one note first
+  // (the pre-Wave-C4 default).
+  if (!(state.selectionSize() > 1 && state.isSelected(note.id))) {
+    selectNote(note);
+  }
+  startGroupDrag(el, e);
+}
+
+/**
+ * Group move-drag (Wave C4) — moves EVERY currently-selected note by the
+ * same pointer delta as one coalesced gesture, committed as ONE
+ * undo.groupMoveCommand on release. A single-note selection is simply a
+ * group of one; this replaces the pre-Wave-C4 single-note-only
+ * startNoteMoveDrag as the one drag implementation both cases share (see
+ * the thin startNoteMoveDrag wrapper below for the one remaining caller
+ * that still needs to select-then-drag a SPECIFIC note: the near-miss
+ * touch-target fallback, finding 41). Same pointer-capture /
+ * pointercancel-rollback / deferred-snap shape as startNoteResizeDrag above
+ * (Wave C2b, findings 38/39/45) — `el` is whichever note element the
+ * pointer physically grabbed (used for setPointerCapture/its own listener
+ * targets), but every note in state.getSelection() moves together,
+ * regardless of which one `el` is.
+ */
+function startGroupDrag(el: HTMLElement, e: PointerEvent): void {
+  if (dragActive) return;
+  const group = state.getSelection()
+    .map((n) => ({ id: n.id, origBeat: n.startBeat, origMidi: n.midi, el: document.querySelector<HTMLElement>(noteSelector(n.id)) }))
+    .filter((g): g is { id: string; origBeat: number; origMidi: number; el: HTMLElement } => g.el !== null);
+  if (group.length === 0) return;
   dragActive = true; // Wave C1 finding 6 — see this flag's declaration
   const startX = e.clientX, startY = e.clientY;
-  const origBeat = note.startBeat, origMidi = note.midi;
   const pointerId = e.pointerId;
   try { el.setPointerCapture(pointerId); } catch { /* pointer already gone — best-effort */ }
 
@@ -1018,42 +1233,96 @@ function startNoteMoveDrag(note: Note, el: HTMLElement, e: PointerEvent) {
     dragActive = false;
     cancelActiveDrag = null;
   };
-  const onMove = (e2: PointerEvent) => {
-    const rawBeat = origBeat + (e2.clientX - startX) / PX_PER_BEAT;
-    const newBeat = resolveDragBeats(rawBeat, e2.pointerType);
-    // Deferred-snap (finding 45) is deliberately time-axis only: a MIDI
-    // pitch has no fractional/continuous representation anywhere in this
-    // app's model (Note.midi is always a whole semitone — state.ts's own
-    // clampMidi and every command factory assume that), so there is no
-    // "unsnapped" pitch value to defer TO — ROW_H is the note's actual
-    // representational granularity, not a cosmetic grid layered on top of
-    // a continuous value the way QUANTIZE_GRID_BEATS is. Row-rounding
-    // therefore stays unconditional for both mouse and touch.
-    const newMidi = origMidi - Math.round((e2.clientY - startY) / ROW_H);
-    state.moveNote(note, newBeat, newMidi);
-    applyNoteStyle(el, note);
-    positionNote(el, note);
-    updateInspector();
-  };
-  const onUp = () => {
-    // Final commit (finding 45) — see startNoteResizeDrag's onUp above for
-    // the same rationale.
-    state.moveNote(note, commitDragBeats(note.startBeat), note.midi);
-    applyNoteStyle(el, note);
-    positionNote(el, note);
-    updateInspector();
-    cleanup();
-    // Coalesced gesture — see startNoteResizeDrag's onUp above (finding 2).
-    if (note.startBeat !== origBeat || note.midi !== origMidi) {
-      undo.commit(undo.moveCommand(note.id, { startBeat: origBeat, midi: origMidi }, { startBeat: note.startBeat, midi: note.midi }));
+
+  /** Apply the SAME (dBeatRaw, dMidi) delta to every group member's ORIGINAL
+   *  position — never accumulated tick-over-tick — so drift can't creep in
+   *  across a long drag the way repeatedly adding a per-tick delta could.
+   *
+   *  Lens-J finding 1 — skip the actual state.moveNote() call for a member
+   *  whose CLAMPED target is identical to where it already sits (computed
+   *  via state.clampedMoveTarget, the same no-op check nudgeSelection uses
+   *  — see its own doc comment). Without this, EVERY tick called
+   *  state.moveNote() unconditionally on EVERY group member, and moveNote
+   *  always clears rawStartBeat/rawDurationBeats (state.ts's own doc
+   *  comment) — so a member that's boundary-clamped to a no-op for the
+   *  WHOLE gesture (e.g. already at MIDI_HI while the rest of the group
+   *  drags upward) silently lost its captured performance timing despite
+   *  never actually moving, and a true zero-movement click (no real delta
+   *  ever applied) stripped raw* from the ENTIRE selection with no undo
+   *  entry to recover it (groupMoveCommand's own no-op skip, undo.ts, only
+   *  protects the discrete nudge/onUp-commit path, never this live tick). */
+  const applyDelta = (dBeatRaw: number, dMidi: number, pointerType: string) => {
+    for (const g of group) {
+      const target = state.getNoteById(g.id);
+      if (!target) continue;
+      const newBeat = resolveDragBeats(g.origBeat + dBeatRaw, pointerType);
+      const clamped = state.clampedMoveTarget(target, newBeat, g.origMidi + dMidi);
+      if (clamped) state.moveNote(target, clamped.startBeat, clamped.midi);
+      applyNoteStyle(g.el, target);
+      positionNote(g.el, target);
     }
   };
-  const onCancel = () => {
-    cleanup();
-    state.moveNote(note, origBeat, origMidi);
-    applyNoteStyle(el, note);
-    positionNote(el, note);
+
+  const onMove = (e2: PointerEvent) => {
+    const dBeatRaw = (e2.clientX - startX) / PX_PER_BEAT;
+    // Deferred-snap (finding 45) is time-axis only — see the pre-Wave-C4
+    // rationale this replaces (no fractional/continuous pitch value
+    // exists to defer TO; ROW_H is the note's actual representational
+    // granularity). Row-rounding stays unconditional for both mouse/touch.
+    const dMidi = -Math.round((e2.clientY - startY) / ROW_H);
+    applyDelta(dBeatRaw, dMidi, e2.pointerType);
     updateInspector();
+  };
+
+  const onUp = () => {
+    // Final per-note commit snap (finding 45) — a no-op for mouse/pen
+    // (already quantized every tick), the one-time snap-to-grid for touch.
+    // Lens-J finding 1 — same clamped-target no-op guard as applyDelta
+    // above: without it, this ran state.moveNote() unconditionally on
+    // EVERY group member even when the commit snap changes nothing (the
+    // mouse/pen "no-op in practice" case the comment above already called
+    // out), which stripped raw* from the whole selection on a plain
+    // zero-movement click — with NO undo entry, since the anyMoved check
+    // below never saw a real change either.
+    for (const g of group) {
+      const target = state.getNoteById(g.id);
+      if (!target) continue;
+      const clamped = state.clampedMoveTarget(target, commitDragBeats(target.startBeat), target.midi);
+      if (clamped) state.moveNote(target, clamped.startBeat, clamped.midi);
+      positionNote(g.el, target);
+    }
+    updateInspector();
+    cleanup();
+    // ONE command for the whole group (Myers & Kosbie 1996, finding 2) —
+    // every group member gets an entry (even one that ends up back at its
+    // ORIGINAL position, e.g. clamped at a MIDI/beat boundary while the
+    // rest of the group moved) so undo/redo's restoreSelection() keeps the
+    // whole group selected — see groupMoveCommand's own doc comment for why
+    // a same-value entry is safe (it skips the actual moveNote() call).
+    // The command itself is only pushed if AT LEAST one note truly moved
+    // (Wave C1 finding 2, generalized to a group).
+    const entries: undo.GroupMoveEntry[] = [];
+    let anyMoved = false;
+    for (const g of group) {
+      const target = state.getNoteById(g.id);
+      if (!target) continue;
+      const after = { startBeat: target.startBeat, midi: target.midi };
+      if (after.startBeat !== g.origBeat || after.midi !== g.origMidi) anyMoved = true;
+      entries.push({ noteId: g.id, before: { startBeat: g.origBeat, midi: g.origMidi }, after });
+    }
+    if (anyMoved) undo.commit(undo.groupMoveCommand(entries));
+  };
+
+  const onCancel = () => {
+    for (const g of group) {
+      const target = state.getNoteById(g.id);
+      if (!target) continue;
+      state.moveNote(target, g.origBeat, g.origMidi);
+      applyNoteStyle(g.el, target);
+      positionNote(g.el, target);
+    }
+    updateInspector();
+    cleanup();
     // No command pushed — the gesture never happened, as far as undo is
     // concerned (finding 39).
   };
@@ -1062,6 +1331,21 @@ function startNoteMoveDrag(note: Note, el: HTMLElement, e: PointerEvent) {
   el.addEventListener("pointercancel", onCancel);
   el.addEventListener("lostpointercapture", onCancel);
   cancelActiveDrag = onCancel;
+}
+
+/** Thin single-note wrapper over startGroupDrag — the one remaining caller
+ *  that needs to select (collapsing any prior selection) a SPECIFIC note
+ *  before dragging it, rather than dispatching on modifiers like
+ *  handleNotePointerDown above: buildPianoRoll's near-miss touch-target
+ *  fallback (finding 41), where a confirmed-empty-space tap is being
+ *  REDIRECTED onto a specific neighboring note the user almost certainly
+ *  meant to grab — treating that as a potential multi-select gesture would
+ *  be surprising for what's meant to read as an ordinary, if imprecise,
+ *  single-note drag. */
+function startNoteMoveDrag(note: Note, el: HTMLElement, e: PointerEvent): void {
+  if (dragActive) return;
+  selectNote(note);
+  startGroupDrag(el, e);
 }
 
 function positionNote(el: HTMLElement, note: Note) {
@@ -1090,27 +1374,243 @@ function applyNoteStyle(el: HTMLElement, note: Note) {
 function rerenderAllNotes() {
   document.querySelectorAll(".pr-note").forEach(el => el.remove());
   for (const n of state.getScore()) renderNote(n);
-  const selected = state.getSelectedNote();
-  if (selected) {
-    document.querySelector(noteSelector(selected.id))?.classList.add("selected");
-  }
+  applySelectionVisuals();
 }
 
+/** Set/clear a single note element's `.selected` CSS class AND its
+ *  data-selected attribute together (Wave C4 finding 85 — "expose
+ *  selection state on note elements") so the two can never drift: every
+ *  call site that used to toggle just the class now goes through this one
+ *  helper instead.
+ *
+ *  data-selected, NOT aria-selected (Lens-J finding 7 — corrected from the
+ *  original Wave C4 fix): aria-selected is only a valid ARIA state on
+ *  elements whose ROLE supports it (option/row/tab/gridcell/etc, each of
+ *  which also requires a specific ancestor role — e.g. option needs a
+ *  listbox parent), and .pr-note is a plain, role-less div — axe's
+ *  aria-allowed-attr rule correctly flags that as invalid ARIA usage.
+ *  Making it valid the "honest" way (role="option" on every note inside a
+ *  role="listbox" roll container) was considered and rejected: this piano
+ *  roll doesn't actually implement listbox semantics (arrow keys nudge
+ *  pitch/time rather than move a listbox selection, Tab cycles the
+ *  selection rather than leaving the widget, multi-select is the default
+ *  with no aria-multiselectable) — bolting on listbox/option roles without
+ *  the behavior a screen reader user would expect them to imply is worse
+ *  than not claiming that semantic at all. data-selected keeps the state
+ *  machine-readable (tests, tooling, future CSS) without asserting ARIA
+ *  semantics this custom widget doesn't back up; the sighted-visible
+ *  selected state is the `.selected` class right above, toggled in the
+ *  same breath so it can never drift from data-selected either. */
+function applySelectedVisual(el: HTMLElement, isSelected: boolean): void {
+  el.classList.toggle("selected", isSelected);
+  el.dataset.selected = String(isSelected);
+}
+
+/** Resync EVERY rendered note's `.selected`/data-selected state from
+ *  state.ts's CURRENT selection set (Wave C4) — the multi-select
+ *  counterpart to the old single-note "clear every `.selected`, then add it
+ *  back to just the one" dance. Scans all `.pr-note` elements rather than
+ *  only ever ADDING (the pre-Wave-C4 shape) because a multi-select can both
+ *  gain AND lose members in the same operation (toggle-off, marquee
+ *  shrinking on a re-drag, etc.) — this is the one function every selection
+ *  mutation in this file funnels its DOM sync through. */
+function applySelectionVisuals(): void {
+  const selectedIds = state.getSelectedIds();
+  document.querySelectorAll<HTMLElement>(".pr-note").forEach((el) => {
+    const id = el.dataset.noteId;
+    applySelectedVisual(el, !!id && selectedIds.has(id));
+  });
+}
+
+/** Plain click / single-select DOM sync — state.ts's selectNote() already
+ *  IS selectOnly() under the hood (see state.ts's Selection section), so
+ *  this only has to resync the DOM + inspector after it, not duplicate the
+ *  set-to-exactly-one-note logic here too. */
 function selectNote(note: Note | null) {
-  document.querySelectorAll(".pr-note.selected").forEach((el) => el.classList.remove("selected"));
   state.selectNote(note);
-  if (note) {
-    document.querySelector(noteSelector(note.id))?.classList.add("selected");
-  }
+  applySelectionVisuals();
   updateInspector();
 }
 
-function deleteSelectedNote() {
-  const note = state.getSelectedNote();
-  if (!note) return;
-  undo.execute(undo.deleteNoteCommand(note));
-  document.querySelector(noteSelector(note.id))?.remove();
+/** DOM sync for every OTHER selection-changing action (toggle, range-add,
+ *  marquee commit, Ctrl+A, Escape-clear, paste/duplicate) — anything that
+ *  mutates state.ts's selection through a function other than selectNote()
+ *  itself. Named separately from selectNote() purely for readability at
+ *  each call site (both do the exact same DOM resync); state.ts has
+ *  already been mutated by the caller before this runs. */
+function refreshSelectionUI(): void {
+  applySelectionVisuals();
   updateInspector();
+}
+
+/** Del key / inspector delete button (both insp-del and insp-del-multi) —
+ *  deletes WHATEVER is currently selected, single note or a group, as ONE
+ *  command (Wave C4 replaces the pre-Wave-C4 single-note-only
+ *  deleteSelectedNote with this: a size-1 selection just uses the plain
+ *  deleteNoteCommand it always did, so a single-note delete's undo entry
+ *  stays byte-for-byte the same shape it was before this wave — only an
+ *  ACTUAL multi-selection reaches groupDeleteCommand). Refused while
+ *  actively recording (Lens-J finding 4 — same
+ *  shouldRefuseSelectionOpWhileRecording interplay guard cutSelection/
+ *  pasteClipboard/duplicateSelection already use below: a delete racing the
+ *  capture engine's own live score writes is exactly the hazard that guard
+ *  exists to prevent, and this is now the ONE place all three delete entry
+ *  points — Delete/Backspace, insp-del, insp-del-multi — funnel through, so
+ *  none of them can bypass it the way they previously did). */
+function deleteSelection(): void {
+  if (shouldRefuseSelectionOpWhileRecording(recordPhase)) { showToast("Stop recording to delete notes"); return; }
+  const notes = state.getSelection();
+  if (notes.length === 0) return;
+  const cmd = notes.length === 1 ? undo.deleteNoteCommand(notes[0]) : undo.groupDeleteCommand(notes);
+  undo.execute(cmd);
+  for (const n of notes) document.querySelector(noteSelector(n.id))?.remove();
+  updateInspector();
+}
+
+/** Auto-scroll the roll so the paste/duplicate target is visible (finding
+ *  86) — reuses the SAME programmaticScroll() grace-window wrapper every
+ *  other scroll site in this file already goes through (Wave C2b finding
+ *  3), so this can't be misread as the user taking over follow. Scrolls to
+ *  the EARLIEST note in the current selection (state.getSelection()'s own
+ *  score-order first entry) via scrollIntoView — the same mechanism
+ *  cycleNoteSelection/insertNoteAtPlayhead already use for "jump to this
+ *  note." */
+function scrollToSelection(): void {
+  const first = state.getSelection()[0];
+  if (!first) return;
+  programmaticScroll(() => {
+    document.querySelector(noteSelector(first.id))?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  });
+}
+
+// ─── Clipboard (Wave C4, findings 82/83) ─────────────────────────────────────
+
+/** Ctrl+A — select every note in the score [85]. */
+function selectAllNotes(): void {
+  state.selectAll();
+  refreshSelectionUI();
+}
+
+/** Ctrl+C — snapshot the current selection into the internal clipboard.
+ *  Copying is never itself undoable (it doesn't change the score); no-ops
+ *  silently with nothing selected, same as every other no-selection
+ *  clipboard guard below. */
+function copySelection(): void {
+  const notes = state.getSelection();
+  if (notes.length === 0) return;
+  clipboardStore.copy(notes);
+}
+
+/** Ctrl+X — copy, then delete, as ONE undo command (the delete — copying
+ *  itself was never on the stack). Refused while actively recording, same
+ *  interplay guard as the marquee (startMarqueeDrag). */
+function cutSelection(): void {
+  if (shouldRefuseSelectionOpWhileRecording(recordPhase)) { showToast("Stop recording to cut notes"); return; }
+  const notes = state.getSelection();
+  if (notes.length === 0) return;
+  clipboardStore.copy(notes);
+  deleteSelection();
+}
+
+/** Ctrl+V — paste the internal clipboard at the playhead (findings 82/83:
+ *  "earliest copied note lands at the playhead beat, relative offsets +
+ *  pitches preserved"). ONE undo command for the whole pasted group
+ *  (undo.pasteCommand); the pasted notes become the new selection and the
+ *  roll auto-scrolls so the paste target is visible (finding 86). No-ops
+ *  with an empty clipboard. Refused while actively recording. */
+function pasteClipboard(): void {
+  if (shouldRefuseSelectionOpWhileRecording(recordPhase)) { showToast("Stop recording to paste"); return; }
+  const clip = clipboardStore.get();
+  if (!clip) return;
+  const targetBeat = quantizeBeats(transport.getPositionBeats());
+  const inits = pasteAtBeat(clip, targetBeat, SCORE_BEATS);
+  const selectionBefore = [...state.getSelectedIds()];
+  undo.execute(undo.pasteCommand(inits, selectionBefore));
+  for (const note of state.getSelection()) renderNote(note);
+  refreshSelectionUI();
+  scrollToSelection();
+}
+
+/** Ctrl+D — duplicate the current selection immediately after its own span
+ *  (finding 82: "Ctrl+D duplicate = paste immediately after the
+ *  selection's end, shift by selection length"), independent of the Ctrl+C
+ *  clipboard (see clipboard.ts's duplicateNotes doc comment — Duplicate
+ *  never reads or writes the Ctrl+C store). ONE undo command; the
+ *  duplicates become the new selection; auto-scrolls to them. Refused
+ *  while actively recording. */
+function duplicateSelection(): void {
+  if (shouldRefuseSelectionOpWhileRecording(recordPhase)) { showToast("Stop recording to duplicate notes"); return; }
+  const notes = state.getSelection();
+  if (notes.length === 0) return;
+  const inits = duplicateNotes(notes, SCORE_BEATS);
+  if (!inits) return;
+  const selectionBefore = [...state.getSelectedIds()];
+  undo.execute(undo.pasteCommand(inits, selectionBefore));
+  for (const note of state.getSelection()) renderNote(note);
+  refreshSelectionUI();
+  scrollToSelection();
+}
+
+/** Ctrl+Shift+ArrowLeft/Right — keyboard range extension (finding 85,
+ *  APG-adapted). DEVIATION, documented honestly (also in the shortcuts
+ *  overlay): the APG grid pattern's own Shift+Arrow is already spoken for
+ *  by this app's pre-existing single-note RESIZE shortcut (Wave C2b,
+ *  finding 44, present well before this wave) — KEEPING that established
+ *  behavior rather than silently repurposing it, and using Ctrl+Shift+
+ *  Arrow for range extension instead, mirrors exactly how this app
+ *  resolved the OTHER real keybinding collision this wave hit (see
+ *  beginToolHold's own doc comment for the bare-"A"-instead-of-"B" story).
+ *
+ *  Extends the range from the ANCHOR (fixed for the whole gesture, same as
+ *  a mouse Shift+click sequence) to the note one step further, in
+ *  startBeat-then-midi order, than whichever end of the CURRENT selection
+ *  is furthest from the anchor in the requested direction — i.e. each
+ *  press grows the range by exactly one note, same granularity a mouse
+ *  Shift+click across adjacent notes would produce. With no anchor yet
+ *  (nothing selected), starts a fresh single selection at one end instead
+ *  of guessing a range, same fallback cycleNoteSelection uses. */
+function extendSelectionRange(dir: 1 | -1): void {
+  const scoreNotes = state.getScore();
+  if (scoreNotes.length === 0) return;
+  const ordered = [...scoreNotes].sort((a, b) => a.startBeat - b.startBeat || a.midi - b.midi);
+  const anchor = state.getAnchor();
+  if (!anchor) {
+    selectNote(ordered[dir > 0 ? 0 : ordered.length - 1]);
+    return;
+  }
+  const anchorIdx = ordered.indexOf(anchor);
+  const selectedIdxs = state.getSelection().map((n) => ordered.indexOf(n)).filter((i) => i >= 0);
+  const frontier = dir > 0 ? Math.max(anchorIdx, ...selectedIdxs) : Math.min(anchorIdx, ...selectedIdxs);
+  const nextIdx = Math.max(0, Math.min(ordered.length - 1, frontier + dir));
+  const target = ordered[nextIdx];
+  const ids = notesInTimeRange(ordered, anchor.startBeat, target.startBeat);
+  // ADDITIVE, like a mouse Shift+click (Lens-J finding 5) — NOT
+  // selectOnly(anchor) + addRange(...) (what this used to do), and NOT
+  // restoreSelection(ids) either. Two separate reasons rule out the two
+  // alternatives:
+  //   - restoreSelection(ids) always re-derives the anchor as "last id in
+  //     the given list," which would silently drift the anchor to
+  //     whichever note has the highest startBeat in the range instead of
+  //     preserving the original pivot.
+  //   - selectOnly(anchor) run BEFORE addRange (the previous shape here)
+  //     wiped the ENTIRE selection down to just {anchor} first — so any
+  //     note a prior Ctrl+click had toggled on OUTSIDE this contiguous
+  //     range silently fell out of the selection on the very next
+  //     Ctrl+Shift+Arrow press. The mouse Shift+click handler (see
+  //     handleNotePointerDown above) never had this bug: it calls
+  //     addRange() directly, unioning the new range in without ever
+  //     clearing what was already selected.
+  // Calling addRange() alone matches that same union-preserving behavior —
+  // the anchor is already guaranteed a member of the current selection
+  // (state.ts's own invariant) and `ids` already includes it (notesInTimeRange's
+  // bounds are inclusive of both ends), and addRange() itself never touches
+  // the anchor, so it stays exactly as fixed across repeated presses as it
+  // did before this fix.
+  state.addRange(ids.map((id) => state.getNoteById(id)).filter((n): n is Note => !!n));
+  refreshSelectionUI();
+  programmaticScroll(() => {
+    document.querySelector(noteSelector(target.id))?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  });
 }
 
 /** Show/hide the "click to add a note" hint (F-B1-009) — visible while the
@@ -1377,25 +1877,37 @@ function cycleNoteSelection(dir: 1 | -1) {
 }
 
 /** ArrowUp/Down (±1 semitone) and ArrowLeft/Right (±1 grid step) on the
- *  selected note — same clamp/quantize rules as mouse drag (positionNote /
- *  state.moveNote) so keyboard and mouse edits stay consistent. */
-function nudgeSelectedNote(semitones: number, steps: number) {
-  const note = state.getSelectedNote();
-  if (!note) return;
-  const before: undo.Point = { startBeat: note.startBeat, midi: note.midi };
-  const rawBeat = steps !== 0 ? quantizeBeats(note.startBeat + QUANTIZE_GRID_BEATS * steps) : note.startBeat;
-  const after = state.clampedMoveTarget(note, rawBeat, note.midi + semitones);
-  // Wave C1 finding 2: null means the clamped target is identical to where
-  // the note already is (e.g. ArrowUp at MIDI_HI, ArrowLeft at beat 0) —
-  // skip entirely rather than pushing a no-op command. undo.execute()
-  // unconditionally wipes the redo stack, so a vacuous command here would
-  // silently destroy the user's redo history for zero visible effect.
-  if (!after) return;
+ *  CURRENT SELECTION (Wave C4: "group nudge — arrows move all selected") —
+ *  same clamp/quantize rules as mouse drag (positionNote/state.moveNote) so
+ *  keyboard and mouse edits stay consistent. A size-1 selection is simply a
+ *  group of one, so this is the ONE code path both the pre-Wave-C4
+ *  single-note nudge and the new group nudge share — see
+ *  undo.groupMoveCommand's own doc comment for why every selected note
+ *  gets an entry (even one clamped to a same-value no-op at a boundary),
+ *  and why the WHOLE command is skipped only when NOTHING in the selection
+ *  actually moved (Wave C1 finding 2, generalized to a group: an
+ *  entirely-vacuous command would still silently destroy the redo stack
+ *  for zero visible effect). */
+function nudgeSelection(semitones: number, steps: number) {
+  const notes = state.getSelection();
+  if (notes.length === 0) return;
+  const entries: undo.GroupMoveEntry[] = [];
+  let anyMoved = false;
+  for (const note of notes) {
+    const before: undo.Point = { startBeat: note.startBeat, midi: note.midi };
+    const rawBeat = steps !== 0 ? quantizeBeats(note.startBeat + QUANTIZE_GRID_BEATS * steps) : note.startBeat;
+    const clamped = state.clampedMoveTarget(note, rawBeat, note.midi + semitones);
+    if (clamped) anyMoved = true;
+    entries.push({ noteId: note.id, before, after: clamped ?? before });
+  }
+  if (!anyMoved) return;
   // Each keypress is its own command (no coalescing) — a nudge is already
   // a single discrete gesture, unlike a mouse drag's continuous stream.
-  undo.execute(undo.moveCommand(note.id, before, after));
-  const el = document.querySelector<HTMLElement>(noteSelector(note.id));
-  if (el) { applyNoteStyle(el, note); positionNote(el, note); }
+  undo.execute(undo.groupMoveCommand(entries));
+  for (const note of notes) {
+    const el = document.querySelector<HTMLElement>(noteSelector(note.id));
+    if (el) { applyNoteStyle(el, note); positionNote(el, note); }
+  }
   updateInspector();
 }
 
@@ -1404,14 +1916,21 @@ function nudgeSelectedNote(semitones: number, steps: number) {
  *  AltControls below) both call this, so keyboard and button paths commit
  *  through the exact same resizeCommand shape a mouse/touch resize-drag
  *  does. One command per call (no coalescing — same "each keypress/click
- *  is its own discrete gesture" reasoning as nudgeSelectedNote above).
+ *  is its own discrete gesture" reasoning as nudgeSelection above).
  *  gesture.ts's resizeStepTarget supplies the floor-at-one-grid-step math;
  *  a call that would be a no-op (already at the floor) is skipped for the
- *  same redo-stack-preservation reason nudgeSelectedNote skips its own
- *  no-op case. */
+ *  same redo-stack-preservation reason nudgeSelection skips its own no-op
+ *  case. Resize stays SINGLE-NOTE only (Wave C4 spec, deliberately kept
+ *  simple): state.getSelectedNote() already returns null whenever more
+ *  than one note is selected, which this turns into an explicit toast
+ *  instead of a silent no-op so a Shift+Arrow press with a multi-selection
+ *  active doesn't look like it just did nothing for no reason. */
 function resizeSelectedNoteByStep(steps: number) {
   const note = state.getSelectedNote();
-  if (!note) return;
+  if (!note) {
+    if (state.selectionSize() > 1) showToast("Resize works on one note at a time — select just one to resize");
+    return;
+  }
   const before = note.durationBeats;
   const after = resizeStepTarget(before, steps);
   if (after === before) return;
@@ -1474,7 +1993,7 @@ function applyMoveModeButtonState() {
  *  the same way click-to-add-note does (gesture.ts's moveModeTarget) and
  *  clamps via state.ts's clampedMoveTarget, so tapping the note's own
  *  current cell is a safe no-op (no command, no redo-stack wipe — same
- *  reasoning as nudgeSelectedNote/resizeSelectedNoteByStep above). */
+ *  reasoning as nudgeSelection/resizeSelectedNoteByStep above). */
 function relocateSelectedNoteTo(xPx: number, yPx: number) {
   const note = state.getSelectedNote();
   if (!note) return;
@@ -1532,6 +2051,83 @@ function bindGestureAltControls() {
   }, { capture: true });
 }
 
+// ─── Select/Draw tool toggle (Wave C4, findings 82/86) ──────────────────────
+//
+// A persistent, visibly-indicated toggle between DRAW (default — click
+// empty space adds a note) and SELECT (click empty space starts a marquee).
+// The toolbar button toggles it PERMANENTLY; the keyboard binding is a pure
+// MOMENTARY override (see beginToolHold/endToolHold) — holding the key
+// temporarily flips the tool for exactly as long as it's held, and
+// releasing always restores whatever was active before the press, never
+// leaving a lasting change. That split (persistent button vs. momentary
+// key) is the simplest reading of "momentary latch on hold: hold-B
+// temporarily flips, release restores" that doesn't require guessing an
+// undocumented tap-vs-hold duration threshold.
+
+const ROLL_ARIA_BASE = "Piano roll. Tab selects notes, arrow keys nudge pitch and time, Shift+Left/Right resizes, Enter inserts a note, Delete removes it. The toolbar's Move and Resize buttons give tap/click-only alternatives to dragging.";
+
+/** Apply `tool`'s visible state everywhere findings 82/86 require: the
+ *  toolbar button's pressed state + label, a distinct cursor over the roll
+ *  (crosshair for DRAW's "click to place," cell for SELECT's "click/drag to
+ *  select" — finding 86: "persistent visible indicator + distinct
+ *  cursors"), and the roll's own aria-label restating the active mode for
+ *  AT (finding 86 again). Also auto-exits Move mode when switching TO
+ *  select ("Move-mode and SELECT tool are distinct — Move-mode auto-exits
+ *  when SELECT activates") — Move mode's own single-note relocate gesture
+ *  and a SELECT-mode marquee would otherwise both be armed on the same
+ *  empty-space pointerdown with no sane way to pick a winner. */
+function setEditTool(tool: EditTool): void {
+  if (editTool === tool) return;
+  editTool = tool;
+  if (tool === "select") exitMoveMode();
+  applyEditToolUI();
+}
+
+/** Toolbar button click — the ONE persistent way to change tools. */
+function toggleEditTool(): void {
+  setEditTool(editTool === "draw" ? "select" : "draw");
+}
+
+function applyEditToolUI(): void {
+  const btn = $("btn-tool-select") as HTMLButtonElement;
+  const isSelect = editTool === "select";
+  btn.classList.toggle("active", isSelect);
+  btn.setAttribute("aria-pressed", String(isSelect));
+  btn.textContent = isSelect ? "Select" : "Draw";
+  const container = $("piano-roll-container");
+  container.classList.toggle("tool-select", isSelect);
+  container.classList.toggle("tool-draw", !isSelect);
+  const toolDesc = isSelect
+    ? "Tool: Select — drag empty space to marquee-select notes (Shift+drag adds to the selection), click a note to select it."
+    : "Tool: Draw — click empty space to add a note, click a note to select it.";
+  container.setAttribute("aria-label", `${ROLL_ARIA_BASE} ${toolDesc}`);
+}
+
+/** Bare "A" keydown (not "B" — see this section's own file-header note):
+ *  begin a momentary tool override. `e.repeat` is already filtered by the
+ *  keydown handler's own top-level repeat bail (see its call site) before
+ *  this is ever reached, so a physically-held key fires this exactly once;
+ *  toolBeforeHold's own null-check is a defensive belt-and-suspenders
+ *  re-entrancy guard on top of that. */
+function beginToolHold(): void {
+  if (toolBeforeHold !== null) return;
+  toolBeforeHold = editTool;
+  setEditTool(editTool === "draw" ? "select" : "draw");
+}
+
+/** Matching keyup — always restores whatever was active before the hold
+ *  started, never leaves the momentary flip in place. */
+function endToolHold(): void {
+  if (toolBeforeHold === null) return;
+  setEditTool(toolBeforeHold);
+  toolBeforeHold = null;
+}
+
+function bindEditToolControls(): void {
+  ($("btn-tool-select") as HTMLButtonElement).addEventListener("click", toggleEditTool);
+  applyEditToolUI();
+}
+
 /** Ctrl+Z / toolbar Undo button. Undo/redo traversal doesn't know which
  *  note(s) a popped command touched (could be a single-note delta or a
  *  whole-score Clear/Import snapshot), so — unlike the surgical single-
@@ -1578,9 +2174,25 @@ function updateInspector() {
   // second call added at every one of those sites.
   updateGestureAltButtons();
   const insp = $("inspector");
-  const note = state.getSelectedNote();
-  if (!note) { insp.classList.remove("active"); return; }
+  const size = state.selectionSize();
+  if (size === 0) { insp.classList.remove("active"); return; }
   insp.classList.add("active");
+
+  // Wave C4 — "inspector shows single-note detail only when exactly one
+  // selected (multi shows count + common ops)": a multi-selection swaps the
+  // whole per-note detail panel (name/velocity/vocal/single delete) for a
+  // simple count + one group-delete button, rather than showing an
+  // arbitrary member's fields as if they applied to the whole group.
+  if (size > 1) {
+    $("insp-single").style.display = "none";
+    $("insp-multi").style.display = "";
+    $("insp-multi-count").textContent = `${size} notes selected`;
+    return;
+  }
+  $("insp-multi").style.display = "none";
+  $("insp-single").style.display = "";
+
+  const note = state.getSelectedNote()!;
   $("insp-name").textContent = noteName(note.midi);
   ($("insp-vel") as HTMLInputElement).value = String(note.velocity);
   $("insp-vel-val").textContent = String(note.velocity);
@@ -1740,13 +2352,77 @@ function buildKeyboard() {
 
     if (e.repeat) return;
 
-    // Don't hijack any other Ctrl/Cmd/Alt combos (Ctrl+C, Ctrl+V, Cmd+A, ...).
+    // Wave C4 — selection/clipboard Ctrl-combos, carved out of the Ctrl/
+    // Cmd-bail below for the same reason Ctrl+Z/Shift+Z/Y are (see that
+    // carve-out's own comment above): Ctrl+A/C/X/V/D and Ctrl+Shift+Arrow
+    // must reach the selection/clipboard handlers instead of being
+    // swallowed by the "don't hijack Ctrl combos" guard. Placed AFTER the
+    // e.repeat bail (unlike the undo carve-out, which deliberately sits
+    // BEFORE it) — a held Ctrl+V repeating would re-paste the SAME clip at
+    // the SAME playhead beat over and over, unlike hold-to-undo's
+    // one-command-per-repeat-tick convention, which is genuinely useful.
+    // The plain A/C/X/V/D branch is deliberately gated on `!e.shiftKey` —
+    // WITHOUT that, Ctrl+Shift+C/V/X/D/A (Chrome DevTools' element
+    // inspector, "paste without formatting," browser bookmark shortcuts,
+    // etc., depending on OS/browser) would be silently hijacked too, since
+    // e.key for Shift+C is still "c" after .toLowerCase(). Ctrl+Shift+Arrow
+    // is the ONE combo in this whole block that WANTS Shift held, so it's
+    // its own branch instead of folding into the no-shift one above.
+    if ((e.ctrlKey || e.metaKey) && !e.altKey && !dragActive) {
+      const ck = e.key.toLowerCase();
+      if (!e.shiftKey) {
+        if (ck === "a") { e.preventDefault(); selectAllNotes(); return; }
+        if (ck === "c") { e.preventDefault(); copySelection(); return; }
+        if (ck === "x") { e.preventDefault(); cutSelection(); return; }
+        if (ck === "v") { e.preventDefault(); pasteClipboard(); return; }
+        if (ck === "d") { e.preventDefault(); duplicateSelection(); return; }
+      } else if (isRollEditContext()) {
+        // Ctrl+Shift+Arrow — keyboard range extension (finding 85). Gated
+        // on isRollEditContext(), same as every OTHER arrow-key shortcut
+        // below, so it can't fire while focus is elsewhere on the page.
+        if (ck === "arrowleft") { e.preventDefault(); extendSelectionRange(-1); return; }
+        if (ck === "arrowright") { e.preventDefault(); extendSelectionRange(1); return; }
+      }
+    }
+
+    // Don't hijack any other Ctrl/Cmd/Alt combos (Cmd+... browser defaults,
+    // etc). Ctrl+A/C/X/V/D/Z/Y/Shift+Z and Ctrl+Shift+Arrow are the
+    // deliberate exceptions carved out above/before this point — everything
+    // else still passes through untouched.
     if (e.ctrlKey || e.metaKey || e.altKey) return;
 
     const k = e.key.toLowerCase();
     // Shortcuts overlay (F-A1-009) — the first-run hint has promised
     // "press ? for shortcuts" since it was written; this makes it true.
     if (k === "?") { e.preventDefault(); toggleShortcutsOverlay(); return; }
+    // Lens-J finding 2 — checked via e.code, NOT the `k` (e.key.toLowerCase())
+    // every other branch here uses: e.code names the PHYSICAL key regardless
+    // of the active keyboard layout (see the QWERTY map's own doc comment
+    // near the top of this file), which matters here specifically because
+    // this binding's whole point is to avoid colliding with that physical
+    // note map. Checking e.key instead (the character the layout PRODUCES)
+    // broke exactly that on AZERTY: physical KeyQ (mapped to MIDI 72 in the
+    // QWERTY map) produces the character "a" under AZERTY, so a plain e.key
+    // check silently stole every AZERTY note played on that key for this
+    // tool-hold branch instead — the QWERTY[code] dispatch further below
+    // never even runs, since this branch returns first.
+    if (e.code === "KeyA") {
+      // Wave C4 — Select/Draw tool toggle, momentary latch on hold. Bound
+      // to physical KeyA (see the e.code rationale just above), NOT the
+      // wave's pinned "B": bare B already plays G4 via the QWERTY
+      // musical-keyboard mapping (KeyB=67, established well before this
+      // wave — see the QWERTY constant near the top of this file);
+      // silently stealing it would regress an existing, tested feature.
+      // Kept the existing binding, picked a different (unclaimed) key,
+      // documented the deviation here AND in the shortcuts overlay — same
+      // resolution this wave applies to the Shift+Arrow/range-extension
+      // collision (see extendSelectionRange's doc comment). KeyA itself has
+      // no entry in the QWERTY note-map (confirmed free — see that map's
+      // own declaration above), so this can never shadow a real note.
+      e.preventDefault();
+      beginToolHold();
+      return;
+    }
     if (k === " ") {
       // A focused button/link/[role=button] owns Space natively — only
       // hijack it for play/pause when focus isn't on one of those
@@ -1775,6 +2451,27 @@ function buildKeyboard() {
       // beyond what any pinned finding requires, called out here in case
       // it should be reverted.
       if (moveModeActive) { e.preventDefault(); exitMoveMode(); return; }
+      // Wave C4 — Escape clears a MULTI-selection (finding: "Escape clears
+      // multi-selection (when not dragging/recording)") rather than
+      // panicking, so backing out of an accidental marquee/Ctrl+A doesn't
+      // also cut off whatever's currently sounding. Deliberately scoped to
+      // selectionSize() > 1 — a single selected note (0 or 1) keeps Escape's
+      // pre-existing, well-established panic meaning unchanged; only an
+      // ACTUAL multi-selection gets the new behavior. Both recording AND a
+      // PENDING count-in are excluded (hasPendingCountIn, not just the
+      // selection-op recording guard) — Escape during a count-in must still
+      // reach panic() below to cancel it (panic() is what calls
+      // cancelCountIn()); a multi-selection left over from before recording
+      // armed must not silently swallow that cancellation.
+      if (
+        !dragActive && !shouldRefuseSelectionOpWhileRecording(recordPhase) &&
+        !hasPendingCountIn(recordPhase) && state.selectionSize() > 1
+      ) {
+        e.preventDefault();
+        state.clearSelection();
+        refreshSelectionUI();
+        return;
+      }
       panic();
       return;
     }
@@ -1782,7 +2479,7 @@ function buildKeyboard() {
       // Only intercept when there's actually a note to delete — otherwise
       // this stole Backspace/Delete from every other context on the page
       // for nothing (F-A1: keyboard-editing scope regression).
-      if (state.getSelectedNote()) { e.preventDefault(); deleteSelectedNote(); }
+      if (state.selectionSize() > 0) { e.preventDefault(); deleteSelection(); }
       return;
     }
     // Keyboard editing of the piano roll (F-B1-002) — selection, pitch/time
@@ -1795,17 +2492,21 @@ function buildKeyboard() {
       if (isRollEditContext()) { e.preventDefault(); cycleNoteSelection(e.shiftKey ? -1 : 1); }
       return;
     }
-    if (k === "arrowup") { if (isRollEditContext()) { e.preventDefault(); nudgeSelectedNote(1, 0); } return; }
-    if (k === "arrowdown") { if (isRollEditContext()) { e.preventDefault(); nudgeSelectedNote(-1, 0); } return; }
+    if (k === "arrowup") { if (isRollEditContext()) { e.preventDefault(); nudgeSelection(1, 0); } return; }
+    if (k === "arrowdown") { if (isRollEditContext()) { e.preventDefault(); nudgeSelection(-1, 0); } return; }
     // Shift+Left/Right resizes by one grid step (finding 44) instead of
     // moving — reuses resizeCommand via the same resizeSelectedNoteByStep
-    // path the toolbar's Resize+/- buttons call (finding 40).
+    // path the toolbar's Resize+/- buttons call (finding 40). KEPT exactly
+    // as-is (Wave C4 spec, deliberate deviation from the APG grid pattern's
+    // own Shift+Arrow-extends-range convention — see extendSelectionRange's
+    // doc comment and the shortcuts overlay for the documented Ctrl+Shift+
+    // Arrow alternative this app uses for range extension instead).
     if (k === "arrowleft") {
-      if (isRollEditContext()) { e.preventDefault(); e.shiftKey ? resizeSelectedNoteByStep(-1) : nudgeSelectedNote(0, -1); }
+      if (isRollEditContext()) { e.preventDefault(); e.shiftKey ? resizeSelectedNoteByStep(-1) : nudgeSelection(0, -1); }
       return;
     }
     if (k === "arrowright") {
-      if (isRollEditContext()) { e.preventDefault(); e.shiftKey ? resizeSelectedNoteByStep(1) : nudgeSelectedNote(0, 1); }
+      if (isRollEditContext()) { e.preventDefault(); e.shiftKey ? resizeSelectedNoteByStep(1) : nudgeSelection(0, 1); }
       return;
     }
     if (k === "enter" || k === "insert") {
@@ -1825,6 +2526,21 @@ function buildKeyboard() {
   });
 
   window.addEventListener("keyup", (e) => {
+    // Lens-J findings 2/3 — the tool-hold release check runs BEFORE the
+    // isTypingTarget bail, and checks e.code (physical KeyA — see the
+    // matching keydown branch's own rationale above), not e.key: releasing
+    // a held tool key is always safe (it can only turn a temporary override
+    // OFF, never start anything new), unlike keydown's note-playing/tool-
+    // arming side effects, which must stay gated behind isTypingTarget.
+    // Previously this check sat AFTER the bail, so focus moving into a text
+    // input (e.g. clicking the BPM field) while "A" was still physically
+    // held meant the eventual keyup never reached endToolHold() at all —
+    // the momentary override stuck flipped until something else reset it
+    // (see panic()'s own endToolHold() call for the blur/tab-away case,
+    // where no keyup ever arrives at all). "KeyA" has no entry in the
+    // QWERTY note-map, so there's no note-release logic to ALSO run for it
+    // below — this returns before reaching that.
+    if (e.code === "KeyA") { endToolHold(); return; }
     if (isTypingTarget(e)) return;
     const code = e.code;
     if (QWERTY[code] !== undefined) { heldKeys.delete(code); midiKeyUp(QWERTY[code], { source: "qwerty", timeStampMs: e.timeStamp }); }
@@ -1890,12 +2606,14 @@ function isActivatableControl(el: Element | null): boolean {
 }
 
 /** True when the piano roll is the active keyboard-editing surface: DOM
- *  focus is on the roll container (or inside it), or a note is currently
- *  selected via an earlier mouse click. Gates Tab/Enter/Insert/arrow note-
- *  editing so those keys never hijack native Tab focus-nav or button/link
- *  activation elsewhere on the page — once focus has moved to a specific
- *  control outside the roll, that control owns those keys, even if a note
- *  is still selected (F-A1: keyboard-editing scope regression). */
+ *  focus is on the roll container (or inside it), or a note (or, Wave C4, a
+ *  GROUP of notes — selectionSize() > 0, not getSelectedNote() != null, so
+ *  a multi-selection doesn't fall through this check) is currently selected
+ *  via an earlier mouse click. Gates Tab/Enter/Insert/arrow note-editing so
+ *  those keys never hijack native Tab focus-nav or button/link activation
+ *  elsewhere on the page — once focus has moved to a specific control
+ *  outside the roll, that control owns those keys, even if a note is still
+ *  selected (F-A1: keyboard-editing scope regression). */
 function isRollEditContext(): boolean {
   const active = document.activeElement;
   if (active && active !== document.body) {
@@ -1903,7 +2621,7 @@ function isRollEditContext(): boolean {
     if (roll && (active === roll || roll.contains(active))) return true;
     return false;
   }
-  return state.getSelectedNote() != null;
+  return state.selectionSize() > 0;
 }
 
 /** Toggle the "?" keyboard-shortcuts overlay (F-A1-009) — the first-run
@@ -2015,6 +2733,12 @@ function panic() {
   silenceEngines();
   heldMidi.clear();
   heldKeys.clear();
+  // Lens-J finding 3 — a blur/tab-away mid-hold never delivers the physical
+  // keyup that would normally call endToolHold() (see the keyup handler's
+  // own doc comment), so without this the momentary Select/Draw override
+  // stuck flipped forever once focus left the page mid-hold. endToolHold()
+  // itself no-ops when no hold is active, so this is safe unconditionally.
+  endToolHold();
   updateKeyVisuals();
 }
 
@@ -2533,7 +3257,8 @@ function bindControls() {
     }
     velGestureBefore = null;
   });
-  $("insp-del").addEventListener("click", deleteSelectedNote);
+  $("insp-del").addEventListener("click", deleteSelection);
+  $("insp-del-multi").addEventListener("click", deleteSelection); // Wave C4 — group delete, same handler
 
   // Inspector vocal: per-note vowel (discrete — one command per click) +
   // breathiness (coalesced, same shape as velocity above).

@@ -389,6 +389,170 @@ export function importScoreCommand<S>(
  * command — main.ts only skips pushing a captureCommand when BOTH are
  * empty, i.e. nothing happened at all this pass).
  */
+// ─── Wave C4 — group commands (multi-select) ────────────────────────────────
+//
+// Every group operation below is ONE command per gesture, same "low-level
+// input events aggregate under one hierarchical top-level command" rule as
+// every single-note command above (Myers & Kosbie 1996, finding 2) —
+// applied here to a SET of notes moved/deleted/added together instead of
+// one. Each also restores the SELECTION itself on both undo() and redo()
+// (finding 86: "selection state in undo") via state.ts's restoreSelection,
+// so undoing a group op leaves the group selected again exactly as it was
+// mid-gesture, not silently dropped to nothing.
+
+/** One note's before/after position within a group move — group drag
+ *  (works from any selected note, the whole selection moves together) AND
+ *  group keyboard-nudge (arrows move every selected note) both resolve to
+ *  this same per-note Point pair (reusing the existing Point shape
+ *  moveCommand already uses for a single note) and share ONE factory: a
+ *  drag is a coalesced continuous gesture, a nudge is a single discrete
+ *  keypress, but both are "N notes, each with its own captured before/after
+ *  Point, committed as one command" at the undo layer. Per-note (rather
+ *  than a single shared delta) because state.moveNote's own clamping
+ *  (MIDI_LO/HI, startBeat >= 0) can clip DIFFERENT notes in a group by
+ *  different amounts when a drag pushes the group toward an edge — capturing
+ *  each note's own actual before/after is what makes undo() restore EXACTLY
+ *  where it was, not "the delta re-applied backward," which could land
+ *  differently once clamping is involved. */
+export interface GroupMoveEntry {
+  noteId: string;
+  before: Point;
+  after: Point;
+}
+
+/** Group drag / group keyboard-nudge — see GroupMoveEntry's doc comment
+ *  above. The selection itself is exactly `entries`' own note ids on BOTH
+ *  undo and redo (a move never adds or removes selection membership), so
+ *  there's no separate before/after selection to pass in, unlike
+ *  groupDeleteCommand/pasteCommand below (which DO change what's selected). */
+export function groupMoveCommand(entries: readonly GroupMoveEntry[]): Command {
+  const snap = entries.map((e) => ({ noteId: e.noteId, before: { ...e.before }, after: { ...e.after } }));
+  const ids = snap.map((e) => e.noteId);
+  // Lens-J finding 6 — snapshot the REAL anchor active at construction time
+  // (immediately before this move gesture's commit/execute call) so both
+  // undo() and redo() restore it exactly, instead of state.restoreSelection
+  // silently re-deriving "anchor = last id in `ids`" — a move never adds or
+  // removes selection membership, so the SAME anchor is correct on both
+  // ends (see this factory's own file-header note on why there's no
+  // separate before/after selection here).
+  const anchor = state.getAnchor()?.id ?? null;
+  return {
+    redo() {
+      for (const e of snap) {
+        const note = resolveNote(e.noteId, "groupMoveCommand.redo");
+        if (!note) continue;
+        // Skip the actual moveNote() call for an entry whose after ===
+        // before (a group member that was boundary-clamped to a no-op —
+        // e.g. one note in the group already sat at MIDI_HI while the rest
+        // of the group moved up) — callers (main.ts's nudgeSelection/
+        // startGroupDrag) deliberately still include a same-value entry for
+        // that note so it survives restoreSelection() below instead of
+        // silently falling out of the group's selection, but actually
+        // CALLING moveNote() on it would needlessly clear its
+        // rawStartBeat/rawDurationBeats (state.ts's moveNote always clears
+        // those on any call — see its own doc comment) even though the
+        // note never really moved.
+        if (note.startBeat !== e.after.startBeat || note.midi !== e.after.midi) {
+          state.moveNote(note, e.after.startBeat, e.after.midi);
+        }
+      }
+      state.restoreSelection(ids, anchor);
+    },
+    undo() {
+      for (const e of snap) {
+        const note = resolveNote(e.noteId, "groupMoveCommand.undo");
+        if (!note) continue;
+        if (note.startBeat !== e.before.startBeat || note.midi !== e.before.midi) {
+          state.moveNote(note, e.before.startBeat, e.before.midi);
+        }
+      }
+      state.restoreSelection(ids, anchor);
+    },
+  };
+}
+
+/** Del key / inspector "Delete N notes" button with a multi-selection
+ *  active — the group counterpart to deleteNoteCommand above, same
+ *  id-preserving restoreNote() contract (Wave C1 finding 1) generalized to
+ *  every note in the group. redo() doesn't need to touch the selection
+ *  explicitly — state.deleteNote() already drops each deleted note out of
+ *  the selection set as it goes (see state.ts's removeFromSelection), so
+ *  the selection is naturally empty once every note in the group is gone.
+ *  undo() restores every note under its exact original id AND reselects
+ *  the whole group (finding 86) — deleting, undoing, and immediately
+ *  hitting Delete again re-deletes the same group without having to
+ *  re-select it by hand. */
+export function groupDeleteCommand(notes: readonly Note[]): Command {
+  const originals = notes.map((n) => ({ ...n }));
+  // Lens-J finding 6 — the anchor active right before THIS delete (always
+  // one of `originals`' own ids, since the anchor can only ever point at a
+  // currently-selected note and the whole current selection is what's being
+  // deleted here) — restored on undo() instead of letting
+  // state.restoreSelection re-derive "anchor = last restored id."
+  const anchorBeforeDelete = state.getAnchor()?.id ?? null;
+  return {
+    redo() {
+      for (const o of originals) {
+        const target = resolveNote(o.id, "groupDeleteCommand.redo");
+        if (target) state.deleteNote(target);
+      }
+    },
+    undo() {
+      const restoredIds: string[] = [];
+      for (const o of originals) restoredIds.push(state.restoreNote({ ...o }).id);
+      state.restoreSelection(restoredIds, anchorBeforeDelete);
+    },
+  };
+}
+
+/**
+ * Ctrl+V paste / Ctrl+D duplicate — batches every pasted/duplicated note
+ * into ONE command (finding 82/83), the same id-preserving-on-repeated-redo
+ * shape addNoteCommand already uses for a single note (Wave C1 finding 1):
+ * the FIRST redo() (execute()'s initial apply) mints fresh ids for every
+ * note via state.addNote and remembers them; every LATER redo() (after an
+ * intervening undo()) restores those SAME ids via state.restoreNote instead
+ * of re-minting, so an undo/redo cycle can never orphan a later command
+ * that captured one of these notes' ids. Both undo() and redo() leave the
+ * pasted/duplicated notes as the selection (finding 86 — "pasted notes
+ * become the new selection"); undo() drops back to whatever was selected
+ * BEFORE the paste (`selectionBefore`, captured by the caller at
+ * construction — main.ts passes state.getSelectedIds() from just before
+ * building the command, mirroring clearScoreCommand's "capture before
+ * mutating" contract).
+ */
+export function pasteCommand(inits: readonly NoteInit[], selectionBefore: readonly string[]): Command {
+  const snapshot = inits.map((n) => ({ ...n }));
+  const beforeIds = [...selectionBefore];
+  // Lens-J finding 6 — the anchor active immediately BEFORE this paste,
+  // captured here (construction time, same instant main.ts captured
+  // `selectionBefore`) so undo() restores it exactly instead of
+  // state.restoreSelection re-deriving "anchor = last id in beforeIds."
+  // redo()'s own anchor (always one of the freshly minted/restored notes)
+  // is left to the default "last id" derivation — a paste always creates a
+  // brand-new anchor among ITS OWN notes, so there is no prior anchor to
+  // preserve on that side.
+  const anchorBefore = state.getAnchor()?.id ?? null;
+  let mintedIds: string[] | null = null;
+  return {
+    redo() {
+      const notes = mintedIds === null
+        ? snapshot.map((init) => state.addNote(init))
+        : mintedIds.map((id, i) => state.restoreNote({ ...snapshot[i], id }));
+      mintedIds = notes.map((n) => n.id);
+      state.restoreSelection(mintedIds);
+    },
+    undo() {
+      if (mintedIds === null) return;
+      for (const id of mintedIds) {
+        const target = resolveNote(id, "pasteCommand.undo");
+        if (target) state.deleteNote(target);
+      }
+      state.restoreSelection(beforeIds, anchorBefore);
+    },
+  };
+}
+
 export function captureCommand(added: readonly Note[], removed: readonly Note[]): Command {
   const addedSnap = added.map((n) => ({ ...n }));
   const removedSnap = removed.map((n) => ({ ...n }));
