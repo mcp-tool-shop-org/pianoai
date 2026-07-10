@@ -1,0 +1,40 @@
+{
+  "schema": "finetune-arc-p1-gate/1.0.0",
+  "verdict": "PASS",
+  "generated_by": "experiments/finetune-arc/scripts/build-sft-data.ts",
+  "inputs": {
+    "records_jsonl_sha256": "72ce6e69d29e198dc94d66d5eeb55d5e0456b859282c872caf86b7b161c8120f",
+    "splits_json_sha256": "d20aeda46d28fa1416d3aa5d892684895980cc34ec7785c0ef31d76fbaf9508a",
+    "tool_schemas_sha256": "f026a6ebae07ba208607d54e99facb2d06c5eff25b69d9c8d3105c20cdc35f0f"
+  },
+  "system_text": "You are operating AI Jam Sessions, a music education platform.",
+  "inner_val_songs": [
+    "chopin-prelude-e-minor",
+    "fur-elise"
+  ],
+  "counts": {
+    "sft_train": 78,
+    "sft_inner_val": 25,
+    "per_song": {
+      "bach-prelude-c-major-bwv846": 16,
+      "chopin-nocturne-op9-no2": 18,
+      "chopin-prelude-e-minor": 12,
+      "fur-elise": 13,
+      "mozart-k545-mvt1": 16,
+      "pathetique-mvt2": 16,
+      "schumann-traumerei": 12
+    },
+    "test_untouched": 12
+  },
+  "gates": {
+    "G1_split_integrity": "PASS",
+    "G2_validate_trace_zero_mismatches": "PASS",
+    "G3_byte_round_trip": "PASS",
+    "G4_counts": "PASS"
+  },
+  "outputs": {
+    "sft-train.jsonl": "b0804eeb0acb3ab3ce9c463625d6bbd554a840c37db6ee2ee61c4578cd171e07",
+    "sft-inner-val.jsonl": "730d49e9d6db620781178dbd7f2bc8544049dc3df829ad3ff868cd525426499b",
+    "tools.json": "71f37328f516242fcc722795f7c1f998c494f192c9c7d661115e46847b31f64b"
+  }
+}

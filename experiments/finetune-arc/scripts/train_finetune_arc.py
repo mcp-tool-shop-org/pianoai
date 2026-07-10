@@ -1,0 +1,382 @@
+#!/usr/bin/env python3
+"""Finetune Arc P2 trainer — pinned recipe from experiments/finetune-arc/P0-LOCK.md §5.
+
+bf16 LoRA (r=16, alpha=32, dropout 0.1, all linear layers incl. MLP) on
+Qwen/Qwen2.5-7B-Instruct, native chat template WITH the 41-tool catalog,
+prompt-loss weight 0.1 (assistant spans weighted 1.0), lr 1.5e-4 cosine,
+effective batch 8, 32 epochs with adapter checkpoints at {2,4,8,16,32}.
+
+Runs one seed per invocation:
+    python train_finetune_arc.py --seed 13 --data sft-train.jsonl \
+        --tools tools.json --out runs/seed13
+
+Emits runs/seed<k>/run-config.json (PIN_PER_STEP receipt: exact package
+versions, input shas, per-epoch loss + cumulative-token saturation log).
+"""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import math
+import time
+from pathlib import Path
+
+import torch
+from torch.nn import CrossEntropyLoss
+from torch.utils.data import Dataset
+
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    Trainer,
+    TrainerCallback,
+    TrainingArguments,
+    set_seed,
+)
+from peft import LoraConfig, get_peft_model
+
+CHECKPOINT_EPOCHS = {2, 4, 8, 16, 32}
+MAX_SEQ_LEN = 8192
+PROMPT_LOSS_WEIGHT = 0.1
+
+
+def sha256_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def load_tools(tools_path: Path) -> list[dict]:
+    catalog = json.loads(tools_path.read_text(encoding="utf-8"))
+    return [
+        {
+            "type": "function",
+            "function": {
+                "name": t["name"],
+                "description": t.get("description", ""),
+                "parameters": t["inputSchema"],
+            },
+        }
+        for t in catalog["tools"]
+    ]
+
+
+def to_template_messages(messages: list[dict]) -> list[dict]:
+    """Map SFT-line messages to the HF chat-template convention."""
+    out = []
+    for m in messages:
+        if m["role"] == "assistant" and m.get("tool_calls"):
+            out.append(
+                {
+                    "role": "assistant",
+                    "content": m.get("content", ""),
+                    "tool_calls": [
+                        {
+                            "type": "function",
+                            "function": {
+                                "name": tc["name"],
+                                "arguments": tc["arguments"],
+                            },
+                        }
+                        for tc in m["tool_calls"]
+                    ],
+                }
+            )
+        elif m["role"] == "tool":
+            out.append({"role": "tool", "name": m.get("name"), "content": m["content"]})
+        else:
+            out.append({"role": m["role"], "content": m["content"]})
+    return out
+
+
+def render_with_spans(
+    tokenizer, messages: list[dict], tools: list[dict]
+) -> tuple[str, list[tuple[int, int]]]:
+    """Render the full conversation and return (text, assistant char spans).
+
+    Uses progressive prefix renders; asserts the prefix property holds for
+    the template (fail fast rather than train on misaligned spans).
+    """
+    tmpl = to_template_messages(messages)
+    full = tokenizer.apply_chat_template(tmpl, tools=tools, tokenize=False)
+    spans: list[tuple[int, int]] = []
+    for i, m in enumerate(tmpl):
+        if m["role"] != "assistant":
+            continue
+        before = tokenizer.apply_chat_template(
+            tmpl[:i], tools=tools, tokenize=False, add_generation_prompt=True
+        )
+        after = tokenizer.apply_chat_template(tmpl[: i + 1], tools=tools, tokenize=False)
+        if not after.startswith(before):
+            raise AssertionError(f"template prefix property violated at turn {i}")
+        if not full.startswith(after):
+            raise AssertionError(f"template full-render property violated at turn {i}")
+        spans.append((len(before), len(after)))
+    return full, spans
+
+
+class SftDataset(Dataset):
+    def __init__(self, lines: list[dict], tokenizer, tools: list[dict]):
+        self.examples = []
+        total_tokens = 0
+        assistant_tokens = 0
+        for line in lines:
+            text, spans = render_with_spans(tokenizer, line["messages"], tools)
+            enc = tokenizer(
+                text,
+                return_offsets_mapping=True,
+                add_special_tokens=False,
+            )
+            ids = enc["input_ids"]
+            if len(ids) > MAX_SEQ_LEN:
+                raise AssertionError(
+                    f"{line['id']} renders to {len(ids)} tokens > {MAX_SEQ_LEN}"
+                )
+            weights = []
+            for (start, end) in enc["offset_mapping"]:
+                in_assistant = any(s < end and start < e for s, e in spans)
+                weights.append(1.0 if in_assistant else PROMPT_LOSS_WEIGHT)
+            n_assist = sum(1 for w in weights if w == 1.0)
+            if n_assist == 0:
+                raise AssertionError(f"{line['id']} produced no assistant tokens")
+            total_tokens += len(ids)
+            assistant_tokens += n_assist
+            self.examples.append(
+                {
+                    "input_ids": ids,
+                    "labels": list(ids),
+                    "loss_weights": weights,
+                }
+            )
+        self.total_tokens = total_tokens
+        self.assistant_tokens = assistant_tokens
+
+    def __len__(self):
+        return len(self.examples)
+
+    def __getitem__(self, idx):
+        return self.examples[idx]
+
+
+class PadCollator:
+    def __init__(self, pad_token_id: int):
+        self.pad_token_id = pad_token_id
+
+    def __call__(self, batch):
+        max_len = max(len(b["input_ids"]) for b in batch)
+        input_ids, attention_mask, labels, weights = [], [], [], []
+        for b in batch:
+            n = len(b["input_ids"])
+            pad = max_len - n
+            input_ids.append(b["input_ids"] + [self.pad_token_id] * pad)
+            attention_mask.append([1] * n + [0] * pad)
+            labels.append(b["labels"] + [-100] * pad)
+            weights.append(b["loss_weights"] + [0.0] * pad)
+        return {
+            "input_ids": torch.tensor(input_ids, dtype=torch.long),
+            "attention_mask": torch.tensor(attention_mask, dtype=torch.long),
+            "labels": torch.tensor(labels, dtype=torch.long),
+            "loss_weights": torch.tensor(weights, dtype=torch.float),
+        }
+
+
+class WeightedTrainer(Trainer):
+    def compute_loss(self, model, inputs, return_outputs=False, **kwargs):
+        weights = inputs.pop("loss_weights")
+        labels = inputs.pop("labels")
+        outputs = model(**inputs)
+        logits = outputs.logits
+        shift_logits = logits[..., :-1, :].contiguous()
+        shift_labels = labels[..., 1:].contiguous()
+        shift_weights = weights[..., 1:].contiguous()
+        loss_fct = CrossEntropyLoss(reduction="none")
+        per_token = loss_fct(
+            shift_logits.view(-1, shift_logits.size(-1)),
+            shift_labels.view(-1),
+        ).view(shift_labels.size())
+        valid = (shift_labels != -100).float()
+        w = shift_weights * valid
+        loss = (per_token * w).sum() / w.sum().clamp(min=1.0)
+        return (loss, outputs) if return_outputs else loss
+
+
+class EpochCheckpointCallback(TrainerCallback):
+    def __init__(self, out_dir: Path, tokenizer):
+        self.out_dir = out_dir
+        self.tokenizer = tokenizer
+        self.saved: list[int] = []
+
+    def on_epoch_end(self, args, state, control, model=None, **kwargs):
+        epoch = int(round(state.epoch or 0))
+        if epoch in CHECKPOINT_EPOCHS and epoch not in self.saved:
+            path = self.out_dir / f"epoch{epoch}"
+            model.save_pretrained(str(path))
+            self.tokenizer.save_pretrained(str(path))
+            self.saved.append(epoch)
+            print(f"[checkpoint] saved adapter at epoch {epoch} -> {path}")
+
+
+def package_versions() -> dict:
+    import importlib.metadata as md
+
+    out = {"torch": torch.__version__}
+    for pkg in ("transformers", "peft", "accelerate", "tokenizers", "jsonschema"):
+        try:
+            out[pkg] = md.version(pkg)
+        except md.PackageNotFoundError:
+            out[pkg] = "absent"
+    return out
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--model", default="Qwen/Qwen2.5-7B-Instruct")
+    ap.add_argument("--data", required=True)
+    ap.add_argument("--tools", required=True)
+    ap.add_argument("--out", required=True)
+    ap.add_argument("--seed", type=int, required=True)
+    ap.add_argument("--epochs", type=int, default=32)
+    ap.add_argument("--lr", type=float, default=1.5e-4)
+    ap.add_argument("--per-device-batch", type=int, default=2)
+    ap.add_argument("--grad-accum", type=int, default=4)
+    ap.add_argument("--smoke", action="store_true", help="render+1 step only")
+    args = ap.parse_args()
+
+    data_path, tools_path, out_dir = Path(args.data), Path(args.tools), Path(args.out)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    set_seed(args.seed)
+
+    tokenizer = AutoTokenizer.from_pretrained(args.model)
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+    tools = load_tools(tools_path)
+    lines = [json.loads(l) for l in data_path.read_text(encoding="utf-8").splitlines() if l]
+    assert all(line["song_id"] != "clair-de-lune" for line in lines), "test-song leak"
+
+    t0 = time.time()
+    dataset = SftDataset(lines, tokenizer, tools)
+    print(
+        f"[data] {len(dataset)} examples | {dataset.total_tokens} tokens "
+        f"({dataset.assistant_tokens} assistant) | render+span ok"
+    )
+
+    if args.smoke:
+        print("[smoke] render/span assertions passed for all examples")
+
+    model = AutoModelForCausalLM.from_pretrained(
+        args.model, torch_dtype=torch.bfloat16, device_map="cuda"
+    )
+    model.config.use_cache = False
+    lora = LoraConfig(
+        r=16,
+        lora_alpha=32,
+        lora_dropout=0.1,
+        bias="none",
+        task_type="CAUSAL_LM",
+        target_modules=[
+            "q_proj", "k_proj", "v_proj", "o_proj",
+            "gate_proj", "up_proj", "down_proj",
+        ],
+    )
+    model = get_peft_model(model, lora)
+    model.print_trainable_parameters()
+
+    steps_per_epoch = math.ceil(
+        len(dataset) / (args.per_device_batch * args.grad_accum)
+    )
+    train_args = TrainingArguments(
+        output_dir=str(out_dir / "hf-out"),
+        num_train_epochs=1 if args.smoke else args.epochs,
+        max_steps=1 if args.smoke else -1,
+        per_device_train_batch_size=args.per_device_batch,
+        gradient_accumulation_steps=args.grad_accum,
+        learning_rate=args.lr,
+        lr_scheduler_type="cosine",
+        warmup_steps=10,
+        weight_decay=0.0,
+        max_grad_norm=1.0,
+        bf16=True,
+        gradient_checkpointing=True,
+        logging_steps=1,
+        save_strategy="no",
+        report_to=[],
+        seed=args.seed,
+        data_seed=args.seed,
+        remove_unused_columns=False,
+    )
+    trainer = WeightedTrainer(
+        model=model,
+        args=train_args,
+        train_dataset=dataset,
+        data_collator=PadCollator(tokenizer.pad_token_id),
+        callbacks=[EpochCheckpointCallback(out_dir, tokenizer)],
+    )
+    result = trainer.train()
+
+    log_history = trainer.state.log_history
+    epoch_losses = [
+        {"epoch": h.get("epoch"), "loss": h.get("loss"), "lr": h.get("learning_rate")}
+        for h in log_history
+        if "loss" in h
+    ]
+    receipt = {
+        "schema": "finetune-arc-run-config/1.0.0",
+        "phase": "P2",
+        "seed": args.seed,
+        "model": args.model,
+        "smoke": args.smoke,
+        "hyperparameters": {
+            "method": "bf16 LoRA",
+            "lora_r": 16,
+            "lora_alpha": 32,
+            "lora_dropout": 0.1,
+            "target_modules": lora.target_modules if isinstance(lora.target_modules, list) else sorted(lora.target_modules),
+            "learning_rate": args.lr,
+            "lr_scheduler": "cosine",
+            "warmup_steps": 10,
+            "weight_decay": 0.0,
+            "max_grad_norm": 1.0,
+            "per_device_batch": args.per_device_batch,
+            "grad_accum": args.grad_accum,
+            "effective_batch": args.per_device_batch * args.grad_accum,
+            "epochs": args.epochs,
+            "checkpoint_epochs": sorted(CHECKPOINT_EPOCHS),
+            "prompt_loss_weight": PROMPT_LOSS_WEIGHT,
+            "max_seq_len": MAX_SEQ_LEN,
+        },
+        "inputs": {
+            "data": str(data_path),
+            "data_sha256": sha256_file(data_path),
+            "tools": str(tools_path),
+            "tools_sha256": sha256_file(tools_path),
+            "examples": len(dataset),
+            "total_tokens": dataset.total_tokens,
+            "assistant_tokens": dataset.assistant_tokens,
+        },
+        "saturation_log": {
+            "steps_per_epoch": steps_per_epoch,
+            "tokens_per_epoch": dataset.total_tokens,
+            "cumulative_tokens_by_checkpoint": {
+                str(e): dataset.total_tokens * e for e in sorted(CHECKPOINT_EPOCHS)
+            },
+            "loss_curve": epoch_losses,
+        },
+        "environment": {
+            "packages": package_versions(),
+            "gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else "none",
+            "cuda": torch.version.cuda,
+        },
+        "training_summary": {
+            "train_runtime_s": result.metrics.get("train_runtime"),
+            "final_loss": result.metrics.get("train_loss"),
+            "wall_time_s": round(time.time() - t0, 1),
+        },
+    }
+    (out_dir / "run-config.json").write_text(
+        json.dumps(receipt, indent=2) + "\n", encoding="utf-8"
+    )
+    print(f"[receipt] {out_dir / 'run-config.json'}")
+
+
+if __name__ == "__main__":
+    main()
