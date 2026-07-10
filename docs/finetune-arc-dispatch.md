@@ -115,11 +115,11 @@ Five parallel research lanes (base model · recipe · constrained decoding · ev
 
 Scores below 3 carry their upgrade path inline (lock emission at execution; verifier receipt appended post-gate).
 
-## Director gates (open)
+## Director gates
 
-1. **Base-model lock:** Qwen2.5-7B-Instruct headline (+ Qwen3-8B secondary yes/no).
-2. **GPU-hours ack:** ≈2–4 h on the 5090 for the full matrix.
-3. **Publish gate (deferred to P7):** HF adapter + README/handbook section only on a baseline-beating, honesty-rule-passing result.
+1. **Base-model lock: ✅ APPROVED 2026-07-10** — Qwen2.5-7B-Instruct headline + Qwen3-8B secondary (reported separately, per L2).
+2. **GPU-hours ack: ✅ APPROVED 2026-07-10** (≈2–4 h on the 5090); execution starts in the next session with this dispatch as the kickoff (P1 data prep onward).
+3. **Publish gate (deferred to P7):** HF adapter + README/handbook section only on a baseline-beating, honesty-rule-passing result. Package release also deferred: main carries the Node-22 engines bump + key corrections unreleased by director decision — Track B's outcome decides the v1.6.0 contents.
 
 ## Verification receipt (2026-07-10)
 
