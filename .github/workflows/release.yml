@@ -46,8 +46,19 @@ jobs:
       # Node 24's bundled npm (>= 11.5) handles the OIDC exchange natively.
       # (Adopted from PR #12, applied directly after it conflicted with the
       # pnpm-10 CI work.)
+      # Rerun-safe: a workflow_dispatch retry after a partial release (e.g.
+      # npm published but Docker failed) skips the already-live version
+      # instead of dying on E409, so downstream jobs still run.
       - name: Publish to npm with Sigstore provenance
-        run: npm publish --provenance --access public
+        run: |
+          set -euo pipefail
+          PKG=$(node -p "require('./package.json').name")
+          VERSION=$(node -p "require('./package.json').version")
+          if npm view "$PKG@$VERSION" version >/dev/null 2>&1; then
+            echo "$PKG@$VERSION already on the registry — skipping publish"
+          else
+            npm publish --provenance --access public
+          fi
 
   publish-docker:
     needs: publish-npm
@@ -85,7 +96,7 @@ jobs:
             fi
             echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           else
-            echo "version=$(node -p 'require(\"./package.json\").version')" >> "$GITHUB_OUTPUT"
+            echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
           fi
 
       - uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0

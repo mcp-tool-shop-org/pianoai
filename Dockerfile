@@ -16,7 +16,9 @@ FROM node:22-slim AS builder
 WORKDIR /app
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-RUN npm i -g pnpm@9.15.9 && pnpm install --frozen-lockfile
+# pnpm 10 to match CI and the lockfile writer — pnpm 9 fails frozen installs
+# against a pnpm-10-written lockfile (settings checksum mismatch).
+RUN npm i -g pnpm@10 && pnpm install --frozen-lockfile
 
 COPY tsconfig.json ./
 COPY src/ src/
@@ -39,7 +41,7 @@ LABEL org.opencontainers.image.license="MIT"
 WORKDIR /app
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-RUN npm i -g pnpm@9.15.9 && pnpm install --frozen-lockfile --prod
+RUN npm i -g pnpm@10 && pnpm install --frozen-lockfile --prod
 
 COPY --from=builder /app/dist/ dist/
 COPY songs/library/ songs/library/
