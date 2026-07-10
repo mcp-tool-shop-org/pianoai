@@ -1,11 +1,11 @@
 ---
 title: MCP tools reference
-description: All 42 MCP tools and 3 prompt templates organized by category — Learn, Play, Sing, Guitar, Build, and Score.
+description: All 46 MCP tools and 3 prompt templates organized by category — Learn, Play, Practice, Sing, Guitar, Build, and Score.
 sidebar:
   order: 4
 ---
 
-AI Jam Sessions exposes 42 tools and 3 prompt templates through the Model Context Protocol, organized into six categories.
+AI Jam Sessions exposes 46 tools and 3 prompt templates through the Model Context Protocol, organized into seven categories.
 
 ## Learn (10 tools)
 
@@ -30,7 +30,7 @@ Tools for audio playback and visualization.
 
 | Tool | Description |
 |------|-------------|
-| `play_song` | Play through speakers — library songs or raw .mid files. Four engines (piano, vocal, tract, guitar), speed, mode, measure range |
+| `play_song` | Play through speakers — library songs or raw .mid files. Four engines (piano, vocal, tract, guitar), speed, mode, measure range, metronome with count-in, and a `record` flag that captures the session for scoring |
 | `stop_playback` | Stop playback |
 | `pause_playback` | Pause or resume |
 | `set_speed` | Change speed mid-playback (0.1x to 4.0x) |
@@ -39,6 +39,17 @@ Tools for audio playback and visualization.
 | `mute_hand` | Mute or unmute left/right hand during practice — isolate one hand at a time |
 | `preview_teaching_cues` | See all teaching notes and key moments before playing |
 | `detect_chord` | Name the chord from a set of currently-sounding MIDI notes (e.g. `[60, 64, 67]` → C) |
+
+## Practice (4 tools)
+
+The teaching loop: record a take, score it note by note, see the marked-up score, and drill the weak measures the way a real teacher assigns them.
+
+| Tool | Description |
+|------|-------------|
+| `practice_loop` | Loop a measure range slower; every pass is recorded and scored, and the tempo ramps up (+5%) only after a clean pass |
+| `practice_status` | Current pass, speed, and a per-measure diagnostic of the last take |
+| `score_last_take` | Score the most recent recorded take — pitch accuracy, timing, completeness, per-note verdicts |
+| `view_scored_piano_roll` | The piano roll overlaid with per-note verdicts in a colorblind-safe palette — solid for correct, dashed for timing, ✕ for missed |
 
 ## Sing (2 tools)
 

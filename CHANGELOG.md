@@ -5,15 +5,51 @@ All notable changes to AI Jam Sessions will be documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.5.0] - 2026-07-10
+
+**The release where it learned to teach.** The library is fully annotated (120/120 songs, was 24), the teaching loop is closed end-to-end (metronome → recording → scoring → marked-up score → practice loops), and the browser cockpit became a real composition tool — live on the web. Tests 1513 → 2506. Every feature decision below traces to a research-grounded, externally-verified design dispatch (`docs/feature-pass-v1.5-dispatch.md`, 86 citation-gated findings); every wave passed an adversarial verification lens before merging.
+
+### Added — the teaching loop
+- **MetronomeEngine** — accented beat 1, synced to the session's effective tempo and time signature, with a configurable count-in (default 1 bar) and click-only-during-count-in mode.
+- **Live recording on both playback paths** — `play_song` gains `metronome`, `countIn`, and `record`; recordings carry a scoring-grade time contract (nominal song-time on the session path, so mid-take speed changes stay exact).
+- **`practice_loop` / `practice_status`** — the drill a real teacher assigns: loop a measure range slower, score every pass, ramp tempo (+5%) only after a *clean* pass, with task-focused per-measure diagnostics and micro-goals.
+- **`score_last_take`** — score the most recent recorded take with per-note verdicts (`noteVerdicts` on `PerformanceResult`, timing windows scaled as percent-of-beat with a 50 ms floor).
+- **`view_scored_piano_roll` / `renderScoredPianoRoll`** — the marked-up score: per-note verdicts in a colorblind-safe Okabe-Ito palette with shape redundancy (solid = correct, dashed = timing, ✕ = missed), plus a "Focus: mm. X, Y, Z" practice hint ranking the worst measures.
+- **CLI**: `play --metronome/--count-in/--record` and the new `practice` command; the first `cli.test.ts` (the CLI had zero direct tests).
+- MCP tool count: 42 → **46**.
+
+### Added — the cockpit became a composition tool (live at `/ai-jam-sessions/cockpit/`)
+- **Beat-based time model** — notes store musical time (beats), so the BPM control genuinely retimes playback (previously it changed nothing but the gridlines); lookahead scheduling on the audio clock; localStorage schema v3 with automatic migration of saved scores at their own saved tempo.
+- **Transport surface** — click-to-seek time-ruler (keyboard-accessible slider), drag-to-set **loop regions** with sample-exact wrapping, real pause (position + playhead preserved), auto-scroll following the playhead (reduced-motion aware).
+- **Record-arm capture** — QWERTY / on-screen keys / Web MIDI land in the score: 1-bar count-in, looper-model overdub across loop cycles (REPLACE as a visible toggle on the arm button), raw performance timing preserved beneath the quantized view, every pass one undoable unit peelable mid-record.
+- **Undo/redo** — a linear command stack over every edit including Clear and Import (their confirm() dialogs retired in favor of undo + toast), gesture-coalesced drags, id-preserving restore.
+- **Multi-select + clipboard** — Select/Draw tool toggle (momentary hold, layout-independent physical key), marquee + platform-standard modifier clicks, copy/cut/paste-at-playhead, Duplicate, group operations as single undoable commands.
+- **Touch + accessibility** — Pointer Events with capture and cancel-rollback on every gesture surface, Esc-cancels-drag, ≥24 px hit targets, tap-to-relocate Move mode (the WCAG 2.5.7 non-drag alternative), Shift+Arrow resize, velocity bars on notes, audible pitch preview on edits.
+- **Deployed to GitHub Pages** — the cockpit ships live from the Pages workflow with its own frozen-lockfile workspace.
+
+### Added — the library and its analysis harness
+- **120/120 songs annotated** (was 24/120) — four staged harvest waves + a legacy uplift, each annotation grounded in deterministic per-song analysis and gated ≥80 on the repo's own exemplar rubric, then adversarially fact-checked (measure numbers, chord windows, structural counts verified against the actual MIDI). First-draft failure rate fell 55.6% → 7.4% → 3.7% → 0% across the waves as the discipline compounded.
+- **Analysis harness** (`scripts/annotate-batch.ts` + three new lenses): windowed pitch-class chord detection (triads + sevenths, confidence-gated per texture/genre, rootless shells hedged as implied), transposition-aware repetition candidates (interval n-grams, evidence-graded), section detection (self-similarity novelty → suggested practice segments), and **content-based key detection** — which exposed unreliable `key` metadata across the library and now grounds every harmony claim in what the notes actually say.
+- **Library data audit** — six fragment source files replaced with identity-verified full transcriptions (three were loops of *unrelated* songs at origin, including a literal `mario2.mid`); provenance recorded per song; a corrupt 512-BPM source tempo that silently dropped a song from the registry fixed.
 
 ### Added
-- `pnpm-workspace.yaml` with esbuild build-script approval — fresh clones on pnpm 10/11 can now run `pnpm verify` without interactive `approve-builds` (pnpm 9, which CI uses, ignores the file).
+- `pnpm-workspace.yaml` with esbuild build-script approval — fresh clones on pnpm 10/11 can now run `pnpm verify` without interactive `approve-builds`.
 - `datasets/jam-actions-v0/PROVENANCE-NOTE.md` — documents the working-corpus/published-subset boundary, the two excluded unverified-provenance works (Satie Gymnopédie No. 1, Debussy Arabesque No. 1), and the MIT-code / CC-BY-SA-3.0-DE-dataset license boundary.
+- **Hugging Face mirror published** — the jam-actions-v0 dataset is live at [`mcp-tool-shop/jam-actions-v0`](https://huggingface.co/datasets/mcp-tool-shop/jam-actions-v0) (the long-deferred token-scope issue resolved).
+- Health pass (dogfood swarm stages A–D): bug/security fixes, proactive hardening, humanization (responsive layouts, structured errors, reconnect feedback), and the Claude Design brand identity (real logo, banner, og-card, learning-loop diagram).
+- `src/stdio-supervisor.ts` — quarantines native-audio fd-1 writes so MCP stdio framing survives headless environments.
+
+### Changed
+- **CI runs pnpm 10 across all workflows** (main matrix, dep-audit, cockpit, release, dataset publish); `pnpm/action-setup` pinned to the peeled v6.0.9 commit; the legacy `package.json` `pnpm.overrides` field removed (overrides live in `pnpm-workspace.yaml`, their single home).
+- `engines.node` raised to `>=20` (health pass).
+- The dataset checksum verifier's manifest-completeness check counts a prompt/continuation pair as two records (the shipped data was always correct; the checker's sum was wrong and blocked publish pre-flights).
+- `hoochie-coochie-man` difficulty `beginner` → `intermediate` (its replacement source is a full 51-measure 12/8 band transcription).
 
 ### Fixed
 - Public-surface accuracy pass (dogfood swarm Stage A): dead unscoped `ai-jam-sessions` install commands replaced with `@mcptoolshop/ai-jam-sessions` on the handbook (getting-started, beginners) and the landing-page config card + npm link; dataset composer list corrected to the actual 6 composers on README/CHANGELOG/landing/handbook; the handbook's provenance table rebuilt from the shipped records (it listed three works that have never been in the subset); README Status un-stuck from v1.4.1; cockpit access story and Sample Piano availability made honest; SECURITY.md network/credential claims scoped to distinguish the default MCP/CLI paths from the opt-in dataset/eval tooling; codecov badge removed (no coverage data has ever been uploaded behind it).
 - `version.test.ts` NAME assertion updated for the scoped package name (post-v1.4.3-tag repair, recorded here for the audit trail).
+
+## [1.4.3] - 2026-05-19
 
 **npm-recovery release.** Restores the package to npm under the `@mcptoolshop/ai-jam-sessions` scope after the v1.4.0 unscoped publish was unpublished a month ago. The v1.4.2 publish attempt under the unscoped name hit npm's E409 packument-save race (the known "first-publish-of-recently-unpublished-name" failure mode); rather than wait out the cooldown, this release migrates to the scoped name that previously hosted v1.3.0 (per the v1.3.1 changelog entry). The scope is now fresh territory on npm (404 at lookup time), so this publish completes cleanly.
 

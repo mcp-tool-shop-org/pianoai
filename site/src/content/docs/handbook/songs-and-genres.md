@@ -1,6 +1,6 @@
 ---
 title: Songs and genres
-description: The 120-song library, 12 genre exemplars, and how songs progress from raw to ready.
+description: The fully annotated 120-song library, 12 genre exemplars, and how the annotation loop works.
 sidebar:
   order: 3
 ---
@@ -44,12 +44,12 @@ Use the Learn tools to explore:
 
 ## Annotation workflow
 
-The AI promotes songs from raw to ready by studying them and writing annotations:
+All 120 songs are now fully annotated — written by AI through this exact loop, gated by a quality rubric, and fact-checked against the actual MIDI. The same workflow promotes any newly imported song from raw to ready:
 
 1. Use `song_info` or `list_measures` to examine the raw MIDI data
 2. Study the genre exemplar for context and teaching patterns
 3. Use `annotate_song` to write musical language — harmonic analysis, key moments, teaching goals
-4. The song progresses from raw to annotated, then to ready once fully documented
+4. Use `score_annotation` to grade it; the song progresses from raw to ready once it clears the quality bar
 
 ## Measure-level inspection
 
