@@ -15,6 +15,19 @@
 //     human) reads the brief and writes the musicalLanguage block; nothing
 //     in this mode calls out to an LLM itself.
 //
+//     Wave W-H (harness analysis upgrade, closing docs/harvest-pilot-report.md's
+//     calibration gaps) adds three more sections, all equally deterministic
+//     and LLM-free — see the module docstrings for the research grounding:
+//       chords     scripts/analysis-chords.ts   — windowed pitch-class-profile
+//                  chord candidates (triad/seventh vocabulary only), gated by
+//                  confidence + texture + genre, with a progression summary.
+//       patterns   scripts/analysis-patterns.ts — transposition-aware repeated
+//                  melodic/bass cells (interval n-gram matching), evidence-
+//                  graded and ranked, complementing repeatedSections above.
+//       sections   scripts/analysis-sections.ts — self-similarity novelty
+//                  section boundaries + suggested practice segments, useful
+//                  even when nothing literally repeats.
+//
 //   --apply <genre> --annotations <file.json> [--min-score <n>]
 //     Takes a JSON array of {slug, musicalLanguage} candidates, validates
 //     each against MusicalLanguageSchema, scores it with scoreAnnotation,
@@ -60,6 +73,9 @@ import {
 import { SONG_ID_REGEX } from "../src/songs/config/schema.js";
 import { scoreAnnotation, type AnnotationScore } from "../src/annotation-scorer.js";
 import { JamError, handleError, EXIT_OK, EXIT_USER } from "../src/errors.js";
+import { analyzeChords, type ChordAnalysis } from "./analysis-chords.js";
+import { analyzePatterns, type PatternAnalysis } from "./analysis-patterns.js";
+import { analyzeSections, type SectionAnalysis } from "./analysis-sections.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(__dirname, "..");
@@ -133,6 +149,12 @@ export interface AnalysisBrief {
   sparsestMeasures: MeasureDensity[];
   longestRestGaps: RestGap[];
   repeatedSections: RepeatGroup[];
+  /** Wave W-H: windowed pitch-class-profile chord analysis (docs/harvest-pilot-report.md's "no chord/harmony detection" gap). See scripts/analysis-chords.ts. */
+  chords: ChordAnalysis;
+  /** Wave W-H: transposition-aware repeated-pattern discovery, complementing repeatedSections above (which is exact/near-identical-pitch only). See scripts/analysis-patterns.ts. */
+  patterns: PatternAnalysis;
+  /** Wave W-H: self-similarity novelty section boundaries + suggested practice segments. See scripts/analysis-sections.ts. */
+  sections: SectionAnalysis;
 }
 
 // ─── Note-string parsing (inverse of hands.ts's formatHand) ────────────────────
@@ -337,6 +359,9 @@ function buildAnalysisBrief(config: SongConfig, entry: SongEntry, topN: number):
     sparsestMeasures,
     longestRestGaps,
     repeatedSections: findRepeatedSections(perMeasure),
+    chords: analyzeChords(entry.measures, config.key, config.genre, entry.timeSignature),
+    patterns: analyzePatterns(entry.measures),
+    sections: analyzeSections(entry.measures, entry.timeSignature),
   };
 }
 

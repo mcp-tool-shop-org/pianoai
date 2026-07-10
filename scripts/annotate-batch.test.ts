@@ -275,6 +275,93 @@ describe("analyzeGenre", () => {
 
     expect(briefs.map((b) => b.slug)).toEqual(["aaa-song", "zzz-song"]);
   });
+
+  // ─── Wave W-H integration: chords / patterns / sections ──────────────────
+  //
+  // The dedicated scripts/analysis-{chords,patterns,sections}.test.ts files
+  // exhaustively test each module's own logic against purpose-built
+  // Measure[] fixtures. These tests instead verify the WIRING: that
+  // buildAnalysisBrief threads config.key/config.genre/entry.timeSignature
+  // into the three passes correctly, through the real MIDI-ingest path (not
+  // hand-built Measure[]), and that the augmented brief stays deterministic.
+
+  /**
+   * 8 measures, whole-note block chords: measures 1-4 = C major (RH C4+E4+G4,
+   * LH C3+E3+G3), measures 5-8 = F major (RH F4+A4+C5, LH F3+A3+C4). Rich
+   * enough to exercise all three new passes' happy paths: a clean,
+   * unambiguous chord each measure; a same-shape repeated block-chord
+   * "pattern" within each half (and a transposed match across the C/F
+   * boundary, since a repeated single note is still a repeated shape); and
+   * a clear two-block section boundary at the C/F seam.
+   */
+  function writeWaveHFixture(genreDir: string, id: string, genre: string = "blues"): void {
+    // writeRawConfig's config.genre field defaults to "blues" independent of
+    // which directory the file is written into (genreDir only controls
+    // where analyzeGenre looks, not what the config itself claims) — pass
+    // genre explicitly whenever the test cares which one analyzeChords sees.
+    writeRawConfig(genreDir, id, { key: "C major", genre });
+    const ticksPerMeasure = 1920; // 480 ticksPerBeat * 4 beats (4/4)
+    const notes: Array<{ noteNumber: number; startTick: number; durationTicks: number }> = [];
+    for (let measure = 0; measure < 8; measure++) {
+      const startTick = measure * ticksPerMeasure;
+      const pitches = measure < 4 ? [60, 64, 67, 48, 52, 55] : [65, 69, 72, 53, 57, 60]; // C-maj then F-maj, RH+LH
+      for (const noteNumber of pitches) notes.push({ noteNumber, startTick, durationTicks: ticksPerMeasure });
+    }
+    writeFileSync(join(genreDir, `${id}.mid`), buildMidiBuffer({ notes }));
+  }
+
+  it("threads config.key/genre and entry.timeSignature into the chords/patterns/sections passes end-to-end", () => {
+    const genreDir = join(tmp, "blues");
+    writeWaveHFixture(genreDir, "wave-h-song");
+    const [brief] = analyzeGenre("blues", tmp);
+
+    // chords: a clean, unambiguous block chord every measure should clear the gate.
+    expect(Array.isArray(brief.chords.windows)).toBe(true);
+    expect(brief.chords.windows.length).toBeGreaterThan(0);
+    expect(brief.chords.windows.some((w) => w.label === "C")).toBe(true);
+    expect(brief.chords.windows.some((w) => w.label === "F")).toBe(true);
+    expect(typeof brief.chords.summary).toBe("string");
+
+    // patterns: the repeated block chord forms a same-shape (possibly
+    // transposed) melodic-reduction repeat in at least one hand.
+    expect(Array.isArray(brief.patterns.groups)).toBe(true);
+    expect(brief.patterns.groups.length).toBeGreaterThan(0);
+    expect(brief.patterns.label).toBe("repetition candidates (evidence-graded)");
+
+    // sections: two internally-homogeneous 4-measure blocks should produce a boundary.
+    expect(Array.isArray(brief.sections.sections)).toBe(true);
+    expect(brief.sections.sections.length).toBeGreaterThanOrEqual(1);
+    expect(brief.sections.practiceSegments.length).toBe(brief.sections.sections.length);
+
+    // the pre-existing exact-repeat pass is untouched and still runs alongside the new ones.
+    expect(Array.isArray(brief.repeatedSections)).toBe(true);
+  });
+
+  it("keeps the augmented brief (including the new Wave W-H fields) deterministic across repeated calls", () => {
+    const genreDir = join(tmp, "blues");
+    writeWaveHFixture(genreDir, "wave-h-song");
+
+    const first = analyzeGenre("blues", tmp);
+    const second = analyzeGenre("blues", tmp);
+    expect(JSON.stringify(second)).toBe(JSON.stringify(first));
+
+    // Sanity: the new fields are actually present in the serialized output
+    // (a wiring bug that silently dropped them would still pass a bare
+    // determinism check).
+    const [brief]: AnalysisBrief[] = first;
+    expect(brief).toHaveProperty("chords");
+    expect(brief).toHaveProperty("patterns");
+    expect(brief).toHaveProperty("sections");
+  });
+
+  it("gates chord windows to implied:true for a hard-gated genre (jazz) on the same note content", () => {
+    const genreDir = join(tmp, "jazz");
+    writeWaveHFixture(genreDir, "wave-h-jazz-song", "jazz");
+    const [brief] = analyzeGenre("jazz", tmp);
+
+    expect(brief.chords.windows.length).toBeGreaterThan(0);
+    expect(brief.chords.windows.every((w) => w.implied === true)).toBe(true);
+  });
 });
 
 // ─── applyAnnotations ───────────────────────────────────────────────────────
