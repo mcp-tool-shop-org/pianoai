@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'site/**'
+      - 'apps/cockpit/**'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
 
@@ -34,6 +35,23 @@ jobs:
       - name: Build site
         working-directory: site
         run: npm run build
+
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          version: 10
+
+      - name: Install cockpit dependencies
+        working-directory: apps/cockpit
+        run: pnpm install --frozen-lockfile
+
+      - name: Build cockpit under the site base path
+        working-directory: apps/cockpit
+        run: pnpm exec vite build --base=/ai-jam-sessions/cockpit/
+
+      - name: Publish cockpit into the site tree
+        run: |
+          mkdir -p site/dist/cockpit
+          cp -r apps/cockpit/dist/. site/dist/cockpit/
 
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:

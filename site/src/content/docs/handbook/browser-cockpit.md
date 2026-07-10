@@ -7,9 +7,11 @@ sidebar:
 
 ## The cockpit
 
-A browser-based instrument and vocal studio that lives in the repo at `apps/cockpit`. No plugins, no DAW — just a web page with a piano.
+A browser-based instrument and vocal studio that lives in the repo at `apps/cockpit`. No plugins, no DAW — just a web page with a piano roll you can click into, play into, and edit like a real composition tool: beat-accurate transport with a time-ruler and loop regions, record-arm capture with count-in, full undo/redo, multi-select and clipboard, touch support.
 
-It is not yet bundled into the npm package — run it from a clone of the repository:
+**[▶ Launch the cockpit](/ai-jam-sessions/cockpit/)** — it runs entirely in your browser; nothing is installed and nothing leaves your machine. Your work autosaves locally (localStorage) between visits.
+
+Prefer to hack on it? Run it from a clone:
 
 ```bash
 git clone https://github.com/mcp-tool-shop-org/ai-jam-sessions.git
