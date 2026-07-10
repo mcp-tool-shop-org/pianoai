@@ -68,11 +68,13 @@ Held-out-of-gradient songs (selection ONLY, never trained on, never clair-de-lun
 | Max seq len | ~~8192~~ **12288** (amendment A1) | — |
 | Epochs / checkpoints | 32 total; adapters saved at epoch {2, 4, 8, 16, 32} | L4, findings 13 vs 29 |
 | Prompt-loss weight | **0.1** on non-assistant tokens, 1.0 on assistant spans (incl. `<tool_call>` blocks + end token) | finding 13 |
-| Seeds | **{13, 42, 271}** (3 runs; L8 minimum) | L8 |
+| Seeds | ~~{13, 42, 271}~~ **{13, 42, 271, 512, 1024}** (amendment A2) | L8 |
 | Precision/misc | bf16, gradient_checkpointing on, adamw_torch, packing OFF | — |
 | Saturation log | per-epoch cumulative trained tokens + loss curve in `run-config.json` receipt (P2 gate) | finding 29 |
 
 **Amendment A1 (2026-07-10, pre-training — no gradient step had run):** max_seq_len 8192 → 12288. The fail-fast render assertion on the first pod launch caught that the 41-tool system block renders to ~8.6k tokens and the longest record to 9,282 — my 8192 estimate was wrong. Capacity constant only; no recipe knob (r/α/lr/batch/epochs/weighting) changed. If the pinned per-device 2 × accum 4 shape OOMs at 12.3k context, the fallback is per-device 1 × accum 8 — the LOCKED quantity is effective batch 8.
+
+**Amendment A2 (2026-07-10, mid-P2, before ANY P3 selection or P5 eval result existed):** seeds extended from the 3-seed L8 minimum to the dispatch's stated preference — **5 seeds {13, 42, 271, 512, 1024}**. Trigger: director expanded the compute budget in-session ("I don't mind the 4-5 hour run, or whatever it takes") after the L11 GPU-hour estimate proved undersized for the rendered example length. The extension is outcome-blind (no selection/eval signal existed at decision time), adds independent runs only, and touches no recipe knob, no data, no eval design. Qwen3-8B secondary (L2) remains deferred — it needs its own prompted baseline to be a fair comparison and stays a post-headline decision.
 
 **Runner deviation (documented per PIN_PER_STEP):** the dispatch names backpropagate v1.7.0 as runner. Its public API cannot express three locked requirements — (a) native chat-template render **with tools** (its converter renders generic ChatML without a tools block), (b) fractional prompt-loss weight (TRL full-sequence loss only), (c) checkpoint capture at the epoch set {2,4,8,16,32}. P2 therefore uses the pinned in-repo script [scripts/train_finetune_arc.py](scripts/train_finetune_arc.py) (vanilla transformers+peft, exact versions frozen into each run receipt). The recipe itself is unchanged from L3; backpropagate remains the envelope source that sized it.
 
