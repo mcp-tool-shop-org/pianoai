@@ -1,0 +1,39 @@
+{
+  "revision": "r001-bach-m061-window",
+  "date": "2026-07-11",
+  "script": "scripts/revise-jam-actions-v0-r001-bach-window.ts",
+  "reason": "Record window mm. 61-64 exceeds the 62-measure source MIDI (prelude 1-35 + fugue 36-62); frozen play_song(61,64) fails live execution. Retargeted to mm. 61-62 — the record's sidecar always contained exactly bars 61-62.",
+  "finding": "finetune-arc-v1 gate G6a (experiments/finetune-arc-v1/data/P1v1-gate-report.json)",
+  "disposition": "experiments/finetune-arc-v1/P0-LOCK.md amendment A1-v1",
+  "erratum": "docs/jam-actions-v0-erratum-001-bach-m061-064.md",
+  "sealed_public_records_sha256": "72ce6e69d29e198dc94d66d5eeb55d5e0456b859282c872caf86b7b161c8120f",
+  "invariants": {
+    "timed_events_untouched": true,
+    "remi_byte_identical": true,
+    "abc_body_identical_title_corrected": true,
+    "hand_counts_unchanged": {
+      "rh": 33,
+      "lh": 8
+    }
+  },
+  "files": {
+    "removed": {
+      "records/bach-prelude-c-major-bwv846-m061-064.json": "c514b0fc73e0ca5cf2ffb3605ad0d4ff4af118b183aa8f5b4c73b1db232fff4f",
+      "pianoroll/bach-prelude-c-major-bwv846-m061-064.svg": "b04e3a3e4b97ae7352e13ddcd44032d12cda3d561e6eb135b3fb2cf1c6ebce23"
+    },
+    "written": {
+      "records/bach-prelude-c-major-bwv846-m061-062.json": "2164542bbcc1c64315b891d4f6e7198539c04a709bff58bd234859c4a1d280d7",
+      "pianoroll/bach-prelude-c-major-bwv846-m061-062.svg": "35ce55a2c537eeb91591204037b118a21488d3aad5e7880fa78f3a944af74f82"
+    },
+    "modified": {
+      "records/bach-prelude-c-major-bwv846-m057-060.json": {
+        "before": "a76bc412faa477c10b15b5dbe14418dff2e2897de89a9bc4c3d702dfd4059056",
+        "after": "ae6aa991d4ef877d99adb03949ebc1edee4c5b04b6cf53d6db2444fa8eb75318"
+      },
+      "splits.json": {
+        "before": "3afd58e572abd9d004b3f84b66b06666099c2d8c5a3de609b11483c4f5ac08a2",
+        "after": "ee920412f05abbb1423844cee5bfba36abf2b4dcedf645d6ab3b2dad4623a093"
+      }
+    }
+  }
+}
