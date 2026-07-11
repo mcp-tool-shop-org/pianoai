@@ -1,0 +1,152 @@
+name: Push jam-ft-v1 adapters to HuggingFace
+
+# Single-purpose relay: the five frozen LoRA adapters (~731 MB staged upload)
+# are too large for git, so they travel as a GitHub RELEASE ASSET; this
+# workflow downloads the asset, verifies its sha256 against the dispatch
+# input (integrity across the hop), and uploads the extracted folder to the
+# HF model repo using the org-scoped HF_TOKEN secret (the rig-local token has
+# user-namespace scope only — same split as the dataset publish).
+#
+# Manual trigger only. Idempotent: create_repo(exist_ok=True) + upload_folder
+# uploads a new revision if the repo already exists.
+#
+# Token (HF_TOKEN) comes from GitHub Secrets. Never echoed, never written.
+#
+# Compensators: HF model repo is deletable / flippable-private from the HF UI
+# (owner: mcp-tool-shop). The GitHub release asset is deletable via
+# `gh release delete`. Neither mints anything immutable.
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "GitHub release tag carrying the adapter archive asset"
+        required: true
+        default: "jam-ft-v1-adapters"
+      asset_name:
+        description: "Asset filename on that release"
+        required: true
+        default: "jam-ft-v1-adapters-upload.tar.gz"
+      asset_sha256:
+        description: "Expected sha256 of the asset (verified before any upload; mismatch aborts)"
+        required: true
+      hf_repo_id:
+        description: "HF model repo (namespace/name)"
+        required: true
+        default: "mcp-tool-shop/jam-ft-v1-qwen25"
+      commit_message:
+        description: "HF commit message"
+        required: false
+        default: "jam-ft-v1-qwen25: five frozen LoRA seeds + card (all-seeds-mean claim, B-1 powered win)"
+
+concurrency:
+  group: push-adapters-hf
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Validate hf_repo_id input
+        env:
+          REPO_ID: ${{ github.event.inputs.hf_repo_id }}
+        run: |
+          set -euo pipefail
+          case "$REPO_ID" in
+            mcp-tool-shop/*|mcp-tool-shop-org/*)
+              echo "hf_repo_id OK: $REPO_ID"
+              ;;
+            *)
+              echo "ERROR: hf_repo_id must start with 'mcp-tool-shop/' or 'mcp-tool-shop-org/' (got: $REPO_ID)"
+              exit 1
+              ;;
+          esac
+
+      - name: Download release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.inputs.release_tag }}
+          ASSET: ${{ github.event.inputs.asset_name }}
+        run: |
+          set -euo pipefail
+          gh release download "$TAG" --repo "${{ github.repository }}" --pattern "$ASSET" --output adapters.tar.gz
+          ls -la adapters.tar.gz
+
+      - name: Verify asset sha256 (integrity across the release hop)
+        env:
+          EXPECTED: ${{ github.event.inputs.asset_sha256 }}
+        run: |
+          set -euo pipefail
+          echo "$EXPECTED  adapters.tar.gz" | sha256sum -c -
+
+      - name: Extract
+        run: |
+          set -euo pipefail
+          mkdir -p upload
+          tar -xzf adapters.tar.gz -C upload
+          echo "Upload tree:"
+          find upload -maxdepth 2 -type d | sort
+          test -f upload/README.md
+          for s in seed13 seed42 seed271 seed512 seed1024; do
+            test -f "upload/$s/adapter_model.safetensors" || { echo "ERROR: missing $s adapter"; exit 1; }
+            test -f "upload/$s/adapter_config.json" || { echo "ERROR: missing $s config"; exit 1; }
+          done
+          echo "All five adapters + card present."
+
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+
+      - name: Install huggingface_hub
+        run: pip install --quiet huggingface_hub
+
+      - name: Push adapters to HuggingFace
+        id: hf_push
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_REPO_ID: ${{ github.event.inputs.hf_repo_id }}
+          HF_COMMIT_MSG: ${{ github.event.inputs.commit_message }}
+        run: |
+          set -euo pipefail
+          if [ -z "${HF_TOKEN:-}" ]; then
+            echo "ERROR: HF_TOKEN secret is not set"
+            exit 1
+          fi
+          python3 << 'PY'
+          import os
+          from huggingface_hub import HfApi
+
+          token = os.environ["HF_TOKEN"]
+          repo_id = os.environ["HF_REPO_ID"]
+          commit_msg = os.environ["HF_COMMIT_MSG"]
+          api = HfApi(token=token)
+
+          api.create_repo(repo_id=repo_id, repo_type="model", private=False, exist_ok=True)
+          print(f"HF model repo ready: {repo_id}")
+
+          commit = api.upload_folder(
+              folder_path="upload",
+              repo_id=repo_id,
+              repo_type="model",
+              commit_message=commit_msg,
+          )
+          print(f"HF push commit: {commit}")
+          print(f"HF URL: https://huggingface.co/{repo_id}")
+          PY
+
+      - name: Print final receipt
+        if: always()
+        run: |
+          echo "================================================================"
+          echo "  jam-ft-v1 adapters push receipt"
+          echo "================================================================"
+          echo "  Release tag:    ${{ github.event.inputs.release_tag }}"
+          echo "  Asset:          ${{ github.event.inputs.asset_name }}"
+          echo "  Asset sha256:   ${{ github.event.inputs.asset_sha256 }}"
+          echo "  HF repo:        ${{ github.event.inputs.hf_repo_id }}"
+          echo "================================================================"
