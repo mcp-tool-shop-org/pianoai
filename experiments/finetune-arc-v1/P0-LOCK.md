@@ -225,6 +225,12 @@ Same 16-record cohort, same 4 conditions, n=3, default sampler seed, local ollam
 | P6-v1 | Three-way stats + receipted report (§11) | Honesty rule binds wording |
 | P7-v1 | IF honesty-rule-passing win: HF publish + docs section | Director publish gate |
 
+## Amendments (pre-training only; the v0 pattern)
+
+**A1-v1 (2026-07-11, during P1, before any output was written — no gradient step has run):** G6a executed every unique frozen jam `tool_call` against the live MCP server and found **1 of 206 fails**: `play_song(bach-prelude-c-major-bwv846, 61–64)` — the server's registry entry for the song is **62 measures** (`endMeasure (64) exceeds … Valid range: 1-62`), while the published record `bach-prelude-c-major-bwv846:m061-064` (and its MIDI sidecar) covers measures 61–64. `view_piano_roll` for the same window succeeds (different bounds handling). This is a **published-dataset data-reality mismatch that v0's schema-only G2 could not see** — the record is immutable published data that BOTH arms (v0-FT and the sealed baseline's world) already carry. Disposition, recorded ex-ante: (i) synthetic-origin calls must pass execution 100% — unchanged and none fail; (ii) calls byte-identical to a human-record call report execution failures as **enumerated findings** in the gate report instead of gate failures (G6a verdict `PASS_WITH_FINDINGS`); (iii) the mismatch is filed to the dataset backlog for a future dataset revision (fix the record window or the server registry — outside this arc's scope; the sealed eval surface e3/e3-tool never calls the MCP server, so nothing in P5/P6 is affected). Training impact vs v0: nil — v0 trained on this exact record with this exact call.
+
+Also recorded (same commit): the G6b containment matcher's number regex initially rejected sentence-terminal values ("5."); fixed before any output was written — the double-build + all gates re-ran from scratch.
+
 ## 16. Verification receipt (2026-07-11)
 
 `prism verify --type citations` (prism v1.6.0, Ed25519-signed, provider ollama, caller-family anthropic excluded) over the 14 new §1 citations → receipt `prism-01kx7tthdc6h6d5e8nr442hngw` (kid `ed25519-91914c8d4e99814a`), full JSON beside this file: [P0-LOCK.citation-receipt.json](P0-LOCK.citation-receipt.json).

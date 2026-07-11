@@ -60,7 +60,11 @@ export function answerContains(
   const text = answerText.toLowerCase();
   switch (gold.kind) {
     case "number": {
-      const re = new RegExp(`(?<![\\d.])${String(gold.value).replace(".", "\\.")}(?![\\d.])`);
+      // Standalone numeric token: not inside a longer number ("15" ≠ "5") and
+      // not a decimal prefix ("5.3" ≠ "5") — but a sentence-ending "5." or a
+      // "5," list separator IS a match (the dot only disqualifies when a
+      // digit follows it).
+      const re = new RegExp(`(?<![\\d.])${String(gold.value).replace(".", "\\.")}(?!\\.?\\d)`);
       return re.test(answerText);
     }
     case "note": {

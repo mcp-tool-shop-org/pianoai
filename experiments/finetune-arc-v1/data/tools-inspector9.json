@@ -1,0 +1,173 @@
+{
+  "source": "src/dataset/eval/midi-inspector.ts inspectorToolSchemas()",
+  "tool_count": 9,
+  "tools": [
+    {
+      "name": "get_events_in_measure",
+      "description": "Return all MIDI events (notes) that occur in the given measure of the phrase, with hand, beat (measure-relative, 0-indexed), pitch (MIDI number), and name (e.g. 'E5').",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "measure_number": {
+            "type": "integer",
+            "description": "1-indexed measure number within the score (matches scope.phrase_window).",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "measure_number"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_events_in_hand",
+      "description": "Return all MIDI events played by the given hand (right or left) across the entire phrase, sorted by measure then beat.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "hand": {
+            "type": "string",
+            "enum": [
+              "right",
+              "left"
+            ],
+            "description": "Which hand played the notes."
+          }
+        },
+        "required": [
+          "hand"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "count_distinct_pitch_classes",
+      "description": "Count the number of DISTINCT pitch classes (C, C#, D, D#, E, F, F#, G, G#, A, A#, B) appearing in the phrase. Optionally restrict to a measure range. Returns the count and the sorted list of distinct pitch class names.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "measure_range": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "Optional [start_measure, end_measure] inclusive. Omit to count across the whole phrase."
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "count_notes_with_pitch_class",
+      "description": "Count the total number of MIDI events (notes) in the phrase whose pitch class equals the given pitch class. Use this to answer 'how many notes with pitch class X' questions. Pitch class accepts canonical sharp names (e.g. 'C', 'C#', 'G'), flat names (e.g. 'Bb', 'Db'), or octave-prefixed notes (the octave is stripped: 'C4' → 'C'). Returns the canonical pitch class plus the count. Distinct from `count_distinct_pitch_classes`, which counts how many UNIQUE pitch classes appear.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "pitch_class": {
+            "type": "string",
+            "description": "Pitch class name (e.g. 'C', 'C#', 'G', 'Bb'). Case-insensitive; octave digits ignored."
+          }
+        },
+        "required": [
+          "pitch_class"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "count_beat_1_onsets",
+      "description": "Count events whose onset falls on beat 1 (the downbeat) of any measure in the phrase. Returns the count and the list of matched events. Uses a robust heuristic that handles both 0-indexed (beat=0) and 1-indexed (beat=1.0) downbeat conventions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_pitch_at",
+      "description": "Look up the pitch played at a specific (measure, beat) position, optionally restricted to a hand. Uses a ±0.1-beat tolerance for nearest match. Returns the event (or null if no event falls within tolerance). If multiple events match, returns the one closest in beat to the requested position.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "measure": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "1-indexed measure number."
+          },
+          "beat": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Measure-relative beat (0-indexed, as stored in timed_events)."
+          },
+          "hand": {
+            "type": "string",
+            "enum": [
+              "right",
+              "left"
+            ],
+            "description": "Optional hand filter. Omit to search both hands."
+          }
+        },
+        "required": [
+          "measure",
+          "beat"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_hand_balance",
+      "description": "Return the count of right-hand and left-hand events plus the ratio rh/(rh+lh). Useful for deciding which hand plays more notes in the phrase.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "find_highest_pitch",
+      "description": "Find the highest-pitched event in the phrase, optionally restricted to one hand. Returns the event with the largest MIDI note number (ties broken by earliest measure+beat).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "hand": {
+            "type": "string",
+            "enum": [
+              "right",
+              "left"
+            ],
+            "description": "Optional hand filter. Omit to search both hands."
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "find_lowest_pitch",
+      "description": "Find the lowest-pitched event in the phrase, optionally restricted to one hand. Returns the event with the smallest MIDI note number (ties broken by earliest measure+beat).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "hand": {
+            "type": "string",
+            "enum": [
+              "right",
+              "left"
+            ],
+            "description": "Optional hand filter. Omit to search both hands."
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      }
+    }
+  ]
+}

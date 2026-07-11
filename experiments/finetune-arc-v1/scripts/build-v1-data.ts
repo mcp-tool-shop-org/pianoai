@@ -535,7 +535,21 @@ interface ToolResultShape {
   isError?: boolean;
 }
 
-async function execVerifyMcp(): Promise<{ executed: number; unique: number }> {
+async function execVerifyMcp(): Promise<{ executed: number; unique: number; findings: string[] }> {
+  // Calls byte-identical to a HUMAN-record call report failures as enumerated
+  // findings (P0-LOCK amendment A1-v1: immutable published data); calls of
+  // synthetic origin hard-fail the gate. All C1 calls are human-frozen by
+  // construction (G6c) — the origin set is derived from the records directly.
+  const humanCallKeys = new Set<string>();
+  for (const r of trainRecords) {
+    for (const turn of r.target_trace.session) {
+      if (turn.role === "assistant" && turn.tool_calls) {
+        for (const tc of turn.tool_calls) {
+          humanCallKeys.add(`${tc.tool}|${JSON.stringify(tc.arguments)}`);
+        }
+      }
+    }
+  }
   const uniqueCalls = new Map<string, { name: string; arguments: Record<string, unknown> }>();
   for (const line of [...trainLines, ...valJamLines]) {
     if (line.tools_key !== "mcp41") continue;
@@ -547,6 +561,7 @@ async function execVerifyMcp(): Promise<{ executed: number; unique: number }> {
       }
     }
   }
+  const findings: string[] = [];
   const isolatedHome = mkdtempSync(join(tmpdir(), "ftv1-exec-"));
   const transport = new StdioClientTransport({
     command: process.execPath,
@@ -558,11 +573,22 @@ async function execVerifyMcp(): Promise<{ executed: number; unique: number }> {
   await client.connect(transport);
   let executed = 0;
   try {
-    for (const tc of uniqueCalls.values()) {
+    for (const [key, tc] of uniqueCalls) {
       const res = (await client.callTool({ name: tc.name, arguments: tc.arguments })) as ToolResultShape;
       executed++;
       if (res.isError === true) {
-        failures.push(`G6a: ${tc.name}(${JSON.stringify(tc.arguments)}) returned isError`);
+        const errText = res.content
+          .filter((c) => c.type === "text" && c.text)
+          .map((c) => c.text)
+          .join(" ")
+          .slice(0, 160);
+        if (humanCallKeys.has(key)) {
+          findings.push(
+            `A1-v1 finding: human-record call ${tc.name}(${JSON.stringify(tc.arguments)}) fails live execution: ${errText}`,
+          );
+        } else {
+          failures.push(`G6a: synthetic call ${tc.name}(${JSON.stringify(tc.arguments)}) returned isError: ${errText}`);
+        }
       }
       if (tc.name === "play_song") {
         await client.callTool({ name: "stop_playback", arguments: {} });
@@ -571,7 +597,7 @@ async function execVerifyMcp(): Promise<{ executed: number; unique: number }> {
   } finally {
     await client.close();
   }
-  return { executed, unique: uniqueCalls.size };
+  return { executed, unique: uniqueCalls.size, findings };
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
@@ -678,7 +704,12 @@ const report = {
       annotation_needles: annotationNeedles.length,
       harness_markers: HARNESS_MARKERS.length,
     },
-    G6a_mcp_execution: { verdict: "PASS", unique_calls: execStats.unique, executed: execStats.executed },
+    G6a_mcp_execution: {
+      verdict: execStats.findings.length > 0 ? "PASS_WITH_FINDINGS" : "PASS",
+      unique_calls: execStats.unique,
+      executed: execStats.executed,
+      findings: execStats.findings,
+    },
     G6b_inspector_reexecution: "PASS",
     G6c_paraphrase_anchors: "PASS",
     DET_double_build: "PASS",

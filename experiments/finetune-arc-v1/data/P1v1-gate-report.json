@@ -1,0 +1,80 @@
+{
+  "schema": "finetune-arc-v1-p1-gate/1.0.0",
+  "verdict": "PASS",
+  "generated_by": "experiments/finetune-arc-v1/scripts/build-v1-data.ts",
+  "lock": "experiments/finetune-arc-v1/P0-LOCK.md",
+  "inputs": {
+    "records_jsonl_sha256": "72ce6e69d29e198dc94d66d5eeb55d5e0456b859282c872caf86b7b161c8120f",
+    "splits_json_sha256": "d20aeda46d28fa1416d3aa5d892684895980cc34ec7785c0ef31d76fbaf9508a",
+    "tool_schemas_sha256": "f026a6ebae07ba208607d54e99facb2d06c5eff25b69d9c8d3105c20cdc35f0f",
+    "midi_inspector_sha256": "1037b937422bdaf35f74c234f851b9fc5c6a9dbb67c842302ca91135f6baeff2",
+    "rehearsal_raw_sha256": "24b037460811f5542c0d8aa77a8446ee8c10693d3353b9d3e57de22a9e7e3da1",
+    "scripts": {
+      "build-v1-data.ts": "75d035471b5c9c7570ab289ce1c0b21a4cc155a390934c54e81f10aec894d5e0",
+      "paraphrase-bank.ts": "05f488e74584c41bde5594de5bbbf98993902a96284a9d0b39a6723dde820b41",
+      "grounding-gen.ts": "f027179f57ff95e76bd3c0c21bdd702783095bbdfb5b954c2b61eef851b73644",
+      "det-util.ts": "7be9a3db4d24d59f83f8efa1a16908d5656907b4b3d417dce3d383a629115728",
+      "gen-rehearsal.ts": "cca647461e6e9b5f1d376b3bbbf487fb84b02fd3726df0bb266ae7c77f074c80"
+    }
+  },
+  "system_text": "You are operating AI Jam Sessions, a music education platform.",
+  "counts": {
+    "train_total": 494,
+    "jam_human": 78,
+    "jam_para": 156,
+    "grounding_sessions": 200,
+    "grounding_items": 310,
+    "rehearsal": 60,
+    "val_jam": 25,
+    "val_grounding_sessions": 50
+  },
+  "histograms": {
+    "grounding_families": {
+      "F3_texture_balance": 34,
+      "F5_downbeat_rhythm": 32,
+      "F8_composition": 34,
+      "F2_extremes": 35,
+      "F6_measure_contents": 34,
+      "F4_pitch_class_census": 34,
+      "F1_position_lookup": 35,
+      "F7_hand_contents": 35,
+      "F9_claim_verification": 37
+    },
+    "grounding_formats": {
+      "terse": 64,
+      "sentence": 209,
+      "yesno": 37
+    }
+  },
+  "gates": {
+    "G1_split_integrity": "PASS",
+    "G2_schema_validity": "PASS",
+    "G3_byte_round_trip": "PASS",
+    "G4_counts": "PASS",
+    "G5_contamination": {
+      "verdict": "PASS",
+      "mcq_blacklist_size": 802,
+      "annotation_needles": 1111,
+      "harness_markers": 7
+    },
+    "G6a_mcp_execution": {
+      "verdict": "PASS_WITH_FINDINGS",
+      "unique_calls": 206,
+      "executed": 206,
+      "findings": [
+        "A1-v1 finding: human-record call play_song({\"id\":\"bach-prelude-c-major-bwv846\",\"startMeasure\":61,\"endMeasure\":64,\"mode\":\"loop\"}) fails live execution: endMeasure (64) exceeds \"Prelude in C Major, BWV 846 (Well-Tempered Clavier)\"'s length. Valid range: 1-62."
+      ]
+    },
+    "G6b_inspector_reexecution": "PASS",
+    "G6c_paraphrase_anchors": "PASS",
+    "DET_double_build": "PASS",
+    "G7_render_failfast": "DEFERRED — render-check-v1.py (training venv) + on-pod stage0"
+  },
+  "outputs": {
+    "sft-train-v1.jsonl": "3be88bb7e6caa539d556222ce4f4f214e21fc83806bf74d0cbbf65fb258e6084",
+    "sft-val-jam.jsonl": "f0a9446f4810efa5e52f9c9c2dc1cc956a7b1a4d3132311f9dd3e03cac1c250f",
+    "sft-val-grounding.jsonl": "b2060440c35cb9db552629909d621b50ef37e59d1e7bc82e1659b7ac67c0bbd5",
+    "tools-mcp41.json": "71f37328f516242fcc722795f7c1f998c494f192c9c7d661115e46847b31f64b",
+    "tools-inspector9.json": "9d1ca24a4e61a93dfcbbe375e2458f1f9ef27cb87bd30d1ee1778e46ed156c39"
+  }
+}
