@@ -20,6 +20,7 @@ import {
   mkdirSync,
   readFileSync,
   readdirSync,
+  rmSync,
   statSync,
   writeFileSync,
 } from "node:fs";
@@ -122,11 +123,26 @@ for (const m of p4.models) {
 }
 
 // (iv) All six ollama tags resolvable; capture modelfile evidence.
+// Windows gotcha (bled for on 2026-07-11): if the ollama daemon is down, the
+// CLI auto-starts it and the daemon INHERITS our stdio pipes — spawnSync then
+// waits forever for pipe EOF even though `ollama show` itself already exited.
+// Redirect to a temp file with stdio ignored so there is no pipe to inherit,
+// and bound with a timeout so a genuinely dead ollama fails the gate loudly
+// instead of hanging it silently.
 const tagEvidence = [];
 for (const m of MODELS) {
-  const show = run("ollama", ["show", m.tag, "--modelfile"]);
-  if (show.status !== 0) fail(`ollama tag not resolvable: ${m.tag}\n${show.stderr}`);
-  tagEvidence.push({ tag: m.tag, modelfile_head: show.stdout.split("\n").slice(0, 6).join("\n") });
+  const tmp = join(EVALS_DIR, `.ollama-show-${m.label}.tmp`);
+  const show = spawnSync("cmd", ["/c", `ollama show ${m.tag} --modelfile > "${tmp}" 2>&1`], {
+    cwd: REPO_ROOT,
+    timeout: 60_000,
+    stdio: "ignore",
+  });
+  const text = existsSync(tmp) ? readFileSync(tmp, "utf8") : "";
+  rmSync(tmp, { force: true });
+  if (show.status !== 0 || !text.includes("FROM")) {
+    fail(`ollama tag not resolvable: ${m.tag}\n${text.slice(0, 300)}`);
+  }
+  tagEvidence.push({ tag: m.tag, modelfile_head: text.split("\n").slice(0, 6).join("\n") });
   log(`ollama tag OK: ${m.tag}`);
 }
 
