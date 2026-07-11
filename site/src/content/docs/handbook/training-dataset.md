@@ -33,20 +33,24 @@ The training signal is not "generate text about music." It is "call the right to
 
 ## Does it actually train anything? — the fine-tuning receipts
 
-The dataset's claims were tested the hard way: preregistered fine-tunes of Qwen2.5-7B-Instruct, scored against the dataset's own sealed baseline, with the statistics and the honesty rules frozen **before** any training run. Two arcs, both fully receipted in the repo:
+The dataset's claims were tested the hard way: preregistered fine-tunes of Qwen2.5-7B-Instruct, scored against sealed baselines, with the statistics and the honesty rules frozen **before** any training run. Three arcs, all fully receipted in the repo:
 
-| Arc | Training data | Primary result (tool-grounded QA, sealed 16-record cohort) | Verdict (preregistered wording) |
+| Arc | What ran | Primary result (tool-grounded QA) | Verdict (preregistered wording) |
 |---|---|---|---|
-| **v0** | The 78 jam traces alone | 0.661 → 0.601 (Δ −0.061, 0/5 seeds above baseline) | **Honest negative** — not better than the prompted baseline |
-| **v1** | 494 examples: the human traces + user-turn paraphrases (tool calls frozen), 310 execution-verified grounding-QA items over the 9-tool inspector surface, and a small self-rehearsal slice | 0.661 → **0.863** (Δ +0.202, permutation p = 0.0043, **all 5 seeds above baseline**, the one unseen song +0.433) | **Directionally better, underpowered** — 12/16 paired wins missed the frozen ≥13/16 victory bar by one |
+| **v0** | 5 seeds trained on the 78 jam traces alone; sealed 16-record cohort | 0.661 → 0.601 (Δ −0.061, 0/5 seeds above baseline) | **Honest negative** — not better than the prompted baseline |
+| **v1** | 5 seeds trained on 494 examples: the human traces + user-turn paraphrases (tool calls frozen), 310 execution-verified grounding-QA items over the 9-tool inspector surface, and a small self-rehearsal slice; same sealed cohort | 0.661 → **0.863** (Δ +0.202, permutation p = 0.0043, **all 5 seeds above baseline**, the one unseen song +0.433) | **Directionally better, underpowered** — 12/16 paired wins missed the frozen ≥13/16 victory bar by one; no adapter published |
+| **B-1** | No training — the **frozen** v1 seeds (sha-pinned before the cohort existed), one sealed eval each against a fresh baseline on the v0.5.0 records, over a preregistered 36-record cohort (all 12 never-trained clair-de-lune records + the 15 sealed-history records + 9 seeded-blind new ones) | 0.678 → **0.890** (Δ +0.212, **29/36 paired wins vs the ex-ante 24/34 bar**, sign p = 0.000039, song-cluster CI excludes zero, never-trained stratum **10/12** on its own) | **Powered win** — v1's miss was a power artifact, not a ceiling |
 
-Three things worth noticing:
+Four things worth noticing:
 
 - **The negative is a feature.** v0 proved the sealed-baseline discipline has teeth: five seeds, no cherry-picking, and a result reported exactly as it landed. The v1 design came directly out of v0's diagnosis (one narrow trace family taught itself and taxed its neighbors).
-- **The near-miss stayed a near-miss.** v1's +0.202 with p ≈ 0.004 would read as a win almost anywhere — but the preregistered bar was 13/16 paired wins and the run produced 12 plus a tie, so no victory claim ships and no adapter publishes. The bar exists precisely so results don't get relitigated after the data is visible.
-- **The pipeline audits the dataset back.** v1's execution-verification gate (every frozen tool call replayed against the live MCP server) caught a real defect in the published Bach records — the final window overshot BWV 846's actual 62 measures — now fixed in the working set as revisions r001/r002 with public errata, while the sealed published package stays byte-frozen and keeps passing its gate.
+- **The near-miss stayed a near-miss until the power existed.** v1's +0.202 with p ≈ 0.004 would read as a win almost anywhere — but the bar was 13/16 wins and the run produced 12 plus a tie, so nothing shipped. B-1 answered the open question the honest way: freeze the artifacts, preregister a bigger cohort and a new bar, evaluate once. The win that ships is the powered one.
+- **The pipeline audits the dataset back.** v1's execution-verification gate (every frozen tool call replayed against the live MCP server) caught a real defect in the published Bach records — the final window overshot BWV 846's actual 62 measures — fixed as revisions r001/r002 with public errata and shipped in v0.5.0, where execution verification is now a standing packaging gate.
+- **What did not improve is reported with equal weight.** Across all three arcs the prose-only surfaces stay below baseline (B-1: text_only −0.074, full −0.083) — the fine-tunes get better by *inspecting*, not by *recalling*. The published claim stops at the tool-grounded surface.
 
-Full reports: [`docs/finetune-arc-eval-report.md`](https://github.com/mcp-tool-shop-org/ai-jam-sessions/blob/main/docs/finetune-arc-eval-report.md) (v0) and [`docs/finetune-arc-v1-eval-report.md`](https://github.com/mcp-tool-shop-org/ai-jam-sessions/blob/main/docs/finetune-arc-v1-eval-report.md) (v1), with preregistration locks, amendments, per-seed receipts, and replayable statistics under [`experiments/`](https://github.com/mcp-tool-shop-org/ai-jam-sessions/tree/main/experiments).
+**The five seed adapters are published** at [`mcp-tool-shop/jam-ft-v1-qwen25`](https://huggingface.co/mcp-tool-shop/jam-ft-v1-qwen25) with the claim tied to the all-seeds mean (per-seed numbers disclosed on the card; no best-of-seeds).
+
+Full reports: [`finetune-arc-eval-report.md`](https://github.com/mcp-tool-shop-org/ai-jam-sessions/blob/main/docs/finetune-arc-eval-report.md) (v0), [`finetune-arc-v1-eval-report.md`](https://github.com/mcp-tool-shop-org/ai-jam-sessions/blob/main/docs/finetune-arc-v1-eval-report.md) (v1), and [`finetune-arc-v2-b1-eval-report.md`](https://github.com/mcp-tool-shop-org/ai-jam-sessions/blob/main/docs/finetune-arc-v2-b1-eval-report.md) (B-1), with preregistration locks, amendments, per-seed receipts, and replayable statistics under [`experiments/`](https://github.com/mcp-tool-shop-org/ai-jam-sessions/tree/main/experiments).
 
 ## How it was built — the 25-slice arc
 

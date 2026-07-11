@@ -1,0 +1,47 @@
+{
+  "schema": "finetune-arc-v2-p7-adapter-publish/1.0.0",
+  "published_at": "2026-07-11",
+  "gate": {
+    "class": "P7 (the director gate v1 reserved for a victory; fired for the first time on B-1's powered win)",
+    "decision": "publish all five seed adapters with the claim tied to the all-seeds mean",
+    "authorized_by": "director, explicit chat decision 2026-07-11, taken with the B-1 result in view",
+    "claim_binding": "all-seeds mean 0.678 -> 0.890 on tool_inspected (B-1, 36-record preregistered cohort); per-seed numbers disclosed on the card; no best-of-seeds"
+  },
+  "artifacts": {
+    "source": "experiments/finetune-arc-v1/artifacts/pod{A,B}/adapters-seed*.tar.gz (the frozen v1 archives; gguf/adapters sha-pinned by p4-receipt.json + artifacts.sha256)",
+    "published_content": "each seed's SELECTED epoch only (the checkpoint the sealed evals ran), PEFT format, per-seed subfolder + model card",
+    "seeds": [
+      { "subfolder": "seed13", "selected_epoch": "epoch8", "adapter_model_sha256_16": "88af293ee2fdec6f", "b1_primary_mean": 0.818 },
+      { "subfolder": "seed42", "selected_epoch": "epoch4", "adapter_model_sha256_16": "c0cba46a72e4e96e", "b1_primary_mean": 0.883 },
+      { "subfolder": "seed271", "selected_epoch": "epoch8", "adapter_model_sha256_16": "076d315126eef10f", "b1_primary_mean": 0.887 },
+      { "subfolder": "seed512", "selected_epoch": "epoch2", "adapter_model_sha256_16": "5a2783fdb18ab37c", "b1_primary_mean": 0.908 },
+      { "subfolder": "seed1024", "selected_epoch": "epoch4", "adapter_model_sha256_16": "0e1eb1c9b459e441", "b1_primary_mean": 0.955 }
+    ]
+  },
+  "huggingface": {
+    "repo_id": "mcp-tool-shop/jam-ft-v1-qwen25",
+    "repo_type": "model",
+    "url": "https://huggingface.co/mcp-tool-shop/jam-ft-v1-qwen25",
+    "push_commit": "16e9c336c338c20bc20a73dc9908c4994d497841",
+    "pushed_from": "local rig, org-scoped token supplied by the director at publish time (value never logged, echoed, or committed)",
+    "verified_live": "card renders with all five seeds, base model Qwen/Qwen2.5-7B-Instruct, the all-seeds-mean claim, and the CC-BY-SA-3.0 share-alike chain"
+  },
+  "github_mirror": {
+    "release_tag": "jam-ft-v1-adapters",
+    "url": "https://github.com/mcp-tool-shop-org/ai-jam-sessions/releases/tag/jam-ft-v1-adapters",
+    "asset": "jam-ft-v1-adapters-upload.tar.gz",
+    "asset_sha256": "8c6a55565731899d4cbcc3b25d0f2c77cfb3e8cd395ce14e8f1d8ba83773f5d4",
+    "note": "byte-identical staging archive; doubles as the GitHub mirror of the frozen artifacts. A relay workflow (.github/workflows/push-adapters-hf.yml) can re-push it to HF from CI with the org-scoped secret if the rig path is ever unavailable."
+  },
+  "evaluation_of_record": {
+    "preregistration": "experiments/finetune-arc-v2/P0-LOCK.md (commit c9dcd17, frozen before any model call)",
+    "report": "docs/finetune-arc-v2-b1-eval-report.md",
+    "stats": "experiments/finetune-arc-v2/evals/b1-stats.json",
+    "verdict": "powered win — 29/36 paired wins (2 ties) vs the ex-ante bar 24/34; sign p = 0.000039; never-trained stratum 10/12 (p = 0.039); prose-only controls remain below baseline and the claim does not extend to them"
+  },
+  "compensators": [
+    { "action": "HF model repo", "undo": "delete or flip private from the HF UI + retraction note in the card and the B-1 report", "owner": "director + advisor" },
+    { "action": "GitHub release + asset", "undo": "gh release delete jam-ft-v1-adapters --yes (tag delete included)", "owner": "advisor" },
+    { "action": "docs sections (README/handbook/landing)", "undo": "git revert of the docs commit", "owner": "advisor" }
+  ]
+}

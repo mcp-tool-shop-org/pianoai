@@ -91,8 +91,8 @@ export const config: SiteConfig = {
           desc: 'Two songs in the source corpus (Satie, Debussy) are NOT in the public subset because their piano-midi.de provenance could not be verified during URL audit. Excluded rather than included on faith.',
         },
         {
-          title: 'Fine-tuning receipts, both ways',
-          desc: 'Preregistered fine-tunes scored on the sealed baseline: v0 was an honest negative (0.661 → 0.601); the v1 grounding-trace pass hit 0.863 (+0.202, all 5 seeds above baseline) and still ships as "directionally better, underpowered" — 12/16 paired wins, one short of the frozen victory bar. No adapter from a near-miss.',
+          title: 'Fine-tuning receipts, three arcs',
+          desc: 'Preregistered fine-tunes on sealed baselines: v0 was an honest negative (0.661 → 0.601); v1 hit +0.202 but missed its frozen 13/16 bar by one — no adapter from a near-miss; B-1 re-tested the FROZEN v1 seeds on a preregistered 36-record cohort and cleared its ex-ante bar (0.678 → 0.890, 29/36 wins vs 24/34, p<0.0001, 10/12 on never-trained music) — a powered win. The five seed adapters ship with the claim tied to the all-seeds mean.',
         },
       ],
     },
