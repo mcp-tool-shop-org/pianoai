@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img src="logo-banner.png" alt="AI Jam Sessions" width="520" />
+  <img src="logo-banner.png" alt="AI Jam Sessions" width="700" />
 </p>
 
 <p align="center">
