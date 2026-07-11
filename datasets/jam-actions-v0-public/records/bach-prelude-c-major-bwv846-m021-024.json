@@ -1142,27 +1142,34 @@
       21,
       24
     ],
-    "structure": "Chromatic consequent — G7 → Cmaj7 → Fmaj7 → Fdim",
+    "structure": "Chromatic ascent onto the dominant pedal — Fmaj7, F#dim7, dim7 over Ab, then G7 with the bass pedal starting at m24",
     "key_moments": [
-      "m21 G7 dominant seventh",
-      "m22 Cmaj7 — tonic with added major seventh",
-      "m23 Fmaj7 — subdominant with color",
-      "m24 F diminished — chromatic passing"
+      "m21 F major seventh — subdominant station",
+      "m22 F# diminished seventh — the bass starts rising",
+      "m23 diminished seventh over Ab — maximum leaning",
+      "m24 G arrives in the bass and stays: the long dominant pedal begins"
     ],
     "teaching_goals": [
-      "major seventh chords introduce a richer, warmer color",
-      "maintain even texture through the added-chord territory"
+      "follow a rising bass line through diminished harmonies",
+      "recognize m24 as the start of the piece's biggest tension span"
     ],
     "style_tips": [
-      "the major sevenths sound warmer than dominant sevenths",
-      "same tempo throughout"
+      "the two diminished bars lean forward — keep the tempo honest",
+      "mark m24's arrival with weight of tone, not speed"
     ],
     "teaching_notes": [
       {
         "measure": 22,
-        "note": "Cmaj7 contains B natural — hear it sparkle in the arpeggio.",
+        "note": "F# diminished seventh — the bass begins its climb toward the dominant.",
         "technique": [
-          "listen for the major 7th interval above C"
+          "feel the bass line as the melody here"
+        ]
+      },
+      {
+        "measure": 24,
+        "note": "G lands in the bass and will not leave for eight measures — the dominant pedal begins.",
+        "technique": [
+          "settle the hand; the drama is above the bass now"
         ]
       }
     ]
@@ -1205,7 +1212,7 @@
       {
         "turn": 4,
         "role": "assistant",
-        "content": "Measures 21–24 push into chromatic territory: m.21 G7, m.22 Cmaj7, m.23 Fmaj7, m.24 F/D diminished. The motion becomes more harmonically adventurous while the arpeggio template holds steady. Let me loop mm. 21–24.",
+        "content": "Measures 21–24 are the prelude's boldest four bars: F major seventh at m.21, then the bass climbs — F# diminished seventh at m.22, a diminished seventh over Ab at m.23 — and lands on G at m.24, where the long dominant pedal begins. Let me loop mm. 21–24.",
         "tool_calls": [
           {
             "tool": "play_song",
@@ -1230,7 +1237,7 @@
       {
         "turn": 6,
         "role": "assistant",
-        "content": "Bach C Major Prelude mm. 21–24: chromatic motion, G7 → Cmaj7 → Fmaj7 → Fdim. Continuation from mm. 17–20."
+        "content": "Bach C Major Prelude mm. 21–24: rising bass through two diminished sevenths (F → F# → Ab) settling onto G at m24 — the dominant pedal begins. Continuation from mm. 17–20."
       }
     ]
   },

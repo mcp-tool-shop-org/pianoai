@@ -23,7 +23,10 @@
 // Hard rules:
 //   - Source dataset is read-only — no modification to anything under
 //     datasets/jam-actions-v0/
-//   - Records are copied byte-for-byte (no re-derivation of any field)
+//   - Records are copied content-identically (no re-derivation of any field);
+//     the ONLY transformation is CRLF→LF normalization, because the package
+//     dir is LF-pinned by .gitattributes (Slice 23.5) while the source
+//     working set is not — see normalizeToLf() for the full rationale
 //   - Splits are preserved: clair-de-lune (12 records) stays in test;
 //     the other 103 public records stay in train
 //   - Deterministic output: running twice with the same --today MUST produce
@@ -40,7 +43,6 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import {
-  copyFileSync,
   existsSync,
   mkdirSync,
   readFileSync,
@@ -206,6 +208,22 @@ function ensureDir(p: string): void {
 function writeText(p: string, content: string): void {
   ensureDir(dirname(p));
   writeFileSync(p, content, "utf8");
+}
+
+/**
+ * Normalize CRLF → LF. The package dir is LF-pinned by .gitattributes
+ * (Slice 23.5: checksums are computed against canonical LF content, and a
+ * fresh clone materializes LF on every platform). The source working set is
+ * NOT attribute-pinned, so under core.autocrlf=true a Windows checkout can
+ * materialize its text files as CRLF on disk — a raw byte copy would then
+ * import CRLF into the LF-pinned package and every imported file's checksum
+ * would mismatch on a cold clone. Normalizing here keeps the packager's
+ * documented contract ("the packager writes content with LF") true on the
+ * copy path too. Records and piano-roll SVGs are both text; neither may
+ * legitimately contain a bare \r.
+ */
+function normalizeToLf(content: Buffer): string {
+  return content.toString("utf8").replace(/\r\n/g, "\n");
 }
 
 function gitHeadShaShort(): string {
@@ -388,8 +406,7 @@ function main(): void {
   //    NOT in the plan — they stay on disk as-is.
   type WritePlan = {
     relPath: string;
-    content: Buffer | string;
-    copyFrom?: string;
+    content: string;
   };
 
   const plan: WritePlan[] = [];
@@ -419,8 +436,7 @@ function main(): void {
     }
     plan.push({
       relPath: `records/${recName}`,
-      content: readFileSync(recAbs),
-      copyFrom: recAbs,
+      content: normalizeToLf(readFileSync(recAbs)),
     });
     const svgName = pianorollFilenameFromRecordId(rec.id);
     const svgAbs = join(SOURCE_PIANOROLL_DIR, svgName);
@@ -429,8 +445,7 @@ function main(): void {
     }
     plan.push({
       relPath: `pianoroll/${svgName}`,
-      content: readFileSync(svgAbs),
-      copyFrom: svgAbs,
+      content: normalizeToLf(readFileSync(svgAbs)),
     });
   }
 
@@ -464,12 +479,7 @@ function main(): void {
   //     touch curated files).
   for (const p of plan) {
     const dest = join(PACKAGE_DATASET, p.relPath);
-    if (p.copyFrom) {
-      ensureDir(dirname(dest));
-      copyFileSync(p.copyFrom, dest);
-    } else {
-      writeText(dest, typeof p.content === "string" ? p.content : p.content.toString("utf8"));
-    }
+    writeText(dest, p.content);
   }
 
   // 11. Recompute checksums.sha256 over EVERY file in the package dir

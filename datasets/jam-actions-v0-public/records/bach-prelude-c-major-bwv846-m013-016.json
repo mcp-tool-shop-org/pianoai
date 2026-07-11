@@ -28,7 +28,7 @@
     "tempo_bpm": 74,
     "time_signature": "4/4",
     "window_role": "continuation_target",
-    "musical_phrase_label": "second cycle — dominant arrival",
+    "musical_phrase_label": "second cycle — first-inversion descent home",
     "natural_phrase_boundary": true,
     "paired_prompt_record_id": "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1"
   },
@@ -1142,27 +1142,27 @@
       13,
       16
     ],
-    "structure": "Cadential approach — Am–D7–G–G7 (ii–V secondary dominant chain)",
+    "structure": "First-inversion descent — Dm/F, dim7 over F, C/E, Fmaj7/E above a stepwise falling bass",
     "key_moments": [
-      "m13 A minor — relative minor pivot",
-      "m14 D7 — secondary dominant of G",
-      "m15 G major — dominant arrival",
-      "m16 G7 — dominant seventh, prepares return to tonic"
+      "m13 D minor over F — the walk home begins",
+      "m14 diminished seventh over the same F bass — passing tension",
+      "m15 C major over E — tonic color, softened by inversion",
+      "m16 Fmaj7 over E — subdominant warmth before the next cycle"
     ],
     "teaching_goals": [
-      "recognize ii7–V cadential motion",
-      "feel the harmonic pull through the D7→G resolution"
+      "hear inversions: the same harmony feels lighter with its third in the bass",
+      "follow a stepwise bass line underneath an unchanging pattern"
     ],
     "style_tips": [
-      "the D7 in m.14 wants to resolve — let it",
-      "G major in m.15 feels like a temporary arrival"
+      "the m14 dissonance is passing — do not accent it",
+      "let the bass line lead the phrase shape"
     ],
     "teaching_notes": [
       {
         "measure": 14,
-        "note": "D7 (D-F#-A-C) is a secondary dominant of G — the F# pulls upward.",
+        "note": "A diminished seventh over the F bass — passing tension that melts into C/E.",
         "technique": [
-          "hear the F# in the arpeggio"
+          "keep it light; resolve into m.15"
         ]
       }
     ]
@@ -1205,7 +1205,7 @@
       {
         "turn": 4,
         "role": "assistant",
-        "content": "Measures 13–16 resolve and extend: m.13 Am (relative minor), m.14 D7 (secondary dominant), m.15 G (dominant), m.16 G7. The pair shape is ii7–V–V7 — a complete cadential preparation. Let me loop mm. 13–16.",
+        "content": "Measures 13–16 slide back from the dominant through first-inversion colors: m.13 D minor over F, m.14 a diminished seventh over the same F bass, m.15 C major over E, m.16 F major seventh over E. The bass walks down by step while every chord is softened by inversion. Let me loop mm. 13–16.",
         "tool_calls": [
           {
             "tool": "play_song",
@@ -1230,7 +1230,7 @@
       {
         "turn": 6,
         "role": "assistant",
-        "content": "Bach C Major Prelude mm. 13–16: Am → D7 → G → G7 cadential approach. Continuation from mm. 9–12. Teaching focus: secondary dominant recognition."
+        "content": "Bach C Major Prelude mm. 13–16: first-inversion descent — Dm/F → dim7/F → C/E → Fmaj7/E; the bass steps down as the harmony eases toward home. Continuation from mm. 9–12."
       }
     ]
   },

@@ -59,7 +59,7 @@ Some annotations are richly detailed; others are skeletal. Concrete examples:
 
 ### 5b. Scope expansion in Slice 11
 
-The original §5 named `bach-prelude-c-major-bwv846:m045-048` as a representative late-Bach record. Slice 11 enriched the **two adjacent late-Bach records of the same coda-texture class** as well — `m049-052` and `m053-056` — because the same enrichment template applies and leaving them sparse would have produced a one-off enrichment surrounded by structurally identical thinner records. The decision is auditable: see `datasets/jam-actions-v0/enrichment-overrides.json` for the precise overlay content. The final two late-Bach records (`m057-060` and `m061-064`) remain at their existing annotation level — they describe the final-cadence and tonic-arrival sections, which already have more architectural framing than the coda-extension records did.
+The original §5 named `bach-prelude-c-major-bwv846:m045-048` as a representative late-Bach record. Slice 11 enriched the **two adjacent late-Bach records of the same coda-texture class** as well — `m049-052` and `m053-056` — because the same enrichment template applies and leaving them sparse would have produced a one-off enrichment surrounded by structurally identical thinner records. The decision is auditable: see `datasets/jam-actions-v0/enrichment-overrides.json` for the precise overlay content. The final two late-Bach records (`m057-060` and `m061-062`) remain at their existing annotation level — they describe the final-cadence and tonic-arrival sections, which already have more architectural framing than the coda-extension records did.
 
 Slice 11 also enriched the **prompt half** of the Pathétique middle-section pair (`pathetique-mvt2:m025-028`) — not flagged in §5's original list, but enriching only the continuation would have produced an asymmetric pair where the consequent's harmonic-arc framing implied a prompt-side framing that didn't exist on disk. The pair is enriched as a unit.
 
@@ -126,7 +126,7 @@ The headline metric had recovered, but Slice 21 surfaced a final stratum-floor i
 
 ### 9c. Slice 21 enrichment + Slice 22 revised RC gate (current state)
 
-Slice 21 enriched the Schumann m045-048 annotation against the actual MIDI events (R6-aware rewrite naming the A4 descending offbeat figures, F2 tonic pedal, and closing F-major arpeggio). The post-repair 16-record E3 baseline (`evals/slice21-fair-e3-baseline-results.json`) shows:
+Slice 21 enriched the Schumann m045-048 annotation against the actual MIDI events (R6-aware rewrite naming the A4 descending offbeat figures, F2 tonic pedal, and closing F-major arpeggio). The post-repair 16-record E3 baseline (`slice21-fair-e3-baseline-results.json` — measured on v0.4.3 records; since v0.5.0 it ships in the v0.4.3 deposit and the source repo's git history rather than in this package, per RELEASE_NOTES) shows:
 
 - Cohort margin (tool_inspected vs text_only): **+0.161**
 - Records clearing +0.10 per-record margin: 10/16 (62.5%)

@@ -28,7 +28,7 @@
     "tempo_bpm": 74,
     "time_signature": "4/4",
     "window_role": "continuation_target",
-    "musical_phrase_label": "fourth cycle — dominant preparation consequent",
+    "musical_phrase_label": "dominant pedal resolves — consequent",
     "natural_phrase_boundary": true,
     "paired_prompt_record_id": "bach-prelude-c-major-bwv846:m025-028:piano:mcp-session:v1"
   },
@@ -1142,26 +1142,27 @@
       29,
       32
     ],
-    "structure": "Dominant approach consequent — returning to G7 territory",
+    "structure": "Pedal resolution — three last bars over G (C/G, G7sus, G7), then the bass lands on low C at m32 (heard as C7)",
     "key_moments": [
-      "m29 returning toward dominant G area",
-      "m31 G7 dominant seventh",
-      "m32 continued dominant preparation"
+      "m29 C major over the G pedal — the alternation continues",
+      "m31 G7 — the pedal's final bar",
+      "m32 the bass drops to low C — tonic ground reached, tinted by a Bb"
     ],
     "teaching_goals": [
-      "feel the harmonic direction reversing — returning home",
-      "the tension is releasing toward the dominant"
+      "feel eight bars of dominant tension release into the tonic bass",
+      "notice that the release is quiet — Bach resolves without announcement"
     ],
     "style_tips": [
-      "sense the homecoming even though you haven't arrived yet",
-      "same even texture"
+      "do not crescendo into m32 — let the bass drop speak for itself",
+      "the Bb at m32 keeps one door open; no full rest yet"
     ],
     "teaching_notes": [
       {
-        "measure": 29,
-        "note": "The return begins here — the harmonic journey starts curving back.",
+        "measure": 32,
+        "note": "The bass lands on low C after eight measures of G — but the Bb above keeps it leaning toward the coda.",
         "technique": [
-          "listen for the G in the bass returning"
+          "listen for the register drop",
+          "steady tempo through the resolution"
         ]
       }
     ]
@@ -1204,7 +1205,7 @@
       {
         "turn": 4,
         "role": "assistant",
-        "content": "Measures 29–32 begin the preparation for the final dominant pedal: the harmony moves back through G7 territory, building toward the long pedal point that concludes the piece. Let me loop mm. 29–32.",
+        "content": "Measures 29–31 are the pedal's last stand — C major over G, a suspended seventh, then G7 — and at m.32 the bass finally drops to a low C. The new tonic pedal arrives colored as C7, its Bb hinting at F for the coda to come. Let me loop mm. 29–32.",
         "tool_calls": [
           {
             "tool": "play_song",
@@ -1229,7 +1230,7 @@
       {
         "turn": 6,
         "role": "assistant",
-        "content": "Bach C Major Prelude mm. 29–32: returning toward dominant, G7 approach. Continuation from mm. 25–28."
+        "content": "Bach C Major Prelude mm. 29–32: the dominant pedal releases — G7 gives way at m32 to a low C bass (heard as C7, leaning toward F). Continuation from mm. 25–28."
       }
     ]
   },

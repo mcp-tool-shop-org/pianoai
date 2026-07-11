@@ -1142,34 +1142,34 @@
       5,
       8
     ],
-    "structure": "Consequent arpeggiated unit — C–C7–F–Fdim, subdominant area",
+    "structure": "Consequent arpeggiated unit — Am/C, D7/C, G/B, Cmaj7/B: leaning toward the dominant over a nearly static bass",
     "key_moments": [
-      "m5 C major return — tonic restatement",
-      "m6 C7 — dominant-function seventh",
-      "m7 F major — subdominant arrival",
-      "m8 F diminished — chromatic color before next section"
+      "m5 A minor over the C bass — relative-minor color",
+      "m6 D7 over C — the first accidental of the piece (F#), pulling toward G",
+      "m7 G major over B — the pull lands",
+      "m8 Cmaj7 over B — softened return, ready for the next cycle"
     ],
     "teaching_goals": [
-      "recognize harmonic direction from tonic toward subdominant",
+      "recognize harmonic direction toward the dominant",
       "match the even arpeggio texture of mm. 1–4",
-      "feel the slightly darker color of m.8 Fdim"
+      "hear m6's F# as the first color note of the piece"
     ],
     "style_tips": [
       "same even texture as mm. 1–4",
-      "the C7 in m.6 should feel slightly warmer — but no accent",
-      "Fdim in m.8 is a passing color, keep forward motion"
+      "the D7 in m.6 should feel slightly brighter — but no accent",
+      "the Cmaj7 in m.8 is a soft landing; keep forward motion"
     ],
     "teaching_notes": [
       {
         "measure": 6,
-        "note": "C7 adds Bb — the first flat pitch in the piece. Listen for the subtle shift.",
+        "note": "D7 over the C bass adds F# — the first accidental in the piece. Listen for the subtle brightening.",
         "technique": [
-          "even weight despite new chord color"
+          "even weight despite the new color"
         ]
       },
       {
         "measure": 8,
-        "note": "F diminished provides chromatic tension that propels toward the next phrase.",
+        "note": "The major-seventh color of m.8 melts back toward the next phrase.",
         "technique": [
           "forward lean into m.9"
         ]
@@ -1214,7 +1214,7 @@
       {
         "turn": 4,
         "role": "assistant",
-        "content": "Measures 5–8 continue the pattern but move toward the subdominant: m.5 C major again (tonic return), m.6 C7 (dominant-function color), m.7 F major (subdominant arrival), m.8 F diminished. This continuation is the harmonic response to mm. 1–4. Let me loop mm. 5–8.",
+        "content": "Measures 5–8 push the same pattern outward: m.5 A minor over the C bass, m.6 D7 over C — the piece's first accidental (F#) — m.7 G major over B, m.8 C major seventh over B. The bass barely moves while the harmony leans toward the dominant; this is the harmonic response to mm. 1–4. Let me loop mm. 5–8.",
         "tool_calls": [
           {
             "tool": "play_song",
@@ -1239,7 +1239,7 @@
       {
         "turn": 6,
         "role": "assistant",
-        "content": "Bach C Major Prelude mm. 5–8: continuation of arpeggiated pattern. C → C7 → F → Fdim. Subdominant region. Pair with mm. 1–4 for E2 harmonic-direction prediction."
+        "content": "Bach C Major Prelude mm. 5–8: continuation of the arpeggiated pattern. Am/C → D7/C → G/B → Cmaj7/B, leaning toward the dominant. Pair with mm. 1–4 for E2 harmonic-direction prediction."
       }
     ]
   },

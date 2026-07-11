@@ -28,7 +28,7 @@
     "tempo_bpm": 74,
     "time_signature": "4/4",
     "window_role": "prompt",
-    "musical_phrase_label": "fourth cycle — deep harmonic exploration antecedent",
+    "musical_phrase_label": "dominant pedal — antecedent",
     "natural_phrase_boundary": true,
     "continuation_target_window": [
       29,
@@ -1145,24 +1145,25 @@
       25,
       28
     ],
-    "structure": "Harmonic peak antecedent — chromatic and diminished chords",
+    "structure": "Dominant pedal core — bass G held (since m24) under alternating C/G, G7sus, G7, and diminished-seventh harmonies",
     "key_moments": [
-      "m25 chromatic territory begins",
-      "m27 most distant chord from home key",
-      "m28 partial cadential approach"
+      "m25 C major over the G pedal — consonance suspended over tension",
+      "m26 suspended G7 — the alternation pattern",
+      "m27 G7 proper",
+      "m28 diminished seventh stacked on the pedal — the tensest bar of the span so far"
     ],
     "teaching_goals": [
-      "recognize this as the harmonic climax of the prelude's exploration",
-      "maintain even arpeggio through dissonant territory"
+      "hear the bass drone as a separate layer from the arpeggios",
+      "feel harmonies alternate tense and settled over one unmoving note"
     ],
     "style_tips": [
-      "the chromatic tension peaks here — don't rush",
-      "no accent changes; the harmony does the work"
+      "the G bass is the anchor — let it ring",
+      "upper voices float above the pedal"
     ],
     "teaching_notes": [
       {
-        "measure": 27,
-        "note": "The most harmonically distant point — the arpeggio holds the tension steady.",
+        "measure": 28,
+        "note": "A diminished seventh over the held G — the tensest sonority of the pedal span.",
         "technique": [
           "even weight regardless of dissonance"
         ]
@@ -1176,7 +1177,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Show me measures 25–28 of the Bach Prelude — what makes this section harmonically distinctive?"
+        "content": "Show me measures 25–28 of the Bach Prelude — what is happening over the bass here?"
       },
       {
         "turn": 2,
@@ -1207,7 +1208,7 @@
       {
         "turn": 4,
         "role": "assistant",
-        "content": "Measures 25–28 are the harmonic peak of the prelude's exploration: chords move through diminished and augmented areas, creating the most chromatic tension in the piece. The 16th-note arpeggio remains unwavering. Let me loop mm. 25–28.",
+        "content": "Measures 25–28 all ride the dominant pedal that began at m.24: the bass holds G while the harmonies above alternate — C major over G at m.25, a suspended G7 at m.26, G7 proper at m.27, and at m.28 a diminished seventh stacked on the pedal. One note below, everything shifting above. Let me loop mm. 25–28.",
         "tool_calls": [
           {
             "tool": "play_song",
@@ -1232,7 +1233,7 @@
       {
         "turn": 6,
         "role": "assistant",
-        "content": "Bach C Major Prelude mm. 25–28: harmonic peak, chromatic and diminished chords, maximum tension. Teaching focus: tension–release arc."
+        "content": "Bach C Major Prelude mm. 25–28: dominant pedal in full — C/G, G7sus, G7, then a diminished seventh over the held G. Teaching focus: pedal point as a tension engine."
       }
     ]
   },

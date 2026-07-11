@@ -27,7 +27,7 @@ The training signal is not "generate text about music." It is "call the right to
 | Composers | Bach, Beethoven, Chopin, Debussy, Mozart, Schumann |
 | Source MIDI | piano-midi.de — Bernd Krueger arrangements |
 | License | CC-BY-SA-3.0-DE |
-| Version | 0.4.3 (2026-05-19) |
+| Version | 0.5.0 (2026-07-11) — Bach BWV 846 correction release, errata 001 + 002 |
 | Schema | `release-gate-assessment/2.0.0` |
 | Repo test suite | 2506 passing (includes the dataset packagers, eval harnesses, and release-gate validator) |
 
@@ -115,19 +115,26 @@ A fresh contributor cloning the repo on Windows native, macOS, Linux, or WSL can
 ```bash
 git clone https://github.com/mcp-tool-shop-org/ai-jam-sessions.git
 cd ai-jam-sessions
-git checkout jam-actions-v0-zenodo-published-2026-05-19   # the v0.4.3 publication state (or stay on main)
+git checkout jam-actions-v0-0.5.0-cut-2026-07-11   # the v0.5.0 cut state (or stay on main)
 
 pnpm install
 
 # Step 1: verify the package (274 entries, ~2 seconds).
 pnpm exec tsx scripts/verify-public-package-checksums.ts
 
-# Step 2: reproduce the canonical Slice 22 RC-gate PASS verdict.
-pnpm exec tsx scripts/check-release-gate.ts \
-  datasets/jam-actions-v0-public/evals/slice21-fair-e3-baseline-results.json
+# Step 2: re-run the standing execution gate — every unique frozen tool call
+# in the package replays against the live MCP server (needs an audio device).
+pnpm build
+pnpm exec tsx scripts/verify-public-package-execution.ts
+
+# Step 3: reproduce the v0.5.0 RC-gate PASS verdict. The sealed E3 baseline it
+# reads was measured on v0.4.3 records and ships in the v0.4.3 deposit, not in
+# the v0.5.0 package — restore its sealed bytes from git history first:
+git show jam-actions-v0-feature-marketed-2026-05-19:datasets/jam-actions-v0-public/evals/slice21-fair-e3-baseline-results.json > /tmp/slice21-baseline.json
+pnpm exec tsx scripts/check-release-gate.ts /tmp/slice21-baseline.json
 ```
 
-Expected: both commands exit 0, and the release-gate CLI prints `Aggregate: PASS` with `RC gate PASS (all 6 blocking axes cleared; reporting declared)`.
+Expected: every command exits 0; the execution gate prints `VERDICT: PASS` (230 unique calls, 0 failures), and the release-gate CLI prints `Aggregate: PASS` with `RC gate PASS (all 6 blocking axes cleared; reporting declared)`.
 
 **What makes this reliable on Windows.** Slice 23.5 added `.gitattributes` pinning LF line endings for `*.sha256` and the entire `datasets/jam-actions-v0-public/**` tree, so Git on Windows doesn't silently CRLF-convert your checkout. The verifier itself is also CRLF-tolerant (`parseChecksumsManifest` strips trailing `\r`) as defense in depth, in case someone forks without the gitattributes.
 
@@ -166,9 +173,9 @@ cat datasets/jam-actions-v0-public/CITATION.cff
 
 Or a plain-text form:
 
-> mcp-tool-shop-org & Krueger, B. (2026). *AI Jam Sessions — Tool-Use Traces v0 (Public Subset)*, Version 0.4.3. Zenodo. CC-BY-SA-3.0-DE. https://doi.org/10.5281/zenodo.20279919
+> mcp-tool-shop-org & Krueger, B. (2026). *AI Jam Sessions — Tool-Use Traces v0 (Public Subset)*, Version 0.5.0. Zenodo. CC-BY-SA-3.0-DE. https://doi.org/10.5281/zenodo.20279918
 
-The DOI [`10.5281/zenodo.20279919`](https://doi.org/10.5281/zenodo.20279919) was minted on Zenodo on 2026-05-19 and is recorded in `CITATION.cff`. It is the canonical citation handle; the record lives at [zenodo.org/records/20279919](https://zenodo.org/records/20279919).
+The concept DOI [`10.5281/zenodo.20279918`](https://doi.org/10.5281/zenodo.20279918) always resolves to the latest published version and is the canonical citation handle recorded in `CITATION.cff`. The prior release v0.4.3 has version DOI [`10.5281/zenodo.20279919`](https://doi.org/10.5281/zenodo.20279919) (minted 2026-05-19); v0.5.0's version DOI is minted at its Zenodo publication and backfilled.
 
 ## Where everything lives
 
@@ -179,8 +186,9 @@ The DOI [`10.5281/zenodo.20279919`](https://doi.org/10.5281/zenodo.20279919) was
 | Citation File Format | `datasets/jam-actions-v0-public/CITATION.cff` |
 | Release notes (per version) | `datasets/jam-actions-v0-public/RELEASE_NOTES.md` |
 | Attribution detail | `datasets/jam-actions-v0-public/ATTRIBUTION.md` |
-| Canonical PASS verdict | `datasets/jam-actions-v0-public/evals/slice22-release-gate-revised-assessment.json` |
-| Canonical baseline | `datasets/jam-actions-v0-public/evals/slice21-fair-e3-baseline-results.json` |
+| Canonical PASS verdict (v0.5.0) | `datasets/jam-actions-v0-public/evals/v0.5.0-release-gate-assessment.json` |
+| Execution-verification receipt (v0.5.0) | `datasets/jam-actions-v0-public/evals/v0.5.0-execution-verification.json` |
+| Sealed E3 baseline (measured on v0.4.3 records) | v0.4.3 deposit + git history (`git show jam-actions-v0-feature-marketed-2026-05-19:datasets/jam-actions-v0-public/evals/slice21-fair-e3-baseline-results.json`) |
 | Records (JSONL) | `datasets/jam-actions-v0-public/records.jsonl` |
 | Records (per-file JSON) | `datasets/jam-actions-v0-public/records/` |
 | Piano-roll SVGs | `datasets/jam-actions-v0-public/pianoroll/` |

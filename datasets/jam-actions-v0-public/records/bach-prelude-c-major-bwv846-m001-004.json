@@ -1145,17 +1145,17 @@
       1,
       4
     ],
-    "structure": "Opening arpeggiated pattern — four-measure harmonic template establishing the prelude's texture (C major – A minor – D7 – G major)",
+    "structure": "Opening arpeggiated pattern — four-measure harmonic template establishing the prelude's texture (C – Dm7/C – G7/B – C)",
     "key_moments": [
-      "m1 C major arpeggio — tonic statement (C-E-G-C-E pattern)",
-      "m2 A minor — relative minor color shift",
-      "m3 D minor7 — subdominant approach",
-      "m4 G major — dominant resolution sets up return"
+      "m1 C major arpeggio — tonic statement (C-E-G pattern)",
+      "m2 Dm7 over the C bass — the prelude's first gentle dissonance",
+      "m3 G7 over B — dominant pull, bass steps down",
+      "m4 C major — home again, the cycle is complete"
     ],
     "teaching_goals": [
       "perfectly even rhythm across all 16th-note arpeggios",
       "harmonic awareness within repeating patterns",
-      "smooth voice-leading as chord changes"
+      "smooth voice-leading as chords change"
     ],
     "style_tips": [
       "equal weight on every note — no accent on beat 1",
@@ -1172,10 +1172,10 @@
         ]
       },
       {
-        "measure": 3,
-        "note": "The D minor7 chord adds the first chromatic color (F#→F natural); listen for the subtle shift.",
+        "measure": 2,
+        "note": "The D and F over the held C bass make the prelude's first gentle dissonance — listen for it resolving into m.3.",
         "technique": [
-          "legato connection to m.4"
+          "legato connection to m.3"
         ]
       }
     ]
@@ -1218,7 +1218,7 @@
       {
         "turn": 4,
         "role": "assistant",
-        "content": "The prelude opens with a flowing arpeggiated texture — each measure is a single chord broken into 16th notes. I can see four distinct chord shapes: m.1 C major (C-E-G-C-E), m.2 A minor (C-E-A), m.3 D minor7 (D-F-A-C), m.4 G major with a leading seventh (B-D-G). The harmonic rhythm is exactly one chord per measure — very transparent. Let me loop mm. 1–4 so you can hear the pattern.",
+        "content": "The prelude opens with a flowing arpeggiated texture — each measure is a single chord broken into 16th notes. I can see four distinct chord shapes: m.1 C major (C-E-G), m.2 D minor seventh over the same C bass (C-D-F-A), m.3 G7 over B (B-D-F-G), m.4 C major again. Tonic, gentle dissonance, dominant, home — with a harmonic rhythm of exactly one chord per measure. Let me loop mm. 1–4 so you can hear the pattern.",
         "tool_calls": [
           {
             "tool": "play_song",
@@ -1243,7 +1243,7 @@
       {
         "turn": 6,
         "role": "assistant",
-        "content": "Phrase summary — Bach C Major Prelude mm. 1–4: arpeggiated opening template. Four measures, four chords (C-Am-Dm7-G). Teaching focus: even 16th-note rhythm, harmonic awareness within the arpeggio pattern, smooth legato through chord changes."
+        "content": "Phrase summary — Bach C Major Prelude mm. 1–4: arpeggiated opening template. Four measures, four chords (C, Dm7/C, G7/B, C). Teaching focus: even 16th-note rhythm, harmonic awareness within the arpeggio pattern, smooth legato through chord changes."
       }
     ]
   },

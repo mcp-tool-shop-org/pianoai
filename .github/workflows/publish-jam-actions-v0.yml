@@ -17,9 +17,10 @@ name: Publish jam-actions-v0
 #          See https://developers.zenodo.org
 #   Owner: mcp-tool-shop
 #
-# Abandoned Zenodo DRAFT (mode=draft-only, no publish)
+# Abandoned Zenodo DRAFT (mode=draft-only, no publish) — fresh OR new-version
 #   Undo:  Safely deletable from the Zenodo web UI, or
-#          DELETE /api/deposit/depositions/{id}
+#          DELETE /api/deposit/depositions/{id} (discards the unpublished
+#          new-version draft; the published prior version is untouched)
 #   Owner: mcp-tool-shop
 #
 # HuggingFace dataset push (mode=publish, HF half fails after Zenodo succeeds)
@@ -43,10 +44,14 @@ on:
         description: 'Type exactly "yes-mint-doi" to authorize DOI minting and/or HF push. Any other value aborts.'
         required: false
         default: "no"
-      ref:
-        description: "Git ref to publish from (tag or branch). Default = jam-actions-v0-feature-marketed-2026-05-19"
+      zenodo_newversion_of:
+        description: "Existing PUBLISHED Zenodo record id to create a NEW VERSION of (same concept DOI). Default = 20279919 (v0.4.3). Empty = brand-new deposit with its own concept DOI (first-publication path)."
         required: false
-        default: "jam-actions-v0-feature-marketed-2026-05-19"
+        default: "20279919"
+      ref:
+        description: "Git ref to publish from (the version's cut tag, or main)"
+        required: false
+        default: "main"
 
 concurrency:
   group: publish-jam-actions-v0
@@ -118,11 +123,6 @@ jobs:
       - name: Verify package checksums
         run: pnpm exec tsx scripts/verify-public-package-checksums.ts
 
-      - name: Verify release gate (Slice 21 canonical baseline)
-        run: |
-          pnpm exec tsx scripts/check-release-gate.ts \
-            datasets/jam-actions-v0-public/evals/slice21-fair-e3-baseline-results.json
-
       - name: Read dataset version
         id: version
         run: |
@@ -130,6 +130,46 @@ jobs:
           VER=$(cat datasets/jam-actions-v0-public/VERSION)
           echo "version=$VER" >> $GITHUB_OUTPUT
           echo "Dataset version: $VER"
+
+      # Since v0.5.0 the sealed Slice-21 E3 baseline is NOT shipped in the
+      # package (it was measured on v0.4.3 records — RELEASE_NOTES.md explains).
+      # The RC gate still recomputes here at publish time: restore the sealed
+      # baseline bytes from git history (fetch-depth: 0 above makes every
+      # commit available), assert the exact sha256 the finetune-arc locks pin,
+      # then run the pure validator against it. The per-record trace sources it
+      # resolves (slice18-5 / slice19-tool-fresh / slice21-schumann-rerun) still
+      # ship in the package.
+      - name: Verify release gate (sealed Slice-21 baseline from git history)
+        run: |
+          set -euo pipefail
+          SEALED_REF="jam-actions-v0-feature-marketed-2026-05-19"
+          SEALED_SHA="5bb5b2244b0bb03dc38a9235804ac71468084e3881ead6c823a79197d25b8e23"
+          git show "${SEALED_REF}:datasets/jam-actions-v0-public/evals/slice21-fair-e3-baseline-results.json" \
+            > /tmp/slice21-fair-e3-baseline-results.json
+          echo "${SEALED_SHA}  /tmp/slice21-fair-e3-baseline-results.json" | sha256sum -c -
+          pnpm exec tsx scripts/check-release-gate.ts /tmp/slice21-fair-e3-baseline-results.json
+
+      # The execution-verification standing gate (every frozen tool_call
+      # replayed against the live MCP server) runs at CUT time on a rig with
+      # an audio device — play_song cannot run on this headless runner
+      # (node-web-audio-api reports devicenotavailable even for valid calls).
+      # Here we verify the SHIPPED receipt instead: it must exist for this
+      # version, carry verdict PASS with zero failures, and its record bytes
+      # are already pinned by the checksum verification above.
+      - name: Verify execution-verification receipt (cut-time standing gate)
+        run: |
+          set -euo pipefail
+          VER="${{ steps.version.outputs.version }}"
+          RECEIPT="datasets/jam-actions-v0-public/evals/v${VER}-execution-verification.json"
+          test -f "$RECEIPT" || { echo "ERROR: missing $RECEIPT"; exit 1; }
+          VERDICT=$(jq -r '.verdict' "$RECEIPT")
+          FAILS=$(jq -r '.failures | length' "$RECEIPT")
+          UNIQUE=$(jq -r '.unique_calls' "$RECEIPT")
+          EXECUTED=$(jq -r '.executed' "$RECEIPT")
+          echo "Receipt: verdict=$VERDICT failures=$FAILS executed=$EXECUTED/$UNIQUE"
+          [ "$VERDICT" = "PASS" ] || { echo "ERROR: receipt verdict is not PASS"; exit 1; }
+          [ "$FAILS" = "0" ] || { echo "ERROR: receipt has failures"; exit 1; }
+          [ "$EXECUTED" = "$UNIQUE" ] || { echo "ERROR: receipt executed != unique calls"; exit 1; }
 
       # ─── Build publication archives ──────────────────────────────────────────
       - name: Build .tar.gz and .zip archives
@@ -162,10 +202,21 @@ jobs:
           retention-days: 14
 
       # ─── Zenodo: create deposit (DRAFT) ──────────────────────────────────────
+      # Two paths, selected by the zenodo_newversion_of input:
+      #   - NEW VERSION (default, id=20279919): POST .../actions/newversion on
+      #     the published record → a draft of the next version under the SAME
+      #     concept DOI (10.5281/zenodo.20279918). Zenodo copies the previous
+      #     version's files into the draft; we delete them so only this
+      #     version's archives ship. Publishing the draft mints the new
+      #     version DOI. The published prior version is never touched.
+      #   - FRESH DEPOSIT (input left empty): POST an empty deposition — a
+      #     brand-new record with its OWN concept DOI. Only for a first-ever
+      #     publication, never for corrections to an already-published dataset.
       - name: Create Zenodo deposit (DRAFT)
         id: zenodo_draft
         env:
           ZEN_TOKEN: ${{ secrets.ZEN_TOKEN }}
+          NEWVERSION_OF: ${{ github.event.inputs.zenodo_newversion_of }}
         run: |
           set -euo pipefail
           if [ -z "${ZEN_TOKEN:-}" ]; then
@@ -173,12 +224,51 @@ jobs:
             exit 1
           fi
 
-          # Create empty deposit
-          DEPOSIT=$(curl --fail-with-body -sSL -X POST \
-            -H "Authorization: Bearer $ZEN_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d '{}' \
-            "https://zenodo.org/api/deposit/depositions")
+          if [ -n "${NEWVERSION_OF:-}" ]; then
+            # Validate the input is a bare record id (digits only).
+            case "$NEWVERSION_OF" in
+              *[!0-9]*)
+                echo "ERROR: zenodo_newversion_of must be a numeric record id (got: $NEWVERSION_OF)"
+                exit 1
+                ;;
+            esac
+            echo "Creating NEW VERSION draft of published record $NEWVERSION_OF..."
+            NV_RESP=$(curl --fail-with-body -sSL -X POST \
+              -H "Authorization: Bearer $ZEN_TOKEN" \
+              "https://zenodo.org/api/deposit/depositions/$NEWVERSION_OF/actions/newversion")
+            DRAFT_URL=$(echo "$NV_RESP" | jq -r '.links.latest_draft')
+            if [ -z "$DRAFT_URL" ] || [ "$DRAFT_URL" = "null" ]; then
+              echo "ERROR: newversion response carried no links.latest_draft"
+              echo "$NV_RESP" | jq '{id, state, submitted, links}'
+              exit 1
+            fi
+            DEPOSIT=$(curl --fail-with-body -sSL \
+              -H "Authorization: Bearer $ZEN_TOKEN" \
+              "$DRAFT_URL")
+            DEPOSIT_ID=$(echo "$DEPOSIT" | jq -r '.id')
+
+            # Delete the files Zenodo copied over from the previous version —
+            # this version ships only its own archives. (Draft-only operation;
+            # the published prior version's files are immutable.)
+            echo "$DEPOSIT" | jq -r '.files[]?.id' | while read -r FID; do
+              [ -n "$FID" ] || continue
+              echo "  deleting inherited draft file $FID"
+              curl --fail-with-body -sSL -X DELETE \
+                -H "Authorization: Bearer $ZEN_TOKEN" \
+                "https://zenodo.org/api/deposit/depositions/$DEPOSIT_ID/files/$FID"
+            done
+            # Re-fetch for the bucket link after file deletion.
+            DEPOSIT=$(curl --fail-with-body -sSL \
+              -H "Authorization: Bearer $ZEN_TOKEN" \
+              "https://zenodo.org/api/deposit/depositions/$DEPOSIT_ID")
+          else
+            echo "Creating FRESH deposit (new concept DOI)..."
+            DEPOSIT=$(curl --fail-with-body -sSL -X POST \
+              -H "Authorization: Bearer $ZEN_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d '{}' \
+              "https://zenodo.org/api/deposit/depositions")
+          fi
 
           DEPOSIT_ID=$(echo "$DEPOSIT" | jq -r '.id')
           BUCKET_URL=$(echo "$DEPOSIT" | jq -r '.links.bucket')
@@ -343,6 +433,7 @@ jobs:
           echo "================================================================"
           echo "  Mode:                ${{ github.event.inputs.mode }}"
           echo "  Confirmation:        ${{ github.event.inputs.confirm_irreversible == 'yes-mint-doi' && 'yes-mint-doi' || 'NO' }}"
+          echo "  New version of:      ${{ github.event.inputs.zenodo_newversion_of || '(fresh deposit — new concept DOI)' }}"
           echo "  Ref:                 ${{ github.event.inputs.ref }}"
           echo "  Version:             ${{ steps.version.outputs.version }}"
           echo "  Tar.gz sha256:       ${{ steps.archives.outputs.tar_sha }}"

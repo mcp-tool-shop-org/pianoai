@@ -1,0 +1,25 @@
+{
+  "schema_version": "jam-actions-public-execution-verification/1.0.0",
+  "generated_at": "2026-07-11T19:14:32.897Z",
+  "generator": "scripts/verify-public-package-execution.ts",
+  "doctrine_note": "Standing packaging gate (erratum-001 §Known residuals): every unique frozen tool_call in the packaged records must execute against the live MCP server with isError:false. Zero errors required; any failure halts the package cut. The verifier is the real server (dist/mcp-server.js over MCP-stdio), never the process that authored the traces.",
+  "package_version": "0.5.0",
+  "server_entry": "dist/mcp-server.js",
+  "server_entry_sha256": "00003ea0ddd675e9a11a1cde0ac4421a7e92f768ed13b86aea1ee440608727bb",
+  "record_count": 115,
+  "tool_call_sites": 230,
+  "unique_calls": 230,
+  "executed": 230,
+  "per_tool": {
+    "play_song": {
+      "total": 115,
+      "failed": 0
+    },
+    "view_piano_roll": {
+      "total": 115,
+      "failed": 0
+    }
+  },
+  "failures": [],
+  "verdict": "PASS"
+}

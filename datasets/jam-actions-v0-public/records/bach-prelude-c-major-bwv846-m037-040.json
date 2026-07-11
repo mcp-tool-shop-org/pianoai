@@ -28,7 +28,7 @@
     "tempo_bpm": 74,
     "time_signature": "4/4",
     "window_role": "continuation_target",
-    "musical_phrase_label": "dominant pedal — continuation",
+    "musical_phrase_label": "fugue exposition — continuation",
     "natural_phrase_boundary": true,
     "paired_prompt_record_id": "bach-prelude-c-major-bwv846:m033-036:piano:mcp-session:v1"
   },
@@ -1550,26 +1550,34 @@
       37,
       40
     ],
-    "structure": "Dominant pedal continuation — G bass persists under shifting harmonies",
+    "structure": "Fugue exposition — entries stack the texture from two voices to four (soprano answer m37, tenor m39, bass m40)",
     "key_moments": [
-      "m37 pedal continues",
-      "m39 upper voices at furthest harmonic point above pedal",
-      "m40 beginning of resolution approach"
+      "m37 soprano answer at the dominant (subject shape starting on G)",
+      "m39 tenor entry on G, an octave below the soprano's answer",
+      "m40 bass entry on C completes the four-voice texture"
     ],
     "teaching_goals": [
-      "feel the accumulated tension of several measures of pedal point",
-      "anticipate the relief when the pedal resolves"
+      "track each new voice as it enters while the earlier ones keep moving",
+      "balance independent lines — the entering voice leads, the others accompany"
     ],
     "style_tips": [
-      "the tension is at its peak here — hold steady",
-      "the resolution will feel enormous after this"
+      "slightly favor whichever voice has the subject",
+      "keep the eighth-note pulse steady as the texture thickens"
     ],
     "teaching_notes": [
       {
-        "measure": 40,
-        "note": "The long pedal is about to resolve — feel the energy building toward release.",
+        "measure": 39,
+        "note": "The tenor entry sits in the middle of the texture and is easy to lose — bring it out.",
         "technique": [
-          "slight lean into the final pedal measure before resolution"
+          "voice the left-hand top notes",
+          "keep the upper lines lighter here"
+        ]
+      },
+      {
+        "measure": 40,
+        "note": "The bass entry completes the exposition — the fugue is fully assembled from here on.",
+        "technique": [
+          "firm but unforced bass tone"
         ]
       }
     ]
@@ -1581,7 +1589,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Play measures 37–40 and describe how the pedal continues."
+        "content": "Play measures 37–40 and describe how the fugue exposition builds."
       },
       {
         "turn": 2,
@@ -1612,7 +1620,7 @@
       {
         "turn": 4,
         "role": "assistant",
-        "content": "Measures 37–40 continue the dominant pedal with different upper voicings — the G bass persists while the arpeggios shift harmony above it. The tension of the pedal point is maintained. Let me loop mm. 37–40.",
+        "content": "Measures 37–40 are the heart of the fugue's exposition. The soprano answers at the dominant in m.37 (the subject shape starting on G), the tenor enters on G an octave lower in m.39, and the bass completes the four-voice texture with the subject on C in m.40. Each entry adds a genuinely independent line — by m.40 the note density has nearly doubled, and F# inflections color the answer entries. Let me loop mm. 37–40.",
         "tool_calls": [
           {
             "tool": "play_song",
@@ -1637,7 +1645,7 @@
       {
         "turn": 6,
         "role": "assistant",
-        "content": "Bach C Major Prelude mm. 37–40: dominant pedal continues, shifting upper harmonies. Continuation from mm. 33–36."
+        "content": "Bach BWV 846 fugue mm. 37–40: exposition — soprano answer (m37), tenor entry (m39), bass entry (m40); the texture grows from two voices to four. Continuation from mm. 33–36."
       }
     ]
   },

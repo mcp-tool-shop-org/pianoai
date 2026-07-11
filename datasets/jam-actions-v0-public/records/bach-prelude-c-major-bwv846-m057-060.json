@@ -28,11 +28,11 @@
     "tempo_bpm": 74,
     "time_signature": "4/4",
     "window_role": "prompt",
-    "musical_phrase_label": "final approach — antecedent",
+    "musical_phrase_label": "drive onto the tonic pedal — antecedent",
     "natural_phrase_boundary": true,
     "continuation_target_window": [
       61,
-      64
+      62
     ]
   },
   "observation": {
@@ -1970,27 +1970,28 @@
       57,
       60
     ],
-    "structure": "Final approach antecedent — last dominant preparation",
+    "structure": "Final drive and tonic pedal — dominant arrival at the end of m58, low C pedal from m59 with the last subject entries above it",
     "key_moments": [
-      "m57 approaching the final cadence",
-      "m59 last dominant-area harmony",
-      "m60 penultimate chord"
+      "m58 the bass winds down to land on G — the fugue's last dominant",
+      "m59 a low C tonic pedal begins and holds to the very end",
+      "m59 the final pair of subject entries: tenor rising out of the pedal, answered by the alto starting on F",
+      "m60 Bb color leans the harmony toward the subdominant over the pedal"
     ],
     "teaching_goals": [
-      "recognize the piece's final approach — the arc is completing",
-      "even arpeggio through the very last phrase"
+      "hear a tonic pedal as ground: the ending is announced by the bass stopping",
+      "connect the tenor's final entry back to the alto's first — the fugue closes its own loop"
     ],
     "style_tips": [
-      "the ending is near — no ritardando yet unless the score marks it",
-      "let the harmony do the work"
+      "let the low C sustain fully — it carries the whole ending",
+      "keep the upper voices flowing over the stationary bass"
     ],
     "teaching_notes": [
       {
         "measure": 59,
-        "note": "One of the last dominant harmonies — the resolution is one phrase away.",
+        "note": "The bass note struck here is held to the very end — and the tenor's last subject statement rises directly out of it.",
         "technique": [
-          "steady tempo",
-          "listen for the pull toward C major"
+          "hold the pedal note its full value",
+          "shape the tenor entry as the lead voice"
         ]
       }
     ]
@@ -2002,7 +2003,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Show me measures 57–60 of the Bach Prelude — the final approach to the cadence."
+        "content": "Show me measures 57–60 of the Bach BWV 846 fugue — how does the ending begin?"
       },
       {
         "turn": 2,
@@ -2033,7 +2034,7 @@
       {
         "turn": 4,
         "role": "assistant",
-        "content": "Measures 57–60 are the final approach: the arpeggio texture moves through the last dominant preparation before the piece's closing tonic statement. The emotional arc is completing. Let me loop mm. 57–60.",
+        "content": "Measures 57–58 make the last cadential push — the bass winds stepwise down and lands on G, the dominant, at the end of m.58. Then m.59 begins the real ending: the bass drops to a low C and holds it as a tonic pedal all the way to the final bar. Above it the tenor states the fugue's last full subject entry — mirroring the alto's opening statement an octave below — answered by the alto starting on F, while Bb color tilts the harmony toward the subdominant. Let me loop mm. 57–60.",
         "tool_calls": [
           {
             "tool": "play_song",
@@ -2058,7 +2059,7 @@
       {
         "turn": 6,
         "role": "assistant",
-        "content": "Bach C Major Prelude mm. 57–60: final dominant preparation, approaching the close."
+        "content": "Bach BWV 846 fugue mm. 57–60: the last cadential drive lands the dominant (m58); a low C tonic pedal begins at m59 with the final subject entries above it (tenor on C, alto on F) and Bb subdominant color."
       }
     ]
   },
@@ -2072,6 +2073,6 @@
       "E3_annotation_grounding"
     ],
     "phrase_continuation_eligible": true,
-    "phrase_continuation_eligible_reason": "window_role='prompt' — paired with bach-prelude-c-major-bwv846:m061-064:piano:mcp-session:v1 for E2 eval."
+    "phrase_continuation_eligible_reason": "window_role='prompt' — paired with bach-prelude-c-major-bwv846:m061-062:piano:mcp-session:v1 for E2 eval."
   }
 }

@@ -7,18 +7,21 @@ authors:
   - family-names: "Krueger"
     given-names: "Bernd"
     affiliation: "piano-midi.de (upstream MIDI arrangements; CC-BY-SA-3.0-DE)"
-version: "0.4.3"
-date-released: "2026-05-19"
+version: "0.5.0"
+date-released: "2026-07-11"
 license: "CC-BY-SA-3.0-DE"
-doi: "10.5281/zenodo.20279919"
+doi: "10.5281/zenodo.20279918"
 identifiers:
   - type: doi
+    value: "10.5281/zenodo.20279918"
+    description: "Concept DOI — resolves to the latest published version on Zenodo"
+  - type: doi
     value: "10.5281/zenodo.20279919"
-    description: "Zenodo DOI for jam-actions-v0 (public subset) version 0.4.3"
+    description: "Version DOI for the prior release, v0.4.3 (2026-05-19); the v0.5.0 version DOI is minted at Zenodo publication and backfilled here"
   - type: url
     value: "https://zenodo.org/records/20279919"
-    description: "Zenodo record page"
-url: "https://doi.org/10.5281/zenodo.20279919"
+    description: "Zenodo record page for v0.4.3 (prior version)"
+url: "https://doi.org/10.5281/zenodo.20279918"
 repository-code: "https://github.com/mcp-tool-shop-org/ai-jam-sessions"
 keywords:
   - music

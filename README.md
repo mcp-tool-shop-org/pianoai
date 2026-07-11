@@ -22,7 +22,7 @@
   <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/songs-120_across_12_genres-blue" alt="Songs"></a>
   <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/annotated-120%2F120-green" alt="Ready"></a>
   <a href="datasets/jam-actions-v0-public/README.md"><img src="https://img.shields.io/badge/dataset-jam--actions--v0%20(115_records)-8b5cf6" alt="Training dataset"></a>
-  <a href="https://doi.org/10.5281/zenodo.20279919"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.20279919.svg" alt="DOI"></a>
+  <a href="https://doi.org/10.5281/zenodo.20279918"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.20279918.svg" alt="DOI"></a>
 </p>
 
 ---
@@ -170,13 +170,13 @@ Each record pairs a 4-measure phrase window with an annotated teaching target an
 
 | | |
 |---|---|
-| **DOI** | [**`10.5281/zenodo.20279919`**](https://doi.org/10.5281/zenodo.20279919) — Zenodo, published 2026-05-19 |
+| **DOI** | [**`10.5281/zenodo.20279918`**](https://doi.org/10.5281/zenodo.20279918) — concept DOI, resolves to the latest published version (v0.4.3's version DOI: [`10.5281/zenodo.20279919`](https://doi.org/10.5281/zenodo.20279919)) |
 | Records | 115 (public subset) |
 | Canonical baseline | 16-record post-repair E3 |
 | Compositions | 8 classical piano works across 6 composers (Bach, Beethoven, Chopin, Debussy, Mozart, Schumann) |
 | Source MIDI | piano-midi.de — Bernd Krueger arrangements |
 | License | CC-BY-SA-3.0-DE (arrangements) over public-domain compositions |
-| Version | 0.4.3 (2026-05-19) |
+| Version | 0.5.0 (2026-07-11) — Bach BWV 846 correction release, errata 001 + 002 |
 | Schema | `release-gate-assessment/2.0.0` |
 
 **Quality story — the 7-axis release gate.** The dataset ships with a release gate that distinguishes evidence-grounded passing from ceiling-saturated passing. Axes 1–6 are blocking (absolute floor, margin compound, tool-use rate, correct-after-tool, misinterpretation count, stratum floor); axis 7 is enriched-vs-non reporting. Axes 2 and 6 admit a `ceiling_saturated_pass` bucket so records that score 1.000 across text-only / tool-inspected / random-MIDI conditions don't dilute the harder strata. The Slice 22 baseline **PASSES** the revised gate. The Slice 19 baseline still **FAILS** it — kept as a regression diagnostic so the gate has teeth.
@@ -187,16 +187,18 @@ Each record pairs a 4-measure phrase window with an annotated teaching target an
 git clone https://github.com/mcp-tool-shop-org/ai-jam-sessions.git
 cd ai-jam-sessions && pnpm install
 pnpm exec tsx scripts/verify-public-package-checksums.ts        # 274 entries, ~2s
-pnpm exec tsx scripts/check-release-gate.ts \
-  datasets/jam-actions-v0-public/evals/slice21-fair-e3-baseline-results.json
-# → "Aggregate: PASS" (exit 0)
+pnpm build && pnpm exec tsx scripts/verify-public-package-execution.ts
+# → "VERDICT: PASS" — every frozen tool call replays live (needs an audio device)
+git show jam-actions-v0-feature-marketed-2026-05-19:datasets/jam-actions-v0-public/evals/slice21-fair-e3-baseline-results.json > /tmp/b.json
+pnpm exec tsx scripts/check-release-gate.ts /tmp/b.json
+# → "Aggregate: PASS" (exit 0) — the sealed baseline ships in the v0.4.3 deposit; v0.5.0 restores it from git history
 ```
 
 `.gitattributes` pins LF line endings for `*.sha256` and the public-dataset tree so the checksum verifier works on every platform. The release-gate CLI is strict-positional (rejects unknown / multiple positional args) so cold-start contributors can't silently mis-invoke it.
 
-**Where to find it.** The published Zenodo record is at https://zenodo.org/records/20279919 (DOI: [`10.5281/zenodo.20279919`](https://doi.org/10.5281/zenodo.20279919)), and the dataset is mirrored on Hugging Face at [`mcp-tool-shop/jam-actions-v0`](https://huggingface.co/datasets/mcp-tool-shop/jam-actions-v0) for `load_dataset()` consumers. The full dataset card is at [`datasets/jam-actions-v0-public/README.md`](datasets/jam-actions-v0-public/README.md). Zenodo deposition metadata is at [`zenodo-metadata.json`](datasets/jam-actions-v0-public/zenodo-metadata.json), citation metadata at [`CITATION.cff`](datasets/jam-actions-v0-public/CITATION.cff), the publication receipt at [`publication-receipt.json`](datasets/jam-actions-v0-public/publication-receipt.json), and release notes at [`RELEASE_NOTES.md`](datasets/jam-actions-v0-public/RELEASE_NOTES.md). The 25-slice build arc — from initial corpus draft through the off-by-one repair, the Schumann remediation, the RC-gate revision, the operator-aloneness audit, and the publication execution — lives in [`docs/`](docs/).
+**Where to find it.** The Zenodo record lives under concept DOI [`10.5281/zenodo.20279918`](https://doi.org/10.5281/zenodo.20279918) (always the latest version; v0.4.3 published 2026-05-19 at https://zenodo.org/records/20279919), and the dataset is mirrored on Hugging Face at [`mcp-tool-shop/jam-actions-v0`](https://huggingface.co/datasets/mcp-tool-shop/jam-actions-v0) for `load_dataset()` consumers. The full dataset card is at [`datasets/jam-actions-v0-public/README.md`](datasets/jam-actions-v0-public/README.md). Zenodo deposition metadata is at [`zenodo-metadata.json`](datasets/jam-actions-v0-public/zenodo-metadata.json), citation metadata at [`CITATION.cff`](datasets/jam-actions-v0-public/CITATION.cff), the publication receipt at [`publication-receipt.json`](datasets/jam-actions-v0-public/publication-receipt.json), and release notes at [`RELEASE_NOTES.md`](datasets/jam-actions-v0-public/RELEASE_NOTES.md). The 25-slice build arc — from initial corpus draft through the off-by-one repair, the Schumann remediation, the RC-gate revision, the operator-aloneness audit, and the publication execution — lives in [`docs/`](docs/).
 
-**Cite it.** `mcp-tool-shop-org & Krueger, B. (2026). AI Jam Sessions — Tool-Use Traces v0 (Public Subset). Zenodo. https://doi.org/10.5281/zenodo.20279919`
+**Cite it.** `mcp-tool-shop-org & Krueger, B. (2026). AI Jam Sessions — Tool-Use Traces v0 (Public Subset). Zenodo. https://doi.org/10.5281/zenodo.20279918`
 
 **Does it actually train anything? — the fine-tuning receipts.** The dataset's claims are tested the hard way: preregistered fine-tunes scored against its own sealed baseline, with the honesty rules frozen before any training. **v0** (the 78 jam traces alone) returned an *honest negative* — tool-grounded QA dropped 0.661 → 0.601 ([report](docs/finetune-arc-eval-report.md)). **v1** (a 494-example data pass adding execution-verified, grounding-shaped traces) moved the same metric 0.661 → **0.863** (+0.202, permutation p = 0.0043, all five seeds above baseline, the one unseen song +0.433) — and still ships as *"directionally better, underpowered"* because 12/16 paired wins missed the preregistered ≥13/16 victory bar by one ([report](docs/finetune-arc-v1-eval-report.md)). No adapter is published from a near-miss. Both arcs, locks, amendments, and per-seed receipts live in [`experiments/`](experiments/) — the discipline is the point.
 

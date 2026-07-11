@@ -2,7 +2,26 @@
 
 This file is the human-readable history of the package's version arc. Each entry names the version, the date, the slice that produced it, and a one-paragraph summary of what changed. For machine-readable metadata, see `manifest.json` (current state) and `CITATION.cff` (citation entry).
 
-## Current version: 0.4.3 (2026-05-19)
+## Current version: 0.5.0 (2026-07-11)
+
+### Record-content correction release — errata 001 + 002 (Bach BWV 846)
+
+**This is the first record-content change since publication.** The sealed, published v0.4.3 (Zenodo DOI [`10.5281/zenodo.20279919`](https://doi.org/10.5281/zenodo.20279919)) is unchanged and remains available; per Zenodo versioning doctrine, corrections ship as a **new version under the concept DOI** ([`10.5281/zenodo.20279918`](https://doi.org/10.5281/zenodo.20279918), which always resolves to the latest version). The v0.5.0 version DOI is minted at publication and backfilled into `CITATION.cff` afterward.
+
+**What changed (both errata are documented in full in the source repo under `docs/`):**
+
+1. **Erratum 001 — `bach-prelude-c-major-bwv846:m061-064` window exceeded the song** (`docs/jam-actions-v0-erratum-001-bach-m061-064.md`). The source MIDI is exactly 62 measures (prelude mm. 1–35 + fugue mm. 36–62); the record's labels and synthesized trace claimed a 4-measure window ending at m64 that does not exist, and its frozen `play_song(61, 64)` call is rejected by the live MCP server. The record was retargeted to the two measures it always contained: id renamed to **`…m061-062…`**, trace calls corrected to `startMeasure: 61, endMeasure: 62`, piano-roll re-rendered, annotation anchors re-anchored, paired prompt record's continuation target updated, `splits.json` id swapped in place. Timed events untouched; REMI byte-identical.
+2. **Erratum 002 — Bach annotation prose described music that is not there** (`docs/jam-actions-v0-erratum-002-bach-annotation-prose.md`). The original song spec narrated an imagined ~64-measure prelude; the actual file is prelude + **fugue**. All 16 Bach records' prose slots (phrase labels, annotation targets, and the user/analysis/summary trace turns) were re-derived from executed MIDI ground truth — the fugue exposition, strettos, and pedal structure are now described as they sound, and the prelude windows' chord letters and pedal placement were corrected too (tier AB, director-approved). Tool calls, windows, ids, MIDI sidecars, REMI/ABC tokens, splits: untouched and asserted byte-identical.
+
+**How the defect was found — and the new standing gate it earned.** The finetune-arc-v1 execution-verification gate (G6a) executed every frozen tool call in a training corpus derived from these records against the real MCP server and caught the one impossible call out of 206. That gate class is now a **standing packaging gate**: every unique frozen `tool_call` in this package replays against the live server (`scripts/verify-public-package-execution.ts`) and must return zero errors before any cut. The v0.5.0 receipt is at `evals/v0.5.0-execution-verification.json` (230 unique calls, 0 failures — the corrected `play_song(61, 62)` executes cleanly).
+
+**RC release gate.** The 7-axis RC gate was re-run at cut time and **PASSES**; the regenerated canonical assessment is `evals/v0.5.0-release-gate-assessment.json`. Honest scope note: the gate's evidence base is the sealed 16-record E3 baseline measured on **v0.4.3 records** (the only LLM baseline in existence at cut time). Erratum 002 changed annotation prose, which the E3 `text_only` condition reads, so those numbers are not a re-measurement of v0.5.0's prose. A fresh sealed baseline measured on v0.5.0 records is the next planned eval artifact and will ship with a future version.
+
+**Eval artifacts policy for this version.** The Slice 21 fair-E3 baseline (`slice21-fair-e3-baseline-results.json` + sample) is **not shipped in v0.5.0**: it was measured on v0.4.3 records, and shipping it beside records whose prose it does not describe invites misreading. It remains permanently available in the v0.4.3 deposit ([DOI 10.5281/zenodo.20279919](https://doi.org/10.5281/zenodo.20279919)) and in the source repo's git history, and it remains the pinned sealed baseline of the finetune-arc receipts. The other slice-tagged eval artifacts under `evals/` are retained as the dataset's documented evolutionary history (see `KNOWN_LIMITATIONS.md` §9 for the layered story); none of them describe v0.5.0's prose either — every eval artifact predating this version is historical by definition.
+
+**Counts.** 115 records (unchanged), 57 pairs + 1 standalone, 8 songs, splits discipline preserved (`clair-de-lune` held out, never trained on). The only id change is the Bach `m061-064` → `m061-062` rename (other songs' `m061-064` windows are legitimate 4-measure windows within longer pieces and are untouched).
+
+## Previous version: 0.4.3 (2026-05-19)
 
 ### Slice 25 — Publication Execution (PUBLISHED 2026-05-19)
 
@@ -31,7 +50,7 @@ Addresses the 5 optional WARN-level gaps surfaced by Slice 24's `hf-dataset-card
 
 Patch bump from 0.4.2 is consistent with the Slice 10.5 / Slice 23.5 / Slice 24 precedent (docs-only / metadata-only patch with no record-content change). The 5 polished YAML fields are material metadata changes — the package now self-describes more accurately to HF consumers — which justifies the bump per the operator's locked rule "0.4.2 unless content metadata materially changes; if metadata files change, 0.4.3 is acceptable."
 
-## Previous version: 0.4.2 (2026-05-19)
+## Earlier version: 0.4.2 (2026-05-19)
 
 **Slice 24 — Publication Dry-Run.** Adds three new curated files to the package — `RELEASE_NOTES.md` (this file), `zenodo-metadata.json` (a schema-valid Zenodo deposition metadata payload), and `hf-dataset-card-check.md` (a field-by-field validation report against the HuggingFace dataset-card schema). These three files prepare the package for an eventual Slice 25 actual publish (Zenodo + HuggingFace) without executing any upload or DOI mint. NO record content changes. NO eval reruns. The Slice 22 RC-gate PASS verdict at `evals/slice22-release-gate-revised-assessment.json` remains the canonical gate-cleared state.
 
@@ -39,21 +58,23 @@ Patch bump from 0.4.1 is consistent with the Slice 10.5 / Slice 23.5 precedent (
 
 ## What this release IS
 
-- A complete dry-run dossier for actual publication: archive build verified, Zenodo metadata schema-valid, HF dataset card validated.
-- Reproducible from a cold-clone state: a fresh Windows / macOS / Linux contributor can clone, install, and verify 270/270 checksums in ~2 seconds and reproduce the canonical PASS verdict end-to-end (Slice 23.5 earned this; Slice 24 confirmed it via network-clone verification).
-- A candidate release. Per the source-repo doctrine, **gate clearance is NOT release approval.** The PASS verdict means the dataset's data-quality axes clear the locked thresholds; the publication decision is downstream and operator-locked.
+- A **record-content correction release**: the Bach BWV 846 records now match their source MIDI (window bounds per erratum 001, annotation prose per erratum 002). Every correction traces to an executed ground-truth derivation with a machine receipt in the source repo (`datasets/jam-actions-v0/revisions/r001-…` and `r002-…`).
+- **Execution-verified**: every unique frozen tool call in the package replays against the live MCP server with zero errors (`evals/v0.5.0-execution-verification.json`) — the standing gate earned by the defect this release corrects.
+- Reproducible from a cold-clone state: a fresh Windows / macOS / Linux contributor can clone, install, and verify all checksums in ~2 seconds (Slice 23.5 earned this). The RC-gate assessment for this version is at `evals/v0.5.0-release-gate-assessment.json`.
+- A candidate release pending operator-gated publication. Per the source-repo doctrine, **gate clearance is NOT release approval.**
 
 ## What this release IS NOT
 
-- A live Zenodo deposit. No DOI has been minted. Slice 24's `zenodo-metadata.json` is the metadata that WOULD attach to an actual deposit, not a record of one that occurred.
-- A live HuggingFace dataset upload. No HF API call has been made. The README's YAML frontmatter is validated as upload-ready; the upload itself is downstream.
+- **A re-measured eval release.** No LLM baseline in this package was measured on v0.5.0's corrected prose. The sealed E3 baseline (measured on v0.4.3 records) informs the RC gate and lives in the v0.4.3 deposit; the successor baseline measured on v0.5.0 records ships with a future version.
 - A scope-expanded dataset. The 115 records, 8 songs, single-arranger, piano-only, English-only-annotations scope is unchanged. See `KNOWN_LIMITATIONS.md` for the honest scope statement.
+- A mutation of anything published. The v0.4.3 Zenodo deposit is immutable and untouched; v0.5.0 is a new version under the same concept DOI.
 
 ## Cross-references
 
-- **Canonical PASS verdict** for the current state: `evals/slice22-release-gate-revised-assessment.json` (release-gate-assessment/2.0.0 schema; all 6 blocking axes PASS at the Slice 22 revised state)
-- **Reproducibility evidence** (the most recent quality improvement): see the source repo's Slice 23.5 doc — `docs/jam-actions-v0-slice23-5-reproducibility-cleanup.md` — for the operator-aloneness audit closeout
-- **Source corpus state** at packaging time: source commit `4b0f181`, source tag `jam-actions-v0-rc-gate-revised-2026-05-19` (Slice 22 baseline), with Slice 23.5 reproducibility-cleanup and Slice 24 publication-dry-run patches layered on top
+- **Canonical PASS verdict** for the current version: `evals/v0.5.0-release-gate-assessment.json` (release-gate-assessment/2.0.0 schema; all 6 blocking axes PASS; evidence base disclosed in the 0.5.0 entry above). The Slice 22 assessment (`evals/slice22-release-gate-revised-assessment.json`) is retained as the historical verdict at the v0.4.x state.
+- **Execution-verification receipt** for the current version: `evals/v0.5.0-execution-verification.json` (standing gate; 0 failures required).
+- **Errata** (source repo): `docs/jam-actions-v0-erratum-001-bach-m061-064.md` + `docs/jam-actions-v0-erratum-002-bach-annotation-prose.md`; revision receipts under `datasets/jam-actions-v0/revisions/`.
+- **Reproducibility evidence**: see the source repo's Slice 23.5 doc — `docs/jam-actions-v0-slice23-5-reproducibility-cleanup.md` — for the operator-aloneness audit closeout
 - **Slice 24 publication-dry-run doc** (source repo): `docs/jam-actions-v0-slice24-publication-dry-run.md`
 
 ## Version arc — full history
@@ -67,7 +88,8 @@ Patch bump from 0.4.1 is consistent with the Slice 10.5 / Slice 23.5 precedent (
 | 0.4.0 | 2026-05-19 | Slice 21 | Schumann m045-048 R6-aware rewrite — the catastrophic-stratum failure from the Slice 19 baseline was repaired via a rubric-6-aware annotation rewrite. This was a single-record content change but it's the most operationally important change in the v0 arc: it took the corpus from a FAIL-on-axis-1 state to a PASS-on-all-blocking-axes state. The Slice 21 fair-E3 baseline (`evals/slice21-fair-e3-baseline-results.json`) is the canonical post-repair eval artifact. |
 | 0.4.1 | 2026-05-19 | Slice 23.5 | Reproducibility hardening — cold-Windows-contributor audit (Slice 23) surfaced 3 blockers and 8 moderate gaps; Slice 23.5 closed them. Concrete changes: CRLF normalization for `*.sha256` via `.gitattributes` (Windows clones now verify cleanly), CRLF-tolerant verifier as defense in depth, CLI strict mode (release-gate validator now hard-fails on unknown axes / schema drift), Reproducibility section in README, and the Slice 23 audit doc shipped to the repo. No record-content changes. |
 | 0.4.2 | 2026-05-19 | Slice 24 | Publication dry-run — three new curated files: `RELEASE_NOTES.md` (this file), `zenodo-metadata.json` (Zenodo deposition payload, schema-valid, no DOI/auth), `hf-dataset-card-check.md` (HF dataset-card field-by-field validation, PASS with 5 optional WARN-level polish items). Patch bump per the Slice 10.5 / 23.5 docs-only precedent. No record-content changes. No eval reruns. |
-| 0.4.3 | 2026-05-19 | Slice 24.5 | HF dataset-card polish — closes the 5 WARN-level gaps from Slice 24 by adding `source_datasets: [original]`, `multilinguality: [monolingual]`, `annotations_creators: [expert-generated, machine-generated]`, `language_creators: [expert-generated, machine-generated]`, and a 1-sentence `pretty_description` to the README YAML frontmatter. `ATTRIBUTION.md` gains a "human-in-the-loop" provenance section that surfaces the operator + AI-agent dual-population story behind the slug-list choice. `task_ids` intentionally absent (HF's enum is NLP-specific; documented). `configs` unchanged (single records.jsonl + per-record `split` column honors the no-record-changes lock). `hf-dataset-card-check.md` re-validated: 0 FAIL, 0 unresolved WARN. Patch bump per the operator-locked threshold rule for metadata-content changes. No record-content changes. No eval reruns. |
+| 0.4.3 | 2026-05-19 | Slice 24.5 | HF dataset-card polish — closes the 5 WARN-level gaps from Slice 24 by adding `source_datasets: [original]`, `multilinguality: [monolingual]`, `annotations_creators: [expert-generated, machine-generated]`, `language_creators: [expert-generated, machine-generated]`, and a 1-sentence `pretty_description` to the README YAML frontmatter. `ATTRIBUTION.md` gains a "human-in-the-loop" provenance section that surfaces the operator + AI-agent dual-population story behind the slug-list choice. `task_ids` intentionally absent (HF's enum is NLP-specific; documented). `configs` unchanged (single records.jsonl + per-record `split` column honors the no-record-changes lock). `hf-dataset-card-check.md` re-validated: 0 FAIL, 0 unresolved WARN. Patch bump per the operator-locked threshold rule for metadata-content changes. No record-content changes. No eval reruns. **Published on Zenodo 2026-05-19 (DOI 10.5281/zenodo.20279919).** |
+| 0.5.0 | 2026-07-11 | Errata 001+002 | Bach BWV 846 correction release — window retarget `m061-064` → `m061-062` (erratum 001; the frozen `play_song(61,64)` was impossible against the 62-measure song) + all 16 Bach records' annotation prose re-derived from executed MIDI ground truth (erratum 002, tier AB; the old prose narrated an imagined 64-measure prelude — the file is prelude mm. 1–35 + fugue mm. 36–62). Execution verification joins the standing packaging gates (`evals/v0.5.0-execution-verification.json`, 230 unique calls, 0 failures). RC gate re-run PASS (`evals/v0.5.0-release-gate-assessment.json`; evidence base = the sealed v0.4.3-measured baseline, disclosed). Slice 21 fair-E3 baseline artifacts not shipped (measured on v0.4.3 records; available in the v0.4.3 deposit + git history). Minor bump per the record-content precedent. |
 
 ## Decision history — version-bump precedent
 
@@ -75,7 +97,7 @@ The version-bump pattern across the arc:
 
 | Bump type | When applied | Examples |
 |---|---|---|
-| Minor (`0.x.0 → 0.(x+1).0`) | Record content changes (records enriched, rewritten, or added) | 0.1.1 → 0.2.0 (Slice 11), 0.2.0 → 0.3.0 (Slice 16), 0.3.0 → 0.4.0 (Slice 21) |
+| Minor (`0.x.0 → 0.(x+1).0`) | Record content changes (records enriched, rewritten, or added) | 0.1.1 → 0.2.0 (Slice 11), 0.2.0 → 0.3.0 (Slice 16), 0.3.0 → 0.4.0 (Slice 21), 0.4.3 → 0.5.0 (errata 001+002) |
 | Patch (`0.x.y → 0.x.(y+1)`) | Docs-only / tooling-only / metadata-only changes; no record-content changes | 0.1.0 → 0.1.1 (Slice 10.5), 0.4.0 → 0.4.1 (Slice 23.5), 0.4.1 → 0.4.2 (Slice 24), 0.4.2 → 0.4.3 (Slice 24.5) |
 | Major (`0.x → 1.0`) | Reserved for the actual public release; **not yet earned** per the operator-locked "gate clearance is not release approval" doctrine | (future) |
 

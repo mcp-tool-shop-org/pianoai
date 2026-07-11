@@ -35,9 +35,9 @@ configs:
 ---
 # Dataset Card for jam-actions-v0 (public subset)
 
-**Version:** 0.4.3   **Built:** 2026-05-19   **Source commit:** `a5daec2`   **Source tag:** `jam-actions-v0-feature-marketed-2026-05-19` (with Slice 23.5 reproducibility-cleanup + Slice 24 publication-dry-run + Slice 24.5 HF dataset-card polish + Slice 25 publication-execution patches applied; see `evals/slice22-release-gate-revised-assessment.json` for the canonical RC-gate PASS verdict at the Slice 22 baseline state)
+**Version:** 0.5.0   **Built:** 2026-07-11   **Source tag:** `jam-actions-v0-0.5.0-cut-2026-07-11` (record-content correction release — Bach BWV 846 errata 001 + 002; see `RELEASE_NOTES.md` for the full entry and `evals/v0.5.0-release-gate-assessment.json` + `evals/v0.5.0-execution-verification.json` for the gate verdicts at this state)
 
-**DOI:** [`10.5281/zenodo.20279919`](https://doi.org/10.5281/zenodo.20279919) — published on Zenodo 2026-05-19. This is the canonical citation handle. The Zenodo record is at https://zenodo.org/records/20279919.
+**DOI:** [`10.5281/zenodo.20279918`](https://doi.org/10.5281/zenodo.20279918) — the **concept DOI**, which always resolves to the latest published version on Zenodo. This is the canonical citation handle. The prior release, v0.4.3, has version DOI [`10.5281/zenodo.20279919`](https://doi.org/10.5281/zenodo.20279919) (published 2026-05-19); v0.5.0's version DOI is minted at its Zenodo publication and backfilled here afterward.
 
 ## Dataset Summary
 
@@ -52,7 +52,7 @@ Top-level files:
 - `records.jsonl` — one JSON object per line; the canonical training feed. Each line is a complete record with an additional `split` field (`"train"` or `"test"`) so consumers can use the file without consulting `splits.json`.
 - `records/` — the same records as individual JSON files (sorted by id), useful for spot-inspection or downstream tools that prefer one-record-per-file.
 - `pianoroll/` — one SVG per record, matched by basename (`<id>.svg` corresponds to `records/<id>.json`).
-- `evals/` — eval artifacts (n=3 multi-run baselines, per-stratum aggregates, release-gate assessments) produced by the source-repo eval harnesses. The two canonical entry-point artifacts are `slice21-fair-e3-baseline-results.json` (current 16-record post-repair E3 baseline) and `slice22-release-gate-revised-assessment.json` (the current RC-gate PASS verdict; revised axes 2 + 6 per Slice 22).
+- `evals/` — eval artifacts produced by the source-repo eval harnesses and gates. The two canonical entry-point artifacts for **this version** are `v0.5.0-release-gate-assessment.json` (the RC-gate PASS verdict at the v0.5.0 cut) and `v0.5.0-execution-verification.json` (the standing execution gate: every unique frozen tool call replayed against the live MCP server, 0 failures). The slice-tagged artifacts (slice16–slice22) are the dataset's documented evolutionary history, all measured on pre-v0.5.0 record states — see `KNOWN_LIMITATIONS.md` §9 for the layered story. The Slice 21 fair-E3 baseline was measured on v0.4.3 records and ships in the v0.4.3 deposit (DOI [10.5281/zenodo.20279919](https://doi.org/10.5281/zenodo.20279919)), not here; the successor baseline measured on v0.5.0 records ships with a future version.
 - `splits.json` — train/test split with `held_out_song` pinned. Locked: `clair-de-lune` is the canonical held-out test set; it is NEVER used for training.
 - `provenance-verification.json` — per-song URL verification report from Slice 2.5 (filtered to the public songs).
 - `manifest.json` — package-scope manifest with `record_count`, `pair_count`, `songs_included`, `splits`, etc.
@@ -68,42 +68,53 @@ Each record has these top-level fields: `id`, `schema_version`, `provenance`, `s
 
 Earned by Slice 23.5 (audit-driven cleanup): a fresh contributor cloning this repo on any platform (Windows native, macOS, Linux, WSL) should be able to verify the package's integrity and reproduce the canonical Slice 22 RC-gate PASS verdict without operator handholding.
 
-**Package version pinned by this reproducibility section:** `0.4.3` (built 2026-05-19). The release gate's canonical PASS state is at the Slice 22 baseline; Slice 23.5 / 24 / 24.5 are operational and metadata hardening only (no record content changes, no eval reruns).
+**Package version pinned by this reproducibility section:** `0.5.0` (built 2026-07-11; Bach BWV 846 correction release, errata 001 + 002).
 
 **Canonical tags:**
 
-- `jam-actions-v0-rc-gate-revised-2026-05-19` — Slice 22 RC-gate revised state (axes 2 + 6 revised; PASS verdict canonical).
-- `jam-actions-v0-aloneness-audit-gaps-2026-05-19` — Slice 23 audit-findings tag (audit doc shipped; fixes NOT applied here).
-- Slice 23.5 reproducibility-cleanup tag (this version) — applies on top of the audit; see `evals/slice22-release-gate-revised-assessment.json` for the canonical PASS artifact.
+- `jam-actions-v0-0.5.0-cut-2026-07-11` — this version's cut (record-content corrections + the standing execution gate).
+- `jam-actions-v0-rc-gate-revised-2026-05-19` — Slice 22 RC-gate revised state (axes 2 + 6 revised).
+- `jam-actions-v0-feature-marketed-2026-05-19` — the v0.4.3 published state (Zenodo DOI 10.5281/zenodo.20279919).
 
-**Three-step verification:**
+**Verification steps:**
 
 ```bash
-# 1. Clone and check out a tagged state.
+# 1. Clone and check out this version's tag.
 git clone https://github.com/mcp-tool-shop-org/ai-jam-sessions.git
 cd ai-jam-sessions
-git checkout jam-actions-v0-rc-gate-revised-2026-05-19   # or a later tag
+git checkout jam-actions-v0-0.5.0-cut-2026-07-11
 
 # 2. Install deps (pnpm 10+ recommended; npm/yarn also work via the lockfile).
 pnpm install
 
-# 3a. Verify package checksums (270 files, ~2 seconds).
+# 3a. Verify package checksums (274 files, ~2 seconds).
 #     Exit 0 on success; exit 1 with `[bad line] / [hash mismatch] / [missing on disk]`
 #     lines on failure. Windows-safe since Slice 23.5: `.gitattributes` pins LF
 #     for *.sha256 files, and the verifier is CRLF-tolerant as defense in depth.
 pnpm exec tsx scripts/verify-public-package-checksums.ts
 
-# 3b. Reproduce the canonical Slice 22 RC-gate PASS verdict against the
-#     current 16-record post-repair E3 baseline.
-pnpm exec tsx scripts/check-release-gate.ts \
-  datasets/jam-actions-v0-public/evals/slice21-fair-e3-baseline-results.json
+# 3b. Re-run the standing execution gate: every unique frozen tool call in the
+#     package replays against the live MCP server (0 failures required).
+#     Requires a machine with an audio device — play_song connects the real
+#     audio engine, so headless CI boxes report devicenotavailable instead.
+pnpm build
+pnpm exec tsx scripts/verify-public-package-execution.ts
+
+# 3c. Reproduce the v0.5.0 RC-gate PASS verdict. The gate's input is the sealed
+#     16-record E3 baseline, which was measured on v0.4.3 records and ships in
+#     the v0.4.3 deposit rather than in this package (see RELEASE_NOTES.md).
+#     Restore its sealed bytes from git history, then run the pure validator:
+git show jam-actions-v0-feature-marketed-2026-05-19:datasets/jam-actions-v0-public/evals/slice21-fair-e3-baseline-results.json > /tmp/slice21-baseline.json
+pnpm exec tsx scripts/check-release-gate.ts /tmp/slice21-baseline.json
 ```
 
 **Expected outputs:**
 
-The verifier ends with `[ok] All checksums verify, every file accounted for.` and exits 0.
+The checksum verifier ends with `[ok] All checksums verify, every file accounted for.` and exits 0.
 
-The release-gate CLI prints a per-axis summary with all 6 blocking axes PASS and aggregate `RC gate PASS`. The structural verdict is byte-identical to `evals/slice22-release-gate-revised-assessment.json` (the canonical Slice 22 PASS artifact). Exit code 0.
+The execution gate prints `VERDICT: PASS` (230 unique calls, 0 failures) and exits 0 — matching `evals/v0.5.0-execution-verification.json`.
+
+The release-gate CLI prints a per-axis summary with all 6 blocking axes PASS and aggregate `RC gate PASS`, exit code 0 — the structural verdict recorded in `evals/v0.5.0-release-gate-assessment.json`. (Honest scope: that baseline predates this version's prose corrections; the successor baseline measured on v0.5.0 records ships with a future version.)
 
 **Regression-check (the Slice 19 baseline should still FAIL under the revised gate):**
 
@@ -114,7 +125,7 @@ pnpm exec tsx scripts/check-release-gate.ts \
 
 Exit code 1, with axes 1/2/6 reported as FAIL (the Schumann m045-048 record's pre-Slice-21 annotation was the catastrophic-stratum failure that Slice 21 repaired). This artifact is referenced as `evals/slice22-release-gate-slice19-regression-check.json` for the canonical regression-check verdict.
 
-**No model runs are required for reproducibility.** The eval artifacts under `evals/` are the canonical n=3 baselines; the release-gate is a pure validator over them. To re-run the model, see the source repo's `scripts/eval-jam-actions-annotation-grounding.ts` (requires Ollama + the `qwen2.5:7b` model locally).
+**No model runs are required for reproducibility.** The release-gate is a pure validator over sealed eval artifacts, and the execution gate replays deterministic tool calls. To re-run the model itself, see the source repo's `scripts/eval-jam-actions-annotation-grounding.ts` (requires Ollama + the `qwen2.5:7b` model locally).
 
 ## Source Data
 
@@ -166,7 +177,7 @@ See `CITATION.cff` for machine-readable metadata. BibTeX equivalent:
 @dataset{jam_actions_v0_public_2026,
   author       = {mcp-tool-shop-org},
   title        = {jam-actions-v0 — AI Jam Sessions tool-use traces (public subset)},
-  version      = {0.4.3},
+  version      = {0.5.0},
   year         = {2026},
   license      = {CC-BY-SA-3.0-DE},
   url          = {https://github.com/mcp-tool-shop-org/ai-jam-sessions}
