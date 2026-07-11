@@ -11,6 +11,12 @@ concurrency:
 
 jobs:
   publish-npm:
+    # App releases only: this repo also cuts ARTIFACT releases (dataset
+    # packages, model adapters — e.g. the jam-ft-v1-adapters release, which
+    # fired this workflow on 2026-07-11 and pushed a stray ghcr tag). Those
+    # tags never start with 'v'; app release tags always do. Non-app releases
+    # must not republish npm or move the Docker :latest tag.
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.release.tag_name, 'v')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -61,6 +67,10 @@ jobs:
           fi
 
   publish-docker:
+    # Same app-tags-only guard as publish-npm (needs alone would not skip
+    # this job if publish-npm is skipped by its condition on some runners —
+    # explicit beats inherited here).
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.release.tag_name, 'v')
     needs: publish-npm
     runs-on: ubuntu-latest
     permissions:
