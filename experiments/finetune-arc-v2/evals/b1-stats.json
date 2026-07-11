@@ -1,0 +1,2224 @@
+{
+  "schema": "finetune-arc-v2-b1-stats/1.0.0",
+  "phase": "P3-v2",
+  "baseline_artifact": "experiments/finetune-arc-v2/evals/b1-baseline-results.json",
+  "seed_artifacts": [
+    "experiments/finetune-arc-v2/evals/b1-seed13-results.json",
+    "experiments/finetune-arc-v2/evals/b1-seed42-results.json",
+    "experiments/finetune-arc-v2/evals/b1-seed271-results.json",
+    "experiments/finetune-arc-v2/evals/b1-seed512-results.json",
+    "experiments/finetune-arc-v2/evals/b1-seed1024-results.json"
+  ],
+  "seeds": [
+    "seed13",
+    "seed42",
+    "seed271",
+    "seed512",
+    "seed1024"
+  ],
+  "cohort_receipt": "experiments/finetune-arc-v2/data/b1-cohort.json",
+  "n_records": 36,
+  "rng": {
+    "algorithm": "mulberry32",
+    "seed": 20260713,
+    "n_boot": 10000,
+    "n_perm": 10000
+  },
+  "primary_condition": "tool_inspected",
+  "pooled_comparison_ft_vs_new_baseline": {
+    "primary": {
+      "condition": "tool_inspected",
+      "n": 36,
+      "baseline_mean": 0.6782407407407407,
+      "ft_mean": 0.890277777777778,
+      "mean_delta": 0.212037037037037,
+      "bootstrap_ci95_records": [
+        0.1479938271604938,
+        0.27546296296296297
+      ],
+      "bootstrap_ci95_song_clusters": [
+        0.127609156076898,
+        0.30511153846153843
+      ],
+      "permutation_p_two_sided": 0.00009999000099990002,
+      "paired": {
+        "wins": 29,
+        "losses": 5,
+        "ties": 2,
+        "p": 0.000038558151572942734
+      }
+    },
+    "secondary": {
+      "condition": "full",
+      "n": 36,
+      "baseline_mean": 0.3958333333333333,
+      "ft_mean": 0.31296296296296294,
+      "mean_delta": -0.08287037037037036,
+      "bootstrap_ci95_records": [
+        -0.13611111111111104,
+        -0.03348765432098768
+      ],
+      "bootstrap_ci95_song_clusters": [
+        -0.12097222222222222,
+        -0.05753946208112877
+      ],
+      "permutation_p_two_sided": 0.0032996700329967,
+      "paired": {
+        "wins": 9,
+        "losses": 24,
+        "ties": 3,
+        "p": 0.013530986849218607
+      }
+    },
+    "controls": {
+      "text_only": {
+        "n": 36,
+        "baseline_mean": 0.3811728395061728,
+        "ft_mean": 0.30694444444444446,
+        "mean_delta": -0.0742283950617284,
+        "bootstrap_ci95_records": [
+          -0.12253472222222225,
+          -0.025771604938271596
+        ],
+        "bootstrap_ci95_song_clusters": [
+          -0.11587458228905599,
+          -0.03727545857052497
+        ],
+        "permutation_p_two_sided": 0.005099490050994901,
+        "paired": {
+          "wins": 13,
+          "losses": 22,
+          "ties": 1,
+          "p": 0.17546524899080396
+        }
+      },
+      "random_midi": {
+        "n": 36,
+        "baseline_mean": 0.396604938271605,
+        "ft_mean": 0.3038580246913581,
+        "mean_delta": -0.0927469135802469,
+        "bootstrap_ci95_records": [
+          -0.15000385802469138,
+          -0.03395061728395063
+        ],
+        "bootstrap_ci95_song_clusters": [
+          -0.14130434782608697,
+          -0.007499999999999984
+        ],
+        "permutation_p_two_sided": 0.0034996500349965005,
+        "paired": {
+          "wins": 9,
+          "losses": 27,
+          "ties": 0,
+          "p": 0.00393317302223295
+        }
+      }
+    }
+  },
+  "strata_primary_unpooled": {
+    "CL": {
+      "condition": "tool_inspected",
+      "n": 12,
+      "baseline_mean": 0.7291666666666666,
+      "ft_mean": 0.9055555555555554,
+      "mean_delta": 0.17638888888888885,
+      "bootstrap_ci95_records": [
+        0.09166666666666666,
+        0.25555555555555554
+      ],
+      "bootstrap_ci95_song_clusters": [
+        0.17638888888888885,
+        0.17638888888888885
+      ],
+      "permutation_p_two_sided": 0.0035996400359964,
+      "paired": {
+        "wins": 10,
+        "losses": 2,
+        "ties": 0,
+        "p": 0.03857421875
+      }
+    },
+    "LG": {
+      "condition": "tool_inspected",
+      "n": 15,
+      "baseline_mean": 0.7111111111111111,
+      "ft_mean": 0.8866666666666667,
+      "mean_delta": 0.17555555555555558,
+      "bootstrap_ci95_records": [
+        0.0737037037037037,
+        0.2703703703703703
+      ],
+      "bootstrap_ci95_song_clusters": [
+        -0.03888888888888889,
+        0.2893719806763286
+      ],
+      "permutation_p_two_sided": 0.0072992700729927005,
+      "paired": {
+        "wins": 11,
+        "losses": 3,
+        "ties": 1,
+        "p": 0.057373046875
+      }
+    },
+    "NW": {
+      "condition": "tool_inspected",
+      "n": 9,
+      "baseline_mean": 0.5555555555555556,
+      "ft_mean": 0.8759259259259259,
+      "mean_delta": 0.32037037037037036,
+      "bootstrap_ci95_records": [
+        0.18148148148148147,
+        0.45185185185185184
+      ],
+      "bootstrap_ci95_song_clusters": [
+        0.22499999999999998,
+        0.425
+      ],
+      "permutation_p_two_sided": 0.008099190080991902,
+      "paired": {
+        "wins": 8,
+        "losses": 0,
+        "ties": 1,
+        "p": 0.0078125
+      }
+    }
+  },
+  "honesty_rule": {
+    "victory_bar_rule": "wins >= k*(n_eff) on the primary, n_eff = 36 - ties, exact two-sided sign test alpha=0.05; table frozen in data/b1-cohort.json BEFORE any model call",
+    "observed_n_eff": 34,
+    "victory_bar_at_observed_n_eff": 24,
+    "paired_wins_observed": 29,
+    "ties": 2,
+    "victory": true,
+    "verdict_wording": "powered win — the jam-actions v1 recipe trains a model that beats the prompted baseline at tool-grounded musical QA on a preregistered 36-record cohort dominated by held-out material (P7-class DIRECTOR gate opens; nothing publishes without the explicit yes)",
+    "best_of_seeds_used": false,
+    "cluster_caveat": "36 records from 8 songs; record-level tests assume record independence — song-cluster bootstrap reported alongside; strata reported unpooled"
+  },
+  "diagnostic_lg_continuity": {
+    "note": "descriptive only, no claim: LG-15 win pattern vs v1's 11/15 (1t) on the same records under the OLD (v0.4.3-measured) baseline",
+    "lg_wins": {
+      "wins": 11,
+      "losses": 3,
+      "ties": 1,
+      "p": 0.057373046875
+    }
+  },
+  "per_record": [
+    {
+      "recordId": "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1",
+      "song": "bach-prelude-c-major-bwv846",
+      "b1_stratum": "LG",
+      "baseline": {
+        "full": 0.75,
+        "text_only": 0.6666666666666666,
+        "random_midi": 0.5833333333333334,
+        "tool_inspected": 0.5833333333333334
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.9166666666666666,
+        "full": 0.2333333333333333,
+        "text_only": 0.2,
+        "random_midi": 0.4
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.3333333333333333,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed42": {
+          "full": 0.25,
+          "text_only": 0.3333333333333333,
+          "random_midi": 0.75,
+          "tool_inspected": 0.75
+        },
+        "seed271": {
+          "full": 0.25,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.25,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed512": {
+          "full": 0.3333333333333333,
+          "text_only": 0.25,
+          "random_midi": 0.4166666666666667,
+          "tool_inspected": 1
+        },
+        "seed1024": {
+          "full": 0,
+          "text_only": 0.08333333333333333,
+          "random_midi": 0.4166666666666667,
+          "tool_inspected": 1
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.33333333333333326,
+        "full": -0.5166666666666667,
+        "text_only": -0.4666666666666666,
+        "random_midi": -0.18333333333333335
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "bach-prelude-c-major-bwv846:m021-024:piano:mcp-session:v1",
+      "song": "bach-prelude-c-major-bwv846",
+      "b1_stratum": "NW",
+      "baseline": {
+        "full": 0,
+        "text_only": 0.25,
+        "random_midi": 0.3333333333333333,
+        "tool_inspected": 0.3333333333333333
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.8833333333333334,
+        "full": 0.06666666666666667,
+        "text_only": 0.13333333333333333,
+        "random_midi": 0.14999999999999997
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.08333333333333333,
+          "text_only": 0,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 0.75
+        },
+        "seed42": {
+          "full": 0.08333333333333333,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0,
+          "tool_inspected": 1
+        },
+        "seed271": {
+          "full": 0.08333333333333333,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 0.75
+        },
+        "seed512": {
+          "full": 0.08333333333333333,
+          "text_only": 0.25,
+          "random_midi": 0.25,
+          "tool_inspected": 1
+        },
+        "seed1024": {
+          "full": 0,
+          "text_only": 0.08333333333333333,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 0.9166666666666666
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.55,
+        "full": 0.06666666666666667,
+        "text_only": -0.11666666666666667,
+        "random_midi": -0.18333333333333335
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1",
+      "song": "bach-prelude-c-major-bwv846",
+      "b1_stratum": "LG",
+      "baseline": {
+        "full": 0.16666666666666666,
+        "text_only": 0.25,
+        "random_midi": 0.16666666666666666,
+        "tool_inspected": 0.5833333333333334
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.85,
+        "full": 0.21666666666666665,
+        "text_only": 0.18333333333333335,
+        "random_midi": 0.08333333333333333
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.25,
+          "text_only": 0.4166666666666667,
+          "random_midi": 0.25,
+          "tool_inspected": 0.75
+        },
+        "seed42": {
+          "full": 0.3333333333333333,
+          "text_only": 0.25,
+          "random_midi": 0,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed271": {
+          "full": 0.08333333333333333,
+          "text_only": 0,
+          "random_midi": 0.08333333333333333,
+          "tool_inspected": 0.75
+        },
+        "seed512": {
+          "full": 0.25,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed1024": {
+          "full": 0.16666666666666666,
+          "text_only": 0.08333333333333333,
+          "random_midi": 0.08333333333333333,
+          "tool_inspected": 0.9166666666666666
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.2666666666666666,
+        "full": 0.04999999999999999,
+        "text_only": -0.06666666666666665,
+        "random_midi": -0.08333333333333333
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1",
+      "song": "bach-prelude-c-major-bwv846",
+      "b1_stratum": "LG",
+      "baseline": {
+        "full": 0.25,
+        "text_only": 0.25,
+        "random_midi": 0.08333333333333333,
+        "tool_inspected": 0.5
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.9,
+        "full": 0.15,
+        "text_only": 0.26666666666666666,
+        "random_midi": 0.11666666666666665
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.08333333333333333,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.08333333333333333,
+          "tool_inspected": 1
+        },
+        "seed42": {
+          "full": 0.25,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.08333333333333333,
+          "tool_inspected": 0.8333333333333334
+        },
+        "seed271": {
+          "full": 0.08333333333333333,
+          "text_only": 0.25,
+          "random_midi": 0,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed512": {
+          "full": 0.08333333333333333,
+          "text_only": 0.4166666666666667,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 0.75
+        },
+        "seed1024": {
+          "full": 0.25,
+          "text_only": 0.3333333333333333,
+          "random_midi": 0.25,
+          "tool_inspected": 1
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.4,
+        "full": -0.1,
+        "text_only": 0.016666666666666663,
+        "random_midi": 0.033333333333333326
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1",
+      "song": "bach-prelude-c-major-bwv846",
+      "b1_stratum": "LG",
+      "baseline": {
+        "full": 0.5,
+        "text_only": 0.5,
+        "random_midi": 0.5,
+        "tool_inspected": 0.75
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.9666666666666668,
+        "full": 0.4666666666666667,
+        "text_only": 0.4,
+        "random_midi": 0.4833333333333333
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.5,
+          "text_only": 0.6666666666666666,
+          "random_midi": 0.6666666666666666,
+          "tool_inspected": 0.8333333333333334
+        },
+        "seed42": {
+          "full": 0.6666666666666666,
+          "text_only": 0.25,
+          "random_midi": 0.3333333333333333,
+          "tool_inspected": 1
+        },
+        "seed271": {
+          "full": 0.4166666666666667,
+          "text_only": 0.5833333333333334,
+          "random_midi": 0.4166666666666667,
+          "tool_inspected": 1
+        },
+        "seed512": {
+          "full": 0.4166666666666667,
+          "text_only": 0.25,
+          "random_midi": 0.5833333333333334,
+          "tool_inspected": 1
+        },
+        "seed1024": {
+          "full": 0.3333333333333333,
+          "text_only": 0.25,
+          "random_midi": 0.4166666666666667,
+          "tool_inspected": 1
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.21666666666666679,
+        "full": -0.033333333333333326,
+        "text_only": -0.09999999999999998,
+        "random_midi": -0.01666666666666672
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1",
+      "song": "bach-prelude-c-major-bwv846",
+      "b1_stratum": "LG",
+      "baseline": {
+        "full": 0.5,
+        "text_only": 0.3333333333333333,
+        "random_midi": 0,
+        "tool_inspected": 0.6666666666666666
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.9666666666666668,
+        "full": 0.2166666666666667,
+        "text_only": 0.13333333333333333,
+        "random_midi": 0.11666666666666665
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.08333333333333333,
+          "text_only": 0,
+          "random_midi": 0,
+          "tool_inspected": 0.8333333333333334
+        },
+        "seed42": {
+          "full": 0.4166666666666667,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 1
+        },
+        "seed271": {
+          "full": 0.08333333333333333,
+          "text_only": 0.08333333333333333,
+          "random_midi": 0,
+          "tool_inspected": 1
+        },
+        "seed512": {
+          "full": 0.25,
+          "text_only": 0.25,
+          "random_midi": 0.25,
+          "tool_inspected": 1
+        },
+        "seed1024": {
+          "full": 0.25,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 1
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.30000000000000016,
+        "full": -0.2833333333333333,
+        "text_only": -0.19999999999999998,
+        "random_midi": 0.11666666666666665
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1",
+      "song": "bach-prelude-c-major-bwv846",
+      "b1_stratum": "LG",
+      "baseline": {
+        "full": 0.4166666666666667,
+        "text_only": 0.3333333333333333,
+        "random_midi": 0.4166666666666667,
+        "tool_inspected": 0.4166666666666667
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.8333333333333334,
+        "full": 0.18333333333333332,
+        "text_only": 0.25,
+        "random_midi": 0.09999999999999999
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.3333333333333333,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 1
+        },
+        "seed42": {
+          "full": 0.16666666666666666,
+          "text_only": 0.25,
+          "random_midi": 0,
+          "tool_inspected": 0.75
+        },
+        "seed271": {
+          "full": 0.08333333333333333,
+          "text_only": 0.08333333333333333,
+          "random_midi": 0.08333333333333333,
+          "tool_inspected": 0.75
+        },
+        "seed512": {
+          "full": 0.16666666666666666,
+          "text_only": 0.3333333333333333,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 0.75
+        },
+        "seed1024": {
+          "full": 0.16666666666666666,
+          "text_only": 0.4166666666666667,
+          "random_midi": 0.08333333333333333,
+          "tool_inspected": 0.9166666666666666
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.4166666666666667,
+        "full": -0.23333333333333336,
+        "text_only": -0.08333333333333331,
+        "random_midi": -0.3166666666666667
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "bach-prelude-c-major-bwv846:m061-062:piano:mcp-session:v1",
+      "song": "bach-prelude-c-major-bwv846",
+      "b1_stratum": "NW",
+      "baseline": {
+        "full": 0.4166666666666667,
+        "text_only": 0.5,
+        "random_midi": 0.75,
+        "tool_inspected": 0.6666666666666666
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.9333333333333332,
+        "full": 0.35,
+        "text_only": 0.3333333333333333,
+        "random_midi": 0.4333333333333334
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.25,
+          "text_only": 0.25,
+          "random_midi": 0.3333333333333333,
+          "tool_inspected": 1
+        },
+        "seed42": {
+          "full": 0.4166666666666667,
+          "text_only": 0.25,
+          "random_midi": 0.6666666666666666,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed271": {
+          "full": 0.25,
+          "text_only": 0.5,
+          "random_midi": 0.5833333333333334,
+          "tool_inspected": 0.75
+        },
+        "seed512": {
+          "full": 0.5,
+          "text_only": 0.3333333333333333,
+          "random_midi": 0.3333333333333333,
+          "tool_inspected": 1
+        },
+        "seed1024": {
+          "full": 0.3333333333333333,
+          "text_only": 0.3333333333333333,
+          "random_midi": 0.25,
+          "tool_inspected": 1
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.2666666666666666,
+        "full": -0.06666666666666671,
+        "text_only": -0.16666666666666669,
+        "random_midi": -0.3166666666666666
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1",
+      "song": "chopin-nocturne-op9-no2",
+      "b1_stratum": "LG",
+      "baseline": {
+        "full": 0.5,
+        "text_only": 0.6666666666666666,
+        "random_midi": 0.4166666666666667,
+        "tool_inspected": 0.6666666666666666
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.7833333333333334,
+        "full": 0.26666666666666666,
+        "text_only": 0.3333333333333333,
+        "random_midi": 0.18333333333333332
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.16666666666666666,
+          "text_only": 0.3333333333333333,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 0.5833333333333334
+        },
+        "seed42": {
+          "full": 0.25,
+          "text_only": 0.4166666666666667,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 0.8333333333333334
+        },
+        "seed271": {
+          "full": 0.25,
+          "text_only": 0.25,
+          "random_midi": 0.08333333333333333,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed512": {
+          "full": 0.3333333333333333,
+          "text_only": 0.3333333333333333,
+          "random_midi": 0.25,
+          "tool_inspected": 0.75
+        },
+        "seed1024": {
+          "full": 0.3333333333333333,
+          "text_only": 0.3333333333333333,
+          "random_midi": 0.25,
+          "tool_inspected": 0.8333333333333334
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.11666666666666681,
+        "full": -0.23333333333333334,
+        "text_only": -0.3333333333333333,
+        "random_midi": -0.23333333333333336
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1",
+      "song": "chopin-nocturne-op9-no2",
+      "b1_stratum": "LG",
+      "baseline": {
+        "full": 0.5833333333333334,
+        "text_only": 0.5833333333333334,
+        "random_midi": 0.3333333333333333,
+        "tool_inspected": 1
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 1,
+        "full": 0.6833333333333333,
+        "text_only": 0.6500000000000001,
+        "random_midi": 0.75
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.8333333333333334,
+          "text_only": 0.5833333333333334,
+          "random_midi": 0.9166666666666666,
+          "tool_inspected": 1
+        },
+        "seed42": {
+          "full": 0.5833333333333334,
+          "text_only": 0.5,
+          "random_midi": 0.5833333333333334,
+          "tool_inspected": 1
+        },
+        "seed271": {
+          "full": 0.6666666666666666,
+          "text_only": 0.8333333333333334,
+          "random_midi": 0.9166666666666666,
+          "tool_inspected": 1
+        },
+        "seed512": {
+          "full": 0.5833333333333334,
+          "text_only": 0.75,
+          "random_midi": 0.5833333333333334,
+          "tool_inspected": 1
+        },
+        "seed1024": {
+          "full": 0.75,
+          "text_only": 0.5833333333333334,
+          "random_midi": 0.75,
+          "tool_inspected": 1
+        }
+      },
+      "delta": {
+        "tool_inspected": 0,
+        "full": 0.09999999999999998,
+        "text_only": 0.06666666666666676,
+        "random_midi": 0.4166666666666667
+      },
+      "primary_win": false
+    },
+    {
+      "recordId": "chopin-nocturne-op9-no2:m013-016:piano:mcp-session:v1",
+      "song": "chopin-nocturne-op9-no2",
+      "b1_stratum": "NW",
+      "baseline": {
+        "full": 0.3333333333333333,
+        "text_only": 0.08333333333333333,
+        "random_midi": 0.08333333333333333,
+        "tool_inspected": 0.75
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.8166666666666667,
+        "full": 0.2666666666666667,
+        "text_only": 0.16666666666666666,
+        "random_midi": 0.18333333333333332
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.25,
+          "text_only": 0,
+          "random_midi": 0.25,
+          "tool_inspected": 0.75
+        },
+        "seed42": {
+          "full": 0.25,
+          "text_only": 0.25,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 0.75
+        },
+        "seed271": {
+          "full": 0.08333333333333333,
+          "text_only": 0.08333333333333333,
+          "random_midi": 0.25,
+          "tool_inspected": 0.75
+        },
+        "seed512": {
+          "full": 0.5,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.08333333333333333,
+          "tool_inspected": 1
+        },
+        "seed1024": {
+          "full": 0.25,
+          "text_only": 0.3333333333333333,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 0.8333333333333334
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.06666666666666665,
+        "full": -0.0666666666666666,
+        "text_only": 0.08333333333333333,
+        "random_midi": 0.09999999999999999
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "chopin-nocturne-op9-no2:m037-040:piano:mcp-session:v1",
+      "song": "chopin-nocturne-op9-no2",
+      "b1_stratum": "NW",
+      "baseline": {
+        "full": 0.16666666666666666,
+        "text_only": 0.08333333333333333,
+        "random_midi": 0.16666666666666666,
+        "tool_inspected": 0.5
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.8833333333333332,
+        "full": 0.15,
+        "text_only": 0.1,
+        "random_midi": 0.19999999999999998
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.16666666666666666,
+          "text_only": 0,
+          "random_midi": 0.08333333333333333,
+          "tool_inspected": 0.75
+        },
+        "seed42": {
+          "full": 0.25,
+          "text_only": 0.08333333333333333,
+          "random_midi": 0.25,
+          "tool_inspected": 1
+        },
+        "seed271": {
+          "full": 0,
+          "text_only": 0.08333333333333333,
+          "random_midi": 0.25,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed512": {
+          "full": 0.08333333333333333,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 0.75
+        },
+        "seed1024": {
+          "full": 0.25,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.25,
+          "tool_inspected": 1
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.3833333333333332,
+        "full": -0.016666666666666663,
+        "text_only": 0.016666666666666677,
+        "random_midi": 0.033333333333333326
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "chopin-prelude-e-minor:m021-024:piano:mcp-session:v1",
+      "song": "chopin-prelude-e-minor",
+      "b1_stratum": "NW",
+      "baseline": {
+        "full": 0.25,
+        "text_only": 0.25,
+        "random_midi": 0.16666666666666666,
+        "tool_inspected": 0.25
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.7999999999999999,
+        "full": 0.08333333333333333,
+        "text_only": 0.08333333333333333,
+        "random_midi": 0.03333333333333333
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed42": {
+          "full": 0.3333333333333333,
+          "text_only": 0.08333333333333333,
+          "random_midi": 0,
+          "tool_inspected": 0.5833333333333334
+        },
+        "seed271": {
+          "full": 0,
+          "text_only": 0,
+          "random_midi": 0,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed512": {
+          "full": 0.08333333333333333,
+          "text_only": 0.08333333333333333,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 0.6666666666666666
+        },
+        "seed1024": {
+          "full": 0,
+          "text_only": 0.08333333333333333,
+          "random_midi": 0,
+          "tool_inspected": 0.9166666666666666
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.5499999999999999,
+        "full": -0.16666666666666669,
+        "text_only": -0.16666666666666669,
+        "random_midi": -0.13333333333333333
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "clair-de-lune:m001-004:piano:mcp-session:v1",
+      "song": "clair-de-lune",
+      "b1_stratum": "CL",
+      "baseline": {
+        "full": 0.3333333333333333,
+        "text_only": 0.3333333333333333,
+        "random_midi": 0.4166666666666667,
+        "tool_inspected": 0.5833333333333334
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.95,
+        "full": 0.2333333333333333,
+        "text_only": 0.1,
+        "random_midi": 0.09999999999999999
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.08333333333333333,
+          "text_only": 0,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 0.75
+        },
+        "seed42": {
+          "full": 0.16666666666666666,
+          "text_only": 0.08333333333333333,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 1
+        },
+        "seed271": {
+          "full": 0.25,
+          "text_only": 0.08333333333333333,
+          "random_midi": 0,
+          "tool_inspected": 1
+        },
+        "seed512": {
+          "full": 0.3333333333333333,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.08333333333333333,
+          "tool_inspected": 1
+        },
+        "seed1024": {
+          "full": 0.3333333333333333,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.08333333333333333,
+          "tool_inspected": 1
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.3666666666666666,
+        "full": -0.1,
+        "text_only": -0.2333333333333333,
+        "random_midi": -0.3166666666666667
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "clair-de-lune:m005-008:piano:mcp-session:v1",
+      "song": "clair-de-lune",
+      "b1_stratum": "CL",
+      "baseline": {
+        "full": 0.25,
+        "text_only": 0.4166666666666667,
+        "random_midi": 0.16666666666666666,
+        "tool_inspected": 0.5
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.8666666666666666,
+        "full": 0.08333333333333333,
+        "text_only": 0.18333333333333332,
+        "random_midi": 0.03333333333333333
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0,
+          "text_only": 0.25,
+          "random_midi": 0,
+          "tool_inspected": 0.75
+        },
+        "seed42": {
+          "full": 0.16666666666666666,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed271": {
+          "full": 0.08333333333333333,
+          "text_only": 0.08333333333333333,
+          "random_midi": 0,
+          "tool_inspected": 1
+        },
+        "seed512": {
+          "full": 0.16666666666666666,
+          "text_only": 0.25,
+          "random_midi": 0.08333333333333333,
+          "tool_inspected": 0.6666666666666666
+        },
+        "seed1024": {
+          "full": 0,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.08333333333333333,
+          "tool_inspected": 1
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.3666666666666666,
+        "full": -0.16666666666666669,
+        "text_only": -0.23333333333333336,
+        "random_midi": -0.13333333333333333
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "clair-de-lune:m015-018:piano:mcp-session:v1",
+      "song": "clair-de-lune",
+      "b1_stratum": "CL",
+      "baseline": {
+        "full": 0.3333333333333333,
+        "text_only": 0.4166666666666667,
+        "random_midi": 0.4166666666666667,
+        "tool_inspected": 0.75
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.85,
+        "full": 0.23333333333333334,
+        "text_only": 0.4333333333333333,
+        "random_midi": 0.3833333333333333
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.16666666666666666,
+          "text_only": 0.4166666666666667,
+          "random_midi": 0.5,
+          "tool_inspected": 0.5
+        },
+        "seed42": {
+          "full": 0.25,
+          "text_only": 0.5833333333333334,
+          "random_midi": 0.3333333333333333,
+          "tool_inspected": 1
+        },
+        "seed271": {
+          "full": 0.25,
+          "text_only": 0.3333333333333333,
+          "random_midi": 0.4166666666666667,
+          "tool_inspected": 0.8333333333333334
+        },
+        "seed512": {
+          "full": 0.3333333333333333,
+          "text_only": 0.3333333333333333,
+          "random_midi": 0.3333333333333333,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed1024": {
+          "full": 0.16666666666666666,
+          "text_only": 0.5,
+          "random_midi": 0.3333333333333333,
+          "tool_inspected": 1
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.09999999999999998,
+        "full": -0.09999999999999998,
+        "text_only": 0.016666666666666607,
+        "random_midi": -0.03333333333333338
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "clair-de-lune:m019-022:piano:mcp-session:v1",
+      "song": "clair-de-lune",
+      "b1_stratum": "CL",
+      "baseline": {
+        "full": 0.25,
+        "text_only": 0.4166666666666667,
+        "random_midi": 0.5833333333333334,
+        "tool_inspected": 0.9166666666666666
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.8666666666666668,
+        "full": 0.4333333333333333,
+        "text_only": 0.45,
+        "random_midi": 0.4333333333333333
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.3333333333333333,
+          "text_only": 0.4166666666666667,
+          "random_midi": 0.5833333333333334,
+          "tool_inspected": 0.5833333333333334
+        },
+        "seed42": {
+          "full": 0.6666666666666666,
+          "text_only": 0.5833333333333334,
+          "random_midi": 0.5,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed271": {
+          "full": 0.3333333333333333,
+          "text_only": 0.4166666666666667,
+          "random_midi": 0.3333333333333333,
+          "tool_inspected": 0.8333333333333334
+        },
+        "seed512": {
+          "full": 0.4166666666666667,
+          "text_only": 0.5,
+          "random_midi": 0.5833333333333334,
+          "tool_inspected": 1
+        },
+        "seed1024": {
+          "full": 0.4166666666666667,
+          "text_only": 0.3333333333333333,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 1
+        }
+      },
+      "delta": {
+        "tool_inspected": -0.04999999999999982,
+        "full": 0.1833333333333333,
+        "text_only": 0.033333333333333326,
+        "random_midi": -0.15000000000000008
+      },
+      "primary_win": false
+    },
+    {
+      "recordId": "clair-de-lune:m023-026:piano:mcp-session:v1",
+      "song": "clair-de-lune",
+      "b1_stratum": "CL",
+      "baseline": {
+        "full": 0.16666666666666666,
+        "text_only": 0.4166666666666667,
+        "random_midi": 0.16666666666666666,
+        "tool_inspected": 0.6666666666666666
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.7666666666666666,
+        "full": 0.18333333333333332,
+        "text_only": 0.35000000000000003,
+        "random_midi": 0.13333333333333333
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.25,
+          "text_only": 0.4166666666666667,
+          "random_midi": 0,
+          "tool_inspected": 0.8333333333333334
+        },
+        "seed42": {
+          "full": 0.16666666666666666,
+          "text_only": 0.25,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 0.5
+        },
+        "seed271": {
+          "full": 0.08333333333333333,
+          "text_only": 0.25,
+          "random_midi": 0.08333333333333333,
+          "tool_inspected": 0.6666666666666666
+        },
+        "seed512": {
+          "full": 0.3333333333333333,
+          "text_only": 0.4166666666666667,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed1024": {
+          "full": 0.08333333333333333,
+          "text_only": 0.4166666666666667,
+          "random_midi": 0.25,
+          "tool_inspected": 0.9166666666666666
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.09999999999999998,
+        "full": 0.016666666666666663,
+        "text_only": -0.06666666666666665,
+        "random_midi": -0.033333333333333326
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "clair-de-lune:m027-030:piano:mcp-session:v1",
+      "song": "clair-de-lune",
+      "b1_stratum": "CL",
+      "baseline": {
+        "full": 0.5833333333333334,
+        "text_only": 0.3333333333333333,
+        "random_midi": 0.5,
+        "tool_inspected": 0.75
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.9833333333333332,
+        "full": 0.55,
+        "text_only": 0.5000000000000001,
+        "random_midi": 0.4166666666666667
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.4166666666666667,
+          "text_only": 0.4166666666666667,
+          "random_midi": 0.3333333333333333,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed42": {
+          "full": 0.6666666666666666,
+          "text_only": 0.5,
+          "random_midi": 0.5833333333333334,
+          "tool_inspected": 1
+        },
+        "seed271": {
+          "full": 0.5,
+          "text_only": 0.4166666666666667,
+          "random_midi": 0.5,
+          "tool_inspected": 1
+        },
+        "seed512": {
+          "full": 0.5833333333333334,
+          "text_only": 0.5833333333333334,
+          "random_midi": 0.3333333333333333,
+          "tool_inspected": 1
+        },
+        "seed1024": {
+          "full": 0.5833333333333334,
+          "text_only": 0.5833333333333334,
+          "random_midi": 0.3333333333333333,
+          "tool_inspected": 1
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.23333333333333317,
+        "full": -0.033333333333333326,
+        "text_only": 0.1666666666666668,
+        "random_midi": -0.08333333333333331
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "clair-de-lune:m031-034:piano:mcp-session:v1",
+      "song": "clair-de-lune",
+      "b1_stratum": "CL",
+      "baseline": {
+        "full": 0.16666666666666666,
+        "text_only": 0.3333333333333333,
+        "random_midi": 0.08333333333333333,
+        "tool_inspected": 0.6666666666666666
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.95,
+        "full": 0.11666666666666665,
+        "text_only": 0.2833333333333333,
+        "random_midi": 0.18333333333333332
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.08333333333333333,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed42": {
+          "full": 0.25,
+          "text_only": 0,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed271": {
+          "full": 0,
+          "text_only": 0.3333333333333333,
+          "random_midi": 0.25,
+          "tool_inspected": 1
+        },
+        "seed512": {
+          "full": 0.08333333333333333,
+          "text_only": 0.5833333333333334,
+          "random_midi": 0.25,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed1024": {
+          "full": 0.16666666666666666,
+          "text_only": 0.3333333333333333,
+          "random_midi": 0.08333333333333333,
+          "tool_inspected": 1
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.2833333333333333,
+        "full": -0.05,
+        "text_only": -0.04999999999999999,
+        "random_midi": 0.09999999999999999
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "clair-de-lune:m035-038:piano:mcp-session:v1",
+      "song": "clair-de-lune",
+      "b1_stratum": "CL",
+      "baseline": {
+        "full": 0.25,
+        "text_only": 0.4166666666666667,
+        "random_midi": 0.5833333333333334,
+        "tool_inspected": 0.8333333333333334
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.9833333333333332,
+        "full": 0.18333333333333335,
+        "text_only": 0.2333333333333333,
+        "random_midi": 0.2666666666666667
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.08333333333333333,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 1
+        },
+        "seed42": {
+          "full": 0.4166666666666667,
+          "text_only": 0.3333333333333333,
+          "random_midi": 0.3333333333333333,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed271": {
+          "full": 0.08333333333333333,
+          "text_only": 0.3333333333333333,
+          "random_midi": 0.25,
+          "tool_inspected": 1
+        },
+        "seed512": {
+          "full": 0.25,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.4166666666666667,
+          "tool_inspected": 1
+        },
+        "seed1024": {
+          "full": 0.08333333333333333,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 1
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.1499999999999998,
+        "full": -0.06666666666666665,
+        "text_only": -0.18333333333333338,
+        "random_midi": -0.31666666666666665
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "clair-de-lune:m037-040:piano:mcp-session:v1",
+      "song": "clair-de-lune",
+      "b1_stratum": "CL",
+      "baseline": {
+        "full": 0.3333333333333333,
+        "text_only": 0.08333333333333333,
+        "random_midi": 0.5833333333333334,
+        "tool_inspected": 0.5833333333333334
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.9166666666666666,
+        "full": 0.2833333333333333,
+        "text_only": 0.35,
+        "random_midi": 0.2
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.25,
+          "text_only": 0.3333333333333333,
+          "random_midi": 0.3333333333333333,
+          "tool_inspected": 0.6666666666666666
+        },
+        "seed42": {
+          "full": 0.4166666666666667,
+          "text_only": 0.4166666666666667,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed271": {
+          "full": 0.25,
+          "text_only": 0.4166666666666667,
+          "random_midi": 0.08333333333333333,
+          "tool_inspected": 1
+        },
+        "seed512": {
+          "full": 0.3333333333333333,
+          "text_only": 0.25,
+          "random_midi": 0.25,
+          "tool_inspected": 1
+        },
+        "seed1024": {
+          "full": 0.16666666666666666,
+          "text_only": 0.3333333333333333,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 1
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.33333333333333326,
+        "full": -0.04999999999999999,
+        "text_only": 0.26666666666666666,
+        "random_midi": -0.38333333333333336
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "clair-de-lune:m041-044:piano:mcp-session:v1",
+      "song": "clair-de-lune",
+      "b1_stratum": "CL",
+      "baseline": {
+        "full": 0.6666666666666666,
+        "text_only": 0.3333333333333333,
+        "random_midi": 0.5833333333333334,
+        "tool_inspected": 1
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.9166666666666667,
+        "full": 0.25,
+        "text_only": 0.25,
+        "random_midi": 0.4166666666666667
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.5,
+          "text_only": 0.08333333333333333,
+          "random_midi": 0.5833333333333334,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed42": {
+          "full": 0.5833333333333334,
+          "text_only": 0.3333333333333333,
+          "random_midi": 0.4166666666666667,
+          "tool_inspected": 0.8333333333333334
+        },
+        "seed271": {
+          "full": 0.08333333333333333,
+          "text_only": 0.3333333333333333,
+          "random_midi": 0.25,
+          "tool_inspected": 0.8333333333333334
+        },
+        "seed512": {
+          "full": 0.08333333333333333,
+          "text_only": 0.25,
+          "random_midi": 0.5833333333333334,
+          "tool_inspected": 1
+        },
+        "seed1024": {
+          "full": 0,
+          "text_only": 0.25,
+          "random_midi": 0.25,
+          "tool_inspected": 1
+        }
+      },
+      "delta": {
+        "tool_inspected": -0.08333333333333326,
+        "full": -0.41666666666666663,
+        "text_only": -0.08333333333333331,
+        "random_midi": -0.16666666666666669
+      },
+      "primary_win": false
+    },
+    {
+      "recordId": "clair-de-lune:m051-054:piano:mcp-session:v1",
+      "song": "clair-de-lune",
+      "b1_stratum": "CL",
+      "baseline": {
+        "full": 0.16666666666666666,
+        "text_only": 0.25,
+        "random_midi": 0.3333333333333333,
+        "tool_inspected": 0.6666666666666666
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.9166666666666667,
+        "full": 0.26666666666666666,
+        "text_only": 0.15,
+        "random_midi": 0.31666666666666665
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.16666666666666666,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.3333333333333333,
+          "tool_inspected": 0.8333333333333334
+        },
+        "seed42": {
+          "full": 0.16666666666666666,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.5,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed271": {
+          "full": 0.3333333333333333,
+          "text_only": 0.08333333333333333,
+          "random_midi": 0.25,
+          "tool_inspected": 0.8333333333333334
+        },
+        "seed512": {
+          "full": 0.25,
+          "text_only": 0.08333333333333333,
+          "random_midi": 0.25,
+          "tool_inspected": 1
+        },
+        "seed1024": {
+          "full": 0.4166666666666667,
+          "text_only": 0.25,
+          "random_midi": 0.25,
+          "tool_inspected": 1
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.2500000000000001,
+        "full": 0.1,
+        "text_only": -0.1,
+        "random_midi": -0.016666666666666663
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "clair-de-lune:m055-058:piano:mcp-session:v1",
+      "song": "clair-de-lune",
+      "b1_stratum": "CL",
+      "baseline": {
+        "full": 0.3333333333333333,
+        "text_only": 0.5,
+        "random_midi": 0.4166666666666667,
+        "tool_inspected": 0.8333333333333334
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.9,
+        "full": 0.26666666666666666,
+        "text_only": 0.2,
+        "random_midi": 0.3333333333333333
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.16666666666666666,
+          "text_only": 0.08333333333333333,
+          "random_midi": 0.3333333333333333,
+          "tool_inspected": 0.5833333333333334
+        },
+        "seed42": {
+          "full": 0.25,
+          "text_only": 0.25,
+          "random_midi": 0.3333333333333333,
+          "tool_inspected": 1
+        },
+        "seed271": {
+          "full": 0.25,
+          "text_only": 0.08333333333333333,
+          "random_midi": 0.25,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed512": {
+          "full": 0.4166666666666667,
+          "text_only": 0.3333333333333333,
+          "random_midi": 0.25,
+          "tool_inspected": 1
+        },
+        "seed1024": {
+          "full": 0.25,
+          "text_only": 0.25,
+          "random_midi": 0.5,
+          "tool_inspected": 1
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.06666666666666665,
+        "full": -0.06666666666666665,
+        "text_only": -0.3,
+        "random_midi": -0.08333333333333337
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "fur-elise:m013-016:piano:mcp-session:v1",
+      "song": "fur-elise",
+      "b1_stratum": "NW",
+      "baseline": {
+        "full": 0.5,
+        "text_only": 0.08333333333333333,
+        "random_midi": 0.5,
+        "tool_inspected": 0.4166666666666667
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.85,
+        "full": 0.35,
+        "text_only": 0.15,
+        "random_midi": 0.26666666666666666
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.3333333333333333,
+          "text_only": 0.08333333333333333,
+          "random_midi": 0.25,
+          "tool_inspected": 0.75
+        },
+        "seed42": {
+          "full": 0.5,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.3333333333333333,
+          "tool_inspected": 1
+        },
+        "seed271": {
+          "full": 0.3333333333333333,
+          "text_only": 0,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 0.6666666666666666
+        },
+        "seed512": {
+          "full": 0.4166666666666667,
+          "text_only": 0.25,
+          "random_midi": 0.4166666666666667,
+          "tool_inspected": 1
+        },
+        "seed1024": {
+          "full": 0.16666666666666666,
+          "text_only": 0.25,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 0.8333333333333334
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.4333333333333333,
+        "full": -0.15000000000000002,
+        "text_only": 0.06666666666666667,
+        "random_midi": -0.23333333333333334
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "mozart-k545-mvt1:m009-012:piano:mcp-session:v1",
+      "song": "mozart-k545-mvt1",
+      "b1_stratum": "NW",
+      "baseline": {
+        "full": 0.3333333333333333,
+        "text_only": 0.25,
+        "random_midi": 0.3333333333333333,
+        "tool_inspected": 0.3333333333333333
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.8833333333333334,
+        "full": 0.2833333333333333,
+        "text_only": 0.3,
+        "random_midi": 0.2333333333333333
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.08333333333333333,
+          "text_only": 0.3333333333333333,
+          "random_midi": 0.25,
+          "tool_inspected": 0.8333333333333334
+        },
+        "seed42": {
+          "full": 0.5,
+          "text_only": 0.25,
+          "random_midi": 0.25,
+          "tool_inspected": 0.8333333333333334
+        },
+        "seed271": {
+          "full": 0.16666666666666666,
+          "text_only": 0.25,
+          "random_midi": 0.3333333333333333,
+          "tool_inspected": 1
+        },
+        "seed512": {
+          "full": 0.4166666666666667,
+          "text_only": 0.4166666666666667,
+          "random_midi": 0.25,
+          "tool_inspected": 0.75
+        },
+        "seed1024": {
+          "full": 0.25,
+          "text_only": 0.25,
+          "random_midi": 0.08333333333333333,
+          "tool_inspected": 1
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.55,
+        "full": -0.04999999999999999,
+        "text_only": 0.04999999999999999,
+        "random_midi": -0.1
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "mozart-k545-mvt1:m017-020:piano:mcp-session:v1",
+      "song": "mozart-k545-mvt1",
+      "b1_stratum": "NW",
+      "baseline": {
+        "full": 0.25,
+        "text_only": 0.3333333333333333,
+        "random_midi": 0.5833333333333334,
+        "tool_inspected": 1
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 1,
+        "full": 0.25,
+        "text_only": 0.18333333333333332,
+        "random_midi": 0.18333333333333335
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.25,
+          "text_only": 0.08333333333333333,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 1
+        },
+        "seed42": {
+          "full": 0.25,
+          "text_only": 0.25,
+          "random_midi": 0.4166666666666667,
+          "tool_inspected": 1
+        },
+        "seed271": {
+          "full": 0.25,
+          "text_only": 0,
+          "random_midi": 0,
+          "tool_inspected": 1
+        },
+        "seed512": {
+          "full": 0.3333333333333333,
+          "text_only": 0.4166666666666667,
+          "random_midi": 0.25,
+          "tool_inspected": 1
+        },
+        "seed1024": {
+          "full": 0.16666666666666666,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.08333333333333333,
+          "tool_inspected": 1
+        }
+      },
+      "delta": {
+        "tool_inspected": 0,
+        "full": 0,
+        "text_only": -0.15,
+        "random_midi": -0.4
+      },
+      "primary_win": false
+    },
+    {
+      "recordId": "pathetique-mvt2:m001-004:piano:mcp-session:v1",
+      "song": "pathetique-mvt2",
+      "b1_stratum": "LG",
+      "baseline": {
+        "full": 0.5,
+        "text_only": 0.5,
+        "random_midi": 0.6666666666666666,
+        "tool_inspected": 0.9166666666666666
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.85,
+        "full": 0.6166666666666666,
+        "text_only": 0.65,
+        "random_midi": 0.6500000000000001
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.75,
+          "text_only": 0.8333333333333334,
+          "random_midi": 0.8333333333333334,
+          "tool_inspected": 0.8333333333333334
+        },
+        "seed42": {
+          "full": 0.6666666666666666,
+          "text_only": 0.5833333333333334,
+          "random_midi": 0.8333333333333334,
+          "tool_inspected": 0.8333333333333334
+        },
+        "seed271": {
+          "full": 0.5,
+          "text_only": 0.5,
+          "random_midi": 0.5,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed512": {
+          "full": 0.6666666666666666,
+          "text_only": 0.6666666666666666,
+          "random_midi": 0.5833333333333334,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed1024": {
+          "full": 0.5,
+          "text_only": 0.6666666666666666,
+          "random_midi": 0.5,
+          "tool_inspected": 0.75
+        }
+      },
+      "delta": {
+        "tool_inspected": -0.06666666666666665,
+        "full": 0.11666666666666659,
+        "text_only": 0.15000000000000002,
+        "random_midi": -0.016666666666666496
+      },
+      "primary_win": false
+    },
+    {
+      "recordId": "pathetique-mvt2:m009-012:piano:mcp-session:v1",
+      "song": "pathetique-mvt2",
+      "b1_stratum": "LG",
+      "baseline": {
+        "full": 0,
+        "text_only": 0.16666666666666666,
+        "random_midi": 0.16666666666666666,
+        "tool_inspected": 0.75
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.8,
+        "full": 0.13333333333333333,
+        "text_only": 0.21666666666666665,
+        "random_midi": 0.03333333333333333
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.08333333333333333,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed42": {
+          "full": 0.3333333333333333,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.08333333333333333,
+          "tool_inspected": 0.8333333333333334
+        },
+        "seed271": {
+          "full": 0.08333333333333333,
+          "text_only": 0.4166666666666667,
+          "random_midi": 0,
+          "tool_inspected": 0.75
+        },
+        "seed512": {
+          "full": 0,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.08333333333333333,
+          "tool_inspected": 0.5
+        },
+        "seed1024": {
+          "full": 0.16666666666666666,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0,
+          "tool_inspected": 1
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.050000000000000044,
+        "full": 0.13333333333333333,
+        "text_only": 0.04999999999999999,
+        "random_midi": -0.13333333333333333
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "pathetique-mvt2:m017-020:piano:mcp-session:v1",
+      "song": "pathetique-mvt2",
+      "b1_stratum": "LG",
+      "baseline": {
+        "full": 0.25,
+        "text_only": 0.3333333333333333,
+        "random_midi": 0.3333333333333333,
+        "tool_inspected": 0.75
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.9166666666666666,
+        "full": 0.25,
+        "text_only": 0.18333333333333332,
+        "random_midi": 0.2833333333333333
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.25,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.3333333333333333,
+          "tool_inspected": 0.6666666666666666
+        },
+        "seed42": {
+          "full": 0.25,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.3333333333333333,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed271": {
+          "full": 0.25,
+          "text_only": 0.08333333333333333,
+          "random_midi": 0.25,
+          "tool_inspected": 1
+        },
+        "seed512": {
+          "full": 0.25,
+          "text_only": 0.3333333333333333,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 1
+        },
+        "seed1024": {
+          "full": 0.25,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.3333333333333333,
+          "tool_inspected": 1
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.16666666666666663,
+        "full": 0,
+        "text_only": -0.15,
+        "random_midi": -0.04999999999999999
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "pathetique-mvt2:m021-024:piano:mcp-session:v1",
+      "song": "pathetique-mvt2",
+      "b1_stratum": "NW",
+      "baseline": {
+        "full": 0.6666666666666666,
+        "text_only": 0.16666666666666666,
+        "random_midi": 0.5833333333333334,
+        "tool_inspected": 0.75
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.8333333333333334,
+        "full": 0.3833333333333333,
+        "text_only": 0.14999999999999997,
+        "random_midi": 0.25
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.3333333333333333,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.16666666666666666,
+          "tool_inspected": 0.8333333333333334
+        },
+        "seed42": {
+          "full": 0.25,
+          "text_only": 0.25,
+          "random_midi": 0.3333333333333333,
+          "tool_inspected": 0.75
+        },
+        "seed271": {
+          "full": 0.25,
+          "text_only": 0,
+          "random_midi": 0.25,
+          "tool_inspected": 0.75
+        },
+        "seed512": {
+          "full": 0.5833333333333334,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.25,
+          "tool_inspected": 0.8333333333333334
+        },
+        "seed1024": {
+          "full": 0.5,
+          "text_only": 0.16666666666666666,
+          "random_midi": 0.25,
+          "tool_inspected": 1
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.08333333333333337,
+        "full": -0.2833333333333333,
+        "text_only": -0.01666666666666669,
+        "random_midi": -0.33333333333333337
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "pathetique-mvt2:m025-028:piano:mcp-session:v1",
+      "song": "pathetique-mvt2",
+      "b1_stratum": "LG",
+      "baseline": {
+        "full": 0.75,
+        "text_only": 0.6666666666666666,
+        "random_midi": 0.5,
+        "tool_inspected": 0.75
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.9666666666666666,
+        "full": 0.38333333333333336,
+        "text_only": 0.4333333333333334,
+        "random_midi": 0.3666666666666666
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.4166666666666667,
+          "text_only": 0.3333333333333333,
+          "random_midi": 0.3333333333333333,
+          "tool_inspected": 1
+        },
+        "seed42": {
+          "full": 0.4166666666666667,
+          "text_only": 0.5833333333333334,
+          "random_midi": 0.3333333333333333,
+          "tool_inspected": 1
+        },
+        "seed271": {
+          "full": 0.3333333333333333,
+          "text_only": 0.4166666666666667,
+          "random_midi": 0.5,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed512": {
+          "full": 0.5,
+          "text_only": 0.4166666666666667,
+          "random_midi": 0.3333333333333333,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed1024": {
+          "full": 0.25,
+          "text_only": 0.4166666666666667,
+          "random_midi": 0.3333333333333333,
+          "tool_inspected": 1
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.21666666666666656,
+        "full": -0.36666666666666664,
+        "text_only": -0.23333333333333323,
+        "random_midi": -0.13333333333333341
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "pathetique-mvt2:m029-032:piano:mcp-session:v1",
+      "song": "pathetique-mvt2",
+      "b1_stratum": "LG",
+      "baseline": {
+        "full": 0.3333333333333333,
+        "text_only": 0.2222222222222222,
+        "random_midi": 0.3333333333333333,
+        "tool_inspected": 0.3333333333333333
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.8222222222222222,
+        "full": 0.42222222222222217,
+        "text_only": 0.24444444444444446,
+        "random_midi": 0.4666666666666666
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.4444444444444444,
+          "text_only": 0.3333333333333333,
+          "random_midi": 0.5555555555555555,
+          "tool_inspected": 0.7777777777777777
+        },
+        "seed42": {
+          "full": 0.5555555555555555,
+          "text_only": 0.2222222222222222,
+          "random_midi": 0.3333333333333333,
+          "tool_inspected": 0.7777777777777777
+        },
+        "seed271": {
+          "full": 0.3333333333333333,
+          "text_only": 0.4444444444444444,
+          "random_midi": 0.4444444444444444,
+          "tool_inspected": 0.7777777777777777
+        },
+        "seed512": {
+          "full": 0.3333333333333333,
+          "text_only": 0.1111111111111111,
+          "random_midi": 0.5555555555555555,
+          "tool_inspected": 0.8888888888888888
+        },
+        "seed1024": {
+          "full": 0.4444444444444444,
+          "text_only": 0.1111111111111111,
+          "random_midi": 0.4444444444444444,
+          "tool_inspected": 0.8888888888888888
+        }
+      },
+      "delta": {
+        "tool_inspected": 0.4888888888888889,
+        "full": 0.08888888888888885,
+        "text_only": 0.022222222222222254,
+        "random_midi": 0.1333333333333333
+      },
+      "primary_win": true
+    },
+    {
+      "recordId": "schumann-traumerei:m001-004:piano:mcp-session:v1",
+      "song": "schumann-traumerei",
+      "b1_stratum": "LG",
+      "baseline": {
+        "full": 1,
+        "text_only": 1,
+        "random_midi": 0.6666666666666666,
+        "tool_inspected": 1
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.95,
+        "full": 1,
+        "text_only": 1,
+        "random_midi": 0.9333333333333333
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 1,
+          "text_only": 1,
+          "random_midi": 0.75,
+          "tool_inspected": 0.8333333333333334
+        },
+        "seed42": {
+          "full": 1,
+          "text_only": 1,
+          "random_midi": 1,
+          "tool_inspected": 0.9166666666666666
+        },
+        "seed271": {
+          "full": 1,
+          "text_only": 1,
+          "random_midi": 1,
+          "tool_inspected": 1
+        },
+        "seed512": {
+          "full": 1,
+          "text_only": 1,
+          "random_midi": 1,
+          "tool_inspected": 1
+        },
+        "seed1024": {
+          "full": 1,
+          "text_only": 1,
+          "random_midi": 0.9166666666666666,
+          "tool_inspected": 1
+        }
+      },
+      "delta": {
+        "tool_inspected": -0.050000000000000044,
+        "full": 0,
+        "text_only": 0,
+        "random_midi": 0.2666666666666667
+      },
+      "primary_win": false
+    },
+    {
+      "recordId": "schumann-traumerei:m045-048:piano:mcp-session:v1",
+      "song": "schumann-traumerei",
+      "b1_stratum": "LG",
+      "baseline": {
+        "full": 1,
+        "text_only": 1,
+        "random_midi": 0.7777777777777777,
+        "tool_inspected": 1
+      },
+      "ft_all_seeds_mean": {
+        "tool_inspected": 0.7777777777777777,
+        "full": 0.7777777777777777,
+        "text_only": 0.8222222222222222,
+        "random_midi": 0.8222222222222222
+      },
+      "ft_per_seed": {
+        "seed13": {
+          "full": 0.6666666666666666,
+          "text_only": 0.6666666666666666,
+          "random_midi": 0.6666666666666666,
+          "tool_inspected": 0.6666666666666666
+        },
+        "seed42": {
+          "full": 0.8888888888888888,
+          "text_only": 1,
+          "random_midi": 0.8888888888888888,
+          "tool_inspected": 0.7777777777777777
+        },
+        "seed271": {
+          "full": 0.6666666666666666,
+          "text_only": 0.6666666666666666,
+          "random_midi": 0.7777777777777777,
+          "tool_inspected": 0.8888888888888888
+        },
+        "seed512": {
+          "full": 0.6666666666666666,
+          "text_only": 0.7777777777777777,
+          "random_midi": 0.7777777777777777,
+          "tool_inspected": 0.8888888888888888
+        },
+        "seed1024": {
+          "full": 1,
+          "text_only": 1,
+          "random_midi": 1,
+          "tool_inspected": 0.6666666666666666
+        }
+      },
+      "delta": {
+        "tool_inspected": -0.22222222222222232,
+        "full": -0.22222222222222232,
+        "text_only": -0.1777777777777778,
+        "random_midi": 0.04444444444444451
+      },
+      "primary_win": false
+    }
+  ]
+}
