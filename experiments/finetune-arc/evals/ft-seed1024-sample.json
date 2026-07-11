@@ -1,7 +1,7 @@
 {
   "schema_version": "corpus-scale-sample/1.0.0",
   "seed": "slice12-2026-05-17",
-  "generated_at": "2026-07-11T04:29:34.782Z",
+  "generated_at": "2026-07-11T04:50:12.446Z",
   "config": {
     "e1_size": 24,
     "e2_pair_size": 12,
