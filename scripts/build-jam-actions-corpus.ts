@@ -139,10 +139,21 @@ interface PairAnnotation {
 
 const SONG_SPECS: SongSpec[] = [
   // ── Bach Prelude C Major BWV 846 ─────────────────────────────────────────
-  // 4/4, ~70 measures. Arpeggiated; one chord per measure.
-  // mm. 1-4 existing record → repurposed as prompt pair 1.
-  // mm. 5-8: dominant-area approach (D7→G→C→Am), natural antecedent/consequent.
-  // mm. 9-12: second harmonic cycle, similar texture.
+  // 4/4, exactly 62 measures in the source MIDI (prelude mm. 1-35 + fugue
+  // mm. 36-62 concatenated — piano-midi.de bach_846 carries both movements).
+  // An earlier "~70 measures" assumption here authored a final pair at
+  // mm. 61-64; the real song ends at m62, so the frozen play_song(61,64)
+  // call in the published record failed live execution (finetune-arc-v1
+  // gate G6a, disposition A1-v1). The window is now 61-62 and buildRecord
+  // hard-fails any window past the ingested song length.
+  // mm. 1-4 existing record → repurposed as prompt pair 1 (Step 2 updates its
+  // scope metadata only, so pair-1 prompt strings mirror that record verbatim).
+  // Annotation prose for all eight pairs was corrected against executed MIDI
+  // ground truth by revision r002 (docs/jam-actions-v0-erratum-002-bach-
+  // annotation-prose.md): prelude chords mm. 1-32, dominant pedal mm. 24-31,
+  // tonic-pedal coda mm. 32-35, and the FOUR-VOICE FUGUE mm. 36-62 (exposition
+  // mm. 36-40, strettos m42+, climax mm. 49-53, tonic pedal mm. 59-62). The
+  // r002 script asserts these spec strings byte-identical to the records.
   {
     songId: "bach-prelude-c-major-bwv846",
     composerDeathYear: 1750,
@@ -157,38 +168,38 @@ const SONG_SPECS: SongSpec[] = [
         contLabel: "consequent four-chord cycle",
         naturalBoundary: true,
         promptUserPrompt:
-          "Show me measures 1–4 of the Bach C Major Prelude and explain the harmonic pattern.",
+          "Read measures 1–4 of the Bach C Major Prelude and describe what's happening musically.",
         contUserPrompt:
           "Now play measures 5–8 and explain how the harmony continues from mm. 1–4.",
         promptAnalysis:
-          "The prelude opens with a flowing 16th-note arpeggio — each measure is one chord: m.1 C major (C-E-G-C-E), m.2 A minor, m.3 D minor7, m.4 G major. This four-measure unit is the template the entire piece builds on. Let me loop mm. 1–4 so you can hear the pattern.",
+          "The prelude opens with a flowing arpeggiated texture — each measure is a single chord broken into 16th notes. I can see four distinct chord shapes: m.1 C major (C-E-G), m.2 D minor seventh over the same C bass (C-D-F-A), m.3 G7 over B (B-D-F-G), m.4 C major again. Tonic, gentle dissonance, dominant, home — with a harmonic rhythm of exactly one chord per measure. Let me loop mm. 1–4 so you can hear the pattern.",
         promptSummary:
-          "Bach C Major Prelude mm. 1–4: four-chord arpeggiated template. C → Am → Dm7 → G. Teaching focus: even 16th-note rhythm, harmonic awareness within single-chord patterns.",
+          "Phrase summary — Bach C Major Prelude mm. 1–4: arpeggiated opening template. Four measures, four chords (C, Dm7/C, G7/B, C). Teaching focus: even 16th-note rhythm, harmonic awareness within the arpeggio pattern, smooth legato through chord changes.",
         contAnalysis:
-          "Measures 5–8 continue the pattern but move toward the subdominant: m.5 C major again (tonic return), m.6 C7 (dominant-function color), m.7 F major (subdominant arrival), m.8 F diminished. This continuation is the harmonic response to mm. 1–4. Let me loop mm. 5–8.",
+          "Measures 5–8 push the same pattern outward: m.5 A minor over the C bass, m.6 D7 over C — the piece's first accidental (F#) — m.7 G major over B, m.8 C major seventh over B. The bass barely moves while the harmony leans toward the dominant; this is the harmonic response to mm. 1–4. Let me loop mm. 5–8.",
         contSummary:
-          "Bach C Major Prelude mm. 5–8: continuation of arpeggiated pattern. C → C7 → F → Fdim. Subdominant region. Pair with mm. 1–4 for E2 harmonic-direction prediction.",
+          "Bach C Major Prelude mm. 5–8: continuation of the arpeggiated pattern. Am/C → D7/C → G/B → Cmaj7/B, leaning toward the dominant. Pair with mm. 1–4 for E2 harmonic-direction prediction.",
       },
       {
         promptStart: 9,
         promptEnd: 12,
         contStart: 13,
         contEnd: 16,
-        promptLabel: "second cycle — dominant preparation",
-        contLabel: "second cycle — dominant arrival",
+        promptLabel: "second cycle — to the dominant",
+        contLabel: "second cycle — first-inversion descent home",
         naturalBoundary: true,
         promptUserPrompt:
           "Show me measures 9–12 of the Bach Prelude and describe the harmonic movement.",
         contUserPrompt:
           "Now play measures 13–16 and describe the resolution from mm. 9–12.",
         promptAnalysis:
-          "Measures 9–12 introduce a new harmonic layer: m.9 C major (tonic), m.10 G7 (dominant seventh), m.11 C major, m.12 G7 again. The dominant seventh appears for the first time here, giving more harmonic tension than the opening cycle. Let me loop mm. 9–12.",
+          "Measures 9–12 travel to the dominant key: m.9 A minor seventh, m.10 D7, m.11 G major — a ii–V–I in G — and m.12 shades the new G bass with a tense diminished seventh. The texture never changes; the journey is entirely harmonic. Let me loop mm. 9–12.",
         promptSummary:
-          "Bach C Major Prelude mm. 9–12: second cycle with dominant sevenths. C → G7 repeated. Increased harmonic tension. Teaching focus: recognizing dominant function within the arpeggio texture.",
+          "Bach C Major Prelude mm. 9–12: ii–V–I into the dominant — Am7 → D7 → G, then a diminished-seventh shade at m12. Teaching focus: hearing a key shift inside an unchanged texture.",
         contAnalysis:
-          "Measures 13–16 resolve and extend: m.13 Am (relative minor), m.14 D7 (secondary dominant), m.15 G (dominant), m.16 G7. The pair shape is ii7–V–V7 — a complete cadential preparation. Let me loop mm. 13–16.",
+          "Measures 13–16 slide back from the dominant through first-inversion colors: m.13 D minor over F, m.14 a diminished seventh over the same F bass, m.15 C major over E, m.16 F major seventh over E. The bass walks down by step while every chord is softened by inversion. Let me loop mm. 13–16.",
         contSummary:
-          "Bach C Major Prelude mm. 13–16: Am → D7 → G → G7 cadential approach. Continuation from mm. 9–12. Teaching focus: secondary dominant recognition.",
+          "Bach C Major Prelude mm. 13–16: first-inversion descent — Dm/F → dim7/F → C/E → Fmaj7/E; the bass steps down as the harmony eases toward home. Continuation from mm. 9–12.",
       },
       // ── Slice 9b new pairs ────────────────────────────────────────────────────
       {
@@ -204,180 +215,180 @@ const SONG_SPECS: SongSpec[] = [
         contUserPrompt:
           "Play measures 21–24 and describe the chromatic movement that follows.",
         promptAnalysis:
-          "Measures 17–20 continue the arpeggiated pattern: m.17 C major returns (tonic), m.18 Am7, m.19 D minor, m.20 B diminished. The texture remains even 16th notes while the harmonics move forward. Let me loop mm. 17–20.",
+          "Measures 17–20 cadence back into C and immediately pivot onward: m.17 D minor seventh, m.18 G7, m.19 C major — a full ii–V–I home — then m.20 turns the tonic into C7, whose Bb points the music toward F. Let me loop mm. 17–20.",
         promptSummary:
-          "Bach C Major Prelude mm. 17–20: third cycle, C → Am7 → Dm → Bdim. Continued arpeggiated texture.",
+          "Bach C Major Prelude mm. 17–20: ii–V–I back to C (Dm7 → G7 → C), then C7 pivots toward the subdominant. Teaching focus: cadence recognition inside the arpeggio stream.",
         contAnalysis:
-          "Measures 21–24 push into chromatic territory: m.21 G7, m.22 Cmaj7, m.23 Fmaj7, m.24 F/D diminished. The motion becomes more harmonically adventurous while the arpeggio template holds steady. Let me loop mm. 21–24.",
+          "Measures 21–24 are the prelude's boldest four bars: F major seventh at m.21, then the bass climbs — F# diminished seventh at m.22, a diminished seventh over Ab at m.23 — and lands on G at m.24, where the long dominant pedal begins. Let me loop mm. 21–24.",
         contSummary:
-          "Bach C Major Prelude mm. 21–24: chromatic motion, G7 → Cmaj7 → Fmaj7 → Fdim. Continuation from mm. 17–20.",
+          "Bach C Major Prelude mm. 21–24: rising bass through two diminished sevenths (F → F# → Ab) settling onto G at m24 — the dominant pedal begins. Continuation from mm. 17–20.",
       },
       {
         promptStart: 25,
         promptEnd: 28,
         contStart: 29,
         contEnd: 32,
-        promptLabel: "fourth cycle — deep harmonic exploration antecedent",
-        contLabel: "fourth cycle — dominant preparation consequent",
+        promptLabel: "dominant pedal — antecedent",
+        contLabel: "dominant pedal resolves — consequent",
         naturalBoundary: true,
         promptUserPrompt:
-          "Show me measures 25–28 of the Bach Prelude — what makes this section harmonically distinctive?",
+          "Show me measures 25–28 of the Bach Prelude — what is happening over the bass here?",
         contUserPrompt:
           "Play measures 29–32 and describe the dominant preparation.",
         promptAnalysis:
-          "Measures 25–28 are the harmonic peak of the prelude's exploration: chords move through diminished and augmented areas, creating the most chromatic tension in the piece. The 16th-note arpeggio remains unwavering. Let me loop mm. 25–28.",
+          "Measures 25–28 all ride the dominant pedal that began at m.24: the bass holds G while the harmonies above alternate — C major over G at m.25, a suspended G7 at m.26, G7 proper at m.27, and at m.28 a diminished seventh stacked on the pedal. One note below, everything shifting above. Let me loop mm. 25–28.",
         promptSummary:
-          "Bach C Major Prelude mm. 25–28: harmonic peak, chromatic and diminished chords, maximum tension. Teaching focus: tension–release arc.",
+          "Bach C Major Prelude mm. 25–28: dominant pedal in full — C/G, G7sus, G7, then a diminished seventh over the held G. Teaching focus: pedal point as a tension engine.",
         contAnalysis:
-          "Measures 29–32 begin the preparation for the final dominant pedal: the harmony moves back through G7 territory, building toward the long pedal point that concludes the piece. Let me loop mm. 29–32.",
+          "Measures 29–31 are the pedal's last stand — C major over G, a suspended seventh, then G7 — and at m.32 the bass finally drops to a low C. The new tonic pedal arrives colored as C7, its Bb hinting at F for the coda to come. Let me loop mm. 29–32.",
         contSummary:
-          "Bach C Major Prelude mm. 29–32: returning toward dominant, G7 approach. Continuation from mm. 25–28.",
+          "Bach C Major Prelude mm. 29–32: the dominant pedal releases — G7 gives way at m32 to a low C bass (heard as C7, leaning toward F). Continuation from mm. 25–28.",
       },
       {
         promptStart: 33,
         promptEnd: 36,
         contStart: 37,
         contEnd: 40,
-        promptLabel: "dominant pedal — antecedent",
-        contLabel: "dominant pedal — continuation",
+        promptLabel: "prelude close into fugue opening — antecedent",
+        contLabel: "fugue exposition — continuation",
         naturalBoundary: true,
         promptUserPrompt:
-          "Show me measures 33–36 of the Bach Prelude — the famous dominant pedal begins here. Describe it.",
+          "Show me measures 33–36 of the Bach BWV 846 — the prelude ends here and the fugue begins. What happens at the seam?",
         contUserPrompt:
-          "Play measures 37–40 and describe how the pedal continues.",
+          "Play measures 37–40 and describe how the fugue exposition builds.",
         promptAnalysis:
-          "Measures 33–36 introduce the famous low G pedal point: a sustained G in the bass underpins shifting upper harmonies. The 16th-note arpeggio texture is unchanged but now a drone-like G bass creates immense tension. Let me loop mm. 33–36.",
+          "Measures 33–36 are the seam between the two movements of BWV 846. The prelude closes over a low C octave pedal: m.33 lays subdominant color (F and A, joined by D) over it, m.34 answers with a G7 sweep over the same C bass, and m.35 lands the final held C major chord — the arpeggio pattern stops entirely. Then m.36 opens the four-voice fugue: the alto alone states the subject, a stepwise climb C-D-E-F capped by a turning sixteenth figure. Let me loop mm. 33–36.",
         promptSummary:
-          "Bach C Major Prelude mm. 33–36: dominant G pedal point begins, sustained bass drone under arpeggios. Maximum tension.",
+          "Bach BWV 846 mm. 33–36: prelude coda over a C pedal (subdominant color, then G7) into the final chord at m35; the fugue subject enters alone at m36. A movement boundary inside one window.",
         contAnalysis:
-          "Measures 37–40 continue the dominant pedal with different upper voicings — the G bass persists while the arpeggios shift harmony above it. The tension of the pedal point is maintained. Let me loop mm. 37–40.",
+          "Measures 37–40 are the heart of the fugue's exposition. The soprano answers at the dominant in m.37 (the subject shape starting on G), the tenor enters on G an octave lower in m.39, and the bass completes the four-voice texture with the subject on C in m.40. Each entry adds a genuinely independent line — by m.40 the note density has nearly doubled, and F# inflections color the answer entries. Let me loop mm. 37–40.",
         contSummary:
-          "Bach C Major Prelude mm. 37–40: dominant pedal continues, shifting upper harmonies. Continuation from mm. 33–36.",
+          "Bach BWV 846 fugue mm. 37–40: exposition — soprano answer (m37), tenor entry (m39), bass entry (m40); the texture grows from two voices to four. Continuation from mm. 33–36.",
       },
       {
         promptStart: 41,
         promptEnd: 44,
         contStart: 45,
         contEnd: 48,
-        promptLabel: "tonic resolution — antecedent",
-        contLabel: "tonic resolution — consequent",
+        promptLabel: "post-exposition strettos — antecedent",
+        contLabel: "stretto chain — consequent",
         naturalBoundary: true,
         promptUserPrompt:
-          "Show me measures 41–44 of the Bach Prelude — does the pedal resolve here?",
+          "Show me measures 41–44 of the Bach BWV 846 fugue — what happens right after the exposition?",
         contUserPrompt:
-          "Play measures 45–48 and describe how the tonic arrival feels.",
+          "Play measures 45–48 and describe how the strettos continue.",
         promptAnalysis:
-          "Measures 41–44 bring the resolution of the dominant pedal: the G bass gives way and tonic C harmony returns. The relief is palpable after the long pedal tension. Let me loop mm. 41–44.",
+          "With all four voices in, Bach immediately tightens the imitation. In m.42 the soprano and tenor state the subject one beat apart — a true stretto — and the alto follows with its own entry in m.44. Passing C# and Bb around m.43 briefly shade the music toward D minor, and the texture now runs about twice the note density of the prelude. Let me loop mm. 41–44.",
         promptSummary:
-          "Bach C Major Prelude mm. 41–44: dominant pedal resolves, tonic C returns, harmonic relief. Teaching focus: resolution recognition.",
+          "Bach BWV 846 fugue mm. 41–44: first strettos — soprano and tenor overlap the subject one beat apart (m42), alto follows (m44); brief D minor shading at m43.",
         contAnalysis:
-          "Measures 45–48 continue the tonic resolution area — the harmony cycles calmly back toward the home key after the dramatic pedal point. The arpeggios return to their opening serenity. Let me loop mm. 45–48.",
+          "The stretto chain keeps building: the bass states the subject in m.45, echoed a beat later by the alto starting on D, and G# inflections through mm. 46–48 pull the music toward A minor. Measure 47 is one of the busiest bars in the entire piece — nothing here is settling; the fugue is accumulating energy. Let me loop mm. 45–48.",
         contSummary:
-          "Bach C Major Prelude mm. 45–48: post-pedal tonic stability, calm arpeggios returning to home character. Continuation from mm. 41–44.",
+          "Bach BWV 846 fugue mm. 45–48: bass-led stretto with A minor coloration (G#); m47 is among the densest bars of the piece. Continuation from mm. 41–44.",
       },
       {
         promptStart: 49,
         promptEnd: 52,
         contStart: 53,
         contEnd: 56,
-        promptLabel: "penultimate section — antecedent",
-        contLabel: "penultimate section — consequent",
+        promptLabel: "climactic strettos — antecedent",
+        contLabel: "peak density — consequent",
         naturalBoundary: true,
         promptUserPrompt:
-          "Show me measures 49–52 of the Bach Prelude — how does the piece approach its conclusion?",
+          "Show me measures 49–52 of the Bach BWV 846 fugue — how dense does the imitation get?",
         contUserPrompt:
-          "Play measures 53–56 and describe the final approach.",
+          "Play measures 53–56 and describe the character at the fugue's peak.",
         promptAnalysis:
-          "Measures 49–52 continue the penultimate section: the arpeggios move through the final chord cycles before the piece's conclusive cadence. The texture remains even; the harmony is calm and goal-directed. Let me loop mm. 49–52.",
+          "This is the fugue's tightest imitation. Five subject statements crowd into mm. 49–51: alto and tenor a beat apart in m.49, the bass at the top of m.50, then soprano and alto overlapping in m.51 — while G#, Bb, and F# mix into the lines. This pile-up is the climax the fugue has been building toward. Let me loop mm. 49–52.",
         promptSummary:
-          "Bach C Major Prelude mm. 49–52: penultimate section, final harmonic cycles, goal-directed calm.",
+          "Bach BWV 846 fugue mm. 49–52: climactic strettos — five subject statements in three bars (alto+tenor m49, bass m50, soprano+alto m51) under mixed chromatic color.",
         contAnalysis:
-          "Measures 53–56 complete the penultimate phrase and move toward the final cadential gesture. The piece is winding down — the harmonic motion slows toward the cadence. Let me loop mm. 53–56.",
+          "Measure 53 is the single busiest bar of the entire piece — forty note onsets — and mm. 53–56 keep that energy moving through sequential figures colored by C# (a D minor shade), with one more soprano entry arriving late in m.55. Nothing slows down yet; the music is still driving toward the close. Let me loop mm. 53–56.",
         contSummary:
-          "Bach C Major Prelude mm. 53–56: approach to final cadence, harmonic motion slowing. Continuation from mm. 49–52.",
+          "Bach BWV 846 fugue mm. 53–56: maximum density (m53 is the busiest bar of the piece), sequential drive with D minor color, soprano entry late in m55. Continuation from mm. 49–52.",
       },
       {
         promptStart: 57,
         promptEnd: 60,
         contStart: 61,
-        contEnd: 64,
-        promptLabel: "final approach — antecedent",
-        contLabel: "final cadence — consequent",
+        contEnd: 62,
+        promptLabel: "drive onto the tonic pedal — antecedent",
+        contLabel: "coda over the tonic pedal — consequent",
         naturalBoundary: true,
         promptUserPrompt:
-          "Show me measures 57–60 of the Bach Prelude — the final approach to the cadence.",
+          "Show me measures 57–60 of the Bach BWV 846 fugue — how does the ending begin?",
         contUserPrompt:
-          "Play measures 61–64 and describe the final cadential arrival.",
+          "Play measures 61–62 and describe the final cadential arrival.",
         promptAnalysis:
-          "Measures 57–60 are the final approach: the arpeggio texture moves through the last dominant preparation before the piece's closing tonic statement. The emotional arc is completing. Let me loop mm. 57–60.",
+          "Measures 57–58 make the last cadential push — the bass winds stepwise down and lands on G, the dominant, at the end of m.58. Then m.59 begins the real ending: the bass drops to a low C and holds it as a tonic pedal all the way to the final bar. Above it the tenor states the fugue's last full subject entry — mirroring the alto's opening statement an octave below — answered by the alto starting on F, while Bb color tilts the harmony toward the subdominant. Let me loop mm. 57–60.",
         promptSummary:
-          "Bach C Major Prelude mm. 57–60: final dominant preparation, approaching the close.",
+          "Bach BWV 846 fugue mm. 57–60: the last cadential drive lands the dominant (m58); a low C tonic pedal begins at m59 with the final subject entries above it (tenor on C, alto on F) and Bb subdominant color.",
         contAnalysis:
-          "Measures 61–64 complete the prelude with the final tonic C arrival — the last arpeggios settle onto the home key. The entire harmonic journey resolves peacefully. Let me loop mm. 61–64.",
+          "Measures 61–62 close the fugue over the low C that has been sounding since m.59. During m.61 the Bb color gives way to B naturals and the harmony turns for home; in m.62 the soprano sweeps up an octave run to the top of the final sonority — a wide-spaced C major chord with the tenor and bass anchored on C. The four-voice journey that began with a single line at m.36 ends in one ringing chord. Let me loop mm. 61–62.",
         contSummary:
-          "Bach C Major Prelude mm. 61–64: final tonic C arrival, conclusion of the harmonic journey. Continuation from mm. 57–60.",
+          "Bach BWV 846 fugue mm. 61–62: final cadence over the held tonic pedal — B natural turns the harmony home, a soprano run climbs the octave, and the piece ends on a wide-spaced C major chord. Continuation from mm. 57–60.",
       },
     ],
     pairAnnotations: [
       {
         promptAnnotation: {
-          structure: "Opening arpeggiated template — four measures, one chord each (C–Am–Dm7–G)",
+          structure: "Opening arpeggiated pattern — four-measure harmonic template establishing the prelude's texture (C – Dm7/C – G7/B – C)",
           key_moments: [
-            "m1 C major arpeggio — tonic statement",
-            "m2 A minor — relative minor color",
-            "m3 D minor7 — subdominant approach",
-            "m4 G major — dominant, sets up return",
+            "m1 C major arpeggio — tonic statement (C-E-G pattern)",
+            "m2 Dm7 over the C bass — the prelude's first gentle dissonance",
+            "m3 G7 over B — dominant pull, bass steps down",
+            "m4 C major — home again, the cycle is complete",
           ],
           teaching_goals: [
-            "perfectly even 16th-note arpeggios",
+            "perfectly even rhythm across all 16th-note arpeggios",
             "harmonic awareness within repeating patterns",
-            "smooth legato through chord changes",
+            "smooth voice-leading as chords change",
           ],
           style_tips: [
             "equal weight on every note — no accent on beat 1",
             "let the harmonic changes do the phrasing",
-            "minimal rubato",
+            "minimal rubato — the flow is the beauty",
           ],
           teaching_notes: [
             {
               measure: 1,
-              note: "Each measure is one chord split into 16th notes — hear the harmony, not the individual notes.",
+              note: "Each measure is one chord split into 16th notes — hear the harmony, not individual notes.",
               technique: ["even finger pressure", "wrist relaxed"],
             },
             {
-              measure: 3,
-              note: "D minor7 adds the first chromatic color — listen for the subtle shift.",
-              technique: ["legato connection to m.4"],
+              measure: 2,
+              note: "The D and F over the held C bass make the prelude's first gentle dissonance — listen for it resolving into m.3.",
+              technique: ["legato connection to m.3"],
             },
           ],
         },
         contAnnotation: {
-          structure: "Consequent arpeggiated unit — C–C7–F–Fdim, subdominant area",
+          structure: "Consequent arpeggiated unit — Am/C, D7/C, G/B, Cmaj7/B: leaning toward the dominant over a nearly static bass",
           key_moments: [
-            "m5 C major return — tonic restatement",
-            "m6 C7 — dominant-function seventh",
-            "m7 F major — subdominant arrival",
-            "m8 F diminished — chromatic color before next section",
+            "m5 A minor over the C bass — relative-minor color",
+            "m6 D7 over C — the first accidental of the piece (F#), pulling toward G",
+            "m7 G major over B — the pull lands",
+            "m8 Cmaj7 over B — softened return, ready for the next cycle",
           ],
           teaching_goals: [
-            "recognize harmonic direction from tonic toward subdominant",
+            "recognize harmonic direction toward the dominant",
             "match the even arpeggio texture of mm. 1–4",
-            "feel the slightly darker color of m.8 Fdim",
+            "hear m6's F# as the first color note of the piece",
           ],
           style_tips: [
             "same even texture as mm. 1–4",
-            "the C7 in m.6 should feel slightly warmer — but no accent",
-            "Fdim in m.8 is a passing color, keep forward motion",
+            "the D7 in m.6 should feel slightly brighter — but no accent",
+            "the Cmaj7 in m.8 is a soft landing; keep forward motion",
           ],
           teaching_notes: [
             {
               measure: 6,
-              note: "C7 adds Bb — the first flat pitch in the piece. Listen for the subtle shift.",
-              technique: ["even weight despite new chord color"],
+              note: "D7 over the C bass adds F# — the first accidental in the piece. Listen for the subtle brightening.",
+              technique: ["even weight despite the new color"],
             },
             {
               measure: 8,
-              note: "F diminished provides chromatic tension that propels toward the next phrase.",
+              note: "The major-seventh color of m.8 melts back toward the next phrase.",
               technique: ["forward lean into m.9"],
             },
           ],
@@ -385,50 +396,50 @@ const SONG_SPECS: SongSpec[] = [
       },
       {
         promptAnnotation: {
-          structure: "Second harmonic cycle — tonic alternating with dominant seventh (C–G7)",
+          structure: "Second cycle — ii–V–I into the dominant key (Am7 – D7 – G) with a diminished-seventh shade at m12",
           key_moments: [
-            "m9 C major — tonic return",
-            "m10 G7 — dominant seventh first appearance in piece",
-            "m11 C major — brief return",
-            "m12 G7 — dominant reiterated",
+            "m9 A minor seventh — pivot away from C",
+            "m10 D7 — dominant of G, the strongest pull away from home so far",
+            "m11 G major — arrival in the dominant key",
+            "m12 diminished-seventh color over the G bass",
           ],
           teaching_goals: [
-            "identify the new dominant seventh tension vs opening cycle",
-            "maintain even arpeggio texture under heightened harmonic interest",
+            "identify a ii–V–I even when it is spread across whole measures of arpeggio",
+            "maintain the even texture while the harmony travels",
           ],
           style_tips: [
-            "G7 measures feel slightly more tense — don't push the tempo",
+            "m10's F# wants to rise to G — let the harmony do the leaning",
             "harmonic rhythm is still one chord per measure — count carefully",
           ],
           teaching_notes: [
             {
               measure: 10,
-              note: "G7 (G-B-D-F) is the first dominant seventh in the piece — the added F creates pull toward C.",
-              technique: ["feel the F in the arpeggio as a dissonance"],
+              note: "D7 (D-F#-A-C) is the dominant of G — its F# pulls the whole phrase toward m.11.",
+              technique: ["feel the F# in the arpeggio as the leaning tone"],
             },
           ],
         },
         contAnnotation: {
-          structure: "Cadential approach — Am–D7–G–G7 (ii–V secondary dominant chain)",
+          structure: "First-inversion descent — Dm/F, dim7 over F, C/E, Fmaj7/E above a stepwise falling bass",
           key_moments: [
-            "m13 A minor — relative minor pivot",
-            "m14 D7 — secondary dominant of G",
-            "m15 G major — dominant arrival",
-            "m16 G7 — dominant seventh, prepares return to tonic",
+            "m13 D minor over F — the walk home begins",
+            "m14 diminished seventh over the same F bass — passing tension",
+            "m15 C major over E — tonic color, softened by inversion",
+            "m16 Fmaj7 over E — subdominant warmth before the next cycle",
           ],
           teaching_goals: [
-            "recognize ii7–V cadential motion",
-            "feel the harmonic pull through the D7→G resolution",
+            "hear inversions: the same harmony feels lighter with its third in the bass",
+            "follow a stepwise bass line underneath an unchanging pattern",
           ],
           style_tips: [
-            "the D7 in m.14 wants to resolve — let it",
-            "G major in m.15 feels like a temporary arrival",
+            "the m14 dissonance is passing — do not accent it",
+            "let the bass line lead the phrase shape",
           ],
           teaching_notes: [
             {
               measure: 14,
-              note: "D7 (D-F#-A-C) is a secondary dominant of G — the F# pulls upward.",
-              technique: ["hear the F# in the arpeggio"],
+              note: "A diminished seventh over the F bass — passing tension that melts into C/E.",
+              technique: ["keep it light; resolve into m.15"],
             },
           ],
         },
@@ -436,253 +447,272 @@ const SONG_SPECS: SongSpec[] = [
       // ── Slice 9b Bach annotations ────────────────────────────────────────────
       {
         promptAnnotation: {
-          structure: "Third harmonic cycle antecedent — C → Am7 → Dm → Bdim",
+          structure: "Cadence home and pivot — ii–V–I in C (Dm7 – G7 – C), then C7 turns toward the subdominant",
           key_moments: [
-            "m17 tonic C returns",
-            "m18 A minor 7th — relative minor with added color",
-            "m20 B diminished — chromatic passing chord",
+            "m17 D minor seventh — the approach home begins",
+            "m18 G7 — the dominant",
+            "m19 C major — cadence home",
+            "m20 C7 — a Bb appears, pointing the music toward F",
           ],
           teaching_goals: [
-            "recognize the pattern repeating with new chord colors",
-            "hear Am7 vs simple Am from the first cycle",
+            "recognize a full ii–V–I cadence inside the arpeggio stream",
+            "hear m20's Bb turn the tonic itself into a pull toward F",
           ],
-          style_tips: ["same even arpeggio texture as the opening", "notice the added 7ths coloring the harmony"],
+          style_tips: ["same even arpeggio texture as the opening", "let the m20 Bb glow without an accent"],
           teaching_notes: [
             {
-              measure: 18,
-              note: "Am7 adds C to the arpeggio — hear the added color within the same pattern.",
-              technique: ["listen for the 7th interval"],
+              measure: 20,
+              note: "C7 adds Bb, turning the tonic into a dominant that points at F — the pivot into the next cycle.",
+              technique: ["listen for the new color against m.19"],
             },
           ],
         },
         contAnnotation: {
-          structure: "Chromatic consequent — G7 → Cmaj7 → Fmaj7 → Fdim",
+          structure: "Chromatic ascent onto the dominant pedal — Fmaj7, F#dim7, dim7 over Ab, then G7 with the bass pedal starting at m24",
           key_moments: [
-            "m21 G7 dominant seventh",
-            "m22 Cmaj7 — tonic with added major seventh",
-            "m23 Fmaj7 — subdominant with color",
-            "m24 F diminished — chromatic passing",
+            "m21 F major seventh — subdominant station",
+            "m22 F# diminished seventh — the bass starts rising",
+            "m23 diminished seventh over Ab — maximum leaning",
+            "m24 G arrives in the bass and stays: the long dominant pedal begins",
           ],
           teaching_goals: [
-            "major seventh chords introduce a richer, warmer color",
-            "maintain even texture through the added-chord territory",
+            "follow a rising bass line through diminished harmonies",
+            "recognize m24 as the start of the piece's biggest tension span",
           ],
-          style_tips: ["the major sevenths sound warmer than dominant sevenths", "same tempo throughout"],
+          style_tips: ["the two diminished bars lean forward — keep the tempo honest", "mark m24's arrival with weight of tone, not speed"],
           teaching_notes: [
             {
               measure: 22,
-              note: "Cmaj7 contains B natural — hear it sparkle in the arpeggio.",
-              technique: ["listen for the major 7th interval above C"],
+              note: "F# diminished seventh — the bass begins its climb toward the dominant.",
+              technique: ["feel the bass line as the melody here"],
+            },
+            {
+              measure: 24,
+              note: "G lands in the bass and will not leave for eight measures — the dominant pedal begins.",
+              technique: ["settle the hand; the drama is above the bass now"],
             },
           ],
         },
       },
       {
         promptAnnotation: {
-          structure: "Harmonic peak antecedent — chromatic and diminished chords",
+          structure: "Dominant pedal core — bass G held (since m24) under alternating C/G, G7sus, G7, and diminished-seventh harmonies",
           key_moments: [
-            "m25 chromatic territory begins",
-            "m27 most distant chord from home key",
-            "m28 partial cadential approach",
+            "m25 C major over the G pedal — consonance suspended over tension",
+            "m26 suspended G7 — the alternation pattern",
+            "m27 G7 proper",
+            "m28 diminished seventh stacked on the pedal — the tensest bar of the span so far",
           ],
           teaching_goals: [
-            "recognize this as the harmonic climax of the prelude's exploration",
-            "maintain even arpeggio through dissonant territory",
+            "hear the bass drone as a separate layer from the arpeggios",
+            "feel harmonies alternate tense and settled over one unmoving note",
           ],
-          style_tips: ["the chromatic tension peaks here — don't rush", "no accent changes; the harmony does the work"],
+          style_tips: ["the G bass is the anchor — let it ring", "upper voices float above the pedal"],
           teaching_notes: [
             {
-              measure: 27,
-              note: "The most harmonically distant point — the arpeggio holds the tension steady.",
+              measure: 28,
+              note: "A diminished seventh over the held G — the tensest sonority of the pedal span.",
               technique: ["even weight regardless of dissonance"],
             },
           ],
         },
         contAnnotation: {
-          structure: "Dominant approach consequent — returning to G7 territory",
+          structure: "Pedal resolution — three last bars over G (C/G, G7sus, G7), then the bass lands on low C at m32 (heard as C7)",
           key_moments: [
-            "m29 returning toward dominant G area",
-            "m31 G7 dominant seventh",
-            "m32 continued dominant preparation",
+            "m29 C major over the G pedal — the alternation continues",
+            "m31 G7 — the pedal's final bar",
+            "m32 the bass drops to low C — tonic ground reached, tinted by a Bb",
           ],
           teaching_goals: [
-            "feel the harmonic direction reversing — returning home",
-            "the tension is releasing toward the dominant",
+            "feel eight bars of dominant tension release into the tonic bass",
+            "notice that the release is quiet — Bach resolves without announcement",
           ],
-          style_tips: ["sense the homecoming even though you haven't arrived yet", "same even texture"],
+          style_tips: ["do not crescendo into m32 — let the bass drop speak for itself", "the Bb at m32 keeps one door open; no full rest yet"],
           teaching_notes: [
             {
-              measure: 29,
-              note: "The return begins here — the harmonic journey starts curving back.",
-              technique: ["listen for the G in the bass returning"],
+              measure: 32,
+              note: "The bass lands on low C after eight measures of G — but the Bb above keeps it leaning toward the coda.",
+              technique: ["listen for the register drop", "steady tempo through the resolution"],
             },
           ],
         },
       },
       {
         promptAnnotation: {
-          structure: "Dominant pedal antecedent — sustained low G with shifting upper voices",
+          structure: "Movement seam — the prelude's coda over a tonic C pedal (mm. 33-35), then the fugue subject alone in the alto (m36)",
           key_moments: [
-            "m33 low G pedal begins",
-            "m35 upper voices shift over pedal",
-            "m36 pedal maintained with harmonic motion above",
+            "m33 low C octave pedal with subdominant color (F-A, joined by D) above",
+            "m34 G7 sweep over the same C bass",
+            "m35 the prelude's final held C major chord",
+            "m36 the fugue subject enters alone: a stepwise climb C-D-E-F with a turning sixteenth figure",
           ],
           teaching_goals: [
-            "hear the bass drone as a separate layer from the arpeggios",
-            "the pedal creates a special tension — a single note held against moving harmony",
+            "hear a movement boundary: cadence, stillness, then a single unaccompanied line",
+            "recognize pedal-point writing: one bass note holding while harmony changes above it",
           ],
-          style_tips: ["the G bass is the anchor — let it ring", "upper voices float above the pedal"],
+          style_tips: ["let m35 ring and breathe before the fugue begins", "state the m36 subject plainly and evenly — it is the seed of everything that follows"],
           teaching_notes: [
             {
-              measure: 33,
-              note: "The low G creates an organ-point effect — held while harmony moves above.",
-              technique: ["sustain the G; let the right-hand harmonies change above it"],
+              measure: 35,
+              note: "The prelude's whole journey lands on this single held C major chord — do not rush past it.",
+              technique: ["let the chord decay naturally", "release both hands together"],
+            },
+            {
+              measure: 36,
+              note: "One voice alone states the fugue subject — every later entry copies this shape, so learn it by ear here.",
+              technique: ["even eighth notes", "shape the sixteenth turn lightly"],
             },
           ],
         },
         contAnnotation: {
-          structure: "Dominant pedal continuation — G bass persists under shifting harmonies",
+          structure: "Fugue exposition — entries stack the texture from two voices to four (soprano answer m37, tenor m39, bass m40)",
           key_moments: [
-            "m37 pedal continues",
-            "m39 upper voices at furthest harmonic point above pedal",
-            "m40 beginning of resolution approach",
+            "m37 soprano answer at the dominant (subject shape starting on G)",
+            "m39 tenor entry on G, an octave below the soprano's answer",
+            "m40 bass entry on C completes the four-voice texture",
           ],
           teaching_goals: [
-            "feel the accumulated tension of several measures of pedal point",
-            "anticipate the relief when the pedal resolves",
+            "track each new voice as it enters while the earlier ones keep moving",
+            "balance independent lines — the entering voice leads, the others accompany",
           ],
-          style_tips: ["the tension is at its peak here — hold steady", "the resolution will feel enormous after this"],
+          style_tips: ["slightly favor whichever voice has the subject", "keep the eighth-note pulse steady as the texture thickens"],
           teaching_notes: [
+            {
+              measure: 39,
+              note: "The tenor entry sits in the middle of the texture and is easy to lose — bring it out.",
+              technique: ["voice the left-hand top notes", "keep the upper lines lighter here"],
+            },
             {
               measure: 40,
-              note: "The long pedal is about to resolve — feel the energy building toward release.",
-              technique: ["slight lean into the final pedal measure before resolution"],
+              note: "The bass entry completes the exposition — the fugue is fully assembled from here on.",
+              technique: ["firm but unforced bass tone"],
             },
           ],
         },
       },
       {
         promptAnnotation: {
-          structure: "Tonic resolution antecedent — pedal releases, C major returns",
+          structure: "Post-exposition strettos — overlapping subject entries begin at once (soprano + tenor m42, alto m44)",
           key_moments: [
-            "m41 dominant pedal releases",
-            "m42 C major harmony restored",
-            "m44 tonic stability re-established",
+            "m42 stretto: soprano and tenor state the subject one beat apart",
+            "m43 passing C# and Bb — a brief D minor shade",
+            "m44 alto entry keeps the chain going",
           ],
           teaching_goals: [
-            "feel the relief of the tonic return after the long pedal",
-            "recognize this as a structural cadence point",
+            "recognize stretto: the subject overlapping itself before it has finished",
+            "hear accidentals as short detours toward neighboring keys, not key changes",
           ],
-          style_tips: ["let the tonic arrival breathe — don't rush past the relief", "the opening serenity returns"],
+          style_tips: ["mark each subject entry slightly, then step back", "keep the pulse strict — density must not become rushing"],
           teaching_notes: [
             {
-              measure: 41,
-              note: "The pedal resolves — tension releases into C major. It should feel like exhaling.",
-              technique: ["lighten the touch as the harmony settles"],
+              measure: 42,
+              note: "Two voices state the subject one beat apart — practice each voice alone, then combine.",
+              technique: ["voice-by-voice practice", "count the offset entry carefully"],
             },
           ],
         },
         contAnnotation: {
-          structure: "Post-resolution consequent — calm tonic cycling returns",
+          structure: "Stretto chain continues — bass entry echoed within a beat (m45); A minor coloration (G#) through mm. 46-48",
           key_moments: [
-            "m45 tonic stability continues",
-            "m47 familiar harmonic cycle",
-            "m48 calm progression",
+            "m45 bass subject entry, echoed a beat later by the alto starting on D",
+            "m46 G# appears — leaning toward A minor",
+            "m47 one of the densest measures in the whole piece",
           ],
           teaching_goals: [
-            "return to the opening character — even, serene arpeggios",
-            "the piece has returned home after its adventure",
+            "keep four voices distinct at high density",
+            "feel the cumulative build — this music gains energy bar over bar",
           ],
-          style_tips: ["back to the opening dynamic and character", "the serenity is restored"],
+          style_tips: ["let the bass entry speak before adding weight above it", "no slowing — the intensity comes from steadiness"],
           teaching_notes: [
             {
-              measure: 45,
-              note: "Back to the familiar texture — play it with fresh ears, not like a routine.",
-              technique: ["same even touch as the opening four measures"],
+              measure: 47,
+              note: "Density peaks here — if it feels cluttered, rebalance the voices rather than slowing down.",
+              technique: ["practice the voices in pairs", "lighten the inner voices"],
             },
           ],
         },
       },
       {
         promptAnnotation: {
-          structure: "Penultimate antecedent — final harmonic cycles before coda",
+          structure: "Climactic stretto region — five subject statements within mm. 49-51 across all four voices",
           key_moments: [
-            "m49 harmonic motion continues",
-            "m51 approaching final stages",
-            "m52 penultimate phrase",
+            "m49 alto and tenor entries one beat apart",
+            "m50 bass entry joins the pile-up",
+            "m51 soprano and alto overlap while G#, Bb, and F# mix in the lines",
           ],
           teaching_goals: [
-            "sense the approaching end — the harmonic trajectory is goal-directed",
-            "same even texture all the way to the close",
+            "hear overlapped subject statements as a deliberate climax device",
+            "keep entries audible when every voice is active",
           ],
-          style_tips: ["no change in character — Bach ends without announcement", "the serenity continues"],
+          style_tips: ["pick one entry per bar to feature — you cannot feature them all", "a steady tempo carries this tension better than volume"],
           teaching_notes: [
             {
               measure: 51,
-              note: "The end approaches without drama — Bach's genius is the seamless arc.",
-              technique: ["no ritardando until marked; maintain tempo"],
+              note: "Two entries overlap while the harmony is at its most chromatic — the fugue's tightest moment.",
+              technique: ["practice slowly, one voice pair at a time"],
             },
           ],
         },
         contAnnotation: {
-          structure: "Penultimate consequent — final approach to cadence",
+          structure: "Peak-density episode — sequences with D minor color (C#); the busiest bar of the piece at m53; late soprano entry m55",
           key_moments: [
-            "m53 continuing toward cadence",
-            "m55 cadential approach",
-            "m56 final dominant",
+            "m53 forty note onsets — the busiest measure in the entire piece",
+            "m54 the sequence continues, still colored by C#",
+            "m55 soprano subject entry arriving late in the bar",
           ],
           teaching_goals: [
-            "feel the harmonic motion slowing toward the final cadence",
-            "the piece is completing its long arc from tonic through tension back to tonic",
+            "sustain evenness at the piece's point of maximum activity",
+            "feel sequences as forward motion, not repetition",
           ],
-          style_tips: ["slight anticipation of the final resolution", "the ending is earned — not rushed"],
+          style_tips: ["think in long four-bar lines, not beat to beat", "no ritardando — the close is near but not here"],
           teaching_notes: [
             {
-              measure: 56,
-              note: "The final dominant — the resolution to C major is now inevitable.",
-              technique: ["slight tenuto on the final dominant before resolution"],
+              measure: 53,
+              note: "The densest bar of the whole work — slow practice here pays off everywhere else.",
+              technique: ["metronome at half tempo first", "voice the moving sixteenths clearly"],
             },
           ],
         },
       },
       {
         promptAnnotation: {
-          structure: "Final approach antecedent — last dominant preparation",
+          structure: "Final drive and tonic pedal — dominant arrival at the end of m58, low C pedal from m59 with the last subject entries above it",
           key_moments: [
-            "m57 approaching the final cadence",
-            "m59 last dominant-area harmony",
-            "m60 penultimate chord",
+            "m58 the bass winds down to land on G — the fugue's last dominant",
+            "m59 a low C tonic pedal begins and holds to the very end",
+            "m59 the final pair of subject entries: tenor rising out of the pedal, answered by the alto starting on F",
+            "m60 Bb color leans the harmony toward the subdominant over the pedal",
           ],
           teaching_goals: [
-            "recognize the piece's final approach — the arc is completing",
-            "even arpeggio through the very last phrase",
+            "hear a tonic pedal as ground: the ending is announced by the bass stopping",
+            "connect the tenor's final entry back to the alto's first — the fugue closes its own loop",
           ],
-          style_tips: ["the ending is near — no ritardando yet unless the score marks it", "let the harmony do the work"],
+          style_tips: ["let the low C sustain fully — it carries the whole ending", "keep the upper voices flowing over the stationary bass"],
           teaching_notes: [
             {
               measure: 59,
-              note: "One of the last dominant harmonies — the resolution is one phrase away.",
-              technique: ["steady tempo", "listen for the pull toward C major"],
+              note: "The bass note struck here is held to the very end — and the tenor's last subject statement rises directly out of it.",
+              technique: ["hold the pedal note its full value", "shape the tenor entry as the lead voice"],
             },
           ],
         },
         contAnnotation: {
-          structure: "Final cadence — tonic C arrival, prelude complete",
+          structure: "Coda over the tonic pedal — B natural returns (m61), then a soprano octave run into the final wide-spaced C major chord (m62)",
           key_moments: [
-            "m61 tonic C return",
-            "m63 final arpeggiated tonic",
-            "m64 conclusion of harmonic journey",
+            "m61 B naturals replace the Bb color — the harmony turns for home",
+            "m62 a soprano sixteenth run climbs the octave to high C",
+            "m62 final chord: wide-spaced C major over the still-sounding pedal",
           ],
           teaching_goals: [
-            "feel the completion of the entire harmonic arc — opening C major returns as the destination",
-            "the final arpeggios should feel like homecoming",
+            "feel the resolution as earned — by the pedal, the final entries, and the color turning from Bb back to B natural",
+            "learn how a fugue ends: four voices arriving on one chord, not a fade-out",
           ],
-          style_tips: ["the conclusion is calm, not triumphant — Bach ends quietly", "let the final C major chord ring"],
+          style_tips: ["the closing run should sound inevitable, not showy", "voice the final chord from the bass up and let it ring"],
           teaching_notes: [
             {
-              measure: 64,
-              note: "The journey from C major through all those chord cycles returns to C major. Complete.",
-              technique: ["slight diminuendo on the final measures", "let the last arpeggio ring naturally"],
+              measure: 62,
+              note: "The single line that started at m36 has become this full four-voice close — let the final chord ring over the pedal.",
+              technique: ["slight broadening into the final chord", "release all voices together"],
             },
           ],
         },
@@ -5318,6 +5348,34 @@ interface BuildRecordArgs {
 
 function buildRecord(args: BuildRecordArgs): DatasetRecord {
   const { songId, songConfig, timeSignatureStr, ticksPerBeat, initialBpm, timeSig, notes, midiSha256, start, end } = args;
+
+  // ANDON: the phrase window must exist in the ingested song. A window
+  // authored past the real end of the MIDI is exactly how record
+  // bach-prelude-c-major-bwv846:m061-064 shipped a frozen play_song call
+  // the live server rejects (62-measure song, window 61-64) — caught only
+  // later by finetune-arc-v1's execution gate (G6a, disposition A1-v1).
+  // Fail the build, never the downstream consumer. play_song validates
+  // endMeasure against the same ingest (registry SongEntry), so a window
+  // that passes here executes there.
+  const actualMeasures = args.songEntry.measures.length;
+  if (end < start) {
+    fail(`Phrase window mm. ${start}-${end} of ${songId} is inverted.`);
+  }
+  if (start > actualMeasures || end > actualMeasures) {
+    fail(
+      `Phrase window mm. ${start}-${end} of ${songId} exceeds the ingested song's actual length ` +
+        `(${actualMeasures} measures). Fix the SONG_SPECS window — records must never reference ` +
+        `measures that do not exist.`,
+    );
+  }
+  for (const tn of args.annotation.teaching_notes) {
+    if (tn.measure < start || tn.measure > end) {
+      fail(
+        `Teaching note anchored at m${tn.measure} lies outside phrase window mm. ${start}-${end} ` +
+          `of ${songId} — annotation anchors must reference measures inside the record's window.`,
+      );
+    }
+  }
 
   // Build timed events for the phrase window
   const ticksPerMeasure = (ticksPerBeat * timeSig.numerator * 4) / timeSig.denominator;

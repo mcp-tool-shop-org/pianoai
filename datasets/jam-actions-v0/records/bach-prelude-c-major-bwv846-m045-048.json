@@ -28,7 +28,7 @@
     "tempo_bpm": 74,
     "time_signature": "4/4",
     "window_role": "continuation_target",
-    "musical_phrase_label": "coda transition — chromatic dominant prep with G2/A2 pedal bass",
+    "musical_phrase_label": "stretto chain — consequent",
     "natural_phrase_boundary": true,
     "paired_prompt_record_id": "bach-prelude-c-major-bwv846:m041-044:piano:mcp-session:v1"
   },
@@ -2120,38 +2120,27 @@
       45,
       48
     ],
-    "structure": "Continuation of the prelude's post-pedal coda area (Krueger's arrangement extends the WTC original past m. 35 with a chromatic-cadential coda). The texture is no longer the simple opening arpeggio (RH-only over LH whole-note pedal); the Krueger arrangement layers three right-hand voices on top of a structural left-hand bass that descends through G2 → A2 → G2 across m. 45–48. Chromatic pitches outside C major appear (F#5 at m. 45, F#3/F#4/G#4 in adjacent measures), marking this as pre-cadential dominant preparation rather than tonic statement.",
+    "structure": "Stretto chain continues — bass entry echoed within a beat (m45); A minor coloration (G#) through mm. 46-48",
     "key_moments": [
-      "m. 45 b1.0 — F#5 sustains 0.81 seconds in the upper voice (chromatic — not in C major); this is the leading-tone of G, marking the dominant-of-dominant area",
-      "m. 45 b2.0 — first deep-bass attack: G2 (left hand, channel 5) sustains 0.41 seconds; B4 and G5 align above for a clear G-major voicing",
-      "m. 45 b3.0 — A2 left-hand bass (low pedal-area shift); the bass moves G2 → A2 within the same measure, distinguishing this from the opening's static one-chord-per-measure design",
-      "m. 45 — RH note count: 82 across the four measures, vs. only 62 in m. 1–4 of the opening; LH note count: 43, vs. only 2 in m. 1–4 — quantitative evidence that this is a different texture, not a simple tonic restatement"
+      "m45 bass subject entry, echoed a beat later by the alto starting on D",
+      "m46 G# appears — leaning toward A minor",
+      "m47 one of the densest measures in the whole piece"
     ],
     "teaching_goals": [
-      "do NOT play this as the opening texture — the multi-voice writing and chromatic harmony make it a different musical event",
-      "voice the F#5 at m. 45 b1.0 distinctly; it's the chromatic color that signals the prelude is now in cadential preparation, not tonic-cycling mode",
-      "feel the G2 → A2 bass motion within m. 45 as the structural step that pulls toward the eventual cadence — the bass is no longer a one-note-per-measure pedal"
+      "keep four voices distinct at high density",
+      "feel the cumulative build — this music gains energy bar over bar"
     ],
     "style_tips": [
-      "slightly more presence than the opening — the texture has thickened, even at the same nominal dynamic",
-      "let the chromatic non-diatonic pitches (F#, A#, G#) speak; they are the harmonic interest of this section, not accidents",
-      "the bass moves on at the half-bar in m. 45; don't pedal through this motion or the chromatic harmonies will smear together"
+      "let the bass entry speak before adding weight above it",
+      "no slowing — the intensity comes from steadiness"
     ],
     "teaching_notes": [
       {
-        "measure": 45,
-        "note": "F#5 at b1.0 is chromatic — outside C major. Voice it clearly; it announces this section is dominant-preparation, not tonic-cycling.",
+        "measure": 47,
+        "note": "Density peaks here — if it feels cluttered, rebalance the voices rather than slowing down.",
         "technique": [
-          "voice the chromatic top line",
-          "release pedal at half-bar"
-        ]
-      },
-      {
-        "measure": 45,
-        "note": "The bass moves G2 (b2.0) → A2 (b3.0) within the bar. Compare to m. 1–4 where each measure has at most one bass note. This is the structural-bass section, not the opening texture.",
-        "technique": [
-          "clear bass articulation",
-          "no over-pedaling"
+          "practice the voices in pairs",
+          "lighten the inner voices"
         ]
       }
     ]
@@ -2163,7 +2152,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Play measures 45–48 and describe how the tonic arrival feels."
+        "content": "Play measures 45–48 and describe how the strettos continue."
       },
       {
         "turn": 2,
@@ -2194,7 +2183,7 @@
       {
         "turn": 4,
         "role": "assistant",
-        "content": "Measures 45–48 continue the tonic resolution area — the harmony cycles calmly back toward the home key after the dramatic pedal point. The arpeggios return to their opening serenity. Let me loop mm. 45–48.",
+        "content": "The stretto chain keeps building: the bass states the subject in m.45, echoed a beat later by the alto starting on D, and G# inflections through mm. 46–48 pull the music toward A minor. Measure 47 is one of the busiest bars in the entire piece — nothing here is settling; the fugue is accumulating energy. Let me loop mm. 45–48.",
         "tool_calls": [
           {
             "tool": "play_song",
@@ -2219,7 +2208,7 @@
       {
         "turn": 6,
         "role": "assistant",
-        "content": "Bach C Major Prelude mm. 45–48: post-pedal tonic stability, calm arpeggios returning to home character. Continuation from mm. 41–44."
+        "content": "Bach BWV 846 fugue mm. 45–48: bass-led stretto with A minor coloration (G#); m47 is among the densest bars of the piece. Continuation from mm. 41–44."
       }
     ]
   },

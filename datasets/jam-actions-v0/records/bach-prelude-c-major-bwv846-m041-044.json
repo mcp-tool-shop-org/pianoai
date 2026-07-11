@@ -28,7 +28,7 @@
     "tempo_bpm": 74,
     "time_signature": "4/4",
     "window_role": "prompt",
-    "musical_phrase_label": "tonic resolution — antecedent",
+    "musical_phrase_label": "post-exposition strettos — antecedent",
     "natural_phrase_boundary": true,
     "continuation_target_window": [
       45,
@@ -1963,26 +1963,27 @@
       41,
       44
     ],
-    "structure": "Tonic resolution antecedent — pedal releases, C major returns",
+    "structure": "Post-exposition strettos — overlapping subject entries begin at once (soprano + tenor m42, alto m44)",
     "key_moments": [
-      "m41 dominant pedal releases",
-      "m42 C major harmony restored",
-      "m44 tonic stability re-established"
+      "m42 stretto: soprano and tenor state the subject one beat apart",
+      "m43 passing C# and Bb — a brief D minor shade",
+      "m44 alto entry keeps the chain going"
     ],
     "teaching_goals": [
-      "feel the relief of the tonic return after the long pedal",
-      "recognize this as a structural cadence point"
+      "recognize stretto: the subject overlapping itself before it has finished",
+      "hear accidentals as short detours toward neighboring keys, not key changes"
     ],
     "style_tips": [
-      "let the tonic arrival breathe — don't rush past the relief",
-      "the opening serenity returns"
+      "mark each subject entry slightly, then step back",
+      "keep the pulse strict — density must not become rushing"
     ],
     "teaching_notes": [
       {
-        "measure": 41,
-        "note": "The pedal resolves — tension releases into C major. It should feel like exhaling.",
+        "measure": 42,
+        "note": "Two voices state the subject one beat apart — practice each voice alone, then combine.",
         "technique": [
-          "lighten the touch as the harmony settles"
+          "voice-by-voice practice",
+          "count the offset entry carefully"
         ]
       }
     ]
@@ -1994,7 +1995,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Show me measures 41–44 of the Bach Prelude — does the pedal resolve here?"
+        "content": "Show me measures 41–44 of the Bach BWV 846 fugue — what happens right after the exposition?"
       },
       {
         "turn": 2,
@@ -2025,7 +2026,7 @@
       {
         "turn": 4,
         "role": "assistant",
-        "content": "Measures 41–44 bring the resolution of the dominant pedal: the G bass gives way and tonic C harmony returns. The relief is palpable after the long pedal tension. Let me loop mm. 41–44.",
+        "content": "With all four voices in, Bach immediately tightens the imitation. In m.42 the soprano and tenor state the subject one beat apart — a true stretto — and the alto follows with its own entry in m.44. Passing C# and Bb around m.43 briefly shade the music toward D minor, and the texture now runs about twice the note density of the prelude. Let me loop mm. 41–44.",
         "tool_calls": [
           {
             "tool": "play_song",
@@ -2050,7 +2051,7 @@
       {
         "turn": 6,
         "role": "assistant",
-        "content": "Bach C Major Prelude mm. 41–44: dominant pedal resolves, tonic C returns, harmonic relief. Teaching focus: resolution recognition."
+        "content": "Bach BWV 846 fugue mm. 41–44: first strettos — soprano and tenor overlap the subject one beat apart (m42), alto follows (m44); brief D minor shading at m43."
       }
     ]
   },

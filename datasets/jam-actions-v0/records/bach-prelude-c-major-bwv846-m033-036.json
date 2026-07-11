@@ -28,7 +28,7 @@
     "tempo_bpm": 74,
     "time_signature": "4/4",
     "window_role": "prompt",
-    "musical_phrase_label": "dominant pedal — antecedent",
+    "musical_phrase_label": "prelude close into fugue opening — antecedent",
     "natural_phrase_boundary": true,
     "continuation_target_window": [
       37,
@@ -818,26 +818,36 @@
       33,
       36
     ],
-    "structure": "Dominant pedal antecedent — sustained low G with shifting upper voices",
+    "structure": "Movement seam — the prelude's coda over a tonic C pedal (mm. 33-35), then the fugue subject alone in the alto (m36)",
     "key_moments": [
-      "m33 low G pedal begins",
-      "m35 upper voices shift over pedal",
-      "m36 pedal maintained with harmonic motion above"
+      "m33 low C octave pedal with subdominant color (F-A, joined by D) above",
+      "m34 G7 sweep over the same C bass",
+      "m35 the prelude's final held C major chord",
+      "m36 the fugue subject enters alone: a stepwise climb C-D-E-F with a turning sixteenth figure"
     ],
     "teaching_goals": [
-      "hear the bass drone as a separate layer from the arpeggios",
-      "the pedal creates a special tension — a single note held against moving harmony"
+      "hear a movement boundary: cadence, stillness, then a single unaccompanied line",
+      "recognize pedal-point writing: one bass note holding while harmony changes above it"
     ],
     "style_tips": [
-      "the G bass is the anchor — let it ring",
-      "upper voices float above the pedal"
+      "let m35 ring and breathe before the fugue begins",
+      "state the m36 subject plainly and evenly — it is the seed of everything that follows"
     ],
     "teaching_notes": [
       {
-        "measure": 33,
-        "note": "The low G creates an organ-point effect — held while harmony moves above.",
+        "measure": 35,
+        "note": "The prelude's whole journey lands on this single held C major chord — do not rush past it.",
         "technique": [
-          "sustain the G; let the right-hand harmonies change above it"
+          "let the chord decay naturally",
+          "release both hands together"
+        ]
+      },
+      {
+        "measure": 36,
+        "note": "One voice alone states the fugue subject — every later entry copies this shape, so learn it by ear here.",
+        "technique": [
+          "even eighth notes",
+          "shape the sixteenth turn lightly"
         ]
       }
     ]
@@ -849,7 +859,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Show me measures 33–36 of the Bach Prelude — the famous dominant pedal begins here. Describe it."
+        "content": "Show me measures 33–36 of the Bach BWV 846 — the prelude ends here and the fugue begins. What happens at the seam?"
       },
       {
         "turn": 2,
@@ -880,7 +890,7 @@
       {
         "turn": 4,
         "role": "assistant",
-        "content": "Measures 33–36 introduce the famous low G pedal point: a sustained G in the bass underpins shifting upper harmonies. The 16th-note arpeggio texture is unchanged but now a drone-like G bass creates immense tension. Let me loop mm. 33–36.",
+        "content": "Measures 33–36 are the seam between the two movements of BWV 846. The prelude closes over a low C octave pedal: m.33 lays subdominant color (F and A, joined by D) over it, m.34 answers with a G7 sweep over the same C bass, and m.35 lands the final held C major chord — the arpeggio pattern stops entirely. Then m.36 opens the four-voice fugue: the alto alone states the subject, a stepwise climb C-D-E-F capped by a turning sixteenth figure. Let me loop mm. 33–36.",
         "tool_calls": [
           {
             "tool": "play_song",
@@ -905,7 +915,7 @@
       {
         "turn": 6,
         "role": "assistant",
-        "content": "Bach C Major Prelude mm. 33–36: dominant G pedal point begins, sustained bass drone under arpeggios. Maximum tension."
+        "content": "Bach BWV 846 mm. 33–36: prelude coda over a C pedal (subdominant color, then G7) into the final chord at m35; the fugue subject enters alone at m36. A movement boundary inside one window."
       }
     ]
   },

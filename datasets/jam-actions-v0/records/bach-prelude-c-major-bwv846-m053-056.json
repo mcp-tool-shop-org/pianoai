@@ -28,7 +28,7 @@
     "tempo_bpm": 74,
     "time_signature": "4/4",
     "window_role": "continuation_target",
-    "musical_phrase_label": "coda extension consequent — chromatic dominant prep continues toward cadence",
+    "musical_phrase_label": "peak density — consequent",
     "natural_phrase_boundary": true,
     "paired_prompt_record_id": "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1"
   },
@@ -2267,37 +2267,27 @@
       53,
       56
     ],
-    "structure": "Consequent of the coda extension (paired with m. 49–52). The Krueger arrangement maintains the dense multi-voice coda texture into the final-cadence preparation zone. The right hand carries layered voices; the left-hand structural bass operates with multiple attacks per measure (a sharp departure from the opening's one-note-per-measure pedal design). Chromatic upper-voice color (F# / G# / A# / C#) continues throughout, signaling that the prelude is still in dominant-preparation mode — the resolution to the final tonic does not arrive in this window.",
+    "structure": "Peak-density episode — sequences with D minor color (C#); the busiest bar of the piece at m53; late soprano entry m55",
     "key_moments": [
-      "m. 53–54 — coda-texture continuation: layered RH voices over the dense LH bass; the surface arpeggio shape remains recognizable, but harmonic content is chromatic, not diatonic-tonic",
-      "m. 55 — cadential-approach measure: bass and upper-voice motion converge toward the dominant; expect upper-line activity to slow as the dominant prepares to resolve",
-      "m. 56 — penultimate cadential measure: the final-dominant area; the next pair (m. 57–60 / m. 61–64) will complete the cadence and reach the C-major tonic conclusion"
+      "m53 forty note onsets — the busiest measure in the entire piece",
+      "m54 the sequence continues, still colored by C#",
+      "m55 soprano subject entry arriving late in the bar"
     ],
     "teaching_goals": [
-      "continue the cadential-preparation character — this window is NOT yet the resolution; the tension wants to remain",
-      "match the antecedent's chromatic density rather than collapsing back to opening-texture simplicity",
-      "voice the bass clearly; the structural-bass design of the coda is the engine driving toward the cadence"
+      "sustain evenness at the piece's point of maximum activity",
+      "feel sequences as forward motion, not repetition"
     ],
     "style_tips": [
-      "the dominant area persists — slight forward energy in the harmonic motion, no premature relaxation",
-      "no ritardando in this window unless the score explicitly marks one — the slowdown belongs to the final-cadence measures",
-      "the chromatic harmonies are the point: let them be heard, not smoothed over"
+      "think in long four-bar lines, not beat to beat",
+      "no ritardando — the close is near but not here"
     ],
     "teaching_notes": [
       {
-        "measure": 55,
-        "note": "Cadential approach: the bass and upper-voice converge toward the final dominant. Maintain the dense texture; the simplification is in the harmonic direction (toward G), not in the surface rhythm.",
+        "measure": 53,
+        "note": "The densest bar of the whole work — slow practice here pays off everywhere else.",
         "technique": [
-          "preserve density",
-          "track harmonic motion"
-        ]
-      },
-      {
-        "measure": 56,
-        "note": "Penultimate cadential measure of this window — the final-dominant area. The next pair (m. 57–60 / m. 61–64) completes the resolution to C-major tonic.",
-        "technique": [
-          "voice the dominant",
-          "prepare the resolution but don't anticipate it"
+          "metronome at half tempo first",
+          "voice the moving sixteenths clearly"
         ]
       }
     ]
@@ -2309,7 +2299,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Play measures 53–56 and describe the final approach."
+        "content": "Play measures 53–56 and describe the character at the fugue's peak."
       },
       {
         "turn": 2,
@@ -2340,7 +2330,7 @@
       {
         "turn": 4,
         "role": "assistant",
-        "content": "Measures 53–56 complete the penultimate phrase and move toward the final cadential gesture. The piece is winding down — the harmonic motion slows toward the cadence. Let me loop mm. 53–56.",
+        "content": "Measure 53 is the single busiest bar of the entire piece — forty note onsets — and mm. 53–56 keep that energy moving through sequential figures colored by C# (a D minor shade), with one more soprano entry arriving late in m.55. Nothing slows down yet; the music is still driving toward the close. Let me loop mm. 53–56.",
         "tool_calls": [
           {
             "tool": "play_song",
@@ -2365,7 +2355,7 @@
       {
         "turn": 6,
         "role": "assistant",
-        "content": "Bach C Major Prelude mm. 53–56: approach to final cadence, harmonic motion slowing. Continuation from mm. 49–52."
+        "content": "Bach BWV 846 fugue mm. 53–56: maximum density (m53 is the busiest bar of the piece), sequential drive with D minor color, soprano entry late in m55. Continuation from mm. 49–52."
       }
     ]
   },

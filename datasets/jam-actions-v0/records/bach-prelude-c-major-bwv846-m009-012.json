@@ -28,7 +28,7 @@
     "tempo_bpm": 74,
     "time_signature": "4/4",
     "window_role": "prompt",
-    "musical_phrase_label": "second cycle — dominant preparation",
+    "musical_phrase_label": "second cycle — to the dominant",
     "natural_phrase_boundary": true,
     "continuation_target_window": [
       13,
@@ -1145,27 +1145,27 @@
       9,
       12
     ],
-    "structure": "Second harmonic cycle — tonic alternating with dominant seventh (C–G7)",
+    "structure": "Second cycle — ii–V–I into the dominant key (Am7 – D7 – G) with a diminished-seventh shade at m12",
     "key_moments": [
-      "m9 C major — tonic return",
-      "m10 G7 — dominant seventh first appearance in piece",
-      "m11 C major — brief return",
-      "m12 G7 — dominant reiterated"
+      "m9 A minor seventh — pivot away from C",
+      "m10 D7 — dominant of G, the strongest pull away from home so far",
+      "m11 G major — arrival in the dominant key",
+      "m12 diminished-seventh color over the G bass"
     ],
     "teaching_goals": [
-      "identify the new dominant seventh tension vs opening cycle",
-      "maintain even arpeggio texture under heightened harmonic interest"
+      "identify a ii–V–I even when it is spread across whole measures of arpeggio",
+      "maintain the even texture while the harmony travels"
     ],
     "style_tips": [
-      "G7 measures feel slightly more tense — don't push the tempo",
+      "m10's F# wants to rise to G — let the harmony do the leaning",
       "harmonic rhythm is still one chord per measure — count carefully"
     ],
     "teaching_notes": [
       {
         "measure": 10,
-        "note": "G7 (G-B-D-F) is the first dominant seventh in the piece — the added F creates pull toward C.",
+        "note": "D7 (D-F#-A-C) is the dominant of G — its F# pulls the whole phrase toward m.11.",
         "technique": [
-          "feel the F in the arpeggio as a dissonance"
+          "feel the F# in the arpeggio as the leaning tone"
         ]
       }
     ]
@@ -1208,7 +1208,7 @@
       {
         "turn": 4,
         "role": "assistant",
-        "content": "Measures 9–12 introduce a new harmonic layer: m.9 C major (tonic), m.10 G7 (dominant seventh), m.11 C major, m.12 G7 again. The dominant seventh appears for the first time here, giving more harmonic tension than the opening cycle. Let me loop mm. 9–12.",
+        "content": "Measures 9–12 travel to the dominant key: m.9 A minor seventh, m.10 D7, m.11 G major — a ii–V–I in G — and m.12 shades the new G bass with a tense diminished seventh. The texture never changes; the journey is entirely harmonic. Let me loop mm. 9–12.",
         "tool_calls": [
           {
             "tool": "play_song",
@@ -1233,7 +1233,7 @@
       {
         "turn": 6,
         "role": "assistant",
-        "content": "Bach C Major Prelude mm. 9–12: second cycle with dominant sevenths. C → G7 repeated. Increased harmonic tension. Teaching focus: recognizing dominant function within the arpeggio texture."
+        "content": "Bach C Major Prelude mm. 9–12: ii–V–I into the dominant — Am7 → D7 → G, then a diminished-seventh shade at m12. Teaching focus: hearing a key shift inside an unchanged texture."
       }
     ]
   },

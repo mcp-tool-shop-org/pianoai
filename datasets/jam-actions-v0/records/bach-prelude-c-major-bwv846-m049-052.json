@@ -28,7 +28,7 @@
     "tempo_bpm": 74,
     "time_signature": "4/4",
     "window_role": "prompt",
-    "musical_phrase_label": "coda extension antecedent — chromatic upper-voice density continues",
+    "musical_phrase_label": "climactic strettos — antecedent",
     "natural_phrase_boundary": true,
     "continuation_target_window": [
       53,
@@ -1806,45 +1806,26 @@
       49,
       52
     ],
-    "structure": "Antecedent of the coda extension (paired with m. 53–56). The Krueger arrangement continues the dense multi-voice coda texture: the right hand carries three layered voices while the left hand maintains the lower-register structural bass that entered at m. 45. Chromatic pitches outside C major are present (A#2, C#4, F#3, F#4, G#4 are all in this window), continuing the dominant-preparation harmonic field. This is NOT a return to the opening's one-chord-per-measure arpeggio; the surface rhythm is similar but the harmonic content is fundamentally different.",
+    "structure": "Climactic stretto region — five subject statements within mm. 49-51 across all four voices",
     "key_moments": [
-      "m. 49 — chromatic non-diatonic pitches active: F#3 and F#4 introduce raised-fourth color (leading-tone of G); the LH bass operates at multiple attacks per measure rather than the opening's single sustained tonic",
-      "m. 50 — the LH bass becomes especially active (10+ attacks across the bar based on event density), with bass figures at b0, b0.5, b1, b1.5, b2, b2.5, b2.75, b2.875, b3, b3.5",
-      "m. 51 — A#2 (B♭2) appears in the bass, the lowered-seventh of C major; combined with C#4 in the upper voice this creates a chromatic-mediant tension area before resolution",
-      "m. 52 — G#4 enters in the upper voice; combined with the bass motion, this marks the antecedent's harmonic-tension peak and hands off to the consequent at m. 53"
+      "m49 alto and tenor entries one beat apart",
+      "m50 bass entry joins the pile-up",
+      "m51 soprano and alto overlap while G#, Bb, and F# mix in the lines"
     ],
     "teaching_goals": [
-      "treat this as cadential-preparation texture, NOT opening-texture; the chromatic upper-voice activity is the musical content here",
-      "track the bass attack pattern within each measure — the bass is busier in m. 50 than in any opening measure, and that activity is structural",
-      "voice the chromatic pitches (F#, A#, G#) as the harmonic agents driving toward the consequent's tension peak"
+      "hear overlapped subject statements as a deliberate climax device",
+      "keep entries audible when every voice is active"
     ],
     "style_tips": [
-      "the opening's serenity has been replaced by chromatic intensity — match the texture, not the affect",
-      "no temptation to over-pedal; the multi-voice writing wants clarity, not blur",
-      "the harmonic motion is goal-directed (toward the cadence at the end of the piece), so the tempo should remain steady — the goal-direction is in the pitch material, not in the speed"
+      "pick one entry per bar to feature — you cannot feature them all",
+      "a steady tempo carries this tension better than volume"
     ],
     "teaching_notes": [
       {
-        "measure": 50,
-        "note": "The left-hand bass has 10+ attack points across the bar — the densest LH measure of the coda extension. Articulate each bass event clearly; over-pedaling will lose the chromatic intervals.",
-        "technique": [
-          "clear LH articulation",
-          "avoid pedal smear"
-        ]
-      },
-      {
         "measure": 51,
-        "note": "A#2 (B♭2) bass against C#4 upper voice creates the chromatic-mediant color of the dominant-preparation field. Voice both lines distinctly.",
+        "note": "Two entries overlap while the harmony is at its most chromatic — the fugue's tightest moment.",
         "technique": [
-          "voice top and bottom",
-          "let the dissonance speak"
-        ]
-      },
-      {
-        "measure": 52,
-        "note": "G#4 marks the harmonic-tension peak of the antecedent. From here the consequent (m. 53–56) will continue the dominant preparation toward final cadence.",
-        "technique": [
-          "voice the G#4 clearly"
+          "practice slowly, one voice pair at a time"
         ]
       }
     ]
@@ -1856,7 +1837,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Show me measures 49–52 of the Bach Prelude — how does the piece approach its conclusion?"
+        "content": "Show me measures 49–52 of the Bach BWV 846 fugue — how dense does the imitation get?"
       },
       {
         "turn": 2,
@@ -1887,7 +1868,7 @@
       {
         "turn": 4,
         "role": "assistant",
-        "content": "Measures 49–52 continue the penultimate section: the arpeggios move through the final chord cycles before the piece's conclusive cadence. The texture remains even; the harmony is calm and goal-directed. Let me loop mm. 49–52.",
+        "content": "This is the fugue's tightest imitation. Five subject statements crowd into mm. 49–51: alto and tenor a beat apart in m.49, the bass at the top of m.50, then soprano and alto overlapping in m.51 — while G#, Bb, and F# mix into the lines. This pile-up is the climax the fugue has been building toward. Let me loop mm. 49–52.",
         "tool_calls": [
           {
             "tool": "play_song",
@@ -1912,7 +1893,7 @@
       {
         "turn": 6,
         "role": "assistant",
-        "content": "Bach C Major Prelude mm. 49–52: penultimate section, final harmonic cycles, goal-directed calm."
+        "content": "Bach BWV 846 fugue mm. 49–52: climactic strettos — five subject statements in three bars (alto+tenor m49, bass m50, soprano+alto m51) under mixed chromatic color."
       }
     ]
   },

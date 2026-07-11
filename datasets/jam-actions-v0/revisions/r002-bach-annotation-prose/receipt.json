@@ -1,0 +1,281 @@
+{
+  "revision": "r002-bach-annotation-prose",
+  "tier": "AB",
+  "date": "2026-07-11",
+  "script": "scripts/revise-jam-actions-v0-r002-bach-annotation-prose.ts",
+  "reason": "Bach BWV 846 annotation prose described mm. 33-62 as prelude material from an imagined 64-measure prelude; the source MIDI is prelude mm. 1-35 + fugue mm. 36-62. Prelude-window chord labels (mm. 1-32) also disagreed with the MIDI. Prose corrected against executed ground truth; tool calls, windows, sidecars, REMI, ABC, and SVGs untouched.",
+  "finding": "docs/jam-actions-v0-erratum-001-bach-m061-064.md §Known residuals (director-scoped follow-up)",
+  "erratum": "docs/jam-actions-v0-erratum-002-bach-annotation-prose.md",
+  "sealed_public_records_sha256": "72ce6e69d29e198dc94d66d5eeb55d5e0456b859282c872caf86b7b161c8120f",
+  "ground_truth_verified": {
+    "total_notes": 1284,
+    "measures": 62,
+    "prelude_tracks": "Piano right/left mm. 1-35",
+    "fugue_entries": {
+      "alto": "m36 C4",
+      "soprano": "m37 G4",
+      "tenor": "m39 G3",
+      "bass": "m40 C3"
+    },
+    "subject_head_intervals": [
+      2,
+      2,
+      1,
+      2,
+      -2,
+      -1,
+      5,
+      -7
+    ],
+    "subject_statements_exact": 17,
+    "dominant_pedal": "G2 mm. 24-31",
+    "tonic_pedal_prelude": "C2 mm. 32-35",
+    "tonic_pedal_fugue": "C3 m59 held 16 beats to the end",
+    "onsets": {
+      "m35": 5,
+      "m36": 8,
+      "m47": 37,
+      "m53": 40,
+      "busiest": "m53"
+    }
+  },
+  "invariants": {
+    "windows_ids_toolcalls_untouched": true,
+    "observation_provenance_eval_metadata_untouched": true,
+    "schema_and_trace_validated": true,
+    "dead_phrases_swept": true,
+    "builder_spec_consistency_asserted": true
+  },
+  "files": {
+    "modified": {
+      "records/bach-prelude-c-major-bwv846-m001-004.json": {
+        "before": "a2efa44300cfbf02dfcdfe6ef4c7fdea3178e1a4e3038aa3a4d228298bf3f16d",
+        "after": "d9d7b1a69cf621c03ddc6a6b32f97f5d0a4e637c7674b30b11c296adfda58813",
+        "fields": [
+          "structure",
+          "key_moments",
+          "teaching_goals",
+          "teaching_notes",
+          "analysis",
+          "summary"
+        ]
+      },
+      "records/bach-prelude-c-major-bwv846-m005-008.json": {
+        "before": "ce2dc76441f4abe419d9067b99a0e67a796567a78cd09d6b8d536058e4f68aba",
+        "after": "0d81d4f0d2c5b69eb2c7f9b5c14be4ff79a43de51236be8a9a0414a97432e7c9",
+        "fields": [
+          "structure",
+          "key_moments",
+          "teaching_goals",
+          "style_tips",
+          "teaching_notes",
+          "analysis",
+          "summary"
+        ]
+      },
+      "records/bach-prelude-c-major-bwv846-m009-012.json": {
+        "before": "8706ea0b6a92f35bb9f017dd870f6b253de50f16b34ac9d50423747dbb03e0cb",
+        "after": "2b19b0267fae4355b2578e1728a9370e28e2f3e6ce541c3f54aa05bef9fa27a7",
+        "fields": [
+          "label",
+          "structure",
+          "key_moments",
+          "teaching_goals",
+          "style_tips",
+          "teaching_notes",
+          "analysis",
+          "summary"
+        ]
+      },
+      "records/bach-prelude-c-major-bwv846-m013-016.json": {
+        "before": "702a9943c29ec70353d4628b3d7ac6a461abcdf27e87b5c22f1952eaeced7223",
+        "after": "4f52157c2ab58f652dff36636d89a33909592e75ae76abfef2a5c18c21d5f7df",
+        "fields": [
+          "label",
+          "structure",
+          "key_moments",
+          "teaching_goals",
+          "style_tips",
+          "teaching_notes",
+          "analysis",
+          "summary"
+        ]
+      },
+      "records/bach-prelude-c-major-bwv846-m017-020.json": {
+        "before": "6c299a2dacea0bce83c1f3693c4974521fbdd416ce197fb0e07b12e3e9e23d46",
+        "after": "6c60704bad3df1db12fc966c449e1f6275d2a0cc1b1ee4e12ad11cf16de4948d",
+        "fields": [
+          "structure",
+          "key_moments",
+          "teaching_goals",
+          "style_tips",
+          "teaching_notes",
+          "analysis",
+          "summary"
+        ]
+      },
+      "records/bach-prelude-c-major-bwv846-m021-024.json": {
+        "before": "7639cb68f3525bec4945e1cd40d423419fc2e37750534909c7ecc81c6249cc5c",
+        "after": "c268c71ccab40a1f1d4c3baf1a7c2f3f249917c8825ff202b91ee0cb88178b2b",
+        "fields": [
+          "structure",
+          "key_moments",
+          "teaching_goals",
+          "style_tips",
+          "teaching_notes",
+          "analysis",
+          "summary"
+        ]
+      },
+      "records/bach-prelude-c-major-bwv846-m025-028.json": {
+        "before": "33526074353ecc55d9661f7e7c3530dc9ec35cb7c3f15d2474495fcc545bf637",
+        "after": "2e2545fbc71703a4d173edb1b0f8b4a755416d32dbf5b8e7f32f55a7eb951376",
+        "fields": [
+          "label",
+          "structure",
+          "key_moments",
+          "teaching_goals",
+          "style_tips",
+          "teaching_notes",
+          "user",
+          "analysis",
+          "summary"
+        ]
+      },
+      "records/bach-prelude-c-major-bwv846-m029-032.json": {
+        "before": "a2e7ca38eb09335091361c579bc45d30f3b973d578e472ad2dcb78209ffa6765",
+        "after": "d34b7d4b1af35cff87c1a735d4b212844fb663ed4f9872ea7f7c6df16c070068",
+        "fields": [
+          "label",
+          "structure",
+          "key_moments",
+          "teaching_goals",
+          "style_tips",
+          "teaching_notes",
+          "analysis",
+          "summary"
+        ]
+      },
+      "records/bach-prelude-c-major-bwv846-m033-036.json": {
+        "before": "66e79b50903be2f57ed46d152e3d5ec2416a00a5c87a4c3de79c3ac95e88ee32",
+        "after": "ca1b8572b7c1e9245fcc0254e9131bed98a427b55912329e3a8129a7f61e6c89",
+        "fields": [
+          "label",
+          "structure",
+          "key_moments",
+          "teaching_goals",
+          "style_tips",
+          "teaching_notes",
+          "user",
+          "analysis",
+          "summary"
+        ]
+      },
+      "records/bach-prelude-c-major-bwv846-m037-040.json": {
+        "before": "50c8e721328a7e9284caa8c5b4053b2788ff4a0248d75a7b01bfbc43570a0473",
+        "after": "605b65b897a9152432fc428fde9726fba916de8ee6b5348c68fa63c0e660a3c4",
+        "fields": [
+          "label",
+          "structure",
+          "key_moments",
+          "teaching_goals",
+          "style_tips",
+          "teaching_notes",
+          "user",
+          "analysis",
+          "summary"
+        ]
+      },
+      "records/bach-prelude-c-major-bwv846-m041-044.json": {
+        "before": "500e9e378f368735bbc234863071a5d4c80f3b80d0c8451c4aac9e54b93edcf2",
+        "after": "c09e6e68b015b5992d34fc61f5c5b2983a75a988f66d9a2efa9f5b3649c21306",
+        "fields": [
+          "label",
+          "structure",
+          "key_moments",
+          "teaching_goals",
+          "style_tips",
+          "teaching_notes",
+          "user",
+          "analysis",
+          "summary"
+        ]
+      },
+      "records/bach-prelude-c-major-bwv846-m045-048.json": {
+        "before": "3bdd94774dd5471df9d6220ea48900993431323f51914df76ebf7349cef0d0a6",
+        "after": "db2bd6cab983b887fd4f68112b1610f1c16b2a769eb1cc234fdcd638ca866dd7",
+        "fields": [
+          "label",
+          "structure",
+          "key_moments",
+          "teaching_goals",
+          "style_tips",
+          "teaching_notes",
+          "user",
+          "analysis",
+          "summary"
+        ]
+      },
+      "records/bach-prelude-c-major-bwv846-m049-052.json": {
+        "before": "e1480d6ebab70048462c1558509d74351de9c118c98cef063fb2413f6021f06c",
+        "after": "0168a348700c38da67ef5e3b2d5e5c5a3ecc254a09d4aa221ad27dac4e6b24ee",
+        "fields": [
+          "label",
+          "structure",
+          "key_moments",
+          "teaching_goals",
+          "style_tips",
+          "teaching_notes",
+          "user",
+          "analysis",
+          "summary"
+        ]
+      },
+      "records/bach-prelude-c-major-bwv846-m053-056.json": {
+        "before": "3159896d70b17a5be60b8c7d2f29f6afa6ea355e0a590a3b9c987091b9d54497",
+        "after": "f260fa302ae906e355e49ab4dda3590a2cac640b2a7df9e448994f3dd5936712",
+        "fields": [
+          "label",
+          "structure",
+          "key_moments",
+          "teaching_goals",
+          "style_tips",
+          "teaching_notes",
+          "user",
+          "analysis",
+          "summary"
+        ]
+      },
+      "records/bach-prelude-c-major-bwv846-m057-060.json": {
+        "before": "ae6aa991d4ef877d99adb03949ebc1edee4c5b04b6cf53d6db2444fa8eb75318",
+        "after": "e75559948df4e75ab12a4e599bfc857862bb5447390478b77ce8f89486a15d7f",
+        "fields": [
+          "label",
+          "structure",
+          "key_moments",
+          "teaching_goals",
+          "style_tips",
+          "teaching_notes",
+          "user",
+          "analysis",
+          "summary"
+        ]
+      },
+      "records/bach-prelude-c-major-bwv846-m061-062.json": {
+        "before": "2164542bbcc1c64315b891d4f6e7198539c04a709bff58bd234859c4a1d280d7",
+        "after": "0b6a781570c56532895978e1b4ac00cf854e511c721d6e35a564d6cf2982894b",
+        "fields": [
+          "label",
+          "structure",
+          "key_moments",
+          "teaching_goals",
+          "style_tips",
+          "teaching_notes",
+          "analysis",
+          "summary"
+        ]
+      }
+    },
+    "already_applied": 0
+  }
+}

@@ -1145,26 +1145,27 @@
       17,
       20
     ],
-    "structure": "Third harmonic cycle antecedent — C → Am7 → Dm → Bdim",
+    "structure": "Cadence home and pivot — ii–V–I in C (Dm7 – G7 – C), then C7 turns toward the subdominant",
     "key_moments": [
-      "m17 tonic C returns",
-      "m18 A minor 7th — relative minor with added color",
-      "m20 B diminished — chromatic passing chord"
+      "m17 D minor seventh — the approach home begins",
+      "m18 G7 — the dominant",
+      "m19 C major — cadence home",
+      "m20 C7 — a Bb appears, pointing the music toward F"
     ],
     "teaching_goals": [
-      "recognize the pattern repeating with new chord colors",
-      "hear Am7 vs simple Am from the first cycle"
+      "recognize a full ii–V–I cadence inside the arpeggio stream",
+      "hear m20's Bb turn the tonic itself into a pull toward F"
     ],
     "style_tips": [
       "same even arpeggio texture as the opening",
-      "notice the added 7ths coloring the harmony"
+      "let the m20 Bb glow without an accent"
     ],
     "teaching_notes": [
       {
-        "measure": 18,
-        "note": "Am7 adds C to the arpeggio — hear the added color within the same pattern.",
+        "measure": 20,
+        "note": "C7 adds Bb, turning the tonic into a dominant that points at F — the pivot into the next cycle.",
         "technique": [
-          "listen for the 7th interval"
+          "listen for the new color against m.19"
         ]
       }
     ]
@@ -1207,7 +1208,7 @@
       {
         "turn": 4,
         "role": "assistant",
-        "content": "Measures 17–20 continue the arpeggiated pattern: m.17 C major returns (tonic), m.18 Am7, m.19 D minor, m.20 B diminished. The texture remains even 16th notes while the harmonics move forward. Let me loop mm. 17–20.",
+        "content": "Measures 17–20 cadence back into C and immediately pivot onward: m.17 D minor seventh, m.18 G7, m.19 C major — a full ii–V–I home — then m.20 turns the tonic into C7, whose Bb points the music toward F. Let me loop mm. 17–20.",
         "tool_calls": [
           {
             "tool": "play_song",
@@ -1232,7 +1233,7 @@
       {
         "turn": 6,
         "role": "assistant",
-        "content": "Bach C Major Prelude mm. 17–20: third cycle, C → Am7 → Dm → Bdim. Continued arpeggiated texture."
+        "content": "Bach C Major Prelude mm. 17–20: ii–V–I back to C (Dm7 → G7 → C), then C7 pivots toward the subdominant. Teaching focus: cadence recognition inside the arpeggio stream."
       }
     ]
   },
