@@ -198,7 +198,7 @@ pnpm exec tsx scripts/check-release-gate.ts \
 
 **Cite it.** `mcp-tool-shop-org & Krueger, B. (2026). AI Jam Sessions — Tool-Use Traces v0 (Public Subset). Zenodo. https://doi.org/10.5281/zenodo.20279919`
 
-**HuggingFace mirror.** Coming in a v1.4.x patch — see [`datasets/jam-actions-v0-public/publication-receipt.json`](datasets/jam-actions-v0-public/publication-receipt.json) for the deferred-status block. The Zenodo DOI is the canonical citation handle; the HF mirror is for ML-ecosystem discovery only.
+**Does it actually train anything? — the fine-tuning receipts.** The dataset's claims are tested the hard way: preregistered fine-tunes scored against its own sealed baseline, with the honesty rules frozen before any training. **v0** (the 78 jam traces alone) returned an *honest negative* — tool-grounded QA dropped 0.661 → 0.601 ([report](docs/finetune-arc-eval-report.md)). **v1** (a 494-example data pass adding execution-verified, grounding-shaped traces) moved the same metric 0.661 → **0.863** (+0.202, permutation p = 0.0043, all five seeds above baseline, the one unseen song +0.433) — and still ships as *"directionally better, underpowered"* because 12/16 paired wins missed the preregistered ≥13/16 victory bar by one ([report](docs/finetune-arc-v1-eval-report.md)). No adapter is published from a near-miss. Both arcs, locks, amendments, and per-seed receipts live in [`experiments/`](experiments/) — the discipline is the point.
 
 > The MIDI arrangements are by Bernd Krueger (piano-midi.de), licensed CC-BY-SA-3.0-DE. The annotations, traces, and eval artifacts are by the AI Jam Sessions team, released under the same license so the share-alike chain is preserved end-to-end. **License boundary:** the repository's MIT license covers the code; everything under `datasets/` is CC-BY-SA-3.0-DE. The working corpus at `datasets/jam-actions-v0/` additionally contains two works (Satie Gymnopédie No. 1, Debussy Arabesque No. 1) that are *excluded* from the published subset because their arrangement provenance could not be verified — see [`datasets/jam-actions-v0/PROVENANCE-NOTE.md`](datasets/jam-actions-v0/PROVENANCE-NOTE.md).
 
@@ -208,7 +208,7 @@ pnpm exec tsx scripts/check-release-gate.ts \
 npm install -g @mcptoolshop/ai-jam-sessions
 ```
 
-Requires **Node.js 18+**. No MIDI drivers, no virtual ports, no external software.
+Requires **Node.js 22+** (v2.0.0 raised the floor with `node-web-audio-api` 2.0). No MIDI drivers, no virtual ports, no external software.
 
 ### Claude Desktop / Claude Code
 
@@ -336,9 +336,9 @@ ai-jam-sessions --version
 
 ## Status
 
-v1.5.0 — the release where it learned to teach (see [CHANGELOG](CHANGELOG.md)). Six sound engines, 46 MCP tools, 3 prompt templates, and a **fully annotated library: 120/120 songs across 12 genres**, every annotation grounded in per-song analysis and quality-gated. The teaching loop is closed end-to-end: metronome with count-in → live recording → per-note scoring → the marked-up scored piano roll → practice loops that ramp tempo only after clean passes. The browser cockpit became a real composition tool — beat-accurate transport with loop regions, record-arm capture, full undo/redo, multi-select and clipboard, touch support — and it's [live on the web](https://mcp-tool-shop-org.github.io/ai-jam-sessions/cockpit/). Song transposition, section markers, per-hand mute/solo, interactive guitar tablature, 7 tuning systems, practice journal, session persistence.
+v2.0.0 — the release where the dataset proved its discipline (see [CHANGELOG](CHANGELOG.md)). **Breaking: the Node.js floor is now 22** (`node-web-audio-api` 2.0); the tool surface itself is unchanged — six sound engines, 46 MCP tools, 3 prompt templates, and a **fully annotated library: 120/120 songs across 12 genres** (12 key fields corrected to content-detected keys this release). The teaching loop is closed end-to-end: metronome with count-in → live recording → per-note scoring → the marked-up scored piano roll → practice loops that ramp tempo only after clean passes. The browser cockpit is a real composition tool — beat-accurate transport with loop regions, record-arm capture, full undo/redo, multi-select and clipboard, touch support — [live on the web](https://mcp-tool-shop-org.github.io/ai-jam-sessions/cockpit/).
 
-Also publishes **[jam-actions-v0](#training-dataset)** — a 115-record training dataset of multi-turn MCP tool-use traces over classical piano, with a 7-axis release gate, cold-start reproducibility, and full Zenodo + CITATION.cff metadata (CC-BY-SA-3.0-DE) — now also mirrored on [Hugging Face](https://huggingface.co/datasets/mcp-tool-shop/jam-actions-v0). 2506 tests passing across the MCP server + cockpit + dataset packagers + eval harnesses + release-gate validator. The MIDI is all there, every song can teach, and the corpus of that learning ships with it.
+Also publishes **[jam-actions-v0](#training-dataset)** — a 115-record training dataset of multi-turn MCP tool-use traces over classical piano, with a 7-axis release gate, cold-start reproducibility, and full Zenodo + CITATION.cff metadata (CC-BY-SA-3.0-DE) — mirrored on [Hugging Face](https://huggingface.co/datasets/mcp-tool-shop/jam-actions-v0), and now carrying **receipted fine-tuning results both ways**: an honest negative (v0) and a preregistration-disciplined positive that stopped one paired win short of its own victory bar (v1) — see the [fine-tuning receipts](#training-dataset). This release also fixes the Bach records at the source (working-set revisions r001/r002 with errata) after the v1 pipeline's execution gate caught the published window overshooting BWV 846's actual 62 measures. 2506 tests passing across the MCP server + cockpit + dataset packagers + eval harnesses + release-gate validator. The MIDI is all there, every song can teach, and the corpus of that learning ships with it.
 
 ## Security & Privacy
 

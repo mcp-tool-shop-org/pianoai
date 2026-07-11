@@ -5,6 +5,31 @@ All notable changes to AI Jam Sessions will be documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-07-11
+
+**The release where the dataset proved its discipline — twice.** The headline is a breaking engines bump (Node 22), but the story is the fine-tuning arc the dataset was built to enable: a preregistered v0 run that returned an honest negative, a v1 data pass with execution-verified grounding traces that moved the primary metric +0.20 — and a frozen honesty rule that still withheld the victory claim at 12/16 paired wins against a ≥13/16 bar. Both receipted reports ship in `docs/`. Along the way, the v1 pipeline's execution gate caught a real defect in the published dataset's Bach records, now fixed in the working set with full errata.
+
+### BREAKING
+
+- **Node.js floor rises 20 → 22** (`node-web-audio-api` 2.0). `engines.node >=22.0.0`; Node 20 installs will refuse. No API changes — the MCP tool surface, CLI, and cockpit are unchanged.
+
+### Fixed
+
+- **Library: 12 song `key` fields corrected to content-detected keys** (PR #21), and `songs/**` edits now trigger CI (they previously drew no CI at all).
+- **Dataset working set — revision r001:** `bach-prelude-c-major-bwv846:m061-064` retargeted to `m061-062`; the record's window, tool-call args, and annotation anchors overshot the 62-measure reality of BWV 846 (prelude mm. 1–35 + fugue mm. 36–62). Found by the v1 fine-tune pipeline's new live-server execution gate; the sealed published package (v0.4.3) is untouched and its checksums + release gate keep passing. [Erratum 001](docs/jam-actions-v0-erratum-001-bach-m061-064.md).
+- **Dataset working set — revision r002:** all 16 Bach records' prose corrected to MIDI-derived ground truth (the old text narrated an imagined 64-measure prelude — wrong pedal spans, wrong chord letters, fugue miscast); every corrected claim is re-derived from the MIDI at revision time and red-tested. The corpus builder now carries an ANDON guard: any phrase window past a song's ingested length fails the build. [Erratum 002](docs/jam-actions-v0-erratum-002-bach-annotation-prose.md). Both revisions land in the next public dataset cut (v0.5.0).
+
+### Changed
+
+- Dependency wave: `@modelcontextprotocol/sdk` 0.109, `ajv` 8.20, `zod` 4.4.3, `tsx` 4.23; dev-infra majors TypeScript 6.0.3, Vitest 4.1.10, `@types/node` 26.
+- Release workflow: pnpm 10 in both Docker stages; publish job is rerun-safe.
+- `play_song` end-measure overshoot on library songs remains a hard error by design (review upheld the read-lenient/act-strict split vs `view_piano_roll`) — the defective dataset call that surfaced this is fixed at the source instead (r001).
+
+### Added — the fine-tuning story (docs + receipts, not in the npm package)
+
+- **v0 arc** (`docs/finetune-arc-eval-report.md`): 5-seed Qwen2.5-7B LoRA on the 78 jam traces — *honest negative*, tool-grounded QA 0.661 → 0.601. Preregistered, sealed-baseline-scored, fully receipted.
+- **v1 arc** (`docs/finetune-arc-v1-eval-report.md`): 494-example data pass (user-turn paraphrases with frozen calls, 9-family execution-verified grounding traces, base-distribution self-rehearsal) — *directionally better, underpowered*: 0.661 → 0.863 (+0.202, perm p = 0.0043, all 5 seeds above baseline, unseen song +0.433), withheld from a victory claim by the preregistered 13/16 paired-wins bar (observed 12/16 + 1 tie). No adapter publishes; the discipline is the product. Preregistration + amendments: `experiments/finetune-arc-v1/P0-LOCK.md`.
+
 ## [1.5.0] - 2026-07-10
 
 **The release where it learned to teach.** The library is fully annotated (120/120 songs, was 24), the teaching loop is closed end-to-end (metronome → recording → scoring → marked-up score → practice loops), and the browser cockpit became a real composition tool — live on the web. Tests 1513 → 2506. Every feature decision below traces to a research-grounded, externally-verified design dispatch (`docs/feature-pass-v1.5-dispatch.md`, 86 citation-gated findings); every wave passed an adversarial verification lens before merging.
