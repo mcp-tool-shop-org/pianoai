@@ -7,7 +7,7 @@ sidebar:
 
 ## Requirements
 
-- **Node.js 18+**
+- **Node.js 22+** (the v2.0.0 floor — `node-web-audio-api` 2.0)
 - No MIDI drivers, no virtual ports, no external software needed
 
 ## Install

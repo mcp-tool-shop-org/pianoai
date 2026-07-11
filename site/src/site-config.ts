@@ -90,6 +90,10 @@ export const config: SiteConfig = {
           title: 'Honest about provenance',
           desc: 'Two songs in the source corpus (Satie, Debussy) are NOT in the public subset because their piano-midi.de provenance could not be verified during URL audit. Excluded rather than included on faith.',
         },
+        {
+          title: 'Fine-tuning receipts, both ways',
+          desc: 'Preregistered fine-tunes scored on the sealed baseline: v0 was an honest negative (0.661 → 0.601); the v1 grounding-trace pass hit 0.863 (+0.202, all 5 seeds above baseline) and still ships as "directionally better, underpowered" — 12/16 paired wins, one short of the frozen victory bar. No adapter from a near-miss.',
+        },
       ],
     },
     {

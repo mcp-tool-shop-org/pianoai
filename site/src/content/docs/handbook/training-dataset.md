@@ -29,7 +29,24 @@ The training signal is not "generate text about music." It is "call the right to
 | License | CC-BY-SA-3.0-DE |
 | Version | 0.4.3 (2026-05-19) |
 | Schema | `release-gate-assessment/2.0.0` |
-| Repo test suite | 1513 passing (includes the dataset packagers, eval harnesses, and release-gate validator) |
+| Repo test suite | 2506 passing (includes the dataset packagers, eval harnesses, and release-gate validator) |
+
+## Does it actually train anything? — the fine-tuning receipts
+
+The dataset's claims were tested the hard way: preregistered fine-tunes of Qwen2.5-7B-Instruct, scored against the dataset's own sealed baseline, with the statistics and the honesty rules frozen **before** any training run. Two arcs, both fully receipted in the repo:
+
+| Arc | Training data | Primary result (tool-grounded QA, sealed 16-record cohort) | Verdict (preregistered wording) |
+|---|---|---|---|
+| **v0** | The 78 jam traces alone | 0.661 → 0.601 (Δ −0.061, 0/5 seeds above baseline) | **Honest negative** — not better than the prompted baseline |
+| **v1** | 494 examples: the human traces + user-turn paraphrases (tool calls frozen), 310 execution-verified grounding-QA items over the 9-tool inspector surface, and a small self-rehearsal slice | 0.661 → **0.863** (Δ +0.202, permutation p = 0.0043, **all 5 seeds above baseline**, the one unseen song +0.433) | **Directionally better, underpowered** — 12/16 paired wins missed the frozen ≥13/16 victory bar by one |
+
+Three things worth noticing:
+
+- **The negative is a feature.** v0 proved the sealed-baseline discipline has teeth: five seeds, no cherry-picking, and a result reported exactly as it landed. The v1 design came directly out of v0's diagnosis (one narrow trace family taught itself and taxed its neighbors).
+- **The near-miss stayed a near-miss.** v1's +0.202 with p ≈ 0.004 would read as a win almost anywhere — but the preregistered bar was 13/16 paired wins and the run produced 12 plus a tie, so no victory claim ships and no adapter publishes. The bar exists precisely so results don't get relitigated after the data is visible.
+- **The pipeline audits the dataset back.** v1's execution-verification gate (every frozen tool call replayed against the live MCP server) caught a real defect in the published Bach records — the final window overshot BWV 846's actual 62 measures — now fixed in the working set as revisions r001/r002 with public errata, while the sealed published package stays byte-frozen and keeps passing its gate.
+
+Full reports: [`docs/finetune-arc-eval-report.md`](https://github.com/mcp-tool-shop-org/ai-jam-sessions/blob/main/docs/finetune-arc-eval-report.md) (v0) and [`docs/finetune-arc-v1-eval-report.md`](https://github.com/mcp-tool-shop-org/ai-jam-sessions/blob/main/docs/finetune-arc-v1-eval-report.md) (v1), with preregistration locks, amendments, per-seed receipts, and replayable statistics under [`experiments/`](https://github.com/mcp-tool-shop-org/ai-jam-sessions/tree/main/experiments).
 
 ## How it was built — the 25-slice arc
 
