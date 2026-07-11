@@ -101,14 +101,45 @@ interface SftLine {
 }
 
 // ─── Load inputs ──────────────────────────────────────────────────────────────
+//
+// A2-v1 (P0-LOCK amendment, pre-training): the corpus builds from the REVISED
+// WORKING SET (datasets/jam-actions-v0/ with r001+r002 applied — erratum-001/
+// -002), selected by the PUBLIC splits.json with r001's single id rename.
+// The sealed public package stays read-only: it feeds ONLY the G5 blacklist
+// (the eval-time question/prose surface) and the sealed-eval pins.
 
-const recordsPath = join(PUBLIC_DIR, "records.jsonl");
+const recordsPath = join(PUBLIC_DIR, "records.jsonl"); // sealed — blacklist + pins only
 const splitsPath = join(PUBLIC_DIR, "splits.json");
-const records: PublicRecord[] = readFileSync(recordsPath, "utf8")
+const WS_RECORDS_DIR = join(REPO_ROOT, "datasets", "jam-actions-v0", "records");
+const R001_RENAME: Readonly<Record<string, string>> = {
+  "bach-prelude-c-major-bwv846:m061-064:piano:mcp-session:v1":
+    "bach-prelude-c-major-bwv846:m061-062:piano:mcp-session:v1",
+};
+
+const sealedRecords: PublicRecord[] = readFileSync(recordsPath, "utf8")
   .trim()
   .split("\n")
   .map((l) => JSON.parse(l) as PublicRecord);
-const splits = JSON.parse(readFileSync(splitsPath, "utf8")) as { test: string[]; train: string[] };
+
+const pubSplits = JSON.parse(readFileSync(splitsPath, "utf8")) as { test: string[]; train: string[] };
+const splits = {
+  train: pubSplits.train.map((id) => R001_RENAME[id] ?? id),
+  test: pubSplits.test.map((id) => R001_RENAME[id] ?? id),
+};
+
+function worksetFile(id: string): string {
+  return join(WS_RECORDS_DIR, `${id.replace(/:piano:mcp-session:v1$/, "").replace(/:/g, "-")}.json`);
+}
+
+const records: PublicRecord[] = [
+  ...splits.train.map((id) => ({ id, split: "train" as const })),
+  ...splits.test.map((id) => ({ id, split: "test" as const })),
+].map(({ id, split }) => {
+  const r = JSON.parse(readFileSync(worksetFile(id), "utf8")) as PublicRecord;
+  if (r.id !== id) throw new Error(`A2-v1: ${worksetFile(id)} carries id ${r.id}, expected ${id}`);
+  return { ...r, split };
+});
+
 const catalog: ToolSchemaCatalog = loadToolSchemaCatalog();
 
 const failures: string[] = [];
@@ -379,8 +410,10 @@ function norm(s: string): string {
   return s.toLowerCase().replace(/\s+/g, " ").trim();
 }
 
+// Blacklist derives from the SEALED records (the surface the eval actually
+// shows) AND the revised working-set records (belt and braces) — A2-v1.
 const blacklist: string[] = [];
-for (const r of records) {
+for (const r of [...sealedRecords, ...records]) {
   for (const q of generateQuestionSet(r as never).questions) {
     if (!isNotComputable(q)) blacklist.push(norm(q.questionText));
   }
@@ -399,7 +432,7 @@ const HARNESS_MARKERS = [
 const OPTION_BLOCK_RE = /\ba\)\s.*\bb\)\s.*\bc\)\s.*\bd\)\s/s;
 
 const annotationNeedles: string[] = [];
-for (const r of records) {
+for (const r of [...sealedRecords, ...records]) {
   const at = (r as PublicRecord).annotation_target;
   const push = (s?: string) => {
     if (s && s.length >= 15) annotationNeedles.push(norm(s));
@@ -665,7 +698,15 @@ const report = {
   generated_by: "experiments/finetune-arc-v1/scripts/build-v1-data.ts",
   lock: "experiments/finetune-arc-v1/P0-LOCK.md",
   inputs: {
-    records_jsonl_sha256: sha256(readFileSync(recordsPath, "utf8")),
+    source:
+      "datasets/jam-actions-v0 working set (r001+r002 applied), selected by public splits.json with the r001 id rename — P0-LOCK amendment A2-v1",
+    sealed_records_jsonl_sha256_blacklist_input: sha256(readFileSync(recordsPath, "utf8")),
+    r001_receipt_sha256: sha256(
+      readFileSync(join(REPO_ROOT, "datasets", "jam-actions-v0", "revisions", "r001-bach-m061-window", "receipt.json"), "utf8"),
+    ),
+    r002_receipt_sha256: sha256(
+      readFileSync(join(REPO_ROOT, "datasets", "jam-actions-v0", "revisions", "r002-bach-annotation-prose", "receipt.json"), "utf8"),
+    ),
     splits_json_sha256: sha256(readFileSync(splitsPath, "utf8")),
     tool_schemas_sha256: sha256(readFileSync(join(REPO_ROOT, "src", "dataset", "tool-schemas.json"), "utf8")),
     midi_inspector_sha256: sha256(readFileSync(join(REPO_ROOT, "src", "dataset", "eval", "midi-inspector.ts"), "utf8")),
