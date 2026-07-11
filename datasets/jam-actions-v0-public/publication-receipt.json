@@ -1,63 +1,64 @@
 {
-  "$schema_note": "Slice 25 publication receipt. Machine-readable record of the public publication state. NO tokens, NO secrets, NO credentials. Conforms to the schema described in C:/Users/mikey/.claude/projects/F--AI/memory/jam-actions-v0-slice25-sonnet-kickoff.md.",
-  "version": "0.4.3",
+  "$schema_note": "v0.5.0 publication receipt. Machine-readable record of the public publication state. NO tokens, NO secrets, NO credentials. Supersedes the v0.4.3 receipt (that publication's record remains in RELEASE_NOTES.md and in git history).",
+  "version": "0.5.0",
   "record_count": 115,
   "license": "CC-BY-SA-3.0-DE",
   "release_gate": "PASS",
-  "release_gate_artifact": "evals/slice22-release-gate-revised-assessment.json",
-  "source_commit": "178bdea (see git history for context; v1.4.2 commit captures the publication state)",
-  "source_tag": "jam-actions-v0-feature-marketed-2026-05-19",
+  "release_gate_artifact": "evals/v0.5.0-release-gate-assessment.json",
+  "execution_verification_artifact": "evals/v0.5.0-execution-verification.json",
+  "source_commit": "938239f (the v0.5.0 cut commit)",
+  "source_tag": "jam-actions-v0-0.5.0-cut-2026-07-11",
   "archives": {
     "tar_gz": {
-      "name": "jam-actions-v0-public-0.4.3.tar.gz",
-      "sha256": "8148083bf51ed27285025f1461e6554151a0aae5e5a88a946f3955508a47814a"
+      "name": "jam-actions-v0-public-0.5.0.tar.gz",
+      "sha256": "7036f47033bb21ac741652982a958a6cf325327a256f0ef912b67dafa2c6532a"
     },
     "zip": {
-      "name": "jam-actions-v0-public-0.4.3.zip",
-      "sha256": "6219de596b2c1b9e51f276e3718ffb0b752ef7336a6d435cdccd2f250c3c60a9"
+      "name": "jam-actions-v0-public-0.5.0.zip",
+      "sha256": "27682d2b38a702e60093647900efd4a93c4a7657cface65574793a4d4a2e407d"
     }
   },
   "zenodo": {
     "status": "published",
-    "deposit_id": 20279919,
-    "doi": "10.5281/zenodo.20279919",
-    "doi_url": "https://doi.org/10.5281/zenodo.20279919",
-    "record_url": "https://zenodo.org/records/20279919",
-    "api_url": "https://zenodo.org/api/records/20279919",
-    "published_at": "2026-05-19",
+    "deposit_id": 21313954,
+    "doi": "10.5281/zenodo.21313954",
+    "doi_url": "https://doi.org/10.5281/zenodo.21313954",
+    "concept_doi": "10.5281/zenodo.20279918",
+    "concept_doi_note": "The concept DOI always resolves to the latest published version; v0.5.0 was deposited via the new-version path on the v0.4.3 record (20279919), which remains published and untouched.",
+    "record_url": "https://zenodo.org/records/21313954",
+    "api_url": "https://zenodo.org/api/records/21313954",
+    "published_at": "2026-07-11",
     "title": "jam-actions-v0 (public subset) — AI Jam Sessions tool-use traces",
     "license_slug": "cc-by-sa-3.0",
-    "creators": [
-      "mcp-tool-shop-org",
-      "Krueger, Bernd"
-    ],
-    "workflow_run": "https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/runs/26077776827"
+    "creators": ["mcp-tool-shop-org", "Krueger, Bernd"],
+    "workflow_run": "https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/runs/29166156583"
   },
   "huggingface": {
-    "status": "deferred",
-    "target_namespace": "mcp-tool-shop-org/jam-actions-v0",
-    "deferred_reason": "HF_TOKEN scope did not include write access to mcp-tool-shop-org organization namespace. Token was a fine-grained token with write rights to the personal namespace only. Recovery deferred to a v1.4.x patch once the token's Organizations section grants mcp-tool-shop-org write.",
-    "workflow": ".github/workflows/push-jam-actions-v0-hf.yml",
-    "workflow_run_failed": "https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/runs/26078174069",
-    "next_steps": [
-      "Grant fine-grained HF token write access to mcp-tool-shop-org under the Organizations section at https://huggingface.co/settings/tokens",
-      "Update the HF_TOKEN repository secret on GitHub",
-      "Re-trigger push-jam-actions-v0-hf.yml workflow",
-      "On success, update this receipt's huggingface.status to 'published' and add the published URL + pushed_at timestamp"
-    ]
+    "status": "published",
+    "repo_id": "mcp-tool-shop/jam-actions-v0",
+    "url": "https://huggingface.co/datasets/mcp-tool-shop/jam-actions-v0",
+    "pushed_at": "2026-07-11",
+    "note": "Updated to v0.5.0 in the same workflow run as the Zenodo deposition. Correction to the historical record: the v0.4.3 receipt recorded HF as 'deferred' (token scope), but the mirror was subsequently pushed and was live at v0.4.3 before this update — the deferred status was stale."
   },
   "verification": {
     "package_checksums": {
       "verifier_script": "scripts/verify-public-package-checksums.ts",
-      "entries_count": 273,
+      "entries_count": 274,
       "result": "PASS"
     },
     "release_gate_cli": {
       "verifier_script": "scripts/check-release-gate.ts",
-      "input_baseline": "evals/slice21-fair-e3-baseline-results.json",
+      "input_baseline": "sealed slice21 baseline restored from git history at publish pre-flight (sha256 5bb5b2244b0bb03dc38a9235804ac71468084e3881ead6c823a79197d25b8e23; measured on v0.4.3 records — scope disclosed in RELEASE_NOTES.md)",
       "blocking_axes_cleared": 6,
       "reporting_declared": true,
       "result": "PASS"
+    },
+    "execution_verification": {
+      "verifier_script": "scripts/verify-public-package-execution.ts",
+      "unique_calls": 230,
+      "failures": 0,
+      "result": "PASS",
+      "note": "Standing packaging gate (erratum-001). Runs at cut time on a rig with an audio device; the publish pre-flight asserts the shipped receipt, whose record bytes are pinned by checksums."
     }
   },
   "provenance": {
@@ -89,9 +90,10 @@
   },
   "doctrine_compliance": {
     "operator_mediated_publication": true,
+    "operator_authorization": "explicit chat authorization 2026-07-11 ('You have my authority to commit, push, merge and publish as needed') after the director-gate presentation of diff + gate results",
     "tokens_in_files_logs_or_chat": false,
     "irreversible_action_gated_by_explicit_input": true,
     "release_gate_pass_before_publication": true,
-    "honest_about_partial_success": "Zenodo publication succeeded; HuggingFace push deferred and explicitly tracked in huggingface.status + next_steps"
+    "record_content_change_shipped_as_new_version": true
   }
 }

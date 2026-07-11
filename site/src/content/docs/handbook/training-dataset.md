@@ -175,7 +175,7 @@ Or a plain-text form:
 
 > mcp-tool-shop-org & Krueger, B. (2026). *AI Jam Sessions — Tool-Use Traces v0 (Public Subset)*, Version 0.5.0. Zenodo. CC-BY-SA-3.0-DE. https://doi.org/10.5281/zenodo.20279918
 
-The concept DOI [`10.5281/zenodo.20279918`](https://doi.org/10.5281/zenodo.20279918) always resolves to the latest published version and is the canonical citation handle recorded in `CITATION.cff`. The prior release v0.4.3 has version DOI [`10.5281/zenodo.20279919`](https://doi.org/10.5281/zenodo.20279919) (minted 2026-05-19); v0.5.0's version DOI is minted at its Zenodo publication and backfilled.
+The concept DOI [`10.5281/zenodo.20279918`](https://doi.org/10.5281/zenodo.20279918) always resolves to the latest published version and is the canonical citation handle recorded in `CITATION.cff`. v0.5.0 is published with version DOI [`10.5281/zenodo.21313954`](https://doi.org/10.5281/zenodo.21313954) (2026-07-11); the prior release v0.4.3 has version DOI [`10.5281/zenodo.20279919`](https://doi.org/10.5281/zenodo.20279919) (2026-05-19).
 
 ## Where everything lives
 

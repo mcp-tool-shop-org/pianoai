@@ -37,7 +37,7 @@ configs:
 
 **Version:** 0.5.0   **Built:** 2026-07-11   **Source tag:** `jam-actions-v0-0.5.0-cut-2026-07-11` (record-content correction release — Bach BWV 846 errata 001 + 002; see `RELEASE_NOTES.md` for the full entry and `evals/v0.5.0-release-gate-assessment.json` + `evals/v0.5.0-execution-verification.json` for the gate verdicts at this state)
 
-**DOI:** [`10.5281/zenodo.20279918`](https://doi.org/10.5281/zenodo.20279918) — the **concept DOI**, which always resolves to the latest published version on Zenodo. This is the canonical citation handle. The prior release, v0.4.3, has version DOI [`10.5281/zenodo.20279919`](https://doi.org/10.5281/zenodo.20279919) (published 2026-05-19); v0.5.0's version DOI is minted at its Zenodo publication and backfilled here afterward.
+**DOI:** [`10.5281/zenodo.20279918`](https://doi.org/10.5281/zenodo.20279918) — the **concept DOI**, which always resolves to the latest published version on Zenodo. This is the canonical citation handle. This release, v0.5.0, has version DOI [`10.5281/zenodo.21313954`](https://doi.org/10.5281/zenodo.21313954) (published 2026-07-11, record at https://zenodo.org/records/21313954); the prior release v0.4.3 has version DOI [`10.5281/zenodo.20279919`](https://doi.org/10.5281/zenodo.20279919) (published 2026-05-19).
 
 ## Dataset Summary
 

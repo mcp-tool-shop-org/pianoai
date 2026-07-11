@@ -4,6 +4,24 @@ This file is the human-readable history of the package's version arc. Each entry
 
 ## Current version: 0.5.0 (2026-07-11)
 
+### PUBLISHED 2026-07-11
+
+**`jam-actions-v0` v0.5.0 is publicly published on Zenodo as a new version under the concept DOI.**
+
+| | |
+|---|---|
+| **Version DOI** | [`10.5281/zenodo.21313954`](https://doi.org/10.5281/zenodo.21313954) |
+| **Concept DOI** (always latest) | [`10.5281/zenodo.20279918`](https://doi.org/10.5281/zenodo.20279918) |
+| **Zenodo record** | https://zenodo.org/records/21313954 |
+| **Published at** | 2026-07-11 |
+| **Files attached** | `jam-actions-v0-public-0.5.0.tar.gz`, `jam-actions-v0-public-0.5.0.zip` |
+| **Tar.gz sha256** | `7036f47033bb21ac741652982a958a6cf325327a256f0ef912b67dafa2c6532a` |
+| **Zip sha256** | `27682d2b38a702e60093647900efd4a93c4a7657cface65574793a4d4a2e407d` |
+| **HuggingFace mirror** | https://huggingface.co/datasets/mcp-tool-shop/jam-actions-v0 (updated in the same workflow run) |
+| **Publish workflow run** | https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/runs/29166156583 |
+
+Published from tag `jam-actions-v0-0.5.0-cut-2026-07-11` via the operator-gated workflow (new-version deposition path; the v0.4.3 record is untouched). Pre-flight re-verified package checksums, the RC gate against the sealed baseline restored from git history (sha-asserted), and the execution-verification receipt, before any irreversible call. As with v0.4.3, the publication-recording files (this annotation, `publication-receipt.json`, the DOI in `CITATION.cff`) land in a follow-up commit — they record the publication of the tagged content; they don't change what was published.
+
 ### Record-content correction release — errata 001 + 002 (Bach BWV 846)
 
 **This is the first record-content change since publication.** The sealed, published v0.4.3 (Zenodo DOI [`10.5281/zenodo.20279919`](https://doi.org/10.5281/zenodo.20279919)) is unchanged and remains available; per Zenodo versioning doctrine, corrections ship as a **new version under the concept DOI** ([`10.5281/zenodo.20279918`](https://doi.org/10.5281/zenodo.20279918), which always resolves to the latest version). The v0.5.0 version DOI is minted at publication and backfilled into `CITATION.cff` afterward.
