@@ -1,0 +1,10 @@
+accelerate==1.10.1
+gguf==0.19.0
+jsonschema==4.23.0
+jsonschema-specifications==2024.10.1
+peft==0.17.0
+tokenizers==0.22.2
+torch==2.8.0.dev20250319+cu128
+torchaudio==2.6.0.dev20250319+cu128
+torchvision==0.22.0.dev20250319+cu128
+transformers==4.57.1
