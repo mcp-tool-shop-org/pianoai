@@ -39,7 +39,7 @@ ssh_fails=0
 log "babysitter armed: $LABEL pod=$POD_ID $IP:$PORT -> $ART"
 
 while true; do
-  state=$($SSH "ls $REMOTE_ART/*.DONE 2>/dev/null | xargs -n1 basename 2>/dev/null; echo '===SIZE==='; stat -c %s /workspace/arc/run.log 2>/dev/null || echo 0" 2>>"$LOG")
+  state=$($SSH "ls $REMOTE_ART/*.DONE 2>/dev/null | xargs -n1 basename 2>/dev/null; echo '===SIZE==='; stat -c %s /workspace/arc/run.log 2>/dev/null || echo 0; echo '===GPU==='; nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits 2>/dev/null || echo 0" 2>>"$LOG")
   if [ -z "$state" ]; then
     ssh_fails=$((ssh_fails + 1))
     log "ssh failure $ssh_fails/10"
@@ -48,10 +48,15 @@ while true; do
   fi
   ssh_fails=0
   markers=$(echo "$state" | sed -n '1,/===SIZE===/p' | grep -v '===SIZE===' || true)
-  size=$(echo "$state" | sed -n '/===SIZE===/,$p' | tail -1)
+  size=$(echo "$state" | sed -n '/===SIZE===/,/===GPU===/p' | grep -v '===' | tail -1)
+  gpu=$(echo "$state" | sed -n '/===GPU===/,$p' | grep -v '===' | tail -1)
 
-  # progress = log growth OR new marker
+  # progress = log growth OR new marker OR a busy GPU. The GPU clause exists
+  # because Python block-buffers stdout under nohup: P3's one-line-per-5-min
+  # checkpoint prints can sit unflushed past any log-based window while the
+  # sweep works at 97% utilization (false-stalled podA at 11:03 on 2026-07-11).
   if [ "$size" != "$last_size" ]; then last_size=$size; last_progress=$(date +%s); fi
+  if [ "${gpu:-0}" -gt 10 ] 2>/dev/null; then last_progress=$(date +%s); fi
 
   for m in $markers; do
     if [ -z "${FETCHED[$m]:-}" ]; then
