@@ -1,0 +1,671 @@
+=== [p5v1-gate] check-release-gate on the sealed slice21 baseline (ANDON) ===
+
+NOTE: This is a CANDIDATE RC gate. A PASS verdict does NOT mean
+the dataset is approved for release.
+=== [p5v1] sealed eval: jam-ft-v1-qwen25:seed13 ===
+========================================================================
+ jam-actions-v0 Corpus-Scale Eval Runner
+========================================================================
+  scope:         public
+  model:         jam-ft-v1-qwen25:seed13
+  backend:       ollama
+  seed:          slice12-2026-05-17
+  evals:         e3,e3-tool
+  n (runs/rec):  3 (Slice 14 multi-run; schema 2.0.0)
+  sample-filter: slice19-cohort
+  dry-run:       false
+  checkpoint:    E:\AI\ai-jam-sessions\.eval-checkpoints\ft-v1-seed13-results.json.checkpoint.json
+  result:        E:/AI/ai-jam-sessions/experiments/finetune-arc-v1/evals/ft-v1-seed13-results.json
+  sample:        E:/AI/ai-jam-sessions/experiments/finetune-arc-v1/evals/ft-v1-seed13-sample.json
+
+Loaded 115 public-package records.
+
+Sample plan:
+  E1 records: 24 (target 24)
+    opening:2 middle:20 cadential:2 bach-tex-rep:3 anacrusis:1
+    enriched: 6/6 (must be 6)
+  E2 pairs: 12 (target 12)
+    enriched pairs: 4/4 (must be 4)
+  E3 records: 24 (target 24)
+    opening:2 middle:20 cadential:2 bach-tex-rep:3 anacrusis:1
+    enriched: 6/6 (must be 6)
+
+Sample filter 'slice19-cohort' applied:
+  E1 records: 24 -> 0
+  E2 pairs:   12 -> 0
+  E3 records: 24 -> 16
+  E3-tool records: 16 (Slice 19 unified 16-record cohort: 13 Slice 18 + 3 fresh)
+
+Sample manifest written: E:/AI/ai-jam-sessions/experiments/finetune-arc-v1/evals/ft-v1-seed13-sample.json
+
+Ollama reachable at http://localhost:11434. Model 'jam-ft-v1-qwen25:seed13' present.
+Tool catalog: 41 tools from dist/mcp-server.js via MCP tools/list
+
+━━━ E1 SKIPPED (--evals subset excludes e1) ━━━
+
+━━━ E2 SKIPPED (--evals subset excludes e2) ━━━
+
+━━━ E3: Annotation Grounding MCQ (16 records, K=3 runs/record) ━━━
+  [ 1/16 run 1/3]       bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1 ... full=0.000 text=0.250 rmidi=0.250 | mT=-0.250 mR=-0.250 | 9445ms
+  [ 1/16 run 2/3]       bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1 ... full=0.000 text=0.500 rmidi=0.000 | mT=-0.500 mR=0.000 | 1944ms
+  [ 1/16 run 3/3]       bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1 ... full=0.000 text=0.250 rmidi=0.000 | mT=-0.250 mR=0.000 | 1674ms
+      ↳ aggregate: full_mean=0.000±0.000 text_mean=0.333±0.144 rmidi_mean=0.083±0.144
+      ↳ margins:   mT_mean=-0.333±0.144 (pass_rate=0.000) mR_mean=-0.083±0.144 (pass_rate=0.000)
+  [ 2/16 run 1/3]       bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1 ... full=0.000 text=0.250 rmidi=0.000 | mT=-0.250 mR=0.000 | 1728ms
+  [ 2/16 run 2/3]       bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1 ... full=0.000 text=0.750 rmidi=0.000 | mT=-0.750 mR=0.000 | 1651ms
+  [ 2/16 run 3/3]       bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1 ... full=0.000 text=0.250 rmidi=0.000 | mT=-0.250 mR=0.000 | 1641ms
+      ↳ aggregate: full_mean=0.000±0.000 text_mean=0.417±0.289 rmidi_mean=0.000±0.000
+      ↳ margins:   mT_mean=-0.417±0.289 (pass_rate=0.000) mR_mean=0.000±0.000 (pass_rate=0.000)
+  [ 3/16 run 1/3]       bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1 ... full=0.250 text=0.000 rmidi=0.000 | mT=0.250 mR=0.250 | 1784ms
+  [ 3/16 run 2/3]       bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1 ... full=0.000 text=0.250 rmidi=0.000 | mT=-0.250 mR=0.000 | 1693ms
+  [ 3/16 run 3/3]       bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1 ... full=0.000 text=0.000 rmidi=0.000 | mT=0.000 mR=0.000 | 1706ms
+      ↳ aggregate: full_mean=0.083±0.144 text_mean=0.083±0.144 rmidi_mean=0.000±0.000
+      ↳ margins:   mT_mean=0.000±0.250 (pass_rate=0.333) mR_mean=0.083±0.144 (pass_rate=0.333)
+  [ 4/16 run 1/3] [ENR] bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1 ... full=0.250 text=0.500 rmidi=0.500 | mT=-0.250 mR=-0.250 | 2092ms
+  [ 4/16 run 2/3] [ENR] bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1 ... full=0.250 text=0.500 rmidi=0.250 | mT=-0.250 mR=0.000 | 1923ms
+  [ 4/16 run 3/3] [ENR] bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1 ... full=0.500 text=0.750 rmidi=0.500 | mT=-0.250 mR=0.000 | 2144ms
+      ↳ aggregate: full_mean=0.333±0.144 text_mean=0.583±0.144 rmidi_mean=0.417±0.144
+      ↳ margins:   mT_mean=-0.250±0.000 (pass_rate=0.000) mR_mean=-0.083±0.144 (pass_rate=0.000)
+  [ 5/16 run 1/3]       pathetique-mvt2:m001-004:piano:mcp-session:v1 ... full=0.750 text=0.750 rmidi=0.750 | mT=0.000 mR=0.000 | 2560ms
+  [ 5/16 run 2/3]       pathetique-mvt2:m001-004:piano:mcp-session:v1 ... full=0.500 text=0.500 rmidi=0.750 | mT=0.000 mR=-0.250 | 2274ms
+  [ 5/16 run 3/3]       pathetique-mvt2:m001-004:piano:mcp-session:v1 ... full=0.750 text=0.750 rmidi=0.750 | mT=0.000 mR=0.000 | 2273ms
+      ↳ aggregate: full_mean=0.667±0.144 text_mean=0.667±0.144 rmidi_mean=0.750±0.000
+      ↳ margins:   mT_mean=0.000±0.000 (pass_rate=0.000) mR_mean=-0.083±0.144 (pass_rate=0.000)
+  [ 6/16 run 1/3]       pathetique-mvt2:m009-012:piano:mcp-session:v1 ... full=0.000 text=0.250 rmidi=0.000 | mT=-0.250 mR=0.000 | 2008ms
+  [ 6/16 run 2/3]       pathetique-mvt2:m009-012:piano:mcp-session:v1 ... full=0.250 text=0.250 rmidi=0.250 | mT=0.000 mR=0.000 | 1707ms
+  [ 6/16 run 3/3]       pathetique-mvt2:m009-012:piano:mcp-session:v1 ... full=0.000 text=0.000 rmidi=0.000 | mT=0.000 mR=0.000 | 1754ms
+      ↳ aggregate: full_mean=0.083±0.144 text_mean=0.167±0.144 rmidi_mean=0.083±0.144
+      ↳ margins:   mT_mean=-0.083±0.144 (pass_rate=0.000) mR_mean=0.000±0.000 (pass_rate=0.000)
+  [ 7/16 run 1/3]       pathetique-mvt2:m017-020:piano:mcp-session:v1 ... full=0.250 text=0.000 rmidi=0.000 | mT=0.250 mR=0.250 | 1827ms
+  [ 7/16 run 2/3]       pathetique-mvt2:m017-020:piano:mcp-session:v1 ... full=0.250 text=0.000 rmidi=0.500 | mT=0.250 mR=-0.250 | 1686ms
+  [ 7/16 run 3/3]       pathetique-mvt2:m017-020:piano:mcp-session:v1 ... full=0.250 text=0.250 rmidi=0.500 | mT=0.000 mR=-0.250 | 1693ms
+      ↳ aggregate: full_mean=0.250±0.000 text_mean=0.083±0.144 rmidi_mean=0.333±0.289
+      ↳ margins:   mT_mean=0.167±0.144 (pass_rate=0.667) mR_mean=-0.083±0.289 (pass_rate=0.333)
+  [ 8/16 run 1/3] [ENR] pathetique-mvt2:m025-028:piano:mcp-session:v1 ... full=0.500 text=0.250 rmidi=0.500 | mT=0.250 mR=0.000 | 2083ms
+  [ 8/16 run 2/3] [ENR] pathetique-mvt2:m025-028:piano:mcp-session:v1 ... full=0.250 text=0.250 rmidi=0.500 | mT=0.000 mR=-0.250 | 1896ms
+  [ 8/16 run 3/3] [ENR] pathetique-mvt2:m025-028:piano:mcp-session:v1 ... full=0.250 text=0.500 rmidi=0.500 | mT=-0.250 mR=-0.250 | 1954ms
+      ↳ aggregate: full_mean=0.333±0.144 text_mean=0.333±0.144 rmidi_mean=0.500±0.000
+      ↳ margins:   mT_mean=0.000±0.250 (pass_rate=0.333) mR_mean=-0.167±0.144 (pass_rate=0.000)
+  [ 9/16 run 1/3]       schumann-traumerei:m001-004:piano:mcp-session:v1 ... full=1.000 text=0.750 rmidi=1.000 | mT=0.250 mR=0.000 | 2369ms
+  [ 9/16 run 2/3]       schumann-traumerei:m001-004:piano:mcp-session:v1 ... full=1.000 text=1.000 rmidi=0.750 | mT=0.000 mR=0.250 | 2120ms
+  [ 9/16 run 3/3]       schumann-traumerei:m001-004:piano:mcp-session:v1 ... full=1.000 text=1.000 rmidi=0.750 | mT=0.000 mR=0.250 | 2148ms
+      ↳ aggregate: full_mean=1.000±0.000 text_mean=0.917±0.144 rmidi_mean=0.833±0.144
+      ↳ margins:   mT_mean=0.083±0.144 (pass_rate=0.333) mR_mean=0.167±0.144 (pass_rate=0.667)
+  [10/16 run 1/3] [ENR] schumann-traumerei:m045-048:piano:mcp-session:v1 ... full=0.667 text=0.667 rmidi=0.667 | mT=0.000 mR=0.000 | 2010ms
+  [10/16 run 2/3] [ENR] schumann-traumerei:m045-048:piano:mcp-session:v1 ... full=0.667 text=0.667 rmidi=0.667 | mT=0.000 mR=0.000 | 1656ms
+  [10/16 run 3/3] [ENR] schumann-traumerei:m045-048:piano:mcp-session:v1 ... full=0.667 text=0.667 rmidi=0.667 | mT=0.000 mR=0.000 | 1656ms
+      ↳ aggregate: full_mean=0.667±0.000 text_mean=0.667±0.000 rmidi_mean=0.667±0.000
+      ↳ margins:   mT_mean=0.000±0.000 (pass_rate=0.000) mR_mean=0.000±0.000 (pass_rate=0.000)
+  [11/16 run 1/3]       chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1 ... full=0.750 text=0.750 rmidi=0.750 | mT=0.000 mR=0.000 | 2410ms
+  [11/16 run 2/3]       chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1 ... full=0.750 text=0.750 rmidi=0.750 | mT=0.000 mR=0.000 | 2114ms
+  [11/16 run 3/3]       chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1 ... full=0.750 text=0.500 rmidi=0.750 | mT=0.250 mR=0.000 | 2063ms
+      ↳ aggregate: full_mean=0.750±0.000 text_mean=0.667±0.144 rmidi_mean=0.750±0.000
+      ↳ margins:   mT_mean=0.083±0.144 (pass_rate=0.333) mR_mean=0.000±0.000 (pass_rate=0.000)
+  [12/16 run 1/3]       chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1 ... full=0.250 text=0.000 rmidi=0.250 | mT=0.250 mR=0.000 | 1866ms
+  [12/16 run 2/3]       chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1 ... full=0.500 text=0.500 rmidi=0.000 | mT=0.000 mR=0.500 | 1712ms
+  [12/16 run 3/3]       chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1 ... full=0.250 text=0.250 rmidi=0.500 | mT=0.000 mR=-0.250 | 1714ms
+      ↳ aggregate: full_mean=0.333±0.144 text_mean=0.250±0.250 rmidi_mean=0.250±0.250
+      ↳ margins:   mT_mean=0.083±0.144 (pass_rate=0.333) mR_mean=0.083±0.382 (pass_rate=0.333)
+  [13/16 run 1/3]       clair-de-lune:m031-034:piano:mcp-session:v1 ... full=0.000 text=0.250 rmidi=0.250 | mT=-0.250 mR=-0.250 | 1833ms
+  [13/16 run 2/3]       clair-de-lune:m031-034:piano:mcp-session:v1 ... full=0.000 text=0.250 rmidi=0.250 | mT=-0.250 mR=-0.250 | 1767ms
+  [13/16 run 3/3]       clair-de-lune:m031-034:piano:mcp-session:v1 ... full=0.000 text=0.250 rmidi=0.000 | mT=-0.250 mR=0.000 | 1748ms
+      ↳ aggregate: full_mean=0.000±0.000 text_mean=0.250±0.000 rmidi_mean=0.167±0.144
+      ↳ margins:   mT_mean=-0.250±0.000 (pass_rate=0.000) mR_mean=-0.167±0.144 (pass_rate=0.000)
+  [14/16 run 1/3] [ENR] pathetique-mvt2:m029-032:piano:mcp-session:v1 ... full=0.667 text=0.333 rmidi=0.333 | mT=0.333 mR=0.333 | 1602ms
+  [14/16 run 2/3] [ENR] pathetique-mvt2:m029-032:piano:mcp-session:v1 ... full=0.667 text=0.667 rmidi=0.333 | mT=0.000 mR=0.333 | 1389ms
+  [14/16 run 3/3] [ENR] pathetique-mvt2:m029-032:piano:mcp-session:v1 ... full=0.667 text=0.333 rmidi=0.333 | mT=0.333 mR=0.333 | 1415ms
+      ↳ aggregate: full_mean=0.667±0.000 text_mean=0.444±0.192 rmidi_mean=0.333±0.000
+      ↳ margins:   mT_mean=0.222±0.192 (pass_rate=0.667) mR_mean=0.333±0.000 (pass_rate=1.000)
+  [15/16 run 1/3] [ENR] bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1 ... full=0.000 text=0.000 rmidi=0.000 | mT=0.000 mR=0.000 | 2167ms
+  [15/16 run 2/3] [ENR] bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1 ... full=0.000 text=0.000 rmidi=0.000 | mT=0.000 mR=0.000 | 1937ms
+  [15/16 run 3/3] [ENR] bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1 ... full=0.000 text=0.000 rmidi=0.000 | mT=0.000 mR=0.000 | 1923ms
+      ↳ aggregate: full_mean=0.000±0.000 text_mean=0.000±0.000 rmidi_mean=0.000±0.000
+      ↳ margins:   mT_mean=0.000±0.000 (pass_rate=0.000) mR_mean=0.000±0.000 (pass_rate=0.000)
+  [16/16 run 1/3] [ENR] bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1 ... full=0.250 text=0.250 rmidi=0.500 | mT=0.000 mR=-0.250 | 2063ms
+  [16/16 run 2/3] [ENR] bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1 ... full=0.250 text=0.000 rmidi=0.000 | mT=0.250 mR=0.250 | 1888ms
+  [16/16 run 3/3] [ENR] bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1 ... full=0.000 text=0.000 rmidi=0.250 | mT=0.000 mR=-0.250 | 1929ms
+      ↳ aggregate: full_mean=0.167±0.144 text_mean=0.083±0.144 rmidi_mean=0.250±0.250
+      ↳ margins:   mT_mean=0.083±0.144 (pass_rate=0.333) mR_mean=-0.083±0.289 (pass_rate=0.333)
+
+E3 aggregate (n=16):
+  full:        0.349
+  text_only:   0.328
+  random_midi: 0.359
+  margin vs text_only:    0.021 (threshold 0.1)
+  margin vs random_midi:  -0.010 (threshold 0.1)
+
+E3 enriched subset (n=6):
+  full mean:                0.389
+  text_only mean:           0.333
+  margin vs text_only:      0.056
+  margin vs random_midi:    -0.028
+
+E3 non-enriched subset (n=10):
+  full mean:                0.325
+  text_only mean:           0.325
+  margin vs text_only:      0.000
+
+━━━ E3-TOOL: Tool-Scaffolded Annotation Grounding (16 records, K=3 runs/record) ━━━
+  [ 1/16 run 1/3]       bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1 ... tool_inspected=0.500 mean_calls=0.75 total_calls=3 | 1607ms
+  [ 1/16 run 2/3]       bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1 ... tool_inspected=0.500 mean_calls=0.75 total_calls=3 | 1458ms
+  [ 1/16 run 3/3]       bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1572ms
+      ↳ aggregate: tool_inspected_mean=0.583±0.144 min=0.500 max=0.750 total_calls=10 mean_calls/q=0.83 silent=0 cap=0
+  [ 2/16 run 1/3]       bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=0.75 total_calls=3 | 1340ms
+  [ 2/16 run 2/3]       bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=0.75 total_calls=3 | 1361ms
+  [ 2/16 run 3/3]       bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1 ... tool_inspected=0.500 mean_calls=0.50 total_calls=2 | 1191ms
+      ↳ aggregate: tool_inspected_mean=0.667±0.144 min=0.500 max=0.750 total_calls=8 mean_calls/q=0.67 silent=0 cap=0
+  [ 3/16 run 1/3]       bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=0.75 total_calls=3 | 1476ms
+  [ 3/16 run 2/3]       bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=0.75 total_calls=3 | 1418ms
+  [ 3/16 run 3/3]       bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1606ms
+      ↳ aggregate: tool_inspected_mean=0.833±0.144 min=0.750 max=1.000 total_calls=10 mean_calls/q=0.83 silent=0 cap=0
+  [ 4/16 run 1/3] [ENR] bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=0.75 total_calls=3 | 1346ms
+  [ 4/16 run 2/3] [ENR] bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=0.75 total_calls=3 | 1304ms
+  [ 4/16 run 3/3] [ENR] bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=0.75 total_calls=3 | 1337ms
+      ↳ aggregate: tool_inspected_mean=1.000±0.000 min=1.000 max=1.000 total_calls=9 mean_calls/q=0.75 silent=0 cap=0
+  [ 5/16 run 1/3]       pathetique-mvt2:m001-004:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=0.75 total_calls=3 | 1390ms
+  [ 5/16 run 2/3]       pathetique-mvt2:m001-004:piano:mcp-session:v1 ... tool_inspected=0.500 mean_calls=0.75 total_calls=3 | 1346ms
+  [ 5/16 run 3/3]       pathetique-mvt2:m001-004:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=0.50 total_calls=2 | 1061ms
+      ↳ aggregate: tool_inspected_mean=0.833±0.289 min=0.500 max=1.000 total_calls=8 mean_calls/q=0.67 silent=0 cap=0
+  [ 6/16 run 1/3]       pathetique-mvt2:m009-012:piano:mcp-session:v1 ... tool_inspected=0.500 mean_calls=0.50 total_calls=2 | 1271ms
+  [ 6/16 run 2/3]       pathetique-mvt2:m009-012:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1570ms
+  [ 6/16 run 3/3]       pathetique-mvt2:m009-012:piano:mcp-session:v1 ... tool_inspected=0.500 mean_calls=0.50 total_calls=2 | 1209ms
+      ↳ aggregate: tool_inspected_mean=0.667±0.289 min=0.500 max=1.000 total_calls=8 mean_calls/q=0.67 silent=0 cap=0
+  [ 7/16 run 1/3]       pathetique-mvt2:m017-020:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=0.75 total_calls=3 | 1316ms
+  [ 7/16 run 2/3]       pathetique-mvt2:m017-020:piano:mcp-session:v1 ... tool_inspected=0.500 mean_calls=0.50 total_calls=2 | 1231ms
+  [ 7/16 run 3/3]       pathetique-mvt2:m017-020:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=0.75 total_calls=3 | 1435ms
+      ↳ aggregate: tool_inspected_mean=0.667±0.144 min=0.500 max=0.750 total_calls=8 mean_calls/q=0.67 silent=0 cap=0
+  [ 8/16 run 1/3] [ENR] pathetique-mvt2:m025-028:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=0.75 total_calls=3 | 1332ms
+  [ 8/16 run 2/3] [ENR] pathetique-mvt2:m025-028:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=0.75 total_calls=3 | 1316ms
+  [ 8/16 run 3/3] [ENR] pathetique-mvt2:m025-028:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=0.75 total_calls=3 | 1296ms
+      ↳ aggregate: tool_inspected_mean=1.000±0.000 min=1.000 max=1.000 total_calls=9 mean_calls/q=0.75 silent=0 cap=0
+  [ 9/16 run 1/3]       schumann-traumerei:m001-004:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=0.25 total_calls=1 | 839ms
+  [ 9/16 run 2/3]       schumann-traumerei:m001-004:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=0.25 total_calls=1 | 810ms
+  [ 9/16 run 3/3]       schumann-traumerei:m001-004:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=0.25 total_calls=1 | 823ms
+      ↳ aggregate: tool_inspected_mean=0.833±0.144 min=0.750 max=1.000 total_calls=3 mean_calls/q=0.25 silent=0 cap=0
+  [10/16 run 1/3] [ENR] schumann-traumerei:m045-048:piano:mcp-session:v1 ... tool_inspected=0.667 mean_calls=0.33 total_calls=1 | 848ms
+  [10/16 run 2/3] [ENR] schumann-traumerei:m045-048:piano:mcp-session:v1 ... tool_inspected=0.667 mean_calls=0.33 total_calls=1 | 689ms
+  [10/16 run 3/3] [ENR] schumann-traumerei:m045-048:piano:mcp-session:v1 ... tool_inspected=0.333 mean_calls=0.33 total_calls=1 | 775ms
+      ↳ aggregate: tool_inspected_mean=0.556±0.192 min=0.333 max=0.667 total_calls=3 mean_calls/q=0.33 silent=0 cap=0
+  [11/16 run 1/3]       chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=0.25 total_calls=1 | 850ms
+  [11/16 run 2/3]       chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=0.50 total_calls=2 | 999ms
+  [11/16 run 3/3]       chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=0.50 total_calls=2 | 976ms
+      ↳ aggregate: tool_inspected_mean=1.000±0.000 min=1.000 max=1.000 total_calls=5 mean_calls/q=0.42 silent=0 cap=0
+  [12/16 run 1/3]       chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=0.75 total_calls=3 | 1492ms
+  [12/16 run 2/3]       chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=0.75 total_calls=3 | 1424ms
+  [12/16 run 3/3]       chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1 ... tool_inspected=0.500 mean_calls=0.75 total_calls=3 | 1428ms
+      ↳ aggregate: tool_inspected_mean=0.667±0.144 min=0.500 max=0.750 total_calls=9 mean_calls/q=0.75 silent=0 cap=0
+  [13/16 run 1/3]       clair-de-lune:m031-034:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=0.75 total_calls=3 | 1356ms
+  [13/16 run 2/3]       clair-de-lune:m031-034:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=0.75 total_calls=3 | 1418ms
+  [13/16 run 3/3]       clair-de-lune:m031-034:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=0.75 total_calls=3 | 1319ms
+      ↳ aggregate: tool_inspected_mean=0.750±0.000 min=0.750 max=0.750 total_calls=9 mean_calls/q=0.75 silent=0 cap=0
+  [14/16 run 1/3] [ENR] pathetique-mvt2:m029-032:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=3 | 1216ms
+  [14/16 run 2/3] [ENR] pathetique-mvt2:m029-032:piano:mcp-session:v1 ... tool_inspected=0.667 mean_calls=0.67 total_calls=2 | 933ms
+  [14/16 run 3/3] [ENR] pathetique-mvt2:m029-032:piano:mcp-session:v1 ... tool_inspected=0.667 mean_calls=0.67 total_calls=2 | 918ms
+      ↳ aggregate: tool_inspected_mean=0.778±0.192 min=0.667 max=1.000 total_calls=7 mean_calls/q=0.78 silent=0 cap=0
+  [15/16 run 1/3] [ENR] bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=0.75 total_calls=3 | 1371ms
+  [15/16 run 2/3] [ENR] bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=0.75 total_calls=3 | 1280ms
+  [15/16 run 3/3] [ENR] bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1 ... tool_inspected=0.500 mean_calls=0.50 total_calls=2 | 1126ms
+      ↳ aggregate: tool_inspected_mean=0.667±0.144 min=0.500 max=0.750 total_calls=8 mean_calls/q=0.67 silent=0 cap=0
+  [16/16 run 1/3] [ENR] bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=0.75 total_calls=3 | 1353ms
+  [16/16 run 2/3] [ENR] bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1516ms
+  [16/16 run 3/3] [ENR] bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=0.75 total_calls=3 | 1255ms
+      ↳ aggregate: tool_inspected_mean=0.833±0.144 min=0.750 max=1.000 total_calls=10 mean_calls/q=0.83 silent=0 cap=0
+
+E3-tool aggregate (n=16):
+  tool_inspected mean: 0.771 (±0.144)
+  total tool calls (across all records × runs): 124
+
+Result artifact written: E:/AI/ai-jam-sessions/experiments/finetune-arc-v1/evals/ft-v1-seed13-results.json
+Sample manifest written: E:/AI/ai-jam-sessions/experiments/finetune-arc-v1/evals/ft-v1-seed13-sample.json
+  [checkpoint] removed (run completed successfully): E:\AI\ai-jam-sessions\.eval-checkpoints\ft-v1-seed13-results.json.checkpoint.json
+
+━━━ DONE ━━━
+E3 corpus margin vs text:  0.021 (threshold +0.1)
+E3 enriched margin vs text:0.056 (threshold +0.1)
+E3-tool corpus tool_inspected mean: 0.771 (n_records=16)
+=== [p5v1] seed 13 eval COMPLETE -> ft-v1-seed13-results.json ===
+=== [p5v1] sealed eval: jam-ft-v1-qwen25:seed42 ===
+========================================================================
+ jam-actions-v0 Corpus-Scale Eval Runner
+========================================================================
+  scope:         public
+  model:         jam-ft-v1-qwen25:seed42
+  backend:       ollama
+  seed:          slice12-2026-05-17
+  evals:         e3,e3-tool
+  n (runs/rec):  3 (Slice 14 multi-run; schema 2.0.0)
+  sample-filter: slice19-cohort
+  dry-run:       false
+  checkpoint:    E:\AI\ai-jam-sessions\.eval-checkpoints\ft-v1-seed42-results.json.checkpoint.json
+  result:        E:/AI/ai-jam-sessions/experiments/finetune-arc-v1/evals/ft-v1-seed42-results.json
+  sample:        E:/AI/ai-jam-sessions/experiments/finetune-arc-v1/evals/ft-v1-seed42-sample.json
+
+Loaded 115 public-package records.
+
+Sample plan:
+  E1 records: 24 (target 24)
+    opening:2 middle:20 cadential:2 bach-tex-rep:3 anacrusis:1
+    enriched: 6/6 (must be 6)
+  E2 pairs: 12 (target 12)
+    enriched pairs: 4/4 (must be 4)
+  E3 records: 24 (target 24)
+    opening:2 middle:20 cadential:2 bach-tex-rep:3 anacrusis:1
+    enriched: 6/6 (must be 6)
+
+Sample filter 'slice19-cohort' applied:
+  E1 records: 24 -> 0
+  E2 pairs:   12 -> 0
+  E3 records: 24 -> 16
+  E3-tool records: 16 (Slice 19 unified 16-record cohort: 13 Slice 18 + 3 fresh)
+
+Sample manifest written: E:/AI/ai-jam-sessions/experiments/finetune-arc-v1/evals/ft-v1-seed42-sample.json
+
+Ollama reachable at http://localhost:11434. Model 'jam-ft-v1-qwen25:seed42' present.
+Tool catalog: 41 tools from dist/mcp-server.js via MCP tools/list
+
+━━━ E1 SKIPPED (--evals subset excludes e1) ━━━
+
+━━━ E2 SKIPPED (--evals subset excludes e2) ━━━
+
+━━━ E3: Annotation Grounding MCQ (16 records, K=3 runs/record) ━━━
+  [ 1/16 run 1/3]       bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1 ... full=0.250 text=0.250 rmidi=0.500 | mT=0.000 mR=-0.250 | 4158ms
+  [ 1/16 run 2/3]       bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1 ... full=0.250 text=0.250 rmidi=0.250 | mT=0.000 mR=0.000 | 1602ms
+  [ 1/16 run 3/3]       bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1 ... full=0.000 text=0.250 rmidi=0.500 | mT=-0.250 mR=-0.500 | 1642ms
+      ↳ aggregate: full_mean=0.167±0.144 text_mean=0.250±0.000 rmidi_mean=0.417±0.144
+      ↳ margins:   mT_mean=-0.083±0.144 (pass_rate=0.000) mR_mean=-0.250±0.250 (pass_rate=0.000)
+  [ 2/16 run 1/3]       bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1 ... full=0.000 text=0.000 rmidi=0.000 | mT=0.000 mR=0.000 | 1732ms
+  [ 2/16 run 2/3]       bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1 ... full=0.250 text=0.250 rmidi=0.000 | mT=0.000 mR=0.250 | 1659ms
+  [ 2/16 run 3/3]       bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1 ... full=0.250 text=0.000 rmidi=0.250 | mT=0.250 mR=0.000 | 1652ms
+      ↳ aggregate: full_mean=0.167±0.144 text_mean=0.083±0.144 rmidi_mean=0.083±0.144
+      ↳ margins:   mT_mean=0.083±0.144 (pass_rate=0.333) mR_mean=0.083±0.144 (pass_rate=0.333)
+  [ 3/16 run 1/3]       bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1 ... full=0.250 text=0.250 rmidi=0.500 | mT=0.000 mR=-0.250 | 1785ms
+  [ 3/16 run 2/3]       bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1 ... full=0.500 text=0.000 rmidi=0.250 | mT=0.500 mR=0.250 | 1695ms
+  [ 3/16 run 3/3]       bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1 ... full=0.250 text=0.250 rmidi=0.250 | mT=0.000 mR=0.000 | 1677ms
+      ↳ aggregate: full_mean=0.333±0.144 text_mean=0.167±0.144 rmidi_mean=0.333±0.144
+      ↳ margins:   mT_mean=0.167±0.289 (pass_rate=0.333) mR_mean=0.000±0.250 (pass_rate=0.333)
+  [ 4/16 run 1/3] [ENR] bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1 ... full=0.500 text=0.500 rmidi=0.500 | mT=0.000 mR=0.000 | 2076ms
+  [ 4/16 run 2/3] [ENR] bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1 ... full=0.500 text=0.500 rmidi=0.750 | mT=0.000 mR=-0.250 | 1881ms
+  [ 4/16 run 3/3] [ENR] bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1 ... full=0.500 text=0.500 rmidi=0.500 | mT=0.000 mR=0.000 | 1885ms
+      ↳ aggregate: full_mean=0.500±0.000 text_mean=0.500±0.000 rmidi_mean=0.583±0.144
+      ↳ margins:   mT_mean=0.000±0.000 (pass_rate=0.000) mR_mean=-0.083±0.144 (pass_rate=0.000)
+  [ 5/16 run 1/3]       pathetique-mvt2:m001-004:piano:mcp-session:v1 ... full=0.500 text=0.500 rmidi=0.500 | mT=0.000 mR=0.000 | 2307ms
+  [ 5/16 run 2/3]       pathetique-mvt2:m001-004:piano:mcp-session:v1 ... full=1.000 text=0.500 rmidi=0.750 | mT=0.500 mR=0.250 | 2005ms
+  [ 5/16 run 3/3]       pathetique-mvt2:m001-004:piano:mcp-session:v1 ... full=0.750 text=0.750 rmidi=0.750 | mT=0.000 mR=0.000 | 2056ms
+      ↳ aggregate: full_mean=0.750±0.250 text_mean=0.583±0.144 rmidi_mean=0.667±0.144
+      ↳ margins:   mT_mean=0.167±0.289 (pass_rate=0.333) mR_mean=0.083±0.144 (pass_rate=0.333)
+  [ 6/16 run 1/3]       pathetique-mvt2:m009-012:piano:mcp-session:v1 ... full=0.000 text=0.250 rmidi=0.250 | mT=-0.250 mR=-0.250 | 1797ms
+  [ 6/16 run 2/3]       pathetique-mvt2:m009-012:piano:mcp-session:v1 ... full=0.000 text=0.000 rmidi=0.250 | mT=0.000 mR=-0.250 | 1661ms
+  [ 6/16 run 3/3]       pathetique-mvt2:m009-012:piano:mcp-session:v1 ... full=0.250 text=0.250 rmidi=0.000 | mT=0.000 mR=0.250 | 1651ms
+      ↳ aggregate: full_mean=0.083±0.144 text_mean=0.167±0.144 rmidi_mean=0.167±0.144
+      ↳ margins:   mT_mean=-0.083±0.144 (pass_rate=0.000) mR_mean=-0.083±0.289 (pass_rate=0.333)
+  [ 7/16 run 1/3]       pathetique-mvt2:m017-020:piano:mcp-session:v1 ... full=0.250 text=0.250 rmidi=0.500 | mT=0.000 mR=-0.250 | 1747ms
+  [ 7/16 run 2/3]       pathetique-mvt2:m017-020:piano:mcp-session:v1 ... full=0.250 text=0.000 rmidi=0.250 | mT=0.250 mR=0.000 | 1675ms
+  [ 7/16 run 3/3]       pathetique-mvt2:m017-020:piano:mcp-session:v1 ... full=0.000 text=0.250 rmidi=0.250 | mT=-0.250 mR=-0.250 | 1644ms
+      ↳ aggregate: full_mean=0.167±0.144 text_mean=0.167±0.144 rmidi_mean=0.333±0.144
+      ↳ margins:   mT_mean=0.000±0.250 (pass_rate=0.333) mR_mean=-0.167±0.144 (pass_rate=0.000)
+  [ 8/16 run 1/3] [ENR] pathetique-mvt2:m025-028:piano:mcp-session:v1 ... full=0.500 text=0.250 rmidi=0.500 | mT=0.250 mR=0.000 | 2014ms
+  [ 8/16 run 2/3] [ENR] pathetique-mvt2:m025-028:piano:mcp-session:v1 ... full=0.500 text=0.250 rmidi=0.500 | mT=0.250 mR=0.000 | 1859ms
+  [ 8/16 run 3/3] [ENR] pathetique-mvt2:m025-028:piano:mcp-session:v1 ... full=0.500 text=0.750 rmidi=0.250 | mT=-0.250 mR=0.250 | 1845ms
+      ↳ aggregate: full_mean=0.500±0.000 text_mean=0.417±0.289 rmidi_mean=0.417±0.144
+      ↳ margins:   mT_mean=0.083±0.289 (pass_rate=0.667) mR_mean=0.083±0.144 (pass_rate=0.333)
+  [ 9/16 run 1/3]       schumann-traumerei:m001-004:piano:mcp-session:v1 ... full=1.000 text=1.000 rmidi=1.000 | mT=0.000 mR=0.000 | 2259ms
+  [ 9/16 run 2/3]       schumann-traumerei:m001-004:piano:mcp-session:v1 ... full=1.000 text=1.000 rmidi=1.000 | mT=0.000 mR=0.000 | 1994ms
+  [ 9/16 run 3/3]       schumann-traumerei:m001-004:piano:mcp-session:v1 ... full=1.000 text=1.000 rmidi=1.000 | mT=0.000 mR=0.000 | 2019ms
+      ↳ aggregate: full_mean=1.000±0.000 text_mean=1.000±0.000 rmidi_mean=1.000±0.000
+      ↳ margins:   mT_mean=0.000±0.000 (pass_rate=0.000) mR_mean=0.000±0.000 (pass_rate=0.000)
+  [10/16 run 1/3] [ENR] schumann-traumerei:m045-048:piano:mcp-session:v1 ... full=1.000 text=1.000 rmidi=1.000 | mT=0.000 mR=0.000 | 1925ms
+  [10/16 run 2/3] [ENR] schumann-traumerei:m045-048:piano:mcp-session:v1 ... full=1.000 text=1.000 rmidi=1.000 | mT=0.000 mR=0.000 | 1541ms
+  [10/16 run 3/3] [ENR] schumann-traumerei:m045-048:piano:mcp-session:v1 ... full=1.000 text=1.000 rmidi=0.667 | mT=0.000 mR=0.333 | 1615ms
+      ↳ aggregate: full_mean=1.000±0.000 text_mean=1.000±0.000 rmidi_mean=0.889±0.192
+      ↳ margins:   mT_mean=0.000±0.000 (pass_rate=0.000) mR_mean=0.111±0.192 (pass_rate=0.333)
+  [11/16 run 1/3]       chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1 ... full=0.750 text=0.500 rmidi=0.750 | mT=0.250 mR=0.000 | 2251ms
+  [11/16 run 2/3]       chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1 ... full=0.750 text=0.750 rmidi=0.500 | mT=0.000 mR=0.250 | 1992ms
+  [11/16 run 3/3]       chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1 ... full=0.500 text=1.000 rmidi=0.750 | mT=-0.500 mR=-0.250 | 2014ms
+      ↳ aggregate: full_mean=0.667±0.144 text_mean=0.750±0.250 rmidi_mean=0.667±0.144
+      ↳ margins:   mT_mean=-0.083±0.382 (pass_rate=0.333) mR_mean=0.000±0.250 (pass_rate=0.333)
+  [12/16 run 1/3]       chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1 ... full=0.000 text=0.000 rmidi=0.000 | mT=0.000 mR=0.000 | 1777ms
+  [12/16 run 2/3]       chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1 ... full=0.500 text=0.250 rmidi=0.250 | mT=0.250 mR=0.250 | 1667ms
+  [12/16 run 3/3]       chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1 ... full=0.250 text=0.000 rmidi=0.000 | mT=0.250 mR=0.250 | 1665ms
+      ↳ aggregate: full_mean=0.250±0.250 text_mean=0.083±0.144 rmidi_mean=0.083±0.144
+      ↳ margins:   mT_mean=0.167±0.144 (pass_rate=0.667) mR_mean=0.167±0.144 (pass_rate=0.667)
+  [13/16 run 1/3]       clair-de-lune:m031-034:piano:mcp-session:v1 ... full=0.500 text=0.250 rmidi=0.250 | mT=0.250 mR=0.250 | 1764ms
+  [13/16 run 2/3]       clair-de-lune:m031-034:piano:mcp-session:v1 ... full=0.000 text=0.000 rmidi=0.750 | mT=0.000 mR=-0.750 | 1683ms
+  [13/16 run 3/3]       clair-de-lune:m031-034:piano:mcp-session:v1 ... full=0.250 text=0.250 rmidi=0.000 | mT=0.000 mR=0.250 | 1692ms
+      ↳ aggregate: full_mean=0.250±0.250 text_mean=0.167±0.144 rmidi_mean=0.333±0.382
+      ↳ margins:   mT_mean=0.083±0.144 (pass_rate=0.333) mR_mean=-0.083±0.577 (pass_rate=0.667)
+  [14/16 run 1/3] [ENR] pathetique-mvt2:m029-032:piano:mcp-session:v1 ... full=0.000 text=0.000 rmidi=0.333 | mT=0.000 mR=-0.333 | 1525ms
+  [14/16 run 2/3] [ENR] pathetique-mvt2:m029-032:piano:mcp-session:v1 ... full=0.333 text=0.000 rmidi=0.667 | mT=0.333 mR=-0.333 | 1372ms
+  [14/16 run 3/3] [ENR] pathetique-mvt2:m029-032:piano:mcp-session:v1 ... full=0.333 text=0.333 rmidi=0.333 | mT=0.000 mR=0.000 | 1371ms
+      ↳ aggregate: full_mean=0.222±0.192 text_mean=0.111±0.192 rmidi_mean=0.444±0.192
+      ↳ margins:   mT_mean=0.111±0.192 (pass_rate=0.333) mR_mean=-0.222±0.192 (pass_rate=0.000)
+  [15/16 run 1/3] [ENR] bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1 ... full=0.000 text=0.000 rmidi=0.000 | mT=0.000 mR=0.000 | 2041ms
+  [15/16 run 2/3] [ENR] bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1 ... full=0.250 text=0.000 rmidi=0.000 | mT=0.250 mR=0.250 | 1866ms
+  [15/16 run 3/3] [ENR] bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1 ... full=0.250 text=0.000 rmidi=0.250 | mT=0.250 mR=0.000 | 1890ms
+      ↳ aggregate: full_mean=0.167±0.144 text_mean=0.000±0.000 rmidi_mean=0.083±0.144
+      ↳ margins:   mT_mean=0.167±0.144 (pass_rate=0.667) mR_mean=0.083±0.144 (pass_rate=0.333)
+  [16/16 run 1/3] [ENR] bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1 ... full=0.500 text=0.000 rmidi=0.000 | mT=0.500 mR=0.500 | 1997ms
+  [16/16 run 2/3] [ENR] bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1 ... full=0.250 text=0.000 rmidi=0.250 | mT=0.250 mR=0.000 | 1832ms
+  [16/16 run 3/3] [ENR] bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1 ... full=0.250 text=0.250 rmidi=0.250 | mT=0.000 mR=0.000 | 1812ms
+      ↳ aggregate: full_mean=0.333±0.144 text_mean=0.083±0.144 rmidi_mean=0.167±0.144
+      ↳ margins:   mT_mean=0.250±0.250 (pass_rate=0.667) mR_mean=0.167±0.289 (pass_rate=0.333)
+
+E3 aggregate (n=16):
+  full:        0.375
+  text_only:   0.313
+  random_midi: 0.411
+  margin vs text_only:    0.063 (threshold 0.1)
+  margin vs random_midi:  -0.036 (threshold 0.1)
+
+E3 enriched subset (n=6):
+  full mean:                0.417
+  text_only mean:           0.292
+  margin vs text_only:      0.125
+  margin vs random_midi:    0.028
+
+E3 non-enriched subset (n=10):
+  full mean:                0.350
+  text_only mean:           0.325
+  margin vs text_only:      0.025
+
+━━━ E3-TOOL: Tool-Scaffolded Annotation Grounding (16 records, K=3 runs/record) ━━━
+  [ 1/16 run 1/3]       bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1 ... tool_inspected=0.500 mean_calls=1.00 total_calls=4 | 1713ms
+  [ 1/16 run 2/3]       bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1640ms
+  [ 1/16 run 3/3]       bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1577ms
+      ↳ aggregate: tool_inspected_mean=0.667±0.144 min=0.500 max=0.750 total_calls=12 mean_calls/q=1.00 silent=0 cap=0
+  [ 2/16 run 1/3]       bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1611ms
+  [ 2/16 run 2/3]       bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1648ms
+  [ 2/16 run 3/3]       bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1525ms
+      ↳ aggregate: tool_inspected_mean=1.000±0.000 min=1.000 max=1.000 total_calls=12 mean_calls/q=1.00 silent=0 cap=0
+  [ 3/16 run 1/3]       bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1640ms
+  [ 3/16 run 2/3]       bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1609ms
+  [ 3/16 run 3/3]       bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1536ms
+      ↳ aggregate: tool_inspected_mean=0.833±0.144 min=0.750 max=1.000 total_calls=12 mean_calls/q=1.00 silent=0 cap=0
+  [ 4/16 run 1/3] [ENR] bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1545ms
+  [ 4/16 run 2/3] [ENR] bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1516ms
+  [ 4/16 run 3/3] [ENR] bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1508ms
+      ↳ aggregate: tool_inspected_mean=1.000±0.000 min=1.000 max=1.000 total_calls=12 mean_calls/q=1.00 silent=0 cap=0
+  [ 5/16 run 1/3]       pathetique-mvt2:m001-004:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1631ms
+  [ 5/16 run 2/3]       pathetique-mvt2:m001-004:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1507ms
+  [ 5/16 run 3/3]       pathetique-mvt2:m001-004:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1484ms
+      ↳ aggregate: tool_inspected_mean=0.750±0.000 min=0.750 max=0.750 total_calls=12 mean_calls/q=1.00 silent=0 cap=0
+  [ 6/16 run 1/3]       pathetique-mvt2:m009-012:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1643ms
+  [ 6/16 run 2/3]       pathetique-mvt2:m009-012:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1532ms
+  [ 6/16 run 3/3]       pathetique-mvt2:m009-012:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1557ms
+      ↳ aggregate: tool_inspected_mean=0.833±0.144 min=0.750 max=1.000 total_calls=12 mean_calls/q=1.00 silent=0 cap=0
+  [ 7/16 run 1/3]       pathetique-mvt2:m017-020:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1569ms
+  [ 7/16 run 2/3]       pathetique-mvt2:m017-020:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1537ms
+  [ 7/16 run 3/3]       pathetique-mvt2:m017-020:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1508ms
+      ↳ aggregate: tool_inspected_mean=1.000±0.000 min=1.000 max=1.000 total_calls=12 mean_calls/q=1.00 silent=0 cap=0
+  [ 8/16 run 1/3] [ENR] pathetique-mvt2:m025-028:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1536ms
+  [ 8/16 run 2/3] [ENR] pathetique-mvt2:m025-028:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1514ms
+  [ 8/16 run 3/3] [ENR] pathetique-mvt2:m025-028:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1496ms
+      ↳ aggregate: tool_inspected_mean=1.000±0.000 min=1.000 max=1.000 total_calls=12 mean_calls/q=1.00 silent=0 cap=0
+  [ 9/16 run 1/3]       schumann-traumerei:m001-004:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1603ms
+  [ 9/16 run 2/3]       schumann-traumerei:m001-004:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1494ms
+  [ 9/16 run 3/3]       schumann-traumerei:m001-004:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1529ms
+      ↳ aggregate: tool_inspected_mean=1.000±0.000 min=1.000 max=1.000 total_calls=12 mean_calls/q=1.00 silent=0 cap=0
+  [10/16 run 1/3] [ENR] schumann-traumerei:m045-048:piano:mcp-session:v1 ... tool_inspected=0.667 mean_calls=0.67 total_calls=2 | 1151ms
+  [10/16 run 2/3] [ENR] schumann-traumerei:m045-048:piano:mcp-session:v1 ... tool_inspected=0.667 mean_calls=1.00 total_calls=3 | 1186ms
+  [10/16 run 3/3] [ENR] schumann-traumerei:m045-048:piano:mcp-session:v1 ... tool_inspected=0.667 mean_calls=1.00 total_calls=3 | 1114ms
+      ↳ aggregate: tool_inspected_mean=0.667±0.000 min=0.667 max=0.667 total_calls=8 mean_calls/q=0.89 silent=0 cap=0
+  [11/16 run 1/3]       chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1663ms
+  [11/16 run 2/3]       chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1501ms
+  [11/16 run 3/3]       chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1492ms
+      ↳ aggregate: tool_inspected_mean=1.000±0.000 min=1.000 max=1.000 total_calls=12 mean_calls/q=1.00 silent=0 cap=0
+  [12/16 run 1/3]       chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1646ms
+  [12/16 run 2/3]       chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1599ms
+  [12/16 run 3/3]       chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1 ... tool_inspected=0.500 mean_calls=0.75 total_calls=3 | 1420ms
+      ↳ aggregate: tool_inspected_mean=0.667±0.144 min=0.500 max=0.750 total_calls=11 mean_calls/q=0.92 silent=0 cap=0
+  [13/16 run 1/3]       clair-de-lune:m031-034:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1581ms
+  [13/16 run 2/3]       clair-de-lune:m031-034:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1565ms
+  [13/16 run 3/3]       clair-de-lune:m031-034:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1578ms
+      ↳ aggregate: tool_inspected_mean=0.917±0.144 min=0.750 max=1.000 total_calls=12 mean_calls/q=1.00 silent=0 cap=0
+  [14/16 run 1/3] [ENR] pathetique-mvt2:m029-032:piano:mcp-session:v1 ... tool_inspected=0.667 mean_calls=1.00 total_calls=3 | 1211ms
+  [14/16 run 2/3] [ENR] pathetique-mvt2:m029-032:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=3 | 1152ms
+  [14/16 run 3/3] [ENR] pathetique-mvt2:m029-032:piano:mcp-session:v1 ... tool_inspected=0.667 mean_calls=1.00 total_calls=3 | 1175ms
+      ↳ aggregate: tool_inspected_mean=0.778±0.192 min=0.667 max=1.000 total_calls=9 mean_calls/q=1.00 silent=0 cap=0
+  [15/16 run 1/3] [ENR] bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1623ms
+  [15/16 run 2/3] [ENR] bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1568ms
+  [15/16 run 3/3] [ENR] bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1570ms
+      ↳ aggregate: tool_inspected_mean=1.000±0.000 min=1.000 max=1.000 total_calls=12 mean_calls/q=1.00 silent=0 cap=0
+  [16/16 run 1/3] [ENR] bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1508ms
+  [16/16 run 2/3] [ENR] bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1508ms
+  [16/16 run 3/3] [ENR] bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1502ms
+      ↳ aggregate: tool_inspected_mean=0.750±0.000 min=0.750 max=0.750 total_calls=12 mean_calls/q=1.00 silent=0 cap=0
+
+E3-tool aggregate (n=16):
+  tool_inspected mean: 0.866 (±0.138)
+  total tool calls (across all records × runs): 184
+
+Result artifact written: E:/AI/ai-jam-sessions/experiments/finetune-arc-v1/evals/ft-v1-seed42-results.json
+Sample manifest written: E:/AI/ai-jam-sessions/experiments/finetune-arc-v1/evals/ft-v1-seed42-sample.json
+  [checkpoint] removed (run completed successfully): E:\AI\ai-jam-sessions\.eval-checkpoints\ft-v1-seed42-results.json.checkpoint.json
+
+━━━ DONE ━━━
+E3 corpus margin vs text:  0.063 (threshold +0.1)
+E3 enriched margin vs text:0.125 (threshold +0.1)
+E3-tool corpus tool_inspected mean: 0.866 (n_records=16)
+=== [p5v1] seed 42 eval COMPLETE -> ft-v1-seed42-results.json ===
+=== [p5v1] sealed eval: jam-ft-v1-qwen25:seed271 ===
+========================================================================
+ jam-actions-v0 Corpus-Scale Eval Runner
+========================================================================
+  scope:         public
+  model:         jam-ft-v1-qwen25:seed271
+  backend:       ollama
+  seed:          slice12-2026-05-17
+  evals:         e3,e3-tool
+  n (runs/rec):  3 (Slice 14 multi-run; schema 2.0.0)
+  sample-filter: slice19-cohort
+  dry-run:       false
+  checkpoint:    E:\AI\ai-jam-sessions\.eval-checkpoints\ft-v1-seed271-results.json.checkpoint.json
+  result:        E:/AI/ai-jam-sessions/experiments/finetune-arc-v1/evals/ft-v1-seed271-results.json
+  sample:        E:/AI/ai-jam-sessions/experiments/finetune-arc-v1/evals/ft-v1-seed271-sample.json
+
+Loaded 115 public-package records.
+
+Sample plan:
+  E1 records: 24 (target 24)
+    opening:2 middle:20 cadential:2 bach-tex-rep:3 anacrusis:1
+    enriched: 6/6 (must be 6)
+  E2 pairs: 12 (target 12)
+    enriched pairs: 4/4 (must be 4)
+  E3 records: 24 (target 24)
+    opening:2 middle:20 cadential:2 bach-tex-rep:3 anacrusis:1
+    enriched: 6/6 (must be 6)
+
+Sample filter 'slice19-cohort' applied:
+  E1 records: 24 -> 0
+  E2 pairs:   12 -> 0
+  E3 records: 24 -> 16
+  E3-tool records: 16 (Slice 19 unified 16-record cohort: 13 Slice 18 + 3 fresh)
+
+Sample manifest written: E:/AI/ai-jam-sessions/experiments/finetune-arc-v1/evals/ft-v1-seed271-sample.json
+
+Ollama reachable at http://localhost:11434. Model 'jam-ft-v1-qwen25:seed271' present.
+Tool catalog: 41 tools from dist/mcp-server.js via MCP tools/list
+
+━━━ E1 SKIPPED (--evals subset excludes e1) ━━━
+
+━━━ E2 SKIPPED (--evals subset excludes e2) ━━━
+
+━━━ E3: Annotation Grounding MCQ (16 records, K=3 runs/record) ━━━
+  [ 1/16 run 1/3]       bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1 ... full=0.000 text=0.250 rmidi=0.000 | mT=-0.250 mR=0.000 | 9158ms
+  [ 1/16 run 2/3]       bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1 ... full=0.500 text=0.500 rmidi=0.000 | mT=0.000 mR=0.500 | 1639ms
+  [ 1/16 run 3/3]       bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1 ... full=0.000 text=0.250 rmidi=0.000 | mT=-0.250 mR=0.000 | 1632ms
+      ↳ aggregate: full_mean=0.167±0.289 text_mean=0.333±0.144 rmidi_mean=0.000±0.000
+      ↳ margins:   mT_mean=-0.167±0.144 (pass_rate=0.000) mR_mean=0.167±0.289 (pass_rate=0.333)
+  [ 2/16 run 1/3]       bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1 ... full=0.250 text=0.000 rmidi=0.250 | mT=0.250 mR=0.000 | 1803ms
+  [ 2/16 run 2/3]       bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1 ... full=0.000 text=0.000 rmidi=0.250 | mT=0.000 mR=-0.250 | 1690ms
+  [ 2/16 run 3/3]       bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1 ... full=0.000 text=0.000 rmidi=0.250 | mT=0.000 mR=-0.250 | 1690ms
+      ↳ aggregate: full_mean=0.083±0.144 text_mean=0.000±0.000 rmidi_mean=0.250±0.000
+      ↳ margins:   mT_mean=0.083±0.144 (pass_rate=0.333) mR_mean=-0.167±0.144 (pass_rate=0.000)
+  [ 3/16 run 1/3]       bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1 ... full=0.000 text=0.250 rmidi=0.000 | mT=-0.250 mR=0.000 | 1823ms
+  [ 3/16 run 2/3]       bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1 ... full=0.000 text=0.250 rmidi=0.000 | mT=-0.250 mR=0.000 | 1720ms
+  [ 3/16 run 3/3]       bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1 ... full=0.250 text=0.000 rmidi=0.000 | mT=0.250 mR=0.250 | 1756ms
+      ↳ aggregate: full_mean=0.083±0.144 text_mean=0.167±0.144 rmidi_mean=0.000±0.000
+      ↳ margins:   mT_mean=-0.083±0.289 (pass_rate=0.333) mR_mean=0.083±0.144 (pass_rate=0.333)
+  [ 4/16 run 1/3] [ENR] bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1 ... full=0.500 text=0.750 rmidi=0.750 | mT=-0.250 mR=-0.250 | 2125ms
+  [ 4/16 run 2/3] [ENR] bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1 ... full=0.500 text=0.750 rmidi=0.500 | mT=-0.250 mR=0.000 | 1954ms
+  [ 4/16 run 3/3] [ENR] bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1 ... full=0.750 text=0.750 rmidi=0.500 | mT=0.000 mR=0.250 | 1980ms
+      ↳ aggregate: full_mean=0.583±0.144 text_mean=0.750±0.000 rmidi_mean=0.583±0.144
+      ↳ margins:   mT_mean=-0.167±0.144 (pass_rate=0.000) mR_mean=0.000±0.250 (pass_rate=0.333)
+  [ 5/16 run 1/3]       pathetique-mvt2:m001-004:piano:mcp-session:v1 ... full=0.500 text=0.500 rmidi=0.500 | mT=0.000 mR=0.000 | 2355ms
+  [ 5/16 run 2/3]       pathetique-mvt2:m001-004:piano:mcp-session:v1 ... full=0.500 text=0.500 rmidi=0.500 | mT=0.000 mR=0.000 | 2096ms
+  [ 5/16 run 3/3]       pathetique-mvt2:m001-004:piano:mcp-session:v1 ... full=0.500 text=0.500 rmidi=0.500 | mT=0.000 mR=0.000 | 2107ms
+      ↳ aggregate: full_mean=0.500±0.000 text_mean=0.500±0.000 rmidi_mean=0.500±0.000
+      ↳ margins:   mT_mean=0.000±0.000 (pass_rate=0.000) mR_mean=0.000±0.000 (pass_rate=0.000)
+  [ 6/16 run 1/3]       pathetique-mvt2:m009-012:piano:mcp-session:v1 ... full=0.000 text=0.250 rmidi=0.000 | mT=-0.250 mR=0.000 | 1802ms
+  [ 6/16 run 2/3]       pathetique-mvt2:m009-012:piano:mcp-session:v1 ... full=0.000 text=0.500 rmidi=0.000 | mT=-0.500 mR=0.000 | 1707ms
+  [ 6/16 run 3/3]       pathetique-mvt2:m009-012:piano:mcp-session:v1 ... full=0.000 text=0.500 rmidi=0.250 | mT=-0.500 mR=-0.250 | 1670ms
+      ↳ aggregate: full_mean=0.000±0.000 text_mean=0.417±0.144 rmidi_mean=0.083±0.144
+      ↳ margins:   mT_mean=-0.417±0.144 (pass_rate=0.000) mR_mean=-0.083±0.144 (pass_rate=0.000)
+  [ 7/16 run 1/3]       pathetique-mvt2:m017-020:piano:mcp-session:v1 ... full=0.250 text=0.250 rmidi=0.250 | mT=0.000 mR=0.000 | 1755ms
+  [ 7/16 run 2/3]       pathetique-mvt2:m017-020:piano:mcp-session:v1 ... full=0.250 text=0.000 rmidi=0.250 | mT=0.250 mR=0.000 | 1672ms
+  [ 7/16 run 3/3]       pathetique-mvt2:m017-020:piano:mcp-session:v1 ... full=0.000 text=0.000 rmidi=0.000 | mT=0.000 mR=0.000 | 1660ms
+      ↳ aggregate: full_mean=0.167±0.144 text_mean=0.083±0.144 rmidi_mean=0.167±0.144
+      ↳ margins:   mT_mean=0.083±0.144 (pass_rate=0.333) mR_mean=0.000±0.000 (pass_rate=0.000)
+  [ 8/16 run 1/3] [ENR] pathetique-mvt2:m025-028:piano:mcp-session:v1 ... full=0.250 text=0.250 rmidi=0.750 | mT=0.000 mR=-0.500 | 2067ms
+  [ 8/16 run 2/3] [ENR] pathetique-mvt2:m025-028:piano:mcp-session:v1 ... full=0.250 text=0.250 rmidi=0.500 | mT=0.000 mR=-0.250 | 1838ms
+  [ 8/16 run 3/3] [ENR] pathetique-mvt2:m025-028:piano:mcp-session:v1 ... full=0.500 text=0.500 rmidi=0.500 | mT=0.000 mR=0.000 | 1904ms
+      ↳ aggregate: full_mean=0.333±0.144 text_mean=0.333±0.144 rmidi_mean=0.583±0.144
+      ↳ margins:   mT_mean=0.000±0.000 (pass_rate=0.000) mR_mean=-0.250±0.250 (pass_rate=0.000)
+  [ 9/16 run 1/3]       schumann-traumerei:m001-004:piano:mcp-session:v1 ... full=1.000 text=1.000 rmidi=1.000 | mT=0.000 mR=0.000 | 2314ms
+  [ 9/16 run 2/3]       schumann-traumerei:m001-004:piano:mcp-session:v1 ... full=1.000 text=1.000 rmidi=1.000 | mT=0.000 mR=0.000 | 2096ms
+  [ 9/16 run 3/3]       schumann-traumerei:m001-004:piano:mcp-session:v1 ... full=1.000 text=1.000 rmidi=1.000 | mT=0.000 mR=0.000 | 2086ms
+      ↳ aggregate: full_mean=1.000±0.000 text_mean=1.000±0.000 rmidi_mean=1.000±0.000
+      ↳ margins:   mT_mean=0.000±0.000 (pass_rate=0.000) mR_mean=0.000±0.000 (pass_rate=0.000)
+  [10/16 run 1/3] [ENR] schumann-traumerei:m045-048:piano:mcp-session:v1 ... full=0.667 text=0.667 rmidi=1.000 | mT=0.000 mR=-0.333 | 2017ms
+  [10/16 run 2/3] [ENR] schumann-traumerei:m045-048:piano:mcp-session:v1 ... full=0.667 text=0.667 rmidi=0.667 | mT=0.000 mR=0.000 | 1597ms
+  [10/16 run 3/3] [ENR] schumann-traumerei:m045-048:piano:mcp-session:v1 ... full=0.667 text=0.667 rmidi=1.000 | mT=0.000 mR=-0.333 | 1615ms
+      ↳ aggregate: full_mean=0.667±0.000 text_mean=0.667±0.000 rmidi_mean=0.889±0.192
+      ↳ margins:   mT_mean=0.000±0.000 (pass_rate=0.000) mR_mean=-0.222±0.192 (pass_rate=0.000)
+  [11/16 run 1/3]       chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1 ... full=1.000 text=0.750 rmidi=1.000 | mT=0.250 mR=0.000 | 2294ms
+  [11/16 run 2/3]       chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1 ... full=0.500 text=0.750 rmidi=0.750 | mT=-0.250 mR=-0.250 | 2059ms
+  [11/16 run 3/3]       chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1 ... full=0.500 text=0.750 rmidi=0.750 | mT=-0.250 mR=-0.250 | 2058ms
+      ↳ aggregate: full_mean=0.667±0.289 text_mean=0.750±0.000 rmidi_mean=0.833±0.144
+      ↳ margins:   mT_mean=-0.083±0.289 (pass_rate=0.333) mR_mean=-0.167±0.144 (pass_rate=0.000)
+  [12/16 run 1/3]       chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1 ... full=0.250 text=0.250 rmidi=0.250 | mT=0.000 mR=0.000 | 1796ms
+  [12/16 run 2/3]       chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1 ... full=0.250 text=0.250 rmidi=0.000 | mT=0.000 mR=0.250 | 1687ms
+  [12/16 run 3/3]       chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1 ... full=0.500 text=0.250 rmidi=0.000 | mT=0.250 mR=0.500 | 1703ms
+      ↳ aggregate: full_mean=0.333±0.144 text_mean=0.250±0.000 rmidi_mean=0.083±0.144
+      ↳ margins:   mT_mean=0.083±0.144 (pass_rate=0.333) mR_mean=0.250±0.250 (pass_rate=0.667)
+  [13/16 run 1/3]       clair-de-lune:m031-034:piano:mcp-session:v1 ... full=0.250 text=0.250 rmidi=0.250 | mT=0.000 mR=0.000 | 1861ms
+  [13/16 run 2/3]       clair-de-lune:m031-034:piano:mcp-session:v1 ... full=0.500 text=0.250 rmidi=0.000 | mT=0.250 mR=0.500 | 1697ms
+  [13/16 run 3/3]       clair-de-lune:m031-034:piano:mcp-session:v1 ... full=0.000 text=0.500 rmidi=0.000 | mT=-0.500 mR=0.000 | 1714ms
+      ↳ aggregate: full_mean=0.250±0.250 text_mean=0.333±0.144 rmidi_mean=0.083±0.144
+      ↳ margins:   mT_mean=-0.083±0.382 (pass_rate=0.333) mR_mean=0.167±0.289 (pass_rate=0.333)
+  [14/16 run 1/3] [ENR] pathetique-mvt2:m029-032:piano:mcp-session:v1 ... full=0.333 text=0.333 rmidi=0.667 | mT=0.000 mR=-0.333 | 1558ms
+  [14/16 run 2/3] [ENR] pathetique-mvt2:m029-032:piano:mcp-session:v1 ... full=0.667 text=0.333 rmidi=0.333 | mT=0.333 mR=0.333 | 1360ms
+  [14/16 run 3/3] [ENR] pathetique-mvt2:m029-032:piano:mcp-session:v1 ... full=0.333 text=0.333 rmidi=0.333 | mT=0.000 mR=0.000 | 1404ms
+      ↳ aggregate: full_mean=0.444±0.192 text_mean=0.333±0.000 rmidi_mean=0.444±0.192
+      ↳ margins:   mT_mean=0.111±0.192 (pass_rate=0.333) mR_mean=0.000±0.333 (pass_rate=0.333)
+  [15/16 run 1/3] [ENR] bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1 ... full=0.000 text=0.000 rmidi=0.000 | mT=0.000 mR=0.000 | 2119ms
+  [15/16 run 2/3] [ENR] bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1 ... full=0.000 text=0.250 rmidi=0.250 | mT=-0.250 mR=-0.250 | 1890ms
+  [15/16 run 3/3] [ENR] bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1 ... full=0.000 text=0.000 rmidi=0.000 | mT=0.000 mR=0.000 | 1886ms
+      ↳ aggregate: full_mean=0.000±0.000 text_mean=0.083±0.144 rmidi_mean=0.083±0.144
+      ↳ margins:   mT_mean=-0.083±0.144 (pass_rate=0.000) mR_mean=-0.083±0.144 (pass_rate=0.000)
+  [16/16 run 1/3] [ENR] bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1 ... full=0.000 text=0.000 rmidi=0.250 | mT=0.000 mR=-0.250 | 2033ms
+  [16/16 run 2/3] [ENR] bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1 ... full=0.000 text=0.250 rmidi=0.250 | mT=-0.250 mR=-0.250 | 1891ms
+  [16/16 run 3/3] [ENR] bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1 ... full=0.250 text=0.250 rmidi=0.250 | mT=0.000 mR=0.000 | 1833ms
+      ↳ aggregate: full_mean=0.083±0.144 text_mean=0.167±0.144 rmidi_mean=0.250±0.000
+      ↳ margins:   mT_mean=-0.083±0.144 (pass_rate=0.000) mR_mean=-0.167±0.144 (pass_rate=0.000)
+
+E3 aggregate (n=16):
+  full:        0.328
+  text_only:   0.359
+  random_midi: 0.432
+  margin vs text_only:    -0.031 (threshold 0.1)
+  margin vs random_midi:  -0.104 (threshold 0.1)
+
+E3 enriched subset (n=6):
+  full mean:                0.292
+  text_only mean:           0.333
+  margin vs text_only:      -0.042
+  margin vs random_midi:    -0.278
+
+E3 non-enriched subset (n=10):
+  full mean:                0.350
+  text_only mean:           0.375
+  margin vs text_only:      -0.025
+
+━━━ E3-TOOL: Tool-Scaffolded Annotation Grounding (16 records, K=3 runs/record) ━━━
+  [ 1/16 run 1/3]       bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1737ms
+  [ 1/16 run 2/3]       bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1583ms
+  [ 1/16 run 3/3]       bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1566ms
+      ↳ aggregate: tool_inspected_mean=0.750±0.000 min=0.750 max=0.750 total_calls=12 mean_calls/q=1.00 silent=0 cap=0
+  [ 2/16 run 1/3]       bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1586ms
+  [ 2/16 run 2/3]       bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1594ms
+  [ 2/16 run 3/3]       bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1609ms
+      ↳ aggregate: tool_inspected_mean=0.750±0.000 min=0.750 max=0.750 total_calls=12 mean_calls/q=1.00 silent=0 cap=0
+  [ 3/16 run 1/3]       bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1643ms
+  [ 3/16 run 2/3]       bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1568ms
+  [ 3/16 run 3/3]       bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1552ms
+      ↳ aggregate: tool_inspected_mean=0.750±0.000 min=0.750 max=0.750 total_calls=12 mean_calls/q=1.00 silent=0 cap=0
+  [ 4/16 run 1/3] [ENR] bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=0.75 total_calls=3 | 1345ms
+  [ 4/16 run 2/3] [ENR] bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=0.75 total_calls=3 | 1326ms
+  [ 4/16 run 3/3] [ENR] bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=0.75 total_calls=3 | 1315ms
+      ↳ aggregate: tool_inspected_mean=1.000±0.000 min=1.000 max=1.000 total_calls=9 mean_calls/q=0.75 silent=0 cap=0
+  [ 5/16 run 1/3]       pathetique-mvt2:m001-004:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=0.75 total_calls=3 | 1401ms
+  [ 5/16 run 2/3]       pathetique-mvt2:m001-004:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=0.75 total_calls=3 | 1283ms
+  [ 5/16 run 3/3]       pathetique-mvt2:m001-004:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1545ms
+      ↳ aggregate: tool_inspected_mean=0.833±0.144 min=0.750 max=1.000 total_calls=10 mean_calls/q=0.83 silent=0 cap=0
+  [ 6/16 run 1/3]       pathetique-mvt2:m009-012:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1626ms
+  [ 6/16 run 2/3]       pathetique-mvt2:m009-012:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1567ms
+  [ 6/16 run 3/3]       pathetique-mvt2:m009-012:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1551ms
+      ↳ aggregate: tool_inspected_mean=0.750±0.000 min=0.750 max=0.750 total_calls=12 mean_calls/q=1.00 silent=0 cap=0
+  [ 7/16 run 1/3]       pathetique-mvt2:m017-020:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1635ms
+  [ 7/16 run 2/3]       pathetique-mvt2:m017-020:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1557ms
+  [ 7/16 run 3/3]       pathetique-mvt2:m017-020:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1620ms
+      ↳ aggregate: tool_inspected_mean=1.000±0.000 min=1.000 max=1.000 total_calls=12 mean_calls/q=1.00 silent=0 cap=0
+  [ 8/16 run 1/3] [ENR] pathetique-mvt2:m025-028:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1579ms
+  [ 8/16 run 2/3] [ENR] pathetique-mvt2:m025-028:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1523ms
+  [ 8/16 run 3/3] [ENR] pathetique-mvt2:m025-028:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=0.75 total_calls=3 | 1363ms
+      ↳ aggregate: tool_inspected_mean=0.917±0.144 min=0.750 max=1.000 total_calls=11 mean_calls/q=0.92 silent=0 cap=0
+  [ 9/16 run 1/3]       schumann-traumerei:m001-004:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=0.75 total_calls=3 | 1600ms
+  [ 9/16 run 2/3]       schumann-traumerei:m001-004:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=0.75 total_calls=3 | 1245ms
+  [ 9/16 run 3/3]       schumann-traumerei:m001-004:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=0.75 total_calls=3 | 1456ms
+      ↳ aggregate: tool_inspected_mean=0.917±0.144 min=0.750 max=1.000 total_calls=9 mean_calls/q=0.75 silent=0 cap=0
+  [10/16 run 1/3] [ENR] schumann-traumerei:m045-048:piano:mcp-session:v1 ... tool_inspected=0.667 mean_calls=0.67 total_calls=2 | 1077ms
+  [10/16 run 2/3] [ENR] schumann-traumerei:m045-048:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=3 | 1149ms
+  [10/16 run 3/3] [ENR] schumann-traumerei:m045-048:piano:mcp-session:v1 ... tool_inspected=0.667 mean_calls=0.67 total_calls=2 | 949ms
+      ↳ aggregate: tool_inspected_mean=0.778±0.192 min=0.667 max=1.000 total_calls=7 mean_calls/q=0.78 silent=0 cap=0
+  [11/16 run 1/3]       chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=0.75 total_calls=3 | 1425ms
+  [11/16 run 2/3]       chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1537ms
+  [11/16 run 3/3]       chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=0.75 total_calls=3 | 1283ms
+      ↳ aggregate: tool_inspected_mean=1.000±0.000 min=1.000 max=1.000 total_calls=10 mean_calls/q=0.83 silent=0 cap=0
+  [12/16 run 1/3]       chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1601ms
+  [12/16 run 2/3]       chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1547ms
+  [12/16 run 3/3]       chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1538ms
+      ↳ aggregate: tool_inspected_mean=1.000±0.000 min=1.000 max=1.000 total_calls=12 mean_calls/q=1.00 silent=0 cap=0
+  [13/16 run 1/3]       clair-de-lune:m031-034:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1641ms
+  [13/16 run 2/3]       clair-de-lune:m031-034:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1615ms
+  [13/16 run 3/3]       clair-de-lune:m031-034:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1595ms
+      ↳ aggregate: tool_inspected_mean=1.000±0.000 min=1.000 max=1.000 total_calls=12 mean_calls/q=1.00 silent=0 cap=0
+  [14/16 run 1/3] [ENR] pathetique-mvt2:m029-032:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=3 | 1215ms
+  [14/16 run 2/3] [ENR] pathetique-mvt2:m029-032:piano:mcp-session:v1 ... tool_inspected=0.667 mean_calls=0.67 total_calls=2 | 922ms
+  [14/16 run 3/3] [ENR] pathetique-mvt2:m029-032:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=3 | 1189ms
+      ↳ aggregate: tool_inspected_mean=0.889±0.192 min=0.667 max=1.000 total_calls=8 mean_calls/q=0.89 silent=0 cap=0
+  [15/16 run 1/3] [ENR] bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1548ms
+  [15/16 run 2/3] [ENR] bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1 ... tool_inspected=1.000 mean_calls=1.00 total_calls=4 | 1539ms
+  [15/16 run 3/3] [ENR] bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=0.75 total_calls=3 | 1327ms
+      ↳ aggregate: tool_inspected_mean=0.917±0.144 min=0.750 max=1.000 total_calls=11 mean_calls/q=0.92 silent=0 cap=0
+  [16/16 run 1/3] [ENR] bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=1.00 total_calls=4 | 1568ms
+  [16/16 run 2/3] [ENR] bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=0.75 total_calls=3 | 1277ms
+  [16/16 run 3/3] [ENR] bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1 ... tool_inspected=0.750 mean_calls=0.75 total_calls=3 | 1270ms
+      ↳ aggregate: tool_inspected_mean=0.750±0.000 min=0.750 max=0.750 total_calls=10 mean_calls/q=0.83 silent=0 cap=0
+
+E3-tool aggregate (n=16):
+  tool_inspected mean: 0.875 (±0.107)
+  total tool calls (across all records × runs): 169
+
+Result artifact written: E:/AI/ai-jam-sessions/experiments/finetune-arc-v1/evals/ft-v1-seed271-results.json
+Sample manifest written: E:/AI/ai-jam-sessions/experiments/finetune-arc-v1/evals/ft-v1-seed271-sample.json
+  [checkpoint] removed (run completed successfully): E:\AI\ai-jam-sessions\.eval-checkpoints\ft-v1-seed271-results.json.checkpoint.json
+
+━━━ DONE ━━━
+E3 corpus margin vs text:  -0.031 (threshold +0.1)
+E3 enriched margin vs text:-0.042 (threshold +0.1)
+E3-tool corpus tool_inspected mean: 0.875 (n_records=16)
+=== [p5v1] seed 271 eval COMPLETE -> ft-v1-seed271-results.json ===
+=== [p5v1] all requested seeds complete ===
