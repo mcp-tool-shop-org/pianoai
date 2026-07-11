@@ -15,6 +15,7 @@
 import { createHash } from "node:crypto";
 import {
   appendFileSync,
+  createReadStream,
   existsSync,
   mkdirSync,
   readFileSync,
@@ -61,8 +62,16 @@ function run(cmd, args, opts = {}) {
   return spawnSync(cmd, args, { cwd: REPO_ROOT, shell: true, encoding: "utf8", ...opts });
 }
 
-function sha256File(path) {
-  return createHash("sha256").update(readFileSync(path)).digest("hex");
+// Streaming — the GGUF artifacts are ~4.7 GB and readFileSync caps at 2 GiB.
+async function sha256File(path) {
+  const h = createHash("sha256");
+  await new Promise((resolve, reject) => {
+    const s = createReadStream(path);
+    s.on("data", (chunk) => h.update(chunk));
+    s.on("end", resolve);
+    s.on("error", reject);
+  });
+  return h.digest("hex");
 }
 
 function findArtifact(name) {
@@ -106,7 +115,7 @@ const artifactEvidence = [];
 for (const m of p4.models) {
   const hits = findArtifact(m.gguf);
   if (hits.length !== 1) fail(`expected exactly 1 on-disk artifact for ${m.gguf}, found ${hits.length}`);
-  const sha = sha256File(hits[0]);
+  const sha = await sha256File(hits[0]);
   if (sha !== m.gguf_sha256) fail(`sha mismatch for ${m.gguf}: disk ${sha} != receipt ${m.gguf_sha256}`);
   artifactEvidence.push({ tag: m.name, gguf: m.gguf, path: hits[0].replace(REPO_ROOT, "."), sha256: sha });
   log(`frozen artifact OK: ${m.name} (${m.gguf.slice(0, 40)}…) sha matches p4-receipt`);
