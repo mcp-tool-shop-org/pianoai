@@ -1,0 +1,260 @@
+{
+  "schema": "finetune-arc-v2-b1-cohort/1.0.0",
+  "derivation": {
+    "package": "datasets/jam-actions-v0-public (v0.5.0, tag jam-actions-v0-0.5.0-cut-2026-07-11)",
+    "rule": "CL = all 12 clair-de-lune test records; LG = the 15 train-song slice19-cohort records; NW = 9 of the remaining 88 train records — sorted candidates, Fisher-Yates with mulberry32(20260712), first 9",
+    "sampler_seed": 20260712,
+    "total": 36
+  },
+  "strata": {
+    "CL": [
+      "clair-de-lune:m001-004:piano:mcp-session:v1",
+      "clair-de-lune:m005-008:piano:mcp-session:v1",
+      "clair-de-lune:m015-018:piano:mcp-session:v1",
+      "clair-de-lune:m019-022:piano:mcp-session:v1",
+      "clair-de-lune:m023-026:piano:mcp-session:v1",
+      "clair-de-lune:m027-030:piano:mcp-session:v1",
+      "clair-de-lune:m031-034:piano:mcp-session:v1",
+      "clair-de-lune:m035-038:piano:mcp-session:v1",
+      "clair-de-lune:m037-040:piano:mcp-session:v1",
+      "clair-de-lune:m041-044:piano:mcp-session:v1",
+      "clair-de-lune:m051-054:piano:mcp-session:v1",
+      "clair-de-lune:m055-058:piano:mcp-session:v1"
+    ],
+    "LG": [
+      "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1",
+      "bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1",
+      "bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1",
+      "bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1",
+      "pathetique-mvt2:m001-004:piano:mcp-session:v1",
+      "pathetique-mvt2:m009-012:piano:mcp-session:v1",
+      "pathetique-mvt2:m017-020:piano:mcp-session:v1",
+      "pathetique-mvt2:m025-028:piano:mcp-session:v1",
+      "schumann-traumerei:m001-004:piano:mcp-session:v1",
+      "schumann-traumerei:m045-048:piano:mcp-session:v1",
+      "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1",
+      "chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1",
+      "pathetique-mvt2:m029-032:piano:mcp-session:v1",
+      "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1",
+      "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1"
+    ],
+    "NW": [
+      "bach-prelude-c-major-bwv846:m021-024:piano:mcp-session:v1",
+      "bach-prelude-c-major-bwv846:m061-062:piano:mcp-session:v1",
+      "chopin-nocturne-op9-no2:m013-016:piano:mcp-session:v1",
+      "chopin-nocturne-op9-no2:m037-040:piano:mcp-session:v1",
+      "chopin-prelude-e-minor:m021-024:piano:mcp-session:v1",
+      "fur-elise:m013-016:piano:mcp-session:v1",
+      "mozart-k545-mvt1:m009-012:piano:mcp-session:v1",
+      "mozart-k545-mvt1:m017-020:piano:mcp-session:v1",
+      "pathetique-mvt2:m021-024:piano:mcp-session:v1"
+    ]
+  },
+  "cohort_sorted": [
+    "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1",
+    "bach-prelude-c-major-bwv846:m021-024:piano:mcp-session:v1",
+    "bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1",
+    "bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1",
+    "bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1",
+    "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1",
+    "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1",
+    "bach-prelude-c-major-bwv846:m061-062:piano:mcp-session:v1",
+    "chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1",
+    "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1",
+    "chopin-nocturne-op9-no2:m013-016:piano:mcp-session:v1",
+    "chopin-nocturne-op9-no2:m037-040:piano:mcp-session:v1",
+    "chopin-prelude-e-minor:m021-024:piano:mcp-session:v1",
+    "clair-de-lune:m001-004:piano:mcp-session:v1",
+    "clair-de-lune:m005-008:piano:mcp-session:v1",
+    "clair-de-lune:m015-018:piano:mcp-session:v1",
+    "clair-de-lune:m019-022:piano:mcp-session:v1",
+    "clair-de-lune:m023-026:piano:mcp-session:v1",
+    "clair-de-lune:m027-030:piano:mcp-session:v1",
+    "clair-de-lune:m031-034:piano:mcp-session:v1",
+    "clair-de-lune:m035-038:piano:mcp-session:v1",
+    "clair-de-lune:m037-040:piano:mcp-session:v1",
+    "clair-de-lune:m041-044:piano:mcp-session:v1",
+    "clair-de-lune:m051-054:piano:mcp-session:v1",
+    "clair-de-lune:m055-058:piano:mcp-session:v1",
+    "fur-elise:m013-016:piano:mcp-session:v1",
+    "mozart-k545-mvt1:m009-012:piano:mcp-session:v1",
+    "mozart-k545-mvt1:m017-020:piano:mcp-session:v1",
+    "pathetique-mvt2:m001-004:piano:mcp-session:v1",
+    "pathetique-mvt2:m009-012:piano:mcp-session:v1",
+    "pathetique-mvt2:m017-020:piano:mcp-session:v1",
+    "pathetique-mvt2:m021-024:piano:mcp-session:v1",
+    "pathetique-mvt2:m025-028:piano:mcp-session:v1",
+    "pathetique-mvt2:m029-032:piano:mcp-session:v1",
+    "schumann-traumerei:m001-004:piano:mcp-session:v1",
+    "schumann-traumerei:m045-048:piano:mcp-session:v1"
+  ],
+  "victory_bar": {
+    "rule": "victory requires wins >= k*(n_eff) on the primary condition, where n_eff = 36 - ties and k*(n) = min{ k : 2*P(Bin(n, 1/2) >= k) <= 0.05 } — exact two-sided sign test, frozen ex-ante",
+    "alpha": 0.05,
+    "table": [
+      {
+        "n_eff": 24,
+        "victory_bar_wins": 18,
+        "exact_two_sided_p_at_bar": 0.022655844688415527
+      },
+      {
+        "n_eff": 25,
+        "victory_bar_wins": 18,
+        "exact_two_sided_p_at_bar": 0.043285250663757324
+      },
+      {
+        "n_eff": 26,
+        "victory_bar_wins": 19,
+        "exact_two_sided_p_at_bar": 0.028959274291992188
+      },
+      {
+        "n_eff": 27,
+        "victory_bar_wins": 20,
+        "exact_two_sided_p_at_bar": 0.0191572904586792
+      },
+      {
+        "n_eff": 28,
+        "victory_bar_wins": 20,
+        "exact_two_sided_p_at_bar": 0.03569813817739487
+      },
+      {
+        "n_eff": 29,
+        "victory_bar_wins": 21,
+        "exact_two_sided_p_at_bar": 0.0241195447742939
+      },
+      {
+        "n_eff": 30,
+        "victory_bar_wins": 21,
+        "exact_two_sided_p_at_bar": 0.04277394525706768
+      },
+      {
+        "n_eff": 31,
+        "victory_bar_wins": 22,
+        "exact_two_sided_p_at_bar": 0.029449373483657837
+      },
+      {
+        "n_eff": 32,
+        "victory_bar_wins": 23,
+        "exact_two_sided_p_at_bar": 0.020061607006937265
+      },
+      {
+        "n_eff": 33,
+        "victory_bar_wins": 23,
+        "exact_two_sided_p_at_bar": 0.03508203336969018
+      },
+      {
+        "n_eff": 34,
+        "victory_bar_wins": 24,
+        "exact_two_sided_p_at_bar": 0.024306510109454393
+      },
+      {
+        "n_eff": 35,
+        "victory_bar_wins": 24,
+        "exact_two_sided_p_at_bar": 0.04095959151163697
+      },
+      {
+        "n_eff": 36,
+        "victory_bar_wins": 25,
+        "exact_two_sided_p_at_bar": 0.028816719655878842
+      }
+    ]
+  },
+  "power_reference_not_binding": [
+    {
+      "n_eff": 30,
+      "victory_bar_wins": 21,
+      "true_win_prob": 0.65,
+      "power": 0.35754089725996574
+    },
+    {
+      "n_eff": 30,
+      "victory_bar_wins": 21,
+      "true_win_prob": 0.7,
+      "power": 0.5888086852407218
+    },
+    {
+      "n_eff": 30,
+      "victory_bar_wins": 21,
+      "true_win_prob": 0.75,
+      "power": 0.8034066369495109
+    },
+    {
+      "n_eff": 30,
+      "victory_bar_wins": 21,
+      "true_win_prob": 0.8,
+      "power": 0.9389128517113446
+    },
+    {
+      "n_eff": 32,
+      "victory_bar_wins": 23,
+      "true_win_prob": 0.65,
+      "power": 0.2684591018321572
+    },
+    {
+      "n_eff": 32,
+      "victory_bar_wins": 23,
+      "true_win_prob": 0.7,
+      "power": 0.4950776801436089
+    },
+    {
+      "n_eff": 32,
+      "victory_bar_wins": 23,
+      "true_win_prob": 0.75,
+      "power": 0.7366590374983459
+    },
+    {
+      "n_eff": 32,
+      "victory_bar_wins": 23,
+      "true_win_prob": 0.8,
+      "power": 0.9101676085907248
+    },
+    {
+      "n_eff": 34,
+      "victory_bar_wins": 24,
+      "true_win_prob": 0.65,
+      "power": 0.3125559367428386
+    },
+    {
+      "n_eff": 34,
+      "victory_bar_wins": 24,
+      "true_win_prob": 0.7,
+      "power": 0.5544594378935463
+    },
+    {
+      "n_eff": 34,
+      "victory_bar_wins": 24,
+      "true_win_prob": 0.75,
+      "power": 0.7894446360842515
+    },
+    {
+      "n_eff": 34,
+      "victory_bar_wins": 24,
+      "true_win_prob": 0.8,
+      "power": 0.9379729217846745
+    },
+    {
+      "n_eff": 36,
+      "victory_bar_wins": 25,
+      "true_win_prob": 0.65,
+      "power": 0.35630916776795774
+    },
+    {
+      "n_eff": 36,
+      "victory_bar_wins": 25,
+      "true_win_prob": 0.7,
+      "power": 0.6090759229080164
+    },
+    {
+      "n_eff": 36,
+      "victory_bar_wins": 25,
+      "true_win_prob": 0.75,
+      "power": 0.8329340421225866
+    },
+    {
+      "n_eff": 36,
+      "victory_bar_wins": 25,
+      "true_win_prob": 0.8,
+      "power": 0.9575722766945559
+    }
+  ]
+}

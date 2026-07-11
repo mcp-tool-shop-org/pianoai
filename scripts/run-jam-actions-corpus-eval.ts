@@ -99,7 +99,8 @@ type SampleFilter =
   | "slice18-cohort"
   | "slice19-fresh"
   | "slice19-cohort"
-  | "slice21-schumann";
+  | "slice21-schumann"
+  | "b1-confirm-cohort";
 
 const SAMPLE_FILTERS: readonly SampleFilter[] = [
   "all",
@@ -110,6 +111,7 @@ const SAMPLE_FILTERS: readonly SampleFilter[] = [
   "slice19-fresh",
   "slice19-cohort",
   "slice21-schumann",
+  "b1-confirm-cohort",
 ] as const;
 
 /**
@@ -217,6 +219,59 @@ const SLICE_19_COHORT_RECORD_IDS: readonly string[] = [
  */
 const SLICE_21_SCHUMANN_RECORD_IDS: readonly string[] = [
   "schumann-traumerei:m045-048:piano:mcp-session:v1",
+];
+
+/**
+ * Finetune Arc v2 (B-1): the 36-record confirmatory cohort. Preregistered in
+ * experiments/finetune-arc-v2/P0-LOCK.md BEFORE any model call; derived
+ * deterministically by experiments/finetune-arc-v2/scripts/derive-b1-cohort.ts
+ * (which also verifies this const against the derivation via --verify).
+ * Strata: CL = all 12 clair-de-lune test records (never in any training
+ * corpus); LG = the 15 train-song slice19-cohort records (sealed-history
+ * continuity); NW = 9 additional train records, seeded sample
+ * (mulberry32(20260712) over the sorted 88 remaining candidates).
+ * E1/E2 iteration lists empty by design — B-1 is an E3-only measurement.
+ */
+const B1_CONFIRM_COHORT_RECORD_IDS: readonly string[] = [
+  // Stratum CL — clair-de-lune confirmatory (test split, all 12)
+  "clair-de-lune:m001-004:piano:mcp-session:v1",
+  "clair-de-lune:m005-008:piano:mcp-session:v1",
+  "clair-de-lune:m015-018:piano:mcp-session:v1",
+  "clair-de-lune:m019-022:piano:mcp-session:v1",
+  "clair-de-lune:m023-026:piano:mcp-session:v1",
+  "clair-de-lune:m027-030:piano:mcp-session:v1",
+  "clair-de-lune:m031-034:piano:mcp-session:v1",
+  "clair-de-lune:m035-038:piano:mcp-session:v1",
+  "clair-de-lune:m037-040:piano:mcp-session:v1",
+  "clair-de-lune:m041-044:piano:mcp-session:v1",
+  "clair-de-lune:m051-054:piano:mcp-session:v1",
+  "clair-de-lune:m055-058:piano:mcp-session:v1",
+  // Stratum LG — the 15 train-song slice19-cohort records
+  "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1",
+  "bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1",
+  "bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1",
+  "bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1",
+  "pathetique-mvt2:m001-004:piano:mcp-session:v1",
+  "pathetique-mvt2:m009-012:piano:mcp-session:v1",
+  "pathetique-mvt2:m017-020:piano:mcp-session:v1",
+  "pathetique-mvt2:m025-028:piano:mcp-session:v1",
+  "schumann-traumerei:m001-004:piano:mcp-session:v1",
+  "schumann-traumerei:m045-048:piano:mcp-session:v1",
+  "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1",
+  "chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1",
+  "pathetique-mvt2:m029-032:piano:mcp-session:v1",
+  "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1",
+  "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1",
+  // Stratum NW — seeded new train-song records
+  "bach-prelude-c-major-bwv846:m021-024:piano:mcp-session:v1",
+  "bach-prelude-c-major-bwv846:m061-062:piano:mcp-session:v1",
+  "chopin-nocturne-op9-no2:m013-016:piano:mcp-session:v1",
+  "chopin-nocturne-op9-no2:m037-040:piano:mcp-session:v1",
+  "chopin-prelude-e-minor:m021-024:piano:mcp-session:v1",
+  "fur-elise:m013-016:piano:mcp-session:v1",
+  "mozart-k545-mvt1:m009-012:piano:mcp-session:v1",
+  "mozart-k545-mvt1:m017-020:piano:mcp-session:v1",
+  "pathetique-mvt2:m021-024:piano:mcp-session:v1",
 ];
 
 /** D-B1-004: LLM backend selection — same three options run-llm-eval.ts exposes. */
@@ -872,6 +927,16 @@ if (opts.sampleFilter === "enriched-only") {
   filteredE2Pairs = [];
   filteredE3Ids = [...SLICE_19_COHORT_RECORD_IDS];
   filteredE3ToolIds = [...SLICE_19_COHORT_RECORD_IDS];
+} else if (opts.sampleFilter === "b1-confirm-cohort") {
+  // Finetune Arc v2 (B-1): the 36-record confirmatory cohort across all 4
+  // conditions (text_only/full/random_midi via e3, tool_inspected via
+  // e3-tool). E1/E2 iteration lists empty — B-1 is an E3-only measurement.
+  // Iteration list REPLACES the plan (several ids, incl. the whole
+  // clair-de-lune test split, are not in the sampler's E3 plan).
+  filteredE1Ids = [];
+  filteredE2Pairs = [];
+  filteredE3Ids = [...B1_CONFIRM_COHORT_RECORD_IDS];
+  filteredE3ToolIds = [...B1_CONFIRM_COHORT_RECORD_IDS];
 } else if (opts.sampleFilter === "slice21-schumann") {
   // Slice 21: schumann-traumerei:m045-048 R6-aware enrichment remediation.
   // Reruns fresh E3 n=3 on this single record across all 4 conditions (full,
@@ -910,6 +975,8 @@ if (opts.sampleFilter !== "all") {
               ? " (Slice 19 fresh-3 records: pathetique m029, bach m049, bach m053)"
               : opts.sampleFilter === "slice19-cohort"
                 ? " (Slice 19 unified 16-record cohort: 13 Slice 18 + 3 fresh)"
+                : opts.sampleFilter === "b1-confirm-cohort"
+                  ? " (Finetune Arc v2 B-1 36-record confirmatory cohort: 12 CL + 15 LG + 9 NW)"
                 : opts.sampleFilter === "slice21-schumann"
                   ? " (Slice 21 schumann m045-048 R6-remediation single record)"
                   : ""),
