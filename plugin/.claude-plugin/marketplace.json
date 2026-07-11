@@ -12,7 +12,7 @@
       "name": "ai-jam-sessions",
       "source": "./",
       "description": "Piano, guitar, and vocal player with built-in audio engine — plays through speakers, no external software required.",
-      "version": "1.5.0",
+      "version": "2.0.0",
       "author": {
         "name": "mcp-tool-shop"
       },
