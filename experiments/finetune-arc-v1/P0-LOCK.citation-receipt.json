@@ -1,0 +1,494 @@
+{
+  "verdict": "escalate",
+  "confidence": 0.8,
+  "retryable": false,
+  "revision_hint": null,
+  "lens_results": [
+    {
+      "lens": "citation_groundedness:0:f34",
+      "model_family": "local",
+      "model_id": "mistral-small:24b",
+      "outcome": "uncertain",
+      "findings": [],
+      "confidence": 0.8,
+      "sees_reasoning": false,
+      "latency_ms": null,
+      "errored": false,
+      "prompt_hash": "96bb2ef1b1f98aeebe694d42e8e365dc4686a92fac67a1f95548c51f9da7a83f"
+    },
+    {
+      "lens": "citation_groundedness:1:f35",
+      "model_family": "local",
+      "model_id": "mistral-small:24b",
+      "outcome": "pass",
+      "findings": [],
+      "confidence": 0.9,
+      "sees_reasoning": false,
+      "latency_ms": null,
+      "errored": false,
+      "prompt_hash": "bb96916428e8a24008aee535251e152a3e7763bd95bf23ad43a6d9bddf1e920b"
+    },
+    {
+      "lens": "citation_groundedness:2:f36",
+      "model_family": "local",
+      "model_id": "mistral-small:24b",
+      "outcome": "pass",
+      "findings": [],
+      "confidence": 0.9,
+      "sees_reasoning": false,
+      "latency_ms": null,
+      "errored": false,
+      "prompt_hash": "803dcc9f2b1af67a4a91f621c1ae71a3bed8fdce4a187aca71d814dc6d539dae"
+    },
+    {
+      "lens": "citation_groundedness:3:f37",
+      "model_family": "local",
+      "model_id": "mistral-small:24b",
+      "outcome": "uncertain",
+      "findings": [],
+      "confidence": 0.9,
+      "sees_reasoning": false,
+      "latency_ms": null,
+      "errored": false,
+      "prompt_hash": "cfe593b6bda4b86ee922183d5aea7544e1df90a5e2a2ed8535f7965240c9f2aa"
+    },
+    {
+      "lens": "citation_groundedness:4:f38",
+      "model_family": "local",
+      "model_id": "mistral-small:24b",
+      "outcome": "pass",
+      "findings": [],
+      "confidence": 0.9,
+      "sees_reasoning": false,
+      "latency_ms": null,
+      "errored": false,
+      "prompt_hash": "35760e3ced34f3bc2dbaa4720c1c892dd91d04d807f2a1a52ffa447634097ca1"
+    },
+    {
+      "lens": "citation_groundedness:5:f39",
+      "model_family": "local",
+      "model_id": "mistral-small:24b",
+      "outcome": "uncertain",
+      "findings": [],
+      "confidence": 1.0,
+      "sees_reasoning": false,
+      "latency_ms": null,
+      "errored": false,
+      "prompt_hash": "bb2920b85e7588d2fa57e1f53fa4bfb3fb19301362ae0071af2d2491df83e095"
+    },
+    {
+      "lens": "citation_groundedness:6:f40",
+      "model_family": "local",
+      "model_id": "mistral-small:24b",
+      "outcome": "pass",
+      "findings": [],
+      "confidence": 0.9,
+      "sees_reasoning": false,
+      "latency_ms": null,
+      "errored": false,
+      "prompt_hash": "502da17ab2803daaf282fe9e0f6aed20c8934e37d90d7be46192457ead35de52"
+    },
+    {
+      "lens": "citation_groundedness:7:f41",
+      "model_family": "local",
+      "model_id": "mistral-small:24b",
+      "outcome": "uncertain",
+      "findings": [],
+      "confidence": 0.9,
+      "sees_reasoning": false,
+      "latency_ms": null,
+      "errored": false,
+      "prompt_hash": "153278d352579ad86896ad8c66f906a08deb321ec2221ba9a284d25085a13a95"
+    },
+    {
+      "lens": "citation_groundedness:8:f42",
+      "model_family": "local",
+      "model_id": "mistral-small:24b",
+      "outcome": "uncertain",
+      "findings": [],
+      "confidence": 0.9,
+      "sees_reasoning": false,
+      "latency_ms": null,
+      "errored": false,
+      "prompt_hash": "710b2d3471dd439ae884bb6301a942a205ec76e9bcef6981cbc884ea19779027"
+    },
+    {
+      "lens": "citation_groundedness:9:f43",
+      "model_family": "local",
+      "model_id": "mistral-small:24b",
+      "outcome": "uncertain",
+      "findings": [],
+      "confidence": 0.9,
+      "sees_reasoning": false,
+      "latency_ms": null,
+      "errored": false,
+      "prompt_hash": "480d390af629dc1b0bb9ed028b2ae8c41ecb11035aa750e46754224043324bbb"
+    },
+    {
+      "lens": "citation_groundedness:10:f44a",
+      "model_family": "local",
+      "model_id": "mistral-small:24b",
+      "outcome": "pass",
+      "findings": [],
+      "confidence": 0.9,
+      "sees_reasoning": false,
+      "latency_ms": null,
+      "errored": false,
+      "prompt_hash": "239b4fef279b786d2ab5099d00943c7c1683ec42184ac17dd341f90161bd0f49"
+    },
+    {
+      "lens": "citation_groundedness:11:f44b",
+      "model_family": "local",
+      "model_id": "mistral-small:24b",
+      "outcome": "pass",
+      "findings": [],
+      "confidence": 0.9,
+      "sees_reasoning": false,
+      "latency_ms": null,
+      "errored": false,
+      "prompt_hash": "727ffa1ad0d953dc8d2bc42221ad17e5a54d637f09c7e0c3d3eb31659ad04f8d"
+    },
+    {
+      "lens": "citation_groundedness:12:f45",
+      "model_family": "local",
+      "model_id": "mistral-small:24b",
+      "outcome": "pass",
+      "findings": [],
+      "confidence": 0.9,
+      "sees_reasoning": false,
+      "latency_ms": null,
+      "errored": false,
+      "prompt_hash": "ae2b08c017b9ff756d622db9d7e8506a16b129596fa84ef8c1defeca05c692ed"
+    },
+    {
+      "lens": "citation_groundedness:13:f46",
+      "model_family": "local",
+      "model_id": "mistral-small:24b",
+      "outcome": "uncertain",
+      "findings": [],
+      "confidence": 0.9,
+      "sees_reasoning": false,
+      "latency_ms": null,
+      "errored": false,
+      "prompt_hash": "927d730945830f4cdcc773f11528fa450d72e4adf63426874d9f4d494801fded"
+    }
+  ],
+  "pairwise_rho": {},
+  "citation_results": [
+    {
+      "citation_id": "f34",
+      "identifier": "arXiv:2406.18518",
+      "existence": "resolved",
+      "finding_match": "not_addressed",
+      "verdict": "escalate",
+      "action": "RETRIEVE FULL TEXT",
+      "detail": "claim is not addressed in the title+abstract",
+      "source_title": "APIGen: Automated Pipeline for Generating Verifiable and Diverse Function-Calling Datasets",
+      "source_abstract": "The advancement of function-calling agent models requires diverse, reliable, and high-quality datasets. This paper presents APIGen, an automated data generation pipeline designed to synthesize verifiable high-quality datasets for function-calling applications. We leverage APIGen and collect 3,673 executable APIs across 21 different categories to generate diverse function-calling datasets in a scalable and structured manner. Each data in our dataset is verified through three hierarchical stages: format checking, actual function executions, and semantic verification, ensuring its reliability and correctness. We demonstrate that models trained with our curated datasets, even with only 7B parameters, can achieve state-of-the-art performance on the Berkeley Function-Calling Benchmark, outperforming multiple GPT-4 models. Moreover, our 1B model achieves exceptional performance, surpassing GPT-3.5-Turbo and Claude-3 Haiku. We release a dataset containing 60,000 high-quality entries, aiming to advance the field of function-calling agent domains. The dataset is available on Huggingface: https://huggingface.co/datasets/Salesforce/xlam-function-calling-60k and the project homepage: https://apigen-pipeline.github.io/",
+      "supporting_span": null,
+      "confidence": 0.8
+    },
+    {
+      "citation_id": "f35",
+      "identifier": "arXiv:2410.12952",
+      "existence": "resolved",
+      "finding_match": "supported",
+      "verdict": "accept",
+      "action": "OK",
+      "detail": "source supports the claim",
+      "source_title": "Facilitating Multi-turn Function Calling for LLMs via Compositional Instruction Tuning",
+      "source_abstract": "Large Language Models (LLMs) have exhibited significant potential in performing diverse tasks, including the ability to call functions or use external tools to enhance their performance. While current research on function calling by LLMs primarily focuses on single-turn interactions, this paper addresses the overlooked necessity for LLMs to engage in multi-turn function calling--critical for handling compositional, real-world queries that require planning with functions but not only use functions. To facilitate this, we introduce an approach, BUTTON, which generates synthetic compositional instruction tuning data via bottom-up instruction construction and top-down trajectory generation. In the bottom-up phase, we generate simple atomic tasks based on real-world scenarios and build compositional tasks using heuristic strategies based on atomic tasks. Corresponding function definitions are then synthesized for these compositional tasks. The top-down phase features a multi-agent environment where interactions among simulated humans, assistants, and tools are utilized to gather multi-turn function calling trajectories. This approach ensures task compositionality and allows for effective function and trajectory generation by examining atomic tasks within compositional tasks. We produce a dataset BUTTONInstruct comprising 8k data points and demonstrate its effectiveness through extensive experiments across various LLMs.",
+      "supporting_span": "We produce a dataset BUTTONInstruct comprising 8k data points and demonstrate its effectiveness through extensive experiments across various LLMs.",
+      "confidence": 0.9
+    },
+    {
+      "citation_id": "f36",
+      "identifier": "arXiv:2410.04717",
+      "existence": "resolved",
+      "finding_match": "supported",
+      "verdict": "accept",
+      "action": "OK",
+      "detail": "source supports the claim",
+      "source_title": "$\\textbf{Only-IF}$:Revealing the Decisive Effect of Instruction Diversity on Generalization",
+      "source_abstract": "Understanding and accurately following instructions is critical for large language models (LLMs) to be effective across diverse tasks. In this work, we rigorously examine the key factors that enable models to generalize to unseen instructions, providing insights to guide the collection of data for instruction-tuning. Through controlled experiments, inspired by the Turing-complete Markov algorithm, we demonstrate that such generalization $\\textbf{only emerges}$ when training data is diversified enough across semantic domains. Our findings also reveal that merely diversifying within limited domains fails to ensure robust generalization. In contrast, cross-domain data diversification, even under constrained data budgets, significantly enhances a model's adaptability. We further extend our analysis to real-world scenarios, including fine-tuning of $\\textit{$\\textbf{specialist}$}$ and $\\textit{$\\textbf{generalist}$}$ models. In both cases, we demonstrate that 1) better performance can be achieved by increasing the diversity of an established dataset while keeping the data size constant, and 2) when scaling up the data, diversifying the semantics of instructions is more effective than simply increasing the quantity of similar data. Our research provides important insights for dataset collation, particularly when optimizing model performance by expanding training data for both specialist and generalist scenarios. We show that careful consideration of data diversification is key: training specialist models with data extending beyond their core domain leads to significant performance improvements, while generalist models benefit from diverse data mixtures that enhance their overall instruction-following capabilities across a wide range of applications. Our results highlight the critical role of strategic diversification and offer clear guidelines for improving data quality.",
+      "supporting_span": "such generalization only emerges when training data is diversified enough across semantic domains.",
+      "confidence": 0.9
+    },
+    {
+      "citation_id": "f37",
+      "identifier": "arXiv:2606.11643",
+      "existence": "resolved",
+      "finding_match": "not_addressed",
+      "verdict": "escalate",
+      "action": "RETRIEVE FULL TEXT",
+      "detail": "claim is not addressed in the title+abstract",
+      "source_title": "Improving Cross-Format Robustness in Language Models with Multi-Format Training",
+      "source_abstract": "Large language models often remain sensitive to answer format: a question solved correctly in one form may fail in another semantically equivalent form. To study this gap, we define cross-format robustness as the extent to which a model answers the same underlying question consistently across formats. We then compare full-format training with FormatMix, which expands only a subset of training items into multiple equivalent formats using either random or targeted selection. Across GLM4 and Llama-3.1, multi-format supervision consistently improves both task performance and cross-format robustness, whereas Multiple-choice question (MCQ)-only supervision alone brings little benefit and can even reduce robustness. We further find that expanding only about 30% of the training set into multiple formats often recovers most of the gain from full-format training, and this effect appears across the model families and sizes we study. These results suggest that format diversity, rather than additional supervision alone, is the key driver of robustness. That lightweight multi-format augmentation is a practical way to make LLMs less sensitive to answer format without changing the base model.",
+      "supporting_span": null,
+      "confidence": 0.9
+    },
+    {
+      "citation_id": "f38",
+      "identifier": "arXiv:2507.02856",
+      "existence": "resolved",
+      "finding_match": "supported",
+      "verdict": "accept",
+      "action": "OK",
+      "detail": "source supports the claim",
+      "source_title": "Answer Matching Outperforms Multiple Choice for Language Model Evaluation",
+      "source_abstract": "Multiple choice benchmarks have long been the workhorse of language model evaluation because grading multiple choice is objective and easy to automate. However, we show multiple choice questions from popular benchmarks can often be answered without even seeing the question. These shortcuts arise from a fundamental limitation of discriminative evaluation not shared by evaluations of the model's free-form, generative answers. Until recently, there appeared to be no viable, scalable alternative to multiple choice--but, we show that this has changed. We consider generative evaluation via what we call answer matching: Give the candidate model the question without the options, have it generate a free-form response, then use a modern language model with the reference answer to determine if the response matches the reference. To compare the validity of different evaluation strategies, we annotate MMLU-Pro and GPQA-Diamond to obtain human grading data, and measure the agreement of each evaluation approach. We find answer matching using recent models--even small ones--achieves near-perfect agreement, in the range of inter-annotator agreement. In contrast, both multiple choice evaluation and using LLM-as-a-judge without reference answers aligns poorly with human grading. Improving evaluations via answer matching is not merely a conceptual concern: the rankings of several models change significantly when evaluating their free-form responses with answer matching. In light of these findings, we discuss how to move the evaluation ecosystem from multiple choice to answer matching.",
+      "supporting_span": "We find answer matching using recent models--even small ones--achieves near-perfect agreement, in the range of inter-annotator agreement. In contrast, both multiple choice evaluation and using LLM-as-a-judge without reference answers aligns poorly with human grading.",
+      "confidence": 0.9
+    },
+    {
+      "citation_id": "f39",
+      "identifier": "arXiv:2606.00135",
+      "existence": "resolved",
+      "finding_match": "not_addressed",
+      "verdict": "escalate",
+      "action": "RETRIEVE FULL TEXT",
+      "detail": "claim is not addressed in the title+abstract",
+      "source_title": "On Effectiveness and Efficiency of Agentic Tool-calling and RL Training",
+      "source_abstract": "Tool-calling is a central component of modern large language model (LLM) agents, equipping them with skills beyond their parametric knowledge. This paper studies tool-calling along two complementary axes: effectiveness, i.e., how this capability is measured, and efficiency, i.e., how it is learned. On effectiveness, we systematically analyze tool-calling evaluation pipelines and show that results can be highly sensitive to seemingly minor, often undocumented implementation choices including the random seed, system prompt, multi-turn template construction, and how prior interaction/reasoning history is carried forward. These choices can lead to substantial differences in reported performance, especially in multi-turn settings where without rigorous standardization, leaderboard rankings are unreliable. On efficiency, we examine standard reinforcement learning (RL) for tool-calling and identify two sources of computational waste: (i) during rollouts, many prompts produce no learning signal, and (ii) during policy updates, optimization incurs high computational cost. Guided by these findings, we introduce two techniques that accelerate RL-based tool-calling training, achieving substantial wall-clock speedup without degrading performance.",
+      "supporting_span": null,
+      "confidence": 1.0
+    },
+    {
+      "citation_id": "f40",
+      "identifier": "arXiv:2603.16759",
+      "existence": "resolved",
+      "finding_match": "supported",
+      "verdict": "accept",
+      "action": "OK",
+      "detail": "source supports the claim",
+      "source_title": "TurnWise: The Gap between Single- and Multi-turn Language Model Capabilities",
+      "source_abstract": "Multi-turn conversations are a common and critical mode of language model interaction. However, current open training and evaluation data focus on single-turn settings, failing to capture the additional dimension of these longer interactions. To understand this multi-/single-turn gap, we first introduce a new benchmark, TurnWiseEval, for multi-turn capabilities that is directly comparable to single-turn chat evaluation. Our evaluation isolates multi-turn specific conversational ability through pairwise comparison to equivalent single-turn settings. We additionally introduce our synthetic multi-turn data pipeline TurnWiseData which allows the scalable generation of multi-turn training data. Our experiments with Olmo 3 show that training with multi-turn data is vital to achieving strong multi-turn chat performance, and that including as little as 10k multi-turn conversations during post-training can lead to a 12% improvement on TurnWiseEval.",
+      "supporting_span": "including as little as 10k multi-turn conversations during post-training can lead to a 12% improvement on TurnWiseEval.",
+      "confidence": 0.9
+    },
+    {
+      "citation_id": "f41",
+      "identifier": "arXiv:2508.11383",
+      "existence": "resolved",
+      "finding_match": "not_addressed",
+      "verdict": "escalate",
+      "action": "RETRIEVE FULL TEXT",
+      "detail": "claim is not addressed in the title+abstract",
+      "source_title": "When Punctuation Matters: A Large-Scale Comparison of Prompt Robustness Methods for LLMs",
+      "source_abstract": "Large Language Models (LLMs) are highly sensitive to subtle, non-semantic variations in prompt phrasing and formatting. In this work, we present the first systematic evaluation of 5 methods for improving prompt robustness within a unified experimental framework. We benchmark these techniques on 8 models from Llama, Qwen and Gemma families across 52 tasks from Natural Instructions dataset. Our evaluation covers robustness methods from both fine-tuned and in-context learning paradigms, and tests their generalization against multiple types of distribution shifts. Finally, we extend our analysis to GPT-4.1 and DeepSeek V3 to assess frontier models' current robustness to format perturbations. Our findings offer actionable insights into the relative effectiveness of these robustness methods, enabling practitioners to make informed decisions when aiming for stable and reliable LLM performance in real-world applications. Code: https://github.com/AIRI-Institute/when-punctuation-matters.",
+      "supporting_span": null,
+      "confidence": 0.9
+    },
+    {
+      "citation_id": "f42",
+      "identifier": "arXiv:2509.03934",
+      "existence": "resolved",
+      "finding_match": "not_addressed",
+      "verdict": "escalate",
+      "action": "RETRIEVE FULL TEXT",
+      "detail": "claim is not addressed in the title+abstract",
+      "source_title": "SelfAug: Mitigating Catastrophic Forgetting in Retrieval-Augmented Generation via Distribution Self-Alignment",
+      "source_abstract": "Recent advancements in large language models (LLMs) have revolutionized natural language processing through their remarkable capabilities in understanding and executing diverse tasks. While supervised fine-tuning, particularly in Retrieval-Augmented Generation (RAG) scenarios, effectively enhances task-specific performance, it often leads to catastrophic forgetting, where models lose their previously acquired knowledge and general capabilities. Existing solutions either require access to general instruction data or face limitations in preserving the model's original distribution. To overcome these limitations, we propose SelfAug, a self-distribution alignment method that aligns input sequence logits to preserve the model's semantic distribution, thereby mitigating catastrophic forgetting and improving downstream performance. Extensive experiments demonstrate that SelfAug achieves a superior balance between downstream learning and general capability retention. Our comprehensive empirical analysis reveals a direct correlation between distribution shifts and the severity of catastrophic forgetting in RAG scenarios, highlighting how the absence of RAG capabilities in general instruction tuning leads to significant distribution shifts during fine-tuning. Our findings not only advance the understanding of catastrophic forgetting in RAG contexts but also provide a practical solution applicable across diverse fine-tuning scenarios. Our code is publicly available at https://github.com/USTC-StarTeam/SelfAug.",
+      "supporting_span": null,
+      "confidence": 0.9
+    },
+    {
+      "citation_id": "f43",
+      "identifier": "arXiv:2410.04587",
+      "existence": "resolved",
+      "finding_match": "not_addressed",
+      "verdict": "escalate",
+      "action": "RETRIEVE FULL TEXT",
+      "detail": "claim is not addressed in the title+abstract",
+      "source_title": "Hammer: Robust Function-Calling for On-Device Language Models via Function Masking",
+      "source_abstract": "Large language models have demonstrated impressive value in performing as autonomous agents when equipped with external tools and API calls. Nonetheless, effectively harnessing their potential for executing complex tasks crucially relies on enhancements in their function calling capabilities. This paper identifies a critical gap in existing function calling models, where performance varies significantly across benchmarks, often due to being misled by specific naming conventions. To address such an issue, we introduce Hammer, a novel family of foundation models specifically engineered for on-device function calling. Hammer employs an augmented dataset that enhances models' sensitivity to irrelevant functions and incorporates function masking techniques to minimize misleading. Our empirical evaluations reveal that Hammer not only outperforms larger models but also demonstrates robust generalization across diverse benchmarks, achieving sota results. Our open source contributions include a specialized dataset for irrelevance detection, a tuning framework for enhanced generalization, and the Hammer models, establishing a new standard for function calling performance.",
+      "supporting_span": null,
+      "confidence": 0.9
+    },
+    {
+      "citation_id": "f44a",
+      "identifier": "arXiv:2404.01413",
+      "existence": "resolved",
+      "finding_match": "supported",
+      "verdict": "accept",
+      "action": "OK",
+      "detail": "source supports the claim",
+      "source_title": "Is Model Collapse Inevitable? Breaking the Curse of Recursion by Accumulating Real and Synthetic Data",
+      "source_abstract": "The proliferation of generative models, combined with pretraining on web-scale data, raises a timely question: what happens when these models are trained on their own generated outputs? Recent investigations into model-data feedback loops proposed that such loops would lead to a phenomenon termed model collapse, under which performance progressively degrades with each model-data feedback iteration until fitted models become useless. However, those studies largely assumed that new data replace old data over time, where an arguably more realistic assumption is that data accumulate over time. In this paper, we ask: what effect does accumulating data have on model collapse? We empirically study this question by pretraining sequences of language models on text corpora. We confirm that replacing the original real data by each generation's synthetic data does indeed tend towards model collapse, then demonstrate that accumulating the successive generations of synthetic data alongside the original real data avoids model collapse; these results hold across a range of model sizes, architectures, and hyperparameters. We obtain similar results for deep generative models on other types of real data: diffusion models for molecule conformation generation and variational autoencoders for image generation. To understand why accumulating data can avoid model collapse, we use an analytically tractable framework introduced by prior work in which a sequence of linear models are fit to the previous models' outputs. Previous work used this framework to show that if data are replaced, the test error increases with the number of model-fitting iterations; we extend this argument to prove that if data instead accumulate, the test error has a finite upper bound independent of the number of iterations, meaning model collapse no longer occurs.",
+      "supporting_span": "we extend this argument to prove that if data instead accumulate, the test error has a finite upper bound independent of the number of iterations, meaning model collapse no longer occurs.",
+      "confidence": 0.9
+    },
+    {
+      "citation_id": "f44b",
+      "identifier": "arXiv:2410.16713",
+      "existence": "resolved",
+      "finding_match": "supported",
+      "verdict": "accept",
+      "action": "OK",
+      "detail": "source supports the claim",
+      "source_title": "Collapse or Thrive? Perils and Promises of Synthetic Data in a Self-Generating World",
+      "source_abstract": "What happens when generative machine learning models are pretrained on web-scale datasets containing data generated by earlier models? Some prior work warns of \"model collapse\" as the web is overwhelmed by synthetic data; other work suggests the problem can be contained (i.e. collapse can be avoided) by managing how available data are used in pretraining. In this paper, we report experiments on three ways of using data (training-workflows), across three generative model task-settings (multivariate Gaussian estimation, kernel density estimation, and language-model fine-tuning) to further confirm the possibility of containment: (a) we confirm that the training-workflow of {\\it replacing} all real data by successive generations of purely synthetic data indeed suffers model collapse in all task-settings studied; (b) we consider the training-workflow of {\\it accumulating} synthetic data alongside real data and training on all data combined and confirming that, although the proportion of real data eventually becomes zero, models remain stable and their test losses do not diverge under this training-workflow; (c) we consider a training-workflow where real and synthetic data accumulate together but successive generations of pretraining are constrained to use fixed-size data subsets each generation. In this workflow, we observe slow and gradual rather than explosive degradation of test loss performance across generations. Our insights are particularly important when forecasting whether future frontier generative models will collapse or thrive, and our results open avenues for empirically and mathematically studying the context-dependent value of synthetic data.",
+      "supporting_span": "we consider the training-workflow of accumulating synthetic data alongside real data and training on all data combined and confirming that, although the proportion of real data eventually becomes zero, models remain stable and their test losses do not diverge under this training-workflow;",
+      "confidence": 0.9
+    },
+    {
+      "citation_id": "f45",
+      "identifier": "arXiv:2310.05492",
+      "existence": "resolved",
+      "finding_match": "supported",
+      "verdict": "accept",
+      "action": "OK",
+      "detail": "source supports the claim",
+      "source_title": "How Abilities in Large Language Models are Affected by Supervised Fine-tuning Data Composition",
+      "source_abstract": "Large language models (LLMs) with enormous pre-training tokens and parameters emerge diverse abilities, including math reasoning, code generation, and instruction following. These abilities are further enhanced by supervised fine-tuning (SFT). While the open-source community has explored ad-hoc SFT for enhancing individual capabilities, proprietary LLMs exhibit versatility across various skills. Therefore, understanding the facilitation of multiple abilities via SFT is paramount. In this study, we specifically focuses on the interplay of data composition between mathematical reasoning, code generation, and general human-aligning abilities during SFT. We propose four intriguing research questions to explore the association between model performance and various factors including data amount, composition ratio, model size and SFT strategies. Our experiments reveal that distinct capabilities scale differently and larger models generally show superior performance with same amount of data. Mathematical reasoning and code generation consistently improve with increasing data amount, whereas general abilities plateau after roughly a thousand samples. Moreover, we observe data composition appears to enhance various abilities under limited data conditions, yet can lead to performance conflicts when data is plentiful. Our findings also suggest the amount of composition data influences performance more than the composition ratio. In analysis of SFT strategies, we find that sequentially learning multiple skills risks catastrophic forgetting. Our proposed Dual-stage Mixed Fine-tuning (DMT) strategy offers a promising solution to learn multiple abilities with different scaling patterns.",
+      "supporting_span": "data composition appears to enhance various abilities under limited data conditions, yet can lead to performance conflicts when data is plentiful. Our findings also suggest the amount of composition data influences performance more than the composition ratio.",
+      "confidence": 0.9
+    },
+    {
+      "citation_id": "f46",
+      "identifier": "arXiv:2506.09428",
+      "existence": "resolved",
+      "finding_match": "not_addressed",
+      "verdict": "escalate",
+      "action": "RETRIEVE FULL TEXT",
+      "detail": "claim is not addressed in the title+abstract",
+      "source_title": "Improved Supervised Fine-Tuning for Large Language Models to Mitigate Catastrophic Forgetting",
+      "source_abstract": "Supervised Fine-Tuning (SFT) is a critical step for enhancing the instruction-following capabilities of Large Language Models (LLMs) and adapting them to specialized domains. However, SFT often leads to a degradation of the model's general abilities, a phenomenon known as catastrophic forgetting. This problem is exacerbated when third-party practitioners fine-tune open-source models, as the original SFT data is typically not available. To address this challenge, we propose a novel and cost-effective SFT method that effectively mitigates catastrophic forgetting without requiring access to the original SFT data. Our approach first reconstructs the likely instruction distribution of the base model. It then employs a multi-model generation and filtering pipeline to synthesize a high-quality general-purpose dataset. This synthetic dataset is mixed with new, domain-specific data for fine-tuning. Experimental results show that our method not only preserves the model's capabilities in general domains but also improves task-specific performance, outperforming baselines that use publicly available SFT datasets.",
+      "supporting_span": null,
+      "confidence": 0.9
+    }
+  ],
+  "receipt": {
+    "id": "prism-01kx7tthdc6h6d5e8nr442hngw",
+    "pre_strip_hash": "a1943f05530e069a8dbbdefc73a846979cf89c5b279069aeb99b30e7faf441ba",
+    "post_strip_hash": "a1943f05530e069a8dbbdefc73a846979cf89c5b279069aeb99b30e7faf441ba",
+    "timestamp": "2026-07-11 05:36:23.468845+00:00",
+    "verifier_models": [
+      "mistral-small:24b"
+    ],
+    "pairwise_rho": {},
+    "reasoning_visibility_mode": "stripped",
+    "lens_prompt_hashes": {
+      "citation_groundedness:0:f34": "96bb2ef1b1f98aeebe694d42e8e365dc4686a92fac67a1f95548c51f9da7a83f",
+      "citation_groundedness:1:f35": "bb96916428e8a24008aee535251e152a3e7763bd95bf23ad43a6d9bddf1e920b",
+      "citation_groundedness:2:f36": "803dcc9f2b1af67a4a91f621c1ae71a3bed8fdce4a187aca71d814dc6d539dae",
+      "citation_groundedness:3:f37": "cfe593b6bda4b86ee922183d5aea7544e1df90a5e2a2ed8535f7965240c9f2aa",
+      "citation_groundedness:4:f38": "35760e3ced34f3bc2dbaa4720c1c892dd91d04d807f2a1a52ffa447634097ca1",
+      "citation_groundedness:5:f39": "bb2920b85e7588d2fa57e1f53fa4bfb3fb19301362ae0071af2d2491df83e095",
+      "citation_groundedness:6:f40": "502da17ab2803daaf282fe9e0f6aed20c8934e37d90d7be46192457ead35de52",
+      "citation_groundedness:7:f41": "153278d352579ad86896ad8c66f906a08deb321ec2221ba9a284d25085a13a95",
+      "citation_groundedness:8:f42": "710b2d3471dd439ae884bb6301a942a205ec76e9bcef6981cbc884ea19779027",
+      "citation_groundedness:9:f43": "480d390af629dc1b0bb9ed028b2ae8c41ecb11035aa750e46754224043324bbb",
+      "citation_groundedness:10:f44a": "239b4fef279b786d2ab5099d00943c7c1683ec42184ac17dd341f90161bd0f49",
+      "citation_groundedness:11:f44b": "727ffa1ad0d953dc8d2bc42221ad17e5a54d637f09c7e0c3d3eb31659ad04f8d",
+      "citation_groundedness:12:f45": "ae2b08c017b9ff756d622db9d7e8506a16b129596fa84ef8c1defeca05c692ed",
+      "citation_groundedness:13:f46": "927d730945830f4cdcc773f11528fa450d72e4adf63426874d9f4d494801fded"
+    },
+    "artifact_type": "citations",
+    "retrieval_pins": [
+      {
+        "id": "f34",
+        "identifier": "arXiv:2406.18518",
+        "query": "https://export.arxiv.org/api/query?id_list=2406.18518",
+        "source_sha256": "746e0ac79c1e3b99ff4c3e7548cb589f029ccdacdb293a73d9093b07edd5b1ca",
+        "existence": "resolved"
+      },
+      {
+        "id": "f35",
+        "identifier": "arXiv:2410.12952",
+        "query": "https://export.arxiv.org/api/query?id_list=2410.12952",
+        "source_sha256": "8bc58c3441997231d1ada98a52b13d273114a2dfdcaf9cb0df68dd946403d4d2",
+        "existence": "resolved"
+      },
+      {
+        "id": "f36",
+        "identifier": "arXiv:2410.04717",
+        "query": "https://export.arxiv.org/api/query?id_list=2410.04717",
+        "source_sha256": "5241268d32b3c264062e27c938b95dfb37a74d6e55aee2c483ecb5457b4b988c",
+        "existence": "resolved"
+      },
+      {
+        "id": "f37",
+        "identifier": "arXiv:2606.11643",
+        "query": "https://export.arxiv.org/api/query?id_list=2606.11643",
+        "source_sha256": "765e98eb2aceb54502b0b5118bf3165bddceb3d4e859b3cdc8f43e2735de803b",
+        "existence": "resolved"
+      },
+      {
+        "id": "f38",
+        "identifier": "arXiv:2507.02856",
+        "query": "https://export.arxiv.org/api/query?id_list=2507.02856",
+        "source_sha256": "c9077935f6d1918b29eb53d6c67c0ff7118d4c6b811fa637b24285d9b53beb45",
+        "existence": "resolved"
+      },
+      {
+        "id": "f39",
+        "identifier": "arXiv:2606.00135",
+        "query": "https://export.arxiv.org/api/query?id_list=2606.00135",
+        "source_sha256": "d11a34e75c56fb06dcf4d93cacf1368bd4eb53ee4ec6f6294eb43c5de5b6f169",
+        "existence": "resolved"
+      },
+      {
+        "id": "f40",
+        "identifier": "arXiv:2603.16759",
+        "query": "https://export.arxiv.org/api/query?id_list=2603.16759",
+        "source_sha256": "ae31ea1e7fb0c344205f8783837936ff5899bac669707cc3d0fc6b4b8fb0fce9",
+        "existence": "resolved"
+      },
+      {
+        "id": "f41",
+        "identifier": "arXiv:2508.11383",
+        "query": "https://export.arxiv.org/api/query?id_list=2508.11383",
+        "source_sha256": "32db17d3c7b348c6cb8e792c1d252c8b228443f604d35f7bbf3a3033f98f5afa",
+        "existence": "resolved"
+      },
+      {
+        "id": "f42",
+        "identifier": "arXiv:2509.03934",
+        "query": "https://export.arxiv.org/api/query?id_list=2509.03934",
+        "source_sha256": "adf81ea4b994aee52648491045d7f55e451935450ddfcb1c6e36a7f09b76019a",
+        "existence": "resolved"
+      },
+      {
+        "id": "f43",
+        "identifier": "arXiv:2410.04587",
+        "query": "https://export.arxiv.org/api/query?id_list=2410.04587",
+        "source_sha256": "7302eddba63a97be76a05c60485abd566513acabe2888e9d05cbc97e36093b3a",
+        "existence": "resolved"
+      },
+      {
+        "id": "f44a",
+        "identifier": "arXiv:2404.01413",
+        "query": "https://export.arxiv.org/api/query?id_list=2404.01413",
+        "source_sha256": "7262a9076414a9c24adbdc37f8fa754c995314f497bd215668fe589bd58fbf0b",
+        "existence": "resolved"
+      },
+      {
+        "id": "f44b",
+        "identifier": "arXiv:2410.16713",
+        "query": "https://export.arxiv.org/api/query?id_list=2410.16713",
+        "source_sha256": "e24aeb967510eb8e954d983660c30c779443686ddda1618339fe901645c340d4",
+        "existence": "resolved"
+      },
+      {
+        "id": "f45",
+        "identifier": "arXiv:2310.05492",
+        "query": "https://export.arxiv.org/api/query?id_list=2310.05492",
+        "source_sha256": "2428c939ae16ed9ad331a722c728a090d2ff9745eede414e6e02ff33c68f831e",
+        "existence": "resolved"
+      },
+      {
+        "id": "f46",
+        "identifier": "arXiv:2506.09428",
+        "query": "https://export.arxiv.org/api/query?id_list=2506.09428",
+        "source_sha256": "4a40f49f119efdfe75c6479dc694b3b7ce30c6ee1c6c5564f241f878202333ae",
+        "existence": "resolved"
+      }
+    ],
+    "alg": "Ed25519",
+    "kid": "ed25519-91914c8d4e99814a",
+    "schema_version": 5,
+    "signature": "e55e40ececbcee9d2e228df51b2cbf8b24ff75fdbaacb730c1f754f10c5ef5c56472574b2bfc477e6fdf63be9d731777ced1ada0f643541ec0958f10781b7d09",
+    "replayable": true
+  }
+}
