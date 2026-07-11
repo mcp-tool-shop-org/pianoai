@@ -1,0 +1,20 @@
+2026-07-11T03:39:53-04:00 babysitter armed: podB pod=4uo46v2etww1gx 185.216.23.244:21610 -> E:/AI/ai-jam-sessions/experiments/finetune-arc-v1/artifacts/podB
+2026-07-11T03:40:55-04:00 stage0 complete
+2026-07-11T05:45:44-04:00 seed 512 complete — fetching adapters + receipt
+2026-07-11T07:50:54-04:00 seed 1024 complete — fetching adapters + receipt
+2026-07-11T08:20:39-04:00 P3 selection complete — fetching report
+2026-07-11T08:23:45-04:00 seed 512 gguf complete — fetching
+2026-07-11T08:27:33-04:00 ALL.DONE — final fetch + verify
+2026-07-11T08:27:38-04:00 missing jam-ft-v1-qwen25-seed1024-epoch4.q4_k_m.gguf — fetching
+jam-ft-v1-qwen25-seed1024-epoch4.q4_k_m.gguf: OK
+jam-ft-v1-qwen25-seed512-epoch2.q4_k_m.gguf: OK
+run-config-seed1024.json: OK
+run-config-seed512.json: OK
+selection-report.json: OK
+adapters-seed1024.tar.gz: OK
+adapters-seed512.tar.gz: OK
+llamacpp-commit.txt: OK
+pip-pins.txt: OK
+2026-07-11T08:30:20-04:00 checksums VERIFIED — terminating pod 4uo46v2etww1gx
+{"data":{"podTerminate":null}}
+2026-07-11T08:30:21-04:00 clean exit 0

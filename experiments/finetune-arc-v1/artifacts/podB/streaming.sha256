@@ -1,0 +1,7 @@
+81dd59488b68a63388060a5d628031053ab927a9397b27ef25d5925c442ff7ed  /workspace/arc/artifacts/adapters-seed512.tar.gz
+2c3407d13a8265b99cc5198ac684ed67ffc8ce0060999c1e10f2c585494bd693  /workspace/arc/artifacts/run-config-seed512.json
+5cdeaea52a69625a14462532c900c5f767ca8059726d0c173021f05ce7feb21a  /workspace/arc/artifacts/adapters-seed1024.tar.gz
+ccd97b788e5e48eca396d75df7ea9277acb9c586171ee20a47a04009db23067f  /workspace/arc/artifacts/run-config-seed1024.json
+a940c2d00bdc88bb5c6f1c227246d4b72e0a86df860f173937998cb2210e0433  /workspace/arc/artifacts/selection-report.json
+02f5285e47cac229ceaa62d3c4e27316ae350bc821bddc3a892d727ca9a114af  /workspace/arc/artifacts/jam-ft-v1-qwen25-seed512-epoch2.q4_k_m.gguf
+5dfa65d7a246ecb52f7691097f5d06104711ec7ae55c2a1e16fa1c8c9fa3fd0c  /workspace/arc/artifacts/jam-ft-v1-qwen25-seed1024-epoch4.q4_k_m.gguf

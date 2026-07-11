@@ -1,0 +1,233 @@
+{
+  "schema": "finetune-arc-v1-p3-selection/1.0.0",
+  "phase": "P3-v1",
+  "selection_rule": "max (jam_exact + (g_call+g_ans)/2)/2; tie -> max jam schema_validity; tie -> fewer epochs",
+  "inner_val": {
+    "jam_data": "/workspace/arc/data/sft-val-jam.jsonl",
+    "jam_data_sha256": "f0a9446f4810efa5e52f9c9c2dc1cc956a7b1a4d3132311f9dd3e03cac1c250f",
+    "jam_records": 25,
+    "grounding_data": "/workspace/arc/data/sft-val-grounding.jsonl",
+    "grounding_data_sha256": "b2060440c35cb9db552629909d621b50ef37e59d1e7bc82e1659b7ac67c0bbd5",
+    "grounding_sessions": 50,
+    "songs": [
+      "chopin-prelude-e-minor",
+      "fur-elise"
+    ],
+    "jam_turn_tasks": 75,
+    "grounding_call_tasks": 85,
+    "grounding_answer_tasks": 77
+  },
+  "tools_mcp41_sha256": "71f37328f516242fcc722795f7c1f998c494f192c9c7d661115e46847b31f64b",
+  "tools_inspector9_sha256": "9d1ca24a4e61a93dfcbbe375e2458f1f9ef27cb87bd30d1ee1778e46ed156c39",
+  "decoding": {
+    "strategy": "greedy",
+    "max_new_tokens": 512
+  },
+  "clair_de_lune_touched": false,
+  "results": {
+    "seed13": {
+      "checkpoints": {
+        "epoch2": {
+          "jam": {
+            "per_call_exact_match": 0.5,
+            "schema_validity": 1.0,
+            "gold_calls_total": 50,
+            "pred_calls_total": 50,
+            "matched": 25,
+            "valid_pred_calls": 50
+          },
+          "grounding": {
+            "g_call": 1.0,
+            "g_ans": 0.896104,
+            "grounding_score": 0.948052,
+            "call_tasks": 85,
+            "call_pass": 85,
+            "ans_tasks": 77,
+            "ans_pass": 69
+          },
+          "composite": 0.724026,
+          "wall_time_s": 352.3
+        },
+        "epoch4": {
+          "jam": {
+            "per_call_exact_match": 0.48,
+            "schema_validity": 1.0,
+            "gold_calls_total": 50,
+            "pred_calls_total": 49,
+            "matched": 24,
+            "valid_pred_calls": 49
+          },
+          "grounding": {
+            "g_call": 1.0,
+            "g_ans": 0.909091,
+            "grounding_score": 0.954545,
+            "call_tasks": 85,
+            "call_pass": 85,
+            "ans_tasks": 77,
+            "ans_pass": 70
+          },
+          "composite": 0.717272,
+          "wall_time_s": 370.1
+        },
+        "epoch8": {
+          "jam": {
+            "per_call_exact_match": 0.48,
+            "schema_validity": 1.0,
+            "gold_calls_total": 50,
+            "pred_calls_total": 49,
+            "matched": 24,
+            "valid_pred_calls": 49
+          },
+          "grounding": {
+            "g_call": 1.0,
+            "g_ans": 0.948052,
+            "grounding_score": 0.974026,
+            "call_tasks": 85,
+            "call_pass": 85,
+            "ans_tasks": 77,
+            "ans_pass": 73
+          },
+          "composite": 0.727013,
+          "wall_time_s": 341.0
+        }
+      },
+      "selected": "epoch8"
+    },
+    "seed271": {
+      "checkpoints": {
+        "epoch2": {
+          "jam": {
+            "per_call_exact_match": 0.5,
+            "schema_validity": 1.0,
+            "gold_calls_total": 50,
+            "pred_calls_total": 50,
+            "matched": 25,
+            "valid_pred_calls": 50
+          },
+          "grounding": {
+            "g_call": 1.0,
+            "g_ans": 0.896104,
+            "grounding_score": 0.948052,
+            "call_tasks": 85,
+            "call_pass": 85,
+            "ans_tasks": 77,
+            "ans_pass": 69
+          },
+          "composite": 0.724026,
+          "wall_time_s": 350.7
+        },
+        "epoch4": {
+          "jam": {
+            "per_call_exact_match": 0.5,
+            "schema_validity": 1.0,
+            "gold_calls_total": 50,
+            "pred_calls_total": 50,
+            "matched": 25,
+            "valid_pred_calls": 50
+          },
+          "grounding": {
+            "g_call": 1.0,
+            "g_ans": 0.896104,
+            "grounding_score": 0.948052,
+            "call_tasks": 85,
+            "call_pass": 85,
+            "ans_tasks": 77,
+            "ans_pass": 69
+          },
+          "composite": 0.724026,
+          "wall_time_s": 349.2
+        },
+        "epoch8": {
+          "jam": {
+            "per_call_exact_match": 0.5,
+            "schema_validity": 1.0,
+            "gold_calls_total": 50,
+            "pred_calls_total": 50,
+            "matched": 25,
+            "valid_pred_calls": 50
+          },
+          "grounding": {
+            "g_call": 1.0,
+            "g_ans": 0.935065,
+            "grounding_score": 0.967532,
+            "call_tasks": 85,
+            "call_pass": 85,
+            "ans_tasks": 77,
+            "ans_pass": 72
+          },
+          "composite": 0.733766,
+          "wall_time_s": 348.8
+        }
+      },
+      "selected": "epoch8"
+    },
+    "seed42": {
+      "checkpoints": {
+        "epoch2": {
+          "jam": {
+            "per_call_exact_match": 0.5,
+            "schema_validity": 1.0,
+            "gold_calls_total": 50,
+            "pred_calls_total": 50,
+            "matched": 25,
+            "valid_pred_calls": 50
+          },
+          "grounding": {
+            "g_call": 1.0,
+            "g_ans": 0.857143,
+            "grounding_score": 0.928571,
+            "call_tasks": 85,
+            "call_pass": 85,
+            "ans_tasks": 77,
+            "ans_pass": 66
+          },
+          "composite": 0.714286,
+          "wall_time_s": 350.1
+        },
+        "epoch4": {
+          "jam": {
+            "per_call_exact_match": 0.5,
+            "schema_validity": 1.0,
+            "gold_calls_total": 50,
+            "pred_calls_total": 50,
+            "matched": 25,
+            "valid_pred_calls": 50
+          },
+          "grounding": {
+            "g_call": 1.0,
+            "g_ans": 0.922078,
+            "grounding_score": 0.961039,
+            "call_tasks": 85,
+            "call_pass": 85,
+            "ans_tasks": 77,
+            "ans_pass": 71
+          },
+          "composite": 0.730519,
+          "wall_time_s": 340.0
+        },
+        "epoch8": {
+          "jam": {
+            "per_call_exact_match": 0.5,
+            "schema_validity": 1.0,
+            "gold_calls_total": 50,
+            "pred_calls_total": 50,
+            "matched": 25,
+            "valid_pred_calls": 50
+          },
+          "grounding": {
+            "g_call": 0.988235,
+            "g_ans": 0.909091,
+            "grounding_score": 0.948663,
+            "call_tasks": 85,
+            "call_pass": 84,
+            "ans_tasks": 77,
+            "ans_pass": 70
+          },
+          "composite": 0.724332,
+          "wall_time_s": 345.4
+        }
+      },
+      "selected": "epoch4"
+    }
+  }
+}
