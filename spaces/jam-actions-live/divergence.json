@@ -1,0 +1,446 @@
+{
+ "note": "Per-question B-1 eval scores (e3-tool / tool_inspected), baseline vs frozen v1 fine-tunes. Seeds are GGUF Q4_K_M runs; the live demo runs bf16 LoRA so live results may differ — this seeds an honest \"likely divergent\" picker, not a guarantee.",
+ "default_seed": "seed271",
+ "by_phrase": {
+  "clair-de-lune:m001-004:piano:mcp-session:v1": [
+   {
+    "q_idx": 0,
+    "type": "pitch_class_count",
+    "correct": 0,
+    "base_score": 1,
+    "base_sel": 0,
+    "ft271_score": 1,
+    "ft271_sel": 0,
+    "ftAll_score": 1,
+    "category": "agree"
+   },
+   {
+    "q_idx": 1,
+    "type": "hand_register",
+    "correct": 3,
+    "base_score": 0,
+    "base_sel": 2,
+    "ft271_score": 1,
+    "ft271_sel": 3,
+    "ftAll_score": 1,
+    "category": "ft_rescue"
+   },
+   {
+    "q_idx": 2,
+    "type": "rhythm_onset",
+    "correct": 2,
+    "base_score": 0.33,
+    "base_sel": 1,
+    "ft271_score": 1,
+    "ft271_sel": 2,
+    "ftAll_score": 0.8,
+    "category": "ft_rescue"
+   },
+   {
+    "q_idx": 3,
+    "type": "annotation_grounding",
+    "correct": 0,
+    "base_score": 1,
+    "base_sel": 0,
+    "ft271_score": 1,
+    "ft271_sel": 0,
+    "ftAll_score": 1,
+    "category": "agree"
+   }
+  ],
+  "fur-elise:m013-016:piano:mcp-session:v1": [
+   {
+    "q_idx": 0,
+    "type": "pitch_class_count",
+    "correct": 3,
+    "base_score": 0,
+    "base_sel": 1,
+    "ft271_score": 1,
+    "ft271_sel": 3,
+    "ftAll_score": 1,
+    "category": "ft_rescue"
+   },
+   {
+    "q_idx": 1,
+    "type": "hand_register",
+    "correct": 2,
+    "base_score": 0.67,
+    "base_sel": 2,
+    "ft271_score": 0.67,
+    "ft271_sel": 2,
+    "ftAll_score": 0.93,
+    "category": "agree"
+   },
+   {
+    "q_idx": 2,
+    "type": "rhythm_onset",
+    "correct": 0,
+    "base_score": 1,
+    "base_sel": 0,
+    "ft271_score": 1,
+    "ft271_sel": 0,
+    "ftAll_score": 1,
+    "category": "agree"
+   },
+   {
+    "q_idx": 3,
+    "type": "annotation_grounding",
+    "correct": 0,
+    "base_score": 0,
+    "base_sel": 2,
+    "ft271_score": 0,
+    "ft271_sel": 2,
+    "ftAll_score": 0.47,
+    "category": "both_miss"
+   }
+  ],
+  "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1": [
+   {
+    "q_idx": 0,
+    "type": "pitch_class_count",
+    "correct": 3,
+    "base_score": 0.33,
+    "base_sel": 1,
+    "ft271_score": 1,
+    "ft271_sel": 3,
+    "ftAll_score": 1,
+    "category": "ft_rescue"
+   },
+   {
+    "q_idx": 1,
+    "type": "hand_register",
+    "correct": 3,
+    "base_score": 0,
+    "base_sel": 2,
+    "ft271_score": 0.67,
+    "ft271_sel": 3,
+    "ftAll_score": 0.73,
+    "category": "ft_better"
+   },
+   {
+    "q_idx": 2,
+    "type": "rhythm_onset",
+    "correct": 3,
+    "base_score": 1,
+    "base_sel": 3,
+    "ft271_score": 1,
+    "ft271_sel": 3,
+    "ftAll_score": 0.93,
+    "category": "agree"
+   },
+   {
+    "q_idx": 3,
+    "type": "annotation_grounding",
+    "correct": 0,
+    "base_score": 1,
+    "base_sel": 0,
+    "ft271_score": 1,
+    "ft271_sel": 0,
+    "ftAll_score": 1,
+    "category": "agree"
+   }
+  ],
+  "mozart-k545-mvt1:m009-012:piano:mcp-session:v1": [
+   {
+    "q_idx": 0,
+    "type": "pitch_class_count",
+    "correct": 0,
+    "base_score": 0.33,
+    "base_sel": 3,
+    "ft271_score": 1,
+    "ft271_sel": 0,
+    "ftAll_score": 0.8,
+    "category": "ft_rescue"
+   },
+   {
+    "q_idx": 1,
+    "type": "hand_register",
+    "correct": 0,
+    "base_score": 0,
+    "base_sel": 1,
+    "ft271_score": 1,
+    "ft271_sel": 0,
+    "ftAll_score": 0.8,
+    "category": "ft_rescue"
+   },
+   {
+    "q_idx": 2,
+    "type": "rhythm_onset",
+    "correct": 1,
+    "base_score": 1,
+    "base_sel": 1,
+    "ft271_score": 1,
+    "ft271_sel": 1,
+    "ftAll_score": 0.93,
+    "category": "agree"
+   },
+   {
+    "q_idx": 3,
+    "type": "annotation_grounding",
+    "correct": 1,
+    "base_score": 0,
+    "base_sel": 3,
+    "ft271_score": 1,
+    "ft271_sel": 1,
+    "ftAll_score": 1,
+    "category": "ft_rescue"
+   }
+  ],
+  "chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1": [
+   {
+    "q_idx": 0,
+    "type": "pitch_class_count",
+    "correct": 1,
+    "base_score": 1,
+    "base_sel": 1,
+    "ft271_score": 1,
+    "ft271_sel": 1,
+    "ftAll_score": 0.93,
+    "category": "agree"
+   },
+   {
+    "q_idx": 1,
+    "type": "hand_register",
+    "correct": 0,
+    "base_score": 0,
+    "base_sel": 1,
+    "ft271_score": 0.67,
+    "ft271_sel": 0,
+    "ftAll_score": 0.47,
+    "category": "ft_better"
+   },
+   {
+    "q_idx": 2,
+    "type": "rhythm_onset",
+    "correct": 2,
+    "base_score": 0.67,
+    "base_sel": 2,
+    "ft271_score": 1,
+    "ft271_sel": 2,
+    "ftAll_score": 0.73,
+    "category": "agree"
+   },
+   {
+    "q_idx": 3,
+    "type": "annotation_grounding",
+    "correct": 2,
+    "base_score": 1,
+    "base_sel": 2,
+    "ft271_score": 1,
+    "ft271_sel": 2,
+    "ftAll_score": 1,
+    "category": "agree"
+   }
+  ],
+  "pathetique-mvt2:m001-004:piano:mcp-session:v1": [
+   {
+    "q_idx": 0,
+    "type": "pitch_class_count",
+    "correct": 1,
+    "base_score": 1,
+    "base_sel": 1,
+    "ft271_score": 1,
+    "ft271_sel": 1,
+    "ftAll_score": 0.87,
+    "category": "agree"
+   },
+   {
+    "q_idx": 1,
+    "type": "hand_register",
+    "correct": 2,
+    "base_score": 1,
+    "base_sel": 2,
+    "ft271_score": 1,
+    "ft271_sel": 2,
+    "ftAll_score": 1,
+    "category": "agree"
+   },
+   {
+    "q_idx": 2,
+    "type": "rhythm_onset",
+    "correct": 2,
+    "base_score": 0.67,
+    "base_sel": 2,
+    "ft271_score": 0.67,
+    "ft271_sel": 2,
+    "ftAll_score": 0.53,
+    "category": "agree"
+   },
+   {
+    "q_idx": 3,
+    "type": "annotation_grounding",
+    "correct": 3,
+    "base_score": 1,
+    "base_sel": 3,
+    "ft271_score": 1,
+    "ft271_sel": 3,
+    "ftAll_score": 1,
+    "category": "agree"
+   }
+  ],
+  "schumann-traumerei:m001-004:piano:mcp-session:v1": [
+   {
+    "q_idx": 0,
+    "type": "pitch_class_count",
+    "correct": 0,
+    "base_score": 1,
+    "base_sel": 0,
+    "ft271_score": 1,
+    "ft271_sel": 0,
+    "ftAll_score": 1,
+    "category": "agree"
+   },
+   {
+    "q_idx": 1,
+    "type": "hand_register",
+    "correct": 1,
+    "base_score": 1,
+    "base_sel": 1,
+    "ft271_score": 1,
+    "ft271_sel": 1,
+    "ftAll_score": 1,
+    "category": "agree"
+   },
+   {
+    "q_idx": 2,
+    "type": "rhythm_onset",
+    "correct": 2,
+    "base_score": 1,
+    "base_sel": 2,
+    "ft271_score": 1,
+    "ft271_sel": 2,
+    "ftAll_score": 0.8,
+    "category": "agree"
+   },
+   {
+    "q_idx": 3,
+    "type": "annotation_grounding",
+    "correct": 3,
+    "base_score": 1,
+    "base_sel": 3,
+    "ft271_score": 1,
+    "ft271_sel": 3,
+    "ftAll_score": 1,
+    "category": "agree"
+   }
+  ],
+  "chopin-prelude-e-minor:m021-024:piano:mcp-session:v1": [
+   {
+    "q_idx": 0,
+    "type": "pitch_class_count",
+    "correct": 3,
+    "base_score": 1,
+    "base_sel": 3,
+    "ft271_score": 1,
+    "ft271_sel": 3,
+    "ftAll_score": 1,
+    "category": "agree"
+   },
+   {
+    "q_idx": 1,
+    "type": "hand_register",
+    "correct": 3,
+    "base_score": 0,
+    "base_sel": 2,
+    "ft271_score": 0.67,
+    "ft271_sel": 3,
+    "ftAll_score": 0.47,
+    "category": "ft_better"
+   },
+   {
+    "q_idx": 2,
+    "type": "rhythm_onset",
+    "correct": 0,
+    "base_score": 0,
+    "base_sel": 1,
+    "ft271_score": 1,
+    "ft271_sel": 0,
+    "ftAll_score": 0.87,
+    "category": "ft_rescue"
+   },
+   {
+    "q_idx": 3,
+    "type": "annotation_grounding",
+    "correct": 3,
+    "base_score": 0,
+    "base_sel": 0,
+    "ft271_score": 1,
+    "ft271_sel": 3,
+    "ftAll_score": 0.87,
+    "category": "ft_rescue"
+   }
+  ]
+ },
+ "cycle": [
+  {
+   "phrase_id": "clair-de-lune:m001-004:piano:mcp-session:v1",
+   "q_idx": 1,
+   "category": "ft_rescue",
+   "base_score": 0,
+   "ft271_score": 1
+  },
+  {
+   "phrase_id": "clair-de-lune:m001-004:piano:mcp-session:v1",
+   "q_idx": 2,
+   "category": "ft_rescue",
+   "base_score": 0.33,
+   "ft271_score": 1
+  },
+  {
+   "phrase_id": "mozart-k545-mvt1:m009-012:piano:mcp-session:v1",
+   "q_idx": 3,
+   "category": "ft_rescue",
+   "base_score": 0,
+   "ft271_score": 1
+  },
+  {
+   "phrase_id": "fur-elise:m013-016:piano:mcp-session:v1",
+   "q_idx": 0,
+   "category": "ft_rescue",
+   "base_score": 0,
+   "ft271_score": 1
+  },
+  {
+   "phrase_id": "chopin-prelude-e-minor:m021-024:piano:mcp-session:v1",
+   "q_idx": 2,
+   "category": "ft_rescue",
+   "base_score": 0,
+   "ft271_score": 1
+  },
+  {
+   "phrase_id": "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1",
+   "q_idx": 0,
+   "category": "ft_rescue",
+   "base_score": 0.33,
+   "ft271_score": 1
+  },
+  {
+   "phrase_id": "chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1",
+   "q_idx": 1,
+   "category": "ft_better",
+   "base_score": 0,
+   "ft271_score": 0.67
+  },
+  {
+   "phrase_id": "fur-elise:m013-016:piano:mcp-session:v1",
+   "q_idx": 3,
+   "category": "both_miss",
+   "base_score": 0,
+   "ft271_score": 0
+  },
+  {
+   "phrase_id": "mozart-k545-mvt1:m009-012:piano:mcp-session:v1",
+   "q_idx": 1,
+   "category": "ft_rescue",
+   "base_score": 0,
+   "ft271_score": 1
+  },
+  {
+   "phrase_id": "chopin-prelude-e-minor:m021-024:piano:mcp-session:v1",
+   "q_idx": 3,
+   "category": "ft_rescue",
+   "base_score": 0,
+   "ft271_score": 1
+  }
+ ]
+}
