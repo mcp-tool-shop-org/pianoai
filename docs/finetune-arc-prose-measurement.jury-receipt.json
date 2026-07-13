@@ -1,0 +1,56 @@
+{
+  "gate": "citation-groundedness-cross-family-cloud-jury",
+  "study": "docs/finetune-arc-prose-measurement-memo.md (prose-surface measurement-design study)",
+  "date": "2026-07-13",
+  "protocol": "study-swarm Step 4 (EXTERNAL_VERIFIER) — Stage 2 groundedness lens; Stage 1 existence oracle is the separate finetune-arc-prose-measurement.citation-receipt.json (36/36)",
+  "method": "PoLL jury of the biggest Ollama Cloud THINKING flagships (600B+), family-disjoint from the Anthropic synthesizer, judging each finding against the cited paper's VERBATIM arXiv abstract supplied in-prompt (so recency past a juror's training cutoff cannot cause a false 'fabricated'). Tool: ollama-intern ollama_verify_claims.",
+  "panel": [
+    {"model": "deepseek-v4-pro:cloud", "vendor": "DeepSeek", "params": "1.6T total / 49B active", "thinking": true},
+    {"model": "glm-5.2:cloud", "vendor": "Z.ai", "params": "756B", "thinking": true},
+    {"model": "minimax-m3:cloud", "vendor": "MiniMax", "params": "flagship", "thinking": true}
+  ],
+  "panel_provenance": "every batch reported 3/3 cloud-served with matching served_model (no local fallback, none excluded)",
+  "aggregation": "lone-dissent-never-decides: CONFIRMED needs >=2 confirms, REFUTED needs >=2 refutes (min_refute_votes=2), else NEEDS_REVIEW",
+  "roster_check": "ollama.com/search?c=cloud webfetched 2026-07-13 — deepseek-v4-pro / glm-5.2 / minimax-m3 / kimi-k2.7-code / nemotron-3-ultra confirmed current biggest thinking flagships",
+  "summary": {
+    "claims": 35,
+    "confirmed": 34,
+    "needs_review": 1,
+    "refuted": 0,
+    "fabricated": 0
+  },
+  "honest_ceiling": "A CONFIRMED on frontier-model-authored claims is corroborating evidence, not proof — the panel reliably flags gross/over-attribution errors (it caught L1-05) and is weaker on a strong generator's subtle ones. Judged against the abstract only; a few findings' specifics live in the paper body (noted below) and were not abstract-verifiable.",
+  "verdicts": {
+    "L1-01": "CONFIRMED", "L1-02": "CONFIRMED", "L1-03": "CONFIRMED", "L1-04": "CONFIRMED",
+    "L1-05": "NEEDS_REVIEW", "L1-06": "CONFIRMED", "L1-07": "CONFIRMED", "L1-08": "CONFIRMED",
+    "L1-09": "CONFIRMED", "L1-10": "CONFIRMED",
+    "L2-12": "CONFIRMED", "L2-13": "CONFIRMED", "L2-14": "CONFIRMED", "L2-15": "CONFIRMED",
+    "L2-16": "CONFIRMED", "L2-17": "CONFIRMED", "L2-18": "CONFIRMED", "L2-19": "CONFIRMED",
+    "L3-20": "CONFIRMED", "L3-21": "CONFIRMED", "L3-22": "CONFIRMED", "L3-23": "CONFIRMED",
+    "L3-24": "CONFIRMED", "L3-25": "CONFIRMED", "L3-26": "CONFIRMED", "L3-27": "CONFIRMED",
+    "L3-28": "CONFIRMED", "L3-29": "CONFIRMED", "L3-30": "CONFIRMED",
+    "L4-31": "CONFIRMED", "L4-32": "CONFIRMED", "L4-33": "CONFIRMED", "L4-34": "CONFIRMED",
+    "L4-35": "CONFIRMED", "L4-36": "CONFIRMED"
+  },
+  "the_one_catch": {
+    "id": "L1-05",
+    "paper": "Kadavath et al. 2022 (arXiv:2207.05221), Language Models (Mostly) Know What They Know",
+    "as_written": "P(True) AND P(IK) are reasonably-calibrated quantities that improve with scale",
+    "jury": "deepseek-v4-pro REFUTED, minimax-m3 UNCERTAIN, glm-5.2 CONFIRMED -> NEEDS_REVIEW",
+    "why": "the abstract says models 'struggle with calibration of P(IK) on new tasks' — the finding over-generalized P(IK) calibration",
+    "resolution": "memo finding narrowed: P(True) is well-calibrated and scales (load-bearing, unaffected); P(IK) is predictable but its calibration does not fully generalize to new tasks. The abstention verdict rests on P(True)/free-form, so the correction does not change any recommendation."
+  },
+  "abstract_only_caveats_still_confirmed": {
+    "L1-08": "deepseek UNCERTAIN — the sampling+meaning-clustering mechanism is described in the body, not the abstract; core claims (unsupervised, single off-the-shelf model, predicts correctness) confirmed",
+    "L3-20": "glm UNCERTAIN — the explicit in-distribution-high / OOD-low framing is a body result; the shortcut-learning ('linearized subgraph matching') + complexity-decay claims confirmed",
+    "L3-28": "deepseek UNCERTAIN — GSM8K is not named in the abstract (MATH is); the '10 datasets, 13-19% absolute, ToRA-7B' claims confirmed"
+  },
+  "run_ids": [
+    "run_2026-07-13T20-50-03_61e99c", "run_2026-07-13T20-52-51_465ea9", "run_2026-07-13T20-53-03_100ef3",
+    "run_2026-07-13T20-54-07_da6acc", "run_2026-07-13T20-54-27_e0feb6", "run_2026-07-13T20-54-38_d23240",
+    "run_2026-07-13T20-55-43_45e2fc", "run_2026-07-13T20-56-09_74afb0", "run_2026-07-13T20-56-26_dcf2d6",
+    "run_2026-07-13T20-57-01_4b430d", "run_2026-07-13T20-57-16_2da931", "run_2026-07-13T20-58-05_4c1c9c",
+    "run_2026-07-13T20-58-47_35daf2"
+  ],
+  "operational_lesson": "batch size <=3 claims/call for these thinking flagships — at 9 claims/call two jurors' verbose output overflowed the parser and were excluded (weak 1/3); at 2-3 claims all 3 parse cleanly. Independent verify calls run fine in parallel (3 at a time, ~10-25s each)."
+}
