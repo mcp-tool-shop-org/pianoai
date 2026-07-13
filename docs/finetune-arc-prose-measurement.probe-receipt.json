@@ -1,0 +1,44 @@
+{
+  "gate": "abstention-reinstrument-probe",
+  "study": "docs/finetune-arc-prose-measurement-memo.md §6.1 ($0 pre-arc measurability gate, executed)",
+  "date": "2026-07-13",
+  "cost": "$0 — local ollama, base + 5 frozen B-2 fine-tunes; no pod, no training, no HF push",
+  "question": "Is calibrated abstention measurable on a VALID instrument (free-form), and did B-2's C4 abstention training add anything a valid instrument can see?",
+  "method": {
+    "instrument": "free-form generation + deterministic decline-cue detection (NOT the forced single-letter A-E MCQ the sealed eval used)",
+    "data": "experiments/finetune-arc-b2/data/sft-val-abstention.jsonl — 12 unanswerable (flavors a/b/c) + 12 answerable twins",
+    "system_prompt": "You are a music teaching assistant. Answer the user's question directly if the information provided is sufficient to answer it. If it cannot be determined from what you are given, say it cannot be determined and briefly state what is missing. Keep your reply to 1-2 sentences.",
+    "decode": "temperature 0, seed 20260714, num_predict 200, one greedy generation per item",
+    "classification": "deterministic decline-cue matcher; every raw response saved and eyeball-audited (probe-result.json / probe-all-result.json in session scratchpad)",
+    "pass_criterion": "baseline unanswerable decline rate strictly in (0,1) AND strictly > answerable decline rate"
+  },
+  "result_base_gate": {
+    "model": "qwen2.5:7b (base, untrained)",
+    "unanswerable_decline_rate": 0.917,
+    "answerable_decline_rate": 0.0,
+    "answerable_answered_correct": "10/12",
+    "PASS": true,
+    "mcq_contrast": "same base model on the forced single-letter A-E MCQ read abstention 0.000 (sealed B-2 eval, memo §3) — the MCQ was degenerate; free-form is non-degenerate and directional"
+  },
+  "result_base_vs_finetunes": {
+    "note": "the decisive comparison — did B-2's C4 abstention training move abstention on a valid instrument?",
+    "table": {
+      "qwen2.5:7b":              {"unanswerable_decline": "11/12", "answerable_over_refusal": "0/12", "false_premise_c": "3/4", "answerable_correct": "10/12"},
+      "jam-ft-b2-qwen25:seed13":  {"unanswerable_decline": "11/12", "answerable_over_refusal": "0/12", "false_premise_c": "3/4", "answerable_correct": "9/12"},
+      "jam-ft-b2-qwen25:seed42":  {"unanswerable_decline": "11/12", "answerable_over_refusal": "0/12", "false_premise_c": "3/4", "answerable_correct": "9/12"},
+      "jam-ft-b2-qwen25:seed271": {"unanswerable_decline": "11/12", "answerable_over_refusal": "0/12", "false_premise_c": "3/4", "answerable_correct": "7/12"},
+      "jam-ft-b2-qwen25:seed512": {"unanswerable_decline": "11/12", "answerable_over_refusal": "1/12", "false_premise_c": "3/4", "answerable_correct": "9/12"},
+      "jam-ft-b2-qwen25:seed1024":{"unanswerable_decline": "11/12", "answerable_over_refusal": "0/12", "false_premise_c": "3/4", "answerable_correct": "9/12"}
+    }
+  },
+  "audit": {
+    "ft_learned_the_phrasing": "the fine-tunes reproduce the C4 training's decline TEMPLATES verbatim ('that cannot be determined from the annotation alone...', 'the premise doesn't hold — there's no X in measure N...') — training took, but it changed HOW the model declines, not WHAT it declines.",
+    "same_hard_miss_all_six": "all six models (base + 5 FT) decline 11/12 and miss the SAME false-premise item (abstain-val::c::022, 'which hand plays the B4 in m20' — no B4 exists); each hallucinates a hand. Training did not fix the one hard case.",
+    "correctness_tax": "the fine-tunes' answerable-correctness is <= base (10/12 base vs 7-9/12 FT), consistent with the known tool-concentration/prose-reasoning tax."
+  },
+  "conclusion": {
+    "measurable": "YES — abstention is non-degenerate and directional on a free-form instrument (0.917 vs 0.000); the B-2 MCQ 0.000 was a pure instrument artifact.",
+    "movable_by_training": "NO (for this base model) — base Qwen2.5-7B-Instruct already abstains at 11/12 free-form with zero training; the 5 B-2 fine-tunes reproduce EXACTLY that (11/12, same 1 miss). C4 abstention training added decline-phrasing style, not abstention capability. No headroom, no demonstrated training effect.",
+    "recommendation": "RE-INSTRUMENT, do NOT retrain. Score abstention free-form (the fix is $0, in the harness). Do not fund an abstention training arc — this $0 gate proves it redundant. Both prose training targets are now closed with evidence: `full` = residual ceiling -> tool; abstention = base already does it free-form. The finetune line's result stands as the published tool win (B-1)."
+  }
+}
