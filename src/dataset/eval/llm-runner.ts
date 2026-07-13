@@ -845,6 +845,25 @@ const E3_SYSTEM_TEXT =
   "Respond with ONLY the single letter (A, B, C, or D) of your chosen answer. " +
   "No explanation, no punctuation — just the letter.";
 
+/**
+ * B-2 abstain surface (finetune-arc-b2 P0-LOCK §6): a fifth OUT-OF-BAND option
+ * "E" lets the model DECLINE when the question cannot be answered from what it
+ * is given. `parseE3Response(text, true)` returns E3_ABSTAIN for an E choice —
+ * a value distinct from a 0–3 answer and from a null parse-fail. The 4-tuple
+ * `MCQuestion.options` and `correctOptionIndex` (0–3) are UNCHANGED; abstain is
+ * scored as not-correct so the existing `metric_mean` stays byte-shaped, while
+ * the 3-way outcome (`E3QuestionRunResult.outcome`) carries the abstain signal
+ * additively for the selective-prediction stats.
+ */
+export const E3_ABSTAIN = -2;
+
+const E3_SYSTEM_TEXT_ABSTAIN =
+  "You are answering multiple-choice questions about piano music phrases. " +
+  "Each question has options labeled A, B, C, D, and E. " +
+  "A–D are answer choices; E means the question CANNOT be determined from what you are given. " +
+  "Choose E when — and only when — the information provided is insufficient to answer; do NOT guess. " +
+  "Respond with ONLY the single letter (A, B, C, D, or E). No explanation, no punctuation — just the letter.";
+
 export type E3Context = "full" | "text_only" | "random_midi";
 
 /**
@@ -858,21 +877,36 @@ export function buildE3UserPrompt(
   question: MCQuestion,
   context: E3Context,
   randomMidiRecord?: E3Record,
+  opts?: { abstain?: boolean },
 ): string {
   const at = record.annotation_target;
+  const abstain = opts?.abstain === true;
   const optionLabels = ["A", "B", "C", "D"] as const;
-  const optionsText = question.options
+  let optionsText = question.options
     .map((opt, i) => `${optionLabels[i]}) ${opt}`)
     .join("\n");
+  // B-2 abstain surface (§6.1): append the out-of-band E option on ALL contexts.
+  if (abstain) optionsText += `\nE) cannot be determined from what is given`;
 
   const questionBlock =
     `\nQuestion: ${question.questionText}\n` +
     `Options:\n${optionsText}\n\n` +
-    `Answer (A/B/C/D):`;
+    `Answer (${abstain ? "A/B/C/D/E" : "A/B/C/D"}):`;
 
   if (context === "text_only") {
     const prose = extractAnnotationProse(record);
-    return `Annotation:\n${prose}\n` + questionBlock;
+    // B-2 abstain surface (§6.3): present the non-MIDI score METADATA (key,
+    // meter, phrase window, provenance) so the prose-answerable question types
+    // are genuinely answerable — the over-refusal guard. MIDI-only types stay
+    // unanswerable (metadata carries no note events), so declining THOSE
+    // remains the calibrated-correct action. Without abstain mode this branch
+    // is byte-identical to the pre-B2 surface (annotation prose only).
+    const meta = abstain
+      ? `Key: ${record.scope.key}. Time signature: ${record.scope.time_signature}. ` +
+        `Phrase: ${record.scope.phrase_window}. ` +
+        `Piece: ${record.provenance.composition_title} by ${record.provenance.composer}.\n\n`
+      : "";
+    return `${meta}Annotation:\n${prose}\n` + questionBlock;
   }
 
   const annotationBlock = [
@@ -927,9 +961,17 @@ export function buildE3UserPrompt(
 
 // ─── E3 output parser ─────────────────────────────────────────────────────────
 
-/** Parse a single-letter answer (A/B/C/D) from model plain text response. */
-export function parseE3Response(text: string): number | null {
-  // F-20dce5c5: prefer the LAST word-boundary A/B/C/D match, not the first.
+/**
+ * Parse a single-letter answer from a model plain-text response. Returns the
+ * 0–3 option index, `null` on parse-fail, or (when `allowAbstain`) `E3_ABSTAIN`
+ * for an "E" decline.
+ *
+ * `allowAbstain` DEFAULTS FALSE so every pre-B2 caller is byte-identical: the
+ * matcher only sees A–D and "E" is never special. In the B-2 abstain surface
+ * the runners pass `true`, admitting the out-of-band E option.
+ */
+export function parseE3Response(text: string, allowAbstain = false): number | null {
+  // F-20dce5c5: prefer the LAST word-boundary letter match, not the first.
   // The E3 system prompt asks for "ONLY the single letter" and maxTokens is
   // capped at 16, but a model that ignores instructions and prepends a short
   // justification before its answer (e.g. "A minor mode, so B") would have
@@ -937,9 +979,12 @@ export function parseE3Response(text: string): number | null {
   // of the actual final answer. Taking the last match is closer to "final
   // answer" semantics and does not change behavior for any single-letter
   // response — first and last are the same match whenever there's only one.
-  const matches = text.trim().match(/\b[A-D]\b/g);
+  const re = allowAbstain ? /\b[A-E]\b/g : /\b[A-D]\b/g;
+  const matches = text.trim().match(re);
   if (matches && matches.length > 0) {
-    return ["A", "B", "C", "D"].indexOf(matches[matches.length - 1]);
+    const last = matches[matches.length - 1];
+    if (last === "E") return E3_ABSTAIN;
+    return ["A", "B", "C", "D"].indexOf(last);
   }
   return null;
 }
@@ -954,6 +999,12 @@ export interface E3QuestionRunResult {
   selectedOptionIndex: number | null;
   correct: boolean;
   score: number;
+  /**
+   * B-2 3-way outcome (§6.2). "abstain" only occurs in the abstain surface (the
+   * model chose E); otherwise it mirrors `correct`. Carried ADDITIVELY — the
+   * `score`/`correct`/`metric_mean` semantics are unchanged (abstain scores 0).
+   */
+  outcome: "correct" | "wrong" | "abstain";
 }
 
 export async function runE3Question(
@@ -963,14 +1014,16 @@ export async function runE3Question(
   backend: LlmBackend,
   runIndex: number,
   randomMidiRecord: E3Record,
+  opts?: { abstain?: boolean },
 ): Promise<E3QuestionRunResult> {
+  const abstain = opts?.abstain === true;
   const runId = `${record.id}:E3:${context}:${question.questionType}:run${runIndex + 1}`;
-  const userMessage = buildE3UserPrompt(record, question, context, randomMidiRecord);
+  const userMessage = buildE3UserPrompt(record, question, context, randomMidiRecord, { abstain });
 
   let responseText: string;
   try {
     responseText = await backend.callPlain({
-      systemPrompt: E3_SYSTEM_TEXT,
+      systemPrompt: abstain ? E3_SYSTEM_TEXT_ABSTAIN : E3_SYSTEM_TEXT,
       userMessage,
       maxTokens: 16, // Single letter only
     });
@@ -994,6 +1047,7 @@ export async function runE3Question(
       selectedOptionIndex: null,
       correct: false,
       score: 0,
+      outcome: "wrong",
     };
   }
 
@@ -1010,16 +1064,32 @@ export async function runE3Question(
     parseError: null,
   };
 
-  const selectedIndex = parseE3Response(responseText);
+  const selectedIndex = parseE3Response(responseText, abstain);
   if (selectedIndex === null) {
     return {
       run: runIndex + 1,
       context,
       questionType: question.questionType,
-      meta: { ...meta, parseOk: false, parseError: "no A/B/C/D found in response" },
+      meta: { ...meta, parseOk: false, parseError: abstain ? "no A/B/C/D/E found in response" : "no A/B/C/D found in response" },
       selectedOptionIndex: null,
       correct: false,
       score: 0,
+      outcome: "wrong",
+    };
+  }
+
+  // B-2 abstain (§6.2): the model declined. Scored as not-correct (metric_mean
+  // unchanged); the abstain signal is carried in `outcome` for selective stats.
+  if (selectedIndex === E3_ABSTAIN) {
+    return {
+      run: runIndex + 1,
+      context,
+      questionType: question.questionType,
+      meta,
+      selectedOptionIndex: null,
+      correct: false,
+      score: 0,
+      outcome: "abstain",
     };
   }
 
@@ -1033,6 +1103,7 @@ export async function runE3Question(
     selectedOptionIndex: selectedIndex,
     correct,
     score: correct ? 1 : 0,
+    outcome: correct ? "correct" : "wrong",
   };
 }
 
@@ -1070,7 +1141,9 @@ export async function runE3ForRecord(
   allRecords: E3Record[],
   backend: LlmBackend,
   n: number,
+  opts?: { abstain?: boolean },
 ): Promise<E3RecordResult> {
+  const abstain = opts?.abstain === true;
   const questionSet = generateQuestionSet(record);
   const randomMidiRecord = selectRandomMidiPartner(record, allRecords);
 
@@ -1110,6 +1183,7 @@ export async function runE3ForRecord(
           backend,
           r,
           randomMidiRecord,
+          { abstain },
         );
         allRuns[ctx].push(result);
         totalCostUsd += result.meta.costUsd;
@@ -1130,6 +1204,46 @@ export async function runE3ForRecord(
       runs: allRuns,
       majorityScore,
     });
+  }
+
+  // B-2 abstain surface (§6.3): the prose-answerable question types
+  // (key_time_sig, measure_range, provenance) are scored on text_only ONLY, as
+  // the over-refusal guard — does the model still ANSWER the answerable ones?
+  // They are appended to `questions` for the selective-prediction stats but are
+  // NOT load-bearing, so `aggregate.text_only.metric_mean` (computed over
+  // load-bearing types below) is unaffected — the primary/secondary re-point
+  // to the unchanged aggregate, the guard reads these by questionType.
+  if (abstain) {
+    const proseTypes: QuestionType[] = [
+      QUESTION_TYPES.KEY_TIME_SIG,
+      QUESTION_TYPES.MEASURE_RANGE,
+      QUESTION_TYPES.PROVENANCE,
+    ];
+    for (const qType of proseTypes) {
+      const idx = questionSet.questionTypeIndex.get(qType);
+      if (idx === undefined) continue;
+      const q = questionSet.questions[idx];
+      if (isNotComputableE3(q)) continue;
+      const mcq = q as MCQuestion;
+      const textOnlyRuns: E3QuestionRunResult[] = [];
+      for (let r = 0; r < n; r++) {
+        const result = await runE3Question(record, mcq, "text_only", backend, r, randomMidiRecord, { abstain });
+        textOnlyRuns.push(result);
+        totalCostUsd += result.meta.costUsd;
+      }
+      questionResults.push({
+        questionType: qType,
+        questionText: mcq.questionText,
+        correctOptionIndex: mcq.correctOptionIndex,
+        options: mcq.options,
+        runs: { full: [], text_only: textOnlyRuns, random_midi: [] },
+        majorityScore: {
+          full: 0,
+          text_only: majorityPass(textOnlyRuns) ? 1 : 0,
+          random_midi: 0,
+        },
+      });
+    }
   }
 
   const lbResults = questionResults.filter((q) =>

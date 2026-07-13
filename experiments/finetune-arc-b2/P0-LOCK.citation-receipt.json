@@ -1,0 +1,162 @@
+{
+ "gate": "citation-existence-oracle",
+ "method": "arXiv API id_list query (https)",
+ "date": "2026-07-13",
+ "summary": {
+  "queried": 32,
+  "resolved": 32,
+  "fabricated": 0,
+  "resolved_total": 43,
+  "queried_total": 43
+ },
+ "note": "All study-swarm references resolve to real arXiv papers. 1805.08206 cite as its actual title 'Bias-Reduced Uncertainty Estimation for Deep Neural Classifiers' (Geifman & El-Yaniv, ICLR 2019), not the informal 'SelectiveNet'. Groundedness lens (claim-vs-abstract) deferred to prism verify --type citations at lock finalization, as in the v1 lock.",
+ "entries": {
+  "2405.09673": {
+   "title": "LoRA Learns Less and Forgets Less",
+   "first_author": "Dan Biderman"
+  },
+  "2401.05605": {
+   "title": "Scaling Laws for Forgetting When Fine-Tuning Large Language Models",
+   "first_author": "Damjan Kalajdzievski"
+  },
+  "2205.12393": {
+   "title": "Fine-tuned Language Models are Continual Learners",
+   "first_author": "Thomas Scialom"
+  },
+  "2308.08747": {
+   "title": "An Empirical Study of Catastrophic Forgetting in Large Language Models During Continual Fine-tuning",
+   "first_author": "Yun Luo"
+  },
+  "2310.05492": {
+   "title": "How Abilities in Large Language Models are Affected by Supervised Fine-tuning Data Composition",
+   "first_author": "Guanting Dong"
+  },
+  "2403.01244": {
+   "title": "Mitigating Catastrophic Forgetting in Large Language Models with Self-Synthesized Rehearsal",
+   "first_author": "Jianheng Huang"
+  },
+  "1802.01483": {
+   "title": "Explicit Inductive Bias for Transfer Learning with Convolutional Networks",
+   "first_author": "Xuhong Li"
+  },
+  "2411.01713": {
+   "title": "Rethinking Weight Decay for Robust Fine-Tuning of Foundation Models",
+   "first_author": "Junjiao Tian"
+  },
+  "2509.04259": {
+   "title": "RL's Razor: Why Online Reinforcement Learning Forgets Less",
+   "first_author": "Idan Shenfeld"
+  },
+  "2311.09677": {
+   "title": "R-Tuning: Instructing Large Language Models to Say `I Don't Know'",
+   "first_author": "Hanning Zhang"
+  },
+  "1806.03822": {
+   "title": "Know What You Don't Know: Unanswerable Questions for SQuAD",
+   "first_author": "Pranav Rajpurkar"
+  },
+  "2607.08456": {
+   "title": "Two Axes of LLM Abstention: Answer Correctness and Question Answerability",
+   "first_author": "Benedikt J. Wagner"
+  },
+  "2312.07000": {
+   "title": "Alignment for Honesty",
+   "first_author": "Yuqing Yang"
+  },
+  "2006.09462": {
+   "title": "Selective Question Answering under Domain Shift",
+   "first_author": "Amita Kamath"
+  },
+  "2502.05911": {
+   "title": "GRAIT: Gradient-Driven Refusal-Aware Instruction Tuning for Effective Hallucination Mitigation",
+   "first_author": "Runchuan Zhu"
+  },
+  "2410.06913": {
+   "title": "Utilize the Flow before Stepping into the Same River Twice: Certainty Represented Knowledge Flow for Refusal-Aware Instruction Tuning",
+   "first_author": "Runchuan Zhu"
+  },
+  "2305.14975": {
+   "title": "Just Ask for Calibration: Strategies for Eliciting Calibrated Confidence Scores from Language Models Fine-Tuned with Human Feedback",
+   "first_author": "Katherine Tian"
+  },
+  "2506.09038": {
+   "title": "AbstentionBench: Reasoning LLMs Fail on Unanswerable Questions",
+   "first_author": "Polina Kirichenko"
+  },
+  "2211.10435": {
+   "title": "PAL: Program-aided Language Models",
+   "first_author": "Luyu Gao"
+  },
+  "2309.17452": {
+   "title": "ToRA: A Tool-Integrated Reasoning Agent for Mathematical Problem Solving",
+   "first_author": "Zhibin Gou"
+  },
+  "2510.22977": {
+   "title": "The Reasoning Trap: How Enhancing LLM Reasoning Amplifies Tool Hallucination",
+   "first_author": "Chenlong Yin"
+  },
+  "2305.18654": {
+   "title": "Faith and Fate: Limits of Transformers on Compositionality",
+   "first_author": "Nouha Dziri"
+  },
+  "2410.19730": {
+   "title": "Counting Ability of Large Language Models and Impact of Tokenization",
+   "first_author": "Xiang Zhang"
+  },
+  "2401.04398": {
+   "title": "Chain-of-Table: Evolving Tables in the Reasoning Chain for Table Understanding",
+   "first_author": "Zilong Wang"
+  },
+  "2310.09263": {
+   "title": "Table-GPT: Table-tuned GPT for Diverse Table Tasks",
+   "first_author": "Peng Li"
+  },
+  "2103.06944": {
+   "title": "Preregistering NLP Research",
+   "first_author": "Emiel van Miltenburg"
+  },
+  "1709.09500": {
+   "title": "Replicability Analysis for Natural Language Processing: Testing Significance with Multiple Datasets",
+   "first_author": "Rotem Dror"
+  },
+  "1705.08500": {
+   "title": "Selective Classification for Deep Neural Networks",
+   "first_author": "Yonatan Geifman"
+  },
+  "1805.08206": {
+   "title": "Bias-Reduced Uncertainty Estimation for Deep Neural Classifiers",
+   "first_author": "Yonatan Geifman"
+  },
+  "2407.01032": {
+   "title": "Overcoming Common Flaws in the Evaluation of Selective Classification Systems",
+   "first_author": "Jeremias Traub"
+  },
+  "2105.03048": {
+   "title": "Regression Bugs Are In Your Model! Measuring, Reducing and Analyzing Regressions In NLP Model Updates",
+   "first_author": "Yuqing Xie"
+  },
+  "1909.03004": {
+   "title": "Show Your Work: Improved Reporting of Experimental Results",
+   "first_author": "Jesse Dodge"
+  }
+ },
+ "pedagogy_swarm": {
+  "date": "2026-07-13",
+  "queried": 11,
+  "resolved": 11,
+  "note": "ML citations from the pedagogy swarm (music-pedagogy + worked-examples + curriculum). Non-arXiv pedagogy sources (Kodaly/Suzuki, Sweller CLT, Cepeda 2006, Rohrer&Taylor, Open Music Theory, Gordon MLT) are books/journals/ped-sites verified by the agents' live retrieval, outside the arXiv oracle.",
+  "entries": {
+   "2112.00114": "Show Your Work: Scratchpads for Intermediate Computation with Language Models",
+   "2305.20050": "Let's Verify Step by Step",
+   "2305.02301": "Distilling Step-by-Step! Outperforming Larger Language Models with Less Training Data and Smaller Model Sizes",
+   "2301.12726": "Specializing Smaller Language Models towards Multi-Step Reasoning",
+   "2502.12143": "Small Models Struggle to Learn from Strong Reasoners",
+   "2401.04925": "The Impact of Reasoning Step Length on Large Language Models",
+   "2501.09804": "Enhancing Generalization in Chain of Thought Reasoning for Smaller Models",
+   "2012.03107": "When Do Curricula Work?",
+   "2406.04371": "Phased Instruction Fine-Tuning for Large Language Models",
+   "2408.07888": "Evaluating Fine-Tuning Efficiency of Human-Inspired Learning Strategies in Medical Question Answering",
+   "2506.09428": "Improved Supervised Fine-Tuning for Large Language Models to Mitigate Catastrophic Forgetting"
+  }
+ }
+}

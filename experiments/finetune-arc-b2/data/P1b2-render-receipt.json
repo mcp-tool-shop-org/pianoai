@@ -1,0 +1,27 @@
+{
+  "schema": "finetune-arc-b2-g7-render/1.0.0",
+  "gate": "G7 render fail-fast (local half)",
+  "verdict": "PASS",
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "max_seq_len": 12288,
+  "runner": "experiments/finetune-arc-b2/scripts/render-check-b2.py",
+  "transformers_version": "5.5.0",
+  "grand_max_tokens": 9334,
+  "grand_max_id": "bach-prelude-c-major-bwv846:m033-036:piano:mcp-session:v1",
+  "files": {
+    "sft-train-b2.jsonl": { "lines": 748, "max_tokens": 9334 },
+    "sft-val-jam.jsonl": { "lines": 25, "max_tokens": 9248 },
+    "sft-val-grounding.jsonl": { "lines": 50, "max_tokens": 2343 },
+    "sft-val-abstention.jsonl": { "lines": 24, "max_tokens": 316 }
+  },
+  "per_component_max_tokens": {
+    "jam_human": 9334,
+    "jam_para": 9332,
+    "grounding": 4304,
+    "full_surface_qa": 5281,
+    "abstention": 538,
+    "rehearsal": 717
+  },
+  "total_corpus_tokens_train_plus_val": 3176725,
+  "note": "The C3 full_surface_qa examples enumerate raw note lists (the max_seq risk this gate exists to catch); max 5281 tokens, comfortably under 12288. The corpus max (9334) is a v1 jam_human trace, unchanged."
+}

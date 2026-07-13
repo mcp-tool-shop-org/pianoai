@@ -1,0 +1,94 @@
+{
+  "schema": "finetune-arc-b2-p1-gate/1.0.0",
+  "verdict": "PASS",
+  "generated_by": "experiments/finetune-arc-b2/scripts/build-b2-data.ts",
+  "lock": "experiments/finetune-arc-b2/P0-LOCK.md",
+  "inputs": {
+    "source": "datasets/jam-actions-v0 working set (r001+r002), selected by public splits.json (r001 rename) — inherited A2-v1",
+    "sealed_records_jsonl_sha256": "0299461b0188ed0c133786ae23cf4cc99c8fbb2bb6fa1a0da484d16dfe8755fe",
+    "splits_json_sha256": "a93f8055ee1be4a5c75af354a17199052cee892cd5aa0805388f85b8d3d1cb6c",
+    "midi_inspector_sha256": "1037b937422bdaf35f74c234f851b9fc5c6a9dbb67c842302ca91135f6baeff2",
+    "rehearsal_b2_raw_sha256": "f60a64d2108eff567a0dd24839c4aeb38786c03bc30a07ddfb8197e619ffc7a1",
+    "scripts": {
+      "build-b2-data.ts": "a594fd286ada97040cfec0ef63a8d3975992a99043bb5afd6fbb4600600cfda9",
+      "full-surface-gen.ts": "573bdc4a6c31aa81dd2fc9ada4cc0af17bdc209722af7598315603c60b2c81e5",
+      "abstention-gen.ts": "9f8c6029dd742dd26fd1dad2ff33649f92ce7f2a2293e236b7c78ede1d8a4590",
+      "gen-rehearsal-b2.ts": "764eb783a698f30372bcc6361b82a81eae840b22121fd87e17fe5b3253927e00",
+      "det-b2.ts": "ed3d8df3b984ef5e59adc9e11faa70911b29759b79db2e35fcb609bdd5386a42",
+      "grounding-gen.ts": "f027179f57ff95e76bd3c0c21bdd702783095bbdfb5b954c2b61eef851b73644",
+      "paraphrase-bank.ts": "05f488e74584c41bde5594de5bbbf98993902a96284a9d0b39a6723dde820b41",
+      "det-util.ts": "7be9a3db4d24d59f83f8efa1a16908d5656907b4b3d417dce3d383a629115728"
+    }
+  },
+  "system_text": "You are operating AI Jam Sessions, a music education platform.",
+  "counts": {
+    "train_total": 748,
+    "jam_human": 78,
+    "jam_para": 156,
+    "grounding": 200,
+    "full_surface_qa": 110,
+    "abstention": 144,
+    "abstention_answerable": 72,
+    "abstention_unanswerable": 72,
+    "abstention_ratio_ans_over_unans": 1,
+    "rehearsal": 60,
+    "val_jam": 25,
+    "val_grounding": 50,
+    "val_abstention": 24,
+    "replay_fraction": 0.1765
+  },
+  "histograms": {
+    "c3_full_surface_families": {
+      "FS4_hand_note_count": 22,
+      "FS1_pitch_class_count": 22,
+      "FS2_downbeat_onsets": 22,
+      "FS3_measure_note_count": 22,
+      "FS5_distinct_pitch_classes": 22
+    },
+    "c3_faded_count": 17,
+    "c4_flavors": {
+      "a": {
+        "answerable": 24,
+        "unanswerable": 24
+      },
+      "b": {
+        "answerable": 24,
+        "unanswerable": 24
+      },
+      "c": {
+        "answerable": 24,
+        "unanswerable": 24
+      }
+    }
+  },
+  "gates": {
+    "G1_split_integrity": "PASS",
+    "G2_schema_validity": "PASS",
+    "G3_byte_round_trip": "PASS",
+    "G4_counts_ratio_interleave": "PASS",
+    "G5_contamination": {
+      "verdict": "PASS",
+      "mcq_blacklist_size": 1604,
+      "annotation_needles": 2210
+    },
+    "G6a_mcp_execution": {
+      "verdict": "PASS",
+      "unique_calls": 206,
+      "executed": 206,
+      "findings": []
+    },
+    "G6b_inspector_reexecution": "PASS (C2 + C3)",
+    "G6c_paraphrase_anchors": "PASS",
+    "G8_abstention_calibration": "PASS",
+    "DET_double_build": "PASS",
+    "G7_render_failfast": "DEFERRED — render-check-b2.py (training venv) + on-pod stage0"
+  },
+  "outputs": {
+    "sft-train-b2.jsonl": "7ebe0f79326efda4473c8af6b88a87bb715766c1621f3520abe434e9e8ecdf6b",
+    "sft-val-jam.jsonl": "f0a9446f4810efa5e52f9c9c2dc1cc956a7b1a4d3132311f9dd3e03cac1c250f",
+    "sft-val-grounding.jsonl": "b2060440c35cb9db552629909d621b50ef37e59d1e7bc82e1659b7ac67c0bbd5",
+    "sft-val-abstention.jsonl": "ab061473925ef59ec8a111600b6c960c6fdfe1843c5171b2973934afa966779f",
+    "tools-mcp41.json": "71f37328f516242fcc722795f7c1f998c494f192c9c7d661115e46847b31f64b",
+    "tools-inspector9.json": "9d1ca24a4e61a93dfcbbe375e2458f1f9ef27cb87bd30d1ee1778e46ed156c39"
+  }
+}

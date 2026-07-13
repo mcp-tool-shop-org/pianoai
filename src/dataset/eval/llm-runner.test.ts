@@ -25,6 +25,7 @@ import {
   parseE2Output,
   buildE3UserPrompt,
   parseE3Response,
+  E3_ABSTAIN,
   majorityPass,
   checkE3Margins,
   runE1ForRecord,
@@ -647,6 +648,31 @@ describe("parseE3Response", () => {
 
   it("parses from multi-word response", () => {
     expect(parseE3Response("The answer is C because")).toBe(2);
+  });
+
+  // B-2 abstain surface (finetune-arc-b2 P0-LOCK §6.2). Default (allowAbstain
+  // false) is byte-identical to the pre-B2 matcher: E is NOT special.
+  it("default mode: E is not recognized (byte-identical pre-B2)", () => {
+    expect(parseE3Response("E")).toBeNull();
+  });
+
+  it("abstain mode: E returns the E3_ABSTAIN sentinel", () => {
+    expect(parseE3Response("E", true)).toBe(E3_ABSTAIN);
+  });
+
+  it("abstain mode: A-D still parse to 0-3", () => {
+    expect(parseE3Response("A", true)).toBe(0);
+    expect(parseE3Response("D", true)).toBe(3);
+  });
+
+  it("abstain mode: last-letter-wins keeps a trailing E as abstain", () => {
+    expect(parseE3Response("Maybe B, but E", true)).toBe(E3_ABSTAIN);
+  });
+
+  it("abstain mode: parse-fail still returns null; E3_ABSTAIN is distinct from null and 0-3", () => {
+    expect(parseE3Response("Yes", true)).toBeNull();
+    expect(E3_ABSTAIN).not.toBe(null);
+    expect(E3_ABSTAIN < 0).toBe(true);
   });
 });
 

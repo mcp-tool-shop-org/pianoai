@@ -1,0 +1,188 @@
+{
+  "schema": "finetune-arc-b2-cohort/1.0.0",
+  "status": "FROZEN at P0-b2 (director sign-off) BEFORE any B-2 model call — the pre-run gate asserts the commit",
+  "lock": "experiments/finetune-arc-b2/P0-LOCK.md",
+  "mission": "retain-and-calibrate: HOLD the tool win (primary veto), CLOSE the full gap, teach CALIBRATED ABSTENTION on text_only",
+  "cohort": {
+    "note": "the SAME 36-record cohort as B-1 (so v1-FT tool_inspected 0.890 is directly comparable); strata + ids inherited verbatim from b1-cohort.json",
+    "total": 36,
+    "strata": {
+      "CL": [
+        "clair-de-lune:m001-004:piano:mcp-session:v1",
+        "clair-de-lune:m005-008:piano:mcp-session:v1",
+        "clair-de-lune:m015-018:piano:mcp-session:v1",
+        "clair-de-lune:m019-022:piano:mcp-session:v1",
+        "clair-de-lune:m023-026:piano:mcp-session:v1",
+        "clair-de-lune:m027-030:piano:mcp-session:v1",
+        "clair-de-lune:m031-034:piano:mcp-session:v1",
+        "clair-de-lune:m035-038:piano:mcp-session:v1",
+        "clair-de-lune:m037-040:piano:mcp-session:v1",
+        "clair-de-lune:m041-044:piano:mcp-session:v1",
+        "clair-de-lune:m051-054:piano:mcp-session:v1",
+        "clair-de-lune:m055-058:piano:mcp-session:v1"
+      ],
+      "LG": [
+        "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1",
+        "bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1",
+        "bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1",
+        "bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1",
+        "pathetique-mvt2:m001-004:piano:mcp-session:v1",
+        "pathetique-mvt2:m009-012:piano:mcp-session:v1",
+        "pathetique-mvt2:m017-020:piano:mcp-session:v1",
+        "pathetique-mvt2:m025-028:piano:mcp-session:v1",
+        "schumann-traumerei:m001-004:piano:mcp-session:v1",
+        "schumann-traumerei:m045-048:piano:mcp-session:v1",
+        "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1",
+        "chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1",
+        "pathetique-mvt2:m029-032:piano:mcp-session:v1",
+        "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1",
+        "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1"
+      ],
+      "NW": [
+        "bach-prelude-c-major-bwv846:m021-024:piano:mcp-session:v1",
+        "bach-prelude-c-major-bwv846:m061-062:piano:mcp-session:v1",
+        "chopin-nocturne-op9-no2:m013-016:piano:mcp-session:v1",
+        "chopin-nocturne-op9-no2:m037-040:piano:mcp-session:v1",
+        "chopin-prelude-e-minor:m021-024:piano:mcp-session:v1",
+        "fur-elise:m013-016:piano:mcp-session:v1",
+        "mozart-k545-mvt1:m009-012:piano:mcp-session:v1",
+        "mozart-k545-mvt1:m017-020:piano:mcp-session:v1",
+        "pathetique-mvt2:m021-024:piano:mcp-session:v1"
+      ]
+    },
+    "cohort_sorted": [
+      "bach-prelude-c-major-bwv846:m009-012:piano:mcp-session:v1",
+      "bach-prelude-c-major-bwv846:m021-024:piano:mcp-session:v1",
+      "bach-prelude-c-major-bwv846:m029-032:piano:mcp-session:v1",
+      "bach-prelude-c-major-bwv846:m037-040:piano:mcp-session:v1",
+      "bach-prelude-c-major-bwv846:m045-048:piano:mcp-session:v1",
+      "bach-prelude-c-major-bwv846:m049-052:piano:mcp-session:v1",
+      "bach-prelude-c-major-bwv846:m053-056:piano:mcp-session:v1",
+      "bach-prelude-c-major-bwv846:m061-062:piano:mcp-session:v1",
+      "chopin-nocturne-op9-no2:m001-004:piano:mcp-session:v1",
+      "chopin-nocturne-op9-no2:m009-012:piano:mcp-session:v1",
+      "chopin-nocturne-op9-no2:m013-016:piano:mcp-session:v1",
+      "chopin-nocturne-op9-no2:m037-040:piano:mcp-session:v1",
+      "chopin-prelude-e-minor:m021-024:piano:mcp-session:v1",
+      "clair-de-lune:m001-004:piano:mcp-session:v1",
+      "clair-de-lune:m005-008:piano:mcp-session:v1",
+      "clair-de-lune:m015-018:piano:mcp-session:v1",
+      "clair-de-lune:m019-022:piano:mcp-session:v1",
+      "clair-de-lune:m023-026:piano:mcp-session:v1",
+      "clair-de-lune:m027-030:piano:mcp-session:v1",
+      "clair-de-lune:m031-034:piano:mcp-session:v1",
+      "clair-de-lune:m035-038:piano:mcp-session:v1",
+      "clair-de-lune:m037-040:piano:mcp-session:v1",
+      "clair-de-lune:m041-044:piano:mcp-session:v1",
+      "clair-de-lune:m051-054:piano:mcp-session:v1",
+      "clair-de-lune:m055-058:piano:mcp-session:v1",
+      "fur-elise:m013-016:piano:mcp-session:v1",
+      "mozart-k545-mvt1:m009-012:piano:mcp-session:v1",
+      "mozart-k545-mvt1:m017-020:piano:mcp-session:v1",
+      "pathetique-mvt2:m001-004:piano:mcp-session:v1",
+      "pathetique-mvt2:m009-012:piano:mcp-session:v1",
+      "pathetique-mvt2:m017-020:piano:mcp-session:v1",
+      "pathetique-mvt2:m021-024:piano:mcp-session:v1",
+      "pathetique-mvt2:m025-028:piano:mcp-session:v1",
+      "pathetique-mvt2:m029-032:piano:mcp-session:v1",
+      "schumann-traumerei:m001-004:piano:mcp-session:v1",
+      "schumann-traumerei:m045-048:piano:mcp-session:v1"
+    ]
+  },
+  "primary_veto": {
+    "condition": "tool_inspected",
+    "reference": "frozen v1-FT (5-seed all-seeds mean) from the sealed B-1 seed artifacts",
+    "v1ft_all_seeds_mean": 0.8903,
+    "v1ft_seed_means": [
+      0.818,
+      0.883,
+      0.887,
+      0.908,
+      0.955
+    ],
+    "baseline_b1_tool_mean": 0.6782,
+    "delta_tool": 0.05,
+    "delta_tool_provenance": "5-seed spread SD (sample n-1) of the frozen v1-FT reference on tool_inspected = 0.0496, rounded to 0.050 (CONSORT-style ex-ante; within one seed-SD of the noise the fine-tune itself exhibits)",
+    "non_inferiority_floor": 0.8403,
+    "non_inferiority_test": "bootstrapCI(B2_allseeds - v1FT_allseeds paired deltas)[lower] > -delta_tool AND B2_allseeds_mean > baseline",
+    "nfr_max": 0.18,
+    "nfr_max_provenance": "max intrinsic v1-FT seed-to-seed item-flip rate over 20 ordered seed pairs = 0.1818 (mean 0.0834), rounded to 0.18; item = (record x questionType) on tool_inspected — held means no more new failures than v1-FT exhibits among its own seeds",
+    "nfr_definition": "of the (record x questionType) tool_inspected items v1-FT gets right, the fraction B-2-FT gets wrong; both at all-seeds majority"
+  },
+  "secondary_reported_non_veto": {
+    "full_non_inferiority": {
+      "condition": "full",
+      "baseline_b1_full_mean": 0.3958,
+      "v1ft_full_all_seeds_mean": 0.313,
+      "v1ft_full_gap_vs_baseline": -0.0829,
+      "delta_full": 0.055,
+      "delta_full_provenance": "v1-FT full-surface 5-seed SD (sample n-1) = 0.0546, rounded to 0.055 (same one-seed-SD methodology as delta_tool)",
+      "test": "B2_full_allseeds >= (fresh B-2 baseline full) - delta_full  (closed the gap, NOT beat the tool)"
+    },
+    "text_only_abstention": {
+      "metric": "abstention rate on the 4 MIDI-only question types (text_only surface)",
+      "margin_over_baseline": 0.1,
+      "margin_provenance": "DESIGN-CHOSEN (not sealed-derivable — needs the fresh B-2-surface baseline): B-2-FT must abstain at least +0.10 more than the fresh baseline on the genuinely-unanswerable MIDI-only text_only questions",
+      "test": "B2_abstention_rate_midi_only >= baseline_abstention_rate_midi_only + 0.10"
+    },
+    "text_only_prose_over_refusal_guard": {
+      "metric": "prose-answerable types (key_time_sig, measure_range, provenance) on text_only",
+      "coverage_floor": 0.6,
+      "selective_accuracy_floor": 0.5,
+      "provenance": "DESIGN-CHOSEN: coverage = answered/(answered+abstain) >= 0.60 (the over-refusal guard — the model still ANSWERS the answerable ones); selective_accuracy = correct/answered >= 0.50 (right when it answers). Single operating point — the A-E output emits no confidence score, so no full risk-coverage curve (reported, said so)."
+    }
+  },
+  "recipe_frozen": {
+    "epochs": 4,
+    "checkpoints": [
+      1,
+      2,
+      4
+    ],
+    "lora_rank": 16,
+    "lora_alpha": 32,
+    "lora_dropout": 0.1,
+    "weight_decay": 0.01,
+    "weight_decay_provenance": "DESIGN-CHOSEN: LoRA weight decay raised 0.0 -> 0.01 (small L2-toward-zero anchor on the adapter deltas, L2-SP-style; conservative conventional value). A KL-to-base term was considered and rejected (custom loss, out of scope for a first B-2).",
+    "lr": 0.00015,
+    "effective_batch": 8,
+    "max_seq": 12288,
+    "base": "Qwen/Qwen2.5-7B-Instruct",
+    "seeds": [
+      13,
+      42,
+      271,
+      512,
+      1024
+    ],
+    "hardware": "RunPod A100-80GB, torch 2.8+cu128 (same stack as v1 — hardware-confound avoidance)"
+  },
+  "corpus_counts_frozen": {
+    "train_total": 748,
+    "jam_human": 78,
+    "jam_para": 156,
+    "grounding": 200,
+    "full_surface_qa": 110,
+    "abstention": 144,
+    "abstention_answerable": 72,
+    "abstention_unanswerable": 72,
+    "rehearsal": 60,
+    "val_jam": 25,
+    "val_grounding": 50,
+    "val_abstention": 24,
+    "replay_fraction": 0.1765,
+    "transfer_slice_diagnostic": 24
+  },
+  "stats": {
+    "rng": "mulberry32",
+    "seed": 20260714,
+    "n_boot": 10000,
+    "n_perm": 10000
+  },
+  "claim_classes": [
+    "PASS",
+    "PARETO",
+    "REGRESSION",
+    "NULL"
+  ]
+}

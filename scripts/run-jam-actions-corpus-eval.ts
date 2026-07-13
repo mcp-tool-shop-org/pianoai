@@ -306,6 +306,15 @@ interface CliOpts {
    * opt out of both writing and resuming.
    */
   checkpoint: boolean;
+  /**
+   * finetune-arc-b2 P0-LOCK §6: the B-2 abstain eval surface. Default FALSE →
+   * the eval is byte-identical to the pre-B2 (v0/v1/B-1) regime. Pass
+   * --abstain-surface to enable the E) "cannot be determined" option on e3 +
+   * e3-tool, 3-way outcome scoring, the text_only metadata header, and the
+   * prose-answerable question types on text_only (the over-refusal guard). The
+   * B-2 fresh baseline and all 5 B-2 seeds run with this ON (the pinned surface).
+   */
+  abstainSurface: boolean;
 }
 
 function parseEvalsList(raw: string): Set<EvalName> {
@@ -349,6 +358,7 @@ function parseArgs(): CliOpts {
     sampleFilter: "all",
     backend: "ollama",
     checkpoint: true,
+    abstainSurface: false,
   };
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
@@ -399,6 +409,8 @@ function parseArgs(): CliOpts {
       opts.backend = v;
     } else if (a === "--no-checkpoint") {
       opts.checkpoint = false;
+    } else if (a === "--abstain-surface") {
+      opts.abstainSurface = true;
     } else if (a === "--help" || a === "-h") {
       opts.help = true;
     }
@@ -1493,6 +1505,7 @@ if (opts.evals.has("e3")) {
           e3RecordsForRandomMidi,
           backend,
           N_RUNS, // inner per-question n stays at 1; K wraps at the outer record level
+          { abstain: opts.abstainSurface },
         );
       } catch (err) {
         console.log(`ERROR (${Date.now() - t0}ms): ${(err as Error).message}`);
@@ -1742,6 +1755,8 @@ if (opts.evals.has("e3-tool")) {
           toolBackend,
           1, // inner n=1: each call to runToolInspectedForRecord runs questions once;
              // outer K wraps at record-level (matches the existing E3 pattern)
+          undefined, // maxIterations: keep the runner default
+          { abstain: opts.abstainSurface },
         );
       } catch (err) {
         console.log(`ERROR (${Date.now() - t0}ms): ${(err as Error).message}`);

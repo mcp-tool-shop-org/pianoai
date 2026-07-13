@@ -45,6 +45,7 @@ import {
 } from "./midi-inspector.js";
 import {
   parseE3Response,
+  E3_ABSTAIN,
   type LlmBackend,
   type ToolSchema,
   type CallMeta,
@@ -292,6 +293,17 @@ const E3_TOOL_SYSTEM_TEXT =
   "Tool calls are free and fast; use them whenever the annotation alone does " +
   "not contain a specific fact you need.";
 
+// B-2 abstain surface (finetune-arc-b2 P0-LOCK §6): the tool_inspected variant
+// gains the out-of-band E option too, so a model that genuinely cannot ground a
+// question (even with the tools) can decline rather than guess. The tool surface
+// is answerable, so abstention here is itself a signal (reported, not a bar).
+const E3_TOOL_SYSTEM_TEXT_ABSTAIN =
+  E3_TOOL_SYSTEM_TEXT.replace(
+    "respond with ONLY the single letter " + "(A, B, C, or D) of your chosen answer. ",
+    "respond with ONLY the single letter (A, B, C, D, or E) of your chosen answer, " +
+      "where E means the question CANNOT be determined even after inspecting — do NOT guess. ",
+  );
+
 /**
  * Build the user message for the tool-inspected condition. Includes the
  * annotation_target prose + question + options + a "use tools as needed"
@@ -300,12 +312,15 @@ const E3_TOOL_SYSTEM_TEXT =
 export function buildE3ToolUserPrompt(
   record: E3Record,
   question: MCQuestion,
+  opts?: { abstain?: boolean },
 ): string {
   const at = record.annotation_target;
+  const abstain = opts?.abstain === true;
   const optionLabels = ["A", "B", "C", "D"] as const;
-  const optionsText = question.options
+  let optionsText = question.options
     .map((opt, i) => `${optionLabels[i]}) ${opt}`)
     .join("\n");
+  if (abstain) optionsText += `\nE) cannot be determined from what is given`;
 
   const annotationBlock = [
     at.structure ? `Structure: ${at.structure}` : null,
@@ -342,7 +357,7 @@ export function buildE3ToolUserPrompt(
     `Question: ${question.questionText}\n` +
     `Options:\n${optionsText}\n\n` +
     `Use the MIDI inspector tools as needed to inspect the phrase, ` +
-    `then respond with ONLY A, B, C, or D.`
+    `then respond with ONLY ${abstain ? "A, B, C, D, or E" : "A, B, C, or D"}.`
   );
 }
 
@@ -357,6 +372,8 @@ export interface ToolInspectedQuestionRunResult {
   correct: boolean;
   score: number;
   trace: ToolInspectedTrace;
+  /** B-2 3-way outcome (§6.2); "abstain" only in the abstain surface. */
+  outcome: "correct" | "wrong" | "abstain";
 }
 
 /**
@@ -379,13 +396,15 @@ export async function runToolInspectedQuestion(
   backend: MultiTurnBackend,
   runIndex: number,
   maxIterations: number = MAX_TOOL_ITERATIONS,
+  opts?: { abstain?: boolean },
 ): Promise<ToolInspectedQuestionRunResult> {
+  const abstain = opts?.abstain === true;
   const runId = `${record.id}:E3:tool_inspected:${question.questionType}:run${runIndex + 1}`;
   const tools = inspectorToolSchemas();
 
-  const userMessage = buildE3ToolUserPrompt(record, question);
+  const userMessage = buildE3ToolUserPrompt(record, question, { abstain });
   const messages: ToolUseMessage[] = [
-    { role: "system", content: E3_TOOL_SYSTEM_TEXT },
+    { role: "system", content: abstain ? E3_TOOL_SYSTEM_TEXT_ABSTAIN : E3_TOOL_SYSTEM_TEXT },
     { role: "user", content: userMessage },
   ];
 
@@ -516,20 +535,39 @@ export async function runToolInspectedQuestion(
       correct: false,
       score: 0,
       trace,
+      outcome: "wrong",
     };
   }
 
-  const selectedIndex = parseE3Response(finalText);
+  const selectedIndex = parseE3Response(finalText, abstain);
   if (selectedIndex === null) {
     return {
       run: runIndex + 1,
       context: "tool_inspected",
       questionType: question.questionType,
-      meta: { ...meta, parseOk: false, parseError: "no A/B/C/D found in final response" },
+      meta: { ...meta, parseOk: false, parseError: abstain ? "no A/B/C/D/E found in final response" : "no A/B/C/D found in final response" },
       selectedOptionIndex: null,
       correct: false,
       score: 0,
       trace,
+      outcome: "wrong",
+    };
+  }
+
+  // B-2 abstain (§6.2): the model declined even after tool access. Scored as
+  // not-correct (tool_inspected_mean unchanged); the abstain is carried in
+  // `outcome` and reported as a signal (the tool surface is answerable).
+  if (selectedIndex === E3_ABSTAIN) {
+    return {
+      run: runIndex + 1,
+      context: "tool_inspected",
+      questionType: question.questionType,
+      meta,
+      selectedOptionIndex: null,
+      correct: false,
+      score: 0,
+      trace,
+      outcome: "abstain",
     };
   }
 
@@ -543,6 +581,7 @@ export async function runToolInspectedQuestion(
     correct,
     score: correct ? 1 : 0,
     trace,
+    outcome: correct ? "correct" : "wrong",
   };
 }
 
@@ -595,7 +634,9 @@ export async function runToolInspectedForRecord(
   backend: MultiTurnBackend,
   n: number,
   maxIterations: number = MAX_TOOL_ITERATIONS,
+  opts?: { abstain?: boolean },
 ): Promise<ToolInspectedRecordResult> {
+  const abstain = opts?.abstain === true;
   const questionSet = generateQuestionSet(record);
   const randomMidiRecord = selectRandomMidiPartner(record, allRecords);
 
@@ -641,6 +682,7 @@ export async function runToolInspectedForRecord(
         backend,
         r,
         maxIterations,
+        { abstain },
       );
       runs.push(result);
       totalRuns++;
