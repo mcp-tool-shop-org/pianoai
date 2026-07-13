@@ -10,7 +10,9 @@
 #     in-flight seed
 #   * printf-delimited progress (the stall detector requires it)
 #
-# Pod A: default SEEDS {13 42 271}. Pod B: launch with SEEDS_OVERRIDE="512 1024".
+# Approved compute (B-2): ONE pod, ALL FIVE seeds sequentially — default SEEDS
+# {13 42 271 512 1024}, no SEEDS_OVERRIDE needed. (SEEDS_OVERRIDE remains as an
+# escape hatch for a manual split/resume.)
 # Recipe: bf16 LoRA r=16, epochs 4 ckpts {1,2,4}, weight-decay 0.01 (P0-LOCK §7).
 set -euo pipefail
 
@@ -19,7 +21,7 @@ DATA=$ARC/data
 SCRIPTS=$ARC/scripts
 RUNS=$ARC/runs
 ART=$ARC/artifacts
-SEEDS=(${SEEDS_OVERRIDE:-13 42 271})
+SEEDS=(${SEEDS_OVERRIDE:-13 42 271 512 1024})
 export HF_HOME=/workspace/hf
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
