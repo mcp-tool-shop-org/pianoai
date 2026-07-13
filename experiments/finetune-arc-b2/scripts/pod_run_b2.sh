@@ -24,6 +24,9 @@ ART=$ARC/artifacts
 SEEDS=(${SEEDS_OVERRIDE:-13 42 271 512 1024})
 export HF_HOME=/workspace/hf
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+# Ubuntu 24.04 base image marks its Python externally-managed (PEP 668); the pod
+# is disposable so allow pip to install into the same dist-packages torch lives in.
+export PIP_BREAK_SYSTEM_PACKAGES=1
 
 mkdir -p "$RUNS" "$ART" "$ARC/merged"
 
