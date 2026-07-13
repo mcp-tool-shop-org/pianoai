@@ -1,0 +1,214 @@
+{
+ "gate": "citation-existence-oracle",
+ "study": "docs/finetune-arc-prose-measurement-memo.md (prose-surface measurement-design study)",
+ "method": "arXiv API id_list query (https, export.arxiv.org), deterministic retrieval — not model memory",
+ "date": "2026-07-13",
+ "summary": {
+  "unique_arxiv_queried": 35,
+  "arxiv_resolved": 35,
+  "fabricated_or_missing": 0,
+  "non_arxiv_verified_out_of_band": 1,
+  "total_sources_resolved": 36,
+  "total_sources_cited": 36,
+  "groundedness_lens": "advisory / deferred — existence oracle is the load-bearing blocking gate (passed); disposition identical to the v1/B-2 locks"
+ },
+ "non_arxiv": {
+  "Rodriguez et al. 2021": {
+   "title": "Evaluation Examples are not Equally Informative: How should that change NLP Leaderboards?",
+   "venue": "ACL-IJCNLP 2021",
+   "url": "https://aclanthology.org/2021.acl-long.346/",
+   "verified": "WebFetch of ACL Anthology page — title/authors/year/IRT-item-informativeness content confirmed"
+  }
+ },
+ "lanes": {
+  "L1_instruments": [
+   "2503.01550",
+   "2309.03882",
+   "2308.11483",
+   "2607.08456",
+   "2207.05221",
+   "2305.14975",
+   "2306.13063",
+   "2302.09664",
+   "2311.09677",
+   "2506.09038"
+  ],
+  "L2_trainability_transfer": [
+   "2311.09677",
+   "2312.07000",
+   "2502.05911",
+   "2410.06913",
+   "2409.00113",
+   "2407.16221",
+   "2402.14499",
+   "2507.02856",
+   "2310.11324",
+   "2309.03882"
+  ],
+  "L3_full_ceiling": [
+   "2305.18654",
+   "2502.12143",
+   "2410.19730",
+   "2207.00729",
+   "2412.04703",
+   "2510.22977",
+   "2211.10435",
+   "2211.12588",
+   "2309.17452",
+   "2401.04398",
+   "2310.09263"
+  ],
+  "L4_validity_checklist": [
+   "1912.05511",
+   "2111.15366",
+   "2104.02145",
+   "2010.06595",
+   "2103.06944",
+   "2310.11324",
+   "2402.01781"
+  ]
+ },
+ "missing": [],
+ "entries": {
+  "1912.05511": {
+   "title": "Measurement and Fairness",
+   "first_author": "Abigail Z. Jacobs"
+  },
+  "2010.06595": {
+   "title": "With Little Power Comes Great Responsibility",
+   "first_author": "Dallas Card"
+  },
+  "2103.06944": {
+   "title": "Preregistering NLP Research",
+   "first_author": "Emiel van Miltenburg"
+  },
+  "2104.02145": {
+   "title": "What Will it Take to Fix Benchmarking in Natural Language Understanding?",
+   "first_author": "Samuel R. Bowman"
+  },
+  "2111.15366": {
+   "title": "AI and the Everything in the Whole Wide World Benchmark",
+   "first_author": "Inioluwa Deborah Raji"
+  },
+  "2207.00729": {
+   "title": "The Parallelism Tradeoff: Limitations of Log-Precision Transformers",
+   "first_author": "William Merrill"
+  },
+  "2207.05221": {
+   "title": "Language Models (Mostly) Know What They Know",
+   "first_author": "Saurav Kadavath"
+  },
+  "2211.10435": {
+   "title": "PAL: Program-aided Language Models",
+   "first_author": "Luyu Gao"
+  },
+  "2211.12588": {
+   "title": "Program of Thoughts Prompting: Disentangling Computation from Reasoning for Numerical Reasoning Tasks",
+   "first_author": "Wenhu Chen"
+  },
+  "2302.09664": {
+   "title": "Semantic Uncertainty: Linguistic Invariances for Uncertainty Estimation in Natural Language Generation",
+   "first_author": "Lorenz Kuhn"
+  },
+  "2305.14975": {
+   "title": "Just Ask for Calibration: Strategies for Eliciting Calibrated Confidence Scores from Language Models Fine-Tuned with Human Feedback",
+   "first_author": "Katherine Tian"
+  },
+  "2305.18654": {
+   "title": "Faith and Fate: Limits of Transformers on Compositionality",
+   "first_author": "Nouha Dziri"
+  },
+  "2306.13063": {
+   "title": "Can LLMs Express Their Uncertainty? An Empirical Evaluation of Confidence Elicitation in LLMs",
+   "first_author": "Miao Xiong"
+  },
+  "2308.11483": {
+   "title": "Large Language Models Sensitivity to The Order of Options in Multiple-Choice Questions",
+   "first_author": "Pouya Pezeshkpour"
+  },
+  "2309.03882": {
+   "title": "Large Language Models Are Not Robust Multiple Choice Selectors",
+   "first_author": "Chujie Zheng"
+  },
+  "2309.17452": {
+   "title": "ToRA: A Tool-Integrated Reasoning Agent for Mathematical Problem Solving",
+   "first_author": "Zhibin Gou"
+  },
+  "2310.09263": {
+   "title": "Table-GPT: Table-tuned GPT for Diverse Table Tasks",
+   "first_author": "Peng Li"
+  },
+  "2310.11324": {
+   "title": "Quantifying Language Models' Sensitivity to Spurious Features in Prompt Design or: How I learned to start worrying about prompt formatting",
+   "first_author": "Melanie Sclar"
+  },
+  "2311.09677": {
+   "title": "R-Tuning: Instructing Large Language Models to Say `I Don't Know'",
+   "first_author": "Hanning Zhang"
+  },
+  "2312.07000": {
+   "title": "Alignment for Honesty",
+   "first_author": "Yuqing Yang"
+  },
+  "2401.04398": {
+   "title": "Chain-of-Table: Evolving Tables in the Reasoning Chain for Table Understanding",
+   "first_author": "Zilong Wang"
+  },
+  "2402.01781": {
+   "title": "When Benchmarks are Targets: Revealing the Sensitivity of Large Language Model Leaderboards",
+   "first_author": "Norah Alzahrani"
+  },
+  "2402.14499": {
+   "title": "\"My Answer is C\": First-Token Probabilities Do Not Match Text Answers in Instruction-Tuned Language Models",
+   "first_author": "Xinpeng Wang"
+  },
+  "2407.16221": {
+   "title": "Do LLMs Know When to NOT Answer? Investigating Abstention Abilities of Large Language Models",
+   "first_author": "Nishanth Madhusudhan"
+  },
+  "2409.00113": {
+   "title": "Wait, that's not an option: LLMs Robustness with Incorrect Multiple-Choice Options",
+   "first_author": "Gracjan Góral"
+  },
+  "2410.06913": {
+   "title": "Utilize the Flow before Stepping into the Same River Twice: Certainty Represented Knowledge Flow for Refusal-Aware Instruction Tuning",
+   "first_author": "Runchuan Zhu"
+  },
+  "2410.19730": {
+   "title": "Counting Ability of Large Language Models and Impact of Tokenization",
+   "first_author": "Xiang Zhang"
+  },
+  "2412.04703": {
+   "title": "Transformers Struggle to Learn to Search",
+   "first_author": "Abulhair Saparov"
+  },
+  "2502.05911": {
+   "title": "GRAIT: Gradient-Driven Refusal-Aware Instruction Tuning for Effective Hallucination Mitigation",
+   "first_author": "Runchuan Zhu"
+  },
+  "2502.12143": {
+   "title": "Small Models Struggle to Learn from Strong Reasoners",
+   "first_author": "Yuetai Li"
+  },
+  "2503.01550": {
+   "title": "None of the Above, Less of the Right: Parallel Patterns between Humans and LLMs on Multi-Choice Questions Answering",
+   "first_author": "Zhi Rui Tam"
+  },
+  "2506.09038": {
+   "title": "AbstentionBench: Reasoning LLMs Fail on Unanswerable Questions",
+   "first_author": "Polina Kirichenko"
+  },
+  "2507.02856": {
+   "title": "Answer Matching Outperforms Multiple Choice for Language Model Evaluation",
+   "first_author": "Nikhil Chandak"
+  },
+  "2510.22977": {
+   "title": "The Reasoning Trap: How Enhancing LLM Reasoning Amplifies Tool Hallucination",
+   "first_author": "Chenlong Yin"
+  },
+  "2607.08456": {
+   "title": "Two Axes of LLM Abstention: Answer Correctness and Question Answerability",
+   "first_author": "Benedikt J. Wagner"
+  }
+ }
+}
