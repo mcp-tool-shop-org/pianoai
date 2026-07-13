@@ -1,0 +1,44 @@
+{
+  "schema": "finetune-arc-b2-p4-receipt/1.0.0",
+  "baseline_tag": "qwen2.5:7b",
+  "baseline_quant": "Q4_K_M",
+  "models": [
+    {
+      "name": "jam-ft-b2-qwen25:seed1024",
+      "gguf": "jam-ft-b2-qwen25-seed1024-epoch1.q4_k_m.gguf",
+      "selected_epoch": "epoch1",
+      "gguf_sha256": "6f7323f53fda182f5d5b2820dd497d0f459bd9a7560cdf2adec9ccab591eb97d",
+      "quant": "Q4_K_M"
+    },
+    {
+      "name": "jam-ft-b2-qwen25:seed13",
+      "gguf": "jam-ft-b2-qwen25-seed13-epoch2.q4_k_m.gguf",
+      "selected_epoch": "epoch2",
+      "gguf_sha256": "8d19adb1952edc8de79562dac5535b798a3a25f7d74ad51e82814ce1a97bccd1",
+      "quant": "Q4_K_M"
+    },
+    {
+      "name": "jam-ft-b2-qwen25:seed271",
+      "gguf": "jam-ft-b2-qwen25-seed271-epoch4.q4_k_m.gguf",
+      "selected_epoch": "epoch4",
+      "gguf_sha256": "db1c4558c30e7de6709b62ebf910927346838e040523dd54aa2ffac16d6e82a3",
+      "quant": "Q4_K_M"
+    },
+    {
+      "name": "jam-ft-b2-qwen25:seed42",
+      "gguf": "jam-ft-b2-qwen25-seed42-epoch2.q4_k_m.gguf",
+      "selected_epoch": "epoch2",
+      "gguf_sha256": "0ff228f7685fcceca30d8416f9328d09dc2973ed0c16af9e8e0bef0ddbf6ecfc",
+      "quant": "Q4_K_M"
+    },
+    {
+      "name": "jam-ft-b2-qwen25:seed512",
+      "gguf": "jam-ft-b2-qwen25-seed512-epoch2.q4_k_m.gguf",
+      "selected_epoch": "epoch2",
+      "gguf_sha256": "2ae63c3f616043e29c37fcc6319aa62d4505802ddfda7e95c907218705143aee",
+      "quant": "Q4_K_M"
+    }
+  ],
+  "template_source": "ollama show qwen2.5:7b --template (byte-identical copy)",
+  "parameters": "none (baseline tag sets none; harness sends none)"
+}
