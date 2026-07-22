@@ -49,6 +49,13 @@ import {
   type NotComputable,
   type ResolvedPair,
 } from "./phrase-continuation.js";
+import { meterAwareGrooveOA, type RequantizeOptions } from "./score-time-gold.js";
+import {
+  signTest,
+  permutationTestPairedMean,
+  type SignTestResult,
+  type PermutationTestResult,
+} from "./paired-tests.js";
 
 // ─── Per-pair score ───────────────────────────────────────────────────────────
 
@@ -249,6 +256,351 @@ export function aggregateModelContinuations(
     minMargin: margins.length > 0 ? Math.min(...margins) : null,
     maxMargin: margins.length > 0 ? Math.max(...margins) : null,
     aggregateClearsBar: meanMargin !== null && meanMargin >= FUTURE_MODEL_GROOVE_MARGIN,
+    notComputableAudit,
+  };
+}
+
+// ─── E2v2: conjunctive two-axis scoring vs a generative foil ──────────────────
+//
+// The E2v2 repair (design §6.2.4): replace the single onset-only groove metric
+// vs a shuffle control with a CONJUNCTIVE two-axis score vs a generative foil.
+//
+//   RHYTHM axis  — meter-aware groove OA vs SCORE-TIME gold (score-time-gold.ts,
+//                  fixes the rubato-cloning confound + Debussy triplet mis-binning)
+//   TONAL  axis  — pitch-class histogram OA vs gold (F11, the MIR-standard tonal
+//                  feature) — closes the "right rhythm, wrong notes" gaming mode
+//
+// Each axis' MARGIN is over the FOIL's same-axis score (Markov foil or copy-
+// forward, markov-foil.ts), not over a permutation of gold. A conjunctive gate
+// (both axes clear) is level-α with NO multiplicity penalty (Berger–Hsu
+// Intersection–Union Test, finding F10) and names/closes the Goodhart failure
+// modes the v1 single-axis gate exposed (F9).
+//
+// The bars below are `[LOCK]` PROPOSALS — Slice 3's $0 pre-measurement computes
+// the real numbers from gold/foil separation and the director signs them ex ante
+// (Fork 5) before any training run. They are NOT the sealed v1 constant.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** `[LOCK]` proposal — rhythm-axis margin the model must beat the foil by. */
+export const E2V2_RHYTHM_MARGIN = 0.15;
+/** `[LOCK]` proposal — tonal-axis margin the model must beat the foil by. */
+export const E2V2_TONAL_MARGIN = 0.1;
+/** `[LOCK]` proposal — min gold-vs-foil separation, per axis, to qualify an item. */
+export const E2V2_SCREEN_SEPARATION = 0.15;
+
+export interface E2v2AxisScore {
+  /** Axis metric of the model continuation vs gold. */
+  modelVsGold: MetricResult;
+  /** Same axis metric of the foil vs gold (the control this margin is over). */
+  foilVsGold: MetricResult;
+  /** modelVsGold − foilVsGold; null when either side is not computable. */
+  margin: number | null;
+}
+
+export interface E2v2ContinuationScore {
+  promptId: string;
+  targetId: string;
+  songId: string;
+  timeSignature: string;
+  targetMeasureRange: string;
+  foilLabel: string;
+  goldEventCount: number;
+  modelEventCount: number;
+  foilEventCount: number;
+  /** Meter-aware groove OA axis (score-time). */
+  rhythm: E2v2AxisScore;
+  /** Pitch-class OA axis. */
+  tonal: E2v2AxisScore;
+  rhythmBar: number;
+  tonalBar: number;
+  /** Conjunctive: both axes computable AND both margins ≥ their bars (F10 IUT). */
+  clearsBar: boolean;
+}
+
+function axisMargin(modelVsGold: MetricResult, foilVsGold: MetricResult): number | null {
+  return !isNotComputable(modelVsGold) && !isNotComputable(foilVsGold)
+    ? (modelVsGold as number) - (foilVsGold as number)
+    : null;
+}
+
+export interface E2v2ScoreOptions extends RequantizeOptions {
+  rhythmBar?: number;
+  tonalBar?: number;
+  foilLabel?: string;
+}
+
+/**
+ * Score a model continuation on both axes against a resolved pair and a
+ * pre-built foil (Markov or copy-forward, at the target measures). Conjunctive
+ * verdict per F10. Model measures are anchored to the target window exactly as
+ * the v1 scorer does; the foil is already at the target measures.
+ */
+export function scoreE2v2Continuation(
+  pair: ResolvedPair,
+  modelEvents: TimedEvent[],
+  foilEvents: TimedEvent[],
+  opts: E2v2ScoreOptions = {},
+): E2v2ContinuationScore {
+  const target = pair.targetRecord;
+  const goldEvents = target.observation.midi_sidecar.timed_events;
+  const timeSignature = target.scope.time_signature;
+  const rhythmBar = opts.rhythmBar ?? E2V2_RHYTHM_MARGIN;
+  const tonalBar = opts.tonalBar ?? E2V2_TONAL_MARGIN;
+
+  const phraseMatch = /measures (\d+)-(\d+)/.exec(target.scope.phrase_window);
+  const phraseStartMeasure = phraseMatch ? parseInt(phraseMatch[1], 10) : 1;
+  const model = alignContinuationMeasures(modelEvents, phraseStartMeasure);
+
+  const empty = (n: number) => n === 0;
+
+  // RHYTHM axis — meter-aware groove OA vs score-time gold.
+  const rhythmModel = empty(model.length)
+    ? notComputable("model continuation has no note events")
+    : meterAwareGrooveOA(goldEvents, model, timeSignature, opts);
+  const rhythmFoil = empty(foilEvents.length)
+    ? notComputable("foil has no note events")
+    : meterAwareGrooveOA(goldEvents, foilEvents, timeSignature, opts);
+
+  // TONAL axis — pitch-class histogram OA (grid-independent).
+  const tonalModel = empty(model.length)
+    ? notComputable("model continuation has no note events")
+    : computePitchClassOA(goldEvents, model);
+  const tonalFoil = empty(foilEvents.length)
+    ? notComputable("foil has no note events")
+    : computePitchClassOA(goldEvents, foilEvents);
+
+  const rhythm: E2v2AxisScore = {
+    modelVsGold: rhythmModel,
+    foilVsGold: rhythmFoil,
+    margin: axisMargin(rhythmModel, rhythmFoil),
+  };
+  const tonal: E2v2AxisScore = {
+    modelVsGold: tonalModel,
+    foilVsGold: tonalFoil,
+    margin: axisMargin(tonalModel, tonalFoil),
+  };
+
+  const clearsBar =
+    rhythm.margin !== null &&
+    tonal.margin !== null &&
+    rhythm.margin >= rhythmBar &&
+    tonal.margin >= tonalBar;
+
+  return {
+    promptId: pair.promptRecord.id,
+    targetId: target.id,
+    songId: target.scope.song_id,
+    timeSignature,
+    targetMeasureRange: target.scope.phrase_window,
+    foilLabel: opts.foilLabel ?? "foil",
+    goldEventCount: goldEvents.length,
+    modelEventCount: model.length,
+    foilEventCount: foilEvents.length,
+    rhythm,
+    tonal,
+    rhythmBar,
+    tonalBar,
+    clearsBar,
+  };
+}
+
+// ─── E2v2 item screen (model-blind, frozen with the item list) ────────────────
+
+export interface E2v2ItemScreen {
+  targetId: string;
+  songId: string;
+  targetMeasureRange: string;
+  foilLabel: string;
+  /** grooveOA(gold,gold) − grooveOA(gold,foil): rhythm discrimination on this item. */
+  rhythmSeparation: number | null;
+  /** pitchClassOA(gold,gold) − pitchClassOA(gold,foil): tonal discrimination. */
+  tonalSeparation: number | null;
+  separationBar: number;
+  /** Item may gate only if BOTH axes separate ≥ bar (F26 set-separation validity). */
+  qualifies: boolean;
+  reason: string;
+}
+
+export interface E2v2ScreenOptions extends RequantizeOptions {
+  separationBar?: number;
+  foilLabel?: string;
+}
+
+/**
+ * Screen an item for gate-eligibility using gold + foil ONLY (never the model —
+ * screening on the candidate would bias toward it, finding F14). An item
+ * qualifies only if the instrument demonstrably separates gold from the foil on
+ * BOTH axes (F26). The output is meant to be frozen alongside the item list.
+ */
+export function screenItemE2v2(
+  pair: ResolvedPair,
+  foilEvents: TimedEvent[],
+  opts: E2v2ScreenOptions = {},
+): E2v2ItemScreen {
+  const target = pair.targetRecord;
+  const goldEvents = target.observation.midi_sidecar.timed_events;
+  const timeSignature = target.scope.time_signature;
+  const separationBar = opts.separationBar ?? E2V2_SCREEN_SEPARATION;
+  const foilLabel = opts.foilLabel ?? "foil";
+
+  const num = (r: MetricResult): number | null => (isNotComputable(r) ? null : (r as number));
+
+  const goldSelfRhythm = num(meterAwareGrooveOA(goldEvents, goldEvents, timeSignature, opts));
+  const foilRhythm =
+    foilEvents.length === 0 ? null : num(meterAwareGrooveOA(goldEvents, foilEvents, timeSignature, opts));
+  const goldSelfTonal = num(computePitchClassOA(goldEvents, goldEvents));
+  const foilTonal = foilEvents.length === 0 ? null : num(computePitchClassOA(goldEvents, foilEvents));
+
+  const rhythmSeparation =
+    goldSelfRhythm !== null && foilRhythm !== null ? goldSelfRhythm - foilRhythm : null;
+  const tonalSeparation =
+    goldSelfTonal !== null && foilTonal !== null ? goldSelfTonal - foilTonal : null;
+
+  let qualifies = false;
+  let reason: string;
+  if (rhythmSeparation === null || tonalSeparation === null) {
+    reason = "not computable — gold or foil produced no scoreable groove/pitch histogram";
+  } else if (rhythmSeparation < separationBar && tonalSeparation < separationBar) {
+    reason = `both axes below separation bar (rhythm ${rhythmSeparation.toFixed(3)}, tonal ${tonalSeparation.toFixed(3)} < ${separationBar})`;
+  } else if (rhythmSeparation < separationBar) {
+    reason = `rhythm separation ${rhythmSeparation.toFixed(3)} < ${separationBar} — instrument cannot distinguish gold from foil on rhythm here`;
+  } else if (tonalSeparation < separationBar) {
+    reason = `tonal separation ${tonalSeparation.toFixed(3)} < ${separationBar} — instrument cannot distinguish gold from foil on pitch here`;
+  } else {
+    qualifies = true;
+    reason = `qualifies — rhythm ${rhythmSeparation.toFixed(3)}, tonal ${tonalSeparation.toFixed(3)} ≥ ${separationBar}`;
+  }
+
+  return {
+    targetId: target.id,
+    songId: target.scope.song_id,
+    targetMeasureRange: target.scope.phrase_window,
+    foilLabel,
+    rhythmSeparation,
+    tonalSeparation,
+    separationBar,
+    qualifies,
+    reason,
+  };
+}
+
+// ─── E2v2 aggregate (over the screened item set) ──────────────────────────────
+
+export interface E2v2AxisAggregate {
+  meanModelVsGold: number | null;
+  meanFoilVsGold: number | null;
+  meanMargin: number | null;
+  minMargin: number | null;
+  maxMargin: number | null;
+  bar: number;
+  /** meanMargin ≥ bar — the effect-size gate for this axis. */
+  meanClearsBar: boolean;
+  /** Exact binomial sign test that item margins tend above 0 (beats the foil). */
+  signTest: SignTestResult;
+  /** Paired sign-flip permutation test that mean margin > 0 (finding F13). */
+  permutationTest: PermutationTestResult;
+}
+
+export interface E2v2Aggregate {
+  modelLabel: string;
+  foilLabel: string;
+  alpha: number;
+  /** Items fed to the aggregate (should already be the SCREENED set). */
+  pairCount: number;
+  /** Items where BOTH axis margins are computable. */
+  computablePairCount: number;
+  /** Items clearing the conjunctive per-item bar. */
+  pairsClearingBar: number;
+  clearRateAllPairs: number | null;
+  rhythm: E2v2AxisAggregate;
+  tonal: E2v2AxisAggregate;
+  /** Conjunctive headline: BOTH axes' mean margin ≥ their bars. */
+  aggregateClearsBar: boolean;
+  /** Conjunctive significance: BOTH axes' one-sided permutation p < alpha. */
+  bothAxesSignificant: boolean;
+  notComputableAudit: Array<{ pairId: string; axis: string; side: string; reason: string }>;
+}
+
+function aggregateAxis(
+  scores: E2v2ContinuationScore[],
+  pick: (s: E2v2ContinuationScore) => E2v2AxisScore,
+  bar: number,
+  seed: number,
+): E2v2AxisAggregate {
+  const withMargin = scores.filter((s) => pick(s).margin !== null);
+  const margins = withMargin.map((s) => pick(s).margin as number);
+  const modelVals = withMargin
+    .map((s) => pick(s).modelVsGold)
+    .filter((v) => !isNotComputable(v)) as number[];
+  const foilVals = withMargin
+    .map((s) => pick(s).foilVsGold)
+    .filter((v) => !isNotComputable(v)) as number[];
+  const mean = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null);
+  const meanMargin = mean(margins);
+  return {
+    meanModelVsGold: mean(modelVals),
+    meanFoilVsGold: mean(foilVals),
+    meanMargin,
+    minMargin: margins.length ? Math.min(...margins) : null,
+    maxMargin: margins.length ? Math.max(...margins) : null,
+    bar,
+    meanClearsBar: meanMargin !== null && meanMargin >= bar,
+    signTest: signTest(margins, 0, "greater"),
+    permutationTest: permutationTestPairedMean(margins, { alternative: "greater", seed }),
+  };
+}
+
+/**
+ * Aggregate E2v2 scores over an item set (pass the SCREENED items — the caller
+ * filters to `qualifies` before calling). Reports each axis' effect-size gate
+ * and exact paired significance, then the conjunctive headline (both axes clear)
+ * and conjunctive significance (both axes p < α). All computed over the margin-
+ * computable subset; not_computable is audited, never fabricated.
+ */
+export function aggregateE2v2(
+  modelLabel: string,
+  scores: E2v2ContinuationScore[],
+  opts: { alpha?: number; seed?: number; foilLabel?: string } = {},
+): E2v2Aggregate {
+  const alpha = opts.alpha ?? 0.05;
+  const seed = opts.seed ?? 12345;
+  const rhythmBar = scores[0]?.rhythmBar ?? E2V2_RHYTHM_MARGIN;
+  const tonalBar = scores[0]?.tonalBar ?? E2V2_TONAL_MARGIN;
+
+  const rhythm = aggregateAxis(scores, (s) => s.rhythm, rhythmBar, seed);
+  const tonal = aggregateAxis(scores, (s) => s.tonal, tonalBar, seed + 1);
+
+  const computablePairCount = scores.filter(
+    (s) => s.rhythm.margin !== null && s.tonal.margin !== null,
+  ).length;
+
+  const notComputableAudit: E2v2Aggregate["notComputableAudit"] = [];
+  for (const s of scores) {
+    for (const [axis, a] of [
+      ["rhythm", s.rhythm],
+      ["tonal", s.tonal],
+    ] as const) {
+      if (isNotComputable(a.modelVsGold)) {
+        notComputableAudit.push({ pairId: s.targetId, axis, side: "model", reason: a.modelVsGold.reason });
+      }
+      if (isNotComputable(a.foilVsGold)) {
+        notComputableAudit.push({ pairId: s.targetId, axis, side: "foil", reason: a.foilVsGold.reason });
+      }
+    }
+  }
+
+  return {
+    modelLabel,
+    foilLabel: opts.foilLabel ?? scores[0]?.foilLabel ?? "foil",
+    alpha,
+    pairCount: scores.length,
+    computablePairCount,
+    pairsClearingBar: scores.filter((s) => s.clearsBar).length,
+    clearRateAllPairs: scores.length ? scores.filter((s) => s.clearsBar).length / scores.length : null,
+    rhythm,
+    tonal,
+    aggregateClearsBar: rhythm.meanClearsBar && tonal.meanClearsBar,
+    bothAxesSignificant: rhythm.permutationTest.pValue < alpha && tonal.permutationTest.pValue < alpha,
     notComputableAudit,
   };
 }
