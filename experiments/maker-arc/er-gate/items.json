@@ -1,0 +1,1787 @@
+{
+  "itemCount": 22,
+  "items": [
+    {
+      "itemId": "all-the-things-you-are:m1-8",
+      "songId": "all-the-things-you-are",
+      "genre": "jazz",
+      "title": "All the Things You Are",
+      "composer": "Jerome Kern",
+      "key": "Ab major",
+      "timeSignature": "4/4",
+      "measureRange": [
+        1,
+        8
+      ],
+      "melody": [
+        {
+          "number": 1,
+          "rightHand": "R:w"
+        },
+        {
+          "number": 2,
+          "rightHand": "D4+D5+D5+F5+F5+F5:h A4:w E5+E5+G5+G5+G5:h C#4:h F5+F5+A5+A5+A5:q C4:h"
+        },
+        {
+          "number": 3,
+          "rightHand": "D5+D5+F5+F5+F5:q E5+E5+G5+G5+G5:e F5+F5+A5+A5+A5:qt E5+E5+G5+G5+G5:q D5+D5+F5+F5+F5:q A4+D5:h."
+        },
+        {
+          "number": 4,
+          "rightHand": "A4+D5+D5:h. E5+E5+E5:qt F5+F5+F5:e F4+C5+C5+C5:h G4+G4+A#4+A#4+A#4:q D4+A4:h."
+        },
+        {
+          "number": 5,
+          "rightHand": "A4+A4:e G4+G4+G4:q. A#4+A#4+A#4:h F4+F4:h. C#4+A4+A4+A4:h"
+        },
+        {
+          "number": 6,
+          "rightHand": "D4:s F4:s A4:s D5:s F5:s A5:s"
+        },
+        {
+          "number": 7,
+          "rightHand": "D4+D4+F4:h E4+E4:e F4+F4:e D4+F4+A4+A4+A#4:w"
+        },
+        {
+          "number": 8,
+          "rightHand": "G4+G4:h F4:et E4+A#4+D5+D5:ht E4:e. D#4+F#4+F#4:et E4+E4+G4+G4:ht"
+        }
+      ],
+      "sourceChords": [
+        {
+          "measure": 1,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 2,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 3,
+          "impliedChord": "B"
+        },
+        {
+          "measure": 4,
+          "impliedChord": "Em"
+        },
+        {
+          "measure": 5,
+          "impliedChord": "Gsus2"
+        },
+        {
+          "measure": 6,
+          "impliedChord": "Bbmaj7"
+        },
+        {
+          "measure": 7,
+          "impliedChord": "F#"
+        },
+        {
+          "measure": 8,
+          "impliedChord": "Ab7"
+        }
+      ]
+    },
+    {
+      "itemId": "autumn-leaves:m1-8",
+      "songId": "autumn-leaves",
+      "genre": "jazz",
+      "title": "Autumn Leaves",
+      "composer": "Joseph Kosma",
+      "key": "G minor",
+      "timeSignature": "4/4",
+      "measureRange": [
+        1,
+        8
+      ],
+      "melody": [
+        {
+          "number": 1,
+          "rightHand": "R:w"
+        },
+        {
+          "number": 2,
+          "rightHand": "G4:h."
+        },
+        {
+          "number": 3,
+          "rightHand": "D4:w F#4:q C#4+F4:h"
+        },
+        {
+          "number": 4,
+          "rightHand": "E4:q D4+A4:h. D4:h"
+        },
+        {
+          "number": 5,
+          "rightHand": "B4+F5+A5+D6:w C#5+C#6:e D5+C6:h B5:q"
+        },
+        {
+          "number": 6,
+          "rightHand": "C5+E5+A5+E6:h. A5:h A5:h C4+F4+A4+A6+A7:w"
+        },
+        {
+          "number": 7,
+          "rightHand": "C5:w F4+A4+C5:w C4:s F4:s A4:s C5:s C4:s F4:s A4:s C5:s A5+A6+A7:q C5:s F5:s A5:s G5:e C6+G6+G7:e F5:e F6+F7:e E5:q E6+E7:q"
+        },
+        {
+          "number": 8,
+          "rightHand": "D5+D6:q D7:q F5:h D4+F4+D5+F6+F7:w G#4+B4+D5+F5:w G#4+G#6:q"
+        }
+      ],
+      "sourceChords": [
+        {
+          "measure": 1,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 2,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 3,
+          "impliedChord": "Edim"
+        },
+        {
+          "measure": 4,
+          "impliedChord": "F"
+        },
+        {
+          "measure": 5,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 6,
+          "impliedChord": "F"
+        },
+        {
+          "measure": 7,
+          "impliedChord": "F"
+        },
+        {
+          "measure": 8,
+          "impliedChord": "Fdim"
+        }
+      ]
+    },
+    {
+      "itemId": "a-thousand-years:m1-8",
+      "songId": "a-thousand-years",
+      "genre": "pop",
+      "title": "A Thousand Years",
+      "composer": "Christina Perri",
+      "key": "Bb major",
+      "timeSignature": "3/4",
+      "measureRange": [
+        1,
+        8
+      ],
+      "melody": [
+        {
+          "number": 1,
+          "rightHand": "C#4:s D#4:s E4:s D#4:s E4:s F#4:s C#4:s D#4:s E4:s D#4:s E4:s F#4:s"
+        },
+        {
+          "number": 2,
+          "rightHand": "C#4:s D#4:s E4:s D#4:s E4:s F#4:s C#4:s D#4:s E4:s D#4:s E4:s F#4:s"
+        },
+        {
+          "number": 3,
+          "rightHand": "C#4:s D#4:s E4:s F#4:s G#4:s A4:s G#4:s A4:s B4:s A4:s G#4:s F#4:s"
+        },
+        {
+          "number": 4,
+          "rightHand": "C#4+G#4+C#5:q. C4+G#4+C5:q."
+        },
+        {
+          "number": 5,
+          "rightHand": "C#4:s D#4:s E4:s D#4:s E4:s F#4:s C#4:s D#4:s E4:s D#4:s E4:s F#4:s"
+        },
+        {
+          "number": 6,
+          "rightHand": "C#4:s D#4:s E4:s D#4:s E4:s F#4:s C#4:s D#4:s E4:s D#4:s E4:s F#4:s"
+        },
+        {
+          "number": 7,
+          "rightHand": "C#4:s D#4:s E4:s F#4:s G#4:s A4:s F#4:s G#4:s A4:s C#5:s D#5:s E5:s"
+        },
+        {
+          "number": 8,
+          "rightHand": "G#4+C#5+E5:q. G#4+C5+D#5:q."
+        }
+      ],
+      "sourceChords": [
+        {
+          "measure": 1,
+          "impliedChord": "C#"
+        },
+        {
+          "measure": 2,
+          "impliedChord": "B"
+        },
+        {
+          "measure": 3,
+          "impliedChord": "A"
+        },
+        {
+          "measure": 4,
+          "impliedChord": "Ab"
+        },
+        {
+          "measure": 5,
+          "impliedChord": "C#"
+        },
+        {
+          "measure": 6,
+          "impliedChord": "B"
+        },
+        {
+          "measure": 7,
+          "impliedChord": "A"
+        },
+        {
+          "measure": 8,
+          "impliedChord": "Ab"
+        }
+      ]
+    },
+    {
+      "itemId": "all-of-me:m1-8",
+      "songId": "all-of-me",
+      "genre": "pop",
+      "title": "All of Me",
+      "composer": "John Legend",
+      "key": "Ab major",
+      "timeSignature": "4/4",
+      "measureRange": [
+        1,
+        8
+      ],
+      "melody": [
+        {
+          "number": 1,
+          "rightHand": "C4+C4+C5+C5+G5+G5:w C5+C5+G5+G5:q. C5+C5+G5+G5:q"
+        },
+        {
+          "number": 2,
+          "rightHand": "C5+C5+G#5+G#5:q. C5+C5+G#5+G#5:q. C5+C5+G#5+G#5:q"
+        },
+        {
+          "number": 3,
+          "rightHand": "A#4+A#4+G5+G5:q. A#4+A#4+G5+G5:q. A#4+A#4+G5+G5:q"
+        },
+        {
+          "number": 4,
+          "rightHand": "A#4+A#4+F5+F5:q. A#4+A#4+F5+F5:q. A#4+A#4+F5+F5:q"
+        },
+        {
+          "number": 5,
+          "rightHand": "C4+C4+C5+C5+G5+G5:w C5+C5+G5+G5:q. F4+F4:e G4+G4:e G4+G4+C5+C5+G5+G5:q"
+        },
+        {
+          "number": 6,
+          "rightHand": "G4+G4+C5+C5+G5+G5:q. G4+G4:e G4+G4:q C5+C5+G5+G5:q. G4+G4:q D#4+D#4+C5+C5+G5+G5:q"
+        },
+        {
+          "number": 7,
+          "rightHand": "D#4+D#4+D#4+D#4+A#4+A#4+G5+G5:w A#4+A#4+G5+G5:q. F4+F4:e G4+G4:e G4+G4+A#4+A#4+G5+G5:q"
+        },
+        {
+          "number": 8,
+          "rightHand": "G4+G4+A#4+A#4+F5+F5:q. F4+F4:e G4+G4:q A#4+A#4+F5+F5:q. G4+G4:e F4+F4:e D#4+D#4+A#4+A#4+F5+F5:q D#4+D#4:e"
+        }
+      ],
+      "sourceChords": [
+        {
+          "measure": 1,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 2,
+          "impliedChord": "Ab"
+        },
+        {
+          "measure": 3,
+          "impliedChord": "Eb"
+        },
+        {
+          "measure": 4,
+          "impliedChord": "Bb"
+        },
+        {
+          "measure": 5,
+          "impliedChord": "C"
+        },
+        {
+          "measure": 6,
+          "impliedChord": "Ab"
+        },
+        {
+          "measure": 7,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 8,
+          "impliedChord": "Bb"
+        }
+      ]
+    },
+    {
+      "itemId": "blues-in-the-night:m1-8",
+      "songId": "blues-in-the-night",
+      "genre": "blues",
+      "title": "Blues in the Night",
+      "composer": "Harold Arlen",
+      "key": "Bb major",
+      "timeSignature": "4/4",
+      "measureRange": [
+        1,
+        8
+      ],
+      "melody": [
+        {
+          "number": 1,
+          "rightHand": "E5:qt F#5:e G#5:q"
+        },
+        {
+          "number": 2,
+          "rightHand": "C#4+G#5:q D#4:e C#4+F4:h C#4+F4+F4+G#5:w F#4+G#5:q E5:et F#5:et E4+G4:w E4+G#5:w"
+        },
+        {
+          "number": 3,
+          "rightHand": "G#4:w C#4+F#5:e D#4+F#5:q F#5:e D#4:qt D#5:et E5:et C#4+E4+F#5:w"
+        },
+        {
+          "number": 4,
+          "rightHand": "F#5:e. C#4:q G#4+B4:h F#5:e. C#4:q G#5:et F#5:s D#5:et E5:et B4+C#5:w F#5+F#5:w"
+        },
+        {
+          "number": 5,
+          "rightHand": "D#4:w E5:q C#4:q C#5:q C#4:q D#5:s F5:et F#5:et C#4+F4:w G#5:qt"
+        },
+        {
+          "number": 6,
+          "rightHand": "C#5+F5:w C#5:h C#4+G#5:qt D#4:e F4+C5+G#5:h G#5:e E5:et F#5:s C#5:w E4+E5:w"
+        },
+        {
+          "number": 7,
+          "rightHand": "G#5:e C#4+F#5:e D#4+F#5:ht F#5:e G#4:q D#4:qt D#5:et E5:et C#4+E4+B4:w F#5:qt"
+        },
+        {
+          "number": 8,
+          "rightHand": "B4:h F#5:qt C#4:e. A4+F#5:h C#4:ht G#5:et F#5:s D#5:et E5:et C#4+B4:w D#4+C#5+F#5:w"
+        }
+      ],
+      "sourceChords": [
+        {
+          "measure": 1,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 2,
+          "impliedChord": "C#"
+        },
+        {
+          "measure": 3,
+          "impliedChord": "Ab"
+        },
+        {
+          "measure": 4,
+          "impliedChord": "Asus2"
+        },
+        {
+          "measure": 5,
+          "impliedChord": "Bsus2"
+        },
+        {
+          "measure": 6,
+          "impliedChord": "C#"
+        },
+        {
+          "measure": 7,
+          "impliedChord": "Amaj7"
+        },
+        {
+          "measure": 8,
+          "impliedChord": "E"
+        }
+      ]
+    },
+    {
+      "itemId": "born-under-a-bad-sign:m1-8",
+      "songId": "born-under-a-bad-sign",
+      "genre": "blues",
+      "title": "Born Under a Bad Sign",
+      "composer": "Albert King",
+      "key": "C# minor",
+      "timeSignature": "4/4",
+      "measureRange": [
+        1,
+        8
+      ],
+      "melody": [
+        {
+          "number": 1,
+          "rightHand": "R:w"
+        },
+        {
+          "number": 2,
+          "rightHand": "D4:s F#4:s F#4:s D4:s F#4:s"
+        },
+        {
+          "number": 3,
+          "rightHand": "D4:s F#4:s F#4:s D4:s F#4:s"
+        },
+        {
+          "number": 4,
+          "rightHand": "D4:s F#4:s F#4:s D4:s F#4:s"
+        },
+        {
+          "number": 5,
+          "rightHand": "D4:s F#4:s F#4+A4+A5:w D4:s F#4:s"
+        },
+        {
+          "number": 6,
+          "rightHand": "D4:s F#4:s F#4:s D4:s F#4:s"
+        },
+        {
+          "number": 7,
+          "rightHand": "D4:s F#4:s F#4:s D4:s F#4:s"
+        },
+        {
+          "number": 8,
+          "rightHand": "D4:s F#4:s F4+F#4+C5:w D4:s F#4:s"
+        }
+      ],
+      "sourceChords": [
+        {
+          "measure": 1,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 2,
+          "impliedChord": "Abmaj7"
+        },
+        {
+          "measure": 3,
+          "impliedChord": "Bbsus2"
+        },
+        {
+          "measure": 4,
+          "impliedChord": "Abmaj7"
+        },
+        {
+          "measure": 5,
+          "impliedChord": "Cm7b5"
+        },
+        {
+          "measure": 6,
+          "impliedChord": "Am7b5"
+        },
+        {
+          "measure": 7,
+          "impliedChord": "Bbsus2"
+        },
+        {
+          "measure": 8,
+          "impliedChord": "Fm"
+        }
+      ]
+    },
+    {
+      "itemId": "baba-oriley:m1-8",
+      "songId": "baba-oriley",
+      "genre": "rock",
+      "title": "Baba O'Riley",
+      "composer": "The Who",
+      "key": "F major",
+      "timeSignature": "4/4",
+      "measureRange": [
+        1,
+        8
+      ],
+      "melody": [
+        {
+          "number": 1,
+          "rightHand": "F4:s F4:s C5:s C5:s F5:s F5:s C5:s C5:s F4:s F4:s C5:s C5:s F5:s F5:s C5:s C5:s"
+        },
+        {
+          "number": 2,
+          "rightHand": "F4:s F4:s C5:s C5:s F5:s F5:s C5:s C5:s F4:s F4:s C5:s C5:s F5:s F5:s C5:s C5:s"
+        },
+        {
+          "number": 3,
+          "rightHand": "F4+C5+C5+E5:et D5:s F4+C5:s D5+D5+E5:q C5+C5+C5+C5:s D5:s C5+C5+C5+E5:e C5+D5:et F5+F5:s E5:s F5:s C5:s C5:s F4:s F4:s C5+C5+E5:e C5+D5:qt C5+C5:e E5+F5+F5:et D5:s F5+F5:s D5:s C5+F5:s D5:s C5+F5:s D5:s"
+        },
+        {
+          "number": 4,
+          "rightHand": "F4:s F4:s C5+C5+E5:et C5+C5+C5:e D5:e E5+F5+F5:et E5:s F5:s C5:s C5:s F4:s F4:s C5+C5:s C5+E5:e C5+C5:e F5+F5:s D5:s F5+F5:s D5:s C5+F5:s D5:s C5+F5:s D5:s"
+        },
+        {
+          "number": 5,
+          "rightHand": "F4:s F4:s C5+C5+C5+E5:et C5+C5:e E5+F5+F5:et E5:s F5:s C5:s C5:s F4:s F4:s C5+C5+C5:s D5+D5+D5+D5+E5:e C5+C5+D5:et C5+C5+F5+F5:s D5:s C5+F5+F5:s D5:s C5+C5+F5:s D5:s C5+C5+F5:s D5:s"
+        },
+        {
+          "number": 6,
+          "rightHand": "F4:s F4:s C5+C5+C5:s C5+C5+E5:e C5+F5:s D5:s F5:s C5:s C5:s F4:s F4:s E5+E5:s C5+C5+C5+E5:qt E5:s C5+C5:e E5:s C5+F5+F5:s E5:s C5+F5+F5:s E5:s C5+C5+F5:s E5:s C5+C5+F5:s E5:s"
+        },
+        {
+          "number": 7,
+          "rightHand": "F4:s F4:s C5+C5+C5+E5:s C5+C5+E5:e F5+F5:s E5:s F5:s C5:s C5:s F4:s F4:s B4+C5+C5:q C5+C5+D5+E5:s D5+F5:s D5+F5:s C5+D5:s C5+D5:s"
+        },
+        {
+          "number": 8,
+          "rightHand": "F4:s F5:s F4:s B4+F5:q C5+C5+D5+E5:e F5:s C5+C5:s F5:s D5+F5:s E5:s F5:s C5:s C5:s F4:s F4:s B4+C5+C5:q C5+C5+D5+E5:et F5+F5:s D5:s F5+F5:s D5:s C5+F5:s D5:s C5+F5:s D5:s"
+        }
+      ],
+      "sourceChords": [
+        {
+          "measure": 1,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 2,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 3,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 4,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 5,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 6,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 7,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 8,
+          "impliedChord": "N/A"
+        }
+      ]
+    },
+    {
+      "itemId": "bennie-and-the-jets:m1-8",
+      "songId": "bennie-and-the-jets",
+      "genre": "rock",
+      "title": "Bennie and the Jets",
+      "composer": "Elton John",
+      "key": "G major",
+      "timeSignature": "4/4",
+      "measureRange": [
+        1,
+        8
+      ],
+      "melody": [
+        {
+          "number": 1,
+          "rightHand": "R:w"
+        },
+        {
+          "number": 2,
+          "rightHand": "R:w"
+        },
+        {
+          "number": 3,
+          "rightHand": "D4+F#4+B4:s D4+F#4+B4:s D4+F#4+B4:s D4+F#4+B4:s D4+F#4+B4:s"
+        },
+        {
+          "number": 4,
+          "rightHand": "D4+F#4+B4:et D4+E4+F#4+B4+E5:s D4+D5:s D4+F#4+B4+B4:s C4+C5:e."
+        },
+        {
+          "number": 5,
+          "rightHand": "C4+E4+A4:s C4+E4+A4:s C4+E4+A4:s C4+E4+A4:et C4+E4+A4:s"
+        },
+        {
+          "number": 6,
+          "rightHand": "C4+E4+A4:s C4+E4+A4:s C4+E4+A4:s"
+        },
+        {
+          "number": 7,
+          "rightHand": "C4+E4+E4+G4:h D4:e. E4:e C4+D4+F#4:h D4:s D4:s E4:s"
+        },
+        {
+          "number": 8,
+          "rightHand": "D4+G4:q D4:qt D4+F4:q. D4:s G#4:e"
+        }
+      ],
+      "sourceChords": [
+        {
+          "measure": 1,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 2,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 3,
+          "impliedChord": "G"
+        },
+        {
+          "measure": 4,
+          "impliedChord": "Em7b5"
+        },
+        {
+          "measure": 5,
+          "impliedChord": "Dm7b5"
+        },
+        {
+          "measure": 6,
+          "impliedChord": "G7"
+        },
+        {
+          "measure": 7,
+          "impliedChord": "Em7"
+        },
+        {
+          "measure": 8,
+          "impliedChord": "G"
+        }
+      ]
+    },
+    {
+      "itemId": "fallin:m1-8",
+      "songId": "fallin",
+      "genre": "rnb",
+      "title": "Fallin'",
+      "composer": "Alicia Keys",
+      "key": "E minor",
+      "timeSignature": "6/8",
+      "measureRange": [
+        1,
+        8
+      ],
+      "melody": [
+        {
+          "number": 1,
+          "rightHand": "R:w"
+        },
+        {
+          "number": 2,
+          "rightHand": "R:w"
+        },
+        {
+          "number": 3,
+          "rightHand": "D#4:w G4:w B4:w D6:e A5:e G5:et"
+        },
+        {
+          "number": 4,
+          "rightHand": "A5:qt G5:qt B5:h."
+        },
+        {
+          "number": 5,
+          "rightHand": "A5:et"
+        },
+        {
+          "number": 6,
+          "rightHand": "G5:et E5:e A5:et G5:et E5:et D5:et G5:e E5:et D5:qt"
+        },
+        {
+          "number": 7,
+          "rightHand": "B4:h"
+        },
+        {
+          "number": 8,
+          "rightHand": "D5:q D5:e."
+        }
+      ],
+      "sourceChords": [
+        {
+          "measure": 1,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 2,
+          "impliedChord": "F#"
+        },
+        {
+          "measure": 3,
+          "impliedChord": "F#sus4"
+        },
+        {
+          "measure": 4,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 5,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 6,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 7,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 8,
+          "impliedChord": "N/A"
+        }
+      ]
+    },
+    {
+      "itemId": "halo:m1-8",
+      "songId": "halo",
+      "genre": "rnb",
+      "title": "Halo",
+      "composer": "Beyonce",
+      "key": "A major",
+      "timeSignature": "4/4",
+      "measureRange": [
+        1,
+        8
+      ],
+      "melody": [
+        {
+          "number": 1,
+          "rightHand": "R:w"
+        },
+        {
+          "number": 2,
+          "rightHand": "C#5:w"
+        },
+        {
+          "number": 3,
+          "rightHand": "E4:e A4:q E4:e C#5+C#5:h. E4:e A4:q E4:e C#5:q E4:e A4:q. E4:e C#5:e. E4:e. B4:e C#5:s D5:w"
+        },
+        {
+          "number": 4,
+          "rightHand": "D5:q F#4:e B4:q F#4:e D5:q F#4:e B4:q. F#4:e D5:h F#4:e C#5:qt F#4:q B4:s C#5:s B4:s B4:s A4:e G#4:s A4:q"
+        },
+        {
+          "number": 5,
+          "rightHand": "A4:w C#4:e F#4:q C#4:e A4:q C#4:e F#4:q C#4:e A4:q C#4:e F#4:q. C#4:q A4:e B4:e. A4:e G#4:s A4:w"
+        },
+        {
+          "number": 6,
+          "rightHand": "F#4:e F#4:e D4:e F#4:e D4:e F#4:q D4:e A4:q D4:e F#4:q D4:q A4:q G#4:e. F#4:s E4:s E4+C#5:w"
+        },
+        {
+          "number": 7,
+          "rightHand": "C#4:w E4:s C#5:s C#5:s C#5:e C#5:e B4:s D5:q"
+        },
+        {
+          "number": 8,
+          "rightHand": "D5:w E5:h F#4:s B4:s B4:s B4:e D4+B4:q C#4+C#5:e. A4:s A4:e F#4:w"
+        }
+      ],
+      "sourceChords": [
+        {
+          "measure": 1,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 2,
+          "impliedChord": "F#m"
+        },
+        {
+          "measure": 3,
+          "impliedChord": "Adim"
+        },
+        {
+          "measure": 4,
+          "impliedChord": "B"
+        },
+        {
+          "measure": 5,
+          "impliedChord": "B"
+        },
+        {
+          "measure": 6,
+          "impliedChord": "F#m7b5"
+        },
+        {
+          "measure": 7,
+          "impliedChord": "Adim"
+        },
+        {
+          "measure": 8,
+          "impliedChord": "B"
+        }
+      ]
+    },
+    {
+      "itemId": "a-change-is-gonna-come:m1-8",
+      "songId": "a-change-is-gonna-come",
+      "genre": "soul",
+      "title": "A Change Is Gonna Come",
+      "composer": "Sam Cooke",
+      "key": "Bb major",
+      "timeSignature": "4/4",
+      "measureRange": [
+        1,
+        8
+      ],
+      "melody": [
+        {
+          "number": 1,
+          "rightHand": "R:w"
+        },
+        {
+          "number": 2,
+          "rightHand": "G#4+B4+E5:w"
+        },
+        {
+          "number": 3,
+          "rightHand": "C#4:et D4:q. F#4+A4+D5:w"
+        },
+        {
+          "number": 4,
+          "rightHand": "D4:s D4:e. D6:s C#4+D6:q D6:et G#4+B4:w"
+        },
+        {
+          "number": 5,
+          "rightHand": "E4+E5+D6:w E4+E4+G#4+B4+E5+D6:h D6:s E4+G#4+B4+E5:et C#4+D6:et D4:h"
+        },
+        {
+          "number": 6,
+          "rightHand": "D4+D4+F#4+F#4+A4+A4+D5+D6:w D5:w D6:s D4+D4+F#4+A4+D5:et D4+D6:q C#4+D4+D6:q G#4+B4+E5:w"
+        },
+        {
+          "number": 7,
+          "rightHand": "E4+D6:et E4+E4+G#4+B4+E5+D6:h D6:s E4+G#4+B4+E5:s C#4+D6:e D4:h F#4+A4:w"
+        },
+        {
+          "number": 8,
+          "rightHand": "D4+D4+F#4+A4+D5+D5+D6:w D6:s D4+D4+F#4+A4+D5:et D4+D6:q C#4+D6:q G#4+B4+E5:w"
+        }
+      ],
+      "sourceChords": [
+        {
+          "measure": 1,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 2,
+          "impliedChord": "F#"
+        },
+        {
+          "measure": 3,
+          "impliedChord": "Esus4"
+        },
+        {
+          "measure": 4,
+          "impliedChord": "Bm7b5"
+        },
+        {
+          "measure": 5,
+          "impliedChord": "Dmaj7"
+        },
+        {
+          "measure": 6,
+          "impliedChord": "Bm7"
+        },
+        {
+          "measure": 7,
+          "impliedChord": "Dmaj7"
+        },
+        {
+          "measure": 8,
+          "impliedChord": "Bm7"
+        }
+      ]
+    },
+    {
+      "itemId": "aint-no-sunshine:m1-8",
+      "songId": "aint-no-sunshine",
+      "genre": "soul",
+      "title": "Ain't No Sunshine",
+      "composer": "Bill Withers",
+      "key": "A minor",
+      "timeSignature": "4/4",
+      "measureRange": [
+        1,
+        8
+      ],
+      "melody": [
+        {
+          "number": 1,
+          "rightHand": "R:w"
+        },
+        {
+          "number": 2,
+          "rightHand": "E4:s G4:e A4:qt C5:et B4:e G4:e"
+        },
+        {
+          "number": 3,
+          "rightHand": "A4:w C4:e C4:et"
+        },
+        {
+          "number": 4,
+          "rightHand": "C4:e. E4:e C4+G4:e. A4:qt C4+C5:e. B4:e C4:e G4:s"
+        },
+        {
+          "number": 5,
+          "rightHand": "A4:h C4:e. C4:et"
+        },
+        {
+          "number": 6,
+          "rightHand": "C4:qt A4:s A4:et C4:qt C5:qt C4+E5:e. D5:s E5:s C4+E5:qt"
+        },
+        {
+          "number": 7,
+          "rightHand": "E4+G4+D5:q A4:s E4+G4+D5:e. C5:e E4+G4+A4:e. G4:e E4+G4+A4:e"
+        },
+        {
+          "number": 8,
+          "rightHand": "A4:q D4+F4:e. C5:s D5:s D4+F4+C5:ht D4+F4:e. A4:s G4:e D4+F4:e A4:s"
+        }
+      ],
+      "sourceChords": [
+        {
+          "measure": 1,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 2,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 3,
+          "impliedChord": "F#m7b5"
+        },
+        {
+          "measure": 4,
+          "impliedChord": "F#m7b5"
+        },
+        {
+          "measure": 5,
+          "impliedChord": "F#m7b5"
+        },
+        {
+          "measure": 6,
+          "impliedChord": "F#dim"
+        },
+        {
+          "measure": 7,
+          "impliedChord": "Esus2"
+        },
+        {
+          "measure": 8,
+          "impliedChord": "D7"
+        }
+      ]
+    },
+    {
+      "itemId": "agua-de-beber:m1-8",
+      "songId": "agua-de-beber",
+      "genre": "latin",
+      "title": "Agua de Beber",
+      "composer": "Antonio Carlos Jobim",
+      "key": "D minor",
+      "timeSignature": "4/4",
+      "measureRange": [
+        1,
+        8
+      ],
+      "melody": [
+        {
+          "number": 1,
+          "rightHand": "C4:e C4:e C4:e"
+        },
+        {
+          "number": 2,
+          "rightHand": "D#4:e D#4:e D4:e D#4:e D4:e D4:e C4:e"
+        },
+        {
+          "number": 3,
+          "rightHand": "C4:e C4:e C4:e"
+        },
+        {
+          "number": 4,
+          "rightHand": "D#4:e D#4:e D4:e D#4:e D4:e D4:e C4:e"
+        },
+        {
+          "number": 5,
+          "rightHand": "C4:e C4:ht"
+        },
+        {
+          "number": 6,
+          "rightHand": "D4+A4:e G4:e D4+A4:q D4:e D4:q C4+E4:e"
+        },
+        {
+          "number": 7,
+          "rightHand": "C4+E4:e C4+E4:e C4+E4:e"
+        },
+        {
+          "number": 8,
+          "rightHand": "D4+A4:e G4:e D4+A4:q D4:e D4:q C4:e"
+        }
+      ],
+      "sourceChords": [
+        {
+          "measure": 1,
+          "impliedChord": "Am7"
+        },
+        {
+          "measure": 2,
+          "impliedChord": "Asus2"
+        },
+        {
+          "measure": 3,
+          "impliedChord": "Am7"
+        },
+        {
+          "measure": 4,
+          "impliedChord": "Asus2"
+        },
+        {
+          "measure": 5,
+          "impliedChord": "Am7"
+        },
+        {
+          "measure": 6,
+          "impliedChord": "Gm7b5"
+        },
+        {
+          "measure": 7,
+          "impliedChord": "A"
+        },
+        {
+          "measure": 8,
+          "impliedChord": "Fsus4"
+        }
+      ]
+    },
+    {
+      "itemId": "besame-mucho:m1-8",
+      "songId": "besame-mucho",
+      "genre": "latin",
+      "title": "Besame Mucho",
+      "composer": "Consuelo Velazquez",
+      "key": "D minor",
+      "timeSignature": "4/4",
+      "measureRange": [
+        1,
+        8
+      ],
+      "melody": [
+        {
+          "number": 1,
+          "rightHand": "D4+A4:e D4:q. C4+F4:e D4+F4+A4+A#4:e. D4:q. E4:s A4:s D4+D#4+F4+A4:q C4+D4:q. D4+F4+A4:w"
+        },
+        {
+          "number": 2,
+          "rightHand": "D4+D4+F4+A#4:q C4+C4+C4:e D4+F4:h E4:s D#4+A4:s D4:s C4:e A4+A#4:h F4:ht"
+        },
+        {
+          "number": 3,
+          "rightHand": "C#5:e. D4+A4:e D4:q C4+F4:e D4+F4+A4+A#4:q D4:q. D4+E4:e D4+D#4+F4+A4+A4+A#5:q A#5:s A#5:s C4+D4+A#5:q. D4+F4+A4+C#5+A#5:w"
+        },
+        {
+          "number": 4,
+          "rightHand": "C#5:q D4+F4+A#4:e D4:et C4+C4+C4+F4:e D4+F4:h E4:s D#4+A4+A#5:s A#5:s D4:s A#5:s C4+A#5:e F4+A#4:e A#5:s"
+        },
+        {
+          "number": 5,
+          "rightHand": "D4+C#5:q D4+A4:e D4:q. C4+D4+F4:e D4+D4+F4+A4+A#4:w E4:s A4:s D4+D#4+F4+A4+A#5:q A#5:s A#5:s C4+D4+A#5:q. D4+F4+A4+C#5+A#5:w"
+        },
+        {
+          "number": 6,
+          "rightHand": "C#5:q D4+D4+F4+A#4:q C4+C4:e D4+F4:h D4:qt E4:s D#4+A4+A#5:s E4+A#5:qt D4:s A#5:s C4+A#5:e F4:e F4+A4+A#4:e A#5:s"
+        },
+        {
+          "number": 7,
+          "rightHand": "A4+C#5:q D4+A4:e D4:e C4+G4:w D4+D4+G4+A#4:q E4:s D4+D#4+G4+A4+A#5:h A#5:s A#5:s C4+A#5:et D4+C#5+A#5:s"
+        },
+        {
+          "number": 8,
+          "rightHand": "C#5:q D4+A#4:e C4:et F4:e D4+G4:q E4:q E4:s D#4+A4+A#5:s G4:q. E4:q A#5:s D4:s A#5:s C4+A#5:e E4+A#4:e A#5:s"
+        }
+      ],
+      "sourceChords": [
+        {
+          "measure": 1,
+          "impliedChord": "Dm7b5"
+        },
+        {
+          "measure": 2,
+          "impliedChord": "Bbmaj7"
+        },
+        {
+          "measure": 3,
+          "impliedChord": "Dm7b5"
+        },
+        {
+          "measure": 4,
+          "impliedChord": "Bbmaj7"
+        },
+        {
+          "measure": 5,
+          "impliedChord": "C#maj7"
+        },
+        {
+          "measure": 6,
+          "impliedChord": "Bbmaj7"
+        },
+        {
+          "measure": 7,
+          "impliedChord": "Bb7"
+        },
+        {
+          "measure": 8,
+          "impliedChord": "Gm7"
+        }
+      ]
+    },
+    {
+      "itemId": "cinema-paradiso:m1-8",
+      "songId": "cinema-paradiso",
+      "genre": "film",
+      "title": "Cinema Paradiso Theme",
+      "composer": "Ennio Morricone",
+      "key": "F major",
+      "timeSignature": "2/4",
+      "measureRange": [
+        1,
+        8
+      ],
+      "melody": [
+        {
+          "number": 1,
+          "rightHand": "C#4+F#4+F#6:s A#6:s C#6:s D#4+F#4+F#6:s D#6:s F#6:s C#4+F#4+C#6:s F#6:s A#5:s C#6:s F#5:s A#5:s"
+        },
+        {
+          "number": 2,
+          "rightHand": "F#5:s A#5:s C#5:s D#4+F#4+F#5:s D#5:s F#5:s C#4+F#4+C#5:s F#5:s A#4:s C#5:s F#4:s A#4:s"
+        },
+        {
+          "number": 3,
+          "rightHand": "C#4:s C#5:s G#4:s C#4+F4+C#5:s G#4:s G#5:s D#4+G#4:s G#5:s D#5:s G#5:s D#5:s D#6:s"
+        },
+        {
+          "number": 4,
+          "rightHand": "D#5:s D#6:s G#5:s D#4+D#6:e G#5:s G#6:s C#4+G#5:e G#6:s C#6:s G#6:s C#6:s C#7:s"
+        },
+        {
+          "number": 5,
+          "rightHand": "C#4+F#4+F#6:s A#6:s C#6:s D#4+F#4+F#6:s D#6:s F#6:s C#4+F#4+C#6:s F#6:s A#5:s C#6:s F#5:s A#5:s"
+        },
+        {
+          "number": 6,
+          "rightHand": "F#5:s A#5:s C#5:s D#4+F#4+F#5:s D#5:s F#5:s C#4+F#4+C#5:s F#5:s A#4:s C#5:s F#4:s A#4:s"
+        },
+        {
+          "number": 7,
+          "rightHand": "D#4:s D#5:s G#4:s D#4+D#5:q G#4:s G#5:s D#5:s G#5:s D#5:s D#5:s G#5:s G#6:s"
+        },
+        {
+          "number": 8,
+          "rightHand": "D4+A#5:e A#6:s A#5:s F4:e D5+A#6:e A#5:s A#6:s A#5:s A#6:s A#5:s A#6:s A#5:s A#6:s"
+        }
+      ],
+      "sourceChords": [
+        {
+          "measure": 1,
+          "impliedChord": "Bmaj7"
+        },
+        {
+          "measure": 2,
+          "impliedChord": "Bmaj7"
+        },
+        {
+          "measure": 3,
+          "impliedChord": "C#m7"
+        },
+        {
+          "measure": 4,
+          "impliedChord": "C#m7"
+        },
+        {
+          "measure": 5,
+          "impliedChord": "Bmaj7"
+        },
+        {
+          "measure": 6,
+          "impliedChord": "Bmaj7"
+        },
+        {
+          "measure": 7,
+          "impliedChord": "Fdim"
+        },
+        {
+          "measure": 8,
+          "impliedChord": "Bb"
+        }
+      ]
+    },
+    {
+      "itemId": "comptine-dun-autre-ete:m1-8",
+      "songId": "comptine-dun-autre-ete",
+      "genre": "film",
+      "title": "Comptine d'un autre ete (Amelie)",
+      "composer": "Yann Tiersen",
+      "key": "E minor",
+      "timeSignature": "4/4",
+      "measureRange": [
+        1,
+        8
+      ],
+      "melody": [
+        {
+          "number": 1,
+          "rightHand": "E4:e E4:e E4:e E4:e"
+        },
+        {
+          "number": 2,
+          "rightHand": "D4:e D4:e D4:e D4:e"
+        },
+        {
+          "number": 3,
+          "rightHand": "D4:e D4:e D4:e D4:e"
+        },
+        {
+          "number": 4,
+          "rightHand": "D4:e D4:e D4:e D4:e"
+        },
+        {
+          "number": 5,
+          "rightHand": "E4:e E4:e E4:e E4:e"
+        },
+        {
+          "number": 6,
+          "rightHand": "D4:e D4:e D4:e D4:e"
+        },
+        {
+          "number": 7,
+          "rightHand": "D4:e D4:e D4:e D4:e"
+        },
+        {
+          "number": 8,
+          "rightHand": "D4:e D4:e D4:e D4:e"
+        }
+      ],
+      "sourceChords": [
+        {
+          "measure": 1,
+          "impliedChord": "Em"
+        },
+        {
+          "measure": 2,
+          "impliedChord": "G"
+        },
+        {
+          "measure": 3,
+          "impliedChord": "Bm"
+        },
+        {
+          "measure": 4,
+          "impliedChord": "D"
+        },
+        {
+          "measure": 5,
+          "impliedChord": "Em"
+        },
+        {
+          "measure": 6,
+          "impliedChord": "G"
+        },
+        {
+          "measure": 7,
+          "impliedChord": "Bm"
+        },
+        {
+          "measure": 8,
+          "impliedChord": "D"
+        }
+      ]
+    },
+    {
+      "itemId": "bethena:m1-8",
+      "songId": "bethena",
+      "genre": "ragtime",
+      "title": "Bethena",
+      "composer": "Scott Joplin",
+      "key": "Bb major",
+      "timeSignature": "3/4",
+      "measureRange": [
+        1,
+        8
+      ],
+      "melody": [
+        {
+          "number": 1,
+          "rightHand": "A5:e G5:q B5:e A5:q"
+        },
+        {
+          "number": 2,
+          "rightHand": "A4:e G4:q B4:e A4:q"
+        },
+        {
+          "number": 3,
+          "rightHand": "R:w"
+        },
+        {
+          "number": 4,
+          "rightHand": "R:w"
+        },
+        {
+          "number": 5,
+          "rightHand": "C4+E4:h."
+        },
+        {
+          "number": 6,
+          "rightHand": "C4+D#4:h."
+        },
+        {
+          "number": 7,
+          "rightHand": "C4+D4:h."
+        },
+        {
+          "number": 8,
+          "rightHand": "C4+F#4+A4:h."
+        }
+      ],
+      "sourceChords": [
+        {
+          "measure": 1,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 2,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 3,
+          "impliedChord": "Asus2"
+        },
+        {
+          "measure": 4,
+          "impliedChord": "Asus2"
+        },
+        {
+          "measure": 5,
+          "impliedChord": "Asus2"
+        },
+        {
+          "measure": 6,
+          "impliedChord": "Cmaj7"
+        },
+        {
+          "measure": 7,
+          "impliedChord": "D"
+        },
+        {
+          "measure": 8,
+          "impliedChord": "D"
+        }
+      ]
+    },
+    {
+      "itemId": "elite-syncopations:m1-8",
+      "songId": "elite-syncopations",
+      "genre": "ragtime",
+      "title": "Elite Syncopations",
+      "composer": "Scott Joplin",
+      "key": "Bb major",
+      "timeSignature": "2/4",
+      "measureRange": [
+        1,
+        8
+      ],
+      "melody": [
+        {
+          "number": 1,
+          "rightHand": "C5+C6:s A4+A5:s G4+G5:s F4+F5:e A4+A5:s G4+G5:s F4+F5:s"
+        },
+        {
+          "number": 2,
+          "rightHand": "G4+G5:s F4+F5:s D4+D5:s C4+C5:e F4:s G4:s A4:s"
+        },
+        {
+          "number": 3,
+          "rightHand": "C4:s G4:e F4:s E4:e G4:e"
+        },
+        {
+          "number": 4,
+          "rightHand": "C4+E4+G4+C5:e C4:s D4:s E4:s"
+        },
+        {
+          "number": 5,
+          "rightHand": "F4:s D5:s F4+A4+C5:e D5:s D#4+A4+C5:e"
+        },
+        {
+          "number": 6,
+          "rightHand": "E4:s D5:s E4+A#4+C5:e D5:s E4+A#4+C5:e"
+        },
+        {
+          "number": 7,
+          "rightHand": "F4+A4+C5:s D#4:e A4+C5:s D4:e G#4+B4:s C#4:e G4+A#4:s"
+        },
+        {
+          "number": 8,
+          "rightHand": "C4+F4+A4:e C5:s G#4+D5:e F5:s G4+C5+E5:e A#4+E5+G5:e"
+        }
+      ],
+      "sourceChords": [
+        {
+          "measure": 1,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 2,
+          "impliedChord": "F"
+        },
+        {
+          "measure": 3,
+          "impliedChord": "C"
+        },
+        {
+          "measure": 4,
+          "impliedChord": "C"
+        },
+        {
+          "measure": 5,
+          "impliedChord": "F"
+        },
+        {
+          "measure": 6,
+          "impliedChord": "G"
+        },
+        {
+          "measure": 7,
+          "impliedChord": "Dmaj7"
+        },
+        {
+          "measure": 8,
+          "impliedChord": "Bbsus2"
+        }
+      ]
+    },
+    {
+      "itemId": "divenire:m1-8",
+      "songId": "divenire",
+      "genre": "new-age",
+      "title": "Divenire",
+      "composer": "Ludovico Einaudi",
+      "key": "A minor",
+      "timeSignature": "4/4",
+      "measureRange": [
+        1,
+        8
+      ],
+      "melody": [
+        {
+          "number": 1,
+          "rightHand": "C6:w G6:w C5:e C4+C6:w"
+        },
+        {
+          "number": 2,
+          "rightHand": "C5:e G5:h C5:h C6:q. C6:w G6:w"
+        },
+        {
+          "number": 3,
+          "rightHand": "C5:e C4+C6:w C5:e"
+        },
+        {
+          "number": 4,
+          "rightHand": "G5:q C5:q C6:q C6:w G6:w"
+        },
+        {
+          "number": 5,
+          "rightHand": "C5:e C4+C6:w C5:e G5:e"
+        },
+        {
+          "number": 6,
+          "rightHand": "C5:e C6:q D#5:s D#5:s D#5:s D#5:s D#5:s D#5:s D#5+C6:w G6:w D#5:s D#5:s D#5:s D#5:s D#5:s D#5:s"
+        },
+        {
+          "number": 7,
+          "rightHand": "D#5:s D#5:s D#5:s D#5:s D#5:s C5:e D#5:s C4+C6:w C5:e G5:h C5:h"
+        },
+        {
+          "number": 8,
+          "rightHand": "C6:q. C6:w G6:w"
+        }
+      ],
+      "sourceChords": [
+        {
+          "measure": 1,
+          "impliedChord": "Gsus4"
+        },
+        {
+          "measure": 2,
+          "impliedChord": "C"
+        },
+        {
+          "measure": 3,
+          "impliedChord": "Cm"
+        },
+        {
+          "measure": 4,
+          "impliedChord": "C"
+        },
+        {
+          "measure": 5,
+          "impliedChord": "C"
+        },
+        {
+          "measure": 6,
+          "impliedChord": "C"
+        },
+        {
+          "measure": 7,
+          "impliedChord": "C"
+        },
+        {
+          "measure": 8,
+          "impliedChord": "C"
+        }
+      ]
+    },
+    {
+      "itemId": "experience:m1-8",
+      "songId": "experience",
+      "genre": "new-age",
+      "title": "Experience",
+      "composer": "Ludovico Einaudi",
+      "key": "D minor",
+      "timeSignature": "4/4",
+      "measureRange": [
+        1,
+        8
+      ],
+      "melody": [
+        {
+          "number": 1,
+          "rightHand": "B4+B4:e A#4+A#4:e F#4+F#4:e E4+E4:e B4+B4:e A#4+A#4:e F#4+F#4:e E4+E4:e"
+        },
+        {
+          "number": 2,
+          "rightHand": "B4+B4:e A#4+A#4:e F#4+F#4:e E4+E4:e B4+B4:e A#4+A#4:e F#4+F#4:e E4+E4:e"
+        },
+        {
+          "number": 3,
+          "rightHand": "B4:e A#4:e F#4:e E4:e B4:e A#4:e F#4:e E4:e"
+        },
+        {
+          "number": 4,
+          "rightHand": "C4+C5:h B4:e G4:e F4:e C5:e B4:e C4+G4:e F4:e C4:s"
+        },
+        {
+          "number": 5,
+          "rightHand": "B4:e A#4:e F#4:e E4:e B4:e A#4:e F#4:e E4:e"
+        },
+        {
+          "number": 6,
+          "rightHand": "F#4:e E4:e C#4:e F#4:e E4:e C#4:e"
+        },
+        {
+          "number": 7,
+          "rightHand": "B4:e A#4:e F#4:e E4:e B4:e A#4:e F#4:e E4:e"
+        },
+        {
+          "number": 8,
+          "rightHand": "C4+C5:h B4:e G4:e F4:e C5:e B4:e C4+G4:e F4:e C4:s"
+        }
+      ],
+      "sourceChords": [
+        {
+          "measure": 1,
+          "impliedChord": "E"
+        },
+        {
+          "measure": 2,
+          "impliedChord": "E"
+        },
+        {
+          "measure": 3,
+          "impliedChord": "Em"
+        },
+        {
+          "measure": 4,
+          "impliedChord": "Dsus4"
+        },
+        {
+          "measure": 5,
+          "impliedChord": "Em"
+        },
+        {
+          "measure": 6,
+          "impliedChord": "Bmaj7"
+        },
+        {
+          "measure": 7,
+          "impliedChord": "Em"
+        },
+        {
+          "measure": 8,
+          "impliedChord": "Dsus4"
+        }
+      ]
+    },
+    {
+      "itemId": "amazing-grace:m1-8",
+      "songId": "amazing-grace",
+      "genre": "folk",
+      "title": "Amazing Grace",
+      "composer": "Traditional",
+      "key": "Eb major",
+      "timeSignature": "3/4",
+      "measureRange": [
+        1,
+        8
+      ],
+      "melody": [
+        {
+          "number": 1,
+          "rightHand": "R:w"
+        },
+        {
+          "number": 2,
+          "rightHand": "D#4+D#4+G4:w G4:e."
+        },
+        {
+          "number": 3,
+          "rightHand": "G4:h C#4+F4:q"
+        },
+        {
+          "number": 4,
+          "rightHand": "C4+D#4+D#4+G#4:w C4:q"
+        },
+        {
+          "number": 5,
+          "rightHand": "G4:w"
+        },
+        {
+          "number": 6,
+          "rightHand": "D#4:h G4:qt"
+        },
+        {
+          "number": 7,
+          "rightHand": "G4:h F4:e."
+        },
+        {
+          "number": 8,
+          "rightHand": "D4+F4+A#4:w"
+        }
+      ],
+      "sourceChords": [
+        {
+          "measure": 1,
+          "impliedChord": "Bb"
+        },
+        {
+          "measure": 2,
+          "impliedChord": "Bb"
+        },
+        {
+          "measure": 3,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 4,
+          "impliedChord": "Ab"
+        },
+        {
+          "measure": 5,
+          "impliedChord": "Bb"
+        },
+        {
+          "measure": 6,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 7,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 8,
+          "impliedChord": "N/A"
+        }
+      ]
+    },
+    {
+      "itemId": "auld-lang-syne:m1-8",
+      "songId": "auld-lang-syne",
+      "genre": "folk",
+      "title": "Auld Lang Syne",
+      "composer": "Traditional Scottish",
+      "key": "F major",
+      "timeSignature": "4/4",
+      "measureRange": [
+        1,
+        8
+      ],
+      "melody": [
+        {
+          "number": 1,
+          "rightHand": "R:w"
+        },
+        {
+          "number": 2,
+          "rightHand": "C4+E4:q. G4+C5+E5:e. G4+C5+E5:s G4+C5+E5:s G4+C5+E5:s C4:s G4+C5+E5:e. E4:e E4+C5:et G4+E5:s G4:e G4+C5+E5:s C5:et C5+E5:h"
+        },
+        {
+          "number": 3,
+          "rightHand": "G4+E5:h C5:e G4:e E4:h C4+C4:q"
+        },
+        {
+          "number": 4,
+          "rightHand": "C4+C4+F4+F4:w C4+E4+E4:q"
+        },
+        {
+          "number": 5,
+          "rightHand": "C4+F4+F4:h F4+F4+A4+A4+A4+C5:h"
+        },
+        {
+          "number": 6,
+          "rightHand": "C4+C4+E4+E4+G4+G4+G4:w D4+D#4+F4+F#4+F#4+G4:q"
+        },
+        {
+          "number": 7,
+          "rightHand": "C4+E4+E4+G4+G4+G4:q. C4:s C4+D4+E4+A4+A4:h E4:e D4:s"
+        },
+        {
+          "number": 8,
+          "rightHand": "C4+C4+F4+F4:w C4+C4:q"
+        }
+      ],
+      "sourceChords": [
+        {
+          "measure": 1,
+          "impliedChord": "N/A"
+        },
+        {
+          "measure": 2,
+          "impliedChord": "Ebm7"
+        },
+        {
+          "measure": 3,
+          "impliedChord": "F7"
+        },
+        {
+          "measure": 4,
+          "impliedChord": "Dm7"
+        },
+        {
+          "measure": 5,
+          "impliedChord": "Dm7"
+        },
+        {
+          "measure": 6,
+          "impliedChord": "Cm"
+        },
+        {
+          "measure": 7,
+          "impliedChord": "Cm"
+        },
+        {
+          "measure": 8,
+          "impliedChord": "Dm7"
+        }
+      ]
+    }
+  ]
+}

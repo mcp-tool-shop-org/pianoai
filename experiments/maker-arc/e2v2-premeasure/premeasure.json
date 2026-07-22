@@ -1,0 +1,1051 @@
+{
+  "schemaVersion": "e2v2-premeasure/1.0.0",
+  "generatedAt": "2026-07-22T17:44:02.663Z",
+  "cohort": {
+    "source": "sealed-22 (e2-phrase-continuation-results.json)",
+    "pairCount": 22
+  },
+  "gridSweep": [
+    6,
+    12,
+    24
+  ],
+  "separationThresholds": [
+    0.05,
+    0.1,
+    0.15,
+    0.2,
+    0.25
+  ],
+  "gridSummary": [
+    {
+      "scoreSubdivisionsPerBeat": 6,
+      "screenSeparation": {
+        "rhythm": {
+          "n": 22,
+          "min": 0.35317460317460303,
+          "p25": 0.6226415094339623,
+          "median": 0.7252252252252253,
+          "p75": 0.8131868131868132,
+          "max": 0.9155172413793106
+        },
+        "tonal": {
+          "n": 22,
+          "min": 0.1177944862155389,
+          "p25": 0.24780976220275341,
+          "median": 0.3591269841269842,
+          "p75": 0.4441666666666668,
+          "max": 0.8444444444444444
+        }
+      },
+      "itemsQualifyingByThreshold": {
+        "0.05": 22,
+        "0.10": 22,
+        "0.15": 21,
+        "0.20": 20,
+        "0.25": 15
+      },
+      "goldIdentityMargin": {
+        "rhythm": {
+          "n": 22,
+          "min": 0.35317460317460303,
+          "p25": 0.6226415094339623,
+          "median": 0.7252252252252253,
+          "p75": 0.8131868131868132,
+          "max": 0.9155172413793106
+        },
+        "tonal": {
+          "n": 22,
+          "min": 0.1177944862155389,
+          "p25": 0.24780976220275341,
+          "median": 0.3591269841269842,
+          "p75": 0.4441666666666668,
+          "max": 0.8444444444444444
+        }
+      },
+      "foilAsModelSanity": {
+        "rhythm": {
+          "n": 22,
+          "min": 0,
+          "p25": 0,
+          "median": 0,
+          "p75": 0,
+          "max": 0
+        }
+      }
+    },
+    {
+      "scoreSubdivisionsPerBeat": 12,
+      "screenSeparation": {
+        "rhythm": {
+          "n": 22,
+          "min": 0,
+          "p25": 0.7800000000000005,
+          "median": 0.8785714285714286,
+          "p75": 0.9166666666666664,
+          "max": 0.9733333333333325
+        },
+        "tonal": {
+          "n": 22,
+          "min": 0.1177944862155389,
+          "p25": 0.27575757575757576,
+          "median": 0.3420990286661929,
+          "p75": 0.4916666666666667,
+          "max": 0.8666666666666667
+        }
+      },
+      "itemsQualifyingByThreshold": {
+        "0.05": 20,
+        "0.10": 20,
+        "0.15": 19,
+        "0.20": 18,
+        "0.25": 16
+      },
+      "goldIdentityMargin": {
+        "rhythm": {
+          "n": 22,
+          "min": 0,
+          "p25": 0.7800000000000005,
+          "median": 0.8785714285714286,
+          "p75": 0.9166666666666664,
+          "max": 0.9733333333333325
+        },
+        "tonal": {
+          "n": 22,
+          "min": 0.1177944862155389,
+          "p25": 0.27575757575757576,
+          "median": 0.3420990286661929,
+          "p75": 0.4916666666666667,
+          "max": 0.8666666666666667
+        }
+      },
+      "foilAsModelSanity": {
+        "rhythm": {
+          "n": 22,
+          "min": 0,
+          "p25": 0,
+          "median": 0,
+          "p75": 0,
+          "max": 0
+        }
+      }
+    },
+    {
+      "scoreSubdivisionsPerBeat": 24,
+      "screenSeparation": {
+        "rhythm": {
+          "n": 22,
+          "min": 0,
+          "p25": 0.8589892294946142,
+          "median": 0.8947368421052632,
+          "p75": 0.9260651629072686,
+          "max": 1.0000000000000002
+        },
+        "tonal": {
+          "n": 22,
+          "min": 0.1177944862155389,
+          "p25": 0.24183006535947682,
+          "median": 0.35220003876720296,
+          "p75": 0.4246112237998647,
+          "max": 0.8444444444444444
+        }
+      },
+      "itemsQualifyingByThreshold": {
+        "0.05": 20,
+        "0.10": 20,
+        "0.15": 19,
+        "0.20": 18,
+        "0.25": 14
+      },
+      "goldIdentityMargin": {
+        "rhythm": {
+          "n": 22,
+          "min": 0,
+          "p25": 0.8589892294946142,
+          "median": 0.8947368421052632,
+          "p75": 0.9260651629072686,
+          "max": 1.0000000000000002
+        },
+        "tonal": {
+          "n": 22,
+          "min": 0.1177944862155389,
+          "p25": 0.24183006535947682,
+          "median": 0.35220003876720296,
+          "p75": 0.4246112237998647,
+          "max": 0.8444444444444444
+        }
+      },
+      "foilAsModelSanity": {
+        "rhythm": {
+          "n": 22,
+          "min": 0,
+          "p25": 0,
+          "median": 0,
+          "p75": 0,
+          "max": 0
+        }
+      }
+    }
+  ],
+  "perPairAtDefaultGrid": [
+    {
+      "targetId": "bach-prelude-c-major-bwv846:m005-008:piano:mcp-session:v1",
+      "songId": "bach-prelude-c-major-bwv846",
+      "timeSignature": "4/4",
+      "markovScreen": {
+        "targetId": "bach-prelude-c-major-bwv846:m005-008:piano:mcp-session:v1",
+        "songId": "bach-prelude-c-major-bwv846",
+        "targetMeasureRange": "measures 5-8",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0,
+        "tonalSeparation": 0.234375,
+        "separationBar": 0.15,
+        "qualifies": false,
+        "reason": "rhythm separation 0.000 < 0.15 — instrument cannot distinguish gold from foil on rhythm here"
+      },
+      "copyfwdScreen": {
+        "targetId": "bach-prelude-c-major-bwv846:m005-008:piano:mcp-session:v1",
+        "songId": "bach-prelude-c-major-bwv846",
+        "targetMeasureRange": "measures 5-8",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0,
+        "tonalSeparation": 0.21875,
+        "separationBar": 0.15,
+        "qualifies": false,
+        "reason": "rhythm separation 0.000 < 0.15 — instrument cannot distinguish gold from foil on rhythm here"
+      },
+      "goldIdentityMarginMarkov": {
+        "rhythm": 0,
+        "tonal": 0.234375
+      },
+      "goldIdentityMarginCopyfwd": {
+        "rhythm": 0,
+        "tonal": 0.21875
+      },
+      "markovAsModelMargin": {
+        "rhythm": 0,
+        "tonal": 0
+      }
+    },
+    {
+      "targetId": "bach-prelude-c-major-bwv846:m013-016:piano:mcp-session:v1",
+      "songId": "bach-prelude-c-major-bwv846",
+      "timeSignature": "4/4",
+      "markovScreen": {
+        "targetId": "bach-prelude-c-major-bwv846:m013-016:piano:mcp-session:v1",
+        "songId": "bach-prelude-c-major-bwv846",
+        "targetMeasureRange": "measures 13-16",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0,
+        "tonalSeparation": 0.3125,
+        "separationBar": 0.15,
+        "qualifies": false,
+        "reason": "rhythm separation 0.000 < 0.15 — instrument cannot distinguish gold from foil on rhythm here"
+      },
+      "copyfwdScreen": {
+        "targetId": "bach-prelude-c-major-bwv846:m013-016:piano:mcp-session:v1",
+        "songId": "bach-prelude-c-major-bwv846",
+        "targetMeasureRange": "measures 13-16",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0,
+        "tonalSeparation": 0.40625,
+        "separationBar": 0.15,
+        "qualifies": false,
+        "reason": "rhythm separation 0.000 < 0.15 — instrument cannot distinguish gold from foil on rhythm here"
+      },
+      "goldIdentityMarginMarkov": {
+        "rhythm": 0,
+        "tonal": 0.3125
+      },
+      "goldIdentityMarginCopyfwd": {
+        "rhythm": 0,
+        "tonal": 0.40625
+      },
+      "markovAsModelMargin": {
+        "rhythm": 0,
+        "tonal": 0
+      }
+    },
+    {
+      "targetId": "chopin-nocturne-op9-no2:m005-008:piano:mcp-session:v1",
+      "songId": "chopin-nocturne-op9-no2",
+      "timeSignature": "4/4",
+      "markovScreen": {
+        "targetId": "chopin-nocturne-op9-no2:m005-008:piano:mcp-session:v1",
+        "songId": "chopin-nocturne-op9-no2",
+        "targetMeasureRange": "measures 5-8",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.8785714285714286,
+        "tonalSeparation": 0.4916666666666667,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.879, tonal 0.492 ≥ 0.15"
+      },
+      "copyfwdScreen": {
+        "targetId": "chopin-nocturne-op9-no2:m005-008:piano:mcp-session:v1",
+        "songId": "chopin-nocturne-op9-no2",
+        "targetMeasureRange": "measures 5-8",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.8679653679653679,
+        "tonalSeparation": 0.48484848484848486,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.868, tonal 0.485 ≥ 0.15"
+      },
+      "goldIdentityMarginMarkov": {
+        "rhythm": 0.8785714285714286,
+        "tonal": 0.4916666666666667
+      },
+      "goldIdentityMarginCopyfwd": {
+        "rhythm": 0.8679653679653679,
+        "tonal": 0.48484848484848486
+      },
+      "markovAsModelMargin": {
+        "rhythm": 0,
+        "tonal": 0
+      }
+    },
+    {
+      "targetId": "chopin-nocturne-op9-no2:m013-016:piano:mcp-session:v1",
+      "songId": "chopin-nocturne-op9-no2",
+      "timeSignature": "4/4",
+      "markovScreen": {
+        "targetId": "chopin-nocturne-op9-no2:m013-016:piano:mcp-session:v1",
+        "songId": "chopin-nocturne-op9-no2",
+        "targetMeasureRange": "measures 13-16",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.9666666666666667,
+        "tonalSeparation": 0.7666666666666666,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.967, tonal 0.767 ≥ 0.15"
+      },
+      "copyfwdScreen": {
+        "targetId": "chopin-nocturne-op9-no2:m013-016:piano:mcp-session:v1",
+        "songId": "chopin-nocturne-op9-no2",
+        "targetMeasureRange": "measures 13-16",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.9237179487179488,
+        "tonalSeparation": 0.41538461538461535,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.924, tonal 0.415 ≥ 0.15"
+      },
+      "goldIdentityMarginMarkov": {
+        "rhythm": 0.9666666666666667,
+        "tonal": 0.7666666666666666
+      },
+      "goldIdentityMarginCopyfwd": {
+        "rhythm": 0.9237179487179488,
+        "tonal": 0.41538461538461535
+      },
+      "markovAsModelMargin": {
+        "rhythm": 0,
+        "tonal": 0
+      }
+    },
+    {
+      "targetId": "chopin-nocturne-op9-no2:m021-024:piano:mcp-session:v1",
+      "songId": "chopin-nocturne-op9-no2",
+      "timeSignature": "4/4",
+      "markovScreen": {
+        "targetId": "chopin-nocturne-op9-no2:m021-024:piano:mcp-session:v1",
+        "songId": "chopin-nocturne-op9-no2",
+        "targetMeasureRange": "measures 21-24",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.7800000000000005,
+        "tonalSeparation": 0.32000000000000006,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.780, tonal 0.320 ≥ 0.15"
+      },
+      "copyfwdScreen": {
+        "targetId": "chopin-nocturne-op9-no2:m021-024:piano:mcp-session:v1",
+        "songId": "chopin-nocturne-op9-no2",
+        "targetMeasureRange": "measures 21-24",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.8035294117647064,
+        "tonalSeparation": 0.30862745098039235,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.804, tonal 0.309 ≥ 0.15"
+      },
+      "goldIdentityMarginMarkov": {
+        "rhythm": 0.7800000000000005,
+        "tonal": 0.32000000000000006
+      },
+      "goldIdentityMarginCopyfwd": {
+        "rhythm": 0.8035294117647064,
+        "tonal": 0.30862745098039235
+      },
+      "markovAsModelMargin": {
+        "rhythm": 0,
+        "tonal": 0
+      }
+    },
+    {
+      "targetId": "chopin-prelude-e-minor:m005-008:piano:mcp-session:v1",
+      "songId": "chopin-prelude-e-minor",
+      "timeSignature": "4/4",
+      "markovScreen": {
+        "targetId": "chopin-prelude-e-minor:m005-008:piano:mcp-session:v1",
+        "songId": "chopin-prelude-e-minor",
+        "targetMeasureRange": "measures 5-8",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.9166666666666664,
+        "tonalSeparation": 0.8666666666666667,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.917, tonal 0.867 ≥ 0.15"
+      },
+      "copyfwdScreen": {
+        "targetId": "chopin-prelude-e-minor:m005-008:piano:mcp-session:v1",
+        "songId": "chopin-prelude-e-minor",
+        "targetMeasureRange": "measures 5-8",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.8888888888888886,
+        "tonalSeparation": 0.8444444444444444,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.889, tonal 0.844 ≥ 0.15"
+      },
+      "goldIdentityMarginMarkov": {
+        "rhythm": 0.9166666666666664,
+        "tonal": 0.8666666666666667
+      },
+      "goldIdentityMarginCopyfwd": {
+        "rhythm": 0.8888888888888886,
+        "tonal": 0.8444444444444444
+      },
+      "markovAsModelMargin": {
+        "rhythm": 0,
+        "tonal": 0
+      }
+    },
+    {
+      "targetId": "chopin-prelude-e-minor:m013-016:piano:mcp-session:v1",
+      "songId": "chopin-prelude-e-minor",
+      "timeSignature": "4/4",
+      "markovScreen": {
+        "targetId": "chopin-prelude-e-minor:m013-016:piano:mcp-session:v1",
+        "songId": "chopin-prelude-e-minor",
+        "targetMeasureRange": "measures 13-16",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.9264957264957264,
+        "tonalSeparation": 0.6598290598290597,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.926, tonal 0.660 ≥ 0.15"
+      },
+      "copyfwdScreen": {
+        "targetId": "chopin-prelude-e-minor:m013-016:piano:mcp-session:v1",
+        "songId": "chopin-prelude-e-minor",
+        "targetMeasureRange": "measures 13-16",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.9777777777777776,
+        "tonalSeparation": 0.6111111111111109,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.978, tonal 0.611 ≥ 0.15"
+      },
+      "goldIdentityMarginMarkov": {
+        "rhythm": 0.9264957264957264,
+        "tonal": 0.6598290598290597
+      },
+      "goldIdentityMarginCopyfwd": {
+        "rhythm": 0.9777777777777776,
+        "tonal": 0.6111111111111109
+      },
+      "markovAsModelMargin": {
+        "rhythm": 0,
+        "tonal": 0
+      }
+    },
+    {
+      "targetId": "clair-de-lune:m005-008:piano:mcp-session:v1",
+      "songId": "clair-de-lune",
+      "timeSignature": "9/8",
+      "markovScreen": {
+        "targetId": "clair-de-lune:m005-008:piano:mcp-session:v1",
+        "songId": "clair-de-lune",
+        "targetMeasureRange": "measures 5-8",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.9411764705882353,
+        "tonalSeparation": 0.24780976220275341,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.941, tonal 0.248 ≥ 0.15"
+      },
+      "copyfwdScreen": {
+        "targetId": "clair-de-lune:m005-008:piano:mcp-session:v1",
+        "songId": "clair-de-lune",
+        "targetMeasureRange": "measures 5-8",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.5159574468085107,
+        "tonalSeparation": 0.22938829787234039,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.516, tonal 0.229 ≥ 0.15"
+      },
+      "goldIdentityMarginMarkov": {
+        "rhythm": 0.9411764705882353,
+        "tonal": 0.24780976220275341
+      },
+      "goldIdentityMarginCopyfwd": {
+        "rhythm": 0.5159574468085107,
+        "tonal": 0.22938829787234039
+      },
+      "markovAsModelMargin": {
+        "rhythm": 0,
+        "tonal": 0
+      }
+    },
+    {
+      "targetId": "clair-de-lune:m019-022:piano:mcp-session:v1",
+      "songId": "clair-de-lune",
+      "timeSignature": "9/8",
+      "markovScreen": {
+        "targetId": "clair-de-lune:m019-022:piano:mcp-session:v1",
+        "songId": "clair-de-lune",
+        "targetMeasureRange": "measures 19-22",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.9365079365079365,
+        "tonalSeparation": 0.3420990286661929,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.937, tonal 0.342 ≥ 0.15"
+      },
+      "copyfwdScreen": {
+        "targetId": "clair-de-lune:m019-022:piano:mcp-session:v1",
+        "songId": "clair-de-lune",
+        "targetMeasureRange": "measures 19-22",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.46878353331382316,
+        "tonalSeparation": 0.35406301824212283,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.469, tonal 0.354 ≥ 0.15"
+      },
+      "goldIdentityMarginMarkov": {
+        "rhythm": 0.9365079365079365,
+        "tonal": 0.3420990286661929
+      },
+      "goldIdentityMarginCopyfwd": {
+        "rhythm": 0.46878353331382316,
+        "tonal": 0.35406301824212283
+      },
+      "markovAsModelMargin": {
+        "rhythm": 0,
+        "tonal": 0
+      }
+    },
+    {
+      "targetId": "debussy-arabesque-no1:m005-008:piano:mcp-session:v1",
+      "songId": "debussy-arabesque-no1",
+      "timeSignature": "4/4",
+      "markovScreen": {
+        "targetId": "debussy-arabesque-no1:m005-008:piano:mcp-session:v1",
+        "songId": "debussy-arabesque-no1",
+        "targetMeasureRange": "measures 5-8",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.35317460317460303,
+        "tonalSeparation": 0.3591269841269842,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.353, tonal 0.359 ≥ 0.15"
+      },
+      "copyfwdScreen": {
+        "targetId": "debussy-arabesque-no1:m005-008:piano:mcp-session:v1",
+        "songId": "debussy-arabesque-no1",
+        "targetMeasureRange": "measures 5-8",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.3314285714285712,
+        "tonalSeparation": 0.33904761904761915,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.331, tonal 0.339 ≥ 0.15"
+      },
+      "goldIdentityMarginMarkov": {
+        "rhythm": 0.35317460317460303,
+        "tonal": 0.3591269841269842
+      },
+      "goldIdentityMarginCopyfwd": {
+        "rhythm": 0.3314285714285712,
+        "tonal": 0.33904761904761915
+      },
+      "markovAsModelMargin": {
+        "rhythm": 0,
+        "tonal": 0
+      }
+    },
+    {
+      "targetId": "debussy-arabesque-no1:m013-016:piano:mcp-session:v1",
+      "songId": "debussy-arabesque-no1",
+      "timeSignature": "4/4",
+      "markovScreen": {
+        "targetId": "debussy-arabesque-no1:m013-016:piano:mcp-session:v1",
+        "songId": "debussy-arabesque-no1",
+        "targetMeasureRange": "measures 13-16",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.7636363636363636,
+        "tonalSeparation": 0.4221033868092692,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.764, tonal 0.422 ≥ 0.15"
+      },
+      "copyfwdScreen": {
+        "targetId": "debussy-arabesque-no1:m013-016:piano:mcp-session:v1",
+        "songId": "debussy-arabesque-no1",
+        "targetMeasureRange": "measures 13-16",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.21568627450980404,
+        "tonalSeparation": 0.2734204793028322,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.216, tonal 0.273 ≥ 0.15"
+      },
+      "goldIdentityMarginMarkov": {
+        "rhythm": 0.7636363636363636,
+        "tonal": 0.4221033868092692
+      },
+      "goldIdentityMarginCopyfwd": {
+        "rhythm": 0.21568627450980404,
+        "tonal": 0.2734204793028322
+      },
+      "markovAsModelMargin": {
+        "rhythm": 0,
+        "tonal": 0
+      }
+    },
+    {
+      "targetId": "fur-elise:m013-016:piano:mcp-session:v1",
+      "songId": "fur-elise",
+      "timeSignature": "3/8",
+      "markovScreen": {
+        "targetId": "fur-elise:m013-016:piano:mcp-session:v1",
+        "songId": "fur-elise",
+        "targetMeasureRange": "measures 13-16",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.8671023965141608,
+        "tonalSeparation": 0.24183006535947682,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.867, tonal 0.242 ≥ 0.15"
+      },
+      "copyfwdScreen": {
+        "targetId": "fur-elise:m013-016:piano:mcp-session:v1",
+        "songId": "fur-elise",
+        "targetMeasureRange": "measures 13-16",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.03703703703703698,
+        "tonalSeparation": 0.09544159544159525,
+        "separationBar": 0.15,
+        "qualifies": false,
+        "reason": "both axes below separation bar (rhythm 0.037, tonal 0.095 < 0.15)"
+      },
+      "goldIdentityMarginMarkov": {
+        "rhythm": 0.8671023965141608,
+        "tonal": 0.24183006535947682
+      },
+      "goldIdentityMarginCopyfwd": {
+        "rhythm": 0.03703703703703698,
+        "tonal": 0.09544159544159525
+      },
+      "markovAsModelMargin": {
+        "rhythm": 0,
+        "tonal": 0
+      }
+    },
+    {
+      "targetId": "mozart-k545-mvt1:m005-008:piano:mcp-session:v1",
+      "songId": "mozart-k545-mvt1",
+      "timeSignature": "4/4",
+      "markovScreen": {
+        "targetId": "mozart-k545-mvt1:m005-008:piano:mcp-session:v1",
+        "songId": "mozart-k545-mvt1",
+        "targetMeasureRange": "measures 5-8",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.9733333333333325,
+        "tonalSeparation": 0.4980392156862745,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.973, tonal 0.498 ≥ 0.15"
+      },
+      "copyfwdScreen": {
+        "targetId": "mozart-k545-mvt1:m005-008:piano:mcp-session:v1",
+        "songId": "mozart-k545-mvt1",
+        "targetMeasureRange": "measures 5-8",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.3858503401360539,
+        "tonalSeparation": 0.25469387755102035,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.386, tonal 0.255 ≥ 0.15"
+      },
+      "goldIdentityMarginMarkov": {
+        "rhythm": 0.9733333333333325,
+        "tonal": 0.4980392156862745
+      },
+      "goldIdentityMarginCopyfwd": {
+        "rhythm": 0.3858503401360539,
+        "tonal": 0.25469387755102035
+      },
+      "markovAsModelMargin": {
+        "rhythm": 0,
+        "tonal": 0
+      }
+    },
+    {
+      "targetId": "mozart-k545-mvt1:m013-016:piano:mcp-session:v1",
+      "songId": "mozart-k545-mvt1",
+      "timeSignature": "4/4",
+      "markovScreen": {
+        "targetId": "mozart-k545-mvt1:m013-016:piano:mcp-session:v1",
+        "songId": "mozart-k545-mvt1",
+        "targetMeasureRange": "measures 13-16",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.6852941176470582,
+        "tonalSeparation": 0.6323529411764706,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.685, tonal 0.632 ≥ 0.15"
+      },
+      "copyfwdScreen": {
+        "targetId": "mozart-k545-mvt1:m013-016:piano:mcp-session:v1",
+        "songId": "mozart-k545-mvt1",
+        "targetMeasureRange": "measures 13-16",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.31031543052003385,
+        "tonalSeparation": 0.45132139812446725,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.310, tonal 0.451 ≥ 0.15"
+      },
+      "goldIdentityMarginMarkov": {
+        "rhythm": 0.6852941176470582,
+        "tonal": 0.6323529411764706
+      },
+      "goldIdentityMarginCopyfwd": {
+        "rhythm": 0.31031543052003385,
+        "tonal": 0.45132139812446725
+      },
+      "markovAsModelMargin": {
+        "rhythm": 0,
+        "tonal": 0
+      }
+    },
+    {
+      "targetId": "pathetique-mvt2:m005-008:piano:mcp-session:v1",
+      "songId": "pathetique-mvt2",
+      "timeSignature": "4/4",
+      "markovScreen": {
+        "targetId": "pathetique-mvt2:m005-008:piano:mcp-session:v1",
+        "songId": "pathetique-mvt2",
+        "targetMeasureRange": "measures 5-8",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.9629629629629628,
+        "tonalSeparation": 0.3481481481481481,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.963, tonal 0.348 ≥ 0.15"
+      },
+      "copyfwdScreen": {
+        "targetId": "pathetique-mvt2:m005-008:piano:mcp-session:v1",
+        "songId": "pathetique-mvt2",
+        "targetMeasureRange": "measures 5-8",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.8333333333333333,
+        "tonalSeparation": 0.29999999999999993,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.833, tonal 0.300 ≥ 0.15"
+      },
+      "goldIdentityMarginMarkov": {
+        "rhythm": 0.9629629629629628,
+        "tonal": 0.3481481481481481
+      },
+      "goldIdentityMarginCopyfwd": {
+        "rhythm": 0.8333333333333333,
+        "tonal": 0.29999999999999993
+      },
+      "markovAsModelMargin": {
+        "rhythm": 0,
+        "tonal": 0
+      }
+    },
+    {
+      "targetId": "pathetique-mvt2:m013-016:piano:mcp-session:v1",
+      "songId": "pathetique-mvt2",
+      "timeSignature": "4/4",
+      "markovScreen": {
+        "targetId": "pathetique-mvt2:m013-016:piano:mcp-session:v1",
+        "songId": "pathetique-mvt2",
+        "targetMeasureRange": "measures 13-16",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.8275862068965516,
+        "tonalSeparation": 0.2822477650063857,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.828, tonal 0.282 ≥ 0.15"
+      },
+      "copyfwdScreen": {
+        "targetId": "pathetique-mvt2:m013-016:piano:mcp-session:v1",
+        "songId": "pathetique-mvt2",
+        "targetMeasureRange": "measures 13-16",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.8888888888888888,
+        "tonalSeparation": 0.33333333333333326,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.889, tonal 0.333 ≥ 0.15"
+      },
+      "goldIdentityMarginMarkov": {
+        "rhythm": 0.8275862068965516,
+        "tonal": 0.2822477650063857
+      },
+      "goldIdentityMarginCopyfwd": {
+        "rhythm": 0.8888888888888888,
+        "tonal": 0.33333333333333326
+      },
+      "markovAsModelMargin": {
+        "rhythm": 0,
+        "tonal": 0
+      }
+    },
+    {
+      "targetId": "satie-gymnopedie-no1:m007-010:piano:mcp-session:v1",
+      "songId": "satie-gymnopedie-no1",
+      "timeSignature": "3/4",
+      "markovScreen": {
+        "targetId": "satie-gymnopedie-no1:m007-010:piano:mcp-session:v1",
+        "songId": "satie-gymnopedie-no1",
+        "targetMeasureRange": "measures 7-10",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.8947368421052632,
+        "tonalSeparation": 0.1177944862155389,
+        "separationBar": 0.15,
+        "qualifies": false,
+        "reason": "tonal separation 0.118 < 0.15 — instrument cannot distinguish gold from foil on pitch here"
+      },
+      "copyfwdScreen": {
+        "targetId": "satie-gymnopedie-no1:m007-010:piano:mcp-session:v1",
+        "songId": "satie-gymnopedie-no1",
+        "targetMeasureRange": "measures 7-10",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.23809523809523814,
+        "tonalSeparation": 0.09523809523809523,
+        "separationBar": 0.15,
+        "qualifies": false,
+        "reason": "tonal separation 0.095 < 0.15 — instrument cannot distinguish gold from foil on pitch here"
+      },
+      "goldIdentityMarginMarkov": {
+        "rhythm": 0.8947368421052632,
+        "tonal": 0.1177944862155389
+      },
+      "goldIdentityMarginCopyfwd": {
+        "rhythm": 0.23809523809523814,
+        "tonal": 0.09523809523809523
+      },
+      "markovAsModelMargin": {
+        "rhythm": 0,
+        "tonal": 0
+      }
+    },
+    {
+      "targetId": "satie-gymnopedie-no1:m015-018:piano:mcp-session:v1",
+      "songId": "satie-gymnopedie-no1",
+      "timeSignature": "3/4",
+      "markovScreen": {
+        "targetId": "satie-gymnopedie-no1:m015-018:piano:mcp-session:v1",
+        "songId": "satie-gymnopedie-no1",
+        "targetMeasureRange": "measures 15-18",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.8947368421052632,
+        "tonalSeparation": 0.19138755980861244,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.895, tonal 0.191 ≥ 0.15"
+      },
+      "copyfwdScreen": {
+        "targetId": "satie-gymnopedie-no1:m015-018:piano:mcp-session:v1",
+        "songId": "satie-gymnopedie-no1",
+        "targetMeasureRange": "measures 15-18",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.2142857142857143,
+        "tonalSeparation": 0.12554112554112562,
+        "separationBar": 0.15,
+        "qualifies": false,
+        "reason": "tonal separation 0.126 < 0.15 — instrument cannot distinguish gold from foil on pitch here"
+      },
+      "goldIdentityMarginMarkov": {
+        "rhythm": 0.8947368421052632,
+        "tonal": 0.19138755980861244
+      },
+      "goldIdentityMarginCopyfwd": {
+        "rhythm": 0.2142857142857143,
+        "tonal": 0.12554112554112562
+      },
+      "markovAsModelMargin": {
+        "rhythm": 0,
+        "tonal": 0
+      }
+    },
+    {
+      "targetId": "satie-gymnopedie-no1:m023-026:piano:mcp-session:v1",
+      "songId": "satie-gymnopedie-no1",
+      "timeSignature": "3/4",
+      "markovScreen": {
+        "targetId": "satie-gymnopedie-no1:m023-026:piano:mcp-session:v1",
+        "songId": "satie-gymnopedie-no1",
+        "targetMeasureRange": "measures 23-26",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.8296296296296296,
+        "tonalSeparation": 0.28148148148148155,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.830, tonal 0.281 ≥ 0.15"
+      },
+      "copyfwdScreen": {
+        "targetId": "satie-gymnopedie-no1:m023-026:piano:mcp-session:v1",
+        "songId": "satie-gymnopedie-no1",
+        "targetMeasureRange": "measures 23-26",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.18713450292397682,
+        "tonalSeparation": 0.25536062378167645,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.187, tonal 0.255 ≥ 0.15"
+      },
+      "goldIdentityMarginMarkov": {
+        "rhythm": 0.8296296296296296,
+        "tonal": 0.28148148148148155
+      },
+      "goldIdentityMarginCopyfwd": {
+        "rhythm": 0.18713450292397682,
+        "tonal": 0.25536062378167645
+      },
+      "markovAsModelMargin": {
+        "rhythm": 0,
+        "tonal": 0
+      }
+    },
+    {
+      "targetId": "schumann-traumerei:m005-008:piano:mcp-session:v1",
+      "songId": "schumann-traumerei",
+      "timeSignature": "4/4",
+      "markovScreen": {
+        "targetId": "schumann-traumerei:m005-008:piano:mcp-session:v1",
+        "songId": "schumann-traumerei",
+        "targetMeasureRange": "measures 5-8",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.8809523809523814,
+        "tonalSeparation": 0.5852130325814535,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.881, tonal 0.585 ≥ 0.15"
+      },
+      "copyfwdScreen": {
+        "targetId": "schumann-traumerei:m005-008:piano:mcp-session:v1",
+        "songId": "schumann-traumerei",
+        "targetMeasureRange": "measures 5-8",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.9761904761904766,
+        "tonalSeparation": 0.3277310924369746,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.976, tonal 0.328 ≥ 0.15"
+      },
+      "goldIdentityMarginMarkov": {
+        "rhythm": 0.8809523809523814,
+        "tonal": 0.5852130325814535
+      },
+      "goldIdentityMarginCopyfwd": {
+        "rhythm": 0.9761904761904766,
+        "tonal": 0.3277310924369746
+      },
+      "markovAsModelMargin": {
+        "rhythm": 0,
+        "tonal": 0
+      }
+    },
+    {
+      "targetId": "schumann-traumerei:m013-016:piano:mcp-session:v1",
+      "songId": "schumann-traumerei",
+      "timeSignature": "4/4",
+      "markovScreen": {
+        "targetId": "schumann-traumerei:m013-016:piano:mcp-session:v1",
+        "songId": "schumann-traumerei",
+        "targetMeasureRange": "measures 13-16",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.8141025641025643,
+        "tonalSeparation": 0.3653846153846154,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.814, tonal 0.365 ≥ 0.15"
+      },
+      "copyfwdScreen": {
+        "targetId": "schumann-traumerei:m013-016:piano:mcp-session:v1",
+        "songId": "schumann-traumerei",
+        "targetMeasureRange": "measures 13-16",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.9230769230769234,
+        "tonalSeparation": 0.34065934065934067,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.923, tonal 0.341 ≥ 0.15"
+      },
+      "goldIdentityMarginMarkov": {
+        "rhythm": 0.8141025641025643,
+        "tonal": 0.3653846153846154
+      },
+      "goldIdentityMarginCopyfwd": {
+        "rhythm": 0.9230769230769234,
+        "tonal": 0.34065934065934067
+      },
+      "markovAsModelMargin": {
+        "rhythm": 0,
+        "tonal": 0
+      }
+    },
+    {
+      "targetId": "schumann-traumerei:m021-024:piano:mcp-session:v1",
+      "songId": "schumann-traumerei",
+      "timeSignature": "4/4",
+      "markovScreen": {
+        "targetId": "schumann-traumerei:m021-024:piano:mcp-session:v1",
+        "songId": "schumann-traumerei",
+        "targetMeasureRange": "measures 21-24",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.8893939393939396,
+        "tonalSeparation": 0.27575757575757576,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.889, tonal 0.276 ≥ 0.15"
+      },
+      "copyfwdScreen": {
+        "targetId": "schumann-traumerei:m021-024:piano:mcp-session:v1",
+        "songId": "schumann-traumerei",
+        "targetMeasureRange": "measures 21-24",
+        "foilLabel": "foil",
+        "rhythmSeparation": 0.9000000000000002,
+        "tonalSeparation": 0.2564814814814814,
+        "separationBar": 0.15,
+        "qualifies": true,
+        "reason": "qualifies — rhythm 0.900, tonal 0.256 ≥ 0.15"
+      },
+      "goldIdentityMarginMarkov": {
+        "rhythm": 0.8893939393939396,
+        "tonal": 0.27575757575757576
+      },
+      "goldIdentityMarginCopyfwd": {
+        "rhythm": 0.9000000000000002,
+        "tonal": 0.2564814814814814
+      },
+      "markovAsModelMargin": {
+        "rhythm": 0,
+        "tonal": 0
+      }
+    }
+  ],
+  "defaultGrid": 12
+}
