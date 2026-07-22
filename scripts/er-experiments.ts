@@ -38,6 +38,11 @@ import {
   type ParsedReharmonization,
 } from "../src/maker/er-gate.js";
 import { renderReharmonization } from "../src/maker/voicer.js";
+import {
+  CHORDS_ONLY_SYSTEM,
+  buildChordsOnlyUser,
+  parseChordsOnly,
+} from "../src/maker/chord-proposer.js";
 import { OllamaBackend } from "../src/dataset/eval/llm-backends/ollama.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -45,51 +50,10 @@ const REPO_ROOT = join(__dirname, "..");
 const LIBRARY_DIR = join(REPO_ROOT, "songs", "library");
 const OUTPUT_DIR = join(REPO_ROOT, "experiments", "maker-arc", "phase-c-experiments");
 
-// ─── Chords-only prompt (the decompose lever) ─────────────────────────────────
-
-const CHORDS_ONLY_SYSTEM = [
-  "You are a harmony arranger. Given a melody (per-measure right-hand notes) in a stated key,",
-  "propose a REHARMONIZATION as a chord symbol per measure. A deterministic renderer will voice",
-  "your chords — you do NOT write voicings, only the chord SYMBOLS.",
-  "",
-  "Rules:",
-  "- Supported chord qualities ONLY: major (write the root alone, e.g. \"C\"), m, 7, maj7, m7, dim, m7b5, aug, sus4, sus2.",
-  "- The melody must sit consonantly on your harmony: chord tones and standard tensions (9,11,13,#11); keep chromatic clashes rare.",
-  "- REHARMONIZE — change the harmony on a meaningful share of measures vs the original (substitutions, secondary dominants, modal interchange).",
-  "",
-  "Output ONLY a JSON array, one object per melody measure, no prose:",
-  '[{"measure": 1, "chord": "Am7"}, {"measure": 2, "chord": "Fmaj7"}, ...]',
-].join("\n");
-
-function buildChordsOnlyUser(item: ERItem): string {
-  const brief = buildERBrief(item);
-  // Reuse the same melody table, drop the voicing instruction line.
-  return brief.user.replace(/Propose your reharmonization.*$/s, "Propose your chord-per-measure reharmonization as a JSON array.");
-}
-
-/** Parse a chords-only response into {measure, intendedChord}. Tolerant. */
-function parseChordsOnly(raw: string): Array<{ measure: number; intendedChord: string }> {
-  if (!raw?.trim()) return [];
-  let parsed: unknown = null;
-  try {
-    parsed = JSON.parse(raw);
-  } catch {
-    const fence = /```(?:json)?\s*([\s\S]*?)```/i.exec(raw);
-    const cand = fence ? fence[1] : (() => { const s = raw.indexOf("["); if (s < 0) return null; let d = 0; for (let i = s; i < raw.length; i++) { if (raw[i] === "[") d++; else if (raw[i] === "]" && --d === 0) return raw.slice(s, i + 1); } return null; })();
-    if (cand) { try { parsed = JSON.parse(cand); } catch { /* */ } }
-  }
-  const arr = Array.isArray(parsed) ? parsed : (parsed && typeof parsed === "object" ? Object.values(parsed as object).find(Array.isArray) : null);
-  if (!Array.isArray(arr)) return [];
-  const out: Array<{ measure: number; intendedChord: string }> = [];
-  for (const e of arr) {
-    if (!e || typeof e !== "object") continue;
-    const o = e as Record<string, unknown>;
-    const measure = Number(o.measure ?? o.m ?? o.bar);
-    const chord = String(o.chord ?? o.intendedChord ?? o.intended ?? "").trim();
-    if (Number.isFinite(measure) && chord) out.push({ measure, intendedChord: chord });
-  }
-  return out;
-}
+// The chords-only brief + tolerant parse (the decompose lever) are promoted to
+// src/maker/chord-proposer.ts as the SINGLE SOURCE — imported above so the
+// experiment path and the product path (OllamaChordProposer / the MCP tool) can
+// never drift. The request bytes here are unchanged by the move.
 
 // ─── Generation ───────────────────────────────────────────────────────────────
 
