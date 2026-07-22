@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "e2v2-jury-receipt/1.0.0",
+  "runDate": "2026-07-22T16:36:20.035Z",
+  "method": "ollama_verify_claims cross-family cloud PoLL — panel deepseek-v4-pro:cloud / glm-5.2:cloud / minimax-m3:cloud (family-disjoint from the Anthropic synthesizer), reasoning-stripped claims, judged vs verbatim abstracts/primary excerpts served as source_paths, lone-dissent-never-decides (min_refute 2, CONFIRMED needs >=2 confirms)",
+  "claimsJudged": 36,
+  "runs": 15,
+  "runIds": [
+    "run_2026-07-22T16-19-19_9d00e2",
+    "run_2026-07-22T16-20-27_e7d33d",
+    "run_2026-07-22T16-21-16_7648c5",
+    "run_2026-07-22T16-21-56_034418",
+    "run_2026-07-22T16-23-26_a9174d",
+    "run_2026-07-22T16-24-54_dc2df0",
+    "run_2026-07-22T16-25-58_fc6172",
+    "run_2026-07-22T16-27-09_bc807f",
+    "run_2026-07-22T16-27-55_49d906",
+    "run_2026-07-22T16-29-41_9a4457",
+    "run_2026-07-22T16-30-45_e4ec59",
+    "run_2026-07-22T16-31-43_e56e27",
+    "run_2026-07-22T16-32-47_bc4a53",
+    "run_2026-07-22T16-33-57_8f27a2",
+    "run_2026-07-22T16-34-47_222c26"
+  ],
+  "verdicts": {
+    "CONFIRMED": [
+      "F1",
+      "F2",
+      "F3",
+      "F6",
+      "F7",
+      "F8",
+      "F9",
+      "F10",
+      "F11",
+      "F12",
+      "F18",
+      "F19",
+      "F20",
+      "F23",
+      "F24",
+      "F25",
+      "F27",
+      "F29",
+      "F32",
+      "F33",
+      "F34",
+      "F35",
+      "F36",
+      "F37",
+      "F38",
+      "F39"
+    ],
+    "NARROWED_TO_CONFIRMED_CORE": {
+      "F13": "protocol-for-test-selection confirmed; specific test prescriptions are body-level — design uses standard exact-test statistics + memo-verified Card power",
+      "F14": "IRT + Fisher-information item selection for discriminative utility confirmed; the specific drop-threshold detail is body-level",
+      "F15": "replicability-analysis framework for multiple comparisons confirmed; juror correction: the contribution is partial-conjunction (Simes-based) AS SUPERIOR TO Bonferroni",
+      "F16": "six objective harmonization metrics + 202-participant listening study on 9,226 pairs confirmed; metric-category names are body-level",
+      "F17": "pseudo-Gibbs + user-pinned constraints + Bach-style generation confirmed; the discrimination-test eval detail is body-level",
+      "F21": "RL fine-tuning with domain-specific incentives on pretrained note-RNN improving structure confirmed; music-theory-rule specifics body-level; NOTE: later arXiv versions retitle to Sequence Tutor",
+      "F22": "Schenkerian-hierarchical + graph diffusion + human-experiment superiority confirmed; the rule-based screening detail is body-level",
+      "F26": "absolute/relative set-comparison strategy confirmed; the exhaustive cross-validation methodology detail is paper-body-level"
+    },
+    "CORROBORATIVE_DEMOTED": {
+      "F4": "MAESTRO negative claim (no beat/score annotations) unprovable from abstract; not load-bearing",
+      "F5": "Music Transformer serialization/eval details body-level; implication carried by confirmed F1/F2/F3"
+    },
+    "ESCALATED_MANUAL": {
+      "F28": "Theiler 1992 surrogate-data: existence+attribution oracle-confirmed (Crossref); no abstract deterministically retrievable this session; groundedness pending manual full-text; demoted to corroborative — control redesign rests on confirmed F24/F27/F29"
+    },
+    "REUSED_FROM_MEMO_JURY": {
+      "F30": "Rodriguez et al. 2021 (memo jury 2026-07-13)",
+      "F31": "Card et al. 2020 + van Miltenburg et al. 2021 (memo jury 2026-07-13)"
+    }
+  },
+  "refuted": 0,
+  "fabricated": 0,
+  "attributionNotes": [
+    "F2: groove_consistency ships in MusPy (Dong et al. 2020) but the metric internally cites Wu & Yang 2020",
+    "F21: arXiv:1611.02796 later versions retitled Sequence Tutor",
+    "F29: juror attribution query on Laban et al. — ACL page lists Laban, Dai, Bandarkar, Hearst (agent attribution correct)"
+  ],
+  "degradedRuns": "3 runs had 1 juror excluded (no_valid_verdicts) — flagged by the tool, never silently counted; all such verdicts met the 2-confirm threshold with the remaining jurors",
+  "honestCeiling": "CONFIRMED on frontier-authored claims is corroboration, not proof; the panel is weaker on subtle errors than gross ones."
+}

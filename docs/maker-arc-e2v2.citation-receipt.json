@@ -1,0 +1,321 @@
+{
+  "schemaVersion": "e2v2-citation-oracle/1.0.0",
+  "runDate": "2026-07-22T16:13:10.449Z",
+  "method": "arXiv API (batched id_list) + Crossref + DataCite + direct page fetch — deterministic retrieval, no parametric recall",
+  "totals": {
+    "checked": 40,
+    "resolved": 40,
+    "unresolved": 0
+  },
+  "reusedFromMemoOracle": [
+    "arXiv:2010.06595",
+    "arXiv:2103.06944",
+    "aclanthology-2021.acl-long.346 (Rodriguez et al. 2021)"
+  ],
+  "results": [
+    {
+      "ref": "arXiv:2008.01951",
+      "resolved": true,
+      "title": "MusPy: A Toolkit for Symbolic Music Generation",
+      "year": "2020",
+      "firstAuthor": "Hao-Wen Dong",
+      "nAuthors": 4
+    },
+    {
+      "ref": "arXiv:2002.00212",
+      "resolved": true,
+      "title": "Pop Music Transformer: Beat-based Modeling and Generation of Expressive Pop Piano Compositions",
+      "year": "2020",
+      "firstAuthor": "Yu-Siang Huang",
+      "nAuthors": 2
+    },
+    {
+      "ref": "arXiv:1810.12247",
+      "resolved": true,
+      "title": "Enabling Factorized Piano Music Modeling and Generation with the MAESTRO Dataset",
+      "year": "2018",
+      "firstAuthor": "Curtis Hawthorne",
+      "nAuthors": 9
+    },
+    {
+      "ref": "arXiv:1809.04281",
+      "resolved": true,
+      "title": "Music Transformer",
+      "year": "2018",
+      "firstAuthor": "Cheng-Zhi Anna Huang",
+      "nAuthors": 10
+    },
+    {
+      "ref": "arXiv:1905.06118",
+      "resolved": true,
+      "title": "Learning to Groove with Inverse Sequence Transformations",
+      "year": "2019",
+      "firstAuthor": "Jon Gillick",
+      "nAuthors": 5
+    },
+    {
+      "ref": "arXiv:1803.04585",
+      "resolved": true,
+      "title": "Categorizing Variants of Goodhart's Law",
+      "year": "2018",
+      "firstAuthor": "David Manheim",
+      "nAuthors": 2
+    },
+    {
+      "ref": "arXiv:2604.18489",
+      "resolved": true,
+      "title": "Aligning Language Models for Lyric-to-Melody Generation with Rule-Based Musical Constraints",
+      "year": "2026",
+      "firstAuthor": "Hao Meng",
+      "nAuthors": 5
+    },
+    {
+      "ref": "arXiv:2511.04689",
+      "resolved": true,
+      "title": "Adaptive Testing for LLM Evaluation: A Psychometric Alternative to Static Benchmarks",
+      "year": "2025",
+      "firstAuthor": "Peiyu Li",
+      "nAuthors": 7
+    },
+    {
+      "ref": "arXiv:2001.02360",
+      "resolved": true,
+      "title": "Automatic Melody Harmonization with Triad Chords: A Comparative Study",
+      "year": "2020",
+      "firstAuthor": "Yin-Cheng Yeh",
+      "nAuthors": 10
+    },
+    {
+      "ref": "arXiv:1612.01010",
+      "resolved": true,
+      "title": "DeepBach: a Steerable Model for Bach Chorales Generation",
+      "year": "2016",
+      "firstAuthor": "Gaëtan Hadjeres",
+      "nAuthors": 3
+    },
+    {
+      "ref": "arXiv:1903.07227",
+      "resolved": true,
+      "title": "Counterpoint by Convolution",
+      "year": "2019",
+      "firstAuthor": "Cheng-Zhi Anna Huang",
+      "nAuthors": 5
+    },
+    {
+      "ref": "arXiv:2108.05064",
+      "resolved": true,
+      "title": "Variable-Length Music Score Infilling via XLNet and Musically Specialized Positional Encoding",
+      "year": "2021",
+      "firstAuthor": "Chin-Jui Chang",
+      "nAuthors": 3
+    },
+    {
+      "ref": "arXiv:2306.08620",
+      "resolved": true,
+      "title": "Anticipatory Music Transformer",
+      "year": "2023",
+      "firstAuthor": "John Thickstun",
+      "nAuthors": 4
+    },
+    {
+      "ref": "arXiv:1611.02796",
+      "resolved": true,
+      "title": "Sequence Tutor: Conservative Fine-Tuning of Sequence Generation Models with KL-control",
+      "year": "2016",
+      "firstAuthor": "Natasha Jaques",
+      "nAuthors": 6
+    },
+    {
+      "ref": "arXiv:2510.10249",
+      "resolved": true,
+      "title": "ProGress: Structured Music Generation via Graph Diffusion and Hierarchical Music Analysis",
+      "year": "2025",
+      "firstAuthor": "Stephen Ni-Hahn",
+      "nAuthors": 6
+    },
+    {
+      "ref": "arXiv:2402.16153",
+      "resolved": true,
+      "title": "ChatMusician: Understanding and Generating Music Intrinsically with LLM",
+      "year": "2024",
+      "firstAuthor": "Ruibin Yuan",
+      "nAuthors": 35
+    },
+    {
+      "ref": "arXiv:2404.06393",
+      "resolved": true,
+      "title": "MuPT: A Generative Symbolic Music Pretrained Transformer",
+      "year": "2024",
+      "firstAuthor": "Xingwei Qu",
+      "nAuthors": 28
+    },
+    {
+      "ref": "arXiv:2008.01307",
+      "resolved": true,
+      "title": "The Jazz Transformer on the Front Line: Exploring the Shortcomings of AI-composed Music through Quantitative Measures",
+      "year": "2020",
+      "firstAuthor": "Shih-Lun Wu",
+      "nAuthors": 2
+    },
+    {
+      "ref": "arXiv:1606.03044",
+      "resolved": true,
+      "title": "The \"Horse'' Inside: Seeking Causes Behind the Behaviours of Music Content Analysis Systems",
+      "year": "2016",
+      "firstAuthor": "Bob L. Sturm",
+      "nAuthors": 1
+    },
+    {
+      "ref": "arXiv:2107.03448",
+      "resolved": true,
+      "title": "Can Transformer Models Measure Coherence In Text? Re-Thinking the Shuffle Test",
+      "year": "2021",
+      "firstAuthor": "Philippe Laban",
+      "nAuthors": 4
+    },
+    {
+      "ref": "arXiv:2010.06595",
+      "resolved": true,
+      "title": "With Little Power Comes Great Responsibility",
+      "year": "2020",
+      "firstAuthor": "Dallas Card",
+      "nAuthors": 6
+    },
+    {
+      "ref": "arXiv:2103.06944",
+      "resolved": true,
+      "title": "Preregistering NLP Research",
+      "year": "2021",
+      "firstAuthor": "Emiel van Miltenburg",
+      "nAuthors": 3
+    },
+    {
+      "ref": "arXiv:2506.05104",
+      "resolved": true,
+      "title": "Survey on the Evaluation of Generative Models in Music",
+      "year": "2025",
+      "firstAuthor": "Alexander Lerch",
+      "nAuthors": 6
+    },
+    {
+      "ref": "arXiv:2412.07948",
+      "resolved": true,
+      "title": "Frechet Music Distance: A Metric For Generative Symbolic Music Evaluation",
+      "year": "2024",
+      "firstAuthor": "Jan Retkowski",
+      "nAuthors": 3
+    },
+    {
+      "ref": "arXiv:2311.01616",
+      "resolved": true,
+      "title": "Adapting Frechet Audio Distance for Generative Music Evaluation",
+      "year": "2023",
+      "firstAuthor": "Azalea Gui",
+      "nAuthors": 4
+    },
+    {
+      "ref": "arXiv:2506.19085",
+      "resolved": true,
+      "title": "Benchmarking Music Generation Models and Metrics via Human Preference Studies",
+      "year": "2025",
+      "firstAuthor": "Florian Grötschla",
+      "nAuthors": 4
+    },
+    {
+      "ref": "arXiv:2501.10811",
+      "resolved": true,
+      "title": "MusicEval: A Generative Music Dataset with Expert Ratings for Automatic Text-to-Music Evaluation",
+      "year": "2025",
+      "firstAuthor": "Cheng Liu",
+      "nAuthors": 9
+    },
+    {
+      "ref": "arXiv:2407.21531",
+      "resolved": true,
+      "title": "Can LLMs \"Reason\" in Music? An Evaluation of LLMs' Capability of Music Understanding and Generation",
+      "year": "2024",
+      "firstAuthor": "Ziya Zhou",
+      "nAuthors": 10
+    },
+    {
+      "ref": "doi:10.1007/s00521-018-3849-7",
+      "resolved": true,
+      "title": "On the evaluation of generative models in music",
+      "year": "2018",
+      "firstAuthor": "Yang"
+    },
+    {
+      "ref": "doi:10.1214/ss/1032280304",
+      "resolved": true,
+      "title": "Bioequivalence trials, intersection-union tests and equivalence confidence sets",
+      "year": "1996",
+      "firstAuthor": "Berger"
+    },
+    {
+      "ref": "doi:10.1186/s13636-023-00279-6",
+      "resolved": true,
+      "title": "MUSIB: musical score inpainting benchmark",
+      "year": "2023",
+      "firstAuthor": "Araneda-Hernandez"
+    },
+    {
+      "ref": "doi:10.1162/tacl_a_00074",
+      "resolved": true,
+      "title": "Replicability Analysis for Natural Language Processing: Testing Significance with Multiple Datasets",
+      "year": "2017",
+      "firstAuthor": "Dror"
+    },
+    {
+      "ref": "doi:10.1016/0167-2789(92)90102-S",
+      "resolved": true,
+      "title": "Testing for nonlinearity in time series: the method of surrogate data",
+      "year": "1992",
+      "firstAuthor": "Theiler"
+    },
+    {
+      "ref": "doi:10.1145/2967507",
+      "resolved": true,
+      "title": "The “Horse” Inside",
+      "year": "2016",
+      "firstAuthor": "Sturm"
+    },
+    {
+      "ref": "doi:10.5334/tismir.149",
+      "resolved": true,
+      "title": "Automatic Note-Level Score-to-Performance Alignments in the ASAP Dataset",
+      "year": "2023",
+      "firstAuthor": "Peter"
+    },
+    {
+      "ref": "doi:10.5281/zenodo.7316682",
+      "resolved": true,
+      "title": "Performance MIDI-to-score conversion by neural beat tracking",
+      "year": "2022",
+      "firstAuthor": "Liu, Lele"
+    },
+    {
+      "ref": "aclanthology-P18-1128",
+      "url": "https://aclanthology.org/P18-1128/",
+      "resolved": true,
+      "title": "The Hitchhiker’s Guide to Testing Statistical Significance in Natural Language Processing - ACL Anthology"
+    },
+    {
+      "ref": "aclanthology-2021.acl-long.346",
+      "url": "https://aclanthology.org/2021.acl-long.346/",
+      "resolved": true,
+      "title": "Evaluation Examples are not Equally Informative: How should that change NLP Leaderboards? - ACL Anthology"
+    },
+    {
+      "ref": "aclanthology-2021.acl-short.134",
+      "url": "https://aclanthology.org/2021.acl-short.134/",
+      "resolved": true,
+      "title": "Can Transformer Models Measure Coherence In Text: Re-Thinking the Shuffle Test - ACL Anthology"
+    },
+    {
+      "ref": "mirex-2019-patterns",
+      "url": "https://music-ir.org/mirex/wiki/2019:Patterns_for_Prediction",
+      "resolved": true,
+      "title": "2019:Patterns for Prediction - MIREX Wiki"
+    }
+  ]
+}
