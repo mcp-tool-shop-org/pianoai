@@ -49,6 +49,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(__dirname, "..");
 const LIBRARY_DIR = join(REPO_ROOT, "songs", "library");
 const OUTPUT_DIR = join(REPO_ROOT, "experiments", "maker-arc", "phase-c-experiments");
+// Optional --tag suffixes the receipt filename so a re-run (e.g. after a
+// vocabulary change) writes to a DISTINCT file instead of clobbering the frozen
+// Phase-C baseline receipts. Set in main().
+let RUN_TAG = "";
 
 // The chords-only brief + tolerant parse (the decompose lever) are promoted to
 // src/maker/chord-proposer.ts as the SINGLE SOURCE — imported above so the
@@ -118,8 +122,9 @@ async function runBestOfN(model: string, items: ERItem[], n: number, gen: (b: Ol
 
 function writeReceipt(label: string, model: string, payload: Record<string, unknown>): void {
   mkdirSync(OUTPUT_DIR, { recursive: true });
-  const path = join(OUTPUT_DIR, `${(model + "_" + label).replace(/[^a-zA-Z0-9._-]+/g, "_")}.json`);
-  writeFileSync(path, JSON.stringify({ schemaVersion: "er-experiment/1.0.0", runDate: new Date().toISOString(), model, nonTrivialityFraction: ER_NON_TRIVIALITY_FRACTION, ...payload }, null, 2) + "\n");
+  const stem = `${model}_${label}${RUN_TAG ? "_" + RUN_TAG : ""}`;
+  const path = join(OUTPUT_DIR, `${stem.replace(/[^a-zA-Z0-9._-]+/g, "_")}.json`);
+  writeFileSync(path, JSON.stringify({ schemaVersion: "er-experiment/1.0.0", runDate: new Date().toISOString(), model, tag: RUN_TAG || undefined, nonTrivialityFraction: ER_NON_TRIVIALITY_FRACTION, ...payload }, null, 2) + "\n");
   console.log(`  written → ${path}`);
 }
 
@@ -131,6 +136,7 @@ async function main(): Promise<void> {
   const mode = arg("--mode") ?? "decompose";
   const n = parseInt(arg("--n") ?? "16", 10);
   const models = (arg("--models") ?? "qwen2.5:7b").split(",").map((s) => s.trim()).filter(Boolean);
+  RUN_TAG = (arg("--tag") ?? "").trim();
 
   initializeFromLibrary(LIBRARY_DIR);
   const items = selectERItems(getAllSongs());

@@ -14,7 +14,10 @@
 //
 // The vocabulary is EXACTLY what verifyHarmony's parseChordSymbol accepts, so a
 // voicing produced here always passes chord fidelity by construction — the whole
-// point of the decomposition.
+// point of the decomposition. voiceChord is generic over that vocabulary (it
+// renders whatever intervals parseChordSymbol returns), so the 2026-07-22
+// extension to add9/madd9 + slash chords needed no change here — only the
+// fidelity test's enumeration grew.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { parseChordSymbol } from "./verify-harmony.js";

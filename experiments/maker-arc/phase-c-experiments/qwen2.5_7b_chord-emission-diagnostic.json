@@ -1,0 +1,257 @@
+{
+  "schemaVersion": "er-chord-emission/1.0.0",
+  "runDate": "2026-07-22T20:17:48.531Z",
+  "model": "qwen2.5:7b",
+  "seed": 42,
+  "note": "single-pass emission profile; subject to run-to-run generation drift",
+  "tally": {
+    "base": 68,
+    "newly-added": 0,
+    "unsupported": 12
+  },
+  "emptyItems": 12,
+  "itemCount": 22,
+  "perItem": [
+    {
+      "itemId": "all-the-things-you-are:m1-8",
+      "symbols": [
+        "Ab",
+        "Dm7",
+        "Bm7b5",
+        "Em7",
+        "Gsus4",
+        "Bbmaj7",
+        "F#m11",
+        "Abm9"
+      ],
+      "newlyAdded": [],
+      "unsupported": [
+        "F#m11",
+        "Abm9"
+      ]
+    },
+    {
+      "itemId": "autumn-leaves:m1-8",
+      "symbols": [
+        "Cm7",
+        "G7",
+        "Dm7",
+        "Em7",
+        "Am7",
+        "F7",
+        "Fm7",
+        "G7"
+      ],
+      "newlyAdded": [],
+      "unsupported": []
+    },
+    {
+      "itemId": "a-thousand-years:m1-8",
+      "symbols": [],
+      "newlyAdded": [],
+      "unsupported": []
+    },
+    {
+      "itemId": "all-of-me:m1-8",
+      "symbols": [
+        "Ab7",
+        "Fmaj7",
+        "Dbm7",
+        "G7",
+        "Cmaj7",
+        "Ab7",
+        "F#m7b5",
+        "Bbmaj7"
+      ],
+      "newlyAdded": [],
+      "unsupported": []
+    },
+    {
+      "itemId": "blues-in-the-night:m1-8",
+      "symbols": [
+        "Bb",
+        "Fmaj7",
+        "Ab7",
+        "Gm7",
+        "Ddim7",
+        "C#m7",
+        "Amaj7",
+        "Fmaj7"
+      ],
+      "newlyAdded": [],
+      "unsupported": [
+        "Ddim7"
+      ]
+    },
+    {
+      "itemId": "born-under-a-bad-sign:m1-8",
+      "symbols": [],
+      "newlyAdded": [],
+      "unsupported": []
+    },
+    {
+      "itemId": "baba-oriley:m1-8",
+      "symbols": [
+        "Am7",
+        "Dm7",
+        "G7",
+        "Cmaj7",
+        "F7",
+        "Bbm7",
+        "Em7",
+        "Abm7"
+      ],
+      "newlyAdded": [],
+      "unsupported": []
+    },
+    {
+      "itemId": "bennie-and-the-jets:m1-8",
+      "symbols": [],
+      "newlyAdded": [],
+      "unsupported": []
+    },
+    {
+      "itemId": "fallin:m1-8",
+      "symbols": [],
+      "newlyAdded": [],
+      "unsupported": []
+    },
+    {
+      "itemId": "halo:m1-8",
+      "symbols": [
+        "A",
+        "F#m7",
+        "Adim7",
+        "Bmaj7",
+        "Amaj7",
+        "F#7",
+        "Aø7",
+        "B13"
+      ],
+      "newlyAdded": [],
+      "unsupported": [
+        "Adim7",
+        "Aø7",
+        "B13"
+      ]
+    },
+    {
+      "itemId": "a-change-is-gonna-come:m1-8",
+      "symbols": [
+        "Bbmaj7",
+        "F#m7",
+        "A7",
+        "D7",
+        "G7",
+        "Bm9",
+        "E7",
+        "Bm9"
+      ],
+      "newlyAdded": [],
+      "unsupported": [
+        "Bm9",
+        "Bm9"
+      ]
+    },
+    {
+      "itemId": "aint-no-sunshine:m1-8",
+      "symbols": [
+        "Am",
+        "Fmaj7",
+        "C7",
+        "Bm7b5",
+        "C7",
+        "G7",
+        "Am7",
+        "D13"
+      ],
+      "newlyAdded": [],
+      "unsupported": [
+        "D13"
+      ]
+    },
+    {
+      "itemId": "agua-de-beber:m1-8",
+      "symbols": [],
+      "newlyAdded": [],
+      "unsupported": []
+    },
+    {
+      "itemId": "besame-mucho:m1-8",
+      "symbols": [
+        "Dm7",
+        "BbM7",
+        "C#m7",
+        "Bb7",
+        "F#dim7",
+        "Bb7",
+        "Dm7",
+        "Bb7"
+      ],
+      "newlyAdded": [],
+      "unsupported": [
+        "BbM7",
+        "F#dim7"
+      ]
+    },
+    {
+      "itemId": "cinema-paradiso:m1-8",
+      "symbols": [
+        "Am7",
+        "Fmaj7",
+        "C#m7",
+        "C#m7",
+        "Am7",
+        "Fmaj7",
+        "Gdim7",
+        "Bbmaj7"
+      ],
+      "newlyAdded": [],
+      "unsupported": [
+        "Gdim7"
+      ]
+    },
+    {
+      "itemId": "comptine-dun-autre-ete:m1-8",
+      "symbols": [],
+      "newlyAdded": [],
+      "unsupported": []
+    },
+    {
+      "itemId": "bethena:m1-8",
+      "symbols": [],
+      "newlyAdded": [],
+      "unsupported": []
+    },
+    {
+      "itemId": "elite-syncopations:m1-8",
+      "symbols": [],
+      "newlyAdded": [],
+      "unsupported": []
+    },
+    {
+      "itemId": "divenire:m1-8",
+      "symbols": [],
+      "newlyAdded": [],
+      "unsupported": []
+    },
+    {
+      "itemId": "experience:m1-8",
+      "symbols": [],
+      "newlyAdded": [],
+      "unsupported": []
+    },
+    {
+      "itemId": "amazing-grace:m1-8",
+      "symbols": [],
+      "newlyAdded": [],
+      "unsupported": []
+    },
+    {
+      "itemId": "auld-lang-syne:m1-8",
+      "symbols": [],
+      "newlyAdded": [],
+      "unsupported": []
+    }
+  ]
+}

@@ -25,10 +25,11 @@
 //                          never failed.
 //
 // The chord vocabulary is exactly what inferChord() can emit (maj, m, 7, maj7,
-// m7, dim, m7b5, aug, sus4, sus2 over any root). A symbol outside that
-// vocabulary cannot be confirmed by the repo's chord engine and honestly fails
-// fidelity — the deterministic instrument's vocabulary IS the measurement
-// boundary, by design.
+// m7, dim, m7b5, aug, sus4, sus2, plus the added-9ths add9, madd9 — over any
+// root; the aliases M7/ø7/ø and slash chords like C/E are read as their base
+// chord). A symbol outside that vocabulary cannot be confirmed by the repo's
+// chord engine and honestly fails fidelity — the deterministic instrument's
+// vocabulary IS the measurement boundary, by design.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { inferChord } from "../songs/jam.js";
@@ -166,6 +167,23 @@ const SUFFIX_INTERVALS: Record<string, number[]> = {
   aug: [0, 4, 8],
   sus4: [0, 5, 7],
   sus2: [0, 2, 7],
+  // Extended chords (added 2026-07-22) — kept in lockstep with CHORD_TEMPLATES in
+  // songs/jam.ts so the voicer renders exactly what inferChord can confirm. Only
+  // the added-9ths (no 7th) are here: 6/m6 and the 9/maj9/m9 (9th WITH a 7th)
+  // collide with another chord's pitch-class set under a rootless engine, so they
+  // cannot round-trip (see the note in jam.ts). Slash chords → parseChordSymbol.
+  add9: [0, 4, 7, 2],
+  madd9: [0, 3, 7, 2],
+  // Notation aliases for chords the base model actually emits (measured — see
+  // the chord-emission diagnostic): "M7" for maj7 and "ø7"/"ø" for m7b5
+  // (half-diminished). These map onto EXISTING intervals, so they round-trip with
+  // zero risk — inferChord still emits the canonical "maj7"/"m7b5", and
+  // chordSymbolsEquivalent bridges the two. (dim7 and the 9th-with-7th chords the
+  // base also emits stay unsupported: dim7 is rotationally symmetric, the 9ths
+  // hit the rootless-upper-structure wall — both need a bass-aware engine.)
+  M7: [0, 4, 7, 11],
+  "ø7": [0, 3, 6, 10],
+  "ø": [0, 3, 6, 10],
 };
 
 /**
@@ -189,7 +207,14 @@ export interface ParsedChordSymbol {
  * Returns null for symbols outside the verifier vocabulary.
  */
 export function parseChordSymbol(symbol: string): ParsedChordSymbol | null {
-  const match = /^([A-G])(#|b)?(.*)$/.exec(symbol.trim());
+  const trimmed = symbol.trim();
+  // Slash chord "Chord/Bass" (e.g. "C/E", "Am7/G"): the bass note is a voicing /
+  // inversion detail the pitch-class chord engine cannot confirm, so parse the
+  // base chord and drop the bass. "C/E" ≡ "C" — same harmony, different
+  // inversion — so the model's slash output is accepted (as its base quality)
+  // rather than rejected as out-of-vocabulary.
+  const base = trimmed.includes("/") ? trimmed.slice(0, trimmed.indexOf("/")).trim() : trimmed;
+  const match = /^([A-G])(#|b)?(.*)$/.exec(base);
   if (!match) return null;
   const [, letter, accidental, suffix] = match;
   let rootPc = LETTER_PC[letter];
@@ -296,7 +321,8 @@ export function verifyHarmony(
     if (!parseChordSymbol(r.intendedChord)) {
       warnings.push(
         `m${r.measure}: intended chord "${r.intendedChord}" is outside the verifier vocabulary ` +
-          `(supported suffixes: maj, m, 7, maj7, m7, dim, m7b5, aug, sus4, sus2) — cannot be confirmed`,
+          `(supported suffixes: maj, m, 7, maj7, m7, dim, m7b5, aug, sus4, sus2, add9, madd9; ` +
+          `aliases M7=maj7, ø7/ø=m7b5; slash chords like C/E are read as their base chord) — cannot be confirmed`,
       );
     }
     fidelityPerMeasure.push({

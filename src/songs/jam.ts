@@ -112,6 +112,25 @@ interface ChordTemplate {
   intervals: number[]; // intervals from root in semitones
 }
 
+// inferChord is a PITCH-CLASS engine — it has no notion of a bass/root note, so a
+// chord whose pitch-class set is a superset of another chord's set is ambiguous.
+// That bounds which "richer" chords can be added while keeping the voicer's
+// round-trip guarantee (voicer.test.ts, whole vocab × 12 roots):
+//
+//   ADDED 2026-07-22: add9 / madd9 — an added 9th over a triad (NO 7th). Their
+//   4-note sets contain no other full chord at a different root, so they round-
+//   trip. The base often chose these VALID chords; the old 10-quality vocabulary
+//   rejected them (E1 "empty" misses).
+//
+//   NOT added — these break the round-trip under pitch-class inference:
+//     • 6 / m6 : pitch-class-identical to the relative minor 7th (C6 = A-C-E-G =
+//       Am7; Cm6 = Am7b5).
+//     • 9 / maj9 / m9 (a 9th WITH the 7th): the rootless upper structure IS
+//       another 7th chord on the 3rd (G9 ⊃ Bm7b5; Cmaj9 ⊃ Em7; Cm9 ⊃ Ebmaj7),
+//       so the engine detects the subset chord instead. Supporting them would
+//       need a bass-aware inferChord — a separate change, out of scope here.
+//     • slash chords (C/E): handled by parseChordSymbol dropping the bass (an
+//       inversion the pitch-class engine cannot confirm), not by a template.
 const CHORD_TEMPLATES: ChordTemplate[] = [
   { name: "maj", intervals: [0, 4, 7] },
   { name: "m", intervals: [0, 3, 7] },
@@ -123,6 +142,8 @@ const CHORD_TEMPLATES: ChordTemplate[] = [
   { name: "aug", intervals: [0, 4, 8] },
   { name: "sus4", intervals: [0, 5, 7] },
   { name: "sus2", intervals: [0, 2, 7] },
+  { name: "add9", intervals: [0, 4, 7, 2] },
+  { name: "madd9", intervals: [0, 3, 7, 2] },
 ];
 
 /**

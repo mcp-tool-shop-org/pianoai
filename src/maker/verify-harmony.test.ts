@@ -294,9 +294,32 @@ describe("parseChordSymbol", () => {
 
   it("returns null outside the vocabulary", () => {
     expect(parseChordSymbol("C13")).toBeNull();
-    expect(parseChordSymbol("Am9")).toBeNull();
+    expect(parseChordSymbol("C6")).toBeNull(); // 6/m6 excluded (same pcs as m7/m7b5)
+    expect(parseChordSymbol("C9")).toBeNull(); // 9th-with-7th excluded (rootless upper structure)
+    expect(parseChordSymbol("Am9")).toBeNull(); // m9 excluded for the same reason
     expect(parseChordSymbol("garbage")).toBeNull();
     expect(parseChordSymbol("")).toBeNull();
+  });
+
+  it("parses the added-9th chords and normalizes slash chords to their base", () => {
+    expect(parseChordSymbol("Cadd9")!.pcs).toEqual([0, 4, 7, 2]);
+    expect(parseChordSymbol("Dmadd9")!.intervals).toEqual([0, 3, 7, 2]);
+    // Slash chord → base chord (the bass is dropped): C/E ≡ C, Am7/G ≡ Am7.
+    expect(parseChordSymbol("C/E")!.pcs).toEqual(parseChordSymbol("C")!.pcs);
+    expect(parseChordSymbol("Am7/G")!.pcs).toEqual(parseChordSymbol("Am7")!.pcs);
+  });
+
+  it("treats a slash chord as equivalent to its base chord", () => {
+    expect(chordSymbolsEquivalent("C/E", "C")).toBe(true);
+    expect(chordSymbolsEquivalent("Am7/G", "Am7")).toBe(true);
+  });
+
+  it("accepts notation aliases the base model emits (M7=maj7, ø7/ø=m7b5)", () => {
+    expect(parseChordSymbol("CM7")!.pcs).toEqual(parseChordSymbol("Cmaj7")!.pcs);
+    expect(parseChordSymbol("Cø7")!.pcs).toEqual(parseChordSymbol("Cm7b5")!.pcs);
+    expect(parseChordSymbol("Dø")!.pcs).toEqual(parseChordSymbol("Dm7b5")!.pcs);
+    expect(chordSymbolsEquivalent("CM7", "Cmaj7")).toBe(true);
+    expect(chordSymbolsEquivalent("Aø7", "Am7b5")).toBe(true);
   });
 });
 
