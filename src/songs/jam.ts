@@ -112,25 +112,28 @@ interface ChordTemplate {
   intervals: number[]; // intervals from root in semitones
 }
 
-// inferChord is a PITCH-CLASS engine — it has no notion of a bass/root note, so a
-// chord whose pitch-class set is a superset of another chord's set is ambiguous.
-// That bounds which "richer" chords can be added while keeping the voicer's
-// round-trip guarantee (voicer.test.ts, whole vocab × 12 roots):
+// inferChord is a pitch-class engine, but it is now BASS-AWARE: it computes the
+// lowest sounding note and, all else equal, names the chord by that bass root.
+// That lifts the ambiguity that used to bound the vocabulary — a chord whose
+// pitch-class set is a superset of another's is disambiguated by which root sits
+// in the bass, so voiceChord (which always voices root-position, bass = root)
+// round-trips the richer qualities below (proven in voicer.test.ts, whole vocab
+// × 12 roots).
 //
-//   ADDED 2026-07-22: add9 / madd9 — an added 9th over a triad (NO 7th). Their
-//   4-note sets contain no other full chord at a different root, so they round-
-//   trip. The base often chose these VALID chords; the old 10-quality vocabulary
-//   rejected them (E1 "empty" misses).
+//   ADDED 2026-07-22 (vocab expansion): add9 / madd9 — an added 9th over a triad
+//   (NO 7th). Their 4-note sets contain no other full chord at a different root.
 //
-//   NOT added — these break the round-trip under pitch-class inference:
-//     • 6 / m6 : pitch-class-identical to the relative minor 7th (C6 = A-C-E-G =
-//       Am7; Cm6 = Am7b5).
-//     • 9 / maj9 / m9 (a 9th WITH the 7th): the rootless upper structure IS
-//       another 7th chord on the 3rd (G9 ⊃ Bm7b5; Cmaj9 ⊃ Em7; Cm9 ⊃ Ebmaj7),
-//       so the engine detects the subset chord instead. Supporting them would
-//       need a bass-aware inferChord — a separate change, out of scope here.
-//     • slash chords (C/E): handled by parseChordSymbol dropping the bass (an
-//       inversion the pitch-class engine cannot confirm), not by a template.
+//   ADDED 2026-07-22 (bass-aware): 6 / m6 / 9 / maj9 / m9 / dim7 — the qualities
+//   the ABC maker emits that the old rootless engine had to DROP. Each collides
+//   with another chord's pitch-class set (6 ≡ the relative m7: C6 = A-C-E-G =
+//   Am7; m6 ≡ the relative m7b5; the 9-with-7th's rootless upper structure IS a
+//   7th on the 3rd, G9 ⊃ Bm7b5; dim7 is rotationally symmetric), so a rootless
+//   engine detected the WRONG one. The bass tie-break resolves the collision:
+//   voiceChord puts the intended root in the bass, so inferChord confirms it.
+//   The 9-with-7th chords also win by being STRICTLY LONGER than the 4-note
+//   subset they contain, so length settles them even before the bass does.
+//     • slash chords (C/E): still handled by parseChordSymbol dropping the bass
+//       (an inversion), not by a template.
 const CHORD_TEMPLATES: ChordTemplate[] = [
   { name: "maj", intervals: [0, 4, 7] },
   { name: "m", intervals: [0, 3, 7] },
@@ -144,28 +147,62 @@ const CHORD_TEMPLATES: ChordTemplate[] = [
   { name: "sus2", intervals: [0, 2, 7] },
   { name: "add9", intervals: [0, 4, 7, 2] },
   { name: "madd9", intervals: [0, 3, 7, 2] },
+  { name: "6", intervals: [0, 4, 7, 9] },
+  { name: "m6", intervals: [0, 3, 7, 9] },
+  { name: "dim7", intervals: [0, 3, 6, 9] },
+  { name: "9", intervals: [0, 4, 7, 10, 2] },
+  { name: "maj9", intervals: [0, 4, 7, 11, 2] },
+  { name: "m9", intervals: [0, 3, 7, 10, 2] },
 ];
 
+/** The bass-aware additions (2026-07-22). They compete only in the EXACT-match
+ *  tier below, never in the legacy best-effort fallback, so an inexact set (a
+ *  texture, or a partial voicing) keeps the label the pre-bass-aware engine gave
+ *  it. This bounds the library regression to measures that spell one exact chord. */
+const EXTENDED_QUALITIES = new Set(["6", "m6", "dim7", "9", "maj9", "m9"]);
+
 /**
- * Best-effort chord inference from a set of pitch classes.
- * Tries each pitch class as a potential root and matches against templates.
+ * Best-effort chord inference from a set of pitch classes, in two tiers:
+ *
+ *   1. BASS-EXACT — the lowest note is the ROOT of an exact chord: the whole set
+ *      spells exactly one template rooted on the bass. This is all the maker's
+ *      clean root-position voicer output ever is, and the only unambiguous case —
+ *      the bass names the chord, so C6 vs Am7 (same four notes), the symmetric
+ *      dim7, and G9 vs the Bm7b5 it contains all resolve to the intended spelling
+ *      and round-trip. Includes every quality (the extended ones too).
+ *   2. LEGACY best-effort — the bass does not spell an exact chord (a busy
+ *      texture, an inversion, or a partial voicing). Falls back to the pre-bass-
+ *      aware tie-break over the BASE vocabulary only, so these labels are byte-
+ *      identical to before (Gate 2: the library snapshot shifts ONLY where the
+ *      bass spells exactly one chord — never on a fuzzy texture, where a single
+ *      chord name is arbitrary and best left as the engine already had it).
  */
-function inferChordFromPitchClasses(pitchClasses: number[]): string {
+function inferChordFromPitchClasses(pitchClasses: number[], bassPc = -1): string {
   if (pitchClasses.length === 0) return "N/A";
   if (pitchClasses.length === 1) return PC_NAMES[pitchClasses[0]];
 
   const unique = [...new Set(pitchClasses)];
+
+  // ── Tier 1: the BASS spells an exact chord (set === one template from bassPc). ──
+  if (bassPc >= 0) {
+    const fromBass = new Set(unique.map(pc => (pc - bassPc + 12) % 12));
+    for (const tmpl of CHORD_TEMPLATES) {
+      // equal size + every template interval present ⇒ the set IS this template.
+      if (tmpl.intervals.length === unique.length && tmpl.intervals.every(iv => fromBass.has(iv))) {
+        return PC_NAMES[bassPc] + (tmpl.name === "maj" ? "" : tmpl.name);
+      }
+    }
+  }
+
+  // ── Tier 2: legacy best-effort over the BASE vocabulary (bass-agnostic). ──
   let bestMatch = "";
   let bestScore = 0;
-
   for (const root of unique) {
     const intervals = unique.map(pc => (pc - root + 12) % 12).sort((a, b) => a - b);
-
     for (const tmpl of CHORD_TEMPLATES) {
-      // Count how many template intervals are present
+      if (EXTENDED_QUALITIES.has(tmpl.name)) continue; // extended qualities are exact-only
       const matched = tmpl.intervals.filter(iv => intervals.includes(iv)).length;
       const score = matched / tmpl.intervals.length;
-
       if (score > bestScore || (score === bestScore && tmpl.intervals.length > 3)) {
         bestScore = score;
         const suffix = tmpl.name === "maj" ? "" : tmpl.name;
@@ -185,13 +222,22 @@ function inferChordFromPitchClasses(pitchClasses: number[]): string {
 export function inferChord(leftHand: string): string {
   const tokens = leftHand.split(/[\s+]+/).filter(Boolean);
   const pitchClasses: number[] = [];
+  let bassMidi = Infinity;
+  let bassPc = -1;
 
   for (const tok of tokens) {
     const name = tokenToNoteName(tok);
     if (name) pitchClasses.push(nameToPitchClass(name));
+    // Track the lowest sounding note so the inference can name the chord by its
+    // bass (root-position voicings round-trip; inversions read by their bass).
+    const midi = tokenToMidi(tok);
+    if (midi >= 0 && midi < bassMidi) {
+      bassMidi = midi;
+      bassPc = midi % 12;
+    }
   }
 
-  return inferChordFromPitchClasses(pitchClasses);
+  return inferChordFromPitchClasses(pitchClasses, bassPc);
 }
 
 // ─── Contour Analysis ───────────────────────────────────────────────────────

@@ -1,0 +1,1093 @@
+{
+  "schemaVersion": "implied-chord-shift-receipt/1.0.0",
+  "note": "Gate-2 adjudication: inferChord bass-aware change (2026-07-22). Shifts occur ONLY where the bass note spells exactly one chord; dense textures fall to the legacy path (byte-identical). E-R non-triviality baseline (22 items, m1-8) UNCHANGED.",
+  "totalMeasures": 13014,
+  "shiftedMeasures": 153,
+  "shiftedFraction": 0.0118,
+  "categories": {
+    "sus2 -> sus4": 31,
+    "sus4 -> sus2": 30,
+    "m7 -> 6": 25,
+    "maj7 -> m9": 23,
+    "dim -> dim7": 16,
+    "m7b5 -> 9": 7,
+    "aug -> aug": 6,
+    "m7b5 -> m6": 6,
+    "madd9 -> m9": 4,
+    "m7 -> maj9": 3,
+    "add9 -> 9": 2
+  },
+  "shifts": [
+    {
+      "song": "amazing-grace",
+      "measure": "m24",
+      "leftHand": "A#1+C2+G#2+A#2+A#2+A#2:h. G#2:et G#2+F3+A#3:q G#2:et C#2+G#2+F3+A#3:q F2+G#2:et",
+      "from": "C#maj7",
+      "to": "Bbm9"
+    },
+    {
+      "song": "amazing-grace",
+      "measure": "m31",
+      "leftHand": "A#1+C2+G#2+A#2+A#2+A#2+A#3:h. G#2:et G#2+F3+A#3:q G#2+A#2:et C#2+G#2+F3+A#3+A#3:q G#2:et",
+      "from": "C#maj7",
+      "to": "Bbm9"
+    },
+    {
+      "song": "black-orpheus",
+      "measure": "m4",
+      "leftHand": "A2:q D2+E3:q",
+      "from": "Asus4",
+      "to": "Dsus2"
+    },
+    {
+      "song": "black-orpheus",
+      "measure": "m6",
+      "leftHand": "E3+A3:ht E3+B3:w A2:w",
+      "from": "Esus4",
+      "to": "Asus2"
+    },
+    {
+      "song": "black-orpheus",
+      "measure": "m11",
+      "leftHand": "E3+B3:w A2:w A3:h",
+      "from": "Esus4",
+      "to": "Asus2"
+    },
+    {
+      "song": "black-orpheus",
+      "measure": "m31",
+      "leftHand": "E3:s A2+B3:h E3:h A2:s A2:e. B3:et A2:ht",
+      "from": "Esus4",
+      "to": "Asus2"
+    },
+    {
+      "song": "blues-in-the-night",
+      "measure": "m59",
+      "leftHand": "F#3:s C#3+C#3:qt G#2+G#3:qt C#2:h G#2:s",
+      "from": "F#sus2",
+      "to": "C#sus4"
+    },
+    {
+      "song": "bohemian-rhapsody",
+      "measure": "m227",
+      "leftHand": "G3:h D#3:e B1:et B1+D#3:h",
+      "from": "Gaug",
+      "to": "Baug"
+    },
+    {
+      "song": "chopin-nocturne-op9-no2",
+      "measure": "m16",
+      "leftHand": "B3:qt D#3:e G3:et",
+      "from": "Baug",
+      "to": "Ebaug"
+    },
+    {
+      "song": "chopin-nocturne-op9-no2",
+      "measure": "m41",
+      "leftHand": "F3:e. A#3:e. D#2:e",
+      "from": "Bbsus4",
+      "to": "Ebsus2"
+    },
+    {
+      "song": "chopin-nocturne-op9-no2",
+      "measure": "m92",
+      "leftHand": "A#3:e D#3:q F3:s A#3:e",
+      "from": "Bbsus4",
+      "to": "Ebsus2"
+    },
+    {
+      "song": "chopin-prelude-e-minor",
+      "measure": "m43",
+      "leftHand": "E3+F#3:e B2+E3+B3:q B2+E3+B3:qt",
+      "from": "Esus2",
+      "to": "Bsus4"
+    },
+    {
+      "song": "clair-de-lune",
+      "measure": "m45",
+      "leftHand": "G#2:s D#2:s G#2:s D#3:s G#2:s D#3:s G#3:s D#3:s G#3+A#3:e G#3:s D#3:s G#3+A#3:e D#3:s G#2:s D#3:s G#2:s D#2:s",
+      "from": "Absus2",
+      "to": "Ebsus4"
+    },
+    {
+      "song": "clair-de-lune",
+      "measure": "m46",
+      "leftHand": "G#2:s D#2:s G#2:s D#3:s G#2:s D#3:s G#3:s D#3:s G#3+A#3:e G#3:s D#3:s G#3+A#3:e D#3:s G#3:s D#3:s G#3:s D#3:s",
+      "from": "Absus2",
+      "to": "Ebsus4"
+    },
+    {
+      "song": "clocks",
+      "measure": "m122",
+      "leftHand": "D#3+G#3:w C#3:e",
+      "from": "Absus4",
+      "to": "C#sus2"
+    },
+    {
+      "song": "corcovado",
+      "measure": "m34",
+      "leftHand": "B1+F#2+B2:q F#2:s C#2+F#2:s B1+F#2+B2:et B1+F#2+F#2:q C#2+F#2+D3:qt F#2+B2+F#3:e B1+F#2+F#2+A3:e",
+      "from": "Dmaj7",
+      "to": "Bm9"
+    },
+    {
+      "song": "corcovado",
+      "measure": "m41",
+      "leftHand": "B1+C#2+D2+F#2:q F#2:s F#2:s B1+C#2+D2+F#2:et B1+F#2+A2:q F#2+F#3+A3:e C#2+F#2+D3:w B1+F#2+A2+F#3+A3:w",
+      "from": "Dmaj7",
+      "to": "Bm9"
+    },
+    {
+      "song": "corcovado",
+      "measure": "m70",
+      "leftHand": "B1+F#2+B2:q F#2:s C#2+F#2:s B1+F#2+B2:et B1+F#2+F#2:q C#2+F#2+D3:qt F#2+B2+F#3:e B1+F#2+F#2+A3:e",
+      "from": "Dmaj7",
+      "to": "Bm9"
+    },
+    {
+      "song": "corcovado",
+      "measure": "m77",
+      "leftHand": "B1+C#2+D2+F#2:q F#2:s F#2:s B1+C#2+D2+F#2:et B1+F#2+A2:q F#2+F#3+A3:e C#2+F#2+D3:w B1+F#2+A2+F#3+A3:w",
+      "from": "Dmaj7",
+      "to": "Bm9"
+    },
+    {
+      "song": "corcovado",
+      "measure": "m113",
+      "leftHand": "B1+C#2+D2+F#2+A3:h. F#2:s F#2:s B1+C#2+F#2:s B1+F#2+A2:et F#2+F#2:et C#2+D2+F#2+D3:et F#3:h B1+D2+F#2+A3:q D3:h",
+      "from": "Dmaj7",
+      "to": "Bm9"
+    },
+    {
+      "song": "danny-boy",
+      "measure": "m51",
+      "leftHand": "F3+A#3:qt D#2+A#2:ht",
+      "from": "Bbsus4",
+      "to": "Ebsus2"
+    },
+    {
+      "song": "debussy-arabesque-no1",
+      "measure": "m3",
+      "leftHand": "C3:et E3:et A3:et A3:et C3:et E3:et G3:et A3:et",
+      "from": "Am7",
+      "to": "C6"
+    },
+    {
+      "song": "debussy-arabesque-no1",
+      "measure": "m17",
+      "leftHand": "E2:qt G3:et B3:et F#3:et D3:et",
+      "from": "Gmaj7",
+      "to": "Em9"
+    },
+    {
+      "song": "debussy-arabesque-no1",
+      "measure": "m58",
+      "leftHand": "D3+A3:q G3:e G2:h.",
+      "from": "Dsus4",
+      "to": "Gsus2"
+    },
+    {
+      "song": "debussy-arabesque-no1",
+      "measure": "m73",
+      "leftHand": "C3:qt E3:qt A3:et A3:qt C3:qt E3:qt G3:et A3:et",
+      "from": "Am7",
+      "to": "C6"
+    },
+    {
+      "song": "debussy-arabesque-no1",
+      "measure": "m87",
+      "leftHand": "E2:q G3:qt B3:qt F#3:et D3:et",
+      "from": "Gmaj7",
+      "to": "Em9"
+    },
+    {
+      "song": "debussy-arabesque-no1",
+      "measure": "m89",
+      "leftHand": "E2:q G3:qt G3:qt D3:qt F#3:et B3:qt B3:qt F#3:et",
+      "from": "Gmaj7",
+      "to": "Em9"
+    },
+    {
+      "song": "debussy-arabesque-no1",
+      "measure": "m99",
+      "leftHand": "D3:e B3:e G3:e D3:e G2:e E3:e G2:e B2:e",
+      "from": "Em7",
+      "to": "G6"
+    },
+    {
+      "song": "desafinado",
+      "measure": "m10",
+      "leftHand": "B1+C#2+F#2+D3:q F#2:s F#2+A3:et B1+C#2+F#2+A2:s A3:e. B1+F#2+A2:q F#2:s C#2+F#2+A3:et B1+F#2+D3+A3:s A3:s",
+      "from": "Dmaj7",
+      "to": "Bm9"
+    },
+    {
+      "song": "desafinado",
+      "measure": "m14",
+      "leftHand": "B1+C#2+F#2+D3+D3+F#3+A3:q F#2:s F#3+A3:e F#2+D3:s B1+C#2+F#2+A2:s A3:q D3+F#3:ht B1+F#2+A2:q F#2:s A3:e C#2+F#2+F#3:et B1+F#2+D3:s",
+      "from": "Dmaj7",
+      "to": "Bm9"
+    },
+    {
+      "song": "desafinado",
+      "measure": "m26",
+      "leftHand": "B1+C#2+F#2+D3:q F#2:s A3:et F#2:s B1+C#2+F#2+A2:s B1+F#2+A2+A3:q F#2:s A3:e C#2+F#2:s B1+F#2+D3:s A3:et",
+      "from": "Dmaj7",
+      "to": "Bm9"
+    },
+    {
+      "song": "desafinado",
+      "measure": "m27",
+      "leftHand": "B1+F#2+D3:q F#2:s A3:q C#2+F#2:s B1+F#2+A2:s B1+F#2+A2+A3:ht C#2+F#2:s F#2:s A3:et B1+F#2+D3:s",
+      "from": "Dmaj7",
+      "to": "Bm9"
+    },
+    {
+      "song": "desafinado",
+      "measure": "m78",
+      "leftHand": "B1+C#2+F#2+D3:q F#2:s F#2+A3:et B1+C#2+F#2+A2:s A3:e. B1+F#2+A2:q F#2:s C#2+F#2+A3:et B1+F#2+D3+A3:s A3:s",
+      "from": "Dmaj7",
+      "to": "Bm9"
+    },
+    {
+      "song": "desafinado",
+      "measure": "m82",
+      "leftHand": "B1+C#2+F#2+D3+D3+F#3+A3:q F#2:s F#3+A3:e F#2+D3:s B1+C#2+F#2+A2:s A3:q D3+F#3:ht B1+F#2+A2:q F#2:s A3:e C#2+F#2+F#3:et B1+F#2+D3:s",
+      "from": "Dmaj7",
+      "to": "Bm9"
+    },
+    {
+      "song": "desafinado",
+      "measure": "m94",
+      "leftHand": "B1+C#2+F#2+D3:q F#2:s A3:et F#2:s B1+C#2+F#2+A2:s B1+F#2+A2+A3:q F#2:s A3:e C#2+F#2:s B1+F#2+D3:s A3:et",
+      "from": "Dmaj7",
+      "to": "Bm9"
+    },
+    {
+      "song": "desafinado",
+      "measure": "m95",
+      "leftHand": "B1+F#2+D3:q F#2:s A3:q C#2+F#2:s B1+F#2+A2:s B1+F#2+A2+A3:ht C#2+F#2:s F#2:s A3:et B1+F#2+D3:s",
+      "from": "Dmaj7",
+      "to": "Bm9"
+    },
+    {
+      "song": "everyday-i-have-the-blues",
+      "measure": "m139",
+      "leftHand": "B1+B2+B3+B3:w E3+G3+B3:w C#3:h B1:et E1:e B1:s B1:e E3:e B1+B2:s",
+      "from": "C#m7b5",
+      "to": "Em6"
+    },
+    {
+      "song": "everyday-i-have-the-blues",
+      "measure": "m174",
+      "leftHand": "C2:e. G2:e. C2:q E2:e. G3+B3:w D3:w",
+      "from": "Em7",
+      "to": "Cmaj9"
+    },
+    {
+      "song": "girl-from-ipanema",
+      "measure": "m9",
+      "leftHand": "G1:w F3:s A3:s B3:s F3+A3+B3:s F3:et A3+B3:e A3:et D2:s",
+      "from": "Bm7b5",
+      "to": "G9"
+    },
+    {
+      "song": "girl-from-ipanema",
+      "measure": "m41",
+      "leftHand": "G1:w F3+A3+B3:s F3+A3+B3:s G2:qt F3+A3:e B3:s B3:et G2:s D2:s G1:h",
+      "from": "Bm7b5",
+      "to": "G9"
+    },
+    {
+      "song": "girl-from-ipanema",
+      "measure": "m52",
+      "leftHand": "F1:h F2:q F2:q A3:q E3:q G2:s C2:h",
+      "from": "Am7",
+      "to": "Fmaj9"
+    },
+    {
+      "song": "girl-from-ipanema",
+      "measure": "m81",
+      "leftHand": "B3:s G1:h F3+B3:s A3:s F3+A3+B3:s G2:s F3+A3:s B3:e A3:s D3:s G2:h",
+      "from": "Gadd9",
+      "to": "G9"
+    },
+    {
+      "song": "girl-from-ipanema",
+      "measure": "m86",
+      "leftHand": "G#2+F3:ht G#2+F3:h F3:e B3:s D3:s",
+      "from": "Abdim",
+      "to": "Abdim7"
+    },
+    {
+      "song": "girl-from-ipanema",
+      "measure": "m88",
+      "leftHand": "A#3:s C3:et F2:h",
+      "from": "Bbsus2",
+      "to": "Fsus4"
+    },
+    {
+      "song": "girl-from-ipanema",
+      "measure": "m94",
+      "leftHand": "G#2:w B3:s F3:et B3:e F3:et D3:s",
+      "from": "Abdim",
+      "to": "Abdim7"
+    },
+    {
+      "song": "girl-from-ipanema",
+      "measure": "m177",
+      "leftHand": "D2+A3:q. A3:s A3:s D3:et A3:s D2:q A3:e D3:s D3:s F3+B3:q",
+      "from": "Bm7b5",
+      "to": "Dm6"
+    },
+    {
+      "song": "girl-from-ipanema",
+      "measure": "m213",
+      "leftHand": "F2:h. G#2:h G#3:q. C3:qt D3:s G#3:s",
+      "from": "Dm7b5",
+      "to": "Fm6"
+    },
+    {
+      "song": "gladiolus-rag",
+      "measure": "m14",
+      "leftHand": "D3+F3+G#3+B3:et D3+F3+G#3+B3:et D3+F3+G#3+B3:et D3+F3+G#3+B3:et",
+      "from": "Ddim",
+      "to": "Ddim7"
+    },
+    {
+      "song": "gladiolus-rag",
+      "measure": "m30",
+      "leftHand": "D3+F3+G#3+B3:et D3+F3+G#3+B3:et D3+F3+G#3+B3:et D3+F3+G#3+B3:et",
+      "from": "Ddim",
+      "to": "Ddim7"
+    },
+    {
+      "song": "gladiolus-rag",
+      "measure": "m78",
+      "leftHand": "D3+F3+G#3+B3:et D3+F3+G#3+B3:et D3+F3+G#3+B3:et D3+F3+G#3+B3:et",
+      "from": "Ddim",
+      "to": "Ddim7"
+    },
+    {
+      "song": "hedwigs-theme",
+      "measure": "m113",
+      "leftHand": "E3+A3+A3:e D3:s",
+      "from": "Asus4",
+      "to": "Dsus2"
+    },
+    {
+      "song": "hedwigs-theme",
+      "measure": "m225",
+      "leftHand": "E3+A3:s B3+B3:et A3+A3:et A1+A2:s",
+      "from": "Esus4",
+      "to": "Asus2"
+    },
+    {
+      "song": "hedwigs-theme",
+      "measure": "m361",
+      "leftHand": "E3+A3:s E3+A3:s E3:s E3+A3:s A1+A1+A2+A2+E3+B3:s E3+B3:s E3:s E3+B3:s E2+E2+E2+E3+E3+E3+E3+E3:e",
+      "from": "Esus4",
+      "to": "Asus2"
+    },
+    {
+      "song": "killing-me-softly",
+      "measure": "m11",
+      "leftHand": "C#2+F3+A#3:h A#3:q A#3:s A#3:qt G#3:s G#3+A#3:e",
+      "from": "Bbm7",
+      "to": "C#6"
+    },
+    {
+      "song": "kiss-the-rain",
+      "measure": "m21",
+      "leftHand": "D2+D2:h A3:e D3+F#3+A3:e A3:e A2+A2+D3+F#3+A3:q D2+D2+D3+F#3+A3:q B3:e",
+      "from": "Bm7",
+      "to": "D6"
+    },
+    {
+      "song": "kiss-the-rain",
+      "measure": "m41",
+      "leftHand": "D2+D2:h A3:e D3+F#3+A3:e A3:e A2+A2+D3+F#3+A3:q D2+D2+D3+F#3+A3:q B3:e",
+      "from": "Bm7",
+      "to": "D6"
+    },
+    {
+      "song": "kiss-the-rain",
+      "measure": "m65",
+      "leftHand": "D2+D2:h A3:e D3+F#3+A3:e A3:e A2+A2+D3+F#3+A3:q D2+D2+D3+F#3+A3:q B3:e",
+      "from": "Bm7",
+      "to": "D6"
+    },
+    {
+      "song": "maple-leaf-rag",
+      "measure": "m13",
+      "leftHand": "D3+F3+G#3+B3:e D3+F3+G#3+B3:e D3+F3+G#3+B3:e",
+      "from": "Ddim",
+      "to": "Ddim7"
+    },
+    {
+      "song": "maple-leaf-rag",
+      "measure": "m29",
+      "leftHand": "D3+F3+G#3+B3:e D3+F3+G#3+B3:e D3+F3+G#3+B3:e",
+      "from": "Ddim",
+      "to": "Ddim7"
+    },
+    {
+      "song": "maple-leaf-rag",
+      "measure": "m47",
+      "leftHand": "F3+A#3:e A#2+F3+A#3:e A#2+F3+A#3:e D#2+D#3:e",
+      "from": "Bbsus4",
+      "to": "Ebsus2"
+    },
+    {
+      "song": "maple-leaf-rag",
+      "measure": "m63",
+      "leftHand": "F3+A#3:e A#2+F3+A#3:e A#2+F3+A#3:e D#2+D#3:e",
+      "from": "Bbsus4",
+      "to": "Ebsus2"
+    },
+    {
+      "song": "maple-leaf-rag",
+      "measure": "m77",
+      "leftHand": "D3+F3+G#3+B3:e D3+F3+G#3+B3:e D3+F3+G#3+B3:e",
+      "from": "Ddim",
+      "to": "Ddim7"
+    },
+    {
+      "song": "maple-leaf-rag",
+      "measure": "m95",
+      "leftHand": "G#3+A#3:e D#3+A#3:e D#3+A#3:e G#3:e",
+      "from": "Absus2",
+      "to": "Ebsus4"
+    },
+    {
+      "song": "maple-leaf-rag",
+      "measure": "m111",
+      "leftHand": "G#3+A#3:e D#3+A#3:e D#3+A#3:e G#3:e",
+      "from": "Absus2",
+      "to": "Ebsus4"
+    },
+    {
+      "song": "maple-leaf-rag",
+      "measure": "m120",
+      "leftHand": "D#3+G#3:e G#2+G#3:e D#3+G#3:e A#2+A#3:e",
+      "from": "Ebsus4",
+      "to": "Absus2"
+    },
+    {
+      "song": "maple-leaf-rag",
+      "measure": "m136",
+      "leftHand": "D#3+G#3:e G#2+G#3:e D#3+G#3:e A#2+A#3:e",
+      "from": "Ebsus4",
+      "to": "Absus2"
+    },
+    {
+      "song": "mas-que-nada",
+      "measure": "m7",
+      "leftHand": "C2+F#2+F#3+A3:s F#2+F#3:s D#2+F#2:s F#2+F#3:s C2+F#2+F#3:s D#2+F#2+F#3:s F#2+F#3:s C2+F#2+F#3:s C2+F#2+F#3:s F#2+F#3:s D#2+F#2+F#3:s C2+F#2+F#3:s F#2+F#3:s D#2+F#2+F#3:s C2+F#2+F#3:s F#2+F#3:s",
+      "from": "Cdim",
+      "to": "Cdim7"
+    },
+    {
+      "song": "may-be",
+      "measure": "m51",
+      "leftHand": "A#3:e F3+A#3:q D#3+A#3:h.",
+      "from": "Bbsus4",
+      "to": "Ebsus2"
+    },
+    {
+      "song": "may-be",
+      "measure": "m53",
+      "leftHand": "A#3:e F3+A#3:q D#3+A#3:h.",
+      "from": "Bbsus4",
+      "to": "Ebsus2"
+    },
+    {
+      "song": "misty",
+      "measure": "m4",
+      "leftHand": "C2:e D#3+G3:qt D3+A#3:e",
+      "from": "Ebmaj7",
+      "to": "Cm9"
+    },
+    {
+      "song": "mozart-k545-mvt1",
+      "measure": "m63",
+      "leftHand": "D3+F3:q B3:et A3:et",
+      "from": "Bm7b5",
+      "to": "Dm6"
+    },
+    {
+      "song": "mozart-k545-mvt1",
+      "measure": "m108",
+      "leftHand": "D3+F3:q B3:et A3:et",
+      "from": "Bm7b5",
+      "to": "Dm6"
+    },
+    {
+      "song": "my-girl",
+      "measure": "m66",
+      "leftHand": "B1+E2+F#2+B3:w F#2:s E2+F#2:s B1+F#2:s B1+E2+F#2:e E1+F#2:e E2+F#2:s B1+F#2:s",
+      "from": "Bsus4",
+      "to": "Esus2"
+    },
+    {
+      "song": "my-heart-will-go-on",
+      "measure": "m42",
+      "leftHand": "F#1:s C#2:w C#1:h. C#2:q. G#2:h.",
+      "from": "F#sus2",
+      "to": "C#sus4"
+    },
+    {
+      "song": "my-heart-will-go-on",
+      "measure": "m109",
+      "leftHand": "A#1:s F1+F2:w F1+F2:h. F2:w C3:h. F3:q. F2:q",
+      "from": "Bbsus2",
+      "to": "Fsus4"
+    },
+    {
+      "song": "nuvole-bianche",
+      "measure": "m21",
+      "leftHand": "G#3:e D#3:e G#3:e D#3:e D#2:e A#2:e D#3:e A#2:e",
+      "from": "Absus2",
+      "to": "Ebsus4"
+    },
+    {
+      "song": "nuvole-bianche",
+      "measure": "m27",
+      "leftHand": "G#3:e D#3:e G#3:e D#3:e D#2:e A#2:e D#3:e A#2:e",
+      "from": "Absus2",
+      "to": "Ebsus4"
+    },
+    {
+      "song": "nuvole-bianche",
+      "measure": "m106",
+      "leftHand": "C#3:e G#2:e C#3:q G#2:e D#3:e G#3:e D#3:e",
+      "from": "C#sus2",
+      "to": "Absus4"
+    },
+    {
+      "song": "nuvole-bianche",
+      "measure": "m112",
+      "leftHand": "C#3:e G#2:e C#3:q G#2:e D#3:e G#3:e D#3:e",
+      "from": "C#sus2",
+      "to": "Absus4"
+    },
+    {
+      "song": "nuvole-bianche",
+      "measure": "m129",
+      "leftHand": "G#2:e D#3:e G#3:e G#3:e D#3:e D#2:e A#2:e",
+      "from": "Absus2",
+      "to": "Ebsus4"
+    },
+    {
+      "song": "nuvole-bianche",
+      "measure": "m132",
+      "leftHand": "G#2:e D#3:e G#3:e G#3:e D#3:e D#2:e A#2:e",
+      "from": "Absus2",
+      "to": "Ebsus4"
+    },
+    {
+      "song": "nuvole-bianche",
+      "measure": "m135",
+      "leftHand": "G#2:e D#3:e G#3:e G#3:e D#3:e D#2:e A#2:e",
+      "from": "Absus2",
+      "to": "Ebsus4"
+    },
+    {
+      "song": "nuvole-bianche",
+      "measure": "m138",
+      "leftHand": "G#2:e D#3:e G#3:e G#3:e D#3:e D#2:e A#2:e",
+      "from": "Absus2",
+      "to": "Ebsus4"
+    },
+    {
+      "song": "nuvole-bianche-na",
+      "measure": "m21",
+      "leftHand": "G#3:e D#3:e G#3:e D#3:e D#2:e A#2:e D#3:e A#2:e",
+      "from": "Absus2",
+      "to": "Ebsus4"
+    },
+    {
+      "song": "nuvole-bianche-na",
+      "measure": "m27",
+      "leftHand": "G#3:e D#3:e G#3:e D#3:e D#2:e A#2:e D#3:e A#2:e",
+      "from": "Absus2",
+      "to": "Ebsus4"
+    },
+    {
+      "song": "nuvole-bianche-na",
+      "measure": "m106",
+      "leftHand": "C#3:e G#2:e C#3:q G#2:e D#3:e G#3:e D#3:e",
+      "from": "C#sus2",
+      "to": "Absus4"
+    },
+    {
+      "song": "nuvole-bianche-na",
+      "measure": "m112",
+      "leftHand": "C#3:e G#2:e C#3:q G#2:e D#3:e G#3:e D#3:e",
+      "from": "C#sus2",
+      "to": "Absus4"
+    },
+    {
+      "song": "nuvole-bianche-na",
+      "measure": "m129",
+      "leftHand": "G#2:e D#3:e G#3:e G#3:e D#3:e D#2:e A#2:e",
+      "from": "Absus2",
+      "to": "Ebsus4"
+    },
+    {
+      "song": "nuvole-bianche-na",
+      "measure": "m132",
+      "leftHand": "G#2:e D#3:e G#3:e G#3:e D#3:e D#2:e A#2:e",
+      "from": "Absus2",
+      "to": "Ebsus4"
+    },
+    {
+      "song": "nuvole-bianche-na",
+      "measure": "m135",
+      "leftHand": "G#2:e D#3:e G#3:e G#3:e D#3:e D#2:e A#2:e",
+      "from": "Absus2",
+      "to": "Ebsus4"
+    },
+    {
+      "song": "nuvole-bianche-na",
+      "measure": "m138",
+      "leftHand": "G#2:e D#3:e G#3:e G#3:e D#3:e D#2:e A#2:e",
+      "from": "Absus2",
+      "to": "Ebsus4"
+    },
+    {
+      "song": "opening-glassworks",
+      "measure": "m3",
+      "leftHand": "F#2:s F#2:s F#2:s F#2:s F#2:s F#2:s F#2:s F#2:s D1+F#2:s D1+F#2:s D1:s D1+A#2:s D1:s D1:s",
+      "from": "F#aug",
+      "to": "Daug"
+    },
+    {
+      "song": "opening-glassworks",
+      "measure": "m5",
+      "leftHand": "F#2:s F#2:s F#2:s F#2:s F#2:s F#2:s F#2:s F#2:s D1+F#2:s D1+F#2:s D1:s D1+A#2:s D1:s D1:s",
+      "from": "F#aug",
+      "to": "Daug"
+    },
+    {
+      "song": "opening-glassworks",
+      "measure": "m7",
+      "leftHand": "F#2:s F#2:s F#2:s F#2:s F#2:s F#2:s F#2:s F#2:s D1+F#2:s D1+F#2:s D1:s D1+A#2:s D1:s D1:s",
+      "from": "F#aug",
+      "to": "Daug"
+    },
+    {
+      "song": "pathetique-mvt2",
+      "measure": "m31",
+      "leftHand": "A#2:s D#3:qt G#2:w D#3:q",
+      "from": "Ebsus4",
+      "to": "Absus2"
+    },
+    {
+      "song": "pathetique-mvt2",
+      "measure": "m63",
+      "leftHand": "A#3:e D#3:et G#2+G#3:h D#3:q",
+      "from": "Ebsus4",
+      "to": "Absus2"
+    },
+    {
+      "song": "pathetique-mvt2",
+      "measure": "m93",
+      "leftHand": "G#3+B3:s G#3:s B3:s G#3+B3:s G#3:s B3:s F1:et D3+G#3:s B3:s G#1:et D3+G#3+B3:s B1+D3:s G#3+B3:et D3+G#3:s D2+B3:s",
+      "from": "Abdim",
+      "to": "Fdim7"
+    },
+    {
+      "song": "pathetique-mvt2",
+      "measure": "m94",
+      "leftHand": "G#3+B3:et D3:s F2:et B3:et D3:s G#3:s G#2:e. D3+G#3+B3:s D3+G#3+B3:s D3+G#3+B3:et D3+G#3+B3:s D3+G#3+B3:et",
+      "from": "Abdim",
+      "to": "Fdim7"
+    },
+    {
+      "song": "pathetique-mvt2",
+      "measure": "m95",
+      "leftHand": "B3:et D3+G#3:s F1:et D3+G#3+B3:s G#1+B3:et D3+G#3:s B1+D3+B3:et G#3:s D3+G#3+B3:et D2:et G#3+B3:et D3:s F2:e",
+      "from": "Bdim",
+      "to": "Fdim7"
+    },
+    {
+      "song": "river-flows-in-you",
+      "measure": "m18",
+      "leftHand": "A2:e E3:e E3:e E2:e B2:e E3:e B2:e",
+      "from": "Asus2",
+      "to": "Esus4"
+    },
+    {
+      "song": "river-flows-in-you",
+      "measure": "m20",
+      "leftHand": "A2:e E3:e E3:e E2:e B2:e E3:q",
+      "from": "Asus2",
+      "to": "Esus4"
+    },
+    {
+      "song": "river-flows-in-you",
+      "measure": "m31",
+      "leftHand": "A2:e E3:e E3:e E2:e B2:e E3:e B2:e",
+      "from": "Asus2",
+      "to": "Esus4"
+    },
+    {
+      "song": "river-flows-in-you",
+      "measure": "m33",
+      "leftHand": "A2:e E3:e E3:e E2:e B2:e E3:e B2:e",
+      "from": "Asus2",
+      "to": "Esus4"
+    },
+    {
+      "song": "river-flows-in-you",
+      "measure": "m35",
+      "leftHand": "A2:e E3:e E3:e E2:e B2:e E3:e B2:e",
+      "from": "Asus2",
+      "to": "Esus4"
+    },
+    {
+      "song": "river-flows-in-you",
+      "measure": "m37",
+      "leftHand": "A2:e E3:e E3:e E2:e B2:e E3:q",
+      "from": "Asus2",
+      "to": "Esus4"
+    },
+    {
+      "song": "rocket-man",
+      "measure": "m4",
+      "leftHand": "C2+A#3:q. E3+G3+A#3:q. E3:e. G3:e A#3:s E3+G3+A#3:qt D3:s G3:q.",
+      "from": "Em7b5",
+      "to": "C9"
+    },
+    {
+      "song": "schindlers-list-theme",
+      "measure": "m16",
+      "leftHand": "G2+G2+D3+A#3:h F3+G3:e G3+A3+A#3:q G3:e A2+A2+G3+A3:h G3:e",
+      "from": "Bbmaj7",
+      "to": "Gm9"
+    },
+    {
+      "song": "schindlers-list-theme",
+      "measure": "m20",
+      "leftHand": "D3+D3:h F3:e G2+G2+A3:h A#3:q A#3:q",
+      "from": "Bbmaj7",
+      "to": "Gm9"
+    },
+    {
+      "song": "schindlers-list-theme",
+      "measure": "m39",
+      "leftHand": "G2+G2+G2+G2+G3:w D3+D3+B3+B3:q. G3+G3+B3:q B3:e C2+C2+G2+C3+E3:h G3:e G3:q G3+G3:e",
+      "from": "Em7",
+      "to": "Cmaj9"
+    },
+    {
+      "song": "shenandoah",
+      "measure": "m9",
+      "leftHand": "D2+G2+D#3+A#3:e G2+D#3:e C2+D#2+D#3:h G2+G2+D#3:e D2+D2+D3+D#3:e G2+D#3+G3:e C2+A#2+D#3+A#3:q D#3:s",
+      "from": "Cmadd9",
+      "to": "Cm9"
+    },
+    {
+      "song": "shenandoah",
+      "measure": "m19",
+      "leftHand": "D2+G2+D#3+A#3:e G2+D#3:e C2+D#2+D#3:h G2+G2+D#3:e D2+D2+D3+D#3:e G2+D#3+G3:e C2+A#2+D#3+A#3:q D#3:s",
+      "from": "Cmadd9",
+      "to": "Cm9"
+    },
+    {
+      "song": "shenandoah",
+      "measure": "m29",
+      "leftHand": "D2+G2+D#3+A#3:e G2+D#3:e C2+D#2+D#3:h G2+G2+D#3:e D2+D2+D3+D#3:e G2+D#3+G3:e C2+A#2+D#3+A#3:q D#3:s",
+      "from": "Cmadd9",
+      "to": "Cm9"
+    },
+    {
+      "song": "shenandoah",
+      "measure": "m39",
+      "leftHand": "D2+G2+D#3+A#3:e G2+D#3:e C2+D#2+D#3:h G2+G2+D#3:e D2+D2+D3+D#3:e G2+D#3+G3:e C2+A#2+D#3+A#3:q D#3:s",
+      "from": "Cmadd9",
+      "to": "Cm9"
+    },
+    {
+      "song": "solace",
+      "measure": "m52",
+      "leftHand": "C3+G3:e C3+A#3:e C2:s D2:s E2:s",
+      "from": "Em7b5",
+      "to": "C9"
+    },
+    {
+      "song": "st-louis-blues",
+      "measure": "m68",
+      "leftHand": "E1+B1+E2+G2:qt B1+E2+G2:q E1:s E1+B1+E2+G2:q F#1:s E2+G2:q B1:s B3:qt E1+E2+D3+D3+G3+B3:et B1+G2+G2:qt",
+      "from": "Gmaj7",
+      "to": "Em9"
+    },
+    {
+      "song": "st-louis-blues",
+      "measure": "m106",
+      "leftHand": "E2:s E2:s E2:s E2+G2+D3+G3:qt B1+B3+B3:qt G1:s",
+      "from": "Em7",
+      "to": "G6"
+    },
+    {
+      "song": "stand-by-me",
+      "measure": "m16",
+      "leftHand": "D2+F#3+A3+A3:q F#3+A3:s D2+F#3+A3:q. F#3+A3+A3:e D2+F#3+A3:e F#2+F#3+A3+B3:e",
+      "from": "Bm7",
+      "to": "D6"
+    },
+    {
+      "song": "stand-by-me",
+      "measure": "m24",
+      "leftHand": "D2+F#3+A3+A3:q F#3+A3:s D2+F#3+A3:q. F#3+A3+B3:e D2+F#3+A3:e B3:s F#2+F#3+A3+A3:q.",
+      "from": "Bm7",
+      "to": "D6"
+    },
+    {
+      "song": "stand-by-me",
+      "measure": "m32",
+      "leftHand": "D2+F#3+A3+A3+B3:q A3:h F#3+A3:s D2+F#3+A3+A3:q. F#3+A3:s D2+F#3+A3+A3:q F#2+F#3+A3:e",
+      "from": "Bm7",
+      "to": "D6"
+    },
+    {
+      "song": "stand-by-me",
+      "measure": "m40",
+      "leftHand": "D2+D3+F#3+F#3+A3+A3+A3+B3:w A3:e. F#3+A3:s D2+F#3+A3:q. F#3+A3:s D2+F#3+A3:e F#2+F#3+A3+B3:e",
+      "from": "Bm7",
+      "to": "D6"
+    },
+    {
+      "song": "stand-by-me",
+      "measure": "m48",
+      "leftHand": "D2+D2+F#3+F#3+A3+A3+A3:w F#3+A3:s D2+F#3+A3:q. F#3+A3+B3:e D2+F#3+A3:e F#2+F#3+A3+B3:e A3:q",
+      "from": "Bm7",
+      "to": "D6"
+    },
+    {
+      "song": "stand-by-me",
+      "measure": "m56",
+      "leftHand": "D2+F#3+A3+B3:e. A3:h F#3+A3:s D2+F#3+A3:q. F#3+A3:s D2+F#3+A3:e F#2+F#3+A3:e",
+      "from": "Bm7",
+      "to": "D6"
+    },
+    {
+      "song": "stand-by-me",
+      "measure": "m64",
+      "leftHand": "D2+F#3+A3+A3:w F#3+A3:s D2+F#3+A3:q. A3:qt F#3+A3:s B3:qt D2+F#3+A3:e F#2+F#3+A3:e",
+      "from": "Bm7",
+      "to": "D6"
+    },
+    {
+      "song": "stand-by-me",
+      "measure": "m72",
+      "leftHand": "D2+F#3+A3+A3:w F#3+A3:s D2+F#3+A3:q. A3:qt F#3+A3:s B3:qt D2+F#3+A3:e F#2+F#3+A3:e",
+      "from": "Bm7",
+      "to": "D6"
+    },
+    {
+      "song": "stand-by-me",
+      "measure": "m80",
+      "leftHand": "D2+D2+F#3+F#3+A3+A3+A3+B3:w A3:e F#3+A3+A3:s B3:e. D2+F#3+A3+A3:q. F#3+A3:s D2+F#3+A3+A3:q F#2+F#3+A3:e",
+      "from": "Bm7",
+      "to": "D6"
+    },
+    {
+      "song": "stand-by-me",
+      "measure": "m88",
+      "leftHand": "D2+D2+F#3+F#3+A3+A3+B3:w A3:e F#3+A3+A3:s B3:e. D2+F#3+A3:q. F#3+A3:s D2+F#3+A3:e F#2+F#3+A3:e",
+      "from": "Bm7",
+      "to": "D6"
+    },
+    {
+      "song": "stand-by-me",
+      "measure": "m92",
+      "leftHand": "D2+D2+F#3+F#3+A3+A3+B3:w A3:e F#3+A3+A3:s B3:e. D2+F#3+A3:q. F#3+A3:s D2+F#3+A3:e F#2+F#3+A3:e",
+      "from": "Bm7",
+      "to": "D6"
+    },
+    {
+      "song": "stand-by-me",
+      "measure": "m96",
+      "leftHand": "D2+D2+F#3+F#3+A3+A3+B3:w A3:e F#3+A3+A3:s B3:e. D2+F#3+A3:q. F#3+A3:s D2+F#3+A3:e F#2+F#3+A3:e",
+      "from": "Bm7",
+      "to": "D6"
+    },
+    {
+      "song": "stormy-monday",
+      "measure": "m251",
+      "leftHand": "A1+C2+F#2+D#3:ht F#2:s A1+C2+F#2:q",
+      "from": "Adim",
+      "to": "Adim7"
+    },
+    {
+      "song": "stormy-monday",
+      "measure": "m271",
+      "leftHand": "A1+C2+F#2+A2+D#3+A3:w C2+F#2:s C2+F#2+A3:s",
+      "from": "Adim",
+      "to": "Adim7"
+    },
+    {
+      "song": "stormy-monday",
+      "measure": "m303",
+      "leftHand": "G#1+C2+G#2+A#2+D#3+F#3+A#3:q F#3+A#3:et C2+D#2+F#2+D#3+G#3:q C2+F#2+G#2+D#3:q G#2:s",
+      "from": "Cm7b5",
+      "to": "Ab9"
+    },
+    {
+      "song": "sweet-home-chicago",
+      "measure": "m23",
+      "leftHand": "B1+B2+B3:h B1+F#2:s B1+D2+F#2:e. B2+D3:h G#3:h E1+B1+E2+F#2+B3:w",
+      "from": "Eadd9",
+      "to": "E9"
+    },
+    {
+      "song": "sweet-home-chicago",
+      "measure": "m113",
+      "leftHand": "B1+B2+B3+B3+B3:h. B1+F#2:s B3:s B2:s D2+F#2:s E3:e E1+B1+E2+F#2+E3+E3:ht D3:s G#3:s",
+      "from": "Abm7b5",
+      "to": "E9"
+    },
+    {
+      "song": "sweet-home-chicago",
+      "measure": "m122",
+      "leftHand": "E3:s D3+G#3+B3:e G#1+D2+F#2:ht B1+E2:et E1+B1+F#2+D3+G#3+B3:h D2+D2+F#2:q",
+      "from": "Abm7b5",
+      "to": "E9"
+    },
+    {
+      "song": "take-the-a-train",
+      "measure": "m13",
+      "leftHand": "C2:q G#1+G#2:q E2:q G#1+G#2:q",
+      "from": "Caug",
+      "to": "Abaug"
+    },
+    {
+      "song": "the-easy-winners",
+      "measure": "m49",
+      "leftHand": "D3+B3:s F3:s G#3:s B3:s",
+      "from": "Ddim",
+      "to": "Ddim7"
+    },
+    {
+      "song": "the-easy-winners",
+      "measure": "m65",
+      "leftHand": "D3+B3:s F3:s G#3:s B3:s",
+      "from": "Ddim",
+      "to": "Ddim7"
+    },
+    {
+      "song": "the-easy-winners",
+      "measure": "m103",
+      "leftHand": "A#2+A#3:e D#2+D#3:e G#1+G#2:q",
+      "from": "Ebsus4",
+      "to": "Absus2"
+    },
+    {
+      "song": "the-easy-winners",
+      "measure": "m119",
+      "leftHand": "A#2+A#3:e D#2+D#3:e G#1+G#2:q",
+      "from": "Ebsus4",
+      "to": "Absus2"
+    },
+    {
+      "song": "the-easy-winners",
+      "measure": "m135",
+      "leftHand": "A#2+A#3:e D#2+D#3:e G#1+G#2:q",
+      "from": "Ebsus4",
+      "to": "Absus2"
+    },
+    {
+      "song": "the-easy-winners",
+      "measure": "m151",
+      "leftHand": "A#2+A#3:e D#2+D#3:e G#1+G#2:q",
+      "from": "Ebsus4",
+      "to": "Absus2"
+    },
+    {
+      "song": "tiny-dancer",
+      "measure": "m67",
+      "leftHand": "C3+D#3+G3:ht C3:h G3:et A3:q.",
+      "from": "Am7b5",
+      "to": "Cm6"
+    },
+    {
+      "song": "watermark",
+      "measure": "m35",
+      "leftHand": "D2:w A2:h D3:ht F#3:qt A3:e F#3:e B2:w",
+      "from": "Bm7",
+      "to": "D6"
+    },
+    {
+      "song": "watermark",
+      "measure": "m46",
+      "leftHand": "F#3:s B2:e B3:w E2:h B2:q. F#3:e",
+      "from": "Bsus4",
+      "to": "Esus2"
+    },
+    {
+      "song": "weeping-willow",
+      "measure": "m87",
+      "leftHand": "A2:e E3+A3:e G2+G3:e C2+C3:e",
+      "from": "Am7",
+      "to": "C6"
+    },
+    {
+      "song": "weeping-willow",
+      "measure": "m95",
+      "leftHand": "A2:e E3+A3:e G2+G3:e C2+C3:e",
+      "from": "Am7",
+      "to": "C6"
+    },
+    {
+      "song": "weeping-willow",
+      "measure": "m99",
+      "leftHand": "D3:e A2+A3:e G2+G3:q",
+      "from": "Dsus4",
+      "to": "Gsus2"
+    },
+    {
+      "song": "weeping-willow",
+      "measure": "m103",
+      "leftHand": "A2:e E3+A3:e G2+G3:e C2+C3:e",
+      "from": "Am7",
+      "to": "C6"
+    },
+    {
+      "song": "weeping-willow",
+      "measure": "m111",
+      "leftHand": "A2:e E3+A3:e G2+G3:e C2+C3:e",
+      "from": "Am7",
+      "to": "C6"
+    },
+    {
+      "song": "weeping-willow",
+      "measure": "m115",
+      "leftHand": "D3:e A2+A3:e G2+G3:q",
+      "from": "Dsus4",
+      "to": "Gsus2"
+    },
+    {
+      "song": "weeping-willow",
+      "measure": "m131",
+      "leftHand": "D3:e A2+A3:e G2+G3:q",
+      "from": "Dsus4",
+      "to": "Gsus2"
+    },
+    {
+      "song": "weeping-willow",
+      "measure": "m147",
+      "leftHand": "D3:e A2+A3:e G2+G3:qt",
+      "from": "Dsus4",
+      "to": "Gsus2"
+    },
+    {
+      "song": "your-song",
+      "measure": "m24",
+      "leftHand": "F2+F2+C3+F3+G#3:h G#3:s G#3:e C3:q G#3:e. G2:e G#2+G#2+D#3+G#3+G#3+G#3:h G#3:s G#3:e G#3:q D#3:q G#3:e.",
+      "from": "Abmaj7",
+      "to": "Fm9"
+    }
+  ]
+}

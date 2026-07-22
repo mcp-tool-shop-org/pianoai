@@ -14,6 +14,10 @@ import { chordSymbolsEquivalent, verifyHarmony } from "./verify-harmony.js";
 const SUFFIXES = [
   "", "m", "7", "maj7", "m7", "dim", "m7b5", "aug", "sus4", "sus2",
   "add9", "madd9",
+  // Bass-aware additions (2026-07-22) — each collides with another chord's
+  // pitch-class set under a rootless engine; the round-trip proves the bass
+  // tie-break + longest-match settle them for voiceChord's root-position output.
+  "6", "m6", "dim7", "9", "maj9", "m9",
 ];
 const ROOTS = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"];
 
@@ -44,10 +48,10 @@ describe("voiceChord — the fidelity guarantee", () => {
   });
 
   it("returns null for a symbol outside the verifier vocabulary", () => {
-    expect(voiceChord("C6")).toBeNull(); // 6/m6 excluded: same pitch classes as m7/m7b5
-    expect(voiceChord("C9")).toBeNull(); // 9th-with-7th excluded: G9 ⊃ Bm7b5 under a rootless engine
-    expect(voiceChord("C13")).toBeNull();
-    expect(voiceChord("H7")).toBeNull();
+    expect(voiceChord("C13")).toBeNull(); // no 13th template
+    expect(voiceChord("C11")).toBeNull(); // no 11th template
+    expect(voiceChord("C7b9")).toBeNull(); // altered dominants unsupported
+    expect(voiceChord("H7")).toBeNull(); // H is not a note name
     expect(voiceChord("")).toBeNull();
   });
 
@@ -65,11 +69,31 @@ describe("voiceChord — the fidelity guarantee", () => {
     expect(chordSymbolsEquivalent("C/E", inferChord(cOverE as string))).toBe(true);
   });
 
-  it("voices notation-alias chords the base model emits (M7=maj7, ø7/ø=m7b5)", () => {
-    for (const [alias, canonical] of [["CM7", "Cmaj7"], ["Cø7", "Cm7b5"], ["Dø", "Dm7b5"]] as const) {
+  it("voices notation-alias chords the base model emits (M7/ø/min7/Δ/+/°/7sus4)", () => {
+    for (const [alias, canonical] of [
+      ["CM7", "Cmaj7"], ["Cø7", "Cm7b5"], ["Dø", "Dm7b5"],
+      ["Cmin7", "Cm7"], ["CΔ7", "Cmaj7"], ["CΔ", "Cmaj7"],
+      ["C+", "Caug"], ["C°", "Cdim"], ["C°7", "Cdim7"], ["G7sus4", "Gsus4"],
+    ] as const) {
       expect(voiceChord(alias), `voiceChord null for ${alias}`).toBe(voiceChord(canonical));
       expect(chordSymbolsEquivalent(alias, inferChord(voiceChord(alias) as string)), alias).toBe(true);
     }
+  });
+
+  it("bass-disambiguates the extended chords that share a pitch-class set", () => {
+    // C6 ≡ Am7 and Cm6 ≡ Am7b5 as pitch-class sets — the bass (root position) decides.
+    expect(inferChord(voiceChord("C6") as string)).toBe("C6");
+    expect(inferChord(voiceChord("Am7") as string)).toBe("Am7");
+    expect(inferChord(voiceChord("Cm6") as string)).toBe("Cm6");
+    expect(inferChord(voiceChord("Am7b5") as string)).toBe("Am7b5");
+    // dim7 is rotationally symmetric — every enharmonic root round-trips to itself.
+    for (const root of ["C", "Eb", "F#", "A"]) {
+      expect(inferChord(voiceChord(`${root}dim7`) as string), `${root}dim7`).toBe(`${root}dim7`);
+    }
+    // The 9-with-7th wins by LENGTH over the 7th-on-the-3rd it contains (G9 ⊃ Bm7b5).
+    expect(inferChord(voiceChord("G9") as string)).toBe("G9");
+    expect(inferChord(voiceChord("Cmaj9") as string)).toBe("Cmaj9");
+    expect(inferChord(voiceChord("Cm9") as string)).toBe("Cm9");
   });
 });
 
@@ -91,7 +115,7 @@ describe("renderReharmonization", () => {
   it("drops out-of-vocabulary chords rather than emitting an unconfirmable voicing", () => {
     const rendered = renderReharmonization([
       { measure: 1, intendedChord: "Am7" },
-      { measure: 2, intendedChord: "C6" }, // out of vocab (6 excluded) → dropped
+      { measure: 2, intendedChord: "C13" }, // out of vocab (no 13th template) → dropped
     ]);
     expect(rendered.map((r) => r.measure)).toEqual([1]);
   });

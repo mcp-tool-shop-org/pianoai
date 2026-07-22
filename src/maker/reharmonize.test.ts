@@ -84,7 +84,7 @@ describe("autoReharmonize", () => {
   it("drops out-of-vocabulary chords via the voicer rather than emitting an unconfirmable voicing", async () => {
     const withBadChord: ChordChoice[] = [
       { measure: 1, intendedChord: "Fmaj7" },
-      { measure: 2, intendedChord: "C6" }, // out of vocab (6 excluded) → dropped by the voicer
+      { measure: 2, intendedChord: "C13" }, // out of vocab (no 13th template) → dropped by the voicer
       { measure: 3, intendedChord: "E7" },
     ];
     const r = await autoReharmonize(item, { proposeChords: async () => withBadChord }, { maxSamples: 1 });

@@ -293,12 +293,29 @@ describe("parseChordSymbol", () => {
   });
 
   it("returns null outside the vocabulary", () => {
-    expect(parseChordSymbol("C13")).toBeNull();
-    expect(parseChordSymbol("C6")).toBeNull(); // 6/m6 excluded (same pcs as m7/m7b5)
-    expect(parseChordSymbol("C9")).toBeNull(); // 9th-with-7th excluded (rootless upper structure)
-    expect(parseChordSymbol("Am9")).toBeNull(); // m9 excluded for the same reason
+    expect(parseChordSymbol("C13")).toBeNull(); // no 13th template
+    expect(parseChordSymbol("C11")).toBeNull(); // no 11th template
+    expect(parseChordSymbol("C7b9")).toBeNull(); // altered dominants unsupported
     expect(parseChordSymbol("garbage")).toBeNull();
     expect(parseChordSymbol("")).toBeNull();
+  });
+
+  it("parses the bass-aware extended vocabulary and its notation aliases", () => {
+    // 6 / m6 / dim7 / 9 / maj9 / m9 — the qualities the ABC maker emits.
+    expect(parseChordSymbol("C6")!.pcs).toEqual([0, 4, 7, 9]);
+    expect(parseChordSymbol("Cm6")!.pcs).toEqual([0, 3, 7, 9]);
+    expect(parseChordSymbol("Cdim7")!.pcs).toEqual([0, 3, 6, 9]);
+    expect(parseChordSymbol("G9")!.pcs).toEqual([7, 11, 2, 5, 9]);
+    expect(parseChordSymbol("Cmaj9")!.pcs).toEqual([0, 4, 7, 11, 2]);
+    expect(parseChordSymbol("Am9")!.intervals).toEqual([0, 3, 7, 10, 2]);
+    // Aliases map onto an existing quality's intervals (chordSymbolsEquivalent bridges).
+    expect(chordSymbolsEquivalent("Cmin7", "Cm7")).toBe(true);
+    expect(chordSymbolsEquivalent("CΔ7", "Cmaj7")).toBe(true);
+    expect(chordSymbolsEquivalent("CΔ", "Cmaj7")).toBe(true);
+    expect(chordSymbolsEquivalent("C+", "Caug")).toBe(true);
+    expect(chordSymbolsEquivalent("C°", "Cdim")).toBe(true);
+    expect(chordSymbolsEquivalent("C°7", "Cdim7")).toBe(true);
+    expect(chordSymbolsEquivalent("G7sus4", "Gsus4")).toBe(true);
   });
 
   it("parses the added-9th chords and normalizes slash chords to their base", () => {
