@@ -38,10 +38,17 @@ import {
   midiToSongEntry,
   generateJamBrief,
   formatJamBrief,
+  parseMeasureRange,
   transposeSong,
   GENRES,
   DIFFICULTIES,
 } from "./songs/index.js";
+import {
+  verifyHarmony,
+  formatHarmonyVerdict,
+  type MelodyMeasureInput,
+  type ReharmonizedMeasure,
+} from "./maker/verify-harmony.js";
 import type { SongEntry, Difficulty, Genre } from "./songs/types.js";
 import { safeParseMeasure, measureToSingableText, type SingAlongMode } from "./note-parser.js";
 import { renderPianoRoll, renderScoredPianoRoll } from "./piano-roll.js";
@@ -324,6 +331,46 @@ server.prompt(
             `5. Use \`save_practice_note\` to record my reflections`,
             ``,
             `Keep the review encouraging but honest — I want to improve!`,
+          ].join("\n"),
+        },
+      }],
+    };
+  }
+);
+
+server.prompt(
+  "maker_loop",
+  "Create a verified reinterpretation of a song — the full maker loop: jam brief → propose a reharmonization → verify_harmony gates it → save, play, and see it. Every generation is verified by the platform's deterministic music tools before it ships.",
+  {
+    song_id: z.string().describe("Source song ID to reinterpret (e.g. 'fur-elise')"),
+    style: z.string().optional().describe("Target genre (e.g. 'jazz', 'blues', 'latin')"),
+  },
+  ({ song_id, style }) => {
+    const song = getSong(song_id);
+    const songInfo = song
+      ? `Song: "${song.title}" by ${song.composer ?? "Unknown"}\nGenre: ${song.genre} | Key: ${song.key} | Tempo: ${song.tempo} BPM | Time: ${song.timeSignature} | Measures: ${song.measures.length}`
+      : `Song "${song_id}" not found — check the ID with list_songs first.`;
+    const styleLabel = style ?? "a genre of your choice";
+
+    return {
+      messages: [{
+        role: "user",
+        content: {
+          type: "text",
+          text: [
+            `I want you to be a music MAKER: reinterpret this song in ${styleLabel}, with every creative choice verified by the platform's own tools.`,
+            ``,
+            songInfo,
+            ``,
+            `The maker loop:`,
+            `1. \`ai_jam_sessions\` with songId "${song_id}"${style ? ` and style "${style}"` : ""} — study the chord progression, melody outline, and style guidance`,
+            `2. Propose your reharmonization: an intended chord + left-hand voicing per measure, keeping the melody`,
+            `3. \`verify_harmony\` — the gate. The chord engine must confirm every voicing (chord fidelity) and the melody must sit on the new harmony (consonance). If it rejects, revise and verify again — do NOT save unverified harmony`,
+            `4. \`add_song\` — save the verified reinterpretation as a new SongEntry`,
+            `5. \`play_song\` — hear it through the engines`,
+            `6. \`view_piano_roll\` — see what you made`,
+            ``,
+            `Be genuinely creative — substitutions, extensions, borrowed chords — but let the verifier keep you honest.`,
           ].join("\n"),
         },
       }],
@@ -1861,6 +1908,124 @@ registerTool(
     const brief = generateJamBrief(song, options);
     const text = formatJamBrief(brief, options);
     return { content: [{ type: "text", text }] };
+  }
+);
+
+// ─── Tool: verify_harmony ────────────────────────────────────────────────
+
+registerTool(
+  "verify_harmony",
+  "Verify a proposed reharmonization with the platform's deterministic music tools — the maker loop's verification gate. Checks chord fidelity (the same chord engine that powers jam briefs must detect your intended chord in each voicing), melody consonance (chord-tone / tension / chromatic labels with a chromatic ceiling), bass voice-leading, and key membership. Give a songId to verify against a library melody, or pass the melody inline. Run this BEFORE add_song when creating a reinterpretation; a ✅ verdict means the harmony is sound by construction.",
+  {
+    reharmonization: z.string().describe(
+      'Your proposed harmony as a JSON array: [{"measure": 1, "intendedChord": "Am7", "voicing": "A2 C3 E3 G3"}, ...]. ' +
+      'Voicings are note tokens (space or "+" separated, optional :duration suffixes). ' +
+      "Supported chord suffixes: maj (empty), m, 7, maj7, m7, dim, m7b5, aug, sus4, sus2.",
+    ),
+    songId: z.string().optional().describe(
+      "Verify against this library song's right-hand melody (e.g. 'fur-elise'). Combine with measures to select a range.",
+    ),
+    measures: z.string().optional().describe(
+      "Measure range within the song, e.g. '1-8'. Only used with songId.",
+    ),
+    melody: z.string().optional().describe(
+      'Inline melody instead of songId: JSON array [{"number": 1, "rightHand": "E5:e D#5:e"}, ...]',
+    ),
+    key: z.string().optional().describe(
+      "Key for the membership check (e.g. 'A minor'). Defaults to the song's key when songId is given.",
+    ),
+    maxChromaticRatio: z.number().min(0).max(1).optional().describe(
+      "Max fraction of melody notes allowed to be chromatic before consonance fails (default 0.2)",
+    ),
+  },
+  async ({ reharmonization, songId, measures, melody, key, maxChromaticRatio }) => {
+    // Parse the proposed reharmonization
+    let reharm: ReharmonizedMeasure[];
+    try {
+      const parsed = JSON.parse(reharmonization) as unknown;
+      if (!Array.isArray(parsed)) throw new Error("expected a JSON array");
+      reharm = parsed.map((r: unknown, i: number) => {
+        const rec = r as Record<string, unknown>;
+        if (
+          typeof rec?.measure !== "number" ||
+          typeof rec?.intendedChord !== "string" ||
+          typeof rec?.voicing !== "string"
+        ) {
+          throw new Error(
+            `element ${i} must be {"measure": number, "intendedChord": string, "voicing": string}`,
+          );
+        }
+        return { measure: rec.measure, intendedChord: rec.intendedChord, voicing: rec.voicing };
+      });
+    } catch (err) {
+      return {
+        content: [{
+          type: "text",
+          text: `Couldn't parse reharmonization: ${err instanceof Error ? err.message : String(err)}\n` +
+            `Expected: [{"measure": 1, "intendedChord": "Am7", "voicing": "A2 C3 E3 G3"}, ...]`,
+        }],
+        isError: true,
+      };
+    }
+
+    // Resolve the melody: library song or inline
+    let melodyMeasures: MelodyMeasureInput[];
+    let effectiveKey = key;
+    if (songId) {
+      const song = getSong(songId);
+      if (!song) {
+        return {
+          content: [{ type: "text", text: `No song called "${songId}" in the library. Try list_songs to browse.` }],
+          isError: true,
+        };
+      }
+      let songMeasures = song.measures;
+      if (measures) {
+        try {
+          const [start, end] = parseMeasureRange(measures, song.measures.length);
+          songMeasures = song.measures.slice(start, end + 1);
+        } catch (err) {
+          return {
+            content: [{ type: "text", text: err instanceof Error ? err.message : String(err) }],
+            isError: true,
+          };
+        }
+      }
+      melodyMeasures = songMeasures.map((m) => ({ number: m.number, rightHand: m.rightHand }));
+      effectiveKey = key ?? song.key;
+    } else if (melody) {
+      try {
+        const parsed = JSON.parse(melody) as unknown;
+        if (!Array.isArray(parsed)) throw new Error("expected a JSON array");
+        melodyMeasures = parsed.map((m: unknown, i: number) => {
+          const rec = m as Record<string, unknown>;
+          if (typeof rec?.number !== "number" || typeof rec?.rightHand !== "string") {
+            throw new Error(`element ${i} must be {"number": number, "rightHand": string}`);
+          }
+          return { number: rec.number, rightHand: rec.rightHand };
+        });
+      } catch (err) {
+        return {
+          content: [{
+            type: "text",
+            text: `Couldn't parse melody: ${err instanceof Error ? err.message : String(err)}\n` +
+              `Expected: [{"number": 1, "rightHand": "E5:e D#5:e"}, ...]`,
+          }],
+          isError: true,
+        };
+      }
+    } else {
+      return {
+        content: [{ type: "text", text: "I need either a songId (with optional measures range) or an inline melody to verify against." }],
+        isError: true,
+      };
+    }
+
+    const verdict = verifyHarmony(melodyMeasures, reharm, { key: effectiveKey, maxChromaticRatio });
+    const next = verdict.verified
+      ? "\n\nNext: save your reinterpretation with add_song, hear it with play_song, see it with view_piano_roll."
+      : "\n\nFix the flagged measures and run verify_harmony again before saving with add_song.";
+    return { content: [{ type: "text", text: formatHarmonyVerdict(verdict) + next }] };
   }
 );
 

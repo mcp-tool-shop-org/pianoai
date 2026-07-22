@@ -74,6 +74,14 @@ describe("inferChord", () => {
     expect(inferChord("Bb3:q D4:q F4:q")).toBe("Bb");
   });
 
+  it("recognizes a '+'-joined chord voicing (MIDI-ingest notation)", () => {
+    expect(inferChord("C3+E3+G3:q")).toBe("C");
+  });
+
+  it("handles mixed '+'-joined and space-separated tokens", () => {
+    expect(inferChord("A2:q A3+C4+E4:h")).toBe("Am");
+  });
+
   it("handles empty string", () => {
     expect(inferChord("")).toBe("N/A");
   });
@@ -117,6 +125,28 @@ describe("computeContour", () => {
   it("ignores rests in contour calculation", () => {
     // C4 -> R -> E4 -> R -> G4 => ascending
     expect(computeContour("C4:q R E4:q R G4:q")).toBe("ascending");
+  });
+
+  it("tracks the top tone of '+'-joined chords (MIDI-ingest notation)", () => {
+    // Tops: G4 -> C5 -> E5 => ascending. Previously every chord token was
+    // dropped as unparseable and the line collapsed to "static".
+    expect(computeContour("C4+E4+G4:q E4+G4+C5:q G4+C5+E5:q")).toBe("ascending");
+  });
+
+  it("mixes single notes and chords using each chord's top tone", () => {
+    // Tops: C5 -> A4 -> G4 -> E4 => descending; top of "E4+A4" is A4
+    // regardless of part order
+    expect(computeContour("C5:q E4+A4:q G4:q E4:q")).toBe("descending");
+  });
+
+  it("ignores rests between chord tokens", () => {
+    // Tops: E4 -> C5 -> E5 => ascending
+    expect(computeContour("C4+E4:q R:q G4+C5:q R:q C5+E5:q")).toBe("ascending");
+  });
+
+  it("handles per-part durations inside a chord token", () => {
+    // Tops: E4 -> G4 => ascending
+    expect(computeContour("C4:q+E4:h G4:q")).toBe("ascending");
   });
 });
 

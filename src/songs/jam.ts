@@ -9,6 +9,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { SongEntry, Measure, Genre, Difficulty } from "./types.js";
+import { splitChordToken } from "../note-parser.js";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -69,6 +70,16 @@ function tokenToMidi(token: string): number {
   if (accidental === "#") midi += 1;
   if (accidental === "b") midi -= 1;
   return midi;
+}
+
+/** Top (highest) MIDI note of a token — a "+"-joined chord follows its top tone. Returns -1 for rests. */
+function tokenToTopMidi(token: string): number {
+  let top = -1;
+  for (const { noteStr } of splitChordToken(token)) {
+    const m = tokenToMidi(noteStr);
+    if (m > top) top = m;
+  }
+  return top;
 }
 
 /** Extract just the note name (e.g., "C", "F#", "Bb") from a token. */
@@ -145,9 +156,13 @@ function inferChordFromPitchClasses(pitchClasses: number[]): string {
   return bestScore >= 0.66 ? bestMatch : PC_NAMES[unique[0]]; // fallback to bass note
 }
 
-/** Infer a chord symbol from a left-hand notation string. */
+/**
+ * Infer a chord symbol from a left-hand notation string. Simultaneous notes
+ * may be "+"-joined ("C3+E3+G3:q", the chord notation MIDI ingest emits) or
+ * space-separated — pitch inference treats both the same.
+ */
 export function inferChord(leftHand: string): string {
-  const tokens = leftHand.split(/\s+/).filter(Boolean);
+  const tokens = leftHand.split(/[\s+]+/).filter(Boolean);
   const pitchClasses: number[] = [];
 
   for (const tok of tokens) {
@@ -160,13 +175,16 @@ export function inferChord(leftHand: string): string {
 
 // ─── Contour Analysis ───────────────────────────────────────────────────────
 
-/** Classify the melodic contour of a right-hand notation string. */
+/**
+ * Classify the melodic contour of a right-hand notation string. A "+"-joined
+ * chord ("C4+E4+G4:q") contributes its top tone — the melody voice.
+ */
 export function computeContour(rightHand: string): "ascending" | "descending" | "static" | "arc" {
   const tokens = rightHand.split(/\s+/).filter(Boolean);
   const midis: number[] = [];
 
   for (const tok of tokens) {
-    const m = tokenToMidi(tok);
+    const m = tokenToTopMidi(tok);
     if (m >= 0) midis.push(m);
   }
 
@@ -310,7 +328,7 @@ export function getStyleGuidance(genre?: Genre, mood?: string): string[] {
 // ─── Jam Brief Generation ───────────────────────────────────────────────────
 
 /** Parse a measure range string like "1-8" into [start, end] (0-based indices). */
-function parseMeasureRange(rangeStr: string, total: number): [number, number] {
+export function parseMeasureRange(rangeStr: string, total: number): [number, number] {
   const parts = rangeStr.split("-").map((s) => s.trim());
   if (parts.length === 0 || parts.length > 2 || parts.some((part) => part.length === 0)) {
     throw new Error(`Invalid measure range: "${rangeStr}". Use "N" or "start-end".`);
@@ -366,8 +384,9 @@ export function generateJamBrief(song: SongEntry, options: JamBriefOptions = {})
     `Create your own ${targetStyle} interpretation of "${song.title}"${targetMood}${targetDiff}.`,
     `Use the chord progression and melody outline as your starting point.`,
     `Reharmonize, embellish, or simplify as you see fit — this is YOUR version.`,
+    `Gate your harmony with verify_harmony BEFORE saving: send your per-measure intended chords + voicings (with songId "${song.id}" or the melody inline) — the chord engine must confirm every voicing and the melody must sit on the new harmony.`,
     `Write a new SongEntry JSON with id "jam-${song.id}-${targetStyle}" and save with add_song.`,
-    `Then play it with play_song to hear your creation.`,
+    `Then play it with play_song to hear your creation, and see it with view_piano_roll.`,
   ];
 
   return {

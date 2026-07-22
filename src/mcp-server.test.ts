@@ -440,6 +440,133 @@ describe("mcp-server.ts — MCP protocol-level tool tests", () => {
     },
     20000,
   );
+
+  it(
+    "verify_harmony verifies the maker-loop demo reharmonization end-to-end over MCP (inline melody) and lists the maker_loop prompt",
+    async () => {
+      const toolList = await client.listTools();
+      expect(toolList.tools.some((t) => t.name === "verify_harmony")).toBe(true);
+
+      const prompts = await client.listPrompts();
+      expect(prompts.prompts.some((p) => p.name === "maker_loop")).toBe(true);
+
+      const melody = JSON.stringify([
+        { number: 1, rightHand: "E5:e D#5:e" },
+        { number: 2, rightHand: "E5:e D#5:e E5:e B4:e D5:e C5:e" },
+        { number: 3, rightHand: "A4:e C4:e E4:e A4:e" },
+        { number: 4, rightHand: "B4:e E4:e G#4:e B4:e" },
+      ]);
+      const reharm = JSON.stringify([
+        { measure: 1, intendedChord: "Am7", voicing: "A2 C3 E3 G3" },
+        { measure: 2, intendedChord: "Am7", voicing: "A2 C3 E3 G3" },
+        { measure: 3, intendedChord: "Fmaj7", voicing: "F2 A2 C3 E3" },
+        { measure: 4, intendedChord: "E7", voicing: "E2 G#2 B2 D3" },
+      ]);
+
+      const result = (await client.callTool({
+        name: "verify_harmony",
+        arguments: { melody, reharmonization: reharm, key: "A minor" },
+      })) as ToolResult;
+      expect(result.isError).not.toBe(true);
+      const text = extractText(result);
+      expect(text).toContain("VERDICT: ✅");
+      expect(text).toContain("4/4 voicings confirmed");
+      expect(text).toContain("all diatonic");
+      expect(text).toContain("add_song"); // points the maker at the next loop step
+    },
+    20000,
+  );
+
+  it(
+    "verify_harmony rejects a wrong voicing with a ❌ verdict and returns structured errors for bad input",
+    async () => {
+      // Wrong harmony: C major voicing under an intended Am7
+      const rejected = (await client.callTool({
+        name: "verify_harmony",
+        arguments: {
+          melody: JSON.stringify([{ number: 1, rightHand: "E5:q" }]),
+          reharmonization: JSON.stringify([
+            { measure: 1, intendedChord: "Am7", voicing: "C3 E3 G3" },
+          ]),
+        },
+      })) as ToolResult;
+      const rejectedText = extractText(rejected);
+      expect(rejectedText).toContain("✗ MISMATCH");
+      expect(rejectedText).toContain("VERDICT: ❌");
+
+      // Malformed reharmonization JSON → structured isError, not a crash
+      const badJson = (await client.callTool({
+        name: "verify_harmony",
+        arguments: { melody: JSON.stringify([]), reharmonization: "not json" },
+      })) as ToolResult;
+      expect(badJson.isError).toBe(true);
+      expect(extractText(badJson)).toContain("Couldn't parse reharmonization");
+
+      // Unknown song → structured isError
+      const noSong = (await client.callTool({
+        name: "verify_harmony",
+        arguments: {
+          songId: "definitely-not-a-song",
+          reharmonization: JSON.stringify([
+            { measure: 1, intendedChord: "C", voicing: "C3 E3 G3" },
+          ]),
+        },
+      })) as ToolResult;
+      expect(noSong.isError).toBe(true);
+
+      // Neither songId nor melody → structured isError
+      const neither = (await client.callTool({
+        name: "verify_harmony",
+        arguments: {
+          reharmonization: JSON.stringify([
+            { measure: 1, intendedChord: "C", voicing: "C3 E3 G3" },
+          ]),
+        },
+      })) as ToolResult;
+      expect(neither.isError).toBe(true);
+    },
+    20000,
+  );
+
+  it(
+    "verify_harmony resolves a library song's melody and key from songId (range-parses measures)",
+    async () => {
+      // Uses the bundled library song "fallin" — the assertion is on the
+      // songId resolution path (melody + key pulled from the song, range
+      // parsed), not on the musical verdict, which depends on MIDI-ingested
+      // content. An out-of-range measures string must error cleanly.
+      const outOfRange = (await client.callTool({
+        name: "verify_harmony",
+        arguments: {
+          songId: "fallin",
+          measures: "8-2",
+          reharmonization: JSON.stringify([
+            { measure: 1, intendedChord: "C", voicing: "C3 E3 G3" },
+          ]),
+        },
+      })) as ToolResult;
+      expect(outOfRange.isError).toBe(true);
+      expect(extractText(outOfRange)).toMatch(/measure/i);
+
+      const ok = (await client.callTool({
+        name: "verify_harmony",
+        arguments: {
+          songId: "fallin",
+          measures: "1-2",
+          reharmonization: JSON.stringify([
+            { measure: 1, intendedChord: "C", voicing: "C3 E3 G3" },
+          ]),
+        },
+      })) as ToolResult;
+      // Whatever the musical verdict, the tool must produce a full verdict
+      // report (not an input error) with the song's key auto-applied.
+      expect(ok.isError).not.toBe(true);
+      const okText = extractText(ok);
+      expect(okText).toContain("VERIFY ① chord fidelity");
+      expect(okText).toContain("VERIFY ④ key");
+    },
+    20000,
+  );
 });
 
 // ─── Stdio purity (pins B-B1-001) ───────────────────────────────────────────

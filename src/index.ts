@@ -276,3 +276,25 @@ export type {
 } from "./types.js";
 
 export { DURATION_MAP, NOTE_OFFSETS } from "./types.js";
+
+// Export the maker harmony verifier (the maker loop's verification gate)
+export {
+  verifyHarmony,
+  formatHarmonyVerdict,
+  parseChordSymbol,
+  chordSymbolsEquivalent,
+  keyToPitchClasses,
+  DEFAULT_MAX_CHROMATIC_RATIO,
+} from "./maker/verify-harmony.js";
+export type {
+  MelodyMeasureInput,
+  ReharmonizedMeasure,
+  VerifyHarmonyOptions,
+  HarmonyVerdict,
+  ChordFidelityMeasure,
+  ConsonanceLabel,
+  ConsonanceMeasure,
+  ConsonanceKind,
+  VoiceLeadingMove,
+  ParsedChordSymbol,
+} from "./maker/verify-harmony.js";

@@ -90,5 +90,5 @@ export { loadSongConfigs, loadSongConfig, listConfigIds } from "./config/loader.
 export { transposeSong } from "./transpose.js";
 
 // Jam session
-export { generateJamBrief, formatJamBrief, inferChord, computeContour, getStyleGuidance } from "./jam.js";
+export { generateJamBrief, formatJamBrief, inferChord, computeContour, getStyleGuidance, parseMeasureRange } from "./jam.js";
 export type { JamBrief, JamBriefOptions, ChordMeasure, MelodyMeasure } from "./jam.js";
