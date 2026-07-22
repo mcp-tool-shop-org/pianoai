@@ -43,6 +43,11 @@ import {
   buildChordsOnlyUser,
   parseChordsOnly,
 } from "../src/maker/chord-proposer.js";
+import {
+  ABC_REHARM_SYSTEM,
+  buildAbcReharmUser,
+  parseAbcChords,
+} from "../src/maker/abc-chord-proposer.js";
 import { OllamaBackend } from "../src/dataset/eval/llm-backends/ollama.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -74,13 +79,25 @@ async function genDecompose(backend: OllamaBackend, item: ERItem): Promise<Parse
   return { measures, status: measures.length ? "clean" : "unrecoverable" };
 }
 
+// ABC pilot: same decompose downstream, but the model emits an ABC lead sheet
+// (plain seeded text) instead of a JSON chord array — testing whether ABC's
+// LLM-native well-formedness reduces the empty-output rate (docs/maker-arc-phase-
+// c-vocab-expansion.md found empty output, not chord rejection, is the dominant miss).
+async function genAbcDecompose(backend: OllamaBackend, item: ERItem): Promise<ParsedReharmonization> {
+  let text = "";
+  try { text = await backend.generateText({ systemPrompt: ABC_REHARM_SYSTEM, userMessage: buildAbcReharmUser(item) }); } catch { text = backend.lastRawText() ?? ""; }
+  const chords = parseAbcChords(text, item.melody.map((m) => m.number));
+  const measures = renderReharmonization(chords);
+  return { measures, status: measures.length ? "clean" : "unrecoverable" };
+}
+
 function backendFor(model: string, seed: number, maxTokens: number): OllamaBackend {
   return new OllamaBackend(model, undefined, { seed, num_predict: maxTokens });
 }
 
 // ─── Modes ────────────────────────────────────────────────────────────────────
 
-interface ItemOutcome { itemId: string; genre: string; passAt: number | null; /* first sample index (1-based) that passed, null = none */ }
+interface ItemOutcome { itemId: string; genre: string; passAt: number | null; /* first sample index (1-based) that passed, null = none */ chords?: number; }
 
 async function runSinglePass(model: string, items: ERItem[], gen: (b: OllamaBackend, it: ERItem) => Promise<ParsedReharmonization>, maxTokens: number, label: string): Promise<void> {
   console.log(`\n═══ ${label} — ${model}, ${items.length} items, single pass (seed 42) ═══`);
@@ -90,12 +107,13 @@ async function runSinglePass(model: string, items: ERItem[], gen: (b: OllamaBack
     const item = items[i];
     const parsed = await gen(backend, item);
     const score = scoreERProposal(item, parsed);
-    outcomes.push({ itemId: item.itemId, genre: item.genre, passAt: score.passes ? 1 : null });
-    console.log(`  [${i + 1}/${items.length}] ${item.itemId}: fidelity ${score.chordFidelity.matched}/${score.chordFidelity.total} Δ${(score.nonTriviality.fraction * 100).toFixed(0)}% ${score.passes ? "✓ PASS" : "· fail"}`);
+    outcomes.push({ itemId: item.itemId, genre: item.genre, passAt: score.passes ? 1 : null, chords: parsed.measures.length });
+    console.log(`  [${i + 1}/${items.length}] ${item.itemId}: ${parsed.measures.length} chords, fidelity ${score.chordFidelity.matched}/${score.chordFidelity.total} Δ${(score.nonTriviality.fraction * 100).toFixed(0)}% ${score.passes ? "✓ PASS" : parsed.measures.length === 0 ? "· EMPTY" : "· fail"}`);
   }
   const pass = outcomes.filter((o) => o.passAt !== null).length;
-  console.log(`  → ${label}: ${pass}/${items.length} pass (${(pass / items.length * 100).toFixed(1)}%)`);
-  writeReceipt(label, model, { mode: label, passRate: pass / items.length, passCount: pass, itemCount: items.length, outcomes });
+  const empty = outcomes.filter((o) => (o.chords ?? 0) === 0).length;
+  console.log(`  → ${label}: ${pass}/${items.length} pass (${(pass / items.length * 100).toFixed(1)}%), ${empty}/${items.length} EMPTY (${(empty / items.length * 100).toFixed(1)}%)`);
+  writeReceipt(label, model, { mode: label, passRate: pass / items.length, passCount: pass, emptyCount: empty, emptyRate: empty / items.length, itemCount: items.length, outcomes });
 }
 
 async function runBestOfN(model: string, items: ERItem[], n: number, gen: (b: OllamaBackend, it: ERItem) => Promise<ParsedReharmonization>, maxTokens: number, label: string): Promise<void> {
@@ -146,6 +164,8 @@ async function main(): Promise<void> {
     if (mode === "decompose") await runSinglePass(model, items, genDecompose, 1024, "decompose");
     else if (mode === "best-of-n") await runBestOfN(model, items, n, genFull, 2048, "best-of-n");
     else if (mode === "decompose-bon") await runBestOfN(model, items, n, genDecompose, 1024, "decompose-bon");
+    else if (mode === "abc-decompose") await runSinglePass(model, items, genAbcDecompose, 1024, "abc-decompose");
+    else if (mode === "abc-decompose-bon") await runBestOfN(model, items, n, genAbcDecompose, 1024, "abc-decompose-bon");
     else { console.error(`unknown mode: ${mode}`); process.exit(2); }
   }
 }

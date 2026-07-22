@@ -1,0 +1,147 @@
+{
+  "schemaVersion": "er-experiment/1.0.0",
+  "runDate": "2026-07-22T20:46:20.732Z",
+  "model": "qwen2.5:7b",
+  "tag": "abc-pilot",
+  "nonTrivialityFraction": 0.3333333333333333,
+  "mode": "decompose",
+  "passRate": 0.45454545454545453,
+  "passCount": 10,
+  "emptyCount": 11,
+  "emptyRate": 0.5,
+  "itemCount": 22,
+  "outcomes": [
+    {
+      "itemId": "all-the-things-you-are:m1-8",
+      "genre": "jazz",
+      "passAt": 1,
+      "chords": 7
+    },
+    {
+      "itemId": "autumn-leaves:m1-8",
+      "genre": "jazz",
+      "passAt": null,
+      "chords": 7
+    },
+    {
+      "itemId": "a-thousand-years:m1-8",
+      "genre": "pop",
+      "passAt": null,
+      "chords": 0
+    },
+    {
+      "itemId": "all-of-me:m1-8",
+      "genre": "pop",
+      "passAt": 1,
+      "chords": 8
+    },
+    {
+      "itemId": "blues-in-the-night:m1-8",
+      "genre": "blues",
+      "passAt": 1,
+      "chords": 7
+    },
+    {
+      "itemId": "born-under-a-bad-sign:m1-8",
+      "genre": "blues",
+      "passAt": null,
+      "chords": 0
+    },
+    {
+      "itemId": "baba-oriley:m1-8",
+      "genre": "rock",
+      "passAt": 1,
+      "chords": 8
+    },
+    {
+      "itemId": "bennie-and-the-jets:m1-8",
+      "genre": "rock",
+      "passAt": null,
+      "chords": 0
+    },
+    {
+      "itemId": "fallin:m1-8",
+      "genre": "rnb",
+      "passAt": null,
+      "chords": 0
+    },
+    {
+      "itemId": "halo:m1-8",
+      "genre": "rnb",
+      "passAt": 1,
+      "chords": 6
+    },
+    {
+      "itemId": "a-change-is-gonna-come:m1-8",
+      "genre": "soul",
+      "passAt": 1,
+      "chords": 6
+    },
+    {
+      "itemId": "aint-no-sunshine:m1-8",
+      "genre": "soul",
+      "passAt": 1,
+      "chords": 7
+    },
+    {
+      "itemId": "agua-de-beber:m1-8",
+      "genre": "latin",
+      "passAt": null,
+      "chords": 0
+    },
+    {
+      "itemId": "besame-mucho:m1-8",
+      "genre": "latin",
+      "passAt": 1,
+      "chords": 7
+    },
+    {
+      "itemId": "cinema-paradiso:m1-8",
+      "genre": "film",
+      "passAt": 1,
+      "chords": 8
+    },
+    {
+      "itemId": "comptine-dun-autre-ete:m1-8",
+      "genre": "film",
+      "passAt": 1,
+      "chords": 7
+    },
+    {
+      "itemId": "bethena:m1-8",
+      "genre": "ragtime",
+      "passAt": null,
+      "chords": 0
+    },
+    {
+      "itemId": "elite-syncopations:m1-8",
+      "genre": "ragtime",
+      "passAt": null,
+      "chords": 0
+    },
+    {
+      "itemId": "divenire:m1-8",
+      "genre": "new-age",
+      "passAt": null,
+      "chords": 0
+    },
+    {
+      "itemId": "experience:m1-8",
+      "genre": "new-age",
+      "passAt": null,
+      "chords": 0
+    },
+    {
+      "itemId": "amazing-grace:m1-8",
+      "genre": "folk",
+      "passAt": null,
+      "chords": 0
+    },
+    {
+      "itemId": "auld-lang-syne:m1-8",
+      "genre": "folk",
+      "passAt": null,
+      "chords": 0
+    }
+  ]
+}

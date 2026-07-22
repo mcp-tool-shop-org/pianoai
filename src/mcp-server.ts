@@ -51,6 +51,7 @@ import {
 } from "./maker/verify-harmony.js";
 import { reharmonizeSongSection, type AutoReharmonizeToolResult } from "./maker/auto-reharmonize-tool.js";
 import { OllamaChordProposer } from "./maker/chord-proposer.js";
+import { AbcChordProposer } from "./maker/abc-chord-proposer.js";
 import type { SongEntry, Difficulty, Genre } from "./songs/types.js";
 import { safeParseMeasure, measureToSingableText, type SingAlongMode } from "./note-parser.js";
 import { renderPianoRoll, renderScoredPianoRoll } from "./piano-roll.js";
@@ -2044,15 +2045,16 @@ registerTool(
 
 registerTool(
   "auto_reharmonize",
-  "Reharmonize a section of a library song with the local inference maker. The Phase-C loop: a local model proposes chord symbols, a deterministic voicer renders each voicing (chord fidelity guaranteed), and verify_harmony admits or rejects — resampling best-of-n until a reharmonization passes. Returns the verified per-measure {measure, intendedChord, voicing} plus telemetry (samplesUsed, passedAtSample, verified). Needs a local Ollama model (default qwen2.5:7b); if Ollama is not running it returns a structured error instead of failing, and every OTHER tool in this server is unaffected. May take up to ~a minute at the default best-of-16 budget.",
+  "Reharmonize a section of a library song with the local inference maker. The Phase-C loop: a local model proposes chord symbols, a deterministic voicer renders each voicing (chord fidelity guaranteed), and verify_harmony admits or rejects — resampling best-of-n until a reharmonization passes. Returns the verified per-measure {measure, intendedChord, voicing} plus telemetry (samplesUsed, passedAtSample, verified). By default the model emits an ABC lead sheet ('abc' format), which is far more reliable than a JSON chord array (measured on the frozen E-R set: ABC 0% empty output vs JSON 50%). Needs a local Ollama model (default qwen2.5:7b); if Ollama is not running it returns a structured error instead of failing, and every OTHER tool in this server is unaffected. May take up to ~a minute at the default best-of-16 budget.",
   {
     songId: z.string().describe("Library song to reharmonize (e.g. 'fur-elise'). Browse with list_songs."),
     measures: z.string().optional().describe("Measure range (1-based), e.g. '1-8'. Default: measures 1-8."),
     style: z.string().optional().describe("Optional target style hint woven into the brief, e.g. 'jazz', 'bossa nova'."),
     maxSamples: z.number().int().min(1).max(64).optional().describe("Best-of-n budget (default 16, the measured knee). Higher = more coverage, more time."),
     model: z.string().optional().describe("Local Ollama model tag (default 'qwen2.5:7b')."),
+    format: z.enum(["abc", "chords"]).optional().describe("How the model emits its choice: 'abc' (default — an ABC lead sheet, far fewer empty outputs) or 'chords' (a JSON chord array)."),
   },
-  async ({ songId, measures, style, maxSamples, model }) => {
+  async ({ songId, measures, style, maxSamples, model, format }) => {
     const structuredError = (code: string, message: string, hint: string) => ({
       content: [
         {
@@ -2073,9 +2075,14 @@ registerTool(
     }
 
     // Ollama is OPTIONAL — probe once so an absent model fails soft with a clear
-    // structured error rather than crashing the server mid-loop.
+    // structured error rather than crashing the server mid-loop. The proposer's
+    // format defaults to ABC (measured far less prone to empty output than JSON);
+    // both are ChordProposers feeding the identical voicer + verify_harmony loop.
     const modelTag = model ?? "qwen2.5:7b";
-    const proposer = new OllamaChordProposer(modelTag, { maxTokens: 1024, styleHint: style });
+    const proposer =
+      format === "chords"
+        ? new OllamaChordProposer(modelTag, { maxTokens: 1024, styleHint: style })
+        : new AbcChordProposer(modelTag, { maxTokens: 1024, styleHint: style });
     try {
       await proposer.probe();
     } catch (err) {

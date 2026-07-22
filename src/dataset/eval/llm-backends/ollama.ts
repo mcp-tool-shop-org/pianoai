@@ -214,9 +214,31 @@ export class OllamaBackend implements LlmBackend {
     }
   }
 
-  /** Raw text from the most recent callStructured call. Used by tolerant E2 parser. */
+  /** Raw text from the most recent callStructured/generateText call. Used by tolerant parsers. */
   lastRawText(): string | null {
     return this._lastRawText;
+  }
+
+  /**
+   * Seeded plain-text generation with NO JSON constraint — for non-JSON outputs
+   * like ABC notation. Unlike callPlain, this forwards the backend's genOptions
+   * (seed, num_predict) the same way callStructured does, so best-of-n stays
+   * seeded and replayable. Sets lastRawText() for tolerant downstream parsing.
+   */
+  async generateText(args: { systemPrompt: string; userMessage: string }): Promise<string> {
+    const messages: OllamaMessage[] = [
+      { role: "system", content: args.systemPrompt },
+      { role: "user", content: args.userMessage },
+    ];
+    const data = (await this.post("/api/chat", {
+      model: this.model,
+      messages,
+      stream: false,
+      ...(this.genOptions ? { options: this.genOptions } : {}),
+    })) as OllamaChatResponse;
+    const text = data.message.content ?? "";
+    this._lastRawText = text;
+    return text;
   }
 
   async callPlain(args: {

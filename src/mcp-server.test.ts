@@ -603,12 +603,20 @@ describe("mcp-server.ts — MCP protocol-level tool tests", () => {
       try {
         const res = (await iso.client.callTool({
           name: "auto_reharmonize",
-          arguments: { songId: "fallin", measures: "1-4" },
+          arguments: { songId: "fallin", measures: "1-4" }, // default format: abc
         })) as ToolResult;
         expect(res.isError).toBe(true);
         const text = extractText(res);
         expect(text).toContain("ollama_unreachable");
         expect(text).toMatch(/ollama serve/i); // the hint tells the user how to fix it
+
+        // The 'chords' (JSON) format is also schema-valid and fails soft the same way.
+        const resChords = (await iso.client.callTool({
+          name: "auto_reharmonize",
+          arguments: { songId: "fallin", measures: "1-4", format: "chords" },
+        })) as ToolResult;
+        expect(resChords.isError).toBe(true);
+        expect(extractText(resChords)).toContain("ollama_unreachable");
 
         // The Ollama dependency is OPTIONAL: a deterministic tool still answers
         // after the failed LLM call, proving the server did not crash.
