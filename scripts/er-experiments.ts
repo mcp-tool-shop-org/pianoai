@@ -112,8 +112,12 @@ async function runSinglePass(model: string, items: ERItem[], gen: (b: OllamaBack
   }
   const pass = outcomes.filter((o) => o.passAt !== null).length;
   const empty = outcomes.filter((o) => (o.chords ?? 0) === 0).length;
-  console.log(`  → ${label}: ${pass}/${items.length} pass (${(pass / items.length * 100).toFixed(1)}%), ${empty}/${items.length} EMPTY (${(empty / items.length * 100).toFixed(1)}%)`);
-  writeReceipt(label, model, { mode: label, passRate: pass / items.length, passCount: pass, emptyCount: empty, emptyRate: empty / items.length, itemCount: items.length, outcomes });
+  // Completeness: mean chords (measures) kept per proposal — the metric the
+  // bass-aware inferChord change targets (fuller reharmonizations, fewer dropped
+  // measures). ABC already passes ~everything; the win here is measures-per-proposal.
+  const meanChordsPerProposal = outcomes.reduce((a, o) => a + (o.chords ?? 0), 0) / items.length;
+  console.log(`  → ${label}: ${pass}/${items.length} pass (${(pass / items.length * 100).toFixed(1)}%), ${empty}/${items.length} EMPTY (${(empty / items.length * 100).toFixed(1)}%), mean ${meanChordsPerProposal.toFixed(2)} chords/proposal`);
+  writeReceipt(label, model, { mode: label, passRate: pass / items.length, passCount: pass, emptyCount: empty, emptyRate: empty / items.length, meanChordsPerProposal, itemCount: items.length, outcomes });
 }
 
 async function runBestOfN(model: string, items: ERItem[], n: number, gen: (b: OllamaBackend, it: ERItem) => Promise<ParsedReharmonization>, maxTokens: number, label: string): Promise<void> {
@@ -122,20 +126,24 @@ async function runBestOfN(model: string, items: ERItem[], n: number, gen: (b: Ol
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     let passAt: number | null = null;
+    let passChords: number | undefined;
     for (let k = 0; k < n; k++) {
       const backend = backendFor(model, 42 + k, maxTokens); // distinct seed per sample
       const parsed = await gen(backend, item);
-      if (scoreERProposal(item, parsed).passes) { passAt = k + 1; break; }
+      if (scoreERProposal(item, parsed).passes) { passAt = k + 1; passChords = parsed.measures.length; break; }
     }
-    outcomes.push({ itemId: item.itemId, genre: item.genre, passAt });
-    console.log(`  [${i + 1}/${items.length}] ${item.itemId}: ${passAt === null ? "· no pass in " + n : "✓ pass@" + passAt}`);
+    outcomes.push({ itemId: item.itemId, genre: item.genre, passAt, chords: passChords });
+    console.log(`  [${i + 1}/${items.length}] ${item.itemId}: ${passAt === null ? "· no pass in " + n : "✓ pass@" + passAt + " (" + passChords + " chords)"}`);
   }
   // coverage@k curve
   const ks = [1, 2, 4, 8, 16, 32].filter((k) => k <= n);
   const coverage: Record<string, number> = {};
   for (const k of ks) coverage[String(k)] = outcomes.filter((o) => o.passAt !== null && o.passAt <= k).length / items.length;
-  console.log(`  → ${label} coverage@k: ${ks.map((k) => `@${k}=${(coverage[String(k)] * 100).toFixed(0)}%`).join(" ")}`);
-  writeReceipt(label + `-n${n}`, model, { mode: label, n, coverageAtK: coverage, itemCount: items.length, outcomes });
+  // Completeness of the passing proposals (measures kept) — the bass-aware target.
+  const passing = outcomes.filter((o) => o.passAt !== null);
+  const meanChordsPerProposal = passing.length ? passing.reduce((a, o) => a + (o.chords ?? 0), 0) / passing.length : 0;
+  console.log(`  → ${label} coverage@k: ${ks.map((k) => `@${k}=${(coverage[String(k)] * 100).toFixed(0)}%`).join(" ")}, mean ${meanChordsPerProposal.toFixed(2)} chords/passing-proposal`);
+  writeReceipt(label + `-n${n}`, model, { mode: label, n, coverageAtK: coverage, meanChordsPerProposal, itemCount: items.length, outcomes });
 }
 
 function writeReceipt(label: string, model: string, payload: Record<string, unknown>): void {

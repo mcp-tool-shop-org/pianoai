@@ -1,0 +1,235 @@
+{
+  "schemaVersion": "bass-aware-completeness/1.0.0",
+  "runDate": "2026-07-22T22:17:14.943Z",
+  "model": "qwen2.5:7b",
+  "note": "Drift-free: each item's ABC generated once (seed 42); old vs new voiceChord vocabulary applied to the IDENTICAL emitted symbols. Metric is completeness (measures kept per proposal), not pass-rate.",
+  "itemCount": 22,
+  "meanChordsEmitted": 7.955,
+  "meanKeptOld": 6.591,
+  "meanKeptNew": 7.773,
+  "droppedRateOld": 0.1714,
+  "droppedRateNew": 0.0229,
+  "newlyUnlockedMeasures": 26,
+  "unlockedByQuality": {
+    "9": 10,
+    "dim7": 5,
+    "min7": 5,
+    "m9": 3,
+    "7sus4": 1,
+    "maj9": 2
+  },
+  "unlockedSymbols": {
+    "C#dim7": 2,
+    "Cdim7": 1,
+    "Bmin7": 1,
+    "Gmin7": 1,
+    "Gm9": 1,
+    "Ab9": 1,
+    "Bb9": 1,
+    "G9": 2,
+    "B7sus4": 1,
+    "C9": 2,
+    "F9": 2,
+    "D9": 2,
+    "Dm9": 1,
+    "Fmaj9": 1,
+    "Bm9": 1,
+    "Emaj9": 1,
+    "Bdim7": 1,
+    "Emin7": 3,
+    "Ddim7": 1
+  },
+  "perItem": [
+    {
+      "itemId": "all-the-things-you-are:m1-8",
+      "emitted": 7,
+      "oldKept": 5,
+      "newKept": 6,
+      "unlocked": [
+        "C#dim7"
+      ]
+    },
+    {
+      "itemId": "autumn-leaves:m1-8",
+      "emitted": 8,
+      "oldKept": 5,
+      "newKept": 8,
+      "unlocked": [
+        "Cdim7",
+        "Bmin7",
+        "Gmin7"
+      ]
+    },
+    {
+      "itemId": "a-thousand-years:m1-8",
+      "emitted": 8,
+      "oldKept": 6,
+      "newKept": 8,
+      "unlocked": [
+        "Gm9",
+        "Ab9"
+      ]
+    },
+    {
+      "itemId": "all-of-me:m1-8",
+      "emitted": 8,
+      "oldKept": 8,
+      "newKept": 8,
+      "unlocked": []
+    },
+    {
+      "itemId": "blues-in-the-night:m1-8",
+      "emitted": 8,
+      "oldKept": 7,
+      "newKept": 8,
+      "unlocked": [
+        "Bb9"
+      ]
+    },
+    {
+      "itemId": "born-under-a-bad-sign:m1-8",
+      "emitted": 8,
+      "oldKept": 7,
+      "newKept": 8,
+      "unlocked": [
+        "C#dim7"
+      ]
+    },
+    {
+      "itemId": "baba-oriley:m1-8",
+      "emitted": 8,
+      "oldKept": 8,
+      "newKept": 8,
+      "unlocked": []
+    },
+    {
+      "itemId": "bennie-and-the-jets:m1-8",
+      "emitted": 8,
+      "oldKept": 8,
+      "newKept": 8,
+      "unlocked": []
+    },
+    {
+      "itemId": "fallin:m1-8",
+      "emitted": 8,
+      "oldKept": 3,
+      "newKept": 8,
+      "unlocked": [
+        "G9",
+        "B7sus4",
+        "C9",
+        "F9",
+        "D9"
+      ]
+    },
+    {
+      "itemId": "halo:m1-8",
+      "emitted": 8,
+      "oldKept": 8,
+      "newKept": 8,
+      "unlocked": []
+    },
+    {
+      "itemId": "a-change-is-gonna-come:m1-8",
+      "emitted": 8,
+      "oldKept": 5,
+      "newKept": 8,
+      "unlocked": [
+        "Dm9",
+        "Fmaj9",
+        "Bm9"
+      ]
+    },
+    {
+      "itemId": "aint-no-sunshine:m1-8",
+      "emitted": 8,
+      "oldKept": 7,
+      "newKept": 8,
+      "unlocked": [
+        "Emaj9"
+      ]
+    },
+    {
+      "itemId": "agua-de-beber:m1-8",
+      "emitted": 8,
+      "oldKept": 6,
+      "newKept": 7,
+      "unlocked": [
+        "Bdim7"
+      ]
+    },
+    {
+      "itemId": "besame-mucho:m1-8",
+      "emitted": 8,
+      "oldKept": 6,
+      "newKept": 6,
+      "unlocked": []
+    },
+    {
+      "itemId": "cinema-paradiso:m1-8",
+      "emitted": 8,
+      "oldKept": 8,
+      "newKept": 8,
+      "unlocked": []
+    },
+    {
+      "itemId": "comptine-dun-autre-ete:m1-8",
+      "emitted": 8,
+      "oldKept": 8,
+      "newKept": 8,
+      "unlocked": []
+    },
+    {
+      "itemId": "bethena:m1-8",
+      "emitted": 8,
+      "oldKept": 4,
+      "newKept": 8,
+      "unlocked": [
+        "C9",
+        "G9",
+        "F9",
+        "D9"
+      ]
+    },
+    {
+      "itemId": "elite-syncopations:m1-8",
+      "emitted": 8,
+      "oldKept": 8,
+      "newKept": 8,
+      "unlocked": []
+    },
+    {
+      "itemId": "divenire:m1-8",
+      "emitted": 8,
+      "oldKept": 8,
+      "newKept": 8,
+      "unlocked": []
+    },
+    {
+      "itemId": "experience:m1-8",
+      "emitted": 8,
+      "oldKept": 4,
+      "newKept": 8,
+      "unlocked": [
+        "Emin7",
+        "Emin7",
+        "Ddim7",
+        "Emin7"
+      ]
+    },
+    {
+      "itemId": "amazing-grace:m1-8",
+      "emitted": 8,
+      "oldKept": 8,
+      "newKept": 8,
+      "unlocked": []
+    },
+    {
+      "itemId": "auld-lang-syne:m1-8",
+      "emitted": 8,
+      "oldKept": 8,
+      "newKept": 8,
+      "unlocked": []
+    }
+  ]
+}
