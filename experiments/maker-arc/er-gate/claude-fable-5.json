@@ -1,0 +1,639 @@
+{
+  "schemaVersion": "er-gate/1.0.0",
+  "runDate": "2026-07-22T18:03:48.415Z",
+  "mode": "responses-file",
+  "model": "claude-fable-5",
+  "bar": {
+    "gate": "verifyHarmony.verified AND non-triviality",
+    "nonTrivialityFraction": 0.3333333333333333
+  },
+  "itemSet": {
+    "source": "library non-classical genres (classical = jam-actions training, excluded)",
+    "itemCount": 22,
+    "itemsPerGenre": 2,
+    "sectionBars": 8
+  },
+  "aggregate": {
+    "modelLabel": "claude-fable-5",
+    "itemCount": 22,
+    "parseableCount": 22,
+    "passCount": 19,
+    "passRate": 0.8636363636363636,
+    "verifiedCount": 21,
+    "verifiedRate": 0.9545454545454546,
+    "trivialButVerifiedCount": 2,
+    "parseFailures": 0,
+    "meanChordFidelity": 1,
+    "meanNonTrivialityFraction": 0.7215909090909091,
+    "byGenre": [
+      {
+        "genre": "jazz",
+        "items": 2,
+        "passes": 2
+      },
+      {
+        "genre": "pop",
+        "items": 2,
+        "passes": 2
+      },
+      {
+        "genre": "blues",
+        "items": 2,
+        "passes": 2
+      },
+      {
+        "genre": "rock",
+        "items": 2,
+        "passes": 2
+      },
+      {
+        "genre": "rnb",
+        "items": 2,
+        "passes": 2
+      },
+      {
+        "genre": "soul",
+        "items": 2,
+        "passes": 1
+      },
+      {
+        "genre": "latin",
+        "items": 2,
+        "passes": 2
+      },
+      {
+        "genre": "film",
+        "items": 2,
+        "passes": 2
+      },
+      {
+        "genre": "ragtime",
+        "items": 2,
+        "passes": 1
+      },
+      {
+        "genre": "new-age",
+        "items": 2,
+        "passes": 1
+      },
+      {
+        "genre": "folk",
+        "items": 2,
+        "passes": 2
+      }
+    ]
+  },
+  "perItem": [
+    {
+      "itemId": "all-the-things-you-are:m1-8",
+      "songId": "all-the-things-you-are",
+      "genre": "jazz",
+      "parseStatus": "clean",
+      "proposalMeasures": 8,
+      "verified": true,
+      "chordFidelity": {
+        "matched": 8,
+        "total": 8,
+        "pass": true
+      },
+      "consonance": {
+        "chromaticRatio": 0.1592920353982301,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 8,
+        "totalMeasures": 8,
+        "fraction": 1,
+        "passes": true
+      },
+      "passes": true,
+      "summary": "VERIFIED — 8/8 chords confirmed by the chord engine; 41 chord tones, 54 tensions, 18 chromatic (ratio 0.159 ≤ 0.2)"
+    },
+    {
+      "itemId": "autumn-leaves:m1-8",
+      "songId": "autumn-leaves",
+      "genre": "jazz",
+      "parseStatus": "clean",
+      "proposalMeasures": 8,
+      "verified": true,
+      "chordFidelity": {
+        "matched": 8,
+        "total": 8,
+        "pass": true
+      },
+      "consonance": {
+        "chromaticRatio": 0.1527777777777778,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 8,
+        "totalMeasures": 8,
+        "fraction": 1,
+        "passes": true
+      },
+      "passes": true,
+      "summary": "VERIFIED — 8/8 chords confirmed by the chord engine; 42 chord tones, 19 tensions, 11 chromatic (ratio 0.153 ≤ 0.2)"
+    },
+    {
+      "itemId": "a-thousand-years:m1-8",
+      "songId": "a-thousand-years",
+      "genre": "pop",
+      "parseStatus": "clean",
+      "proposalMeasures": 8,
+      "verified": true,
+      "chordFidelity": {
+        "matched": 8,
+        "total": 8,
+        "pass": true
+      },
+      "consonance": {
+        "chromaticRatio": 0.05952380952380952,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 4,
+        "totalMeasures": 8,
+        "fraction": 0.5,
+        "passes": true
+      },
+      "passes": true,
+      "summary": "VERIFIED — 8/8 chords confirmed by the chord engine; 43 chord tones, 36 tensions, 5 chromatic (ratio 0.060 ≤ 0.2)"
+    },
+    {
+      "itemId": "all-of-me:m1-8",
+      "songId": "all-of-me",
+      "genre": "pop",
+      "parseStatus": "clean",
+      "proposalMeasures": 8,
+      "verified": true,
+      "chordFidelity": {
+        "matched": 8,
+        "total": 8,
+        "pass": true
+      },
+      "consonance": {
+        "chromaticRatio": 0,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 8,
+        "totalMeasures": 8,
+        "fraction": 1,
+        "passes": true
+      },
+      "passes": true,
+      "summary": "VERIFIED — 8/8 chords confirmed by the chord engine; 98 chord tones, 42 tensions, 0 chromatic (ratio 0.000 ≤ 0.2)"
+    },
+    {
+      "itemId": "blues-in-the-night:m1-8",
+      "songId": "blues-in-the-night",
+      "genre": "blues",
+      "parseStatus": "clean",
+      "proposalMeasures": 8,
+      "verified": true,
+      "chordFidelity": {
+        "matched": 8,
+        "total": 8,
+        "pass": true
+      },
+      "consonance": {
+        "chromaticRatio": 0.019801980198019802,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 7,
+        "totalMeasures": 8,
+        "fraction": 0.875,
+        "passes": true
+      },
+      "passes": true,
+      "summary": "VERIFIED — 8/8 chords confirmed by the chord engine; 51 chord tones, 48 tensions, 2 chromatic (ratio 0.020 ≤ 0.2)"
+    },
+    {
+      "itemId": "born-under-a-bad-sign:m1-8",
+      "songId": "born-under-a-bad-sign",
+      "genre": "blues",
+      "parseStatus": "clean",
+      "proposalMeasures": 8,
+      "verified": true,
+      "chordFidelity": {
+        "matched": 8,
+        "total": 8,
+        "pass": true
+      },
+      "consonance": {
+        "chromaticRatio": 0.1282051282051282,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 6,
+        "totalMeasures": 8,
+        "fraction": 0.75,
+        "passes": true
+      },
+      "passes": true,
+      "summary": "VERIFIED — 8/8 chords confirmed by the chord engine; 14 chord tones, 20 tensions, 5 chromatic (ratio 0.128 ≤ 0.2)"
+    },
+    {
+      "itemId": "baba-oriley:m1-8",
+      "songId": "baba-oriley",
+      "genre": "rock",
+      "parseStatus": "clean",
+      "proposalMeasures": 8,
+      "verified": true,
+      "chordFidelity": {
+        "matched": 8,
+        "total": 8,
+        "pass": true
+      },
+      "consonance": {
+        "chromaticRatio": 0.043478260869565216,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 8,
+        "totalMeasures": 8,
+        "fraction": 1,
+        "passes": true
+      },
+      "passes": true,
+      "summary": "VERIFIED — 8/8 chords confirmed by the chord engine; 169 chord tones, 95 tensions, 12 chromatic (ratio 0.043 ≤ 0.2)"
+    },
+    {
+      "itemId": "bennie-and-the-jets:m1-8",
+      "songId": "bennie-and-the-jets",
+      "genre": "rock",
+      "parseStatus": "clean",
+      "proposalMeasures": 8,
+      "verified": true,
+      "chordFidelity": {
+        "matched": 8,
+        "total": 8,
+        "pass": true
+      },
+      "consonance": {
+        "chromaticRatio": 0.013513513513513514,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 6,
+        "totalMeasures": 8,
+        "fraction": 0.75,
+        "passes": true
+      },
+      "passes": true,
+      "summary": "VERIFIED — 8/8 chords confirmed by the chord engine; 61 chord tones, 12 tensions, 1 chromatic (ratio 0.014 ≤ 0.2)"
+    },
+    {
+      "itemId": "fallin:m1-8",
+      "songId": "fallin",
+      "genre": "rnb",
+      "parseStatus": "clean",
+      "proposalMeasures": 8,
+      "verified": true,
+      "chordFidelity": {
+        "matched": 8,
+        "total": 8,
+        "pass": true
+      },
+      "consonance": {
+        "chromaticRatio": 0.045454545454545456,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 7,
+        "totalMeasures": 8,
+        "fraction": 0.875,
+        "passes": true
+      },
+      "passes": true,
+      "summary": "VERIFIED — 8/8 chords confirmed by the chord engine; 11 chord tones, 10 tensions, 1 chromatic (ratio 0.045 ≤ 0.2)"
+    },
+    {
+      "itemId": "halo:m1-8",
+      "songId": "halo",
+      "genre": "rnb",
+      "parseStatus": "clean",
+      "proposalMeasures": 8,
+      "verified": true,
+      "chordFidelity": {
+        "matched": 8,
+        "total": 8,
+        "pass": true
+      },
+      "consonance": {
+        "chromaticRatio": 0.05434782608695652,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 6,
+        "totalMeasures": 8,
+        "fraction": 0.75,
+        "passes": true
+      },
+      "passes": true,
+      "summary": "VERIFIED — 8/8 chords confirmed by the chord engine; 61 chord tones, 26 tensions, 5 chromatic (ratio 0.054 ≤ 0.2)"
+    },
+    {
+      "itemId": "a-change-is-gonna-come:m1-8",
+      "songId": "a-change-is-gonna-come",
+      "genre": "soul",
+      "parseStatus": "clean",
+      "proposalMeasures": 8,
+      "verified": true,
+      "chordFidelity": {
+        "matched": 8,
+        "total": 8,
+        "pass": true
+      },
+      "consonance": {
+        "chromaticRatio": 0.031914893617021274,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 2,
+        "totalMeasures": 8,
+        "fraction": 0.25,
+        "passes": false
+      },
+      "passes": false,
+      "summary": "VERIFIED — 8/8 chords confirmed by the chord engine; 58 chord tones, 33 tensions, 3 chromatic (ratio 0.032 ≤ 0.2)"
+    },
+    {
+      "itemId": "aint-no-sunshine:m1-8",
+      "songId": "aint-no-sunshine",
+      "genre": "soul",
+      "parseStatus": "clean",
+      "proposalMeasures": 8,
+      "verified": true,
+      "chordFidelity": {
+        "matched": 8,
+        "total": 8,
+        "pass": true
+      },
+      "consonance": {
+        "chromaticRatio": 0.07936507936507936,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 3,
+        "totalMeasures": 8,
+        "fraction": 0.375,
+        "passes": true
+      },
+      "passes": true,
+      "summary": "VERIFIED — 8/8 chords confirmed by the chord engine; 38 chord tones, 20 tensions, 5 chromatic (ratio 0.079 ≤ 0.2)"
+    },
+    {
+      "itemId": "agua-de-beber:m1-8",
+      "songId": "agua-de-beber",
+      "genre": "latin",
+      "parseStatus": "clean",
+      "proposalMeasures": 8,
+      "verified": true,
+      "chordFidelity": {
+        "matched": 8,
+        "total": 8,
+        "pass": true
+      },
+      "consonance": {
+        "chromaticRatio": 0.08888888888888889,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 5,
+        "totalMeasures": 8,
+        "fraction": 0.625,
+        "passes": true
+      },
+      "passes": true,
+      "summary": "VERIFIED — 8/8 chords confirmed by the chord engine; 20 chord tones, 21 tensions, 4 chromatic (ratio 0.089 ≤ 0.2)"
+    },
+    {
+      "itemId": "besame-mucho:m1-8",
+      "songId": "besame-mucho",
+      "genre": "latin",
+      "parseStatus": "clean",
+      "proposalMeasures": 8,
+      "verified": true,
+      "chordFidelity": {
+        "matched": 8,
+        "total": 8,
+        "pass": true
+      },
+      "consonance": {
+        "chromaticRatio": 0.010471204188481676,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 6,
+        "totalMeasures": 8,
+        "fraction": 0.75,
+        "passes": true
+      },
+      "passes": true,
+      "summary": "VERIFIED — 8/8 chords confirmed by the chord engine; 111 chord tones, 78 tensions, 2 chromatic (ratio 0.010 ≤ 0.2)"
+    },
+    {
+      "itemId": "cinema-paradiso:m1-8",
+      "songId": "cinema-paradiso",
+      "genre": "film",
+      "parseStatus": "clean",
+      "proposalMeasures": 8,
+      "verified": true,
+      "chordFidelity": {
+        "matched": 8,
+        "total": 8,
+        "pass": true
+      },
+      "consonance": {
+        "chromaticRatio": 0.016,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 4,
+        "totalMeasures": 8,
+        "fraction": 0.5,
+        "passes": true
+      },
+      "passes": true,
+      "summary": "VERIFIED — 8/8 chords confirmed by the chord engine; 79 chord tones, 44 tensions, 2 chromatic (ratio 0.016 ≤ 0.2)"
+    },
+    {
+      "itemId": "comptine-dun-autre-ete:m1-8",
+      "songId": "comptine-dun-autre-ete",
+      "genre": "film",
+      "parseStatus": "clean",
+      "proposalMeasures": 8,
+      "verified": true,
+      "chordFidelity": {
+        "matched": 8,
+        "total": 8,
+        "pass": true
+      },
+      "consonance": {
+        "chromaticRatio": 0,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 5,
+        "totalMeasures": 8,
+        "fraction": 0.625,
+        "passes": true
+      },
+      "passes": true,
+      "summary": "VERIFIED — 8/8 chords confirmed by the chord engine; 20 chord tones, 12 tensions, 0 chromatic (ratio 0.000 ≤ 0.2)"
+    },
+    {
+      "itemId": "bethena:m1-8",
+      "songId": "bethena",
+      "genre": "ragtime",
+      "parseStatus": "clean",
+      "proposalMeasures": 8,
+      "verified": false,
+      "chordFidelity": {
+        "matched": 8,
+        "total": 8,
+        "pass": true
+      },
+      "consonance": {
+        "chromaticRatio": 0.23529411764705882,
+        "pass": false
+      },
+      "nonTriviality": {
+        "changedMeasures": 7,
+        "totalMeasures": 8,
+        "fraction": 0.875,
+        "passes": true
+      },
+      "passes": false,
+      "summary": "REJECTED — chromatic ratio 0.235 > 0.2"
+    },
+    {
+      "itemId": "elite-syncopations:m1-8",
+      "songId": "elite-syncopations",
+      "genre": "ragtime",
+      "parseStatus": "clean",
+      "proposalMeasures": 8,
+      "verified": true,
+      "chordFidelity": {
+        "matched": 8,
+        "total": 8,
+        "pass": true
+      },
+      "consonance": {
+        "chromaticRatio": 0.0625,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 5,
+        "totalMeasures": 8,
+        "fraction": 0.625,
+        "passes": true
+      },
+      "passes": true,
+      "summary": "VERIFIED — 8/8 chords confirmed by the chord engine; 46 chord tones, 29 tensions, 5 chromatic (ratio 0.063 ≤ 0.2)"
+    },
+    {
+      "itemId": "divenire:m1-8",
+      "songId": "divenire",
+      "genre": "new-age",
+      "parseStatus": "clean",
+      "proposalMeasures": 8,
+      "verified": true,
+      "chordFidelity": {
+        "matched": 8,
+        "total": 8,
+        "pass": true
+      },
+      "consonance": {
+        "chromaticRatio": 0,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 7,
+        "totalMeasures": 8,
+        "fraction": 0.875,
+        "passes": true
+      },
+      "passes": true,
+      "summary": "VERIFIED — 8/8 chords confirmed by the chord engine; 36 chord tones, 21 tensions, 0 chromatic (ratio 0.000 ≤ 0.2)"
+    },
+    {
+      "itemId": "experience:m1-8",
+      "songId": "experience",
+      "genre": "new-age",
+      "parseStatus": "clean",
+      "proposalMeasures": 8,
+      "verified": true,
+      "chordFidelity": {
+        "matched": 8,
+        "total": 8,
+        "pass": true
+      },
+      "consonance": {
+        "chromaticRatio": 0.11904761904761904,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 2,
+        "totalMeasures": 8,
+        "fraction": 0.25,
+        "passes": false
+      },
+      "passes": false,
+      "summary": "VERIFIED — 8/8 chords confirmed by the chord engine; 34 chord tones, 40 tensions, 10 chromatic (ratio 0.119 ≤ 0.2)"
+    },
+    {
+      "itemId": "amazing-grace:m1-8",
+      "songId": "amazing-grace",
+      "genre": "folk",
+      "parseStatus": "clean",
+      "proposalMeasures": 8,
+      "verified": true,
+      "chordFidelity": {
+        "matched": 8,
+        "total": 8,
+        "pass": true
+      },
+      "consonance": {
+        "chromaticRatio": 0.05,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 8,
+        "totalMeasures": 8,
+        "fraction": 1,
+        "passes": true
+      },
+      "passes": true,
+      "summary": "VERIFIED — 8/8 chords confirmed by the chord engine; 15 chord tones, 4 tensions, 1 chromatic (ratio 0.050 ≤ 0.2)"
+    },
+    {
+      "itemId": "auld-lang-syne:m1-8",
+      "songId": "auld-lang-syne",
+      "genre": "folk",
+      "parseStatus": "clean",
+      "proposalMeasures": 8,
+      "verified": true,
+      "chordFidelity": {
+        "matched": 8,
+        "total": 8,
+        "pass": true
+      },
+      "consonance": {
+        "chromaticRatio": 0.046511627906976744,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 5,
+        "totalMeasures": 8,
+        "fraction": 0.625,
+        "passes": true
+      },
+      "passes": true,
+      "summary": "VERIFIED — 8/8 chords confirmed by the chord engine; 65 chord tones, 17 tensions, 4 chromatic (ratio 0.047 ≤ 0.2)"
+    }
+  ],
+  "responsesFile": "C:/Users/mikey/AppData/Local/Temp/claude/E--AI-ai-jam-sessions/c2684146-d2d5-4189-8786-750d1b15e1d7/scratchpad/claude-er-responses.json"
+}

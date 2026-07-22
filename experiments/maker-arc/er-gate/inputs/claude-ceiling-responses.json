@@ -1,0 +1,93 @@
+{
+  "label": "claude-fable-5",
+  "responses": [
+    {
+      "itemId": "all-the-things-you-are:m1-8",
+      "raw": "[{\"measure\":1,\"intendedChord\":\"Fm7\",\"voicing\":\"F2 G#2 C3 D#3\"},{\"measure\":2,\"intendedChord\":\"Fm7\",\"voicing\":\"F2 G#2 C3 D#3\"},{\"measure\":3,\"intendedChord\":\"Bbm7\",\"voicing\":\"A#2 C#3 F3 G#3\"},{\"measure\":4,\"intendedChord\":\"Eb7\",\"voicing\":\"D#2 G2 A#2 C#3\"},{\"measure\":5,\"intendedChord\":\"Abmaj7\",\"voicing\":\"G#2 C3 D#3 G3\"},{\"measure\":6,\"intendedChord\":\"Dbmaj7\",\"voicing\":\"C#2 F2 G#2 C3\"},{\"measure\":7,\"intendedChord\":\"Gm7\",\"voicing\":\"G2 A#2 D3 F3\"},{\"measure\":8,\"intendedChord\":\"C7\",\"voicing\":\"C2 E2 G2 A#2\"}]"
+    },
+    {
+      "itemId": "autumn-leaves:m1-8",
+      "raw": "[{\"measure\":1,\"intendedChord\":\"Gm7\",\"voicing\":\"G2 A#2 D3 F3\"},{\"measure\":2,\"intendedChord\":\"Gm7\",\"voicing\":\"G2 A#2 D3 F3\"},{\"measure\":3,\"intendedChord\":\"Am7b5\",\"voicing\":\"A2 C3 D#3 G3\"},{\"measure\":4,\"intendedChord\":\"D7\",\"voicing\":\"D2 F#2 A2 C3\"},{\"measure\":5,\"intendedChord\":\"Gm7\",\"voicing\":\"G2 A#2 D3 F3\"},{\"measure\":6,\"intendedChord\":\"Cm7\",\"voicing\":\"C2 D#2 G2 A#2\"},{\"measure\":7,\"intendedChord\":\"F7\",\"voicing\":\"F2 A2 C3 D#3\"},{\"measure\":8,\"intendedChord\":\"Bbmaj7\",\"voicing\":\"A#2 D3 F3 A3\"}]"
+    },
+    {
+      "itemId": "a-thousand-years:m1-8",
+      "raw": "[{\"measure\":1,\"intendedChord\":\"C#m\",\"voicing\":\"C#2 E2 G#2\"},{\"measure\":2,\"intendedChord\":\"B\",\"voicing\":\"B2 D#3 F#3\"},{\"measure\":3,\"intendedChord\":\"A\",\"voicing\":\"A2 C#3 E3\"},{\"measure\":4,\"intendedChord\":\"Amaj7\",\"voicing\":\"A2 C#3 E3 G#3\"},{\"measure\":5,\"intendedChord\":\"C#m\",\"voicing\":\"C#2 E2 G#2\"},{\"measure\":6,\"intendedChord\":\"B\",\"voicing\":\"B2 D#3 F#3\"},{\"measure\":7,\"intendedChord\":\"A\",\"voicing\":\"A2 C#3 E3\"},{\"measure\":8,\"intendedChord\":\"Amaj7\",\"voicing\":\"A2 C#3 E3 G#3\"}]"
+    },
+    {
+      "itemId": "all-of-me:m1-8",
+      "raw": "[{\"measure\":1,\"intendedChord\":\"Cm7\",\"voicing\":\"C2 D#2 G2 A#2\"},{\"measure\":2,\"intendedChord\":\"Fm7\",\"voicing\":\"F2 G#2 C3 D#3\"},{\"measure\":3,\"intendedChord\":\"Ebmaj7\",\"voicing\":\"D#2 G2 A#2 D3\"},{\"measure\":4,\"intendedChord\":\"Bb7\",\"voicing\":\"A#2 D3 F3 G#3\"},{\"measure\":5,\"intendedChord\":\"Cm7\",\"voicing\":\"C2 D#2 G2 A#2\"},{\"measure\":6,\"intendedChord\":\"Fm7\",\"voicing\":\"F2 G#2 C3 D#3\"},{\"measure\":7,\"intendedChord\":\"Fm7\",\"voicing\":\"F2 G#2 C3 D#3\"},{\"measure\":8,\"intendedChord\":\"Bb7\",\"voicing\":\"A#2 D3 F3 G#3\"}]"
+    },
+    {
+      "itemId": "blues-in-the-night:m1-8",
+      "raw": "[{\"measure\":1,\"intendedChord\":\"C#m7\",\"voicing\":\"C#2 E2 G#2 B2\"},{\"measure\":2,\"intendedChord\":\"C#7\",\"voicing\":\"C#2 F2 G#2 B2\"},{\"measure\":3,\"intendedChord\":\"F#m7\",\"voicing\":\"F#2 A2 C#3 E3\"},{\"measure\":4,\"intendedChord\":\"B7\",\"voicing\":\"B2 D#3 F#3 A3\"},{\"measure\":5,\"intendedChord\":\"D#m7b5\",\"voicing\":\"D#2 F#2 A2 C#3\"},{\"measure\":6,\"intendedChord\":\"G#7\",\"voicing\":\"G#2 C3 D#3 F#3\"},{\"measure\":7,\"intendedChord\":\"Amaj7\",\"voicing\":\"A2 C#3 E3 G#3\"},{\"measure\":8,\"intendedChord\":\"E7\",\"voicing\":\"E2 G#2 B2 D3\"}]"
+    },
+    {
+      "itemId": "born-under-a-bad-sign:m1-8",
+      "raw": "[{\"measure\":1,\"intendedChord\":\"C#m\",\"voicing\":\"C#2 E2 G#2\"},{\"measure\":2,\"intendedChord\":\"F#m7\",\"voicing\":\"F#2 A2 C#3 E3\"},{\"measure\":3,\"intendedChord\":\"Bsus2\",\"voicing\":\"B2 C#3 F#3\"},{\"measure\":4,\"intendedChord\":\"F#m7\",\"voicing\":\"F#2 A2 C#3 E3\"},{\"measure\":5,\"intendedChord\":\"Gdim\",\"voicing\":\"G2 A#2 C#3\"},{\"measure\":6,\"intendedChord\":\"Am7b5\",\"voicing\":\"A2 C3 D#3 G3\"},{\"measure\":7,\"intendedChord\":\"Bsus2\",\"voicing\":\"B2 C#3 F#3\"},{\"measure\":8,\"intendedChord\":\"Fm\",\"voicing\":\"F2 G#2 C3\"}]"
+    },
+    {
+      "itemId": "baba-oriley:m1-8",
+      "raw": "[{\"measure\":1,\"intendedChord\":\"F\",\"voicing\":\"F2 A2 C3\"},{\"measure\":2,\"intendedChord\":\"F\",\"voicing\":\"F2 A2 C3\"},{\"measure\":3,\"intendedChord\":\"Fsus2\",\"voicing\":\"F2 G2 C3\"},{\"measure\":4,\"intendedChord\":\"C\",\"voicing\":\"C2 E2 G2\"},{\"measure\":5,\"intendedChord\":\"Fmaj7\",\"voicing\":\"F2 A2 C3 E3\"},{\"measure\":6,\"intendedChord\":\"Bb\",\"voicing\":\"A#2 D3 F3\"},{\"measure\":7,\"intendedChord\":\"F\",\"voicing\":\"F2 A2 C3\"},{\"measure\":8,\"intendedChord\":\"C7\",\"voicing\":\"C2 E2 G2 A#2\"}]"
+    },
+    {
+      "itemId": "bennie-and-the-jets:m1-8",
+      "raw": "[{\"measure\":1,\"intendedChord\":\"G\",\"voicing\":\"G2 B2 D3\"},{\"measure\":2,\"intendedChord\":\"G\",\"voicing\":\"G2 B2 D3\"},{\"measure\":3,\"intendedChord\":\"Gmaj7\",\"voicing\":\"G2 B2 D3 F#3\"},{\"measure\":4,\"intendedChord\":\"Em7\",\"voicing\":\"E2 G2 B2 D3\"},{\"measure\":5,\"intendedChord\":\"Am7\",\"voicing\":\"A2 C3 E3 G3\"},{\"measure\":6,\"intendedChord\":\"D7\",\"voicing\":\"D2 F#2 A2 C3\"},{\"measure\":7,\"intendedChord\":\"Em7\",\"voicing\":\"E2 G2 B2 D3\"},{\"measure\":8,\"intendedChord\":\"G\",\"voicing\":\"G2 B2 D3\"}]"
+    },
+    {
+      "itemId": "fallin:m1-8",
+      "raw": "[{\"measure\":1,\"intendedChord\":\"Em\",\"voicing\":\"E2 G2 B2\"},{\"measure\":2,\"intendedChord\":\"F#m7b5\",\"voicing\":\"F#2 A2 C3 E3\"},{\"measure\":3,\"intendedChord\":\"F#sus4\",\"voicing\":\"F#2 B2 C#3\"},{\"measure\":4,\"intendedChord\":\"Am\",\"voicing\":\"A2 C3 E3\"},{\"measure\":5,\"intendedChord\":\"Am7\",\"voicing\":\"A2 C3 E3 G3\"},{\"measure\":6,\"intendedChord\":\"G\",\"voicing\":\"G2 B2 D3\"},{\"measure\":7,\"intendedChord\":\"Bm\",\"voicing\":\"B2 D3 F#3\"},{\"measure\":8,\"intendedChord\":\"D\",\"voicing\":\"D2 F#2 A2\"}]"
+    },
+    {
+      "itemId": "halo:m1-8",
+      "raw": "[{\"measure\":1,\"intendedChord\":\"Amaj7\",\"voicing\":\"A2 C#3 E3 G#3\"},{\"measure\":2,\"intendedChord\":\"F#m7\",\"voicing\":\"F#2 A2 C#3 E3\"},{\"measure\":3,\"intendedChord\":\"A\",\"voicing\":\"A2 C#3 E3\"},{\"measure\":4,\"intendedChord\":\"Bsus2\",\"voicing\":\"B2 C#3 F#3\"},{\"measure\":5,\"intendedChord\":\"B7\",\"voicing\":\"B2 D#3 F#3 A3\"},{\"measure\":6,\"intendedChord\":\"F#m7b5\",\"voicing\":\"F#2 A2 C3 E3\"},{\"measure\":7,\"intendedChord\":\"A\",\"voicing\":\"A2 C#3 E3\"},{\"measure\":8,\"intendedChord\":\"B\",\"voicing\":\"B2 D#3 F#3\"}]"
+    },
+    {
+      "itemId": "a-change-is-gonna-come:m1-8",
+      "raw": "[{\"measure\":1,\"intendedChord\":\"Bbmaj7\",\"voicing\":\"A#2 D3 F3 A3\"},{\"measure\":2,\"intendedChord\":\"Gm7\",\"voicing\":\"G2 A#2 D3 F3\"},{\"measure\":3,\"intendedChord\":\"Esus4\",\"voicing\":\"E2 A2 B2\"},{\"measure\":4,\"intendedChord\":\"Bm7b5\",\"voicing\":\"B2 D3 F3 A3\"},{\"measure\":5,\"intendedChord\":\"Dmaj7\",\"voicing\":\"D2 F#2 A2 C#3\"},{\"measure\":6,\"intendedChord\":\"Bm7\",\"voicing\":\"B2 D3 F#3 A3\"},{\"measure\":7,\"intendedChord\":\"Dmaj7\",\"voicing\":\"D2 F#2 A2 C#3\"},{\"measure\":8,\"intendedChord\":\"Bm7\",\"voicing\":\"B2 D3 F#3 A3\"}]"
+    },
+    {
+      "itemId": "aint-no-sunshine:m1-8",
+      "raw": "[{\"measure\":1,\"intendedChord\":\"Am7\",\"voicing\":\"A2 C3 E3 G3\"},{\"measure\":2,\"intendedChord\":\"Cmaj7\",\"voicing\":\"C2 E2 G2 B2\"},{\"measure\":3,\"intendedChord\":\"F#m7b5\",\"voicing\":\"F#2 A2 C3 E3\"},{\"measure\":4,\"intendedChord\":\"Dm7\",\"voicing\":\"D2 F2 A2 C3\"},{\"measure\":5,\"intendedChord\":\"F#m7b5\",\"voicing\":\"F#2 A2 C3 E3\"},{\"measure\":6,\"intendedChord\":\"F#dim\",\"voicing\":\"F#2 A2 C3\"},{\"measure\":7,\"intendedChord\":\"Esus2\",\"voicing\":\"E2 F#2 B2\"},{\"measure\":8,\"intendedChord\":\"D7\",\"voicing\":\"D2 F#2 A2 C3\"}]"
+    },
+    {
+      "itemId": "agua-de-beber:m1-8",
+      "raw": "[{\"measure\":1,\"intendedChord\":\"Am7\",\"voicing\":\"A2 C3 E3 G3\"},{\"measure\":2,\"intendedChord\":\"Am7\",\"voicing\":\"A2 C3 E3 G3\"},{\"measure\":3,\"intendedChord\":\"Dm7\",\"voicing\":\"D2 F2 A2 C3\"},{\"measure\":4,\"intendedChord\":\"Dm7\",\"voicing\":\"D2 F2 A2 C3\"},{\"measure\":5,\"intendedChord\":\"Am7\",\"voicing\":\"A2 C3 E3 G3\"},{\"measure\":6,\"intendedChord\":\"Gm7b5\",\"voicing\":\"G2 A#2 C#3 F3\"},{\"measure\":7,\"intendedChord\":\"A7\",\"voicing\":\"A2 C#3 E3 G3\"},{\"measure\":8,\"intendedChord\":\"Fmaj7\",\"voicing\":\"F2 A2 C3 E3\"}]"
+    },
+    {
+      "itemId": "besame-mucho:m1-8",
+      "raw": "[{\"measure\":1,\"intendedChord\":\"Dm7\",\"voicing\":\"D2 F2 A2 C3\"},{\"measure\":2,\"intendedChord\":\"Bbmaj7\",\"voicing\":\"A#2 D3 F3 A3\"},{\"measure\":3,\"intendedChord\":\"Gm7\",\"voicing\":\"G2 A#2 D3 F3\"},{\"measure\":4,\"intendedChord\":\"A7\",\"voicing\":\"A2 C#3 E3 G3\"},{\"measure\":5,\"intendedChord\":\"Dm7\",\"voicing\":\"D2 F2 A2 C3\"},{\"measure\":6,\"intendedChord\":\"Bbmaj7\",\"voicing\":\"A#2 D3 F3 A3\"},{\"measure\":7,\"intendedChord\":\"Gm7\",\"voicing\":\"G2 A#2 D3 F3\"},{\"measure\":8,\"intendedChord\":\"A7\",\"voicing\":\"A2 C#3 E3 G3\"}]"
+    },
+    {
+      "itemId": "cinema-paradiso:m1-8",
+      "raw": "[{\"measure\":1,\"intendedChord\":\"Bmaj7\",\"voicing\":\"B2 D#3 F#3 A#3\"},{\"measure\":2,\"intendedChord\":\"Bmaj7\",\"voicing\":\"B2 D#3 F#3 A#3\"},{\"measure\":3,\"intendedChord\":\"C#m7\",\"voicing\":\"C#2 E2 G#2 B2\"},{\"measure\":4,\"intendedChord\":\"F#7\",\"voicing\":\"F#2 A#2 C#3 E3\"},{\"measure\":5,\"intendedChord\":\"Bmaj7\",\"voicing\":\"B2 D#3 F#3 A#3\"},{\"measure\":6,\"intendedChord\":\"G#m7\",\"voicing\":\"G#2 B2 D#3 F#3\"},{\"measure\":7,\"intendedChord\":\"C#m7\",\"voicing\":\"C#2 E2 G#2 B2\"},{\"measure\":8,\"intendedChord\":\"F#7\",\"voicing\":\"F#2 A#2 C#3 E3\"}]"
+    },
+    {
+      "itemId": "comptine-dun-autre-ete:m1-8",
+      "raw": "[{\"measure\":1,\"intendedChord\":\"Em\",\"voicing\":\"E2 G2 B2\"},{\"measure\":2,\"intendedChord\":\"Cmaj7\",\"voicing\":\"C2 E2 G2 B2\"},{\"measure\":3,\"intendedChord\":\"Bm7\",\"voicing\":\"B2 D3 F#3 A3\"},{\"measure\":4,\"intendedChord\":\"Am7\",\"voicing\":\"A2 C3 E3 G3\"},{\"measure\":5,\"intendedChord\":\"Em\",\"voicing\":\"E2 G2 B2\"},{\"measure\":6,\"intendedChord\":\"Cmaj7\",\"voicing\":\"C2 E2 G2 B2\"},{\"measure\":7,\"intendedChord\":\"G\",\"voicing\":\"G2 B2 D3\"},{\"measure\":8,\"intendedChord\":\"D\",\"voicing\":\"D2 F#2 A2\"}]"
+    },
+    {
+      "itemId": "bethena:m1-8",
+      "raw": "[{\"measure\":1,\"intendedChord\":\"Gm7\",\"voicing\":\"G2 A#2 D3 F3\"},{\"measure\":2,\"intendedChord\":\"Gm7\",\"voicing\":\"G2 A#2 D3 F3\"},{\"measure\":3,\"intendedChord\":\"Cm7\",\"voicing\":\"C2 D#2 G2 A#2\"},{\"measure\":4,\"intendedChord\":\"Cm7\",\"voicing\":\"C2 D#2 G2 A#2\"},{\"measure\":5,\"intendedChord\":\"Am7b5\",\"voicing\":\"A2 C3 D#3 G3\"},{\"measure\":6,\"intendedChord\":\"Cmaj7\",\"voicing\":\"C2 E2 G2 B2\"},{\"measure\":7,\"intendedChord\":\"D7\",\"voicing\":\"D2 F#2 A2 C3\"},{\"measure\":8,\"intendedChord\":\"G7\",\"voicing\":\"G2 B2 D3 F3\"}]"
+    },
+    {
+      "itemId": "elite-syncopations:m1-8",
+      "raw": "[{\"measure\":1,\"intendedChord\":\"Dm7\",\"voicing\":\"D2 F2 A2 C3\"},{\"measure\":2,\"intendedChord\":\"F\",\"voicing\":\"F2 A2 C3\"},{\"measure\":3,\"intendedChord\":\"Cmaj7\",\"voicing\":\"C2 E2 G2 B2\"},{\"measure\":4,\"intendedChord\":\"Am7\",\"voicing\":\"A2 C3 E3 G3\"},{\"measure\":5,\"intendedChord\":\"Dm7\",\"voicing\":\"D2 F2 A2 C3\"},{\"measure\":6,\"intendedChord\":\"G7\",\"voicing\":\"G2 B2 D3 F3\"},{\"measure\":7,\"intendedChord\":\"Dmaj7\",\"voicing\":\"D2 F#2 A2 C#3\"},{\"measure\":8,\"intendedChord\":\"Bbsus2\",\"voicing\":\"A#2 C3 F3\"}]"
+    },
+    {
+      "itemId": "divenire:m1-8",
+      "raw": "[{\"measure\":1,\"intendedChord\":\"Am7\",\"voicing\":\"A2 C3 E3 G3\"},{\"measure\":2,\"intendedChord\":\"Cmaj7\",\"voicing\":\"C2 E2 G2 B2\"},{\"measure\":3,\"intendedChord\":\"Cm\",\"voicing\":\"C2 D#2 G2\"},{\"measure\":4,\"intendedChord\":\"Fmaj7\",\"voicing\":\"F2 A2 C3 E3\"},{\"measure\":5,\"intendedChord\":\"Cmaj7\",\"voicing\":\"C2 E2 G2 B2\"},{\"measure\":6,\"intendedChord\":\"Cmaj7\",\"voicing\":\"C2 E2 G2 B2\"},{\"measure\":7,\"intendedChord\":\"Cmaj7\",\"voicing\":\"C2 E2 G2 B2\"},{\"measure\":8,\"intendedChord\":\"Cmaj7\",\"voicing\":\"C2 E2 G2 B2\"}]"
+    },
+    {
+      "itemId": "experience:m1-8",
+      "raw": "[{\"measure\":1,\"intendedChord\":\"Em7\",\"voicing\":\"E2 G2 B2 D3\"},{\"measure\":2,\"intendedChord\":\"Em7\",\"voicing\":\"E2 G2 B2 D3\"},{\"measure\":3,\"intendedChord\":\"Em\",\"voicing\":\"E2 G2 B2\"},{\"measure\":4,\"intendedChord\":\"Dsus4\",\"voicing\":\"D2 G2 A2\"},{\"measure\":5,\"intendedChord\":\"Em\",\"voicing\":\"E2 G2 B2\"},{\"measure\":6,\"intendedChord\":\"Bmaj7\",\"voicing\":\"B2 D#3 F#3 A#3\"},{\"measure\":7,\"intendedChord\":\"Em\",\"voicing\":\"E2 G2 B2\"},{\"measure\":8,\"intendedChord\":\"Dsus4\",\"voicing\":\"D2 G2 A2\"}]"
+    },
+    {
+      "itemId": "amazing-grace:m1-8",
+      "raw": "[{\"measure\":1,\"intendedChord\":\"Ebmaj7\",\"voicing\":\"D#2 G2 A#2 D3\"},{\"measure\":2,\"intendedChord\":\"Cm7\",\"voicing\":\"C2 D#2 G2 A#2\"},{\"measure\":3,\"intendedChord\":\"Ab\",\"voicing\":\"G#2 C3 D#3\"},{\"measure\":4,\"intendedChord\":\"Fm7\",\"voicing\":\"F2 G#2 C3 D#3\"},{\"measure\":5,\"intendedChord\":\"Ebmaj7\",\"voicing\":\"D#2 G2 A#2 D3\"},{\"measure\":6,\"intendedChord\":\"Cm7\",\"voicing\":\"C2 D#2 G2 A#2\"},{\"measure\":7,\"intendedChord\":\"Bb7\",\"voicing\":\"A#2 D3 F3 G#3\"},{\"measure\":8,\"intendedChord\":\"Ebmaj7\",\"voicing\":\"D#2 G2 A#2 D3\"}]"
+    },
+    {
+      "itemId": "auld-lang-syne:m1-8",
+      "raw": "[{\"measure\":1,\"intendedChord\":\"Fmaj7\",\"voicing\":\"F2 A2 C3 E3\"},{\"measure\":2,\"intendedChord\":\"Am7\",\"voicing\":\"A2 C3 E3 G3\"},{\"measure\":3,\"intendedChord\":\"F7\",\"voicing\":\"F2 A2 C3 D#3\"},{\"measure\":4,\"intendedChord\":\"Dm7\",\"voicing\":\"D2 F2 A2 C3\"},{\"measure\":5,\"intendedChord\":\"Gm7\",\"voicing\":\"G2 A#2 D3 F3\"},{\"measure\":6,\"intendedChord\":\"Cm7\",\"voicing\":\"C2 D#2 G2 A#2\"},{\"measure\":7,\"intendedChord\":\"C7\",\"voicing\":\"C2 E2 G2 A#2\"},{\"measure\":8,\"intendedChord\":\"Dm7\",\"voicing\":\"D2 F2 A2 C3\"}]"
+    }
+  ]
+}

@@ -1,0 +1,643 @@
+{
+  "schemaVersion": "er-gate/1.0.0",
+  "runDate": "2026-07-22T18:01:56.983Z",
+  "mode": "ollama",
+  "model": "jam-ft-v1-qwen25:seed1024",
+  "bar": {
+    "gate": "verifyHarmony.verified AND non-triviality",
+    "nonTrivialityFraction": 0.3333333333333333
+  },
+  "itemSet": {
+    "source": "library non-classical genres (classical = jam-actions training, excluded)",
+    "itemCount": 22,
+    "itemsPerGenre": 2,
+    "sectionBars": 8
+  },
+  "aggregate": {
+    "modelLabel": "jam-ft-v1-qwen25:seed1024",
+    "itemCount": 22,
+    "parseableCount": 22,
+    "passCount": 0,
+    "passRate": 0,
+    "verifiedCount": 0,
+    "verifiedRate": 0,
+    "trivialButVerifiedCount": 0,
+    "parseFailures": 0,
+    "meanChordFidelity": 0.3806818181818182,
+    "meanNonTrivialityFraction": 0.8238636363636364,
+    "byGenre": [
+      {
+        "genre": "jazz",
+        "items": 2,
+        "passes": 0
+      },
+      {
+        "genre": "pop",
+        "items": 2,
+        "passes": 0
+      },
+      {
+        "genre": "blues",
+        "items": 2,
+        "passes": 0
+      },
+      {
+        "genre": "rock",
+        "items": 2,
+        "passes": 0
+      },
+      {
+        "genre": "rnb",
+        "items": 2,
+        "passes": 0
+      },
+      {
+        "genre": "soul",
+        "items": 2,
+        "passes": 0
+      },
+      {
+        "genre": "latin",
+        "items": 2,
+        "passes": 0
+      },
+      {
+        "genre": "film",
+        "items": 2,
+        "passes": 0
+      },
+      {
+        "genre": "ragtime",
+        "items": 2,
+        "passes": 0
+      },
+      {
+        "genre": "new-age",
+        "items": 2,
+        "passes": 0
+      },
+      {
+        "genre": "folk",
+        "items": 2,
+        "passes": 0
+      }
+    ]
+  },
+  "perItem": [
+    {
+      "itemId": "all-the-things-you-are:m1-8",
+      "songId": "all-the-things-you-are",
+      "genre": "jazz",
+      "parseStatus": "recovered",
+      "proposalMeasures": 8,
+      "verified": false,
+      "chordFidelity": {
+        "matched": 2,
+        "total": 8,
+        "pass": false
+      },
+      "consonance": {
+        "chromaticRatio": 0.11267605633802817,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 8,
+        "totalMeasures": 8,
+        "fraction": 1,
+        "passes": true
+      },
+      "passes": false,
+      "summary": "REJECTED — chord fidelity 2/8"
+    },
+    {
+      "itemId": "autumn-leaves:m1-8",
+      "songId": "autumn-leaves",
+      "genre": "jazz",
+      "parseStatus": "recovered",
+      "proposalMeasures": 8,
+      "verified": false,
+      "chordFidelity": {
+        "matched": 2,
+        "total": 8,
+        "pass": false
+      },
+      "consonance": {
+        "chromaticRatio": 0,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 8,
+        "totalMeasures": 8,
+        "fraction": 1,
+        "passes": true
+      },
+      "passes": false,
+      "summary": "REJECTED — chord fidelity 2/8"
+    },
+    {
+      "itemId": "a-thousand-years:m1-8",
+      "songId": "a-thousand-years",
+      "genre": "pop",
+      "parseStatus": "recovered",
+      "proposalMeasures": 8,
+      "verified": false,
+      "chordFidelity": {
+        "matched": 0,
+        "total": 8,
+        "pass": false
+      },
+      "consonance": {
+        "chromaticRatio": 0,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 8,
+        "totalMeasures": 8,
+        "fraction": 1,
+        "passes": true
+      },
+      "passes": false,
+      "summary": "REJECTED — chord fidelity 0/8"
+    },
+    {
+      "itemId": "all-of-me:m1-8",
+      "songId": "all-of-me",
+      "genre": "pop",
+      "parseStatus": "recovered",
+      "proposalMeasures": 8,
+      "verified": false,
+      "chordFidelity": {
+        "matched": 2,
+        "total": 8,
+        "pass": false
+      },
+      "consonance": {
+        "chromaticRatio": 0.125,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 8,
+        "totalMeasures": 8,
+        "fraction": 1,
+        "passes": true
+      },
+      "passes": false,
+      "summary": "REJECTED — chord fidelity 2/8"
+    },
+    {
+      "itemId": "blues-in-the-night:m1-8",
+      "songId": "blues-in-the-night",
+      "genre": "blues",
+      "parseStatus": "recovered",
+      "proposalMeasures": 8,
+      "verified": false,
+      "chordFidelity": {
+        "matched": 1,
+        "total": 8,
+        "pass": false
+      },
+      "consonance": {
+        "chromaticRatio": 0.05714285714285714,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 8,
+        "totalMeasures": 8,
+        "fraction": 1,
+        "passes": true
+      },
+      "passes": false,
+      "summary": "REJECTED — chord fidelity 1/8"
+    },
+    {
+      "itemId": "born-under-a-bad-sign:m1-8",
+      "songId": "born-under-a-bad-sign",
+      "genre": "blues",
+      "parseStatus": "recovered",
+      "proposalMeasures": 8,
+      "verified": false,
+      "chordFidelity": {
+        "matched": 0,
+        "total": 8,
+        "pass": false
+      },
+      "consonance": {
+        "chromaticRatio": 0.11764705882352941,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 8,
+        "totalMeasures": 8,
+        "fraction": 1,
+        "passes": true
+      },
+      "passes": false,
+      "summary": "REJECTED — chord fidelity 0/8"
+    },
+    {
+      "itemId": "baba-oriley:m1-8",
+      "songId": "baba-oriley",
+      "genre": "rock",
+      "parseStatus": "recovered",
+      "proposalMeasures": 8,
+      "verified": false,
+      "chordFidelity": {
+        "matched": 7,
+        "total": 8,
+        "pass": false
+      },
+      "consonance": {
+        "chromaticRatio": 0.03985507246376811,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 8,
+        "totalMeasures": 8,
+        "fraction": 1,
+        "passes": true
+      },
+      "passes": false,
+      "summary": "REJECTED — chord fidelity 7/8"
+    },
+    {
+      "itemId": "bennie-and-the-jets:m1-8",
+      "songId": "bennie-and-the-jets",
+      "genre": "rock",
+      "parseStatus": "recovered",
+      "proposalMeasures": 8,
+      "verified": false,
+      "chordFidelity": {
+        "matched": 5,
+        "total": 8,
+        "pass": false
+      },
+      "consonance": {
+        "chromaticRatio": 0.02040816326530612,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 8,
+        "totalMeasures": 8,
+        "fraction": 1,
+        "passes": true
+      },
+      "passes": false,
+      "summary": "REJECTED — chord fidelity 5/8"
+    },
+    {
+      "itemId": "fallin:m1-8",
+      "songId": "fallin",
+      "genre": "rnb",
+      "parseStatus": "recovered",
+      "proposalMeasures": 8,
+      "verified": false,
+      "chordFidelity": {
+        "matched": 4,
+        "total": 8,
+        "pass": false
+      },
+      "consonance": {
+        "chromaticRatio": 0.07142857142857142,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 8,
+        "totalMeasures": 8,
+        "fraction": 1,
+        "passes": true
+      },
+      "passes": false,
+      "summary": "REJECTED — chord fidelity 4/8"
+    },
+    {
+      "itemId": "halo:m1-8",
+      "songId": "halo",
+      "genre": "rnb",
+      "parseStatus": "recovered",
+      "proposalMeasures": 8,
+      "verified": false,
+      "chordFidelity": {
+        "matched": 4,
+        "total": 8,
+        "pass": false
+      },
+      "consonance": {
+        "chromaticRatio": 0.28378378378378377,
+        "pass": false
+      },
+      "nonTriviality": {
+        "changedMeasures": 8,
+        "totalMeasures": 8,
+        "fraction": 1,
+        "passes": true
+      },
+      "passes": false,
+      "summary": "REJECTED — chord fidelity 4/8; chromatic ratio 0.284 > 0.2"
+    },
+    {
+      "itemId": "a-change-is-gonna-come:m1-8",
+      "songId": "a-change-is-gonna-come",
+      "genre": "soul",
+      "parseStatus": "recovered",
+      "proposalMeasures": 8,
+      "verified": false,
+      "chordFidelity": {
+        "matched": 2,
+        "total": 8,
+        "pass": false
+      },
+      "consonance": {
+        "chromaticRatio": 0.03571428571428571,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 8,
+        "totalMeasures": 8,
+        "fraction": 1,
+        "passes": true
+      },
+      "passes": false,
+      "summary": "REJECTED — chord fidelity 2/8"
+    },
+    {
+      "itemId": "aint-no-sunshine:m1-8",
+      "songId": "aint-no-sunshine",
+      "genre": "soul",
+      "parseStatus": "recovered",
+      "proposalMeasures": 8,
+      "verified": false,
+      "chordFidelity": {
+        "matched": 4,
+        "total": 8,
+        "pass": false
+      },
+      "consonance": {
+        "chromaticRatio": 0.041666666666666664,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 8,
+        "totalMeasures": 8,
+        "fraction": 1,
+        "passes": true
+      },
+      "passes": false,
+      "summary": "REJECTED — chord fidelity 4/8"
+    },
+    {
+      "itemId": "agua-de-beber:m1-8",
+      "songId": "agua-de-beber",
+      "genre": "latin",
+      "parseStatus": "recovered",
+      "proposalMeasures": 8,
+      "verified": false,
+      "chordFidelity": {
+        "matched": 3,
+        "total": 8,
+        "pass": false
+      },
+      "consonance": {
+        "chromaticRatio": 0.13333333333333333,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 0,
+        "totalMeasures": 8,
+        "fraction": 0,
+        "passes": false
+      },
+      "passes": false,
+      "summary": "REJECTED — chord fidelity 3/8"
+    },
+    {
+      "itemId": "besame-mucho:m1-8",
+      "songId": "besame-mucho",
+      "genre": "latin",
+      "parseStatus": "recovered",
+      "proposalMeasures": 8,
+      "verified": false,
+      "chordFidelity": {
+        "matched": 5,
+        "total": 8,
+        "pass": false
+      },
+      "consonance": {
+        "chromaticRatio": 0.07853403141361257,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 0,
+        "totalMeasures": 8,
+        "fraction": 0,
+        "passes": false
+      },
+      "passes": false,
+      "summary": "REJECTED — chord fidelity 5/8"
+    },
+    {
+      "itemId": "cinema-paradiso:m1-8",
+      "songId": "cinema-paradiso",
+      "genre": "film",
+      "parseStatus": "recovered",
+      "proposalMeasures": 8,
+      "verified": false,
+      "chordFidelity": {
+        "matched": 0,
+        "total": 8,
+        "pass": false
+      },
+      "consonance": {
+        "chromaticRatio": 0.064,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 0,
+        "totalMeasures": 8,
+        "fraction": 0,
+        "passes": false
+      },
+      "passes": false,
+      "summary": "REJECTED — chord fidelity 0/8"
+    },
+    {
+      "itemId": "comptine-dun-autre-ete:m1-8",
+      "songId": "comptine-dun-autre-ete",
+      "genre": "film",
+      "parseStatus": "recovered",
+      "proposalMeasures": 8,
+      "verified": false,
+      "chordFidelity": {
+        "matched": 7,
+        "total": 8,
+        "pass": false
+      },
+      "consonance": {
+        "chromaticRatio": 0,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 7,
+        "totalMeasures": 8,
+        "fraction": 0.875,
+        "passes": true
+      },
+      "passes": false,
+      "summary": "REJECTED — chord fidelity 7/8"
+    },
+    {
+      "itemId": "bethena:m1-8",
+      "songId": "bethena",
+      "genre": "ragtime",
+      "parseStatus": "recovered",
+      "proposalMeasures": 8,
+      "verified": false,
+      "chordFidelity": {
+        "matched": 4,
+        "total": 8,
+        "pass": false
+      },
+      "consonance": {
+        "chromaticRatio": 0,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 8,
+        "totalMeasures": 8,
+        "fraction": 1,
+        "passes": true
+      },
+      "passes": false,
+      "summary": "REJECTED — chord fidelity 4/8"
+    },
+    {
+      "itemId": "elite-syncopations:m1-8",
+      "songId": "elite-syncopations",
+      "genre": "ragtime",
+      "parseStatus": "recovered",
+      "proposalMeasures": 8,
+      "verified": false,
+      "chordFidelity": {
+        "matched": 1,
+        "total": 8,
+        "pass": false
+      },
+      "consonance": {
+        "chromaticRatio": 0.04918032786885246,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 7,
+        "totalMeasures": 8,
+        "fraction": 0.875,
+        "passes": true
+      },
+      "passes": false,
+      "summary": "REJECTED — chord fidelity 1/8"
+    },
+    {
+      "itemId": "divenire:m1-8",
+      "songId": "divenire",
+      "genre": "new-age",
+      "parseStatus": "recovered",
+      "proposalMeasures": 8,
+      "verified": false,
+      "chordFidelity": {
+        "matched": 3,
+        "total": 8,
+        "pass": false
+      },
+      "consonance": {
+        "chromaticRatio": 0.075,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 7,
+        "totalMeasures": 8,
+        "fraction": 0.875,
+        "passes": true
+      },
+      "passes": false,
+      "summary": "REJECTED — chord fidelity 3/8"
+    },
+    {
+      "itemId": "experience:m1-8",
+      "songId": "experience",
+      "genre": "new-age",
+      "parseStatus": "recovered",
+      "proposalMeasures": 8,
+      "verified": false,
+      "chordFidelity": {
+        "matched": 6,
+        "total": 8,
+        "pass": false
+      },
+      "consonance": {
+        "chromaticRatio": 0.21428571428571427,
+        "pass": false
+      },
+      "nonTriviality": {
+        "changedMeasures": 8,
+        "totalMeasures": 8,
+        "fraction": 1,
+        "passes": true
+      },
+      "passes": false,
+      "summary": "REJECTED — chord fidelity 6/8; chromatic ratio 0.214 > 0.2"
+    },
+    {
+      "itemId": "amazing-grace:m1-8",
+      "songId": "amazing-grace",
+      "genre": "folk",
+      "parseStatus": "recovered",
+      "proposalMeasures": 8,
+      "verified": false,
+      "chordFidelity": {
+        "matched": 0,
+        "total": 8,
+        "pass": false
+      },
+      "consonance": {
+        "chromaticRatio": 0.2,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 6,
+        "totalMeasures": 8,
+        "fraction": 0.75,
+        "passes": true
+      },
+      "passes": false,
+      "summary": "REJECTED — chord fidelity 0/8"
+    },
+    {
+      "itemId": "auld-lang-syne:m1-8",
+      "songId": "auld-lang-syne",
+      "genre": "folk",
+      "parseStatus": "recovered",
+      "proposalMeasures": 8,
+      "verified": false,
+      "chordFidelity": {
+        "matched": 5,
+        "total": 8,
+        "pass": false
+      },
+      "consonance": {
+        "chromaticRatio": 0,
+        "pass": true
+      },
+      "nonTriviality": {
+        "changedMeasures": 6,
+        "totalMeasures": 8,
+        "fraction": 0.75,
+        "passes": true
+      },
+      "passes": false,
+      "summary": "REJECTED — chord fidelity 5/8"
+    }
+  ],
+  "backendParams": {
+    "temperature": "ollama-default",
+    "seed": 42,
+    "numPredict": 2048
+  }
+}

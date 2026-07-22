@@ -1,0 +1,220 @@
+{
+  "schemaVersion": "e2v2-gate/1.0.0",
+  "runDate": "2026-07-22T18:33:13.343Z",
+  "mode": "ollama",
+  "model": "jam-ft-b2-qwen25:seed512",
+  "bars": {
+    "scoreSubdivisionsPerBeat": 12,
+    "screen": 0.15,
+    "rhythmBar": 0.15,
+    "tonalBar": 0.1,
+    "alpha": 0.05,
+    "foil": "stronger of markov + copy-forward"
+  },
+  "aggregate": {
+    "label": "jam-ft-b2-qwen25:seed512",
+    "itemCount": 17,
+    "computable": 14,
+    "pairsClearingBar": 0,
+    "clearRate": 0,
+    "rhythm": {
+      "meanMargin": -0.21975967065885013,
+      "bar": 0.15,
+      "meanClears": false,
+      "signTest": {
+        "n": 14,
+        "above": 0,
+        "below": 14,
+        "ties": 0,
+        "pValue": 1,
+        "alternative": "greater"
+      },
+      "permutationTest": {
+        "n": 14,
+        "observedMean": -0.21975967065885013,
+        "pValue": 1,
+        "method": "exact",
+        "assignments": 16384,
+        "alternative": "greater"
+      }
+    },
+    "tonal": {
+      "meanMargin": -0.23263713908532274,
+      "bar": 0.1,
+      "meanClears": false,
+      "signTest": {
+        "n": 14,
+        "above": 1,
+        "below": 13,
+        "ties": 0,
+        "pValue": 0.9999389648437509,
+        "alternative": "greater"
+      },
+      "permutationTest": {
+        "n": 14,
+        "observedMean": -0.23263713908532274,
+        "pValue": 0.9998779296875,
+        "method": "exact",
+        "assignments": 16384,
+        "alternative": "greater"
+      }
+    },
+    "aggregateClearsBar": false,
+    "bothAxesSignificant": false
+  },
+  "perItem": [
+    {
+      "targetId": "chopin-nocturne-op9-no2:m005-008:piano:mcp-session:v1",
+      "songId": "chopin-nocturne-op9-no2",
+      "rhythmMargin": -0.10822510822510822,
+      "tonalMargin": -0.18181818181818182,
+      "clears": false,
+      "parseStatus": "clean",
+      "modelEvents": 7
+    },
+    {
+      "targetId": "chopin-nocturne-op9-no2:m013-016:piano:mcp-session:v1",
+      "songId": "chopin-nocturne-op9-no2",
+      "rhythmMargin": -0.026282051282051286,
+      "tonalMargin": -0.2623931623931624,
+      "clears": false,
+      "parseStatus": "clean",
+      "modelEvents": 9
+    },
+    {
+      "targetId": "chopin-nocturne-op9-no2:m021-024:piano:mcp-session:v1",
+      "songId": "chopin-nocturne-op9-no2",
+      "rhythmMargin": null,
+      "tonalMargin": null,
+      "clears": false,
+      "parseStatus": "unrecoverable",
+      "modelEvents": 0
+    },
+    {
+      "targetId": "chopin-prelude-e-minor:m005-008:piano:mcp-session:v1",
+      "songId": "chopin-prelude-e-minor",
+      "rhythmMargin": -0.1111111111111111,
+      "tonalMargin": -0.08888888888888889,
+      "clears": false,
+      "parseStatus": "clean",
+      "modelEvents": 11
+    },
+    {
+      "targetId": "chopin-prelude-e-minor:m013-016:piano:mcp-session:v1",
+      "songId": "chopin-prelude-e-minor",
+      "rhythmMargin": -0.011004273504273493,
+      "tonalMargin": 0.08749999999999997,
+      "clears": false,
+      "parseStatus": "clean",
+      "modelEvents": 16
+    },
+    {
+      "targetId": "clair-de-lune:m005-008:piano:mcp-session:v1",
+      "songId": "clair-de-lune",
+      "rhythmMargin": -0.1861702127659574,
+      "tonalMargin": -0.29661643026004725,
+      "clears": false,
+      "parseStatus": "clean",
+      "modelEvents": 18
+    },
+    {
+      "targetId": "clair-de-lune:m019-022:piano:mcp-session:v1",
+      "songId": "clair-de-lune",
+      "rhythmMargin": -0.4789776607160276,
+      "tonalMargin": -0.32208007581141906,
+      "clears": false,
+      "parseStatus": "clean",
+      "modelEvents": 4
+    },
+    {
+      "targetId": "debussy-arabesque-no1:m005-008:piano:mcp-session:v1",
+      "songId": "debussy-arabesque-no1",
+      "rhythmMargin": -0.41460317460317464,
+      "tonalMargin": -0.002943722943722915,
+      "clears": false,
+      "parseStatus": "clean",
+      "modelEvents": 11
+    },
+    {
+      "targetId": "debussy-arabesque-no1:m013-016:piano:mcp-session:v1",
+      "songId": "debussy-arabesque-no1",
+      "rhythmMargin": -0.392156862745098,
+      "tonalMargin": -0.16971677559912857,
+      "clears": false,
+      "parseStatus": "clean",
+      "modelEvents": 15
+    },
+    {
+      "targetId": "mozart-k545-mvt1:m005-008:piano:mcp-session:v1",
+      "songId": "mozart-k545-mvt1",
+      "rhythmMargin": null,
+      "tonalMargin": null,
+      "clears": false,
+      "parseStatus": "unrecoverable",
+      "modelEvents": 0
+    },
+    {
+      "targetId": "mozart-k545-mvt1:m013-016:piano:mcp-session:v1",
+      "songId": "mozart-k545-mvt1",
+      "rhythmMargin": -0.5367433930093773,
+      "tonalMargin": -0.2317668371696504,
+      "clears": false,
+      "parseStatus": "clean",
+      "modelEvents": 16
+    },
+    {
+      "targetId": "pathetique-mvt2:m005-008:piano:mcp-session:v1",
+      "songId": "pathetique-mvt2",
+      "rhythmMargin": -0.09999999999999999,
+      "tonalMargin": -0.36666666666666675,
+      "clears": false,
+      "parseStatus": "clean",
+      "modelEvents": 4
+    },
+    {
+      "targetId": "pathetique-mvt2:m013-016:piano:mcp-session:v1",
+      "songId": "pathetique-mvt2",
+      "rhythmMargin": -0.09833971902937422,
+      "tonalMargin": -0.19394271118409057,
+      "clears": false,
+      "parseStatus": "clean",
+      "modelEvents": 21
+    },
+    {
+      "targetId": "satie-gymnopedie-no1:m023-026:piano:mcp-session:v1",
+      "songId": "satie-gymnopedie-no1",
+      "rhythmMargin": -0.5536062378167639,
+      "tonalMargin": -0.6705653021442495,
+      "clears": false,
+      "parseStatus": "clean",
+      "modelEvents": 8
+    },
+    {
+      "targetId": "schumann-traumerei:m005-008:piano:mcp-session:v1",
+      "songId": "schumann-traumerei",
+      "rhythmMargin": -0.023809523809523808,
+      "tonalMargin": -0.27183600713012485,
+      "clears": false,
+      "parseStatus": "clean",
+      "modelEvents": 11
+    },
+    {
+      "targetId": "schumann-traumerei:m013-016:piano:mcp-session:v1",
+      "songId": "schumann-traumerei",
+      "rhythmMargin": null,
+      "tonalMargin": null,
+      "clears": false,
+      "parseStatus": "unrecoverable",
+      "modelEvents": 0
+    },
+    {
+      "targetId": "schumann-traumerei:m021-024:piano:mcp-session:v1",
+      "songId": "schumann-traumerei",
+      "rhythmMargin": -0.035606060606060586,
+      "tonalMargin": -0.28518518518518526,
+      "clears": false,
+      "parseStatus": "clean",
+      "modelEvents": 12
+    }
+  ]
+}

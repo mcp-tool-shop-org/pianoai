@@ -1,0 +1,908 @@
+{
+  "schemaVersion": "er-gate-summary/1.0.0",
+  "generatedAt": "2026-07-22T18:38:25.249Z",
+  "nonTrivialityFraction": 0.3333333333333333,
+  "itemCount": 22,
+  "models": [
+    {
+      "model": "claude-fable-5",
+      "mode": "responses-file",
+      "runDate": "2026-07-22T18:03:48.415Z",
+      "aggregate": {
+        "modelLabel": "claude-fable-5",
+        "itemCount": 22,
+        "parseableCount": 22,
+        "passCount": 19,
+        "passRate": 0.8636363636363636,
+        "verifiedCount": 21,
+        "verifiedRate": 0.9545454545454546,
+        "trivialButVerifiedCount": 2,
+        "parseFailures": 0,
+        "meanChordFidelity": 1,
+        "meanNonTrivialityFraction": 0.7215909090909091,
+        "byGenre": [
+          {
+            "genre": "jazz",
+            "items": 2,
+            "passes": 2
+          },
+          {
+            "genre": "pop",
+            "items": 2,
+            "passes": 2
+          },
+          {
+            "genre": "blues",
+            "items": 2,
+            "passes": 2
+          },
+          {
+            "genre": "rock",
+            "items": 2,
+            "passes": 2
+          },
+          {
+            "genre": "rnb",
+            "items": 2,
+            "passes": 2
+          },
+          {
+            "genre": "soul",
+            "items": 2,
+            "passes": 1
+          },
+          {
+            "genre": "latin",
+            "items": 2,
+            "passes": 2
+          },
+          {
+            "genre": "film",
+            "items": 2,
+            "passes": 2
+          },
+          {
+            "genre": "ragtime",
+            "items": 2,
+            "passes": 1
+          },
+          {
+            "genre": "new-age",
+            "items": 2,
+            "passes": 1
+          },
+          {
+            "genre": "folk",
+            "items": 2,
+            "passes": 2
+          }
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:7b",
+      "mode": "ollama",
+      "runDate": "2026-07-22T17:46:08.485Z",
+      "aggregate": {
+        "modelLabel": "qwen2.5:7b",
+        "itemCount": 22,
+        "parseableCount": 22,
+        "passCount": 2,
+        "passRate": 0.09090909090909091,
+        "verifiedCount": 2,
+        "verifiedRate": 0.09090909090909091,
+        "trivialButVerifiedCount": 0,
+        "parseFailures": 0,
+        "meanChordFidelity": 0.3693181818181818,
+        "meanNonTrivialityFraction": 0.7613636363636364,
+        "byGenre": [
+          {
+            "genre": "jazz",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "pop",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "blues",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "rock",
+            "items": 2,
+            "passes": 1
+          },
+          {
+            "genre": "rnb",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "soul",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "latin",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "film",
+            "items": 2,
+            "passes": 1
+          },
+          {
+            "genre": "ragtime",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "new-age",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "folk",
+            "items": 2,
+            "passes": 0
+          }
+        ]
+      }
+    },
+    {
+      "model": "jam-ft-v1-qwen25:seed1024",
+      "mode": "ollama",
+      "runDate": "2026-07-22T18:01:56.983Z",
+      "aggregate": {
+        "modelLabel": "jam-ft-v1-qwen25:seed1024",
+        "itemCount": 22,
+        "parseableCount": 22,
+        "passCount": 0,
+        "passRate": 0,
+        "verifiedCount": 0,
+        "verifiedRate": 0,
+        "trivialButVerifiedCount": 0,
+        "parseFailures": 0,
+        "meanChordFidelity": 0.3806818181818182,
+        "meanNonTrivialityFraction": 0.8238636363636364,
+        "byGenre": [
+          {
+            "genre": "jazz",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "pop",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "blues",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "rock",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "rnb",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "soul",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "latin",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "film",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "ragtime",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "new-age",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "folk",
+            "items": 2,
+            "passes": 0
+          }
+        ]
+      }
+    },
+    {
+      "model": "jam-ft-v1-qwen25:seed13",
+      "mode": "ollama",
+      "runDate": "2026-07-22T17:58:54.714Z",
+      "aggregate": {
+        "modelLabel": "jam-ft-v1-qwen25:seed13",
+        "itemCount": 22,
+        "parseableCount": 22,
+        "passCount": 0,
+        "passRate": 0,
+        "verifiedCount": 0,
+        "verifiedRate": 0,
+        "trivialButVerifiedCount": 0,
+        "parseFailures": 0,
+        "meanChordFidelity": 0.22727272727272727,
+        "meanNonTrivialityFraction": 0.7727272727272727,
+        "byGenre": [
+          {
+            "genre": "jazz",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "pop",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "blues",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "rock",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "rnb",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "soul",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "latin",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "film",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "ragtime",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "new-age",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "folk",
+            "items": 2,
+            "passes": 0
+          }
+        ]
+      }
+    },
+    {
+      "model": "jam-ft-v1-qwen25:seed271",
+      "mode": "ollama",
+      "runDate": "2026-07-22T18:00:14.110Z",
+      "aggregate": {
+        "modelLabel": "jam-ft-v1-qwen25:seed271",
+        "itemCount": 22,
+        "parseableCount": 21,
+        "passCount": 0,
+        "passRate": 0,
+        "verifiedCount": 0,
+        "verifiedRate": 0,
+        "trivialButVerifiedCount": 0,
+        "parseFailures": 1,
+        "meanChordFidelity": 0.31547619047619047,
+        "meanNonTrivialityFraction": 0.6666666666666666,
+        "byGenre": [
+          {
+            "genre": "jazz",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "pop",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "blues",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "rock",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "rnb",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "soul",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "latin",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "film",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "ragtime",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "new-age",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "folk",
+            "items": 2,
+            "passes": 0
+          }
+        ]
+      }
+    },
+    {
+      "model": "jam-ft-v1-qwen25:seed42",
+      "mode": "ollama",
+      "runDate": "2026-07-22T17:59:34.235Z",
+      "aggregate": {
+        "modelLabel": "jam-ft-v1-qwen25:seed42",
+        "itemCount": 22,
+        "parseableCount": 22,
+        "passCount": 0,
+        "passRate": 0,
+        "verifiedCount": 0,
+        "verifiedRate": 0,
+        "trivialButVerifiedCount": 0,
+        "parseFailures": 0,
+        "meanChordFidelity": 0.3465909090909091,
+        "meanNonTrivialityFraction": 0.8352272727272727,
+        "byGenre": [
+          {
+            "genre": "jazz",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "pop",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "blues",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "rock",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "rnb",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "soul",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "latin",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "film",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "ragtime",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "new-age",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "folk",
+            "items": 2,
+            "passes": 0
+          }
+        ]
+      }
+    },
+    {
+      "model": "jam-ft-v1-qwen25:seed512",
+      "mode": "ollama",
+      "runDate": "2026-07-22T18:01:07.624Z",
+      "aggregate": {
+        "modelLabel": "jam-ft-v1-qwen25:seed512",
+        "itemCount": 22,
+        "parseableCount": 14,
+        "passCount": 0,
+        "passRate": 0,
+        "verifiedCount": 0,
+        "verifiedRate": 0,
+        "trivialButVerifiedCount": 0,
+        "parseFailures": 8,
+        "meanChordFidelity": 0.09821428571428571,
+        "meanNonTrivialityFraction": 0.8035714285714286,
+        "byGenre": [
+          {
+            "genre": "jazz",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "pop",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "blues",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "rock",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "rnb",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "soul",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "latin",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "film",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "ragtime",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "new-age",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "folk",
+            "items": 2,
+            "passes": 0
+          }
+        ]
+      }
+    },
+    {
+      "model": "jam-ft-b2-qwen25:seed1024",
+      "mode": "ollama",
+      "runDate": "2026-07-22T18:06:00.142Z",
+      "aggregate": {
+        "modelLabel": "jam-ft-b2-qwen25:seed1024",
+        "itemCount": 22,
+        "parseableCount": 19,
+        "passCount": 0,
+        "passRate": 0,
+        "verifiedCount": 0,
+        "verifiedRate": 0,
+        "trivialButVerifiedCount": 0,
+        "parseFailures": 3,
+        "meanChordFidelity": 0.17857142857142858,
+        "meanNonTrivialityFraction": 0.9464285714285715,
+        "byGenre": [
+          {
+            "genre": "jazz",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "pop",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "blues",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "rock",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "rnb",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "soul",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "latin",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "film",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "ragtime",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "new-age",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "folk",
+            "items": 2,
+            "passes": 0
+          }
+        ]
+      }
+    },
+    {
+      "model": "jam-ft-b2-qwen25:seed13",
+      "mode": "ollama",
+      "runDate": "2026-07-22T18:03:02.321Z",
+      "aggregate": {
+        "modelLabel": "jam-ft-b2-qwen25:seed13",
+        "itemCount": 22,
+        "parseableCount": 1,
+        "passCount": 0,
+        "passRate": 0,
+        "verifiedCount": 0,
+        "verifiedRate": 0,
+        "trivialButVerifiedCount": 0,
+        "parseFailures": 21,
+        "meanChordFidelity": 0,
+        "meanNonTrivialityFraction": 1,
+        "byGenre": [
+          {
+            "genre": "jazz",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "pop",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "blues",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "rock",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "rnb",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "soul",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "latin",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "film",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "ragtime",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "new-age",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "folk",
+            "items": 2,
+            "passes": 0
+          }
+        ]
+      }
+    },
+    {
+      "model": "jam-ft-b2-qwen25:seed271",
+      "mode": "ollama",
+      "runDate": "2026-07-22T18:04:36.575Z",
+      "aggregate": {
+        "modelLabel": "jam-ft-b2-qwen25:seed271",
+        "itemCount": 22,
+        "parseableCount": 16,
+        "passCount": 0,
+        "passRate": 0,
+        "verifiedCount": 0,
+        "verifiedRate": 0,
+        "trivialButVerifiedCount": 0,
+        "parseFailures": 6,
+        "meanChordFidelity": 0.171875,
+        "meanNonTrivialityFraction": 0.8125,
+        "byGenre": [
+          {
+            "genre": "jazz",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "pop",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "blues",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "rock",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "rnb",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "soul",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "latin",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "film",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "ragtime",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "new-age",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "folk",
+            "items": 2,
+            "passes": 0
+          }
+        ]
+      }
+    },
+    {
+      "model": "jam-ft-b2-qwen25:seed42",
+      "mode": "ollama",
+      "runDate": "2026-07-22T18:03:52.024Z",
+      "aggregate": {
+        "modelLabel": "jam-ft-b2-qwen25:seed42",
+        "itemCount": 22,
+        "parseableCount": 21,
+        "passCount": 0,
+        "passRate": 0,
+        "verifiedCount": 0,
+        "verifiedRate": 0,
+        "trivialButVerifiedCount": 0,
+        "parseFailures": 1,
+        "meanChordFidelity": 0.16666666666666666,
+        "meanNonTrivialityFraction": 0.9107142857142857,
+        "byGenre": [
+          {
+            "genre": "jazz",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "pop",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "blues",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "rock",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "rnb",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "soul",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "latin",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "film",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "ragtime",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "new-age",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "folk",
+            "items": 2,
+            "passes": 0
+          }
+        ]
+      }
+    },
+    {
+      "model": "jam-ft-b2-qwen25:seed512",
+      "mode": "ollama",
+      "runDate": "2026-07-22T18:05:19.790Z",
+      "aggregate": {
+        "modelLabel": "jam-ft-b2-qwen25:seed512",
+        "itemCount": 22,
+        "parseableCount": 15,
+        "passCount": 0,
+        "passRate": 0,
+        "verifiedCount": 0,
+        "verifiedRate": 0,
+        "trivialButVerifiedCount": 0,
+        "parseFailures": 7,
+        "meanChordFidelity": 0.08452380952380951,
+        "meanNonTrivialityFraction": 0.8738095238095238,
+        "byGenre": [
+          {
+            "genre": "jazz",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "pop",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "blues",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "rock",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "rnb",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "soul",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "latin",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "film",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "ragtime",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "new-age",
+            "items": 2,
+            "passes": 0
+          },
+          {
+            "genre": "folk",
+            "items": 2,
+            "passes": 0
+          }
+        ]
+      }
+    }
+  ]
+}
