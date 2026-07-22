@@ -79,6 +79,13 @@ async function spawnIsolatedServer(options: {
    * read during its own startup.
    */
   beforeStart?: (tmpHome: string) => void;
+  /**
+   * Extra environment variables merged into the spawned server's env (after
+   * process.env, HOME, and USERPROFILE). Lets a test pin e.g. OLLAMA_HOST to a
+   * dead port so the auto_reharmonize probe fails deterministically regardless
+   * of whether a real Ollama is running on the dev machine.
+   */
+  env?: Record<string, string>;
 } = {}): Promise<{
   client: Client;
   transport: StdioClientTransport;
@@ -94,6 +101,7 @@ async function spawnIsolatedServer(options: {
       ...process.env,
       HOME: tmpHome,
       USERPROFILE: tmpHome,
+      ...options.env,
     } as Record<string, string>,
   });
   const client = new Client({ name: "tests-agent-mcp-server-test-iso", version: "0.0.0" });
@@ -566,6 +574,52 @@ describe("mcp-server.ts — MCP protocol-level tool tests", () => {
       expect(okText).toContain("VERIFY ④ key");
     },
     20000,
+  );
+
+  it(
+    "auto_reharmonize is registered and returns a structured error for an unknown song",
+    async () => {
+      const toolList = await client.listTools();
+      expect(toolList.tools.some((t) => t.name === "auto_reharmonize")).toBe(true);
+
+      // song_not_found is decided before any model call — deterministic with or
+      // without Ollama.
+      const noSong = (await client.callTool({
+        name: "auto_reharmonize",
+        arguments: { songId: "definitely-not-a-song" },
+      })) as ToolResult;
+      expect(noSong.isError).toBe(true);
+      expect(extractText(noSong)).toContain("song_not_found");
+    },
+    20000,
+  );
+
+  it(
+    "auto_reharmonize fails soft when Ollama is unreachable — structured error, server stays alive",
+    async () => {
+      // Pin OLLAMA_HOST to a dead port so the probe fails deterministically,
+      // regardless of whether a real Ollama is running on the dev machine.
+      const iso = await spawnIsolatedServer({ env: { OLLAMA_HOST: "http://127.0.0.1:1" } });
+      try {
+        const res = (await iso.client.callTool({
+          name: "auto_reharmonize",
+          arguments: { songId: "fallin", measures: "1-4" },
+        })) as ToolResult;
+        expect(res.isError).toBe(true);
+        const text = extractText(res);
+        expect(text).toContain("ollama_unreachable");
+        expect(text).toMatch(/ollama serve/i); // the hint tells the user how to fix it
+
+        // The Ollama dependency is OPTIONAL: a deterministic tool still answers
+        // after the failed LLM call, proving the server did not crash.
+        const info = (await iso.client.callTool({ name: "server_info", arguments: {} })) as ToolResult;
+        expect(info.isError).not.toBe(true);
+        expect(extractText(info)).toContain("Tools:");
+      } finally {
+        await iso.close();
+      }
+    },
+    30000,
   );
 });
 

@@ -158,6 +158,25 @@ function sectionToItem(
   };
 }
 
+/**
+ * Build a single E-R item from one song section on demand — the public entry the
+ * `auto_reharmonize` MCP tool uses (reuses the same `sectionToItem` logic that
+ * builds the frozen set, so an on-demand item is scored identically). Measures
+ * are 1-based measure NUMBERS. Returns null when the section carries no melody to
+ * reharmonize (fewer than `minMeasures` melody-bearing bars).
+ *
+ * `minMeasures` defaults to 1 here (the caller chose the range deliberately),
+ * looser than selectERItems' default of 4 for the frozen benchmark set.
+ */
+export function buildERItemFromSong(
+  song: SongEntry,
+  startMeasure = 1,
+  bars = 8,
+  minMeasures = 1,
+): ERItem | null {
+  return sectionToItem(song, startMeasure, bars, minMeasures);
+}
+
 // ─── The generator brief ──────────────────────────────────────────────────────
 
 export const ER_SYSTEM_TEXT = [

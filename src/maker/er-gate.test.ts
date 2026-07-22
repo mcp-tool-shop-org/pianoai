@@ -15,6 +15,7 @@ import type { SongEntry, Genre } from "../songs/types.js";
 import {
   TRAINING_SONG_IDS,
   selectERItems,
+  buildERItemFromSong,
   parseReharmonization,
   computeNonTriviality,
   scoreERProposal,
@@ -34,6 +35,36 @@ function mkSong(id: string, genre: Genre, numMeasures: number): SongEntry {
     tags: [],
   };
 }
+
+// ─── buildERItemFromSong (the on-demand entry the auto_reharmonize tool uses) ──
+
+describe("buildERItemFromSong", () => {
+  it("builds an item from a song section (melody + source harmony + frozen range)", () => {
+    const item = buildERItemFromSong(mkSong("jazz-x", "jazz", 8), 1, 4);
+    expect(item).not.toBeNull();
+    expect(item!.itemId).toBe("jazz-x:m1-4");
+    expect(item!.measureRange).toEqual([1, 4]);
+    expect(item!.melody).toHaveLength(4);
+    expect(item!.sourceChords).toEqual([
+      { measure: 1, impliedChord: "Am" },
+      { measure: 2, impliedChord: "Am" },
+      { measure: 3, impliedChord: "Am" },
+      { measure: 4, impliedChord: "Am" },
+    ]);
+  });
+
+  it("clamps the requested bars to the song and reports the real end measure", () => {
+    const item = buildERItemFromSong(mkSong("jazz-y", "jazz", 6), 3, 8);
+    expect(item).not.toBeNull();
+    expect(item!.measureRange).toEqual([3, 6]); // 8 bars requested, only measures 3-6 exist
+  });
+
+  it("returns null when the section carries no melody", () => {
+    const song = mkSong("jazz-z", "jazz", 4);
+    for (const m of song.measures) m.rightHand = "R";
+    expect(buildERItemFromSong(song, 1, 4)).toBeNull();
+  });
+});
 
 // ─── Item selection ──────────────────────────────────────────────────────────
 

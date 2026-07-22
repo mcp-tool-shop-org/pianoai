@@ -49,6 +49,8 @@ import {
   type MelodyMeasureInput,
   type ReharmonizedMeasure,
 } from "./maker/verify-harmony.js";
+import { reharmonizeSongSection, type AutoReharmonizeToolResult } from "./maker/auto-reharmonize-tool.js";
+import { OllamaChordProposer } from "./maker/chord-proposer.js";
 import type { SongEntry, Difficulty, Genre } from "./songs/types.js";
 import { safeParseMeasure, measureToSingableText, type SingAlongMode } from "./note-parser.js";
 import { renderPianoRoll, renderScoredPianoRoll } from "./piano-roll.js";
@@ -2027,6 +2029,80 @@ registerTool(
       : "\n\nFix the flagged measures and run verify_harmony again before saving with add_song.";
     return { content: [{ type: "text", text: formatHarmonyVerdict(verdict) + next }] };
   }
+);
+
+// ─── Tool: auto_reharmonize ──────────────────────────────────────────────
+//
+// The FIRST tool in this server that calls a local LLM — the shipped Phase-C
+// inference maker (docs/maker-arc-phase-c-design.md): a local model proposes
+// chord SYMBOLS, voiceChord renders each voicing deterministically (100%
+// fidelity by construction), verify_harmony admits or rejects, and best-of-n
+// resamples until a reharmonization passes. Every OTHER tool is deterministic,
+// so the Ollama dependency is OPTIONAL and fail-soft: a probe up front means an
+// absent/unreachable model returns a structured {code,message,hint} error and
+// NEVER crashes the server. The only judge is verify_harmony (external verifier).
+
+registerTool(
+  "auto_reharmonize",
+  "Reharmonize a section of a library song with the local inference maker. The Phase-C loop: a local model proposes chord symbols, a deterministic voicer renders each voicing (chord fidelity guaranteed), and verify_harmony admits or rejects — resampling best-of-n until a reharmonization passes. Returns the verified per-measure {measure, intendedChord, voicing} plus telemetry (samplesUsed, passedAtSample, verified). Needs a local Ollama model (default qwen2.5:7b); if Ollama is not running it returns a structured error instead of failing, and every OTHER tool in this server is unaffected. May take up to ~a minute at the default best-of-16 budget.",
+  {
+    songId: z.string().describe("Library song to reharmonize (e.g. 'fur-elise'). Browse with list_songs."),
+    measures: z.string().optional().describe("Measure range (1-based), e.g. '1-8'. Default: measures 1-8."),
+    style: z.string().optional().describe("Optional target style hint woven into the brief, e.g. 'jazz', 'bossa nova'."),
+    maxSamples: z.number().int().min(1).max(64).optional().describe("Best-of-n budget (default 16, the measured knee). Higher = more coverage, more time."),
+    model: z.string().optional().describe("Local Ollama model tag (default 'qwen2.5:7b')."),
+  },
+  async ({ songId, measures, style, maxSamples, model }) => {
+    const structuredError = (code: string, message: string, hint: string) => ({
+      content: [
+        {
+          type: "text" as const,
+          text: `❌ ${message}\n\n` + JSON.stringify({ error: { code, message, hint } }, null, 2),
+        },
+      ],
+      isError: true,
+    });
+
+    const song = getSong(songId);
+    if (!song) {
+      return structuredError(
+        "song_not_found",
+        `No song called "${songId}" in the library.`,
+        "Browse the library with list_songs, then pass an exact song id.",
+      );
+    }
+
+    // Ollama is OPTIONAL — probe once so an absent model fails soft with a clear
+    // structured error rather than crashing the server mid-loop.
+    const modelTag = model ?? "qwen2.5:7b";
+    const proposer = new OllamaChordProposer(modelTag, { maxTokens: 1024, styleHint: style });
+    try {
+      await proposer.probe();
+    } catch (err) {
+      return structuredError(
+        "ollama_unreachable",
+        `The local model "${modelTag}" is not reachable — auto_reharmonize needs Ollama running.`,
+        `Start Ollama ("ollama serve") and pull the model ("ollama pull ${modelTag}"), or set OLLAMA_HOST. ` +
+          `Every other tool in this server works without it. Underlying: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    }
+
+    let result: AutoReharmonizeToolResult;
+    try {
+      result = await reharmonizeSongSection(song, { measures, maxSamples, proposer });
+    } catch (err) {
+      return structuredError(
+        "reharmonize_failed",
+        `The maker loop errored while reharmonizing "${songId}".`,
+        err instanceof Error ? err.message : String(err),
+      );
+    }
+
+    if (!result.ok) {
+      return structuredError(result.code, result.message, result.hint);
+    }
+    return { content: [{ type: "text", text: result.text }] };
+  },
 );
 
 // ─── Tool: add_song ──────────────────────────────────────────────────────

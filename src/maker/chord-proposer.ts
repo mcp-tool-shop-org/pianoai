@@ -122,6 +122,9 @@ export interface OllamaChordProposerOptions {
   maxTokens?: number;
   /** Ollama base URL. Default OLLAMA_HOST env or http://localhost:11434. */
   baseUrl?: string;
+  /** Optional style hint appended to the brief (e.g. "jazz"). Omitted → the
+   *  pinned experiment prompt, byte-for-byte. */
+  styleHint?: string;
   /** Test seam: build the backend for a given per-sample seed. */
   backendFactory?: (seed: number) => ChordProposerBackend;
 }
@@ -140,12 +143,14 @@ export class OllamaChordProposer implements ChordProposer {
   readonly model: string;
   readonly baseSeed: number;
   readonly maxTokens: number;
+  private readonly styleHint?: string;
   private readonly makeBackend: (seed: number) => ChordProposerBackend;
 
   constructor(model = "qwen2.5:7b", opts: OllamaChordProposerOptions = {}) {
     this.model = model;
     this.baseSeed = opts.baseSeed ?? 42;
     this.maxTokens = opts.maxTokens ?? 1024;
+    this.styleHint = opts.styleHint?.trim() || undefined;
     const { baseUrl, backendFactory } = opts;
     const maxTokens = this.maxTokens;
     this.makeBackend =
@@ -160,10 +165,13 @@ export class OllamaChordProposer implements ChordProposer {
 
   async proposeChords(item: ERItem, sampleIndex: number): Promise<ChordChoice[]> {
     const backend = this.makeBackend(this.baseSeed + sampleIndex);
+    const userMessage = this.styleHint
+      ? `${buildChordsOnlyUser(item)}\n\nTarget style: ${this.styleHint} — prefer its idiomatic reharmonizations.`
+      : buildChordsOnlyUser(item);
     try {
       await backend.callStructured({
         systemPrompt: CHORDS_ONLY_SYSTEM,
-        userMessage: buildChordsOnlyUser(item),
+        userMessage,
         outputSchema: {},
       });
     } catch {
