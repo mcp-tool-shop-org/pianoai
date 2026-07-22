@@ -64,14 +64,22 @@ export class OllamaBackend implements LlmBackend {
   };
   /** Raw text from the most recent callStructured call (for tolerant parsing). */
   private _lastRawText: string | null = null;
+  /**
+   * Optional Ollama generation options (temperature, seed, …) forwarded as the
+   * /api/chat `options` field. Opt-in: prior callers pass nothing and get
+   * Ollama's defaults, byte-identical to pre-existing behavior. The E2
+   * continuation gate pins {temperature: 0, seed} here for replayable runs.
+   */
+  private readonly genOptions?: Record<string, number>;
 
-  constructor(model: string, baseUrl?: string) {
+  constructor(model: string, baseUrl?: string, genOptions?: Record<string, number>) {
     this.model = model;
     const raw = baseUrl ?? (process.env.OLLAMA_HOST ?? "http://localhost:11434");
     // Normalize: add http:// scheme if missing (Ollama sets OLLAMA_HOST as host:port)
     this.baseUrl = raw.startsWith("http://") || raw.startsWith("https://")
       ? raw
       : `http://${raw}`;
+    this.genOptions = genOptions;
   }
 
   private async post(endpoint: string, body: unknown): Promise<unknown> {
@@ -191,6 +199,7 @@ export class OllamaBackend implements LlmBackend {
       messages,
       format: "json",
       stream: false,
+      ...(this.genOptions ? { options: this.genOptions } : {}),
     })) as OllamaChatResponse;
 
     const text = data.message.content ?? "";

@@ -5,6 +5,30 @@ All notable changes to AI Jam Sessions will be documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-07-22
+
+**The release where the analyst became a maker.** The finetune line proved the model can *analyze* music through grounded tools; this release ships the loop that lets it *make* music under the same discipline. A model proposes a reharmonization; the platform's own deterministic tools gate it — the chord engine must confirm every intended voicing, every melody note is labeled against the new harmony — and only a verified interpretation goes on to be saved, played, and seen. Generation verified by construction: no rubric, no self-grading, no forced-choice proxy.
+
+### Added — the maker loop (generate → verify → play → see)
+
+- **`verifyHarmony`** (`src/maker/verify-harmony.ts`, exported from the package root) — deterministic verification of a proposed reharmonization against a melody, productionized from `scripts/maker-loop-demo.ts`. Four checks, one structured verdict: **chord fidelity** through the same `inferChord` that powers jam briefs (canonical pitch-class comparison, so `D#7` ≡ `Eb7`; hard gate), **melody consonance** (chord-tone / named-tension / chromatic labels with a configurable chromatic ceiling, default 0.2; hard gate), **bass voice-leading** (semitone moves, max leap, stepwise ratio; informational), and **key membership** (raised-7th-aware in minor keys; informational — borrowed tones are flagged, never failed). The verifier vocabulary is exactly what the chord engine can detect — the deterministic instrument's vocabulary is the measurement boundary, by design.
+- **`verify_harmony` MCP tool** — the maker loop's verification gate. Verify against a library song's melody (`songId` + `measures` range; the song's key auto-applies) or an inline melody. ✅ routes to `add_song` → `play_song` → `view_piano_roll`; ❌ routes back to revision. MCP tool count 46 → **47**.
+- **`maker_loop` prompt template** — the whole loop as a guided prompt: jam brief → propose → verify → save → play → see. Prompt templates 3 → **4**.
+- **Jam briefs now route through the gate** — `ai_jam_sessions` brief instructions direct every reinterpretation through `verify_harmony` before `add_song`, and end at `view_piano_roll` so the maker sees what it made.
+- `parseMeasureRange` exported from the songs module (shared by the jam brief and the new tool).
+
+### Added — the E2 continuation gate (eval harness + receipts, not in the npm package)
+
+- **`src/dataset/eval/model-continuation.ts`** — wires the locked, preregistered, never-used future-model slot of the E2 phrase-continuation eval (`FUTURE_MODEL_GROOVE_MARGIN = 0.15`): grooveOA(model, gold) minus grooveOA(shuffled, gold), with bar-number anchoring (Bar_1-relative and absolute-numbered continuations score identically), not_computable as a first-class result, and an aggregate that separates the all-pairs clear rate from computable-subset means. 12 unit tests pin the anchor identities (model ≡ gold → margin = headroom; model ≡ shuffled(gold) → margin = 0 exactly).
+- **`scripts/e2-continuation-gate.ts`** — the maker arc's $0 pre-training gate: pins the sealed 22-pair cohort by ID, ANDON-halts unless the shuffled control reproduces the sealed artifact (observed max |Δ| = 0), reports per-pair *headroom* (max attainable margin), and runs generators through the unchanged sealed E2 machinery (system prompt, tolerant parser, FM-4 retry, seeded sampling). Plus `scripts/e2-gate-summary.ts` for the receipted results table.
+- **Gate outcome (the $0 catch):** *nobody* clears the locked bar — not base qwen2.5:7b, not the ten frozen jam-ft adapters, not a Claude ceiling run composed from prompt-only briefs. Cause: 9/22 pairs have headroom < 0.15 (three at exactly 0), and the shuffled-bars control inherits the gold performance's rubato micro-timing, so the bar rewards verbatim performance cloning over musical continuation. Verdict per the preregistered decision matrix: **fix the task/bar before spending** — no training arc fires on this instrument. Full report: `docs/maker-arc-e2-gate-report.md`.
+- `OllamaBackend` accepts opt-in generation options (seed / temperature / num_predict) forwarded as the `/api/chat` `options` field; prior callers are byte-identical. `synthTimedEventsFromRemi` + `E2_SYSTEM_TEXT` exported for the gate.
+
+### Fixed
+
+- **`inferChord` now understands "+"-joined simultaneous notes** ("C3+E3+G3:q" — the chord notation MIDI ingest emits). It previously tokenized on whitespace only, so the whole voicing arrived as one unparseable token and jam briefs for MIDI-ingested songs showed `N/A` in the implied-chord column. `verifyHarmony` had pre-expanded "+" to spaces as a workaround; that adapter is gone — the engine takes the notation natively.
+- **`computeContour` now follows the top tone of "+"-joined chords.** Chord tokens previously failed the single-note parse and were silently dropped, so a chord-heavy MIDI-ingested right hand always read `static` in the jam brief's melody outline. Each chord now contributes its highest note — the melody voice, the same rule the sing-along contour mode already uses — so those songs get real contours. (Deliberately not a naive token split: that would have read one chord's simultaneous notes as a melodic run.)
+
 ## [2.0.0] - 2026-07-11
 
 **The release where the dataset proved its discipline — twice.** The headline is a breaking engines bump (Node 22), but the story is the fine-tuning arc the dataset was built to enable: a preregistered v0 run that returned an honest negative, a v1 data pass with execution-verified grounding traces that moved the primary metric +0.20 — and a frozen honesty rule that still withheld the victory claim at 12/16 paired wins against a ≥13/16 bar. Both receipted reports ship in `docs/`. Along the way, the v1 pipeline's execution gate caught a real defect in the published dataset's Bach records, now fixed in the working set with full errata.

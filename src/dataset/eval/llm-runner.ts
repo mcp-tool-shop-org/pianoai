@@ -329,7 +329,7 @@ export function checkE1Pass(runs: E1RunResult[]): boolean {
 // adds guardrails for cases where format:"json" is not strict enough.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const E2_SYSTEM_TEXT =
+export const E2_SYSTEM_TEXT =
   "You are predicting musical phrase continuations for piano music.\n\n" +
   "Given the REMI token sequence and metadata for a prompt phrase, " +
   "output the continuation phrase as valid JSON with this exact schema:\n\n" +
@@ -784,8 +784,12 @@ export async function runE2ForPair(
 /**
  * Synthesize minimal TimedEvent array from REMI tokens for groove scoring.
  * REMI format: Bar_N Position_P Pitch_X Velocity_V Duration_D ...
+ *
+ * Exported for the E2 continuation gate (model-continuation.ts) so the
+ * model-vs-gold margin path converts REMI with exactly the same rules the
+ * in-run E2 scorer uses.
  */
-function synthTimedEventsFromRemi(
+export function synthTimedEventsFromRemi(
   tokens: string[],
   phraseWindow: string,
   timeSignature: string,

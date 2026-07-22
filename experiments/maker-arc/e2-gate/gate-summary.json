@@ -1,0 +1,455 @@
+{
+  "schemaVersion": "e2-continuation-gate-summary/1.0.0",
+  "generatedAt": "2026-07-22T15:52:26.259Z",
+  "bar": 0.15,
+  "cohort": {
+    "source": "sealed-22 (e2-phrase-continuation-results.json, 2026-05-16)",
+    "pairCount": 22,
+    "crossCheckMaxAbsDelta": 0,
+    "meanHeadroom": 0.35314188270401103,
+    "unclearablePairCount": 9
+  },
+  "models": [
+    {
+      "model": "gold-identity (instrument ceiling)",
+      "mode": "gold-identity",
+      "runDate": "2026-07-22T15:52:05.295Z",
+      "aggregate": {
+        "modelLabel": "gold-identity (instrument ceiling)",
+        "bar": 0.15,
+        "pairCount": 22,
+        "computablePairCount": 22,
+        "pairsClearingBar": 13,
+        "clearRateAllPairs": 0.5909090909090909,
+        "meanModelVsGold": 1,
+        "meanShuffledVsGold": 0.646858117295989,
+        "meanMargin": 0.35314188270401103,
+        "minMargin": 0,
+        "maxMargin": 0.9629629629629628,
+        "aggregateClearsBar": true,
+        "notComputableAudit": []
+      },
+      "parseTelemetry": {
+        "clean": 22,
+        "recovered": 0,
+        "unrecoverable": 0,
+        "firstPassNoteEmpty": 0,
+        "retriesFired": 0,
+        "noteEmptyAfterRetry": 0
+      }
+    },
+    {
+      "model": "claude-fable-5",
+      "mode": "responses-file",
+      "runDate": "2026-07-22T15:36:27.468Z",
+      "aggregate": {
+        "modelLabel": "claude-fable-5",
+        "bar": 0.15,
+        "pairCount": 22,
+        "computablePairCount": 22,
+        "pairsClearingBar": 0,
+        "clearRateAllPairs": 0,
+        "meanModelVsGold": 0.5110822349839599,
+        "meanShuffledVsGold": 0.646858117295989,
+        "meanMargin": -0.13577588231202897,
+        "minMargin": -0.4727272727272727,
+        "maxMargin": 0.1368686868686868,
+        "aggregateClearsBar": false,
+        "notComputableAudit": []
+      },
+      "parseTelemetry": {
+        "clean": 22,
+        "recovered": 0,
+        "unrecoverable": 0,
+        "firstPassNoteEmpty": 0,
+        "retriesFired": 0,
+        "noteEmptyAfterRetry": 0
+      }
+    },
+    {
+      "model": "qwen2.5:7b",
+      "mode": "ollama",
+      "runDate": "2026-07-22T15:36:59.493Z",
+      "aggregate": {
+        "modelLabel": "qwen2.5:7b",
+        "bar": 0.15,
+        "pairCount": 22,
+        "computablePairCount": 22,
+        "pairsClearingBar": 0,
+        "clearRateAllPairs": 0,
+        "meanModelVsGold": 0.23449692451754497,
+        "meanShuffledVsGold": 0.646858117295989,
+        "meanMargin": -0.412361192778444,
+        "minMargin": -0.75,
+        "maxMargin": 0.12753036437246962,
+        "aggregateClearsBar": false,
+        "notComputableAudit": []
+      },
+      "parseTelemetry": {
+        "clean": 22,
+        "recovered": 0,
+        "unrecoverable": 0,
+        "firstPassNoteEmpty": 0,
+        "retriesFired": 0,
+        "noteEmptyAfterRetry": 0
+      }
+    },
+    {
+      "model": "jam-ft-v1-qwen25:seed1024",
+      "mode": "ollama",
+      "runDate": "2026-07-22T15:44:29.582Z",
+      "aggregate": {
+        "modelLabel": "jam-ft-v1-qwen25:seed1024",
+        "bar": 0.15,
+        "pairCount": 22,
+        "computablePairCount": 22,
+        "pairsClearingBar": 0,
+        "clearRateAllPairs": 0,
+        "meanModelVsGold": 0.27197576860500877,
+        "meanShuffledVsGold": 0.646858117295989,
+        "meanMargin": -0.37488234869098014,
+        "minMargin": -0.7894736842105263,
+        "maxMargin": 0.08265856950067474,
+        "aggregateClearsBar": false,
+        "notComputableAudit": []
+      },
+      "parseTelemetry": {
+        "clean": 22,
+        "recovered": 0,
+        "unrecoverable": 0,
+        "firstPassNoteEmpty": 0,
+        "retriesFired": 0,
+        "noteEmptyAfterRetry": 0
+      }
+    },
+    {
+      "model": "jam-ft-v1-qwen25:seed13",
+      "mode": "ollama",
+      "runDate": "2026-07-22T15:38:17.668Z",
+      "aggregate": {
+        "modelLabel": "jam-ft-v1-qwen25:seed13",
+        "bar": 0.15,
+        "pairCount": 22,
+        "computablePairCount": 19,
+        "pairsClearingBar": 1,
+        "clearRateAllPairs": 0.045454545454545456,
+        "meanModelVsGold": 0.25887043914725766,
+        "meanShuffledVsGold": 0.6326218289855013,
+        "meanMargin": -0.3737513898382435,
+        "minMargin": -0.7599999999999991,
+        "maxMargin": 0.17407407407407408,
+        "aggregateClearsBar": false,
+        "notComputableAudit": [
+          {
+            "pairId": "chopin-nocturne-op9-no2:m021-024:piano:mcp-session:v1",
+            "metric": "grooveOA_modelVsGold",
+            "reason": "model continuation has no note events"
+          },
+          {
+            "pairId": "clair-de-lune:m005-008:piano:mcp-session:v1",
+            "metric": "grooveOA_modelVsGold",
+            "reason": "model continuation has no note events"
+          },
+          {
+            "pairId": "satie-gymnopedie-no1:m015-018:piano:mcp-session:v1",
+            "metric": "grooveOA_modelVsGold",
+            "reason": "model continuation has no note events"
+          }
+        ]
+      },
+      "parseTelemetry": {
+        "clean": 19,
+        "recovered": 0,
+        "unrecoverable": 3,
+        "firstPassNoteEmpty": 0,
+        "retriesFired": 0,
+        "noteEmptyAfterRetry": 0
+      }
+    },
+    {
+      "model": "jam-ft-v1-qwen25:seed271",
+      "mode": "ollama",
+      "runDate": "2026-07-22T15:41:02.754Z",
+      "aggregate": {
+        "modelLabel": "jam-ft-v1-qwen25:seed271",
+        "bar": 0.15,
+        "pairCount": 22,
+        "computablePairCount": 22,
+        "pairsClearingBar": 0,
+        "clearRateAllPairs": 0,
+        "meanModelVsGold": 0.2853579219803446,
+        "meanShuffledVsGold": 0.646858117295989,
+        "meanMargin": -0.3615001953156444,
+        "minMargin": -0.7407407407407407,
+        "maxMargin": 0.1275303643724696,
+        "aggregateClearsBar": false,
+        "notComputableAudit": []
+      },
+      "parseTelemetry": {
+        "clean": 22,
+        "recovered": 0,
+        "unrecoverable": 0,
+        "firstPassNoteEmpty": 0,
+        "retriesFired": 0,
+        "noteEmptyAfterRetry": 0
+      }
+    },
+    {
+      "model": "jam-ft-v1-qwen25:seed42",
+      "mode": "ollama",
+      "runDate": "2026-07-22T15:39:41.397Z",
+      "aggregate": {
+        "modelLabel": "jam-ft-v1-qwen25:seed42",
+        "bar": 0.15,
+        "pairCount": 22,
+        "computablePairCount": 20,
+        "pairsClearingBar": 0,
+        "clearRateAllPairs": 0,
+        "meanModelVsGold": 0.2630885650603574,
+        "meanShuffledVsGold": 0.6245462930917818,
+        "meanMargin": -0.3614577280314243,
+        "minMargin": -0.8266666666666658,
+        "maxMargin": 0.09586056644880175,
+        "aggregateClearsBar": false,
+        "notComputableAudit": [
+          {
+            "pairId": "clair-de-lune:m005-008:piano:mcp-session:v1",
+            "metric": "grooveOA_modelVsGold",
+            "reason": "model continuation has no note events"
+          },
+          {
+            "pairId": "satie-gymnopedie-no1:m023-026:piano:mcp-session:v1",
+            "metric": "grooveOA_modelVsGold",
+            "reason": "model continuation has no note events"
+          }
+        ]
+      },
+      "parseTelemetry": {
+        "clean": 20,
+        "recovered": 0,
+        "unrecoverable": 2,
+        "firstPassNoteEmpty": 0,
+        "retriesFired": 0,
+        "noteEmptyAfterRetry": 0
+      }
+    },
+    {
+      "model": "jam-ft-v1-qwen25:seed512",
+      "mode": "ollama",
+      "runDate": "2026-07-22T15:42:06.432Z",
+      "aggregate": {
+        "modelLabel": "jam-ft-v1-qwen25:seed512",
+        "bar": 0.15,
+        "pairCount": 22,
+        "computablePairCount": 22,
+        "pairsClearingBar": 0,
+        "clearRateAllPairs": 0,
+        "meanModelVsGold": 0.22093672886161728,
+        "meanShuffledVsGold": 0.646858117295989,
+        "meanMargin": -0.4259213884343716,
+        "minMargin": -0.8,
+        "maxMargin": 0.037037037037037035,
+        "aggregateClearsBar": false,
+        "notComputableAudit": []
+      },
+      "parseTelemetry": {
+        "clean": 22,
+        "recovered": 0,
+        "unrecoverable": 0,
+        "firstPassNoteEmpty": 0,
+        "retriesFired": 0,
+        "noteEmptyAfterRetry": 0
+      }
+    },
+    {
+      "model": "jam-ft-b2-qwen25:seed1024",
+      "mode": "ollama",
+      "runDate": "2026-07-22T15:51:07.627Z",
+      "aggregate": {
+        "modelLabel": "jam-ft-b2-qwen25:seed1024",
+        "bar": 0.15,
+        "pairCount": 22,
+        "computablePairCount": 21,
+        "pairsClearingBar": 0,
+        "clearRateAllPairs": 0,
+        "meanModelVsGold": 0.22724931080940283,
+        "meanShuffledVsGold": 0.6371340357487869,
+        "meanMargin": -0.40988472493938394,
+        "minMargin": -0.8588235294117637,
+        "maxMargin": 0.10943081686115738,
+        "aggregateClearsBar": false,
+        "notComputableAudit": [
+          {
+            "pairId": "clair-de-lune:m005-008:piano:mcp-session:v1",
+            "metric": "grooveOA_modelVsGold",
+            "reason": "model continuation has no note events"
+          }
+        ]
+      },
+      "parseTelemetry": {
+        "clean": 21,
+        "recovered": 0,
+        "unrecoverable": 1,
+        "firstPassNoteEmpty": 0,
+        "retriesFired": 0,
+        "noteEmptyAfterRetry": 0
+      }
+    },
+    {
+      "model": "jam-ft-b2-qwen25:seed13",
+      "mode": "ollama",
+      "runDate": "2026-07-22T15:46:26.591Z",
+      "aggregate": {
+        "modelLabel": "jam-ft-b2-qwen25:seed13",
+        "bar": 0.15,
+        "pairCount": 22,
+        "computablePairCount": 21,
+        "pairsClearingBar": 0,
+        "clearRateAllPairs": 0,
+        "meanModelVsGold": 0.25038809251877253,
+        "meanShuffledVsGold": 0.6300418371672266,
+        "meanMargin": -0.379653744648454,
+        "minMargin": -0.8125,
+        "maxMargin": 0.10188933873144398,
+        "aggregateClearsBar": false,
+        "notComputableAudit": [
+          {
+            "pairId": "satie-gymnopedie-no1:m015-018:piano:mcp-session:v1",
+            "metric": "grooveOA_modelVsGold",
+            "reason": "model continuation has no note events"
+          }
+        ]
+      },
+      "parseTelemetry": {
+        "clean": 21,
+        "recovered": 0,
+        "unrecoverable": 1,
+        "firstPassNoteEmpty": 0,
+        "retriesFired": 0,
+        "noteEmptyAfterRetry": 0
+      }
+    },
+    {
+      "model": "jam-ft-b2-qwen25:seed271",
+      "mode": "ollama",
+      "runDate": "2026-07-22T15:48:39.815Z",
+      "aggregate": {
+        "modelLabel": "jam-ft-b2-qwen25:seed271",
+        "bar": 0.15,
+        "pairCount": 22,
+        "computablePairCount": 20,
+        "pairsClearingBar": 1,
+        "clearRateAllPairs": 0.045454545454545456,
+        "meanModelVsGold": 0.1856434483415771,
+        "meanShuffledVsGold": 0.6448772623589212,
+        "meanMargin": -0.4592338140173441,
+        "minMargin": -0.84375,
+        "maxMargin": 0.19907407407407407,
+        "aggregateClearsBar": false,
+        "notComputableAudit": [
+          {
+            "pairId": "satie-gymnopedie-no1:m015-018:piano:mcp-session:v1",
+            "metric": "grooveOA_modelVsGold",
+            "reason": "model continuation has no note events"
+          },
+          {
+            "pairId": "schumann-traumerei:m005-008:piano:mcp-session:v1",
+            "metric": "grooveOA_modelVsGold",
+            "reason": "model continuation has no note events"
+          }
+        ]
+      },
+      "parseTelemetry": {
+        "clean": 20,
+        "recovered": 0,
+        "unrecoverable": 2,
+        "firstPassNoteEmpty": 0,
+        "retriesFired": 0,
+        "noteEmptyAfterRetry": 0
+      }
+    },
+    {
+      "model": "jam-ft-b2-qwen25:seed42",
+      "mode": "ollama",
+      "runDate": "2026-07-22T15:47:30.677Z",
+      "aggregate": {
+        "modelLabel": "jam-ft-b2-qwen25:seed42",
+        "bar": 0.15,
+        "pairCount": 22,
+        "computablePairCount": 21,
+        "pairsClearingBar": 0,
+        "clearRateAllPairs": 0,
+        "meanModelVsGold": 0.19860157498281564,
+        "meanShuffledVsGold": 0.6460333083825784,
+        "meanMargin": -0.4474317333997626,
+        "minMargin": -0.8181818181818181,
+        "maxMargin": 0.14814814814814814,
+        "aggregateClearsBar": false,
+        "notComputableAudit": [
+          {
+            "pairId": "clair-de-lune:m019-022:piano:mcp-session:v1",
+            "metric": "grooveOA_modelVsGold",
+            "reason": "model continuation has no note events"
+          }
+        ]
+      },
+      "parseTelemetry": {
+        "clean": 21,
+        "recovered": 0,
+        "unrecoverable": 1,
+        "firstPassNoteEmpty": 0,
+        "retriesFired": 0,
+        "noteEmptyAfterRetry": 0
+      }
+    },
+    {
+      "model": "jam-ft-b2-qwen25:seed512",
+      "mode": "ollama",
+      "runDate": "2026-07-22T15:50:04.499Z",
+      "aggregate": {
+        "modelLabel": "jam-ft-b2-qwen25:seed512",
+        "bar": 0.15,
+        "pairCount": 22,
+        "computablePairCount": 18,
+        "pairsClearingBar": 0,
+        "clearRateAllPairs": 0,
+        "meanModelVsGold": 0.21478282850572233,
+        "meanShuffledVsGold": 0.6513915784450834,
+        "meanMargin": -0.43660874993936094,
+        "minMargin": -0.7662337662337663,
+        "maxMargin": 0.14814814814814814,
+        "aggregateClearsBar": false,
+        "notComputableAudit": [
+          {
+            "pairId": "chopin-nocturne-op9-no2:m005-008:piano:mcp-session:v1",
+            "metric": "grooveOA_modelVsGold",
+            "reason": "model continuation has no note events"
+          },
+          {
+            "pairId": "fur-elise:m013-016:piano:mcp-session:v1",
+            "metric": "grooveOA_modelVsGold",
+            "reason": "model continuation has no note events"
+          },
+          {
+            "pairId": "mozart-k545-mvt1:m005-008:piano:mcp-session:v1",
+            "metric": "grooveOA_modelVsGold",
+            "reason": "model continuation has no note events"
+          },
+          {
+            "pairId": "schumann-traumerei:m013-016:piano:mcp-session:v1",
+            "metric": "grooveOA_modelVsGold",
+            "reason": "model continuation has no note events"
+          }
+        ]
+      },
+      "parseTelemetry": {
+        "clean": 18,
+        "recovered": 0,
+        "unrecoverable": 4,
+        "firstPassNoteEmpty": 0,
+        "retriesFired": 0,
+        "noteEmptyAfterRetry": 0
+      }
+    }
+  ]
+}
