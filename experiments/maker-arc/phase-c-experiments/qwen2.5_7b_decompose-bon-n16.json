@@ -1,0 +1,128 @@
+{
+  "schemaVersion": "er-experiment/1.0.0",
+  "runDate": "2026-07-22T19:08:19.084Z",
+  "model": "qwen2.5:7b",
+  "nonTrivialityFraction": 0.3333333333333333,
+  "mode": "decompose-bon",
+  "n": 16,
+  "coverageAtK": {
+    "1": 0.5,
+    "2": 0.5,
+    "4": 0.5909090909090909,
+    "8": 0.7272727272727273,
+    "16": 0.9090909090909091
+  },
+  "itemCount": 22,
+  "outcomes": [
+    {
+      "itemId": "all-the-things-you-are:m1-8",
+      "genre": "jazz",
+      "passAt": 1
+    },
+    {
+      "itemId": "autumn-leaves:m1-8",
+      "genre": "jazz",
+      "passAt": 3
+    },
+    {
+      "itemId": "a-thousand-years:m1-8",
+      "genre": "pop",
+      "passAt": 12
+    },
+    {
+      "itemId": "all-of-me:m1-8",
+      "genre": "pop",
+      "passAt": 1
+    },
+    {
+      "itemId": "blues-in-the-night:m1-8",
+      "genre": "blues",
+      "passAt": 1
+    },
+    {
+      "itemId": "born-under-a-bad-sign:m1-8",
+      "genre": "blues",
+      "passAt": 14
+    },
+    {
+      "itemId": "baba-oriley:m1-8",
+      "genre": "rock",
+      "passAt": 1
+    },
+    {
+      "itemId": "bennie-and-the-jets:m1-8",
+      "genre": "rock",
+      "passAt": 12
+    },
+    {
+      "itemId": "fallin:m1-8",
+      "genre": "rnb",
+      "passAt": null
+    },
+    {
+      "itemId": "halo:m1-8",
+      "genre": "rnb",
+      "passAt": 1
+    },
+    {
+      "itemId": "a-change-is-gonna-come:m1-8",
+      "genre": "soul",
+      "passAt": 1
+    },
+    {
+      "itemId": "aint-no-sunshine:m1-8",
+      "genre": "soul",
+      "passAt": 1
+    },
+    {
+      "itemId": "agua-de-beber:m1-8",
+      "genre": "latin",
+      "passAt": null
+    },
+    {
+      "itemId": "besame-mucho:m1-8",
+      "genre": "latin",
+      "passAt": 1
+    },
+    {
+      "itemId": "cinema-paradiso:m1-8",
+      "genre": "film",
+      "passAt": 1
+    },
+    {
+      "itemId": "comptine-dun-autre-ete:m1-8",
+      "genre": "film",
+      "passAt": 6
+    },
+    {
+      "itemId": "bethena:m1-8",
+      "genre": "ragtime",
+      "passAt": 6
+    },
+    {
+      "itemId": "elite-syncopations:m1-8",
+      "genre": "ragtime",
+      "passAt": 1
+    },
+    {
+      "itemId": "divenire:m1-8",
+      "genre": "new-age",
+      "passAt": 4
+    },
+    {
+      "itemId": "experience:m1-8",
+      "genre": "new-age",
+      "passAt": 14
+    },
+    {
+      "itemId": "amazing-grace:m1-8",
+      "genre": "folk",
+      "passAt": 6
+    },
+    {
+      "itemId": "auld-lang-syne:m1-8",
+      "genre": "folk",
+      "passAt": 1
+    }
+  ]
+}

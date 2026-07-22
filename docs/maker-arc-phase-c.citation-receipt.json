@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "phase-c-citation-receipt/1.0.0",
+  "date": "2026-07-22",
+  "protocol": "research-grounded-advisor (study-swarm)",
+  "dispatch": "docs/maker-arc-phase-c-design.md",
+  "stage1_existence_oracle": {
+    "method": "deterministic arXiv API id_list batch retrieval (+ WebSearch for the one non-arXiv paper)",
+    "resolved": 40,
+    "total": 40,
+    "fabricated": 0,
+    "note": "All post-training-cutoff papers (2025/2026: 2504.11343, 2504.13837, 2505.22617, 2509.04259, 2607.18725, 2502.18008, 2509.23350, 2606.09410, 2503.19206) resolved with matching titles/authors/years — parametric recall would have false-flagged them, which is exactly why the oracle is the load-bearing existence lens.",
+    "non_arxiv_verified": [
+      { "paper": "Chord Jazzification (Chen, Fukayama, Goto, Su, ISMIR 2020)", "method": "WebSearch retrieval", "claim_confirmed": "the two-stage coloring→voicing process outperforms an end-to-end generation approach" }
+    ],
+    "attribution_corrections": [
+      { "id": "2411.17501", "as_cited": "Inference Scaling fLaws: The Limits of LLM Resampling with Imperfect Verifiers", "canonical_title": "The Limits of Inference Scaling Through Resampling", "authors_year_ok": true, "action": "title corrected in the dispatch; authors (Stroebl et al.) and year (2024) and finding unchanged" }
+    ]
+  },
+  "stage2_groundedness_jury": {
+    "tool": "ollama_verify_claims (Ollama Cloud, reasoning-stripped by schema)",
+    "families_served": ["deepseek-v4-pro:cloud", "glm-5.2:cloud"],
+    "note": "kimi-k2.7-code never parsed (tool-side output-parser flakiness); deepseek served batch 1, glm-5.2 served batch 2 — two disjoint frontier families across the 16 load-bearing claims.",
+    "confirmed": 13,
+    "refuted": 0,
+    "uncertain": 3,
+    "uncertain_ids": ["chord-jazzification", "raft-competitive-rl", "narrow-sft-collapses-structure"],
+    "uncertain_disposition": "chord-jazzification retrieval-verified (WebSearch, reclassified CONFIRMED); raft-competitive-rl (Xiong 2025, post-cutoff — CORROBORATIVE, the load-bearing training-paradigm finding is RFT/Yuan which IS confirmed); narrow-sft-collapses-structure (Mitra 2026, post-cutoff — CORROBORATIVE, and it independently reproduces our OWN measured b2 format-collapse, which is the primary evidence).",
+    "honest_ceiling": "A CONFIRMED on frontier-authored claims is corroboration, not proof; the panel reliably flags gross errors and is weaker on subtle ones. The retrieval oracle (existence) is the load-bearing gate; the jury adds groundedness where the papers are within its knowledge."
+  },
+  "ensemble": "retrieval oracle (arXiv/WebSearch) + deepseek-v4-pro + glm-5.2 = ≥3 decorrelated lenses, ≥2 different-family LLM lenses; 0 fabricated, 0 refuted.",
+  "halt_conditions_hit": "none — no FABRICATED, no REFUTED; the 3 UNCERTAIN handled per the CANNOT_CONFIRM rule (retrieval-verified or demoted to corroborative, none silently load-bearing)."
+}
