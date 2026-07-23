@@ -22,12 +22,25 @@ import { songEvents } from "./events.js";
 import { segmentMeasure } from "./profile.js";
 import { findRoot } from "./root.js";
 import { identifyChord, type ChordIdOptions } from "./chord-id.js";
+import { detectRegions, type Region } from "./hcdf.js";
 
 export interface AnalyzeOptions extends ChordIdOptions {
   /** Optional 1-based inclusive measure range [start, end] to analyze. */
   measureRange?: [number, number];
   /** Profile-compression exponent for root-finding (see DEFAULT_ROOT_ALPHA). */
   rootAlpha?: number;
+  /**
+   * Span segmentation strategy. "beat" (default) merges adjacent same-symbol
+   * tactus segments — best for block-chord harmonic rhythm. "hcdf" groups beats
+   * into harmonically-stable regions via the tonal-centroid change function —
+   * intended to stop arpeggio fragmentation. Only `spans` is affected; the
+   * per-measure view is identical either way.
+   */
+  segmentation?: "beat" | "hcdf";
+  /** HCDF boundary threshold (only when segmentation === "hcdf"). */
+  hcdfThreshold?: number;
+  /** HCDF smoothing radius in beats (only when segmentation === "hcdf"). */
+  hcdfSmooth?: number;
 }
 
 /** A tactus segment with its resolved chord label (internal). */
@@ -151,12 +164,34 @@ export function analyzeHarmony(song: SongEntry, options: AnalyzeOptions = {}): H
     for (const seg of segs) labeled.push(labelSegment(seg, options));
   }
 
+  const spans =
+    options.segmentation === "hcdf"
+      ? detectRegions(labeled, options.hcdfThreshold, options.hcdfSmooth).map((r) => labelRegion(r, options))
+      : mergeSpans(labeled);
+
   return {
     songId: song.id,
     key: song.key,
     timeSignature: song.timeSignature,
     beatsPerMeasure,
-    spans: mergeSpans(labeled),
+    spans,
     perMeasure: perMeasureView(labeled, options),
   };
+}
+
+/** Label one HCDF region as a ChordSpan (silent → N/C). */
+function labelRegion(region: Region, opts: AnalyzeOptions): ChordSpan {
+  const base = {
+    startBeat: region.startBeat,
+    endBeat: region.endBeat,
+    startMeasure: region.measure,
+    bassPc: region.bassPc,
+    segments: region.segments,
+  };
+  if (region.silent || region.totalWeight <= 0) {
+    return { ...base, root: -1, quality: "N/C", symbol: "N/C", confidence: 0 };
+  }
+  const { root, margin } = findRoot(region.profile, region.bassPc, opts.rootAlpha);
+  const id = identifyChord(region.profile, root, margin, opts);
+  return { ...base, root, quality: id.quality, symbol: id.symbol, confidence: id.confidence };
 }

@@ -72,4 +72,19 @@ describe("analyzeHarmony", () => {
     expect(a.perMeasure[0].symbol).toBe("N/C");
     expect(a.spans[0].symbol).toBe("N/C");
   });
+
+  it("segmentation:'hcdf' groups an arpeggio that beat-mode fragments (the mechanism)", () => {
+    // A bare C-major arpeggio: beat-mode roots each single-note beat separately
+    // (C, E, G, C → 4 spans); HCDF's smoothed change function sees one stable
+    // C-major region → one span. (This is the mechanism; the reference
+    // measurement shows it costs block-chord boundary precision — see the
+    // receipt. Default stays "beat".)
+    const s = song([{ number: 1, leftHand: "C3:q E3:q G3:q C4:q", rightHand: "R:w" }]);
+    const beat = analyzeHarmony(s, { segmentation: "beat" });
+    const hcdf = analyzeHarmony(s, { segmentation: "hcdf", hcdfSmooth: 2 });
+    expect(beat.spans.length).toBeGreaterThan(1);
+    expect(hcdf.spans.length).toBeLessThan(beat.spans.length);
+    expect(hcdf.spans).toHaveLength(1);
+    expect(hcdf.spans[0].root).toBe(0); // roots the whole region on C
+  });
 });
