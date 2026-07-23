@@ -23,7 +23,8 @@
 
 import { parseChordSymbol } from "../maker/verify-harmony.js";
 import { verifyVoiceLeading, type VoiceLeadingVerdict, type VLRule } from "./voice-leading.js";
-import { scoreRealization, type RealizationScore } from "./scorer.js";
+import { scoreRealization, type RealizationScore, type ScoreWeights } from "./scorer.js";
+import type { StyleReference } from "./style-cost.js";
 import type { StyleName, StyleProfile } from "./style.js";
 import type { Realization, RealizedFrame } from "./types.js";
 
@@ -68,6 +69,10 @@ export interface RealizeOptions {
    * the style's set (default none). Prefer `style`; this stays for direct control.
    */
   relaxRules?: VLRule[];
+  /** Scorer weights for ranking admitted candidates (default DEFAULT_SCORE_WEIGHTS). */
+  scoreWeights?: ScoreWeights;
+  /** Opt-in A2 style-typicality reference band, forwarded to the scorer (default off). */
+  styleReference?: StyleReference;
 }
 
 export interface RealizeResult {
@@ -246,7 +251,7 @@ export async function realizeProgression(
       style: opts.style,
       relaxRules: opts.relaxRules,
     });
-    const score = scoreRealization(real);
+    const score = scoreRealization(real, opts.scoreWeights, { styleReference: opts.styleReference });
     const candidate = { real, verdict, score };
 
     if (bestAny === null || score.score > bestAny.score.score) bestAny = candidate;
@@ -263,7 +268,7 @@ export async function realizeProgression(
     bestAny ?? {
       real: { key: progression.key, frames: [] } as Realization,
       verdict: verifyVoiceLeading({ key: progression.key, frames: [] }, { requireVoiceCount, style: opts.style }),
-      score: scoreRealization({ key: progression.key, frames: [] }),
+      score: scoreRealization({ key: progression.key, frames: [] }, opts.scoreWeights, { styleReference: opts.styleReference }),
     };
 
   return {

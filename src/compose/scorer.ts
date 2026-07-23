@@ -25,6 +25,7 @@
 import { parseChordSymbol } from "../maker/verify-harmony.js";
 import { parseKey } from "./voice-leading.js";
 import { verifyVoiceLeading } from "./voice-leading.js";
+import { styleTypicality, type StyleReference } from "./style-cost.js";
 import type { Realization, RealizedFrame } from "./types.js";
 
 export interface ScoreWeights {
@@ -32,14 +33,22 @@ export interface ScoreWeights {
   completeness: number;
   doublingQuality: number;
   outerContrary: number;
+  /**
+   * The soft STYLE-TYPICALITY axis (A2). DEFAULT 0 — off unless a caller opts in
+   * with a reference band AND a positive weight, so it changes no existing
+   * ranking. A ranking signal only, never a gate, never a quality claim (finding 19).
+   */
+  styleTypicality: number;
 }
 
-/** Default weights — the 3rd/root completeness and smoothness carry the most. */
+/** Default weights — the 3rd/root completeness and smoothness carry the most.
+ *  styleTypicality defaults to 0 (the A2 axis is opt-in; see ScoreWeights). */
 export const DEFAULT_SCORE_WEIGHTS: ScoreWeights = {
   smoothness: 0.3,
   completeness: 0.35,
   doublingQuality: 0.2,
   outerContrary: 0.15,
+  styleTypicality: 0,
 };
 
 export interface RealizationScore {
@@ -53,7 +62,18 @@ export interface RealizationScore {
   doublingQuality: number;
   /** [0,1] — fraction of transitions with contrary or oblique outer-voice motion. */
   outerContrary: number;
+  /** (0,1] — style-band fit (A2). 1 (neutral) when no styleReference was supplied. */
+  styleTypicality: number;
   weights: ScoreWeights;
+}
+
+export interface ScoreRealizationOptions {
+  /**
+   * A per-style reference band. When supplied, the styleTypicality axis measures
+   * the realization's fit to it; otherwise the axis is a neutral 1 (and, with the
+   * default weight 0, contributes nothing). See style-cost.ts.
+   */
+  styleReference?: StyleReference;
 }
 
 const sign = (x: number): number => (x > 0 ? 1 : x < 0 ? -1 : 0);
@@ -131,6 +151,7 @@ function frameDoublingQuality(frame: RealizedFrame, leadingTonePc: number | null
 export function scoreRealization(
   realization: Realization,
   weights: ScoreWeights = DEFAULT_SCORE_WEIGHTS,
+  opts: ScoreRealizationOptions = {},
 ): RealizationScore {
   const verdict = verifyVoiceLeading(realization);
   const key = parseKey(realization.key);
@@ -171,15 +192,25 @@ export function scoreRealization(
   }
   const outerContrary = transitions > 0 ? contrary / transitions : 1;
 
-  const wsum = weights.smoothness + weights.completeness + weights.doublingQuality + weights.outerContrary;
+  // A2: the soft style-typicality axis. Neutral 1 when no reference is supplied;
+  // with the default weight 0 it contributes nothing (default score unchanged).
+  const styleTyp = opts.styleReference ? styleTypicality(realization, opts.styleReference) : 1;
+
+  const wsum =
+    weights.smoothness +
+    weights.completeness +
+    weights.doublingQuality +
+    weights.outerContrary +
+    weights.styleTypicality;
   const score =
     wsum > 0
       ? (smoothness * weights.smoothness +
           completeness * weights.completeness +
           doublingQuality * weights.doublingQuality +
-          outerContrary * weights.outerContrary) /
+          outerContrary * weights.outerContrary +
+          styleTyp * weights.styleTypicality) /
         wsum
       : 0;
 
-  return { score, smoothness, completeness, doublingQuality, outerContrary, weights };
+  return { score, smoothness, completeness, doublingQuality, outerContrary, styleTypicality: styleTyp, weights };
 }

@@ -37,7 +37,16 @@ export {
   DEFAULT_SCORE_WEIGHTS,
   type RealizationScore,
   type ScoreWeights,
+  type ScoreRealizationOptions,
 } from "./scorer.js";
+export {
+  styleFeatures,
+  buildStyleReference,
+  styleTypicality,
+  type StyleFeatureName,
+  type StyleFeatureStats,
+  type StyleReference,
+} from "./style-cost.js";
 export {
   realizeProgression,
   rootPositionRealization,
