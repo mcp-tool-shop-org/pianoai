@@ -104,6 +104,20 @@ export {
   parseJudgeResponse,
   type OllamaBwsJudgeOptions,
 } from "./ollama-bws-judge.js";
+export {
+  runVoiceLeadingPanel,
+  renderPanelReport,
+  type PanelSystemSpec,
+  type PanelJudge,
+  type PanelRunOptions,
+  type PanelReport,
+} from "./panel-run.js";
+export {
+  runComposePanelTool,
+  type ComposePanelToolInput,
+  type ComposePanelToolResult,
+  type ComposePanelPayload,
+} from "./compose-panel-tool.js";
 
 // ─── Analysis → progression (the Phase-1 → Phase-2 seam) ──────────────────────
 

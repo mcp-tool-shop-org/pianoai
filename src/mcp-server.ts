@@ -53,6 +53,22 @@ import { reharmonizeSongSection, type AutoReharmonizeToolResult } from "./maker/
 import { OllamaChordProposer } from "./maker/chord-proposer.js";
 import { AbcChordProposer } from "./maker/abc-chord-proposer.js";
 import type { SongEntry, Difficulty, Genre } from "./songs/types.js";
+import { analyzeHarmony } from "./analysis/index.js";
+import {
+  progressionFromAnalysis,
+  rootPositionRealization,
+  nearestToneRealization,
+  refineRealization,
+  realizeProgression,
+  RefiningProposer,
+  OllamaSpecRealizer,
+  OllamaBwsJudge,
+  runComposePanelTool,
+  type PanelSystemSpec,
+  type PanelJudge,
+  type ChordProgression,
+  type StyleName,
+} from "./compose/index.js";
 import { safeParseMeasure, measureToSingableText, type SingAlongMode } from "./note-parser.js";
 import { renderPianoRoll, renderScoredPianoRoll } from "./piano-roll.js";
 import { renderGuitarTab } from "./guitar-tab-roll.js";
@@ -2109,6 +2125,102 @@ registerTool(
       return structuredError(result.code, result.message, result.hint);
     }
     return { content: [{ type: "text", text: result.text }] };
+  },
+);
+
+// ─── Tool: compose_panel ─────────────────────────────────────────────────
+//
+// The $0 cross-family LLM voice-leading SMOKE-SCREEN as a repeatable feature:
+// realize each library song four ways (root-position floor · nearest-tone ·
+// refined · the composition engine = model-spec best-of-n + part-at-a-time
+// refine), then have several LOCAL judge families best-worst them blind. It is a
+// DIRECTIONAL filter, explicitly NOT a quality measure — local LLMs judging
+// note-names cannot make a quality claim (that is a blind human-AUDIO panel). A
+// discrimination-floor gate returns UNINTERPRETABLE if the judges cannot even
+// rank the theory-valid system above the theory-invalid floor. Needs local Ollama
+// (judges default to mistral/granite/gemma/aya — none is the qwen generator so no
+// judge grades its own output); fail-soft + $0. May take several minutes.
+
+registerTool(
+  "compose_panel",
+  "Run a cross-family local-LLM 'best-worst' panel over how the composition engine voices library songs — a $0 DIRECTIONAL smoke-screen, NOT a quality measure (local models judging note-names can't make a quality claim; that needs a blind human-audio panel). It realizes each song four ways (root-position floor, nearest-tone leader, refined, and the engine = model-spec best-of-n + refine), then several disjoint local judge families rank them blind. A discrimination-floor gate returns UNINTERPRETABLE if the judges can't rank the theory-valid system above the theory-invalid floor; INCONCLUSIVE is a normal outcome. Needs local Ollama (judges default to mistral-small/granite/gemma/aya — none is the generator family); fail-soft, zero API cost. Runs slowly (several minutes) since it generates + judges with 24–31B models.",
+  {
+    songs: z.string().optional().describe("Comma-separated library song ids (e.g. 'let-it-be,all-of-me'). Default: a genre-diverse set of 10. Browse with list_songs."),
+    measures: z.string().optional().describe("Measure range (1-based), e.g. '1-8'. Default: measures 1-8."),
+    style: z.string().optional().describe("Style preset the engine + refinement target: 'common-practice', 'lead-sheet' (default), or 'film-ambient'."),
+    n: z.number().int().min(1).max(32).optional().describe("Engine best-of-n budget (default 6). Higher = more coverage, more time."),
+    judges: z.string().optional().describe("Comma-separated judge families as 'model:family' (e.g. 'mistral-small:24b:mistral'). Default four disjoint local families, none of them qwen (the generator)."),
+    genModel: z.string().optional().describe("Local Ollama model the engine generates with (default 'qwen2.5:7b')."),
+  },
+  async ({ songs, measures, style, n, judges, genModel }) => {
+    const structuredError = (code: string, message: string, hint: string) => ({
+      content: [{ type: "text" as const, text: `❌ ${message}\n\n` + JSON.stringify({ error: { code, message, hint } }, null, 2) }],
+      isError: true,
+    });
+
+    const voices = 4;
+    const styleName = (style ?? "lead-sheet") as StyleName;
+    const [lo, hi] = (measures ?? "1-8").split("-").map((x) => parseInt(x, 10));
+    if (!Number.isFinite(lo) || !Number.isFinite(hi) || lo < 1 || hi < lo) {
+      return structuredError("bad_measure_range", `Invalid measure range "${measures}".`, 'Use "N" or "start-end", e.g. "1-8".');
+    }
+
+    const DEFAULT_SONGS = ["bach-prelude-c-major-bwv846", "autumn-leaves", "all-of-me", "blues-in-the-night", "bennie-and-the-jets", "fallin", "aint-no-sunshine", "besame-mucho", "bethena", "amazing-grace"];
+    const songIds = (songs ?? DEFAULT_SONGS.join(",")).split(",").map((s) => s.trim()).filter(Boolean);
+    const progressions: Array<{ id: string; progression: ChordProgression }> = [];
+    const skipped: string[] = [];
+    for (const id of songIds) {
+      const song = getSong(id);
+      if (!song) { skipped.push(id); continue; }
+      progressions.push({ id, progression: progressionFromAnalysis(analyzeHarmony(song, { measureRange: [lo, hi] })) });
+    }
+    if (progressions.length === 0) {
+      return structuredError("no_songs", `None of the requested songs are in the library${skipped.length ? ` (unknown: ${skipped.join(", ")})` : ""}.`, "Browse with list_songs and pass exact ids.");
+    }
+
+    // Ollama is OPTIONAL + fail-soft. Probe the engine generator + each judge; drop
+    // unreachable judges. The generator family (qwen) is never a judge.
+    const genTag = genModel ?? "qwen2.5:7b";
+    const specRealizer = new OllamaSpecRealizer(genTag, { voices, maxTokens: 1024 });
+    try {
+      await specRealizer.probe();
+    } catch (err) {
+      return structuredError("ollama_unreachable", `The engine model "${genTag}" is not reachable — compose_panel needs Ollama running.`, `Start Ollama ("ollama serve") and pull the model. Underlying: ${err instanceof Error ? err.message : String(err)}`);
+    }
+    const engineProposer = new RefiningProposer(specRealizer, { voices, style: styleName });
+
+    const DEFAULT_JUDGES = "mistral-small:24b:mistral,granite4.1:30b:granite,gemma4:31b:gemma,aya-expanse:32b:aya";
+    const judgeSpecs = (judges ?? DEFAULT_JUDGES).split(",").map((s) => s.trim()).filter(Boolean);
+    const reachableJudges: PanelJudge[] = [];
+    const unreachableJudges: string[] = [];
+    for (const spec of judgeSpecs) {
+      const li = spec.lastIndexOf(":");
+      const parts = spec.split(":");
+      const [model, family] = parts.length === 3 ? [spec.slice(0, li), spec.slice(li + 1)] : [spec, spec];
+      const j = new OllamaBwsJudge(model, family);
+      try { await j.probe(); reachableJudges.push(j); } catch { unreachableJudges.push(model); }
+    }
+    if (reachableJudges.length < 3) {
+      return structuredError("too_few_judges", `An honest cross-family panel needs ≥3 reachable judge families; only ${reachableJudges.length} of ${judgeSpecs.length} responded${unreachableJudges.length ? ` (down: ${unreachableJudges.join(", ")})` : ""}.`, "Pull more local models (e.g. 'ollama pull mistral-small:24b'), or pass --judges with models you have.");
+    }
+
+    const systems: PanelSystemSpec[] = [
+      { id: "floor", note: "root-position floor (theory-INVALID discrimination anchor)", realize: (p: ChordProgression) => rootPositionRealization(p, voices) },
+      { id: "nearest", note: "nearest-tone deterministic leader", realize: (p) => nearestToneRealization(p, voices) },
+      { id: "refined", note: "refined nearest-tone (theory-VALID discrimination anchor)", realize: (p) => refineRealization(nearestToneRealization(p, voices), { voices, style: styleName }).realization },
+      { id: "engine", note: "the composition engine: model-spec best-of-n + part-at-a-time refine", realize: async (p) => (await realizeProgression(p, engineProposer, { maxSamples: n ?? 6, voices, style: styleName })).realization },
+    ];
+
+    let result;
+    try {
+      result = await runComposePanelTool({ progressions, systems, judges: reachableJudges, style: styleName, anchors: { floor: "floor", valid: "refined", engine: "engine" } });
+    } catch (err) {
+      return structuredError("panel_failed", "The panel errored while running.", err instanceof Error ? err.message : String(err));
+    }
+    if (!result.ok) return structuredError(result.code, result.message, result.hint);
+
+    const preamble = skipped.length ? `(skipped unknown songs: ${skipped.join(", ")})\n\n` : "";
+    return { content: [{ type: "text", text: preamble + result.text }] };
   },
 );
 
