@@ -71,6 +71,36 @@
         { "startBeat": 12, "endBeat": 14, "chord": "F" },
         { "startBeat": 14, "endBeat": 16, "chord": "C" }
       ]
+    },
+    {
+      "songId": "imagine",
+      "label": "mm.2-6 — the block-chord Cmaj7/F vamp (another clean block-chord case for the analyzer's strong suit)",
+      "measureRange": [2, 6],
+      "provenance": "the factual Cmaj7-F alternation, confirmed against the per-measure left-hand chord content",
+      "changes": [
+        { "startBeat": 0, "endBeat": 4, "chord": "Cmaj7" },
+        { "startBeat": 4, "endBeat": 8, "chord": "F" },
+        { "startBeat": 8, "endBeat": 12, "chord": "Cmaj7" },
+        { "startBeat": 12, "endBeat": 16, "chord": "F" },
+        { "startBeat": 16, "endBeat": 20, "chord": "C" }
+      ]
+    },
+    {
+      "songId": "chopin-prelude-e-minor",
+      "label": "mm.2-3 — a held Em with G in the bass (inversion stressor: bass ≠ root, the pedal-root failure mode)",
+      "measureRange": [2, 3],
+      "provenance": "public domain (Chopin, Op.28 No.4 opening); {E,G,B} = Em, sounded with G lowest",
+      "changes": [{ "startBeat": 0, "endBeat": 8, "chord": "Em" }]
+    },
+    {
+      "songId": "clocks",
+      "label": "mm.3-4 — Eb then Bbm, both in inversion (block-chord pop, bass ≠ root)",
+      "measureRange": [3, 4],
+      "provenance": "the factual Eb-Bbm move, confirmed against the content ({Eb,G,Bb} over G; {Bb,Db,F} over F)",
+      "changes": [
+        { "startBeat": 0, "endBeat": 4, "chord": "Eb" },
+        { "startBeat": 4, "endBeat": 8, "chord": "Bbm" }
+      ]
     }
   ]
 }

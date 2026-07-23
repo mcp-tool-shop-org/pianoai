@@ -1,7 +1,7 @@
 {
   "generatedNote": "Deterministic output of scripts/analysis-validate.ts. Regenerate with `pnpm exec tsx scripts/analysis-validate.ts`. Accuracies are duration-weighted MIREX (root/maj-min/full-quality). See reference-changes.json for the no-ground-truth caveats — these are a relative A/B, not an absolute grade.",
   "referenceSet": {
-    "sections": 6,
+    "sections": 9,
     "perSection": [
       {
         "songId": "bach-prelude-c-major-bwv846",
@@ -176,32 +176,119 @@
           "fullAcc": 0,
           "refBeats": 16
         }
+      },
+      {
+        "songId": "imagine",
+        "label": "mm.2-6 — the block-chord Cmaj7/F vamp (another clean block-chord case for the analyzer's strong suit)",
+        "refBeats": 20,
+        "analyzerSpans": {
+          "rootAcc": 0.8,
+          "majMinAcc": 0.8,
+          "fullAcc": 0.15,
+          "refBeats": 20
+        },
+        "analyzerPerMeasure": {
+          "rootAcc": 0.8,
+          "majMinAcc": 0.8,
+          "fullAcc": 0.2,
+          "refBeats": 20
+        },
+        "baselineLeftHand": {
+          "rootAcc": 1,
+          "majMinAcc": 1,
+          "fullAcc": 0.8,
+          "refBeats": 20
+        },
+        "baselinePooled": {
+          "rootAcc": 0.8,
+          "majMinAcc": 0.8,
+          "fullAcc": 0.6,
+          "refBeats": 20
+        }
+      },
+      {
+        "songId": "chopin-prelude-e-minor",
+        "label": "mm.2-3 — a held Em with G in the bass (inversion stressor: bass ≠ root, the pedal-root failure mode)",
+        "refBeats": 8,
+        "analyzerSpans": {
+          "rootAcc": 0.125,
+          "majMinAcc": 0.125,
+          "fullAcc": 0.125,
+          "refBeats": 8
+        },
+        "analyzerPerMeasure": {
+          "rootAcc": 0.5,
+          "majMinAcc": 0.5,
+          "fullAcc": 0.5,
+          "refBeats": 8
+        },
+        "baselineLeftHand": {
+          "rootAcc": 0,
+          "majMinAcc": 0,
+          "fullAcc": 0,
+          "refBeats": 8
+        },
+        "baselinePooled": {
+          "rootAcc": 1,
+          "majMinAcc": 1,
+          "fullAcc": 1,
+          "refBeats": 8
+        }
+      },
+      {
+        "songId": "clocks",
+        "label": "mm.3-4 — Eb then Bbm, both in inversion (block-chord pop, bass ≠ root)",
+        "refBeats": 8,
+        "analyzerSpans": {
+          "rootAcc": 0.625,
+          "majMinAcc": 0.625,
+          "fullAcc": 0.625,
+          "refBeats": 8
+        },
+        "analyzerPerMeasure": {
+          "rootAcc": 0.5,
+          "majMinAcc": 0.5,
+          "fullAcc": 0.5,
+          "refBeats": 8
+        },
+        "baselineLeftHand": {
+          "rootAcc": 0,
+          "majMinAcc": 0,
+          "fullAcc": 0,
+          "refBeats": 8
+        },
+        "baselinePooled": {
+          "rootAcc": 1,
+          "majMinAcc": 1,
+          "fullAcc": 1,
+          "refBeats": 8
+        }
       }
     ],
     "aggregate": {
       "analyzerSpans": {
-        "rootAcc": 0.5,
-        "majMinAcc": 0.36585365853658536,
-        "fullAcc": 0.2926829268292683,
-        "refBeats": 82
+        "rootAcc": 0.5338983050847458,
+        "majMinAcc": 0.4406779661016949,
+        "fullAcc": 0.2796610169491525,
+        "refBeats": 118
       },
       "analyzerPerMeasure": {
-        "rootAcc": 0.4634146341463415,
-        "majMinAcc": 0.4268292682926829,
-        "fullAcc": 0.3048780487804878,
-        "refBeats": 82
+        "rootAcc": 0.5254237288135594,
+        "majMinAcc": 0.5,
+        "fullAcc": 0.3135593220338983,
+        "refBeats": 118
       },
       "baselineLeftHand": {
-        "rootAcc": 0.24390243902439024,
-        "majMinAcc": 0.14634146341463414,
-        "fullAcc": 0.12195121951219512,
-        "refBeats": 82
+        "rootAcc": 0.3389830508474576,
+        "majMinAcc": 0.2711864406779661,
+        "fullAcc": 0.22033898305084745,
+        "refBeats": 118
       },
       "baselinePooled": {
-        "rootAcc": 0.6341463414634146,
-        "majMinAcc": 0.6341463414634146,
-        "fullAcc": 0.5609756097560976,
-        "refBeats": 82
+        "rootAcc": 0.711864406779661,
+        "majMinAcc": 0.711864406779661,
+        "fullAcc": 0.6271186440677966,
+        "refBeats": 118
       }
     }
   },
