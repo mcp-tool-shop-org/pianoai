@@ -87,6 +87,23 @@ export {
   type RefineOptions,
   type RefineResult,
 } from "./refine.js";
+export {
+  renderVoicingText,
+  makeRng,
+  shuffledOrder,
+  aggregatePanel,
+  interpretPanel,
+  type PanelSystem,
+  type BwsVote,
+  type PanelScore,
+  type PanelResult,
+} from "./bws.js";
+export {
+  OllamaBwsJudge,
+  buildJudgePrompt,
+  parseJudgeResponse,
+  type OllamaBwsJudgeOptions,
+} from "./ollama-bws-judge.js";
 
 // ─── Analysis → progression (the Phase-1 → Phase-2 seam) ──────────────────────
 
