@@ -56,6 +56,21 @@ export {
   REALIZE_OUTPUT_SCHEMA,
   type OllamaRealizerOptions,
 } from "./ollama-realizer.js";
+export {
+  renderVoicingSpec,
+  renderSpecRealization,
+  repairDegrees,
+  DEFAULT_BASS_OCTAVE,
+  type VoicingSpec,
+} from "./voicing-spec.js";
+export {
+  OllamaSpecRealizer,
+  specSystem,
+  buildSpecUser,
+  parseSpecResponse,
+  SPEC_OUTPUT_SCHEMA,
+  type OllamaSpecRealizerOptions,
+} from "./ollama-spec-realizer.js";
 
 // ─── Analysis → progression (the Phase-1 → Phase-2 seam) ──────────────────────
 
