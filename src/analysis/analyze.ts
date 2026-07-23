@@ -26,6 +26,8 @@ import { identifyChord, type ChordIdOptions } from "./chord-id.js";
 export interface AnalyzeOptions extends ChordIdOptions {
   /** Optional 1-based inclusive measure range [start, end] to analyze. */
   measureRange?: [number, number];
+  /** Profile-compression exponent for root-finding (see DEFAULT_ROOT_ALPHA). */
+  rootAlpha?: number;
 }
 
 /** A tactus segment with its resolved chord label (internal). */
@@ -37,11 +39,11 @@ interface LabeledSegment extends Segment {
 }
 
 /** Label one segment: silent → N/C, else root-find then conservative chord-ID. */
-function labelSegment(seg: Segment, opts: ChordIdOptions): LabeledSegment {
+function labelSegment(seg: Segment, opts: AnalyzeOptions): LabeledSegment {
   if (seg.totalWeight <= 0) {
     return { ...seg, root: -1, quality: "N/C", symbol: "N/C", confidence: 0 };
   }
-  const { root, margin } = findRoot(seg.profile, seg.bassPc);
+  const { root, margin } = findRoot(seg.profile, seg.bassPc, opts.rootAlpha);
   const id = identifyChord(seg.profile, root, margin, opts);
   return { ...seg, root, quality: id.quality, symbol: id.symbol, confidence: id.confidence };
 }
@@ -91,7 +93,7 @@ function mergeSpans(labeled: LabeledSegment[]): ChordSpan[] {
  * rhythm lives in `spans`. A measure with real harmonic motion pools to one
  * lossy label — that motion is what `spans` is for.
  */
-function perMeasureView(labeled: LabeledSegment[], opts: ChordIdOptions): PerMeasureChord[] {
+function perMeasureView(labeled: LabeledSegment[], opts: AnalyzeOptions): PerMeasureChord[] {
   const byMeasure = new Map<number, LabeledSegment[]>();
   for (const seg of labeled) {
     const list = byMeasure.get(seg.measure) ?? [];
@@ -114,7 +116,7 @@ function perMeasureView(labeled: LabeledSegment[], opts: ChordIdOptions): PerMea
       rows.push({ measure, symbol: "N/C", confidence: 0 });
       continue;
     }
-    const { root, margin } = findRoot(pooled, bassPc);
+    const { root, margin } = findRoot(pooled, bassPc, opts.rootAlpha);
     const id = identifyChord(pooled, root, margin, opts);
     rows.push({ measure, symbol: id.symbol, confidence: id.confidence });
   }

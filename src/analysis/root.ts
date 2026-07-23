@@ -34,6 +34,25 @@ export const ROOT_SUPPORT: ReadonlyArray<readonly [number, number]> = [
 /** How close (as a fraction of the winner) a runner-up must be for the bass to break the tie. */
 const BASS_TIEBREAK_MARGIN = 0.06;
 
+/**
+ * Profile-compression exponent for root candidacy — a TUNABLE LEVER, defaulted
+ * OFF (α=1 = the raw salience-weighted sum). Root-finding raises the profile to
+ * this power before computing salience: α<1 compresses toward chord-tone
+ * PRESENCE (Temperley 1997 / Parncutt 1988 — the root is a function of which
+ * pitch classes are present, not how loud one is), α=0 is pure presence.
+ *
+ * WHY IT DEFAULTS OFF (measured — the Session-2 sweep, docs/music-wing-phase1-
+ * analysis-engine.md): compression is a Goodhart trap here. α=0 fixes the
+ * pedal/ostinato cases (el-condor root 0%→88%) and RAISES the aggregate, but the
+ * over-weighted tone IS a chord tone, so flattening it necessarily amplifies
+ * passing-tone noise — which ROBS the studio's target block-chord texture
+ * (let-it-be 88%→69%, simple-gifts 100%→75%). No single α is a strict
+ * improvement. The real fix for pedal/inversion is context-aware NCT detection /
+ * HCDF (a magnitude can't tell a pedal-bass chord tone from a root) — Session 2+.
+ * The lever is kept, tested, and defaulted to the honest raw behavior.
+ */
+export const DEFAULT_ROOT_ALPHA = 1.0;
+
 export interface RootResult {
   /** Winning root pitch class 0-11, or -1 when the profile is empty/silent. */
   root: number;
@@ -45,13 +64,19 @@ export interface RootResult {
   bassDecided: boolean;
 }
 
-/** Salience of every candidate root over the profile (length-12 vector). */
-export function rootSalience(profile: number[]): number[] {
+/**
+ * Salience of every candidate root over the profile (length-12 vector). The
+ * profile is compressed by `alpha` first (see DEFAULT_ROOT_ALPHA): each present
+ * pitch class contributes `weight^alpha` of its salience, so one dominant tone
+ * cannot swamp the root support. α=1 reproduces the raw weighted sum.
+ */
+export function rootSalience(profile: number[], alpha: number = DEFAULT_ROOT_ALPHA): number[] {
+  const comp = profile.map((w) => (w > 0 ? Math.pow(w, alpha) : 0));
   const out = new Array<number>(12).fill(0);
   for (let root = 0; root < 12; root++) {
     let s = 0;
     for (const [interval, weight] of ROOT_SUPPORT) {
-      s += weight * profile[(root + interval) % 12];
+      s += weight * comp[(root + interval) % 12];
     }
     out[root] = s;
   }
@@ -61,13 +86,14 @@ export function rootSalience(profile: number[]): number[] {
 /**
  * Find the chord root of a salience-weighted profile. The bass pitch class is
  * used ONLY to break a near-tie (within BASS_TIEBREAK_MARGIN of the winner),
- * never to override a clear winner.
+ * never to override a clear winner. `alpha` compresses the profile for root
+ * candidacy (see DEFAULT_ROOT_ALPHA).
  */
-export function findRoot(profile: number[], bassPc = -1): RootResult {
+export function findRoot(profile: number[], bassPc = -1, alpha: number = DEFAULT_ROOT_ALPHA): RootResult {
   const total = profile.reduce((a, b) => a + b, 0);
   if (total <= 0) return { root: -1, margin: 0, salience: new Array<number>(12).fill(0), bassDecided: false };
 
-  const salience = rootSalience(profile);
+  const salience = rootSalience(profile, alpha);
 
   // Winner + runner-up.
   let best = 0;

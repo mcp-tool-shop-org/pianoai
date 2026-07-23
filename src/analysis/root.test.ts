@@ -57,4 +57,14 @@ describe("findRoot", () => {
   it("returns -1 for a silent (all-zero) profile", () => {
     expect(findRoot(new Array<number>(12).fill(0)).root).toBe(-1);
   });
+
+  it("default alpha (1.0) roots on a heavily over-weighted tone; alpha=0 (presence) does not", () => {
+    // {E, G, B} = Em, but G is an over-weighted ostinato/pedal (the el-condor
+    // failure mode). At raw salience (α=1) the loud G wins the root; at pure
+    // presence (α=0) the pitch-class SET roots correctly on E. This documents
+    // why α is a lever, and why it defaults OFF (see DEFAULT_ROOT_ALPHA).
+    const emWithLoudG = prof({ 4: 1, 7: 3, 11: 1 });
+    expect(findRoot(emWithLoudG, 7 /* bass G */).root).toBe(7); // default α=1 → roots on G (wrong)
+    expect(findRoot(emWithLoudG, 7, 0 /* pure presence */).root).toBe(4); // α=0 → roots on E (right)
+  });
 });

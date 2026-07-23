@@ -38,6 +38,12 @@ import { toLabelSpan, scoreTimeline, aggregateScores, type LabelSpan, type Mirex
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(__dirname, "..");
+
+// Optional root-compression sweep knob (Session-2 finding). Default (unset) =
+// the shipped α=1.0. Reproduce the sweep with e.g.
+//   ANALYSIS_ROOT_ALPHA=0 pnpm exec tsx scripts/analysis-validate.ts
+const ROOT_ALPHA_ENV = process.env.ANALYSIS_ROOT_ALPHA;
+const ROOT_ALPHA = ROOT_ALPHA_ENV !== undefined ? Number.parseFloat(ROOT_ALPHA_ENV) : undefined;
 const LIBRARY_DIR = join(REPO_ROOT, "songs", "library");
 const FIXTURE = join(REPO_ROOT, "experiments", "analysis-arc", "reference-changes.json");
 const OUT = join(REPO_ROOT, "experiments", "analysis-arc", "validation-results.json");
@@ -86,7 +92,7 @@ function scoreSection(section: RefSection): (EstScores & { label: string; songId
 
   const ref: LabelSpan[] = section.changes.map((c) => toLabelSpan(c.startBeat, c.endBeat, c.chord));
 
-  const analysis = analyzeHarmony(song, { measureRange: section.measureRange });
+  const analysis = analyzeHarmony(song, { measureRange: section.measureRange, rootAlpha: ROOT_ALPHA });
   const analyzerSpans: LabelSpan[] = analysis.spans.map((s) =>
     toLabelSpan(s.startBeat - sectionStartBeat, s.endBeat - sectionStartBeat, s.symbol),
   );
@@ -156,7 +162,7 @@ function main(): void {
     if (song.measures.length === 0) continue;
     proxySongs++;
 
-    const analysis = analyzeHarmony(song);
+    const analysis = analyzeHarmony(song, { rootAlpha: ROOT_ALPHA });
     const kcA = keyConsistency(spansToWeightedRoots(analysis.spans), song.key);
     analyzerProxy.inKey += kcA.inKey;
     analyzerProxy.total += kcA.total;
