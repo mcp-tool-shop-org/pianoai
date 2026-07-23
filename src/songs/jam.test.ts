@@ -341,6 +341,38 @@ describe("formatJamBrief", () => {
   });
 });
 
+// ─── harmonicAnalysis (real analyzer, additive & frozen-safe) ────────────────
+
+describe("jam brief harmonic analysis (additive)", () => {
+  it("adds a per-measure analyzer view + a progression", () => {
+    const brief = generateJamBrief(makeSong());
+    expect(brief.harmonicAnalysis.perMeasure).toHaveLength(4);
+    for (const p of brief.harmonicAnalysis.perMeasure) {
+      expect(p.chord.length).toBeGreaterThan(0);
+      expect(p.confidence).toBeGreaterThanOrEqual(0);
+      expect(p.confidence).toBeLessThanOrEqual(1);
+    }
+    expect(Array.isArray(brief.harmonicAnalysis.progression)).toBe(true);
+  });
+
+  it("does NOT change impliedChord — the frozen inferChord path is untouched", () => {
+    const song = makeSong();
+    const brief = generateJamBrief(song);
+    // impliedChord still comes straight from inferChord(leftHand), independent of
+    // the analyzer — so the E-R sourceChords baseline + Gate-2 snapshot are safe.
+    expect(brief.chordProgression[0].impliedChord).toBe(inferChord(song.measures[0].leftHand));
+  });
+
+  it("formatJamBrief renders the harmonic analysis section", () => {
+    expect(formatJamBrief(generateJamBrief(makeSong()))).toContain("Harmonic Analysis");
+  });
+
+  it("respects the measure range", () => {
+    const brief = generateJamBrief(makeSong(), { measures: "1-2" });
+    expect(brief.harmonicAnalysis.perMeasure.map((p) => p.measure)).toEqual([1, 2]);
+  });
+});
+
 // ─── parseMeasureRange (tested indirectly) ──────────────────────────────────
 
 describe("parseMeasureRange (via generateJamBrief)", () => {

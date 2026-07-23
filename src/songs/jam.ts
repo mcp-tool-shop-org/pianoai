@@ -10,6 +10,7 @@
 
 import type { SongEntry, Measure, Genre, Difficulty } from "./types.js";
 import { splitChordToken } from "../note-parser.js";
+import { analyzeHarmony } from "../analysis/index.js";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -30,6 +31,21 @@ export interface ChordMeasure {
   impliedChord: string;
 }
 
+/**
+ * The real harmonic analysis of the section (src/analysis) — richer, both-hands,
+ * salience-weighted source analysis than the per-measure `impliedChord` above,
+ * added to the brief so the maker reasons about the actual progression + harmonic
+ * rhythm. ADDITIVE and decoupled: it does NOT change `impliedChord` (which stays
+ * `inferChord(leftHand)`), so nothing that consumes `inferChord` directly — the
+ * frozen E-R `sourceChords` baseline, the Gate-2 snapshot — is touched.
+ */
+export interface JamBriefHarmony {
+  /** Per-measure dominant chord from the analyzer, with confidence in [0,1]. */
+  perMeasure: Array<{ measure: number; chord: string; confidence: number }>;
+  /** The progression as spans (harmonic rhythm): chord + where it starts. */
+  progression: Array<{ chord: string; startMeasure: number; startBeatInMeasure: number; confidence: number }>;
+}
+
 export interface MelodyMeasure {
   measure: number;
   rightHand: string;
@@ -48,6 +64,8 @@ export interface JamBrief {
     structure: string;
   };
   chordProgression: ChordMeasure[];
+  /** The real harmonic analysis of the section (additive; see JamBriefHarmony). */
+  harmonicAnalysis: JamBriefHarmony;
   melodyOutline: MelodyMeasure[];
   styleGuidance: string[];
   instructions: string[];
@@ -425,12 +443,17 @@ export function generateJamBrief(song: SongEntry, options: JamBriefOptions = {})
     measures = song.measures.slice(start, end + 1);
   }
 
-  // Analyze chords
+  // Analyze chords — the crude per-measure implied chord (kept for backward-
+  // compatibility and consistency with anything that reads inferChord).
   const chordProgression: ChordMeasure[] = measures.map(m => ({
     measure: m.number,
     leftHand: m.leftHand,
     impliedChord: inferChord(m.leftHand),
   }));
+
+  // The real harmonic analysis of the section (src/analysis) — richer source
+  // material for the maker. Decoupled: reads the song, changes nothing frozen.
+  const harmonicAnalysis = buildHarmonicAnalysis(song, measures);
 
   // Analyze melody
   const melodyOutline: MelodyMeasure[] = measures.map(m => ({
@@ -468,9 +491,35 @@ export function generateJamBrief(song: SongEntry, options: JamBriefOptions = {})
       structure: song.musicalLanguage.structure,
     },
     chordProgression,
+    harmonicAnalysis,
     melodyOutline,
     styleGuidance,
     instructions,
+  };
+}
+
+/**
+ * Run the real analyzer over the section and pack it into the brief's
+ * harmonic-analysis block. The analyzer takes a 1-based measure range; when the
+ * brief is a slice, restrict to the sliced measures' numbers.
+ */
+function buildHarmonicAnalysis(song: SongEntry, measures: Measure[]): JamBriefHarmony {
+  if (measures.length === 0) return { perMeasure: [], progression: [] };
+  const range: [number, number] = [measures[0].number, measures[measures.length - 1].number];
+  const analysis = analyzeHarmony(song, { measureRange: range });
+  const bpm = analysis.beatsPerMeasure || 4;
+  return {
+    perMeasure: analysis.perMeasure.map((p) => ({
+      measure: p.measure,
+      chord: p.symbol,
+      confidence: Math.round(p.confidence * 100) / 100,
+    })),
+    progression: analysis.spans.map((s) => ({
+      chord: s.symbol,
+      startMeasure: s.startMeasure,
+      startBeatInMeasure: Math.round((s.startBeat - (s.startMeasure - 1) * bpm) * 100) / 100,
+      confidence: Math.round(s.confidence * 100) / 100,
+    })),
   };
 }
 
@@ -499,6 +548,31 @@ export function formatJamBrief(brief: JamBrief, options: JamBriefOptions = {}): 
 
   for (const cm of brief.chordProgression) {
     lines.push(`| ${cm.measure} | ${cm.leftHand} | ${cm.impliedChord} |`);
+  }
+
+  // Harmonic analysis (the real both-hands, salience-weighted analyzer) — richer
+  // source material than the crude left-hand "implied chord" table above.
+  const ha = brief.harmonicAnalysis;
+  if (ha && ha.perMeasure.length > 0) {
+    lines.push(
+      ``,
+      `## Harmonic Analysis${rangeLabel} (real analyzer — both hands, confidence 0–1)`,
+      `Per measure:`,
+      `| Measure | Chord | Confidence |`,
+      `|---------|-------|------------|`,
+    );
+    for (const p of ha.perMeasure) {
+      lines.push(`| ${p.measure} | ${p.chord} | ${p.confidence.toFixed(2)} |`);
+    }
+    // The progression as it actually moves (harmonic rhythm): a chord may change
+    // mid-measure. Show only real chords, compactly.
+    const chords = ha.progression.filter((p) => p.chord !== "N/C");
+    if (chords.length > 0) {
+      const seq = chords
+        .map((p) => `${p.chord}@m${p.startMeasure}${p.startBeatInMeasure > 0 ? `.${p.startBeatInMeasure}` : ""}`)
+        .join(" → ");
+      lines.push(``, `Progression (harmonic rhythm): ${seq}`);
+    }
   }
 
   lines.push(
