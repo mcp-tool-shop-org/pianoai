@@ -96,6 +96,16 @@ export interface VerifyVoiceLeadingOptions {
   maxUpperSpacing?: number;
   /** When set, every sounding frame must have exactly this many voices (structure gate). */
   requireVoiceCount?: number;
+  /**
+   * Rules to DEMOTE from hard gates to warnings for this call (still computed +
+   * reported, just excluded from `admitted`). The DEFAULT is empty — the strict
+   * common-practice set. This is the neutral mechanism for Session-2 style-
+   * parameterization: a jazz/pop "lead-sheet" style relaxes {parallels,
+   * tendencySeventh} (parallel voicings and non-resolving 7ths are idiomatic
+   * there), a chorale style relaxes nothing. WHICH rules a named style relaxes is
+   * a Session-2 design decision, not baked in here.
+   */
+  relaxRules?: VLRule[];
 }
 
 /** Widened SATB tessitura (MIDI), generous to avoid false rejects. */
@@ -423,13 +433,20 @@ export function verifyVoiceLeading(
     "tendencySeventh",
     "tendencyLeadingTone",
   ];
+  const relaxSet = new Set(options.relaxRules ?? []);
   const hardGates = {} as Record<VLRule, VLRuleResult>;
   for (const rule of rules) {
     hardGates[rule] = { pass: violations[rule].length === 0, violations: violations[rule] };
+    // A relaxed rule is still computed + reported (its violations surface as
+    // warnings), just excluded from `admitted`.
+    if (relaxSet.has(rule)) {
+      for (const v of violations[rule]) warnings.push(`[relaxed:${rule}] ${v.detail}`);
+    }
   }
-  const admitted = rules.every((r) => hardGates[r].pass);
+  // admitted ignores relaxed rules (default: no rules relaxed → strict).
+  const admitted = rules.every((r) => relaxSet.has(r) || hardGates[r].pass);
 
-  const failed = rules.filter((r) => !hardGates[r].pass);
+  const failed = rules.filter((r) => !relaxSet.has(r) && !hardGates[r].pass);
   const summary = admitted
     ? `ADMITTED — clean part-writing across ${sounding.length} sounding frame(s)` +
       (voiceCount ? ` (${voiceCount} voices)` : "")

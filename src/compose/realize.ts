@@ -22,7 +22,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { parseChordSymbol } from "../maker/verify-harmony.js";
-import { verifyVoiceLeading, type VoiceLeadingVerdict } from "./voice-leading.js";
+import { verifyVoiceLeading, type VoiceLeadingVerdict, type VLRule } from "./voice-leading.js";
 import { scoreRealization, type RealizationScore } from "./scorer.js";
 import type { Realization, RealizedFrame } from "./types.js";
 
@@ -56,6 +56,12 @@ export interface RealizeOptions {
    * keep the highest-scoring one. Default false (kickoff: keep the best admitted).
    */
   stopOnFirstAdmit?: boolean;
+  /**
+   * Rules to demote from hard gates to warnings for admission (the Session-2
+   * style lever; default none = strict common-practice). Forwarded to
+   * verifyVoiceLeading — a jazz/pop style relaxes {parallels, tendencySeventh}.
+   */
+  relaxRules?: VLRule[];
 }
 
 export interface RealizeResult {
@@ -229,7 +235,7 @@ export async function realizeProgression(
     samplesUsed = k + 1;
     const real = await proposer.proposeRealization(progression, k);
     if (!real) continue;
-    const verdict = verifyVoiceLeading(real, { requireVoiceCount });
+    const verdict = verifyVoiceLeading(real, { requireVoiceCount, relaxRules: opts.relaxRules });
     const score = scoreRealization(real);
     const candidate = { real, verdict, score };
 

@@ -71,6 +71,13 @@ async function main(): Promise<void> {
   const noModel = argv.includes("--no-model");
   const [lo, hi] = (argOf(argv, "--measures") ?? "1-8").split("-").map((x) => parseInt(x, 10));
   const songIds = (argOf(argv, "--songs") ?? DEFAULT_SONGS.join(",")).split(",").map((s) => s.trim());
+  // The Session-2 style lever: demote named rules from the admission gate (e.g.
+  // --relax parallels,tendencySeventh = a jazz/pop "lead-sheet" gate). Default =
+  // strict common-practice.
+  const relaxRules = (argOf(argv, "--relax") ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean) as unknown as import("../src/compose/index.js").VLRule[];
 
   initializeFromLibrary(LIBRARY_DIR);
   const all = getAllSongs();
@@ -93,7 +100,10 @@ async function main(): Promise<void> {
     process.exit(2);
   }
 
-  console.log(`\n═══ Phase 2 composition engine — voice-leading admission (measures ${lo}-${hi}, ${voices} voices) ═══\n`);
+  const mode = relaxRules.length ? `relaxed [${relaxRules.join(",")}]` : "strict common-practice";
+  console.log(
+    `\n═══ Phase 2 composition engine — voice-leading admission (measures ${lo}-${hi}, ${voices} voices, ${mode}) ═══\n`,
+  );
 
   // ── deterministic baselines ($0, no Ollama) ──
   const floorProposer = new DeterministicProposer(rootPositionRealization, voices);
@@ -124,12 +134,12 @@ async function main(): Promise<void> {
   }> = [];
 
   for (const t of targets) {
-    const floor = await realizeProgression(t.progression, floorProposer, { maxSamples: 1, voices });
-    const nearest = await realizeProgression(t.progression, nearestProposer, { maxSamples: 1, voices });
+    const floor = await realizeProgression(t.progression, floorProposer, { maxSamples: 1, voices, relaxRules });
+    const nearest = await realizeProgression(t.progression, nearestProposer, { maxSamples: 1, voices, relaxRules });
     let model: RealizeResult | null = null;
     if (realizer) {
       const t0 = Date.now();
-      model = await realizeProgression(t.progression, realizer, { maxSamples: n, voices });
+      model = await realizeProgression(t.progression, realizer, { maxSamples: n, voices, relaxRules });
       const secs = ((Date.now() - t0) / 1000).toFixed(0);
       console.log(
         `  ${t.id.padEnd(24)} model best-of-${n}: ` +

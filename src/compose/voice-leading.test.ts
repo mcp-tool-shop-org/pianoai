@@ -178,6 +178,33 @@ describe("verifyVoiceLeading — tendency tones", () => {
   });
 });
 
+describe("verifyVoiceLeading — relaxRules (the Session-2 style lever)", () => {
+  it("demotes a named rule from hard gate to warning without hiding it", () => {
+    // C→Dm block motion trips parallels (only). Strict rejects; relaxed admits.
+    const r = realize("C major", [
+      [1, "C", "C3 E3 G3 C4"],
+      [2, "Dm", "D3 F3 A3 D4"],
+    ]);
+    const strict = verifyVoiceLeading(r);
+    expect(strict.admitted).toBe(false);
+    expect(strict.hardGates.parallels.violations.length).toBeGreaterThan(0);
+
+    const relaxed = verifyVoiceLeading(r, { relaxRules: ["parallels"] });
+    expect(relaxed.admitted).toBe(true); // parallels no longer gates
+    // still computed + reported, just as warnings
+    expect(relaxed.hardGates.parallels.violations.length).toBeGreaterThan(0);
+    expect(relaxed.warnings.some((w) => w.startsWith("[relaxed:parallels]"))).toBe(true);
+  });
+
+  it("still rejects when a NON-relaxed rule fails", () => {
+    // Bad chord membership is not relaxed → still rejected.
+    const r = realize("C major", [[1, "C", "C3 E3 G3 Bb3"]]);
+    const relaxed = verifyVoiceLeading(r, { relaxRules: ["parallels", "tendencySeventh"] });
+    expect(relaxed.admitted).toBe(false);
+    expect(relaxed.hardGates.chordMembership.violations.length).toBeGreaterThan(0);
+  });
+});
+
 describe("verifyVoiceLeading — range (warn by default, gate on request)", () => {
   it("reports out-of-range voices but does not reject by default", () => {
     // A clean C major but voiced very low (below SATB bass tessitura).
