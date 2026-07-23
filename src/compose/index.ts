@@ -71,6 +71,13 @@ export {
   SPEC_OUTPUT_SCHEMA,
   type OllamaSpecRealizerOptions,
 } from "./ollama-spec-realizer.js";
+export {
+  refineRealization,
+  RefiningProposer,
+  gatingViolationCount,
+  type RefineOptions,
+  type RefineResult,
+} from "./refine.js";
 
 // ─── Analysis → progression (the Phase-1 → Phase-2 seam) ──────────────────────
 
