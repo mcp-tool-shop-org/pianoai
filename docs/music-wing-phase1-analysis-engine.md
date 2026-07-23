@@ -64,6 +64,21 @@ Validated with `scripts/analysis-validate.ts` against a 6-section hand-annotated
 2. **Cheapest immediate win, if a source-analysis upgrade is wanted now:** the both-hands-pooled control (pool both hands into the existing bass-aware `inferChord`) already lifts reference root accuracy 24% → 63% over the left-hand-only jam brief, and fixes the empty-left-hand blindness — at near-zero code. The analyzer's beat-resolution spans add value *specifically* for block-chord harmonic rhythm on top of that.
 3. **Session 2** (the real analyzer maturation): HCDF change-detection so spans stop fragmenting on arpeggios; pedal/inversion-aware root-finding so salience stops rooting on ostinati; then structure/form/cadence. The measurement harness built here (fixture + MIREX + proxies) is what will validate those — on an EXPANDED reference (6 sections is too small to tune a parameter on without overfitting to Bach).
 
+## Session 2 update (2026-07-23) — the pedal fix is a CONTEXT problem, not a magnitude problem
+
+On the director's "green to proceed," Session 2 began the maturation and rigorously ruled out the cheap version of the fix — a valuable de-risking, established by measurement.
+
+- **Reference expanded to 9 sections** (added imagine's block-chord Cmaj7/F vamp, chopin-prelude-e-minor's held Em-over-G-bass, clocks' inverted Eb/Bbm). Bach's weight dropped 34%→25%. **The finding held and is NOT a Bach artifact:** analyzer spans root **53.4%** still beat the incumbent left-hand baseline (**33.9%**) but still lose to the both-hands-pooled control (**71.2%**) — the new inversion cases (bass ≠ root) systematically trip the salience-roots-on-the-pedal failure. (`eb2562e`)
+- **A root-compression sweep (α, `ANALYSIS_ROOT_ALPHA`) proved a single-parameter magnitude fix is a Goodhart trap.** Compressing the profile toward chord-tone presence for root candidacy:
+
+  | α | ref root | el-condor (ostinato) | let-it-be (block-chord target) | simple-gifts |
+  |---|---|---|---|---|
+  | 1.0 (shipped) | 53% | 0% | **88%** | **100%** |
+  | 0.3 | 56% | 0% | 88% | 88% |
+  | 0.0 (pure presence) | **59%** | **88%** | 69% | 75% |
+
+  α=0 fixes the ostinati **and raises the aggregate** — but the over-weighted tone IS a chord tone, so flattening it necessarily amplifies passing-tone noise and **robs the studio's target block-chord texture** (let-it-be 88%→69%). No α is a strict improvement; the aggregate "win" is a redistribution away from the actual use case (anti-Goodhart: do not maximize a number that over-weights the arpeggio stress cases). **Conclusion: the real fix is context-aware NCT detection / HCDF — a magnitude cannot distinguish a pedal-bass chord tone from a root (study-swarm finding 9: NCT separation needs metric/temporal context).** The α lever ships defaulted OFF (1.0), tested, and reproducible, as the Session-2+ hook. (`32f5f52`)
+
 ## Standards compliance (six standards, 0–3)
 
 - **PIN_PER_STEP 3** — deterministic + seedless by construction (no model in the analyzer); every result is a byte-reproducible function of committed inputs; `analysis-validate.ts` regenerates `validation-results.json` exactly.
