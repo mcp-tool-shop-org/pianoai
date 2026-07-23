@@ -1,0 +1,221 @@
+{
+  "generatedNote": "Deterministic output of scripts/analysis-validate.ts. Regenerate with `pnpm exec tsx scripts/analysis-validate.ts`. Accuracies are duration-weighted MIREX (root/maj-min/full-quality). See reference-changes.json for the no-ground-truth caveats — these are a relative A/B, not an absolute grade.",
+  "referenceSet": {
+    "sections": 6,
+    "perSection": [
+      {
+        "songId": "bach-prelude-c-major-bwv846",
+        "label": "BWV846 mm.1-7 — the textbook arpeggiated progression (analyzer's hard case; baseline is blind, left hand is empty)",
+        "refBeats": 28,
+        "analyzerSpans": {
+          "rootAcc": 0.2857142857142857,
+          "majMinAcc": 0.07142857142857142,
+          "fullAcc": 0.07142857142857142,
+          "refBeats": 28
+        },
+        "analyzerPerMeasure": {
+          "rootAcc": 0.2857142857142857,
+          "majMinAcc": 0.2857142857142857,
+          "fullAcc": 0.14285714285714285,
+          "refBeats": 28
+        },
+        "baselineLeftHand": {
+          "rootAcc": 0,
+          "majMinAcc": 0,
+          "fullAcc": 0,
+          "refBeats": 28
+        },
+        "baselinePooled": {
+          "rootAcc": 1,
+          "majMinAcc": 1,
+          "fullAcc": 1,
+          "refBeats": 28
+        }
+      },
+      {
+        "songId": "el-condor-pasa",
+        "label": "mm.3-6 — a sustained E-minor vamp (the left hand is empty, so the pooled-left-hand baseline cannot label it at all)",
+        "refBeats": 16,
+        "analyzerSpans": {
+          "rootAcc": 0,
+          "majMinAcc": 0,
+          "fullAcc": 0,
+          "refBeats": 16
+        },
+        "analyzerPerMeasure": {
+          "rootAcc": 0,
+          "majMinAcc": 0,
+          "fullAcc": 0,
+          "refBeats": 16
+        },
+        "baselineLeftHand": {
+          "rootAcc": 0,
+          "majMinAcc": 0,
+          "fullAcc": 0,
+          "refBeats": 16
+        },
+        "baselinePooled": {
+          "rootAcc": 0.5,
+          "majMinAcc": 0.5,
+          "fullAcc": 0.5,
+          "refBeats": 16
+        }
+      },
+      {
+        "songId": "mozart-k545-mvt1",
+        "label": "mm.1-2 — the famous opening (Alberti figuration)",
+        "refBeats": 8,
+        "analyzerSpans": {
+          "rootAcc": 0.625,
+          "majMinAcc": 0.5,
+          "fullAcc": 0.375,
+          "refBeats": 8
+        },
+        "analyzerPerMeasure": {
+          "rootAcc": 1,
+          "majMinAcc": 1,
+          "fullAcc": 0.5,
+          "refBeats": 8
+        },
+        "baselineLeftHand": {
+          "rootAcc": 0,
+          "majMinAcc": 0,
+          "fullAcc": 0,
+          "refBeats": 8
+        },
+        "baselinePooled": {
+          "rootAcc": 0.5,
+          "majMinAcc": 0.5,
+          "fullAcc": 0.5,
+          "refBeats": 8
+        }
+      },
+      {
+        "songId": "scarborough-fair",
+        "label": "mm.1-2 — modal D-minor opening (6/8, arpeggiated bass)",
+        "refBeats": 6,
+        "analyzerSpans": {
+          "rootAcc": 1,
+          "majMinAcc": 0.5,
+          "fullAcc": 0.5,
+          "refBeats": 6
+        },
+        "analyzerPerMeasure": {
+          "rootAcc": 1,
+          "majMinAcc": 0.5,
+          "fullAcc": 0.5,
+          "refBeats": 6
+        },
+        "baselineLeftHand": {
+          "rootAcc": 1,
+          "majMinAcc": 1,
+          "fullAcc": 1,
+          "refBeats": 6
+        },
+        "baselinePooled": {
+          "rootAcc": 1,
+          "majMinAcc": 1,
+          "fullAcc": 1,
+          "refBeats": 6
+        }
+      },
+      {
+        "songId": "simple-gifts",
+        "label": "mm.5-6 — hymn cadence (tonic then subdominant)",
+        "refBeats": 8,
+        "analyzerSpans": {
+          "rootAcc": 1,
+          "majMinAcc": 0.875,
+          "fullAcc": 0.625,
+          "refBeats": 8
+        },
+        "analyzerPerMeasure": {
+          "rootAcc": 1,
+          "majMinAcc": 1,
+          "fullAcc": 1,
+          "refBeats": 8
+        },
+        "baselineLeftHand": {
+          "rootAcc": 1,
+          "majMinAcc": 0.5,
+          "fullAcc": 0.5,
+          "refBeats": 8
+        },
+        "baselinePooled": {
+          "rootAcc": 0.5,
+          "majMinAcc": 0.5,
+          "fullAcc": 0,
+          "refBeats": 8
+        }
+      },
+      {
+        "songId": "let-it-be",
+        "label": "mm.2-5 — the iconic block-chord verse progression, two chords per bar (the analyzer's common-case strength)",
+        "refBeats": 16,
+        "analyzerSpans": {
+          "rootAcc": 0.875,
+          "majMinAcc": 0.875,
+          "fullAcc": 0.6875,
+          "refBeats": 16
+        },
+        "analyzerPerMeasure": {
+          "rootAcc": 0.5,
+          "majMinAcc": 0.5,
+          "fullAcc": 0.375,
+          "refBeats": 16
+        },
+        "baselineLeftHand": {
+          "rootAcc": 0.375,
+          "majMinAcc": 0.125,
+          "fullAcc": 0,
+          "refBeats": 16
+        },
+        "baselinePooled": {
+          "rootAcc": 0.125,
+          "majMinAcc": 0.125,
+          "fullAcc": 0,
+          "refBeats": 16
+        }
+      }
+    ],
+    "aggregate": {
+      "analyzerSpans": {
+        "rootAcc": 0.5,
+        "majMinAcc": 0.36585365853658536,
+        "fullAcc": 0.2926829268292683,
+        "refBeats": 82
+      },
+      "analyzerPerMeasure": {
+        "rootAcc": 0.4634146341463415,
+        "majMinAcc": 0.4268292682926829,
+        "fullAcc": 0.3048780487804878,
+        "refBeats": 82
+      },
+      "baselineLeftHand": {
+        "rootAcc": 0.24390243902439024,
+        "majMinAcc": 0.14634146341463414,
+        "fullAcc": 0.12195121951219512,
+        "refBeats": 82
+      },
+      "baselinePooled": {
+        "rootAcc": 0.6341463414634146,
+        "majMinAcc": 0.6341463414634146,
+        "fullAcc": 0.5609756097560976,
+        "refBeats": 82
+      }
+    }
+  },
+  "libraryProxies": {
+    "songs": 120,
+    "analyzer": {
+      "keyConsistency": 0.821826865944513,
+      "labeledMeasureRate": 0.9888581527585677,
+      "meanChordsPerMeasure": 2.5233824119737402,
+      "meanSpanBeats": 1.4616291514461766
+    },
+    "baselineLeftHand": {
+      "keyConsistency": 0.7595388188453882,
+      "labeledMeasureRate": 0.9270016904871676
+    }
+  }
+}

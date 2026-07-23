@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "analysis-reference/1.0.0",
+  "about": "Hand-annotated authoritative chord changes for a small set of harmonically-clear sections, used to measure the src/analysis harmonic analyzer (Phase 1) against the crude pooled-bag inferChord baseline, MIREX-style (root / maj-min / full-quality, duration-weighted). Changes are expressed in SECTION-RELATIVE quarter-note beats (0 = the section's first downbeat).",
+  "provenance": "Every change was derived from the section's ACTUAL MIDI pitch content in this library (the committed .mid files), NOT transcribed from a copyrighted lead sheet. Public-domain / traditional pieces are preferred; the two pop sections' changes are the well-known factual progressions confirmed against the pitch content.",
+  "honestCaveats": [
+    "Small (6 sections, ~24 measures) and SINGLE-ANNOTATOR — there is no inter-annotator agreement check. Expert agreement on chord labels is only ~76% root / ~73% maj-min / ~54% on complex qualities (Koops et al. 2019; Ni et al. 2013), so these numbers are a relative A/B signal, never an absolute grade of correctness.",
+    "The Bach prelude is included deliberately as the analyzer's HARD case (a pure fast arpeggio, which beat-synchronous segmentation fragments — the Session-2 HCDF target); its changes are textbook-unambiguous, so it is a fair, honest stress test, not a cherry-pick."
+  ],
+  "sections": [
+    {
+      "songId": "bach-prelude-c-major-bwv846",
+      "label": "BWV846 mm.1-7 — the textbook arpeggiated progression (analyzer's hard case; baseline is blind, left hand is empty)",
+      "measureRange": [1, 7],
+      "provenance": "public domain (J.S. Bach); one chord per measure, unambiguous from the arpeggiated content",
+      "changes": [
+        { "startBeat": 0, "endBeat": 4, "chord": "C" },
+        { "startBeat": 4, "endBeat": 8, "chord": "Dm7" },
+        { "startBeat": 8, "endBeat": 12, "chord": "G7" },
+        { "startBeat": 12, "endBeat": 16, "chord": "C" },
+        { "startBeat": 16, "endBeat": 20, "chord": "Am" },
+        { "startBeat": 20, "endBeat": 24, "chord": "D7" },
+        { "startBeat": 24, "endBeat": 28, "chord": "G" }
+      ]
+    },
+    {
+      "songId": "el-condor-pasa",
+      "label": "mm.3-6 — a sustained E-minor vamp (the left hand is empty, so the pooled-left-hand baseline cannot label it at all)",
+      "measureRange": [3, 6],
+      "provenance": "traditional Andean melody (public domain); a right-hand E-G-B tremolo over an empty left hand, held Em with melodic passing tones",
+      "changes": [{ "startBeat": 0, "endBeat": 16, "chord": "Em" }]
+    },
+    {
+      "songId": "mozart-k545-mvt1",
+      "label": "mm.1-2 — the famous opening (Alberti figuration)",
+      "measureRange": [1, 2],
+      "provenance": "public domain (W.A. Mozart); tonic then dominant-7th",
+      "changes": [
+        { "startBeat": 0, "endBeat": 4, "chord": "C" },
+        { "startBeat": 4, "endBeat": 8, "chord": "G7" }
+      ]
+    },
+    {
+      "songId": "scarborough-fair",
+      "label": "mm.1-2 — modal D-minor opening (6/8, arpeggiated bass)",
+      "measureRange": [1, 2],
+      "provenance": "traditional English ballad (public domain); a D-F-A bass arpeggio, unambiguous Dm",
+      "changes": [{ "startBeat": 0, "endBeat": 6, "chord": "Dm" }]
+    },
+    {
+      "songId": "simple-gifts",
+      "label": "mm.5-6 — hymn cadence (tonic then subdominant)",
+      "measureRange": [5, 6],
+      "provenance": "traditional Shaker tune (public domain); C then F from the block content",
+      "changes": [
+        { "startBeat": 0, "endBeat": 4, "chord": "C" },
+        { "startBeat": 4, "endBeat": 8, "chord": "F" }
+      ]
+    },
+    {
+      "songId": "let-it-be",
+      "label": "mm.2-5 — the iconic block-chord verse progression, two chords per bar (the analyzer's common-case strength)",
+      "measureRange": [2, 5],
+      "provenance": "the factual C-G-Am-F-C-G-F-C progression, confirmed against the per-half-measure bass + chord content in the library's MIDI",
+      "changes": [
+        { "startBeat": 0, "endBeat": 2, "chord": "C" },
+        { "startBeat": 2, "endBeat": 4, "chord": "G" },
+        { "startBeat": 4, "endBeat": 6, "chord": "Am" },
+        { "startBeat": 6, "endBeat": 8, "chord": "F" },
+        { "startBeat": 8, "endBeat": 10, "chord": "C" },
+        { "startBeat": 10, "endBeat": 12, "chord": "G" },
+        { "startBeat": 12, "endBeat": 14, "chord": "F" },
+        { "startBeat": 14, "endBeat": 16, "chord": "C" }
+      ]
+    }
+  ]
+}
