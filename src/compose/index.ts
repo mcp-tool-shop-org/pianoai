@@ -23,6 +23,16 @@ export {
   type ParsedKey,
 } from "./voice-leading.js";
 export {
+  resolveStyle,
+  validateProfile,
+  STYLE_PROFILES,
+  HARD_FLOOR_RULES,
+  STYLE_GATED_RULES,
+  DEFAULT_STYLE,
+  type StyleName,
+  type StyleProfile,
+} from "./style.js";
+export {
   scoreRealization,
   DEFAULT_SCORE_WEIGHTS,
   type RealizationScore,

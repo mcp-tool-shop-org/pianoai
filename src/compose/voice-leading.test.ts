@@ -217,6 +217,131 @@ describe("verifyVoiceLeading — range (warn by default, gate on request)", () =
   });
 });
 
+// ─── The leap floor (style-invariant no-wild-leap bound; finding 4) ──────────
+
+describe("verifyVoiceLeading — leap (the smoothness floor)", () => {
+  it("flags a wild (>octave) leap in an upper voice, in isolation", () => {
+    // C(C3 C4) → C(C3 E5): the upper voice leaps C4(60)→E5(76) = 16 semitones.
+    // 2 voices → no adjacent-upper spacing check, same chord → no tendency, no
+    // parallels/overlap — so ONLY leap fires. Proves it is a real, isolable gate.
+    const r = realize("C major", [
+      [1, "C", "C3 C4"],
+      [2, "C", "C3 E5"],
+    ]);
+    const v = verifyVoiceLeading(r);
+    expect(v.hardGates.leap.violations.length).toBeGreaterThan(0);
+    expect(v.admitted).toBe(false);
+    // and nothing else fired
+    for (const [rule, res] of Object.entries(v.hardGates)) {
+      if (rule === "leap") continue;
+      expect(res.pass, `${rule} unexpectedly fired`).toBe(true);
+    }
+  });
+
+  it("EXEMPTS the bass — a big bass leap with clean upper voices is admitted", () => {
+    // C(C4 E4 G4) → C(C2 E4 G4): the bass leaps C4(60)→C2(36) = 24 semitones, but
+    // the bass is exempt (root motion + register resets); the upper voices hold.
+    const r = realize("C major", [
+      [1, "C", "C4 E4 G4"],
+      [2, "C", "C2 E4 G4"],
+    ]);
+    const v = verifyVoiceLeading(r);
+    expect(v.hardGates.leap.pass, v.hardGates.leap.violations.map((x) => x.detail).join("; ")).toBe(true);
+    expect(v.admitted).toBe(true);
+  });
+
+  it("honors a custom maxLeap threshold", () => {
+    // C(C3 E3 G3) → C(C3 G3 C4): upper voices move 3 and 5 semitones. Clean under
+    // the default (12); with maxLeap:2 those moves become wild leaps.
+    const r = realize("C major", [
+      [1, "C", "C3 E3 G3"],
+      [2, "C", "C3 G3 C4"],
+    ]);
+    expect(verifyVoiceLeading(r).admitted).toBe(true);
+    const tight = verifyVoiceLeading(r, { maxLeap: 2 });
+    expect(tight.hardGates.leap.violations.length).toBeGreaterThan(0);
+    expect(tight.admitted).toBe(false);
+  });
+});
+
+// ─── Leading-tone MOOT-per-scale (finding 5) ─────────────────────────────────
+
+describe("verifyVoiceLeading — tendencyLeadingTone is MOOT when the scale has no LT", () => {
+  it("marks the LT rule n/a (not relaxed, not failed) when no scale-degree 7 sounds", () => {
+    // C major key, but a C→Am passage where B (the leading tone, pc 11) never
+    // sounds and is in no chord — a modal/pentatonic-flavored fragment. The LT
+    // rule does not APPLY; it is reported moot, and it never gates.
+    const r = realize("C major", [
+      [1, "C", "C3 E3 G3"],
+      [2, "Am", "C3 E3 A3"],
+    ]);
+    const v = verifyVoiceLeading(r);
+    expect(v.hardGates.tendencyLeadingTone.applicable).toBe(false);
+    expect(v.mootRules).toContain("tendencyLeadingTone");
+    expect(v.warnings.some((w) => w.includes("moot"))).toBe(true);
+    expect(v.admitted).toBe(true); // moot ≠ relaxed; the rule simply doesn't apply
+  });
+
+  it("keeps the LT rule APPLICABLE when the leading tone actually functions", () => {
+    // A real I–V–I: B sounds (in G and the soprano) → the LT rule applies + passes.
+    const r = realize("C major", [
+      [1, "C", "C3 E3 G3 C4"],
+      [2, "G", "G2 D3 G3 B3"],
+      [3, "C", "C3 E3 G3 C4"],
+    ]);
+    const v = verifyVoiceLeading(r);
+    expect(v.hardGates.tendencyLeadingTone.applicable).toBe(true);
+    expect(v.mootRules).not.toContain("tendencyLeadingTone");
+  });
+});
+
+// ─── Named styles wired into the gate (Thread A) ─────────────────────────────
+
+describe("verifyVoiceLeading — named style presets", () => {
+  // A C→Dm block trips parallels (P5+P8) — a common-practice fault that is
+  // idiomatic in a lead-sheet idiom (parallel voicings).
+  const parallelBlock = realize("C major", [
+    [1, "C", "C3 E3 G3 C4"],
+    [2, "Dm", "D3 F3 A3 D4"],
+  ]);
+
+  it("common-practice (the default) rejects parallel voicings", () => {
+    const v = verifyVoiceLeading(parallelBlock, { style: "common-practice" });
+    expect(v.admitted).toBe(false);
+    expect(v.style).toBe("common-practice");
+    const def = verifyVoiceLeading(parallelBlock);
+    expect(def.style).toBe("common-practice"); // default = common-practice
+    expect(def.admitted).toBe(false);
+  });
+
+  it("lead-sheet admits the same parallel voicing (parallels + 7ths demoted, reported)", () => {
+    const v = verifyVoiceLeading(parallelBlock, { style: "lead-sheet" });
+    expect(v.admitted).toBe(true);
+    expect(v.style).toBe("lead-sheet");
+    expect(v.relaxedRules).toEqual(expect.arrayContaining(["parallels", "tendencySeventh"]));
+    // the violation is still computed + surfaced as a warning, never hidden
+    expect(v.hardGates.parallels.violations.length).toBeGreaterThan(0);
+    expect(v.warnings.some((w) => w.startsWith("[relaxed:parallels]"))).toBe(true);
+  });
+
+  it("no style preset can wave through a HARD-FLOOR fault (membership)", () => {
+    // C3 E3 G3 Bb3 over C — Bb is a non-chord tone (membership, a floor rule).
+    // Even the loosest preset (film-ambient) must still reject it.
+    const bad = realize("C major", [[1, "C", "C3 E3 G3 Bb3"]]);
+    for (const style of ["common-practice", "lead-sheet", "film-ambient"] as const) {
+      const v = verifyVoiceLeading(bad, { style });
+      expect(v.admitted, `${style} wrongly admitted a non-chord tone`).toBe(false);
+      expect(v.hardGates.chordMembership.violations.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("unions a style's relaxRules with an explicit relaxRules list", () => {
+    const v = verifyVoiceLeading(parallelBlock, { style: "common-practice", relaxRules: ["parallels"] });
+    expect(v.relaxedRules).toContain("parallels");
+    expect(v.admitted).toBe(true); // parallels demoted via the explicit list
+  });
+});
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 describe("parseKey", () => {

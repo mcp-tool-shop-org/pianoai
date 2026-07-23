@@ -24,6 +24,7 @@
 import { parseChordSymbol } from "../maker/verify-harmony.js";
 import { verifyVoiceLeading, type VoiceLeadingVerdict, type VLRule } from "./voice-leading.js";
 import { scoreRealization, type RealizationScore } from "./scorer.js";
+import type { StyleName, StyleProfile } from "./style.js";
 import type { Realization, RealizedFrame } from "./types.js";
 
 // ─── Inputs ───────────────────────────────────────────────────────────────────
@@ -57,9 +58,14 @@ export interface RealizeOptions {
    */
   stopOnFirstAdmit?: boolean;
   /**
-   * Rules to demote from hard gates to warnings for admission (the Session-2
-   * style lever; default none = strict common-practice). Forwarded to
-   * verifyVoiceLeading — a jazz/pop style relaxes {parallels, tendencySeventh}.
+   * A named style (or StyleProfile) whose style-gated rules are demoted for
+   * admission (default common-practice = relax nothing). Forwarded to
+   * verifyVoiceLeading — e.g. "lead-sheet" relaxes {parallels, tendencySeventh}.
+   */
+  style?: StyleName | StyleProfile;
+  /**
+   * Extra rules to demote from hard gates to warnings for admission, unioned with
+   * the style's set (default none). Prefer `style`; this stays for direct control.
    */
   relaxRules?: VLRule[];
 }
@@ -235,7 +241,11 @@ export async function realizeProgression(
     samplesUsed = k + 1;
     const real = await proposer.proposeRealization(progression, k);
     if (!real) continue;
-    const verdict = verifyVoiceLeading(real, { requireVoiceCount, relaxRules: opts.relaxRules });
+    const verdict = verifyVoiceLeading(real, {
+      requireVoiceCount,
+      style: opts.style,
+      relaxRules: opts.relaxRules,
+    });
     const score = scoreRealization(real);
     const candidate = { real, verdict, score };
 
@@ -252,7 +262,7 @@ export async function realizeProgression(
     bestAdmitted ??
     bestAny ?? {
       real: { key: progression.key, frames: [] } as Realization,
-      verdict: verifyVoiceLeading({ key: progression.key, frames: [] }, { requireVoiceCount }),
+      verdict: verifyVoiceLeading({ key: progression.key, frames: [] }, { requireVoiceCount, style: opts.style }),
       score: scoreRealization({ key: progression.key, frames: [] }),
     };
 

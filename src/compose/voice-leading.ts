@@ -32,6 +32,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { parseChordSymbol } from "../maker/verify-harmony.js";
+import { resolveStyle, type StyleName, type StyleProfile } from "./style.js";
 import type { Realization, RealizedFrame } from "./types.js";
 
 // ─── Verdict types ────────────────────────────────────────────────────────────
@@ -45,6 +46,7 @@ export type VLRule =
   | "overlap" // no voice overlap between consecutive frames
   | "spacing" // adjacent upper voices ≤ an octave
   | "crossing" // no voice crossing (ordered mode only)
+  | "leap" // no wild (>maxLeap) leap in an upper voice — the smoothness floor
   | "tendencySeventh" // chordal 7th resolves down by step (or is held)
   | "tendencyLeadingTone"; // soprano leading tone resolves up on V→I
 
@@ -60,6 +62,14 @@ export interface VLViolation {
 
 export interface VLRuleResult {
   pass: boolean;
+  /**
+   * Whether the rule APPLIES to this material at all. `false` = MOOT — its
+   * precondition is absent, so it neither passes nor fails, it does not apply
+   * (finding 5: leading-tone rules are moot when the operative scale lacks
+   * scale-degree 7). A moot rule never gates and is reported as "n/a", distinct
+   * from a relaxed rule (which could fire but the style demotes it). Default true.
+   */
+  applicable: boolean;
   violations: VLViolation[];
 }
 
@@ -70,6 +80,12 @@ export interface VoiceLeadingVerdict {
   voiceCount: number | null;
   /** Per-rule pass/fail + violations, keyed by rule. */
   hardGates: Record<VLRule, VLRuleResult>;
+  /** The style whose relaxed set was applied to admission (default common-practice). */
+  style: string;
+  /** Rules DEMOTED to warnings for this call (the style's relaxRules ∪ options.relaxRules). */
+  relaxedRules: VLRule[];
+  /** Rules found MOOT for this material (precondition absent — reported n/a, never gate). */
+  mootRules: VLRule[];
   /** INFORMATIONAL: total absolute semitone motion across all voices & transitions. */
   totalMotion: number;
   /** INFORMATIONAL: mean motion per voice per transition (null when no transition). */
@@ -94,16 +110,31 @@ export interface VerifyVoiceLeadingOptions {
   ranges?: Array<[number, number]>;
   /** Max spacing (semitones) between adjacent UPPER voices. Default 12 (an octave). */
   maxUpperSpacing?: number;
+  /**
+   * Max leap (semitones) an UPPER voice may make between consecutive frames — the
+   * style-invariant no-wild-leap smoothness floor (finding 4: conjunct voice
+   * leading is the cross-style invariant). Default 12 (an octave). The BASS is
+   * exempt (root motion + register resets legitimately leap), mirroring spacing.
+   */
+  maxLeap?: number;
   /** When set, every sounding frame must have exactly this many voices (structure gate). */
   requireVoiceCount?: number;
   /**
-   * Rules to DEMOTE from hard gates to warnings for this call (still computed +
-   * reported, just excluded from `admitted`). The DEFAULT is empty — the strict
-   * common-practice set. This is the neutral mechanism for Session-2 style-
-   * parameterization: a jazz/pop "lead-sheet" style relaxes {parallels,
-   * tendencySeventh} (parallel voicings and non-resolving 7ths are idiomatic
-   * there), a chorale style relaxes nothing. WHICH rules a named style relaxes is
-   * a Session-2 design decision, not baked in here.
+   * A named style (or a StyleProfile) whose style-gated rules are demoted from
+   * hard gates to warnings for admission. DEFAULT = common-practice (relax
+   * nothing — anti-Goodhart). This is the Session-2 thin control surface over the
+   * `relaxRules` lever; the style's relaxRules are UNIONED with `relaxRules`
+   * below. A style may only relax style-gated rules (validated), never the hard
+   * floor. See style.ts.
+   */
+  style?: StyleName | StyleProfile;
+  /**
+   * Extra rules to DEMOTE from hard gates to warnings for this call, unioned with
+   * the style's set (still computed + reported, just excluded from `admitted`).
+   * The DEFAULT is empty. Prefer a named `style`; this stays for direct control
+   * and back-compat. NOTE: unlike a style preset, an explicit relaxRules entry is
+   * NOT validated against the hard floor — a caller may force-relax any rule, and
+   * owns that choice.
    */
   relaxRules?: VLRule[];
 }
@@ -156,6 +187,27 @@ function isSounding(f: RealizedFrame): boolean {
   return f.voices.length > 0;
 }
 
+/**
+ * Does scale-degree 7 (the leading tone, tonic+11) FUNCTION in this passage?
+ * Detected from the material itself: the leading-tone pitch class appears in some
+ * voiced pitch, or in some chord's pitch classes. When it is absent everywhere,
+ * the operative scale has no leading tone (a modal/pentatonic passage; finding 5),
+ * so the leading-tone tendency rule is MOOT — there is nothing to resolve — rather
+ * than "waived." Errs toward APPLICABLE (present anywhere → the rule applies), the
+ * conservative direction for a gate: we skip the rule only when the LT truly does
+ * not sound. Returns false when the key is unparseable (no LT function to check).
+ */
+function scaleHasLeadingTone(sounding: RealizedFrame[], key: ParsedKey | null): boolean {
+  if (!key) return false;
+  const ltPc = (key.tonicPc + 11) % 12;
+  for (const f of sounding) {
+    for (const v of f.voices) if (v % 12 === ltPc) return true;
+    const p = parseChordSymbol(f.chordSymbol);
+    if (p && p.pcs.includes(ltPc)) return true;
+  }
+  return false;
+}
+
 // ─── The verifier ─────────────────────────────────────────────────────────────
 
 /**
@@ -169,6 +221,11 @@ export function verifyVoiceLeading(
   const assignByPitch = options.assignVoicesByPitch ?? true;
   const rangeMode = options.rangeMode ?? "warn";
   const maxUpperSpacing = options.maxUpperSpacing ?? 12;
+  const maxLeap = options.maxLeap ?? 12;
+  // The style's relaxed set ∪ any explicit relaxRules (the style is the thin
+  // control surface over the lever; default common-practice = relax nothing).
+  const profile = resolveStyle(options.style);
+  const relaxSet = new Set<VLRule>([...profile.relaxRules, ...(options.relaxRules ?? [])]);
   const warnings: string[] = [];
 
   // Normalize voice identity: sort ascending per frame (rank identity) or keep order.
@@ -195,6 +252,7 @@ export function verifyVoiceLeading(
     overlap: [],
     spacing: [],
     crossing: [],
+    leap: [],
     tendencySeventh: [],
     tendencyLeadingTone: [],
   };
@@ -285,9 +343,23 @@ export function verifyVoiceLeading(
     const n = Math.min(a.voices.length, b.voices.length);
     const equalN = a.voices.length === b.voices.length;
 
-    // total motion (rank-paired up to the min count)
+    // total motion (rank-paired up to the min count) + the leap floor.
     if (equalN) {
-      for (let v = 0; v < n; v++) totalMotion += Math.abs(b.voices[v] - a.voices[v]);
+      for (let v = 0; v < n; v++) {
+        const motion = Math.abs(b.voices[v] - a.voices[v]);
+        totalMotion += motion;
+        // leap (style-INVARIANT smoothness floor, finding 4): no UPPER voice
+        // leaps more than maxLeap. The bass (v=0) is exempt — root motion +
+        // register resets legitimately leap (mirrors the spacing bass exemption).
+        if (v >= 1 && motion > maxLeap) {
+          violations.leap.push({
+            rule: "leap",
+            atMeasure: a.measure,
+            toMeasure: b.measure,
+            detail: `m${a.measure}→${b.measure}: voice ${v} leaps ${motion} semitones (> ${maxLeap})`,
+          });
+        }
+      }
       motionTransitions += n;
     }
 
@@ -430,32 +502,56 @@ export function verifyVoiceLeading(
     "overlap",
     "spacing",
     "crossing",
+    "leap",
     "tendencySeventh",
     "tendencyLeadingTone",
   ];
-  const relaxSet = new Set(options.relaxRules ?? []);
+
+  // MOOT detection (finding 5): the leading-tone tendency rule does not APPLY
+  // when the operative scale has no leading tone — it is n/a, not relaxed. (The
+  // LT check above already only fires when a dominant chord contains the LT, so a
+  // moot passage has no LT violations anyway; this makes the "n/a" explicit and
+  // honest rather than silently reporting a vacuous pass.)
+  const ltApplicable = scaleHasLeadingTone(sounding, key);
+  const applicableOf = (rule: VLRule): boolean =>
+    rule === "tendencyLeadingTone" ? ltApplicable : true;
+
+  const mootRules: VLRule[] = [];
   const hardGates = {} as Record<VLRule, VLRuleResult>;
   for (const rule of rules) {
-    hardGates[rule] = { pass: violations[rule].length === 0, violations: violations[rule] };
-    // A relaxed rule is still computed + reported (its violations surface as
-    // warnings), just excluded from `admitted`.
-    if (relaxSet.has(rule)) {
+    const applicable = applicableOf(rule);
+    hardGates[rule] = { pass: violations[rule].length === 0, applicable, violations: violations[rule] };
+    if (!applicable) {
+      mootRules.push(rule);
+      // Surface any computed detail as informational (a moot rule never gates).
+      for (const v of violations[rule]) warnings.push(`[moot:${rule}] ${v.detail}`);
+    } else if (relaxSet.has(rule)) {
+      // A relaxed rule is still computed + reported (its violations surface as
+      // warnings), just excluded from `admitted`.
       for (const v of violations[rule]) warnings.push(`[relaxed:${rule}] ${v.detail}`);
     }
   }
-  // admitted ignores relaxed rules (default: no rules relaxed → strict).
-  const admitted = rules.every((r) => relaxSet.has(r) || hardGates[r].pass);
+  if (!ltApplicable && key) {
+    warnings.push(`tendencyLeadingTone is moot — the operative scale has no leading tone (no scale-degree 7 sounds)`);
+  }
 
-  const failed = rules.filter((r) => !relaxSet.has(r) && !hardGates[r].pass);
+  // admitted: a rule gates ONLY if it is applicable AND not relaxed AND failed.
+  const admitted = rules.every((r) => !applicableOf(r) || relaxSet.has(r) || hardGates[r].pass);
+
+  const failed = rules.filter((r) => applicableOf(r) && !relaxSet.has(r) && !hardGates[r].pass);
   const summary = admitted
-    ? `ADMITTED — clean part-writing across ${sounding.length} sounding frame(s)` +
-      (voiceCount ? ` (${voiceCount} voices)` : "")
-    : `REJECTED — ${failed.map((r) => `${r} (${hardGates[r].violations.length})`).join(", ")}`;
+    ? `ADMITTED [${profile.name}] — clean part-writing across ${sounding.length} sounding frame(s)` +
+      (voiceCount ? ` (${voiceCount} voices)` : "") +
+      (mootRules.length ? `; moot: ${mootRules.join(", ")}` : "")
+    : `REJECTED [${profile.name}] — ${failed.map((r) => `${r} (${hardGates[r].violations.length})`).join(", ")}`;
 
   return {
     admitted,
     voiceCount,
     hardGates,
+    style: profile.name,
+    relaxedRules: [...relaxSet],
+    mootRules,
     totalMotion,
     meanMotionPerVoice: motionTransitions > 0 ? totalMotion / motionTransitions : null,
     rangeExceedances,
