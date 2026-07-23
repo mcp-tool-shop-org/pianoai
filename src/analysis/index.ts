@@ -20,3 +20,23 @@ export { segmentMeasure } from "./profile.js";
 export { findRoot, rootSalience, ROOT_SUPPORT, type RootResult } from "./root.js";
 export { identifyChord, QUALITY_INTERVALS, type ChordId, type ChordIdOptions } from "./chord-id.js";
 export { analyzeHarmony, type AnalyzeOptions } from "./analyze.js";
+
+// ── Measurement layer (baseline + proxies + MIREX scoring) ──
+export { parseChordLabel, majMinClass, keyScalePcs, type ParsedLabel } from "./symbols.js";
+export { baselineLeftHand, baselinePooledBothHands, type MeasureLabel } from "./baseline.js";
+export {
+  keyConsistency,
+  harmonicRhythm,
+  spansToWeightedRoots,
+  labelsToWeightedRoots,
+  type KeyConsistency,
+  type HarmonicRhythm,
+  type WeightedRoot,
+} from "./proxies.js";
+export {
+  scoreTimeline,
+  aggregateScores,
+  toLabelSpan,
+  type LabelSpan,
+  type MirexScore,
+} from "./mireval.js";
