@@ -35,6 +35,13 @@ bytes from a source whose license we can show, and make every claim in the two s
 true of the new bytes. The compositions are public domain; it is the *arrangement* bytes and
 the *attribution* that must become clean.
 
+**Settled question (2026-08-19, so nobody re-opens it):** a Comfy-Cloud consult, independently
+calibrated by the Advisor against the live catalog's type system, established the platform is
+**waveform end-to-end — no MIDI in, no MIDI out, no score representation, and ACE-Step cannot
+be score-driven**. There is no generative/transcription alternative to sourcing typeset
+public-domain scores; the path below is the whole path, and all symbolic work stays in this
+repo's own TypeScript pipeline.
+
 ## Sources (license-first — the decisive axis)
 
 1. **Primary: the Mutopia Project** — typeset editions with an explicit per-piece license
