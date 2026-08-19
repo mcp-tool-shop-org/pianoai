@@ -57,6 +57,10 @@ jobs:
           REPO_ID: ${{ github.event.inputs.hf_repo_id }}
         run: |
           set -euo pipefail
+          if ! printf '%s' "$REPO_ID" | grep -Eq '^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$'; then
+            echo "ERROR: hf_repo_id must be namespace/name (got: $REPO_ID)"
+            exit 1
+          fi
           case "$REPO_ID" in
             mcp-tool-shop/*|mcp-tool-shop-org/*)
               echo "hf_repo_id OK: $REPO_ID"
@@ -141,12 +145,17 @@ jobs:
 
       - name: Print final receipt
         if: always()
+        env:
+          RELEASE_TAG: ${{ github.event.inputs.release_tag }}
+          ASSET: ${{ github.event.inputs.asset_name }}
+          ASSET_SHA: ${{ github.event.inputs.asset_sha256 }}
+          HF_REPO_ID: ${{ github.event.inputs.hf_repo_id }}
         run: |
           echo "================================================================"
           echo "  jam-ft-v1 adapters push receipt"
           echo "================================================================"
-          echo "  Release tag:    ${{ github.event.inputs.release_tag }}"
-          echo "  Asset:          ${{ github.event.inputs.asset_name }}"
-          echo "  Asset sha256:   ${{ github.event.inputs.asset_sha256 }}"
-          echo "  HF repo:        ${{ github.event.inputs.hf_repo_id }}"
+          echo "  Release tag:    $RELEASE_TAG"
+          echo "  Asset:          $ASSET"
+          echo "  Asset sha256:   $ASSET_SHA"
+          echo "  HF repo:        $HF_REPO_ID"
           echo "================================================================"

@@ -52,6 +52,10 @@ jobs:
           REPO_ID: ${{ github.event.inputs.hf_repo_id }}
         run: |
           set -euo pipefail
+          if ! printf '%s' "$REPO_ID" | grep -Eq '^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$'; then
+            echo "ERROR: hf_repo_id must be namespace/name (got: $REPO_ID)"
+            exit 1
+          fi
           case "$REPO_ID" in
             mcp-tool-shop/*|mcp-tool-shop-org/*)
               echo "hf_repo_id OK: $REPO_ID"
@@ -131,12 +135,17 @@ jobs:
 
       - name: Print final receipt
         if: always()
+        env:
+          HF_REPO_ID: ${{ github.event.inputs.hf_repo_id }}
+          HF_COMMIT_MSG: ${{ github.event.inputs.commit_message }}
+          REF: ${{ github.event.inputs.ref }}
+          HF_URL: ${{ steps.hf_push.outputs.hf_url }}
         run: |
           echo "================================================================"
           echo "  HuggingFace push receipt"
           echo "================================================================"
-          echo "  HF repo:        ${{ github.event.inputs.hf_repo_id }}"
-          echo "  Commit message: ${{ github.event.inputs.commit_message }}"
-          echo "  Ref:            ${{ github.event.inputs.ref }}"
-          echo "  HF URL:         ${{ steps.hf_push.outputs.hf_url || '(push failed)' }}"
+          echo "  HF repo:        $HF_REPO_ID"
+          echo "  Commit message: $HF_COMMIT_MSG"
+          echo "  Ref:            $REF"
+          echo "  HF URL:         ${HF_URL:-(push failed)}"
           echo "================================================================"

@@ -1,5 +1,8 @@
 name: CI
 
+permissions:
+  contents: read
+
 on:
   push:
     paths:
@@ -14,6 +17,15 @@ on:
       # validated by the registry, tests, and smoke — library edits must run
       # CI. Gap found 2026-07-10: a key-corrections PR drew no CI without this.
       - "songs/**"
+      # datasets/** is live corpus that several src/dataset tests load
+      # (schema-placeholder, midi-inspector, annotation-grounding,
+      # package-public). Same class as the 2026-07-10 songs/** miss: a
+      # corpus-only edit never started pnpm test. vitest.config.ts is the
+      # coverage-floor config the Node-22 job enforces. samples/** ships
+      # in the npm tarball and the Docker image.
+      - "datasets/**"
+      - "vitest.config.ts"
+      - "samples/**"
       - "Dockerfile"
       - "plugin/**"
       - ".github/workflows/**"
@@ -28,6 +40,9 @@ on:
       - "apps/**"
       - "scripts/**"
       - "songs/**"
+      - "datasets/**"
+      - "vitest.config.ts"
+      - "samples/**"
       - "Dockerfile"
       - "plugin/**"
       - ".github/workflows/**"
@@ -49,6 +64,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
       - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
         with:
@@ -95,6 +112,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
       - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
         with:
@@ -117,6 +136,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
       - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
         with:
@@ -137,6 +158,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
       - name: Check plugin.json / marketplace.json version parity with package.json
         run: |
@@ -179,6 +202,8 @@ jobs:
         working-directory: apps/cockpit
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
       - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
         with:
