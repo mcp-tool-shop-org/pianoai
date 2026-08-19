@@ -359,7 +359,7 @@ async function cmdPlay(args: string[]): Promise<void> {
 
   // Determine source: .mid file or library song
   // Only treat as MIDI file if it has a MIDI extension, or looks like a file path (has separator/extension) and exists
-  const hasMidiExtension = target.endsWith(".mid") || target.endsWith(".midi");
+  const hasMidiExtension = /\.midi?$/i.test(target);
   const looksLikeFilePath = target.includes("/") || target.includes("\\") || target.includes(".");
   const isMidiFile = hasMidiExtension || (looksLikeFilePath && existsSync(target));
 

@@ -180,6 +180,11 @@ function isSafeSongId(id: string): boolean {
   return SAFE_SONG_ID_PATTERN.test(id) && !id.includes("..") && !id.includes("/") && !id.includes("\\");
 }
 
+/** Case-insensitive .mid / .midi suffix (Windows Explorer often yields .MID). */
+function isMidiPath(p: string): boolean {
+  return /\.midi?$/i.test(p);
+}
+
 /**
  * Resolve an existing path and ensure it stays within the allowed root after
  * following symlinks. Returns the canonical path on success, or null on failure.
@@ -236,14 +241,51 @@ const server = new McpServer({
   version: VERSION,
 });
 
-// Thin wrapper around server.tool() that keeps an authoritative count of
-// registered tools, so server_info's reported count (and the header comment
-// above) can never silently drift from reality the way the old hardcoded
-// "36"/"Tools (34)" literals did (B-A1-005/006).
+// Thin wrapper around server.registerTool() that keeps an authoritative
+// count of registered tools, so server_info's reported count (and the
+// header comment above) can never silently drift from reality the way the
+// old hardcoded "36"/"Tools (34)" literals did (B-A1-005/006).
+//
+// F-5d549299: call the 2025-06-18 registerTool config form (not deprecated
+// server.tool()). Descriptions stay byte-identical at each call site.
+// Annotations are applied here for the clearly read-only list/info/view/
+// status class; mutating or ambiguous tools get no annotation rather than
+// a guessed hint.
+const READONLY_IDEMPOTENT_TOOLS = new Set([
+  "list_songs",
+  "song_info",
+  "list_measures",
+  "list_sections",
+  "annotation_progress",
+  "registry_stats",
+  "server_info",
+  "list_keyboards",
+  "get_keyboard_config",
+  "list_guitar_voices",
+  "list_guitar_tunings",
+  "get_guitar_config",
+  "playback_status",
+  "practice_status",
+  "read_practice_journal",
+  "detect_chord",
+  "validate_song_entry",
+  "compare_songs",
+  "suggest_song",
+  "preview_teaching_cues",
+  "teaching_note",
+  "view_piano_roll",
+]);
 let registeredToolCount = 0;
-const registerTool: typeof server.tool = (...args: any[]) => {
+const registerTool = (name: string, description: string, schema: object, cb: (...args: any[]) => any) => {
   registeredToolCount++;
-  return (server.tool as any)(...args);
+  const annotations = READONLY_IDEMPOTENT_TOOLS.has(name)
+    ? { readOnlyHint: true, idempotentHint: true }
+    : undefined;
+  return (server.registerTool as any)(name, {
+    description,
+    inputSchema: schema,
+    ...(annotations ? { annotations } : {}),
+  }, cb);
 };
 
 // ─── Prompts ────────────────────────────────────────────────────────────────
@@ -1098,7 +1140,7 @@ registerTool(
     await stopActive();
 
     // Determine if this is a .mid file path or a library song ID — require explicit extension
-    const isMidiFile = id.endsWith(".mid") || id.endsWith(".midi");
+    const isMidiFile = isMidiPath(id);
     const homeDir = getCanonicalHomeDir();
     const safeMidiPath = isMidiFile && homeDir
       ? resolveContainedExistingPath(id, homeDir)
@@ -2159,14 +2201,23 @@ registerTool(
     });
 
     const voices = 4;
-    const styleName = (style ?? "lead-sheet") as StyleName;
-    const [lo, hi] = (measures ?? "1-8").split("-").map((x) => parseInt(x, 10));
+    const STYLE_PRESETS = ["common-practice", "lead-sheet", "film-ambient"] as const;
+    const requestedStyle = style ?? "lead-sheet";
+    if (!(STYLE_PRESETS as readonly string[]).includes(requestedStyle)) {
+      return structuredError(
+        "bad_style",
+        `Unknown style "${requestedStyle}".`,
+        `Use one of: ${STYLE_PRESETS.join(", ")}.`,
+      );
+    }
+    const styleName = requestedStyle as StyleName;
+    const [lo, hi] = (measures ?? "1-8").split("-").map((x: string) => parseInt(x, 10));
     if (!Number.isFinite(lo) || !Number.isFinite(hi) || lo < 1 || hi < lo) {
       return structuredError("bad_measure_range", `Invalid measure range "${measures}".`, 'Use "N" or "start-end", e.g. "1-8".');
     }
 
     const DEFAULT_SONGS = ["bach-prelude-c-major-bwv846", "autumn-leaves", "all-of-me", "blues-in-the-night", "bennie-and-the-jets", "fallin", "aint-no-sunshine", "besame-mucho", "bethena", "amazing-grace"];
-    const songIds = (songs ?? DEFAULT_SONGS.join(",")).split(",").map((s) => s.trim()).filter(Boolean);
+    const songIds = (songs ?? DEFAULT_SONGS.join(",")).split(",").map((s: string) => s.trim()).filter(Boolean);
     const progressions: Array<{ id: string; progression: ChordProgression }> = [];
     const skipped: string[] = [];
     for (const id of songIds) {
@@ -2190,7 +2241,7 @@ registerTool(
     const engineProposer = new RefiningProposer(specRealizer, { voices, style: styleName });
 
     const DEFAULT_JUDGES = "mistral-small:24b:mistral,granite4.1:30b:granite,gemma4:31b:gemma,aya-expanse:32b:aya";
-    const judgeSpecs = (judges ?? DEFAULT_JUDGES).split(",").map((s) => s.trim()).filter(Boolean);
+    const judgeSpecs = (judges ?? DEFAULT_JUDGES).split(",").map((s: string) => s.trim()).filter(Boolean);
     const reachableJudges: PanelJudge[] = [];
     const unreachableJudges: string[] = [];
     for (const spec of judgeSpecs) {
@@ -2332,7 +2383,7 @@ registerTool(
     try {
       // Path traversal protection + directory containment
       const resolvedMidiPath = pathResolve(midi_path);
-      if (!resolvedMidiPath.endsWith(".mid") && !resolvedMidiPath.endsWith(".midi")) {
+      if (!isMidiPath(resolvedMidiPath)) {
         return {
           content: [{ type: "text", text: `Invalid MIDI path: must be a .mid or .midi file.` }],
           isError: true,
@@ -2411,6 +2462,7 @@ registerTool(
           type: "text",
           text: `Failed to import MIDI: ${err instanceof Error ? err.message : String(err)}`,
         }],
+        isError: true,
       };
     }
   }
@@ -3221,7 +3273,7 @@ registerTool(
 
     // Path traversal protection — same containment as play_song/import_midi
     const resolvedPath = pathResolve(midi_path);
-    if (!resolvedPath.endsWith(".mid") && !resolvedPath.endsWith(".midi")) {
+    if (!isMidiPath(resolvedPath)) {
       return {
         content: [{ type: "text", text: "That doesn't look like a MIDI file — the path should end with .mid or .midi." }],
         isError: true,
