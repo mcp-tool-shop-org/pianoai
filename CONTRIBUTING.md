@@ -14,8 +14,8 @@ cd ai-jam-sessions
 pnpm install
 ```
 
-Requires Node >=20 (`package.json`'s `engines` field; CI's matrix covers 20
-and 22; the Docker image ships on `node:22-slim`).
+Requires Node >=22 (`package.json`'s `engines` field; CI's matrix covers 22
+and 24; the Docker image ships on `node:22-slim`).
 
 ## Three things that differ between your machine and CI
 
@@ -34,19 +34,20 @@ that touches one of the engine files, don't assume you need a physical audio
 device to reach the logic you're testing — put the logic ahead of the connect
 and you won't. What you genuinely can't verify headlessly is actual sound output.
 
-**2. pnpm version.** CI hard-pins **pnpm 9** in every workflow
-(`pnpm/action-setup@... version: 9`). Your local pnpm is probably newer — this
+**2. pnpm version.** CI pins **pnpm 10** in every workflow
+(`pnpm/action-setup@... version: 10`). Your local pnpm may be newer — this
 matters because pnpm's build-script-approval and override mechanisms changed
 across major versions. `pnpm-workspace.yaml` carries both the old
 (`onlyBuiltDependencies`) and new (`allowBuilds`) approval keys, and its own
-`overrides` block duplicates `package.json`'s `pnpm.overrides` — pnpm 9 reads
+`overrides` block duplicates `package.json`'s `pnpm.overrides` — pnpm 9 read
 the `package.json` field, pnpm 10/11 don't (confirmed directly: pnpm 11
 prints `[WARN] The "pnpm" field in package.json is no longer read by pnpm`
 and reads the workspace file instead). Both are kept in sync deliberately; if
-you touch one, update the other. `ci.yml`'s `pnpm10-install` job exists
-specifically to catch a pnpm-10 regression before it becomes a pnpm-9 problem
-nobody noticed. If `pnpm install` behaves differently locally than in a CI
-log, check `pnpm --version` first.
+you touch one, update the other. `ci.yml`'s `pnpm10-install` job ("Modern
+pnpm cold-start") runs a `--frozen-lockfile` install plus typecheck and tests
+on the pinned toolchain, so an install-layer regression can't hide behind the
+main matrix. If `pnpm install` behaves differently locally than in a CI log,
+check `pnpm --version` first.
 
 **3. Coverage floor.** `pnpm test:coverage` enforces a local coverage floor
 (`vitest.config.ts`, `coverage.thresholds`) independent of the Codecov upload
@@ -58,14 +59,14 @@ a coverage regression doesn't surprise you in CI. The current floor is
 intentionally conservative (see the comment block at the top of
 `vitest.config.ts` for the reasoning and how to raise it later).
 
-## `scripts/` typecheck is opt-in, not yet enforced
+## `scripts/` typecheck is part of `pnpm typecheck`
 
 `scripts/tsconfig.json` + `pnpm typecheck:scripts` give the `scripts/`
 directory (dataset-building and release-gate tooling) the same `tsc --noEmit`
-safety net `src/` has via `pnpm typecheck`. It is **not** currently chained
-into `pnpm typecheck` or CI — running it today surfaces pre-existing type
-errors in a handful of dataset scripts that predate this config. Run it
-directly if you're touching anything under `scripts/`:
+safety net `src/` has. It **is** chained: `pnpm typecheck` runs
+`tsc --noEmit && pnpm typecheck:scripts`, and CI runs `pnpm typecheck` — a
+type error under `scripts/` fails the build the same as one under `src/`.
+To check only the scripts side:
 
 ```bash
 pnpm typecheck:scripts

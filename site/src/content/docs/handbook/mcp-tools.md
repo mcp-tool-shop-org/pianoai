@@ -1,11 +1,11 @@
 ---
 title: MCP tools reference
-description: All 46 MCP tools and 3 prompt templates organized by category — Learn, Play, Practice, Sing, Guitar, Build, and Score.
+description: All 49 MCP tools and 4 prompt templates organized by category — Learn, Play, Practice, Sing, Guitar, Build, and Score.
 sidebar:
   order: 4
 ---
 
-AI Jam Sessions exposes 46 tools and 3 prompt templates through the Model Context Protocol, organized into seven categories.
+AI Jam Sessions exposes 49 tools and 4 prompt templates through the Model Context Protocol, organized into seven categories.
 
 ## Learn (10 tools)
 
@@ -51,14 +51,17 @@ The teaching loop: record a take, score it note by note, see the marked-up score
 | `score_last_take` | Score the most recent recorded take — pitch accuracy, timing, completeness, per-note verdicts |
 | `view_scored_piano_roll` | The piano roll overlaid with per-note verdicts in a colorblind-safe palette — solid for correct, dashed for timing, ✕ for missed |
 
-## Sing (2 tools)
+## Sing (5 tools)
 
-Tools for vocal performance and jam sessions.
+Tools for vocal performance, jam sessions, and the verified maker loop.
 
 | Tool | Description |
 |------|-------------|
 | `sing_along` | Singable text — note-names, solfege, contour, or syllables. With or without piano accompaniment |
 | `ai_jam_sessions` | Generate a jam brief — chord progression, melody outline, and style hints for reinterpretation |
+| `verify_harmony` | The maker loop's verification gate — a proposed reharmonization is checked by the platform's own deterministic tools: chord fidelity, melody consonance, bass voice-leading, key membership |
+| `auto_reharmonize` | The maker loop in one call — a local model proposes a reharmonization, the deterministic gate checks every voicing, best-of-n until a verified interpretation comes back |
+| `compose_panel` | Run the voice-leading composition panel — four systems realize accompaniments, blind cross-family LLM judges rank them, Bradley-Terry aggregates, and a discrimination-floor gate voids uninterpretable runs |
 
 ## Guitar (6 tools)
 
@@ -102,7 +105,7 @@ Tools for evaluating performances and annotation quality.
 | `score_performance` | Score a MIDI play-along against a library song — pitch accuracy, timing, completeness, with graded feedback and practice suggestions |
 | `score_annotation` | Score annotation quality across 5 dimensions — completeness, depth, specificity, teaching value, and musical vocabulary |
 
-## MCP Prompts (3 templates)
+## MCP Prompts (4 templates)
 
 Prompt templates for structured teaching workflows. These appear as available prompts in MCP clients.
 
@@ -111,3 +114,4 @@ Prompt templates for structured teaching workflows. These appear as available pr
 | `annotate_song` | Guided annotation workflow — study an exemplar, then write musical language for a raw song |
 | `practice_plan` | Build a structured practice plan based on genre, difficulty, and learning goals |
 | `performance_review` | Review a completed session — what went well, areas to focus on, suggested next steps |
+| `maker_loop` | Walk the full maker loop — propose a reharmonization, verify it with the deterministic tools, then add and play the verified result |

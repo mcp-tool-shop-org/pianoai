@@ -51,7 +51,7 @@ export const config: SiteConfig = {
           desc: 'Vocal tract synthesis with 20 voice presets. Sing-along mode with solfege, contour, and syllable narration.',
         },
         {
-          title: '42 MCP Tools + 3 Prompts',
+          title: '49 MCP Tools + 4 Prompts',
           desc: 'Learn, play, sing, build, score — browse songs, transpose keys, mute hands, preview teaching cues, render piano rolls, write annotations, and journal reflections.',
         },
         {
@@ -221,7 +221,7 @@ ai-jam-sessions list --genre folk`,
       kind: 'data-table',
       id: 'tools',
       title: 'MCP tools',
-      subtitle: '42 tools and 3 prompt templates across six categories: Learn, Play, Sing, Guitar, Build, and Score.',
+      subtitle: '49 tools and 4 prompt templates across seven categories: Learn, Play, Practice, Sing, Guitar, Build, and Score.',
       columns: ['Tool', 'Category', 'Description'],
       rows: [
         ['`list_songs`', 'Learn', 'Browse by genre, difficulty, or keyword'],

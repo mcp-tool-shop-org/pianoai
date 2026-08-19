@@ -227,7 +227,7 @@ Requires **Node.js 22+** (v2.0.0 raised the floor with `node-web-audio-api` 2.0)
 
 ## MCP Tools
 
-47 tools and 4 prompt templates across seven categories:
+49 tools and 4 prompt templates across seven categories:
 
 ### Learn
 
@@ -275,6 +275,8 @@ Requires **Node.js 22+** (v2.0.0 raised the floor with `node-web-audio-api` 2.0)
 | `sing_along` | Singable text — note-names, solfege, contour, or syllables. With or without piano accompaniment. |
 | `ai_jam_sessions` | Generate a jam brief — chord progression, melody outline, and style hints for reinterpretation |
 | `verify_harmony` | The maker loop's verification gate: a proposed reharmonization is checked by the platform's own deterministic tools — chord fidelity (the chord engine must detect each intended chord), melody consonance (tone/tension/chromatic), bass voice-leading, key membership |
+| `auto_reharmonize` | The maker loop in one call — a local model proposes a reharmonization, `verify_harmony`'s deterministic gate checks every voicing, best-of-n until a verified interpretation comes back |
+| `compose_panel` | Run the voice-leading composition panel on any songs: four systems realize accompaniments, blind cross-family LLM judges rank them, Bradley-Terry aggregates — with a discrimination-floor gate that voids uninterpretable runs (directional signal only, never a quality score) |
 
 ### Guitar
 
@@ -308,13 +310,14 @@ Requires **Node.js 22+** (v2.0.0 raised the floor with `node-web-audio-api` 2.0)
 
 ### MCP Prompts
 
-Three prompt templates for structured teaching workflows:
+Four prompt templates for structured teaching workflows:
 
 | Prompt | What it does |
 |--------|--------------|
 | `annotate_song` | Guided annotation workflow — study an exemplar, write musical language for a raw song |
 | `practice_plan` | Build a structured practice plan based on genre, difficulty, and goals |
 | `performance_review` | Review a completed session — what went well, what to focus on next |
+| `maker_loop` | Walk the full maker loop — propose a reharmonization, verify it with the platform's deterministic tools, then add and play the verified result |
 
 ## CLI
 
@@ -341,7 +344,9 @@ ai-jam-sessions --version
 
 v2.1.0 — the release where the analyst became a **maker** (see [CHANGELOG](CHANGELOG.md)). The maker loop ships as product: a model proposes a reharmonization of any library song, and the platform's own deterministic tools gate it — the chord engine must confirm every intended voicing (`verify_harmony`), every melody note is labeled against the new harmony, and only a verified interpretation goes on to `add_song` → `play_song` → `view_piano_roll`. Generation verified by construction — no rubric, no self-grading; the same `inferChord` that writes jam briefs is the judge. The `maker_loop` prompt template walks the whole loop.
 
-Previously in v2.0.0 — the release where the dataset proved its discipline. **Breaking: the Node.js floor is now 22** (`node-web-audio-api` 2.0); the tool surface itself is unchanged — six sound engines, 47 MCP tools, 4 prompt templates, and a **fully annotated library: 120/120 songs across 12 genres** (12 key fields corrected to content-detected keys this release). The teaching loop is closed end-to-end: metronome with count-in → live recording → per-note scoring → the marked-up scored piano roll → practice loops that ramp tempo only after clean passes. The browser cockpit is a real composition tool — beat-accurate transport with loop regions, record-arm capture, full undo/redo, multi-select and clipboard, touch support — [live on the web](https://mcp-tool-shop-org.github.io/ai-jam-sessions/cockpit/).
+Since the 2.1.0 cut, `main` has also grown the composition engine (`src/compose/`): a deterministic voice-leading gate with named style presets, membership-by-construction voicing specs, a part-at-a-time refiner, and the `compose_panel` tool that runs a blind cross-family ranking panel (directional only — uninterpretable and inconclusive are first-class outcomes). The live surface is **49 tools and 4 prompt templates**, with **2930 tests passing (1 skipped)**. **Publication state:** npm's latest is **2.0.0** — everything from 2.1.0 forward lives on `main` only; run from a clone until the next release.
+
+Previously in v2.0.0 — the release where the dataset proved its discipline. **Breaking: the Node.js floor is now 22** (`node-web-audio-api` 2.0); the tool surface itself is unchanged — six sound engines, 47 MCP tools, 3 prompt templates, and a **fully annotated library: 120/120 songs across 12 genres** (12 key fields corrected to content-detected keys this release). The teaching loop is closed end-to-end: metronome with count-in → live recording → per-note scoring → the marked-up scored piano roll → practice loops that ramp tempo only after clean passes. The browser cockpit is a real composition tool — beat-accurate transport with loop regions, record-arm capture, full undo/redo, multi-select and clipboard, touch support — [live on the web](https://mcp-tool-shop-org.github.io/ai-jam-sessions/cockpit/).
 
 Also publishes **[jam-actions-v0](#training-dataset)** — a 115-record training dataset of multi-turn MCP tool-use traces over classical piano, with a 7-axis release gate, cold-start reproducibility, and full Zenodo + CITATION.cff metadata (CC-BY-SA-3.0-DE) — mirrored on [Hugging Face](https://huggingface.co/datasets/mcp-tool-shop/jam-actions-v0), and now carrying **receipted fine-tuning results both ways**: an honest negative (v0) and a preregistration-disciplined positive that stopped one paired win short of its own victory bar (v1) — see the [fine-tuning receipts](#training-dataset). This release also fixes the Bach records at the source (working-set revisions r001/r002 with errata) after the v1 pipeline's execution gate caught the published window overshooting BWV 846's actual 62 measures. 2506 tests passing across the MCP server + cockpit + dataset packagers + eval harnesses + release-gate validator. The MIDI is all there, every song can teach, and the corpus of that learning ships with it.
 

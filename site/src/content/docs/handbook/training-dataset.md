@@ -29,7 +29,7 @@ The training signal is not "generate text about music." It is "call the right to
 | License | CC-BY-SA-3.0-DE |
 | Version | 0.5.0 (2026-07-11) — Bach BWV 846 correction release, errata 001 + 002 |
 | Schema | `release-gate-assessment/2.0.0` |
-| Repo test suite | 2506 passing (includes the dataset packagers, eval harnesses, and release-gate validator) |
+| Repo test suite | 2930 passing (includes the dataset packagers, eval harnesses, and release-gate validator) |
 
 ## Does it actually train anything? — the fine-tuning receipts
 
