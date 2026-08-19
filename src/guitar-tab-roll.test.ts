@@ -79,3 +79,17 @@ describe("renderGuitarTab — chord tokens", () => {
     expect(notes.map((n) => n.startBeat)).toEqual([0, 1, 2, 3]);
   });
 });
+
+describe("renderGuitarTab — script-context embedding (F-fbc1028a)", () => {
+  it("a title containing </script> does not close the inline script tag", () => {
+    const html = renderGuitarTab(makeSong({ title: "</script><img src=x onerror=alert(1)>" }));
+    const start = html.indexOf("const SONG = ");
+    expect(start).toBeGreaterThan(-1);
+    const payloadLine = html.slice(start, html.indexOf(";\n", start) + 1);
+    expect(payloadLine).toContain("\\u003c/script>");
+    expect(payloadLine).not.toContain("</script>");
+    const jsonText = payloadLine.slice("const SONG = ".length).replace(/;$/, "");
+    const data = JSON.parse(jsonText) as { title: string };
+    expect(data.title).toBe("</script><img src=x onerror=alert(1)>");
+  });
+});

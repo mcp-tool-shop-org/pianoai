@@ -220,7 +220,8 @@ export function renderGuitarTab(
     return names[midi % 12];
   });
 
-  // Serialise data for embedding in HTML
+  // Serialise data for embedding in HTML. Escape '<' so a title like
+  // `</script>` cannot break out of the inline <script> (F-fbc1028a).
   const songData = JSON.stringify({
     title: song.title,
     composer: song.composer ?? "",
@@ -240,7 +241,7 @@ export function renderGuitarTab(
       teachingNote: m.teachingNote ?? null,
     })),
     notes: tabNotes,
-  }).replace(/<\//g, "<\\/");
+  }).replace(/</g, "\\u003c");
 
   return `<!DOCTYPE html>
 <html lang="en">
