@@ -112,9 +112,12 @@ describe("PlaybackController", () => {
       if (e.type === "stateChange") states.push(e.state);
     });
 
+    vi.useFakeTimers();
     const playPromise = controller.play({ speed: 2.0 });
-    setTimeout(() => controller.pause(), 30);
+    await vi.advanceTimersByTimeAsync(30);
+    controller.pause();
     await playPromise;
+    vi.useRealTimers();
 
     // Should have recorded at least one stateChange
     expect(states.length).toBeGreaterThan(0);

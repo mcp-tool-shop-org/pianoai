@@ -141,9 +141,12 @@ describe("MidiPlaybackEngine", () => {
     const connector = createMockConnector();
     const engine = new MidiPlaybackEngine(connector, parsed);
 
-    // Start playing at normal speed, then stop after a brief delay
+    // Start playing at normal speed, then stop after a simulated delay
+    // (F-bce4d2c6: fake timers, matching the pause tests below).
+    vi.useFakeTimers();
     const playPromise = engine.play({ speed: 2.0 });
-    setTimeout(() => engine.stop(), 50);
+    await vi.advanceTimersByTimeAsync(50);
+    engine.stop();
     await playPromise;
 
     expect(engine.state).toBe("stopped");
