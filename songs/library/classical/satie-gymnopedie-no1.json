@@ -12,7 +12,7 @@
     "ambient",
     "meditative"
   ],
-  "source": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
+  "source": "Mutopia Project, https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=37, typeset by Evin Robertson (Public Domain)",
   "status": "ready",
   "musicalLanguage": {
     "description": "This transcription of Satie's Gymnopedie No. 1 runs 79 measures at 89 BPM in 3/4 time with 454 notes, and the stated D major is confirmed by the content (statedKeyFit 0.754; the detected key matches exactly). The piece is essentially one idea stated twice: an 80%-coverage right-hand span (measures 1-32) restates almost verbatim at measures 40-71, bridged by a short, more harmonically active transition (measures 32-39) that itself returns to close the piece (measures 74-77 reuse the same material). The opening's famous 7th-chord vamp is the piece's most literal repetition — the same two alternating chords recur six to eight times each across the whole piece (measures 1, 3, 11, 40, 42, and 50 share one chord; measures 2, 4, 10, 12, 41, 43, 49, and 51 share the other) — while the implied Gmaj7 window, the single most-cited harmonic label (4 windows), keeps returning at measures 7, 15, 46, and 54, always in the same spot relative to the vamp.",

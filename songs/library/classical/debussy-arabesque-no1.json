@@ -11,7 +11,7 @@
     "impressionist",
     "flowing"
   ],
-  "source": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
+  "source": "Mutopia Project, https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1777, typeset by Keith OHara, source Durand et Fils (1904) (Public Domain)",
   "status": "ready",
   "musicalLanguage": {
     "description": "This transcription of Debussy's Arabesque No. 1 runs 106 measures at 93 BPM in 4/4 time with 1,392 notes, and its key picture is genuinely unsettled: the stated E major fits the content only weakly (statedKeyFit -0.102), and content-based detection is too ambiguous to trust either (0.04 margin, below the analysis's own confidence floor). Rather than force a single tonic, the honest reading leans on the implied chord windows themselves, which scatter across many different roots without settling on one: Em7 and G major tie as the most-cited labels (4 windows apiece, 3.4% of measures considered), with Am, Bm, D#, Em, and F close behind. What the data does establish cleanly is the piece's architecture: the opening material (the right hand's measures 2-16, the left hand's measures 5-18) returns almost verbatim near the close (measures 72-86 and 75-88), a genuine recapitulation confirmed by two independent pattern groups plus several byte-identical single-measure pairs (10 and 80, 14 and 84, 15 and 85 among them).",
