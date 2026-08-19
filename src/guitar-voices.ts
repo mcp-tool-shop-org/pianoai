@@ -671,19 +671,40 @@ function guitarTuningPath(voiceId: string): string {
   return join(guitarTuningDir(), `${safeVoiceId}.json`);
 }
 
-/** Load user tuning overrides for a voice. Returns empty object if none saved. */
-export function loadGuitarUserTuning(voiceId: string): GuitarUserTuning {
+export interface GuitarUserTuningLoad {
+  overrides: GuitarUserTuning;
+  /** True when a file existed but could not be parsed — factory defaults are in effect. */
+  discardedCorrupt: boolean;
+}
+
+/** User-facing warning when a saved guitar tuning file was discarded (F-aff2d3b7). */
+export function discardedGuitarTuningWarning(id: string): string {
+  return `Saved tuning for ${id} could not be read — showing factory defaults. Re-save to repair.`;
+}
+
+export function withDiscardedGuitarTuningWarning(id: string, discarded: boolean, body: string): string {
+  if (!discarded) return body;
+  return `${discardedGuitarTuningWarning(id)}\n\n${body}`;
+}
+
+/** Load guitar tuning overrides plus whether a corrupt file was discarded. */
+export function loadGuitarUserTuningStatus(voiceId: string): GuitarUserTuningLoad {
   const p = guitarTuningPath(voiceId);
-  if (!existsSync(p)) return {};
+  if (!existsSync(p)) return { overrides: {}, discardedCorrupt: false };
   try {
-    return JSON.parse(readFileSync(p, "utf-8"));
+    return { overrides: JSON.parse(readFileSync(p, "utf-8")), discardedCorrupt: false };
   } catch (err) {
     // A corrupt file used to silently and permanently fall back to factory
     // defaults with no trace of why (B-B1-005) — warn so it's diagnosable
     // instead of a guitar mysteriously "forgetting" its tuning.
     console.error(`WARNING: corrupt tuning file, using factory defaults: ${p} (${err instanceof Error ? err.message : String(err)})`);
-    return {};
+    return { overrides: {}, discardedCorrupt: true };
   }
+}
+
+/** Load user tuning overrides for a voice. Returns empty object if none saved. */
+export function loadGuitarUserTuning(voiceId: string): GuitarUserTuning {
+  return loadGuitarUserTuningStatus(voiceId).overrides;
 }
 
 /** Save user tuning overrides. Merges with existing overrides. Atomic (write-temp-then-rename) so a crash or racing writer can't leave a half-written, corrupt tuning file (B-B1-005). */
