@@ -54,6 +54,7 @@ concurrency:
 
 jobs:
   ci:
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -109,6 +110,7 @@ jobs:
   # cleanly under pnpm 11 too, so the next major bump is pre-validated.
   pnpm10-install:
     name: Modern pnpm cold-start (pnpm 10, Node 22)
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -133,6 +135,7 @@ jobs:
         run: pnpm test
 
   dep-audit:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -155,6 +158,7 @@ jobs:
 
   plugin-validate:
     name: Validate plugin manifests
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -196,6 +200,7 @@ jobs:
   # worth the risk of a cache-resolution edge case failing the job.
   cockpit:
     name: Cockpit app (typecheck + build)
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     defaults:
       run:
