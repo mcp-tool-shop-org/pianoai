@@ -77,6 +77,7 @@ import {
   createSalamanderSampler, SAMPLES_LOADING_MESSAGE, SAMPLES_UNAVAILABLE_MESSAGE,
   type SalamanderSampler,
 } from "./salamander-sampler.js";
+import { samplerHandlesVoice } from "./salamander-logic.js";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -877,7 +878,8 @@ function activeNoteOn(midi: number, velocity: number, time?: number) {
     vocalSynth.noteOn(midi, velocity, time);
     return;
   }
-  if (sampler.isReady() && sampler.noteOn(midi, velocity, time)) return;
+  const voiceId = ($("sel-voice") as HTMLSelectElement).value;
+  if (samplerHandlesVoice(voiceId) && sampler.isReady() && sampler.noteOn(midi, velocity, time)) return;
   synth.noteOn(midi, velocity, time);
 }
 

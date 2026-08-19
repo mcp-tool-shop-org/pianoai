@@ -44,3 +44,13 @@ describe("salamander-logic", () => {
     expect(layersOrdered([{ id: 0, velLo: 1, velHi: 40 }, { id: 1, velLo: 50, velHi: 127 }])).toBe(false);
   });
 });
+
+describe("samplerHandlesVoice", () => {
+  it("routes only the Concert Grand preset to the sampler", async () => {
+    const { samplerHandlesVoice } = await import("./salamander-logic.js");
+    expect(samplerHandlesVoice("grand")).toBe(true);
+    for (const v of ["upright", "electric", "honkytonk", "musicbox", "bright", "synth-pad", "organ", "bell", "strings"]) {
+      expect(samplerHandlesVoice(v)).toBe(false);
+    }
+  });
+});

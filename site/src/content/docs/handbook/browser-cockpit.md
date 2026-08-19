@@ -9,7 +9,7 @@ sidebar:
 
 A browser-based instrument and vocal studio that lives in the repo at `apps/cockpit`. No plugins, no DAW — just a web page with a piano roll you can click into, play into, and edit like a real composition tool: beat-accurate transport with a time-ruler and loop regions, record-arm capture with count-in, full undo/redo, multi-select and clipboard, touch support.
 
-**[▶ Launch the cockpit](/ai-jam-sessions/cockpit/)** — it runs entirely in your browser; nothing is installed and nothing leaves your machine. Your work autosaves locally (localStorage) between visits — but autosave needs persistent storage: in a private/incognito window, or when storage is full, the cockpit will tell you saving is blocked, and your work lasts only until the tab closes (use **Export JSON** to keep it).
+**[▶ Launch the cockpit](/ai-jam-sessions/cockpit/)** — it runs entirely in your browser; nothing is installed and nothing leaves your machine. The default piano is the real thing: recorded [Salamander Grand Piano](https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html) samples by Alexander Holm (CC-BY 3.0), with a synth fallback while they load. Your work autosaves locally (localStorage) between visits — but autosave needs persistent storage: in a private/incognito window, or when storage is full, the cockpit will tell you saving is blocked, and your work lasts only until the tab closes (use **Export JSON** to keep it).
 
 Prefer to hack on it? Run it from a clone:
 

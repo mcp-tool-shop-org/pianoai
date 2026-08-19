@@ -70,3 +70,15 @@ export function layersOrdered(layers: readonly SampleLayer[]): boolean {
   }
   return layers[0].velLo === 1 && layers[layers.length - 1].velHi === 127;
 }
+
+/**
+ * The pack IS a recorded concert grand — only the Concert Grand preset routes
+ * to it. Every other voice keeps its own synth character (the 10-voice rack
+ * must stay 10 voices; regression caught live by the Director when a ready
+ * sampler swallowed the whole rack).
+ */
+export const SAMPLED_VOICE_ID = "grand";
+
+export function samplerHandlesVoice(voiceId: string): boolean {
+  return voiceId === SAMPLED_VOICE_ID;
+}
