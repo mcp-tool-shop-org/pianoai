@@ -31,4 +31,5 @@
 datasets/jam-actions-v0-public/** text eol=lf
 songs/library/**/*.json text eol=lf
 *.mid binary
+*.ogg binary
 samples/**/*.wav binary
