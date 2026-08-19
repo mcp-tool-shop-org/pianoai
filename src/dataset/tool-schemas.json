@@ -1,8 +1,8 @@
 {
   "server_name": "ai-jam-sessions",
   "derived_from": "dist/mcp-server.js via MCP tools/list",
-  "derived_at": "2026-05-16T13:46:09.703Z",
-  "tool_count": 41,
+  "derived_at": "2026-08-19T09:31:05.945Z",
+  "tool_count": 49,
   "tools": [
     {
       "name": "add_section",
@@ -198,6 +198,49 @@
       }
     },
     {
+      "name": "auto_reharmonize",
+      "description": "Reharmonize a section of a library song with the local inference maker. The Phase-C loop: a local model proposes chord symbols, a deterministic voicer renders each voicing (chord fidelity guaranteed), and verify_harmony admits or rejects — resampling best-of-n until a reharmonization passes. Returns the verified per-measure {measure, intendedChord, voicing} plus telemetry (samplesUsed, passedAtSample, verified). By default the model emits an ABC lead sheet ('abc' format), which is far more reliable than a JSON chord array (measured on the frozen E-R set: ABC 0% empty output vs JSON 50%). Needs a local Ollama model (default qwen2.5:7b); if Ollama is not running it returns a structured error instead of failing, and every OTHER tool in this server is unaffected. May take up to ~a minute at the default best-of-16 budget.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "songId": {
+            "type": "string",
+            "description": "Library song to reharmonize (e.g. 'fur-elise'). Browse with list_songs."
+          },
+          "measures": {
+            "description": "Measure range (1-based), e.g. '1-8'. Default: measures 1-8.",
+            "type": "string"
+          },
+          "style": {
+            "description": "Optional target style hint woven into the brief, e.g. 'jazz', 'bossa nova'.",
+            "type": "string"
+          },
+          "maxSamples": {
+            "description": "Best-of-n budget (default 16, the measured knee). Higher = more coverage, more time.",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 64
+          },
+          "model": {
+            "description": "Local Ollama model tag (default 'qwen2.5:7b').",
+            "type": "string"
+          },
+          "format": {
+            "description": "How the model emits its choice: 'abc' (default — an ABC lead sheet, far fewer empty outputs) or 'chords' (a JSON chord array).",
+            "type": "string",
+            "enum": [
+              "abc",
+              "chords"
+            ]
+          }
+        },
+        "required": [
+          "songId"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
       "name": "compare_songs",
       "description": "Compare two songs to find shared harmonic, structural, and rhythmic patterns. Surfaces cross-genre connections and teaching opportunities. Use this to understand how different pieces relate musically.",
       "inputSchema": {
@@ -215,6 +258,66 @@
         "required": [
           "song_a",
           "song_b"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "compose_panel",
+      "description": "Run a cross-family local-LLM 'best-worst' panel over how the composition engine voices library songs — a $0 DIRECTIONAL smoke-screen, NOT a quality measure (local models judging note-names can't make a quality claim; that needs a blind human-audio panel). It realizes each song four ways (root-position floor, nearest-tone leader, refined, and the engine = model-spec best-of-n + refine), then several disjoint local judge families rank them blind. A discrimination-floor gate returns UNINTERPRETABLE if the judges can't rank the theory-valid system above the theory-invalid floor; INCONCLUSIVE is a normal outcome. Needs local Ollama (judges default to mistral-small/granite/gemma/aya — none is the generator family); fail-soft, zero API cost. Runs slowly (several minutes) since it generates + judges with 24–31B models.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "songs": {
+            "description": "Comma-separated library song ids (e.g. 'let-it-be,all-of-me'). Default: a genre-diverse set of 10. Browse with list_songs.",
+            "type": "string"
+          },
+          "measures": {
+            "description": "Measure range (1-based), e.g. '1-8'. Default: measures 1-8.",
+            "type": "string"
+          },
+          "style": {
+            "description": "Style preset the engine + refinement target: 'common-practice', 'lead-sheet' (default), or 'film-ambient'.",
+            "type": "string"
+          },
+          "n": {
+            "description": "Engine best-of-n budget (default 6). Higher = more coverage, more time.",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 32
+          },
+          "judges": {
+            "description": "Comma-separated judge families as 'model:family' (e.g. 'mistral-small:24b:mistral'). Default four disjoint local families, none of them qwen (the generator).",
+            "type": "string"
+          },
+          "genModel": {
+            "description": "Local Ollama model the engine generates with (default 'qwen2.5:7b').",
+            "type": "string"
+          }
+        },
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "detect_chord",
+      "description": "Detect the chord name from a set of currently-sounding MIDI note numbers (0-127). Useful for identifying what chord is being held during live playback. Returns the chord name (e.g. 'C', 'Gm7', 'F#/A#') and the note names involved.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "notes": {
+            "minItems": 1,
+            "maxItems": 64,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 127
+            },
+            "description": "MIDI note numbers currently sounding, e.g. [60, 64, 67] for a C major triad"
+          }
+        },
+        "required": [
+          "notes"
         ],
         "$schema": "http://json-schema.org/draft-07/schema#"
       }
@@ -612,6 +715,20 @@
               "before",
               "concurrent"
             ]
+          },
+          "metronome": {
+            "description": "Enable the metronome click track (library songs only). Default: false.",
+            "type": "boolean"
+          },
+          "countIn": {
+            "description": "Count-in length in bars before playback starts (library songs only). Only takes effect when metronome is true. Default: 1 bar when metronome is true and this is omitted, 0 otherwise.",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 8
+          },
+          "record": {
+            "description": "Record played notes for later scoring (library songs only) — retrieve with score_last_take. Default: false.",
+            "type": "boolean"
           }
         },
         "required": [
@@ -626,6 +743,61 @@
       "inputSchema": {
         "type": "object",
         "properties": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "practice_loop",
+      "description": "Start a practice loop: drills a measure range at reduced tempo, ramping toward full speed one step at a time — but only after a CLEAN pass (accurate + complete), never on a fixed schedule. Metronome + a count-in are on by default, every pass is recorded and scored. Returns immediately with the first pass's micro-goal while it runs in the background — poll with practice_status, stop with stop_playback.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Song ID from the library (e.g. 'fur-elise')"
+          },
+          "startMeasure": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991,
+            "description": "First measure of the drilled range (1-based)"
+          },
+          "endMeasure": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991,
+            "description": "Last measure of the drilled range (1-based, inclusive)"
+          },
+          "speedStartPct": {
+            "description": "Starting speed, percent of the song's tempo. Default: 70",
+            "type": "number",
+            "minimum": 1,
+            "maximum": 400
+          },
+          "speedTargetPct": {
+            "description": "Target speed, percent of the song's tempo. Default: 100",
+            "type": "number",
+            "minimum": 1,
+            "maximum": 400
+          },
+          "rampStepPct": {
+            "description": "Speed increase applied after each CLEAN pass. Default: 5",
+            "type": "number",
+            "minimum": 0.1,
+            "maximum": 100
+          },
+          "maxPasses": {
+            "description": "Optional cap on total passes. Default: no cap — runs until a clean pass at speedTargetPct, or stop_playback.",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "id",
+          "startMeasure",
+          "endMeasure"
+        ],
         "$schema": "http://json-schema.org/draft-07/schema#"
       }
     },
@@ -652,6 +824,15 @@
         "required": [
           "id"
         ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "practice_status",
+      "description": "Check progress on the current (or most recently run) practice loop: pass number, speed, and the last pass's diagnostic. Task-focused wording only — notes/timing/measures, no grades, no praise, no points/streaks. Returns a message if no practice loop has run yet.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
         "$schema": "http://json-schema.org/draft-07/schema#"
       }
     },
@@ -796,6 +977,15 @@
         "required": [
           "song_id"
         ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "score_last_take",
+      "description": "Score the most recently recorded take — from play_song with record:true, or the latest practice_loop pass — against the song (or drilled measure range, for a practice pass). Returns metrics, a per-measure diagnostic, and the full feedback assessment. No MIDI file needed.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
         "$schema": "http://json-schema.org/draft-07/schema#"
       }
     },
@@ -1276,6 +1466,45 @@
       }
     },
     {
+      "name": "verify_harmony",
+      "description": "Verify a proposed reharmonization with the platform's deterministic music tools — the maker loop's verification gate. Checks chord fidelity (the same chord engine that powers jam briefs must detect your intended chord in each voicing), melody consonance (chord-tone / tension / chromatic labels with a chromatic ceiling), bass voice-leading, and key membership. Give a songId to verify against a library melody, or pass the melody inline. Run this BEFORE add_song when creating a reinterpretation; a ✅ verdict means the harmony is sound by construction.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "reharmonization": {
+            "type": "string",
+            "description": "Your proposed harmony as a JSON array: [{\"measure\": 1, \"intendedChord\": \"Am7\", \"voicing\": \"A2 C3 E3 G3\"}, ...]. Voicings are note tokens (space or \"+\" separated, optional :duration suffixes). Supported chord suffixes: maj (empty), m, 7, maj7, m7, dim, m7b5, aug, sus4, sus2."
+          },
+          "songId": {
+            "description": "Verify against this library song's right-hand melody (e.g. 'fur-elise'). Combine with measures to select a range.",
+            "type": "string"
+          },
+          "measures": {
+            "description": "Measure range within the song, e.g. '1-8'. Only used with songId.",
+            "type": "string"
+          },
+          "melody": {
+            "description": "Inline melody instead of songId: JSON array [{\"number\": 1, \"rightHand\": \"E5:e D#5:e\"}, ...]",
+            "type": "string"
+          },
+          "key": {
+            "description": "Key for the membership check (e.g. 'A minor'). Defaults to the song's key when songId is given.",
+            "type": "string"
+          },
+          "maxChromaticRatio": {
+            "description": "Max fraction of melody notes allowed to be chromatic before consonance fails (default 0.2)",
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "reharmonization"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
       "name": "view_guitar_tab",
       "description": "Render an interactive guitar tablature editor for a song as a self-contained HTML page. Open the output file in a browser for real-time playback cursor, click-to-add notes, drag editing, string/fret reassignment, and JSON export. Supports configurable guitar tunings.",
       "inputSchema": {
@@ -1348,6 +1577,15 @@
         "required": [
           "songId"
         ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "view_scored_piano_roll",
+      "description": "Render the scored piano-roll overlay (per-note verdicts: correct/timing/missed, plus extra-note ghosts) for the most recently scored take. Run score_last_take (or a practice_loop pass) first. Writes the SVG to a temp file (for viewing outside the chat) and also returns it inline.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
         "$schema": "http://json-schema.org/draft-07/schema#"
       }
     }

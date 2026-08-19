@@ -166,6 +166,18 @@ describe("mcp-server.ts — MCP protocol-level tool tests", () => {
       expect(toolList.tools.some((t) => t.name === "transpose_song")).toBe(true);
       expect(toolList.tools.some((t) => t.name === "server_info")).toBe(true);
 
+      const catalog = JSON.parse(
+        readFileSync(fileURLToPath(new URL("./dataset/tool-schemas.json", import.meta.url)), "utf8"),
+      ) as { tool_count: number; tools: Array<{ name: string }> };
+      const liveNames = toolList.tools.map((t) => t.name).sort();
+      const catalogNames = catalog.tools.map((t) => t.name).sort();
+      expect(catalogNames).toEqual(liveNames);
+      expect(catalog.tool_count).toBe(liveNames.length);
+
+      const listSongs = toolList.tools.find((t) => t.name === "list_songs");
+      expect(listSongs?.annotations?.readOnlyHint).toBe(true);
+      expect(listSongs?.annotations?.idempotentHint).toBe(true);
+
       const result = (await client.callTool({
         name: "server_info",
         arguments: {},
@@ -628,6 +640,123 @@ describe("mcp-server.ts — MCP protocol-level tool tests", () => {
       }
     },
     30000,
+  );
+
+  it(
+    "compose_panel is registered (F-3f054882)",
+    async () => {
+      const toolList = await client.listTools();
+      expect(toolList.tools.some((t) => t.name === "compose_panel")).toBe(true);
+    },
+    15000,
+  );
+
+  it(
+    "compose_panel rejects a bad measure range with a structured error, not panel_failed (F-3f054882 / F-9a7bbbd8 glue)",
+    async () => {
+      const res = (await client.callTool({
+        name: "compose_panel",
+        arguments: { songs: "fallin", measures: "nope" },
+      })) as ToolResult;
+      expect(res.isError).toBe(true);
+      expect(extractText(res)).toContain("bad_measure_range");
+      expect(extractText(res)).not.toContain("panel_failed");
+    },
+    20000,
+  );
+
+  it(
+    "compose_panel rejects an unknown song set with no_songs (F-3f054882)",
+    async () => {
+      const res = (await client.callTool({
+        name: "compose_panel",
+        arguments: { songs: "definitely-not-a-song", measures: "1-4" },
+      })) as ToolResult;
+      expect(res.isError).toBe(true);
+      expect(extractText(res)).toContain("no_songs");
+    },
+    20000,
+  );
+
+  it(
+    "compose_panel style=jazz yields structured bad_style, not panel_failed (F-9a7bbbd8)",
+    async () => {
+      const res = (await client.callTool({
+        name: "compose_panel",
+        arguments: { songs: "fallin", measures: "1-4", style: "jazz" },
+      })) as ToolResult;
+      expect(res.isError).toBe(true);
+      const text = extractText(res);
+      expect(text).toContain("bad_style");
+      expect(text).not.toContain("panel_failed");
+    },
+    20000,
+  );
+
+  it(
+    "compose_panel fails soft when Ollama is unreachable — structured error, server stays alive (F-3f054882)",
+    async () => {
+      const iso = await spawnIsolatedServer({ env: { OLLAMA_HOST: "http://127.0.0.1:1" } });
+      try {
+        const res = (await iso.client.callTool({
+          name: "compose_panel",
+          arguments: { songs: "fallin", measures: "1-4" },
+        })) as ToolResult;
+        expect(res.isError).toBe(true);
+        expect(extractText(res)).toContain("ollama_unreachable");
+
+        const info = (await iso.client.callTool({ name: "server_info", arguments: {} })) as ToolResult;
+        expect(info.isError).not.toBe(true);
+        expect(extractText(info)).toContain("Tools:");
+      } finally {
+        await iso.close();
+      }
+    },
+    30000,
+  );
+
+  it(
+    "import_midi's parse-throw path returns isError: true (F-95f55587)",
+    async () => {
+      const iso = await spawnIsolatedServer({
+        beforeStart: (home) => {
+          writeFileSync(join(home, "broken.mid"), "not a midi file");
+        },
+      });
+      try {
+        const res = (await iso.client.callTool({
+          name: "import_midi",
+          arguments: {
+            midi_path: join(iso.tmpHome, "broken.mid"),
+            id: "broken-import",
+            title: "Broken",
+            genre: "classical",
+            difficulty: "beginner",
+            key: "C major",
+          },
+        })) as ToolResult;
+        expect(res.isError).toBe(true);
+        expect(extractText(res).toLowerCase()).toMatch(/failed to import midi|midi/i);
+      } finally {
+        await iso.close();
+      }
+    },
+    20000,
+  );
+
+  it(
+    "play_song treats a .MID path as a MIDI file, not a library id (F-e2e9baac)",
+    async () => {
+      const res = (await client.callTool({
+        name: "play_song",
+        arguments: { id: join(tmpHome, "missing-file.MID") },
+      })) as ToolResult;
+      expect(res.isError).toBe(true);
+      const text = extractText(res).toLowerCase();
+      expect(text).toMatch(/home directory|midi/);
+      expect(text).not.toMatch(/no song called/);
+    },
+    20000,
   );
 });
 
