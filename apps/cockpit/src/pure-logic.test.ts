@@ -524,7 +524,7 @@ describe("platform-status — storage save failure (F-4ac54ea0 / F-a623a05e)", (
     expect(writeStorageItem(setItem, "k", "{}")).toBe(false);
     expect(storageSaveFailureStatus(false)).toBe(SESSION_SAVE_BLOCKED_MESSAGE);
     expect(SESSION_SAVE_BLOCKED_MESSAGE).toBe(
-      "Could not save this session — browser storage is full or blocked",
+      "Could not save this session — browser storage is full or blocked. Your work stays until this tab closes; use Export JSON to keep it.",
     );
   });
 

@@ -41,4 +41,5 @@ Each of the 12 genres has a richly annotated exemplar that serves as a reference
 - [MCP tools](/ai-jam-sessions/handbook/mcp-tools/) — all 49 tools and 4 prompt templates organized by category
 - [Browser cockpit](/ai-jam-sessions/handbook/browser-cockpit/) — the cockpit UI, practice journal, and tuning lab
 - [Training dataset](/ai-jam-sessions/handbook/training-dataset/) — jam-actions-v0, the 115-record MCP tool-use corpus, its 7-axis release gate, and how to reproduce the canonical PASS verdict
+- [Troubleshooting](/ai-jam-sessions/handbook/troubleshooting/) — silent audio, blocked saves, missing MIDI, an unreachable Ollama, and import errors
 - [For beginners](/ai-jam-sessions/handbook/beginners/) — new to AI Jam Sessions? Start here

@@ -5,7 +5,7 @@
 
 /** F-4ac54ea0 — localStorage setItem threw (quota or private mode). */
 export const SESSION_SAVE_BLOCKED_MESSAGE =
-  "Could not save this session — browser storage is full or blocked";
+  "Could not save this session — browser storage is full or blocked. Your work stays until this tab closes; use Export JSON to keep it.";
 
 /** F-9c275158 — AudioContext stayed suspended after resume(). */
 export const AUDIO_BLOCKED_MESSAGE =
