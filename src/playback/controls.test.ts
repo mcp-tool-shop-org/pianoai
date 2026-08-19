@@ -403,6 +403,13 @@ describe("PlaybackController", () => {
   // ── Recording (Wave S1) ──────────────────────────────────────────────
 
   describe("getRecording()", () => {
+    // F-cb7b28af: mid-take setSpeed tests fake the engine's setTimeout
+    // scheduling. Restore real timers after every test in this block so a
+    // throw cannot leak fake timers into the wall-clock recording tests.
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it("is empty when record is not enabled (default)", async () => {
       const { controller } = createTestController(3);
       await controller.play({ speed: 4 });
@@ -470,8 +477,9 @@ describe("PlaybackController", () => {
 
     it("speedChangedDuringTake becomes true after a mid-take setSpeed() call", async () => {
       const { controller } = createTestController(20, { record: true });
+      vi.useFakeTimers();
       const playPromise = controller.play({ speed: 2 });
-      await new Promise((r) => setTimeout(r, 10));
+      await vi.advanceTimersByTimeAsync(10);
       controller.setSpeed(4); // mid-take speed change
       controller.pause();
       await playPromise;
@@ -481,8 +489,9 @@ describe("PlaybackController", () => {
 
     it("a fresh play() after stop() resets speedAtStart/speedChangedDuringTake for the new take", async () => {
       const { controller } = createTestController(20, { record: true });
+      vi.useFakeTimers();
       const playPromise = controller.play({ speed: 2 });
-      await new Promise((r) => setTimeout(r, 10));
+      await vi.advanceTimersByTimeAsync(10);
       controller.setSpeed(4);
       controller.stop();
       await playPromise;
