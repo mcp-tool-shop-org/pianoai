@@ -1,6 +1,10 @@
 #!/usr/bin/env npx tsx
 // ─── Import Classical MIDI from piano-midi.de ────────────────────────────────
 //
+// Legacy importer. Writes SongEntry JSON to songs/builtin/ — NOT the live
+// MIDI-first library under songs/library/. URLs in this file are historical.
+// Do not run this script against songs/library.
+//
 // Downloads MIDI files from piano-midi.de and converts them to SongEntry JSON
 // using the midiToSongEntry pipeline. Each file gets CC BY-SA attribution.
 //
