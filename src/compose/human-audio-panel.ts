@@ -435,6 +435,52 @@ export function scoreHumanAudio(opts: {
   };
 }
 
+export interface EngineVoicingSpec {
+  measure: number;
+  degrees: number[];
+  bassOctave?: number;
+}
+
+/**
+ * Parse the local model's voicing-spec reply. Ollama's `format: "json"`
+ * forces a single JSON OBJECT, so models frequently return the specs keyed by
+ * measure (`{"1": {...}, "2": {...}}`) or under a wrapper key
+ * (`{"measures": [...]}`) instead of the requested bare array — all three
+ * shapes are accepted. Anything unusable returns [] (never throws).
+ */
+export function parseEngineSpecArray(raw: string): EngineVoicingSpec[] {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return [];
+  }
+  const candidates: unknown[] = [];
+  if (Array.isArray(parsed)) {
+    candidates.push(...parsed);
+  } else if (parsed && typeof parsed === "object") {
+    const values = Object.values(parsed as Record<string, unknown>);
+    if (values.length === 1 && Array.isArray(values[0])) {
+      candidates.push(...(values[0] as unknown[]));
+    } else {
+      candidates.push(...values);
+    }
+  }
+  const out: EngineVoicingSpec[] = [];
+  for (const e of candidates) {
+    if (!e || typeof e !== "object") continue;
+    const o = e as Record<string, unknown>;
+    const measure = Number(o.measure);
+    const degrees = Array.isArray(o.degrees) ? o.degrees.map(Number).filter(Number.isFinite) : [];
+    if (!Number.isFinite(measure) || degrees.length === 0) continue;
+    const spec: EngineVoicingSpec = { measure, degrees };
+    const bass = Number(o.bassOctave);
+    if (Number.isFinite(bass)) spec.bassOctave = bass;
+    out.push(spec);
+  }
+  return out;
+}
+
 export async function probeLocalModel(
   fetchImpl: typeof fetch,
   url = "http://127.0.0.1:11434/api/tags",

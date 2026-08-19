@@ -16,6 +16,7 @@ import {
   emptyRunRecord,
   isFloorTrialPair,
   listenerCountLabel,
+  parseEngineSpecArray,
   probeLocalModel,
   scoreHumanAudio,
   serializePanelRuns,
@@ -221,11 +222,13 @@ async function realize(songId: string, system: HumanAudioSystemId): Promise<Real
     real = refineRealization(nearestToneRealization(progression, 4), { voices: 4, style: "lead-sheet" }).realization;
   } else {
     // Never silently substitute another system for the engine — a faked
-    // engine clip would poison the ranking. Failing loudly is the honest path.
+    // engine clip would poison the ranking. Failing loudly is the honest path,
+    // and marking the engine unusable makes the next run's k=3 detection true.
     const engine = await realizeEngine(progression);
     if (!engine) {
+      engineProbe = { reachable: false, reason: "the local model answered but returned no usable voicing" };
       throw new Error(
-        "the engine system did not return a usable voicing, so this trial cannot be presented honestly. Start a new run — the re-probe will drop the engine system if the local model is not reachable.",
+        "the engine system did not return a usable voicing, so this trial cannot be presented honestly. Start a new run — it will continue without the engine system.",
       );
     }
     real = engine;
@@ -236,61 +239,45 @@ async function realize(songId: string, system: HumanAudioSystemId): Promise<Real
 
 async function realizeEngine(progression: ChordProgression): Promise<Realization | null> {
   if (!engineProbe.reachable) return null;
-  try {
-    const user = [
-      `# Voice this progression in ${progression.key} — 4 voices per chord, bass to soprano.`,
-      "",
-      "| Measure | Chord |",
-      "|---------|-------|",
-      ...progression.chords.map((c) => `| ${c.measure} | ${c.chordSymbol} |`),
-      "",
-      `Return one JSON object per measure with "degrees" (4 chord-note numbers, low→high).`,
-    ].join("\n");
-    const res = await fetch(`${ENGINE_URL}/api/chat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "qwen2.5:7b",
-        stream: false,
-        format: "json",
-        messages: [
-          { role: "system", content: "You are a keyboard part-writer. Output ONLY a JSON array of {measure, degrees, bassOctave?} objects. degrees are chord-tone indices, low to high." },
-          { role: "user", content: user },
-        ],
-      }),
-    });
-    if (!res.ok) return null;
-    const data = await res.json() as { message?: { content?: string } };
-    const raw = data.message?.content ?? "";
-    const specs = parseSpecArray(raw);
-    if (specs.length === 0) return null;
-    return renderSpecRealization(progression, specs, 4);
-  } catch {
-    return null;
-  }
-}
-
-function parseSpecArray(raw: string): Array<{ measure: number; degrees: number[]; bassOctave?: number }> {
-  try {
-    const parsed = JSON.parse(raw) as unknown;
-    const arr = Array.isArray(parsed) ? parsed : null;
-    if (!arr) return [];
-    const out: Array<{ measure: number; degrees: number[]; bassOctave?: number }> = [];
-    for (const e of arr) {
-      if (!e || typeof e !== "object") continue;
-      const o = e as Record<string, unknown>;
-      const measure = Number(o.measure);
-      const degrees = Array.isArray(o.degrees) ? o.degrees.map(Number).filter(Number.isFinite) : [];
-      if (!Number.isFinite(measure) || degrees.length === 0) continue;
-      const spec: { measure: number; degrees: number[]; bassOctave?: number } = { measure, degrees };
-      const bass = Number(o.bassOctave);
-      if (Number.isFinite(bass)) spec.bassOctave = bass;
-      out.push(spec);
+  // Ollama's format:"json" forbids a bare array, so the contract is a single
+  // wrapper object the model can actually emit. One bounded retry for a flaky
+  // emission — a partial or unusable answer is null, never a substitute.
+  const measures = progression.chords.map((c) => c.measure);
+  const user = [
+    `# Voice this progression in ${progression.key} — 4 voices per chord, bass to soprano.`,
+    "",
+    "| Measure | Chord |",
+    "|---------|-------|",
+    ...progression.chords.map((c) => `| ${c.measure} | ${c.chordSymbol} |`),
+    "",
+    `Return ONE JSON object: {"specs": [{"measure": <n>, "degrees": [four chord-note numbers, low to high]}, ...]}`,
+    `with exactly one entry for every measure in the table (measures ${Math.min(...measures)}–${Math.max(...measures)}).`,
+  ].join("\n");
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const res = await fetch(`${ENGINE_URL}/api/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "qwen2.5:7b",
+          stream: false,
+          format: "json",
+          messages: [
+            { role: "system", content: 'You are a keyboard part-writer. Reply with ONE JSON object of the form {"specs": [{"measure": n, "degrees": [...]}, ...]} — one entry per measure, degrees are chord-tone indices low to high. No prose.' },
+            { role: "user", content: user },
+          ],
+        }),
+      });
+      if (!res.ok) continue;
+      const data = await res.json() as { message?: { content?: string } };
+      const specs = parseEngineSpecArray(data.message?.content ?? "");
+      if (specs.length < progression.chords.length) continue;
+      return renderSpecRealization(progression, specs, 4);
+    } catch {
+      // fall through to the retry, then to null
     }
-    return out;
-  } catch {
-    return [];
   }
+  return null;
 }
 
 async function prepareCurrentTrial(): Promise<void> {

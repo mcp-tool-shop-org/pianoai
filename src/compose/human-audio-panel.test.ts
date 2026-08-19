@@ -11,6 +11,7 @@ import {
   listenerCountLabel,
   screenListener,
   scoreHumanAudio,
+  parseEngineSpecArray,
   pairwiseVoteToBws,
   isFloorTrialPair,
   pairKey,
@@ -334,6 +335,45 @@ describe("panel run persistence (beside, never inside, the score blob)", () => {
     expect(json).not.toMatch(/ai-jam-cockpit:state/);
     expect(deserializePanelRuns(json)).toEqual([rec]);
     expect(deserializePanelRuns("{nope}")).toEqual([]);
+  });
+});
+
+describe("parseEngineSpecArray — every shape Ollama format:json actually emits", () => {
+  const SPEC = { measure: 1, degrees: [0, 4, 7, 11] };
+
+  it("accepts the requested bare array", () => {
+    expect(parseEngineSpecArray(JSON.stringify([SPEC]))).toEqual([SPEC]);
+  });
+
+  it("accepts a measure-keyed object (the shape qwen2.5:7b returned live)", () => {
+    const raw = JSON.stringify({
+      "1": { measure: 1, degrees: [0, 4, 7, 11] },
+      "2": { measure: 2, degrees: [9, 13, 0, 4] },
+    });
+    expect(parseEngineSpecArray(raw)).toEqual([
+      { measure: 1, degrees: [0, 4, 7, 11] },
+      { measure: 2, degrees: [9, 13, 0, 4] },
+    ]);
+  });
+
+  it("accepts a single wrapper key holding the array", () => {
+    expect(parseEngineSpecArray(JSON.stringify({ measures: [SPEC] }))).toEqual([SPEC]);
+  });
+
+  it("keeps a finite bassOctave and drops junk entries", () => {
+    const raw = JSON.stringify([
+      { measure: 1, degrees: [0, 2], bassOctave: 3 },
+      { measure: "x", degrees: [1] },
+      { measure: 2, degrees: [] },
+      null,
+    ]);
+    expect(parseEngineSpecArray(raw)).toEqual([{ measure: 1, degrees: [0, 2], bassOctave: 3 }]);
+  });
+
+  it("returns [] on non-JSON and on empty objects, never throws", () => {
+    expect(parseEngineSpecArray("not json")).toEqual([]);
+    expect(parseEngineSpecArray("{}")).toEqual([]);
+    expect(parseEngineSpecArray("42")).toEqual([]);
   });
 });
 
