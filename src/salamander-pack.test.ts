@@ -2,9 +2,9 @@ import { describe, it, expect } from "vitest";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { layersOrdered, rootsCoverPiano, type SalamanderManifest } from "./salamander-logic.js";
+import { layersOrdered, rootsCoverPiano, type SalamanderManifest } from "../apps/cockpit/src/salamander-logic.js";
 
-const PACK = join(dirname(fileURLToPath(import.meta.url)), "..", "public", "samples", "salamander");
+const PACK = join(dirname(fileURLToPath(import.meta.url)), "..", "apps", "cockpit", "public", "samples", "salamander");
 const BUDGET = 10 * 1024 * 1024;
 
 describe("salamander cockpit pack integrity", () => {
