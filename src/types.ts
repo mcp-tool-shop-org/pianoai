@@ -6,7 +6,7 @@
 
 import type { SongEntry, Measure } from "./songs/types.js";
 import type { MidiNoteEvent } from "./midi/types.js";
-import type { MetronomeEngine } from "./playback/metronome.js";
+import type { MetronomeEngine } from "./playback/metronome-types.js";
 
 // ─── MIDI Types ─────────────────────────────────────────────────────────────
 
