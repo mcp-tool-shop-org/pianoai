@@ -65,6 +65,15 @@ export interface ComposerPage {
   titleFragments: string[];
 }
 
+// COMPOSER_PAGES is jam-actions-v0 Slice-2.5 verification HISTORY for the
+// frozen dataset records under datasets/jam-actions-v0/. It is NOT live
+// teaching-library provenance. The library's truth is each song JSON's
+// `source` field. satie-gymnopedie-no1 and debussy-arabesque-no1 were
+// re-sourced to Mutopia Public Domain on the teaching library; they
+// intentionally still point at piano-midi.de HERE because that is what the
+// frozen dataset slice claimed and verified (and then deny-listed).
+// Do not retarget these URLs to match the library. Do not treat a 418 or
+// title miss as a library-receipt failure.
 export const COMPOSER_PAGES: Record<string, ComposerPage> = {
   "bach-prelude-c-major-bwv846": {
     url: "http://piano-midi.de/bach.htm",
