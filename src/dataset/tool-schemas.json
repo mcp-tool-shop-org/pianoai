@@ -606,7 +606,7 @@
     },
     {
       "name": "play_song",
-      "description": "Play a song through the built-in audio engine. Supports piano (default) and vocal engines. Accepts a library song ID or a path to a .mid file. Returns immediately with session info while playback runs in the background.",
+      "description": "Play a song through the built-in audio engine. Default is sampled piano when Accurate-Salamander is installed, otherwise the oscillator piano. Accepts a library song ID or a path to a .mid file. Returns immediately with session info while playback runs in the background.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -679,10 +679,11 @@
             ]
           },
           "engine": {
-            "description": "Sound engine: 'piano' (default) plays piano, 'vocal' plays sustained vowel tones, 'tract' uses Pink Trombone vocal tract synthesis, 'guitar' plays physically-modeled guitar.",
+            "description": "Sound engine: omitted picks sampled piano when Accurate-Salamander is installed, else oscillator piano. 'sample' is the Concert Grand pack; 'piano' is the oscillator fallback; 'vocal' / 'tract' / 'guitar' as before.",
             "type": "string",
             "enum": [
               "piano",
+              "sample",
               "vocal",
               "tract",
               "guitar"

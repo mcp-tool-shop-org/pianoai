@@ -79,12 +79,13 @@ export type SyncMode =
  * (B-B1-004). Derive from this constant everywhere instead of re-typing
  * the literals.
  */
-export const ENGINE_IDS = ["piano", "vocal", "tract", "guitar"] as const;
+export const ENGINE_IDS = ["piano", "sample", "vocal", "tract", "guitar"] as const;
 export type EngineId = (typeof ENGINE_IDS)[number];
 
 /** Human-readable label for each engine id (e.g. for error messages). */
 export const ENGINE_LABELS: Record<EngineId, string> = {
   piano: "piano",
+  sample: "sampled piano",
   vocal: "vocal",
   tract: "vocal tract",
   guitar: "guitar",
