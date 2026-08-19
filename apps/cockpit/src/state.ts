@@ -64,6 +64,13 @@ export function clampMidi(midi: number): number {
   return Math.max(MIDI_LO, Math.min(MIDI_HI, midi));
 }
 
+/** True when `midi` sits on the painted roll (36–96). Import rejects
+ *  outside this range; addNote/replaceScore clamp so capture can never
+ *  persist an off-canvas note (F-b81b796a). */
+export function isMidiInRoll(midi: number): boolean {
+  return Number.isFinite(midi) && midi >= MIDI_LO && midi <= MIDI_HI;
+}
+
 // ─── Score state ─────────────────────────────────────────────────────────────
 
 let score: Note[] = [];
@@ -268,7 +275,7 @@ export function getSelectedNote(): Note | null {
  * would later break `[data-note-id]` selection/deletion.
  */
 export function addNote(init: NoteInit): Note {
-  const note: Note = { ...init, id: "n" + nextId++ };
+  const note: Note = { ...init, id: "n" + nextId++, midi: clampMidi(init.midi) };
   score.push(note);
   return note;
 }
@@ -395,7 +402,7 @@ export function replaceScore(notes: readonly NoteInit[]): readonly Note[] {
   score = [];
   clearSelection();
   for (const init of notes) {
-    score.push({ ...init, id: "n" + nextId++ });
+    score.push({ ...init, id: "n" + nextId++, midi: clampMidi(init.midi) });
   }
   return score;
 }

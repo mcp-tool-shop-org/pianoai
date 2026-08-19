@@ -210,6 +210,59 @@ describe("cli.ts — dispatch (spawned subprocess)", () => {
     },
     20000,
   );
+
+  // F-20e0b65a — pre-audio dispatch smokes for sing + play's unknown-engine
+  // / unknown-song arms. Same shape as the practice cases above: they must
+  // exit before any audio connect so the suite stays deterministic.
+  it(
+    "`sing` with no song id prints usage to stderr and exits 1",
+    () => {
+      const { status, stderr } = runCli(["sing"]);
+      expect(status).toBe(1);
+      expect(stderr).toMatch(/usage/i);
+    },
+    20000,
+  );
+
+  it(
+    "`sing <unknown-song>` exits 1 with a 'not found' message (proves dispatch reaches song lookup)",
+    () => {
+      const { status, stderr } = runCli(["sing", "not-a-real-song-xyz"]);
+      expect(status).toBe(1);
+      expect(stderr).toMatch(/not found/i);
+    },
+    20000,
+  );
+
+  it(
+    "`sing fallin --mode not-a-mode` exits 1 with an 'Invalid mode' message (proves VALID_SING_MODES is wired, before any audio connect)",
+    () => {
+      const { status, stderr } = runCli(["sing", "fallin", "--mode", "not-a-mode"]);
+      expect(status).toBe(1);
+      expect(stderr).toMatch(/invalid mode/i);
+    },
+    20000,
+  );
+
+  it(
+    "`play fallin --engine not-an-engine` exits 1 with an 'Unknown engine' message (proves VALID_ENGINES is wired, before any audio connect)",
+    () => {
+      const { status, stderr } = runCli(["play", "fallin", "--engine", "not-an-engine"]);
+      expect(status).toBe(1);
+      expect(stderr).toMatch(/unknown engine/i);
+    },
+    20000,
+  );
+
+  it(
+    "`play <unknown-song>` exits 1 with a 'not found' message (proves dispatch reaches song lookup, before any audio connect)",
+    () => {
+      const { status, stderr } = runCli(["play", "not-a-real-song-xyz"]);
+      expect(status).toBe(1);
+      expect(stderr).toMatch(/not found/i);
+    },
+    20000,
+  );
 });
 
 // ─── Entry guard — symlinked / built-artifact execution ────────────────────
@@ -247,16 +300,10 @@ describe("cli.ts — entry guard (symlinked / built-artifact execution)", () => 
     20000,
   );
 
-  it(
+  it.skipIf(!existsSync(join(REPO_ROOT, "dist", "cli.js")))(
     "`node dist/cli.js --version` prints a version after a real build (proves the entry guard on the BUILT artifact, not just tsx-run source; skipped if dist isn't built)",
     () => {
       const distCliPath = join(REPO_ROOT, "dist", "cli.js");
-      if (!existsSync(distCliPath)) {
-        // Not built in this environment (e.g. before `pnpm build` has ever
-        // run) — the tsx-run smokes above already exercise the entry
-        // guard's logic against the source directly.
-        return;
-      }
       const result = spawnSync(process.execPath, [distCliPath, "--version"], {
         encoding: "utf8",
         timeout: 20000,

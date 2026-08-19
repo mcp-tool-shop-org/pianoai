@@ -22,7 +22,7 @@ No music theory knowledge is required — the tool includes deeply annotated exe
 
 ## Prerequisites
 
-- **Node.js 18+** — check with `node --version`
+- **Node.js 22+** — check with `node --version`
 - **npm** — included with Node.js
 - **An MCP client** — Claude Desktop, Claude Code, Cursor, or VS Code with MCP support
 - **Speakers or headphones** — the AI plays music out loud

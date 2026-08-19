@@ -1,6 +1,6 @@
 // ─── PlaybackController Unit Tests ──────────────────────────────────────────
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { writeMidi } from "midi-file";
 import { parseMidiBuffer } from "../midi/parser.js";
 import { PlaybackController, createPlaybackController } from "./controls.js";
@@ -134,13 +134,18 @@ describe("PlaybackController", () => {
   // ── Pause / resume state transitions ──────────────────────────────────
 
   describe("pause/resume state transitions", () => {
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it("pause during playback emits a stateChange event", async () => {
       const { controller } = createTestController(20);
       const stateEvents: StateChangeEvent[] = [];
       controller.on("stateChange", (e) => stateEvents.push(e as StateChangeEvent));
 
+      vi.useFakeTimers();
       const playPromise = controller.play({ speed: 2.0 });
-      await new Promise((r) => setTimeout(r, 20));
+      await vi.advanceTimersByTimeAsync(20);
       controller.pause();
       await playPromise;
 
@@ -151,8 +156,9 @@ describe("PlaybackController", () => {
     it("pause calls engine.pause which silences active notes", async () => {
       const { controller, connector } = createTestController(20);
 
+      vi.useFakeTimers();
       const playPromise = controller.play({ speed: 2.0 });
-      await new Promise((r) => setTimeout(r, 30));
+      await vi.advanceTimersByTimeAsync(30);
       controller.pause();
       await playPromise;
 
@@ -176,8 +182,9 @@ describe("PlaybackController", () => {
 
     it("resume when stopped is a no-op", async () => {
       const { controller } = createTestController(20);
+      vi.useFakeTimers();
       const playPromise = controller.play({ speed: 2.0 });
-      await new Promise((r) => setTimeout(r, 20));
+      await vi.advanceTimersByTimeAsync(20);
       controller.stop();
       await playPromise;
 
@@ -188,8 +195,9 @@ describe("PlaybackController", () => {
 
     it("multiple pauses do not throw", async () => {
       const { controller } = createTestController(20);
+      vi.useFakeTimers();
       const playPromise = controller.play({ speed: 2.0 });
-      await new Promise((r) => setTimeout(r, 20));
+      await vi.advanceTimersByTimeAsync(20);
       controller.pause();
       await playPromise;
 
@@ -201,11 +209,16 @@ describe("PlaybackController", () => {
   // ── Stop cleanup ──────────────────────────────────────────────────────
 
   describe("stop cleanup", () => {
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it("stop resets event index and calls allNotesOff", async () => {
       const { controller, connector } = createTestController(20);
 
+      vi.useFakeTimers();
       const playPromise = controller.play({ speed: 2.0 });
-      await new Promise((r) => setTimeout(r, 30));
+      await vi.advanceTimersByTimeAsync(30);
       controller.stop();
       await playPromise;
 
@@ -220,8 +233,9 @@ describe("PlaybackController", () => {
       const stateEvents: StateChangeEvent[] = [];
       controller.on("stateChange", (e) => stateEvents.push(e as StateChangeEvent));
 
+      vi.useFakeTimers();
       const playPromise = controller.play({ speed: 2.0 });
-      await new Promise((r) => setTimeout(r, 20));
+      await vi.advanceTimersByTimeAsync(20);
       controller.stop();
       await playPromise;
 

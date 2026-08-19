@@ -1,0 +1,7 @@
+# Large training binaries + runtime markers are NOT committed (matches the v0/v1
+# convention). The receipts that ARE tracked: *.json, *.txt, *.sha256.
+*.gguf
+adapters-*.tar.gz
+*.log
+*.DONE
+DEADMAN_CANCEL_*

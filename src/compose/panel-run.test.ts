@@ -69,6 +69,26 @@ describe("runVoiceLeadingPanel — orchestration with stub judges", () => {
     expect(report.text).toMatch(/Discrimination-floor gate/);
     expect(report.result.scores).toHaveLength(4);
   });
+
+  it("a null-returning judge is counted as possible but not collected (F-0f01cb08)", async () => {
+    const dropping: PanelJudge = {
+      family: "drop",
+      model: "stub-drop",
+      async judge() { return null; },
+    };
+    const judges = [stubJudge("f1", "engine"), stubJudge("f2", "engine"), dropping];
+    const report = await runVoiceLeadingPanel({
+      progressions: PROGS,
+      systems: SYSTEMS,
+      judges,
+      anchors: { floor: "floor", valid: "refined", engine: "engine" },
+      bootstrap: 50,
+      seed: 1,
+    });
+    expect(report.votesPossible).toBe(PROGS.length * judges.length);
+    expect(report.votesCollected).toBeLessThan(report.votesPossible);
+    expect(report.votesCollected).toBe(PROGS.length * 2);
+  });
 });
 
 describe("runComposePanelTool — validation gates", () => {
@@ -94,6 +114,16 @@ describe("runComposePanelTool — validation gates", () => {
     const res = await runComposePanelTool({ progressions: [], systems: SYSTEMS, judges: judges3 });
     expect(res.ok).toBe(false);
     if (!res.ok) expect(res.code).toBe("no_songs");
+  });
+
+  it("rejects a panel with fewer than 2 systems (F-0f01cb08)", async () => {
+    const res = await runComposePanelTool({
+      progressions: PROGS,
+      systems: SYSTEMS.slice(0, 1),
+      judges: judges3,
+    });
+    expect(res.ok).toBe(false);
+    if (!res.ok) expect(res.code).toBe("too_few_systems");
   });
 
   it("returns ok with a payload for a well-formed panel", async () => {

@@ -68,10 +68,11 @@ jobs:
     steps:
       # ─── Input gate ──────────────────────────────────────────────────────────
       - name: Validate inputs (irreversible-action gate)
+        env:
+          MODE: ${{ github.event.inputs.mode }}
+          CONFIRM: ${{ github.event.inputs.confirm_irreversible }}
         run: |
           set -euo pipefail
-          MODE="${{ github.event.inputs.mode }}"
-          CONFIRM="${{ github.event.inputs.confirm_irreversible }}"
           echo "Mode: $MODE"
           echo "Confirm token: <redacted>"
           case "$MODE" in
@@ -426,15 +427,24 @@ jobs:
       # ─── Final receipt summary ───────────────────────────────────────────────
       - name: Print final receipt
         if: always()
+        env:
+          MODE: ${{ github.event.inputs.mode }}
+          CONFIRM: ${{ github.event.inputs.confirm_irreversible }}
+          NEWVERSION_OF: ${{ github.event.inputs.zenodo_newversion_of }}
+          REF: ${{ github.event.inputs.ref }}
         run: |
           set -euo pipefail
           echo "================================================================"
           echo "  jam-actions-v0 publication receipt"
           echo "================================================================"
-          echo "  Mode:                ${{ github.event.inputs.mode }}"
-          echo "  Confirmation:        ${{ github.event.inputs.confirm_irreversible == 'yes-mint-doi' && 'yes-mint-doi' || 'NO' }}"
-          echo "  New version of:      ${{ github.event.inputs.zenodo_newversion_of || '(fresh deposit — new concept DOI)' }}"
-          echo "  Ref:                 ${{ github.event.inputs.ref }}"
+          echo "  Mode:                $MODE"
+          if [ "$CONFIRM" = "yes-mint-doi" ]; then
+            echo "  Confirmation:        yes-mint-doi"
+          else
+            echo "  Confirmation:        NO"
+          fi
+          echo "  New version of:      ${NEWVERSION_OF:-'(fresh deposit — new concept DOI)'}"
+          echo "  Ref:                 $REF"
           echo "  Version:             ${{ steps.version.outputs.version }}"
           echo "  Tar.gz sha256:       ${{ steps.archives.outputs.tar_sha }}"
           echo "  Zip sha256:          ${{ steps.archives.outputs.zip_sha }}"

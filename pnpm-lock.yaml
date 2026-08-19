@@ -16,8 +16,8 @@ importers:
         specifier: ^0.109.1
         version: 0.109.1(zod@4.4.3)
       '@modelcontextprotocol/sdk':
-        specifier: ^1.26.0
-        version: 1.29.0(zod@4.4.3)
+        specifier: 1.30.0
+        version: 1.30.0(zod@4.4.3)
       ajv:
         specifier: ^8.20.0
         version: 8.20.0
@@ -436,8 +436,8 @@ packages:
     resolution: {gitHosted: true, integrity: sha512-Lg/6pLB9ijlqcXRf4GMGCZ3EvoEfPI3koblhPrLD9J9ne1O5ynVvU13TcesvxdW4Vb6qVXD85X5Em5yXGnpq7A==, tarball: https://codeload.github.com/mcp-tool-shop-org/vocal-synth-engine/tar.gz/7269cd539b20907743601f66812b3d904d43508e}
     version: 1.0.3
 
-  '@modelcontextprotocol/sdk@1.29.0':
-    resolution: {integrity: sha512-zo37mZA9hJWpULgkRpowewez1y6ML5GsXJPY8FI0tBBCd77HEvza4jDqRKOXgHNn867PVGCyTdzqpz0izu5ZjQ==}
+  '@modelcontextprotocol/sdk@1.30.0':
+    resolution: {integrity: sha512-xKd8OIzlqNzcqcNumGAa6g+PW2kjD5vrpcKOnfldAUPP3j7lnqMPwlTXQm8gF+UwH72z0lqaRbjr9hqGz0eITA==}
     engines: {node: '>=18'}
     peerDependencies:
       '@cfworker/json-schema': ^4.1.1
@@ -1532,7 +1532,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@modelcontextprotocol/sdk@1.29.0(zod@4.4.3)':
+  '@modelcontextprotocol/sdk@1.30.0(zod@4.4.3)':
     dependencies:
       '@hono/node-server': 1.19.12(hono@4.12.9)
       ajv: 8.20.0
