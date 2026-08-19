@@ -52,6 +52,11 @@ import {
   serializeCockpitState, deserializeCockpitState, CURRENT_SCHEMA_VERSION,
 } from "./persistence.js";
 import { BPM_MIN, BPM_MAX, DEFAULT_BPM, secondsToBeats } from "./time.js";
+import {
+  writeStorageItem, storageSaveFailureStatus, SESSION_SAVE_BLOCKED_MESSAGE,
+  isAudioContextBlocked, AUDIO_BLOCKED_MESSAGE,
+  midiUnavailableStatus, MIDI_UNAVAILABLE_MESSAGE,
+} from "./platform-status.js";
 
 // F-B1-001 (state persistence, Stage C) — the gap flagged in the note above
 // (persistence code now lives in persistence.ts, a DOM-free module mirroring
@@ -505,5 +510,44 @@ describe("createSynth().setRefPitch — NaN/non-finite guard (pins F-a8db61fa)",
     expect(synth.getRefPitch()).toBe(494);
     synth.setRefPitch(1);
     expect(synth.getRefPitch()).toBe(392);
+  });
+});
+
+describe("platform-status — storage save failure (F-4ac54ea0 / F-a623a05e)", () => {
+  it("QuotaExceededError from setItem does not throw and yields the status string", () => {
+    const setItem = () => {
+      const err = new Error("The quota has been exceeded.");
+      err.name = "QuotaExceededError";
+      throw err;
+    };
+    expect(() => writeStorageItem(setItem, "k", "{}")).not.toThrow();
+    expect(writeStorageItem(setItem, "k", "{}")).toBe(false);
+    expect(storageSaveFailureStatus(false)).toBe(SESSION_SAVE_BLOCKED_MESSAGE);
+    expect(SESSION_SAVE_BLOCKED_MESSAGE).toBe(
+      "Could not save this session — browser storage is full or blocked",
+    );
+  });
+
+  it("a successful setItem returns true and no status string", () => {
+    const store: Record<string, string> = {};
+    expect(writeStorageItem((k, v) => { store[k] = v; }, "k", "{\"ok\":true}")).toBe(true);
+    expect(store.k).toBe("{\"ok\":true}");
+    expect(storageSaveFailureStatus(true)).toBeNull();
+  });
+});
+
+describe("platform-status — audio / MIDI (F-9c275158 / F-f61250eb)", () => {
+  it("treats suspended/interrupted/closed as blocked, running as ok", () => {
+    expect(isAudioContextBlocked("suspended")).toBe(true);
+    expect(isAudioContextBlocked("interrupted")).toBe(true);
+    expect(isAudioContextBlocked("closed")).toBe(true);
+    expect(isAudioContextBlocked("running")).toBe(false);
+    expect(isAudioContextBlocked(null)).toBe(false);
+    expect(AUDIO_BLOCKED_MESSAGE).toContain("allow sound");
+  });
+
+  it("MIDI status is the unavailable line when the API is missing, null when present", () => {
+    expect(midiUnavailableStatus(false)).toBe(MIDI_UNAVAILABLE_MESSAGE);
+    expect(midiUnavailableStatus(true)).toBeNull();
   });
 });
