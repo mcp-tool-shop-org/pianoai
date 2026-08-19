@@ -472,8 +472,68 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
 
 /* ─── Mode Toggle ─── */
 .mode-toggle { display: flex; gap: 0; }
-.mode-btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+body.panel-mode {
+  --accent: #4a9eff; --accent-dim: #4a9eff2b; --accent-hover: #4a9eff88;
+}
+body.panel-mode #piano-roll-container,
+body.panel-mode #transport,
+body.panel-mode #keyboard-area,
+body.panel-mode #tuning-audit { display: none !important; }
+body.panel-mode .instr-only,
+body.panel-mode .vocal-only { display: none !important; }
+body.panel-mode #inspector { display: none; }
+body.panel-mode #app {
+  grid-template-columns: 1fr;
+  grid-template-rows: 44px 1fr;
+}
+#panel-view { display: none; }
+body.panel-mode #panel-view {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  grid-column: 1 / -1;
+  grid-row: 2;
+  min-height: 0;
+  overflow: hidden;
+}
+.panel-rail {
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  padding: 14px 14px 24px;
+  overflow: auto;
+}
+.panel-main { padding: 16px 20px 32px; overflow: auto; }
+.panel-rail h2, .panel-main h2 {
+  font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-muted); margin: 0 0 10px;
+}
+.panel-song { display: flex; flex-direction: column; gap: 2px; font-size: 13px; margin: 0 0 8px; }
+.panel-song em { font-style: normal; color: var(--text-muted); font-size: 11px; }
+.panel-chip {
+  display: inline-block; font-family: var(--mono); font-size: 11px;
+  border: 1px solid var(--border); border-radius: 10px; padding: 2px 8px; margin: 0 4px 4px 0;
+}
+.panel-note { font-size: 12px; color: var(--text-muted); line-height: 1.45; margin: 8px 0; }
+.panel-ab { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+.panel-ab button, .panel-transport button, .panel-votes button, .panel-rail button {
+  background: var(--surface2); color: var(--text); border: 1px solid var(--border);
+  border-radius: 6px; padding: 10px 12px; font: inherit; cursor: pointer;
+}
+.panel-ab button { min-height: 88px; font-size: 22px; font-weight: 700; }
+.panel-ab button.active, .panel-transport button.active { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); }
+.panel-transport, .panel-votes { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0 14px; }
+.panel-verdict { border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin: 12px 0; }
+.panel-verdict.danger { border-color: var(--danger-border); background: var(--danger-dim); }
+.panel-verdict.amber { border-color: #ffa65755; background: #ffa65718; }
+.panel-verdict.ok { border-color: var(--accent); background: var(--accent-dim); }
+.panel-verdict h3 { margin: 0 0 6px; font-size: 16px; }
+.panel-score { display: flex; gap: 12px; align-items: baseline; padding: 6px 0; border-bottom: 1px solid var(--border); }
+.panel-score .mono, .panel-pairs .mono { font-family: var(--mono); font-size: 12px; }
+.panel-honesty {
+  margin-top: 16px; padding: 10px 12px; border: 1px dashed var(--border); border-radius: 6px;
+  font-size: 12px; color: var(--text-muted); line-height: 1.45;
+}
+#panel-status { font-size: 13px; color: var(--text); margin: 0 0 10px; }
+.mode-btn {  display: inline-flex; align-items: center; justify-content: center; gap: 5px;
   background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border);
   padding: 4px 8px; font-size: 11px; cursor: pointer; font-family: var(--font);
   transition: all 0.15s;
@@ -625,6 +685,7 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
     <div class="mode-toggle">
       <button class="mode-btn active" id="mode-instrument" data-tip="Instrument synthesis" aria-pressed="true">Instr</button>
       <button class="mode-btn" id="mode-vocal" data-tip="Vocal synthesis" aria-pressed="false"><svg class="icon" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="6" y="1.6" width="4" height="7.2" rx="2"/><path d="M4 7.6a4 4 0 0 0 8 0"/><path d="M8 11.6v2.8"/><path d="M5.6 14.4h4.8"/></svg> Vocal</button>
+      <button class="mode-btn" id="mode-panel" data-tip="Human-audio composition panel" aria-pressed="false">Panel</button>
     </div>
 
     <div class="sep"></div>
@@ -696,6 +757,54 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
     <div id="piano-roll"></div>
     <div class="pr-playhead" id="playhead"></div>
     <div id="pr-hint" style="position:absolute;top:50px;left:8px;font-family:var(--mono);font-size:11px;color:var(--text-muted);pointer-events:none;z-index:5;">Click to add a note · press ? for shortcuts</div>
+  </div>
+
+  <div id="panel-view">
+    <aside class="panel-rail" aria-label="Panel run config">
+      <h2>Run config</h2>
+      <p class="panel-note">Blind A/B on the real Concert Grand path. No LLM judge in this mode.</p>
+      <h2>Songs</h2>
+      <div id="panel-songs"></div>
+      <h2>Systems</h2>
+      <div id="panel-systems"></div>
+      <h2>Seed</h2>
+      <div style="display:flex;gap:6px;align-items:center">
+        <input id="panel-seed-value" type="number" style="width:120px;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:4px 8px;font-family:var(--mono);font-size:12px">
+        <button type="button" id="panel-seed">New seed</button>
+      </div>
+      <p class="panel-note" id="panel-n-label"></p>
+      <div style="display:flex;gap:6px;margin-top:12px">
+        <button type="button" id="panel-start">Start run</button>
+        <button type="button" id="panel-export">Export JSON</button>
+      </div>
+      <div class="panel-honesty">
+        Human-audio is the quality claim, honest about N: 1 listener is your blind preference; ≥3 independent listeners is the robust claim.
+        UNINTERPRETABLE and INCONCLUSIVE are first-class outcomes — not errors.
+      </div>
+    </aside>
+    <section class="panel-main" aria-label="Blind audition">
+      <p id="panel-status">Choose songs, then start a run. Nothing plays until you press a clip.</p>
+      <div id="panel-trial" hidden>
+        <h2 id="panel-progress">Trial</h2>
+        <p id="panel-song-name" class="panel-note"></p>
+        <button type="button" id="panel-ref">Reference — the tune</button>
+        <div class="panel-ab">
+          <button type="button" id="panel-a">A</button>
+          <button type="button" id="panel-b">B</button>
+        </div>
+        <div class="panel-transport">
+          <button type="button" id="panel-play">Play</button>
+          <button type="button" id="panel-stop">Stop</button>
+          <button type="button" id="panel-restart">Restart clip</button>
+        </div>
+        <p class="panel-note">Which backing fits the tune? 1 / 2 switch A↔B at the same playhead · Space play/pause · Esc stop · R reference · Enter votes the clip you’re hearing.</p>
+        <div class="panel-votes">
+          <button type="button" id="panel-vote-a">A fits better</button>
+          <button type="button" id="panel-vote-b">B fits better</button>
+        </div>
+      </div>
+      <div id="panel-outcome"></div>
+    </section>
   </div>
 
   <!-- ─── Transport (floating) ─── -->

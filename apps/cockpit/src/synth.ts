@@ -482,6 +482,12 @@ export interface Synth {
   getContext(): AudioContext | null;
   /** Entry to the shared compressor→master chain — sampler connects here. */
   getOutputNode(): AudioNode | null;
+  /**
+   * Additive: wire this instance to an already-created context (live or
+   * OfflineAudioContext) using the same compressor→master graph as connect().
+   * No-ops if already connected. Does not close or replace a live context.
+   */
+  attachContext(external: BaseAudioContext): void;
 
   // ── Tuning Verification API ──
   /** Set custom tuning by providing 12 cent values (C=0..B=11). C must be 0. */
@@ -605,19 +611,24 @@ export function createSynth(options?: {
   }
 
   const synth: Synth = {
-    async connect() {
-      ctx = new AudioContext({ sampleRate: 48000, latencyHint: "interactive" });
-      compressor = ctx.createDynamicsCompressor();
+    attachContext(external: BaseAudioContext) {
+      if (ctx) return;
+      ctx = external as AudioContext;
+      compressor = external.createDynamicsCompressor();
       compressor.threshold.value = PIANO_COMPRESSOR.threshold;
       compressor.knee.value = PIANO_COMPRESSOR.knee;
       compressor.ratio.value = PIANO_COMPRESSOR.ratio;
       compressor.attack.value = PIANO_COMPRESSOR.attack;
       compressor.release.value = PIANO_COMPRESSOR.release;
-      master = ctx.createGain();
+      master = external.createGain();
       master.gain.value = voice.masterGain;
       compressor.connect(master);
-      master.connect(ctx.destination);
+      master.connect(external.destination);
       buildHammerNoise();
+    },
+
+    async connect() {
+      synth.attachContext(new AudioContext({ sampleRate: 48000, latencyHint: "interactive" }));
     },
 
     disconnect() {

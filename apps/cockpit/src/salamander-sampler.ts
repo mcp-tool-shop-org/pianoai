@@ -22,6 +22,11 @@ interface SampleVoice {
   midi: number;
 }
 
+export interface SamplerPack {
+  manifest: SalamanderManifest;
+  buffers: Map<string, AudioBuffer>;
+}
+
 export interface SalamanderSampler {
   state(): SamplerState;
   isReady(): boolean;
@@ -29,6 +34,43 @@ export interface SalamanderSampler {
   noteOn(midi: number, velocity: number, time?: number): boolean;
   noteOff(midi: number, time?: number): void;
   allNotesOff(): void;
+  /** Additive: decoded pack for offline render through the same samples. */
+  getPack(): SamplerPack | null;
+}
+
+/** Shared note-start math used by live noteOn and offline render. */
+export function scheduleSalamanderNote(opts: {
+  ctx: BaseAudioContext;
+  output: AudioNode;
+  pack: SamplerPack;
+  midi: number;
+  velocity: number;
+  time: number;
+  durationSec?: number;
+}): { source: AudioBufferSourceNode; gain: GainNode } | null {
+  const { ctx, output, pack, midi, velocity, time } = opts;
+  const root = nearestRoot(midi, pack.manifest.roots);
+  const layer = velocityLayer(velocity, pack.manifest.layers);
+  const ref = fileFor(root, layer, pack.manifest.files);
+  if (!ref) return null;
+  const buf = pack.buffers.get(ref.file);
+  if (!buf) return null;
+  const source = ctx.createBufferSource();
+  source.buffer = buf;
+  source.playbackRate.value = playbackRateFor(midi, root);
+  const gain = ctx.createGain();
+  const vel01 = Math.max(0.05, Math.min(1, velocity / 127));
+  gain.gain.setValueAtTime(vel01 * 0.9, time);
+  source.connect(gain);
+  gain.connect(output);
+  source.start(time);
+  if (opts.durationSec != null && opts.durationSec > 0) {
+    const rel = time + opts.durationSec;
+    gain.gain.setValueAtTime(vel01 * 0.9, rel);
+    gain.gain.exponentialRampToValueAtTime(0.0001, rel + 0.18);
+    source.stop(rel + 0.2);
+  }
+  return { source, gain };
 }
 
 export function createSalamanderSampler(): SalamanderSampler {
@@ -78,35 +120,27 @@ export function createSalamanderSampler(): SalamanderSampler {
       return state;
     },
 
+    getPack() {
+      if (state !== "ready" || !manifest || buffers.size === 0) return null;
+      return { manifest, buffers };
+    },
+
     noteOn(midi, velocity, time) {
       if (state !== "ready" || !ctx || !output || !manifest) return false;
-      const root = nearestRoot(midi, manifest.roots);
-      const layer = velocityLayer(velocity, manifest.layers);
-      const ref = fileFor(root, layer, manifest.files);
-      if (!ref) return false;
-      const buf = buffers.get(ref.file);
-      if (!buf) return false;
-
       const now = time ?? ctx.currentTime;
       const existing = voices.get(midi);
       if (existing) {
         try { existing.source.stop(now); } catch { /* already stopped */ }
         voices.delete(midi);
       }
-
-      const source = ctx.createBufferSource();
-      source.buffer = buf;
-      source.playbackRate.value = playbackRateFor(midi, root);
-      const gain = ctx.createGain();
-      const vel01 = Math.max(0.05, Math.min(1, velocity / 127));
-      gain.gain.setValueAtTime(vel01 * 0.9, now);
-      source.connect(gain);
-      gain.connect(output);
-      source.start(now);
-      source.onended = () => {
-        if (voices.get(midi)?.source === source) voices.delete(midi);
+      const scheduled = scheduleSalamanderNote({
+        ctx, output, pack: { manifest, buffers }, midi, velocity, time: now,
+      });
+      if (!scheduled) return false;
+      scheduled.source.onended = () => {
+        if (voices.get(midi)?.source === scheduled.source) voices.delete(midi);
       };
-      voices.set(midi, { source, gain, midi });
+      voices.set(midi, { source: scheduled.source, gain: scheduled.gain, midi });
       return true;
     },
 
