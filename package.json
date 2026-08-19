@@ -61,7 +61,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.109.1",
-    "@modelcontextprotocol/sdk": "^1.26.0",
+    "@modelcontextprotocol/sdk": "1.30.0",
     "ajv": "^8.20.0",
     "jzz": "^1.8.0",
     "midi-file": "^1.2.4",
