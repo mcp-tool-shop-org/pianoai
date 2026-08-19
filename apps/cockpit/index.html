@@ -70,6 +70,7 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
 #piano-roll-container {
   position: relative; overflow: auto; background: var(--bg);
   border-bottom: 1px solid var(--border);
+  scroll-padding-bottom: 56px;
   /* Wave C2b (finding 39/45, pinned decision): the roll is a GESTURE
      surface, not a native-pan surface — a touch drag on it means "move a
      note" or "add a note," never "scroll the roll." Native scrollbar drag
@@ -325,7 +326,12 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
   position: absolute; bottom: 170px; left: 10px; z-index: 20;
   background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
   padding: 4px 8px;
+  pointer-events: none;
 }
+#transport .ctrl-btn,
+#transport input,
+#transport button,
+#transport select { pointer-events: auto; }
 #transport .ctrl-btn { padding: 4px 8px; font-size: 13px; }
 #transport .time {
   font-family: var(--mono); font-size: 12px; color: var(--text-muted); min-width: 50px; text-align: center;
@@ -530,11 +536,16 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
 #shortcuts-overlay {
   display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
   z-index: 200; background: var(--surface); border: 1px solid var(--border);
-  border-radius: 8px; padding: 16px; max-width: 320px;
+  border-radius: 8px; padding: 16px 16px 16px 16px; max-width: 320px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.5);
 }
 #shortcuts-overlay.open { display: block; }
 #shortcuts-overlay h2 { font-size: 12px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+#shortcuts-overlay .shortcuts-close {
+  position: absolute; top: 10px; right: 10px;
+  background: var(--surface2); color: var(--text); border: 1px solid var(--border);
+  border-radius: 4px; padding: 4px 8px; font-size: 11px; cursor: pointer; font-family: var(--font);
+}
 #shortcuts-overlay ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
 #shortcuts-overlay li { font-size: 12px; color: var(--text); display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 #shortcuts-overlay kbd {
@@ -612,8 +623,8 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
 
     <!-- Mode Toggle -->
     <div class="mode-toggle">
-      <button class="mode-btn active" id="mode-instrument" data-tip="Instrument synthesis">Instr</button>
-      <button class="mode-btn" id="mode-vocal" data-tip="Vocal synthesis"><svg class="icon" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="6" y="1.6" width="4" height="7.2" rx="2"/><path d="M4 7.6a4 4 0 0 0 8 0"/><path d="M8 11.6v2.8"/><path d="M5.6 14.4h4.8"/></svg> Vocal</button>
+      <button class="mode-btn active" id="mode-instrument" data-tip="Instrument synthesis" aria-pressed="true">Instr</button>
+      <button class="mode-btn" id="mode-vocal" data-tip="Vocal synthesis" aria-pressed="false"><svg class="icon" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="6" y="1.6" width="4" height="7.2" rx="2"/><path d="M4 7.6a4 4 0 0 0 8 0"/><path d="M8 11.6v2.8"/><path d="M5.6 14.4h4.8"/></svg> Vocal</button>
     </div>
 
     <div class="sep"></div>
@@ -834,8 +845,9 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
 <div id="toast" role="status" aria-live="polite"></div>
 
 <!-- ─── Keyboard Shortcuts Overlay (F-A1-009) ─── -->
-<div id="shortcuts-overlay" role="dialog" aria-label="Keyboard shortcuts" aria-hidden="true">
+<div id="shortcuts-overlay" role="dialog" aria-modal="false" aria-label="Keyboard shortcuts" aria-hidden="true">
   <h2>Keyboard Shortcuts</h2>
+  <button type="button" class="shortcuts-close" aria-label="Close shortcuts">Close</button>
   <ul>
     <li><kbd>Space</kbd> Play / pause</li>
     <li><kbd>Del</kbd> Delete selected note(s)</li>

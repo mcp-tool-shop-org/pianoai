@@ -286,6 +286,11 @@ describe("shouldRefuseUndoWhileRecording (Lens-I finding 1)", () => {
   it("false during the count-in — nothing has been captured yet, so nothing to corrupt", () => {
     expect(shouldRefuseUndoWhileRecording("counting-in")).toBe(false);
   });
+  it("redo is refused in the same recording phase as undo (F-1e191f0a) — performRedo calls this same predicate", () => {
+    expect(shouldRefuseUndoWhileRecording("recording")).toBe(true);
+    expect(shouldRefuseUndoWhileRecording("idle")).toBe(false);
+    expect(shouldRefuseUndoWhileRecording("counting-in")).toBe(false);
+  });
 });
 
 describe("shouldRefuseSelectionOpWhileRecording (Wave C4 interplay guard)", () => {

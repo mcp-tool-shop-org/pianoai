@@ -422,8 +422,9 @@ function onStateChanged() {
  *  (both-disabled) state, and after that entirely via undo.setOnChange
  *  below, never called directly from an edit handler. */
 function updateUndoRedoButtons() {
-  ($("btn-undo") as HTMLButtonElement).disabled = !undo.canUndo();
-  ($("btn-redo") as HTMLButtonElement).disabled = !undo.canRedo();
+  const recording = shouldRefuseUndoWhileRecording(recordPhase);
+  ($("btn-undo") as HTMLButtonElement).disabled = recording || !undo.canUndo();
+  ($("btn-redo") as HTMLButtonElement).disabled = recording || !undo.canRedo();
 }
 
 /** The undo module's single onChange hook (Wave C1, finding 8: "every
@@ -565,7 +566,10 @@ async function init() {
       }
     },
     onPlayStateChange: (isPlayingNow) => {
-      $("btn-play").innerHTML = isPlayingNow ? PAUSE_ICON_SVG : PLAY_ICON_SVG;
+      const playBtn = $("btn-play");
+      playBtn.innerHTML = isPlayingNow ? PAUSE_ICON_SVG : PLAY_ICON_SVG;
+      playBtn.setAttribute("aria-label", isPlayingNow ? "Pause (Space)" : "Play (Space)");
+      playBtn.setAttribute("title", isPlayingNow ? "Pause (Space)" : "Play (Space)");
       // Lens-I finding 6 — refresh the record button's title on EVERY
       // play/pause/stop transition, not just recording-related ones:
       // whether pressing Record right now would count-in or punch-in
@@ -606,12 +610,10 @@ async function init() {
   // devtools console, so the page would look like it loaded fine (keys,
   // telemetry, piano roll all render) while being completely mute with zero
   // on-page explanation (F-B1-010). Surface it instead.
-  try {
-    await synth.connect();
-    await vocalSynth.connect();
-  } catch (err) {
-    reportAudioError("init", err);
-  }
+  // F-0127119a — do not construct AudioContext at boot. Chrome/Safari
+  // create contexts suspended until a user gesture; some WebKit builds
+  // have required construct+resume in the SAME gesture. Defer both to
+  // bindAutoplayUnlock (first pointerdown/keydown).
   bindAutoplayUnlock();
   populateSelectors();
   buildPianoRoll();
@@ -657,15 +659,35 @@ async function init() {
  * but no sound played, with no visible error (F-A1-003). Resume on the very
  * first pointerdown/keydown anywhere on the page.
  */
-function bindAutoplayUnlock() {
-  const unlock = () => {
+let audioUnlockPromise: Promise<void> | null = null;
+
+/** Construct+resume both AudioContexts. Safe to call repeatedly. First
+ *  call must happen inside a user gesture (F-0127119a). */
+function ensureAudioUnlocked(): Promise<void> {
+  if (audioUnlockPromise) return audioUnlockPromise;
+  audioUnlockPromise = (async () => {
+    try {
+      if (!synth.getContext()) await synth.connect();
+      if (!vocalSynth.getContext()) await vocalSynth.connect();
+    } catch (err) {
+      reportAudioError("init", err);
+      audioUnlockPromise = null;
+      return;
+    }
     const c1 = synth.getContext();
     const c2 = vocalSynth.getContext();
     if (c1 && c1.state === "suspended") c1.resume().catch((err) => reportAudioError("resume", err));
     if (c2 && c2.state === "suspended") c2.resume().catch((err) => reportAudioError("resume", err));
-  };
-  window.addEventListener("pointerdown", unlock, { once: true });
-  window.addEventListener("keydown", unlock, { once: true });
+  })();
+  return audioUnlockPromise;
+}
+
+function bindAutoplayUnlock() {
+  const unlock = () => { void ensureAudioUnlocked(); };
+  // capture:true so construct+resume runs before the same keydown/click
+  // that would otherwise hit noteOn on an unconnected synth.
+  window.addEventListener("pointerdown", unlock, { once: true, capture: true });
+  window.addEventListener("keydown", unlock, { once: true, capture: true });
 }
 
 /** Scroll the piano roll so MIDI 60 (C4) is vertically centered — called
@@ -791,6 +813,8 @@ function setMode(m: "instrument" | "vocal") {
   document.body.classList.toggle("vocal-mode", m === "vocal");
   $("mode-instrument").classList.toggle("active", m === "instrument");
   $("mode-vocal").classList.toggle("active", m === "vocal");
+  $("mode-instrument").setAttribute("aria-pressed", String(m === "instrument"));
+  $("mode-vocal").setAttribute("aria-pressed", String(m === "vocal"));
   rerenderAllNotes();
   updateInspector();
   updateTelemetry();
@@ -2244,6 +2268,10 @@ function performUndo() {
 
 /** Ctrl+Shift+Z / Ctrl+Y / toolbar Redo button — see performUndo above. */
 function performRedo() {
+  if (shouldRefuseUndoWhileRecording(recordPhase)) {
+    showToast("Stop recording to redo");
+    return;
+  }
   if (!undo.redo()) return;
   rerenderAllNotes();
   updateInspector();
@@ -2518,9 +2546,10 @@ function buildKeyboard() {
       // Wave C3 — during a count-in, Space means "abort the pending
       // record start," not "also start playback under the count-in."
       if (recordPhase === "counting-in") { cancelCountIn(); return; }
-      transport.togglePlayPause(); return;
+      void ensureAudioUnlocked().then(() => transport.togglePlayPause()); return;
     }
     if (k === "escape") {
+      if (closeShortcutsOverlay()) { e.preventDefault(); return; }
       // Wave C2b finding 39 — Esc-cancel takes precedence over panic while
       // a note drag is active: rolls the gesture back cleanly (same path
       // as pointercancel — restore pre-drag geometry, release capture, no
@@ -2712,13 +2741,33 @@ function isRollEditContext(): boolean {
 
 /** Toggle the "?" keyboard-shortcuts overlay (F-A1-009) — the first-run
  *  hint has promised "press ? for shortcuts" since it was written, but no
- *  handler ever backed it up. */
+ *  handler ever backed it up. F-2283d074: aria-modal, focus move, Close. */
+let shortcutsFocusRestore: HTMLElement | null = null;
+
+function closeShortcutsOverlay(): boolean {
+  const el = document.getElementById("shortcuts-overlay");
+  if (!el || !el.classList.contains("open")) return false;
+  el.classList.remove("open");
+  el.setAttribute("aria-hidden", "true");
+  el.setAttribute("aria-modal", "false");
+  shortcutsFocusRestore?.focus();
+  shortcutsFocusRestore = null;
+  return true;
+}
+
 function toggleShortcutsOverlay() {
   const el = document.getElementById("shortcuts-overlay");
   if (!el) return;
-  const open = !el.classList.contains("open");
-  el.classList.toggle("open", open);
-  el.setAttribute("aria-hidden", String(!open));
+  if (el.classList.contains("open")) {
+    closeShortcutsOverlay();
+    return;
+  }
+  shortcutsFocusRestore = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  el.classList.add("open");
+  el.setAttribute("aria-hidden", "false");
+  el.setAttribute("aria-modal", "true");
+  const closeBtn = el.querySelector<HTMLElement>(".shortcuts-close");
+  closeBtn?.focus();
 }
 
 /** What a live-input call site knows about the ORIGINATING DOM/MIDI event
@@ -3225,6 +3274,7 @@ function updateRecordUI(): void {
       : "Recording mode: replace (clears the region each cycle) — click to switch to overdub",
   );
   document.getElementById("pr-ruler")?.classList.toggle("recording", recordPhase === "recording");
+  updateUndoRedoButtons();
 }
 
 // ─── Undo/Redo ───────────────────────────────────────────────────────────────
@@ -3260,6 +3310,9 @@ function updateTransportTime(positionBeats: number) {
 // ─── Controls ────────────────────────────────────────────────────────────────
 
 function bindControls() {
+  document.querySelector(".shortcuts-close")?.addEventListener("click", () => {
+    closeShortcutsOverlay();
+  });
   // Gesture-coalescing state for the velocity/breathiness sliders (Wave C1,
   // finding 2): captured on the FIRST "input" tick of a gesture (mouse drag
   // OR a keyboard arrow-key nudge on the focused slider — both fire "input"
@@ -3271,7 +3324,7 @@ function bindControls() {
   $("btn-play").addEventListener("click", () => {
     // Wave C3 — same count-in-abort rule as the Space shortcut.
     if (recordPhase === "counting-in") { cancelCountIn(); return; }
-    transport.togglePlayPause();
+    void ensureAudioUnlocked().then(() => transport.togglePlayPause());
   });
   $("btn-stop").addEventListener("click", () => {
     // Wave C3 — Stop during a count-in just aborts it (nothing to stop).
@@ -3763,6 +3816,9 @@ function validateImportedNote(n: unknown, index: number, snapshotBpm: number): N
   const midi = r.midi as number;
   if (!Number.isFinite(midi) || midi < 0 || midi > 127) {
     return { ok: false, message: `note[${index}].midi must be a finite number 0-127 (got ${JSON.stringify(r.midi)})` };
+  }
+  if (!state.isMidiInRoll(midi)) {
+    return { ok: false, message: `note[${index}].midi ${midi} is outside the piano-roll range ${state.MIDI_LO}–${state.MIDI_HI}` };
   }
   const velocity = r.velocity as number;
   if (!Number.isFinite(velocity) || velocity < 0 || velocity > 127) {

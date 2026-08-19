@@ -26,6 +26,24 @@ describe("addNote / getScore", () => {
     expect(state.getScore()).toContain(note);
   });
 
+  it("clamps persisted midi onto the painted roll 36–96 (F-b81b796a) — live preview may stay unclamped", () => {
+    const low = state.addNote({ midi: 21, startBeat: 0, durationBeats: 1, velocity: 100 });
+    const high = state.addNote({ midi: 108, startBeat: 1, durationBeats: 1, velocity: 100 });
+    expect(low.midi).toBe(MIDI_LO);
+    expect(high.midi).toBe(MIDI_HI);
+    expect(state.isMidiInRoll(21)).toBe(false);
+    expect(state.isMidiInRoll(60)).toBe(true);
+  });
+
+  it("replaceScore also clamps off-roll midi so import cannot persist off-canvas notes", () => {
+    const added = state.replaceScore([
+      { midi: 12, startBeat: 0, durationBeats: 1, velocity: 90 },
+      { midi: 60, startBeat: 1, durationBeats: 1, velocity: 90 },
+    ]);
+    expect(added[0].midi).toBe(MIDI_LO);
+    expect(added[1].midi).toBe(60);
+  });
+
   it("generates a distinct id for each note, even with identical fields", () => {
     const a = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
     const b = state.addNote({ midi: 60, startBeat: 0, durationBeats: 1, velocity: 100 });
