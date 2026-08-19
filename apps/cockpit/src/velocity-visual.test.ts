@@ -1,5 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { velocityBarWidthPct, VELOCITY_MIN, VELOCITY_MAX } from "./velocity-visual.js";
+import {
+  velocityBarWidthPct,
+  velocityAriaValueNow,
+  velocityAriaValueText,
+  applyVelocityAria,
+  VELOCITY_MIN,
+  VELOCITY_MAX,
+} from "./velocity-visual.js";
 
 describe("velocityBarWidthPct", () => {
   it("maps the minimum velocity (1) to 0%", () => {
@@ -29,5 +36,21 @@ describe("velocityBarWidthPct", () => {
 
   it("clamps a velocity above 127 (defensive — malformed import)", () => {
     expect(velocityBarWidthPct(999)).toBe(100);
+  });
+});
+
+describe("applyVelocityAria (F-4a4fb612)", () => {
+  it("writes valuemin/max/now/text on the note box", () => {
+    const attrs: Record<string, string> = {};
+    applyVelocityAria({ setAttribute: (name, value) => { attrs[name] = value; } }, 100);
+    expect(attrs["aria-valuemin"]).toBe("1");
+    expect(attrs["aria-valuemax"]).toBe("127");
+    expect(attrs["aria-valuenow"]).toBe("100");
+    expect(attrs["aria-valuetext"]).toBe("velocity 100");
+  });
+
+  it("clamps out-of-range velocity into the aria now/text", () => {
+    expect(velocityAriaValueNow(0)).toBe(VELOCITY_MIN);
+    expect(velocityAriaValueText(999)).toBe("velocity 127");
   });
 });

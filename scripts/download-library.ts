@@ -10,6 +10,8 @@
 //   npx tsx scripts/download-library.ts --genre jazz  # download one genre
 //   npx tsx scripts/download-library.ts --cached      # skip downloads, use cache
 //
+// This is a bootstrap tool for an empty library, not a refresher of receipted entries.
+//
 // MIDI sources:
 //   Classical: piano-midi.de (CC BY-SA)
 //   Jazz: Doug McKenzie / midiworld / freemidi
@@ -20,6 +22,7 @@ import { writeFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { midiToSongEntry } from "../src/songs/midi/ingest.js";
+import { shouldSkipExistingLibraryFile } from "./library-write-guard.js";
 import { validateSong } from "../src/songs/registry.js";
 import type { SongConfig } from "../src/songs/config/schema.js";
 import type { SongStatus } from "../src/songs/config/schema.js";
@@ -620,11 +623,14 @@ async function main(): Promise<void> {
       const midiDest = join(genreDir, `${imp.config.id}.mid`);
       const configDest = join(genreDir, `${imp.config.id}.json`);
 
-      // Always write/update the config
-      writeFileSync(configDest, JSON.stringify(imp.config, null, 2) + "\n");
+      if (shouldSkipExistingLibraryFile(existsSync(configDest))) {
+        console.log(`  SKIP ${imp.config.id}: config already exists`);
+      } else {
+        writeFileSync(configDest, JSON.stringify(imp.config, null, 2) + "\n");
+      }
 
       // Skip MIDI download if already in library
-      if (existsSync(midiDest)) {
+      if (shouldSkipExistingLibraryFile(existsSync(midiDest))) {
         console.log(`  SKIP ${imp.config.id}: MIDI already exists`);
         skipped++;
         continue;

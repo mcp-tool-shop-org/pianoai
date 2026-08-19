@@ -38,3 +38,24 @@ export function velocityBarWidthPct(velocity: number): number {
   const clamped = Math.max(VELOCITY_MIN, Math.min(VELOCITY_MAX, velocity));
   return ((clamped - VELOCITY_MIN) / (VELOCITY_MAX - VELOCITY_MIN)) * 100;
 }
+
+/** Clamp to the app's playable velocity range (F-4a4fb612). */
+export function velocityAriaValueNow(velocity: number): number {
+  return Math.max(VELOCITY_MIN, Math.min(VELOCITY_MAX, Math.round(velocity)));
+}
+
+export function velocityAriaValueText(velocity: number): string {
+  return `velocity ${velocityAriaValueNow(velocity)}`;
+}
+
+/** Apply the non-visual velocity channel onto a note box. */
+export function applyVelocityAria(
+  el: { setAttribute(name: string, value: string): void },
+  velocity: number,
+): void {
+  const now = velocityAriaValueNow(velocity);
+  el.setAttribute("aria-valuemin", String(VELOCITY_MIN));
+  el.setAttribute("aria-valuemax", String(VELOCITY_MAX));
+  el.setAttribute("aria-valuenow", String(now));
+  el.setAttribute("aria-valuetext", velocityAriaValueText(velocity));
+}

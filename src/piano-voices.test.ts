@@ -79,7 +79,7 @@ vi.mock("node:fs", async (importOriginal) => {
 
 // Imported after vi.mock (vi.mock calls are hoisted by vitest regardless of
 // import order — written this way for readability).
-import { loadUserTuning, saveUserTuning, resetUserTuning, getMergedVoice, getVoice } from "./piano-voices.js";
+import { loadUserTuning, loadUserTuningStatus, discardedTuningWarning, withDiscardedTuningWarning, saveUserTuning, resetUserTuning, getMergedVoice, getVoice } from "./piano-voices.js";
 
 describe("piano-voices.ts — user tuning persistence (B-B1-005)", () => {
   let tmpHome: string;
@@ -145,6 +145,25 @@ describe("piano-voices.ts — user tuning persistence (B-B1-005)", () => {
 
       expect(loadUserTuning("grand")).toEqual({});
       expect(getMergedVoice("grand")).toEqual(getVoice("grand"));
+    });
+
+    it("loadUserTuningStatus marks discardedCorrupt on unparseable JSON and not on a clean file (F-aff2d3b7)", () => {
+      mkdirSync(tuningDirPath(), { recursive: true });
+      writeFileSync(tuningFilePath("grand"), "{ not json", "utf-8");
+      const bad = loadUserTuningStatus("grand");
+      expect(bad.overrides).toEqual({});
+      expect(bad.discardedCorrupt).toBe(true);
+      expect(discardedTuningWarning("grand")).toBe(
+        "Saved tuning for grand could not be read — showing factory defaults. Re-save to repair.",
+      );
+      expect(withDiscardedTuningWarning("grand", true, "body")).toContain("Saved tuning for grand could not be read");
+      expect(withDiscardedTuningWarning("grand", false, "body")).toBe("body");
+
+      resetUserTuning("grand");
+      saveUserTuning("grand", { brightness: 0.22 });
+      const good = loadUserTuningStatus("grand");
+      expect(good.overrides).toEqual({ brightness: 0.22 });
+      expect(good.discardedCorrupt).toBe(false);
     });
   });
 

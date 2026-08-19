@@ -1169,6 +1169,48 @@ describe("mcp-server.ts — session-state validation (pins B-B1-002)", () => {
   );
 
   it(
+    "get_keyboard_config includes the discarded-tuning warning when the user file is corrupt (F-aff2d3b7)",
+    async () => {
+      const iso = await spawnIsolatedServer({
+        beforeStart: (tmpHome) => {
+          const dir = join(tmpHome, ".ai-jam-sessions", "voices");
+          mkdirSync(dir, { recursive: true });
+          writeFileSync(join(dir, "grand.json"), "{ not json", "utf-8");
+        },
+      });
+      try {
+        const result = (await iso.client.callTool({
+          name: "get_keyboard_config",
+          arguments: { id: "grand" },
+        })) as ToolResult;
+        const text = extractText(result);
+        expect(text).toContain("Saved tuning for grand could not be read — showing factory defaults. Re-save to repair.");
+      } finally {
+        await iso.close();
+      }
+    },
+    20000,
+  );
+
+  it(
+    "get_keyboard_config does not warn when no user tuning file exists (F-aff2d3b7)",
+    async () => {
+      const iso = await spawnIsolatedServer();
+      try {
+        const result = (await iso.client.callTool({
+          name: "get_keyboard_config",
+          arguments: { id: "grand" },
+        })) as ToolResult;
+        const text = extractText(result);
+        expect(text).not.toContain("could not be read");
+      } finally {
+        await iso.close();
+      }
+    },
+    20000,
+  );
+
+  it(
     "discards gracefully (server still starts, tools still work) when server-state.json is unparseable JSON",
     async () => {
       const iso = await spawnIsolatedServer({

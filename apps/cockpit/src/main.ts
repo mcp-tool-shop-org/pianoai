@@ -64,7 +64,12 @@ import {
   notesInMarquee, notesInTimeRange, pasteAtBeat, duplicateNotes,
   createClipboardStore,
 } from "./clipboard.js";
-import { velocityBarWidthPct } from "./velocity-visual.js";
+import { velocityBarWidthPct, applyVelocityAria } from "./velocity-visual.js";
+import {
+  writeStorageItem, storageSaveFailureStatus,
+  AUDIO_BLOCKED_MESSAGE, isAudioContextBlocked, MIDI_UNAVAILABLE_MESSAGE,
+  midiUnavailableStatus,
+} from "./platform-status.js";
 import {
   shouldPreviewPitchChange, previewSuppressed, PITCH_PREVIEW_MS, type PreviewGate,
 } from "./preview.js";
@@ -359,7 +364,9 @@ function safeLoadRaw(): string | null {
   try { return localStorage.getItem(STORAGE_KEY); } catch { return null; }
 }
 function safeSaveRaw(json: string): void {
-  try { localStorage.setItem(STORAGE_KEY, json); } catch { /* private mode / quota — no-op */ }
+  const ok = writeStorageItem((k, v) => localStorage.setItem(k, v), STORAGE_KEY, json);
+  const status = storageSaveFailureStatus(ok);
+  if (status) setScoreStatus(status, "error");
 }
 function safeClearStorage(): void {
   try { localStorage.removeItem(STORAGE_KEY); } catch { /* no-op */ }
@@ -521,6 +528,27 @@ function reportAudioError(context: string, err: unknown) {
   setScoreStatus(`Audio ${context} failed: ${msg}`, "error");
 }
 
+const audioBlockedBound = new WeakSet<AudioContext>();
+
+/** Resume a suspended context and surface a still-blocked state (F-9c275158). */
+function resumeOrReport(ctx: AudioContext | null): void {
+  if (!ctx) return;
+  if (!audioBlockedBound.has(ctx)) {
+    audioBlockedBound.add(ctx);
+    ctx.addEventListener("statechange", () => {
+      if (isAudioContextBlocked(ctx.state)) setScoreStatus(AUDIO_BLOCKED_MESSAGE, "error");
+    });
+  }
+  const reportIfStillBlocked = () => {
+    if (isAudioContextBlocked(ctx.state)) setScoreStatus(AUDIO_BLOCKED_MESSAGE, "error");
+  };
+  if (ctx.state === "suspended") {
+    ctx.resume().then(reportIfStillBlocked).catch((err) => reportAudioError("resume", err));
+  } else {
+    reportIfStillBlocked();
+  }
+}
+
 // ─── Init ────────────────────────────────────────────────────────────────────
 
 async function init() {
@@ -529,10 +557,8 @@ async function init() {
   transport = createTransport({
     getContext: () => (mode === "vocal" ? vocalSynth.getContext() : synth.getContext()),
     resumeContexts: () => {
-      const c1 = synth.getContext();
-      const c2 = vocalSynth.getContext();
-      if (c1 && c1.state === "suspended") c1.resume().catch((err) => reportAudioError("resume", err));
-      if (c2 && c2.state === "suspended") c2.resume().catch((err) => reportAudioError("resume", err));
+      resumeOrReport(synth.getContext());
+      resumeOrReport(vocalSynth.getContext());
     },
     noteOn: (midi, velocity, time) => activeNoteOn(midi, velocity, time),
     noteOff: (midi, time) => activeNoteOff(midi, time),
@@ -674,10 +700,8 @@ function ensureAudioUnlocked(): Promise<void> {
       audioUnlockPromise = null;
       return;
     }
-    const c1 = synth.getContext();
-    const c2 = vocalSynth.getContext();
-    if (c1 && c1.state === "suspended") c1.resume().catch((err) => reportAudioError("resume", err));
-    if (c2 && c2.state === "suspended") c2.resume().catch((err) => reportAudioError("resume", err));
+    resumeOrReport(synth.getContext());
+    resumeOrReport(vocalSynth.getContext());
   })();
   return audioUnlockPromise;
 }
@@ -1454,6 +1478,7 @@ function applyNoteStyle(el: HTMLElement, note: Note) {
   // group operation, without a second call site to keep in sync.
   const bar = el.querySelector<HTMLElement>(".vel-bar");
   if (bar) bar.style.width = velocityBarWidthPct(note.velocity) + "%";
+  applyVelocityAria(el, note.velocity);
 }
 
 /** Remove + re-render every note (called on mode switch) */
@@ -2899,7 +2924,11 @@ function handleMidiMessage(e: MIDIMessageEvent) {
 }
 
 function bindMidi() {
-  if (!navigator.requestMIDIAccess) return;
+  const missing = midiUnavailableStatus(typeof navigator.requestMIDIAccess === "function");
+  if (missing) {
+    setScoreStatus(missing, "error");
+    return;
+  }
   navigator.requestMIDIAccess().then((access) => {
     for (const input of access.inputs.values()) {
       input.onmidimessage = handleMidiMessage;
@@ -2912,7 +2941,9 @@ function bindMidi() {
         }
       }
     };
-  }).catch(() => { /* MIDI not available */ });
+  }).catch(() => {
+    setScoreStatus(MIDI_UNAVAILABLE_MESSAGE, "error");
+  });
 }
 
 // ─── Record-arm capture (Wave C3) ────────────────────────────────────────────
@@ -2988,9 +3019,8 @@ function toggleRecordMode(): void {
 function startCountInThenRecord(): void {
   // Same belt-and-suspenders resume as transport.play()'s resumeContexts.
   const c1 = synth.getContext();
-  const c2 = vocalSynth.getContext();
-  if (c1 && c1.state === "suspended") c1.resume().catch((err) => reportAudioError("resume", err));
-  if (c2 && c2.state === "suspended") c2.resume().catch((err) => reportAudioError("resume", err));
+  resumeOrReport(c1);
+  resumeOrReport(vocalSynth.getContext());
 
   recordPhase = "counting-in";
   updateRecordUI();

@@ -61,6 +61,9 @@ vi.mock("node:fs", async (importOriginal) => {
 // import order — written this way for readability).
 import {
   loadGuitarUserTuning,
+  loadGuitarUserTuningStatus,
+  discardedGuitarTuningWarning,
+  withDiscardedGuitarTuningWarning,
   saveGuitarUserTuning,
   resetGuitarUserTuning,
   getMergedGuitarVoice,
@@ -125,6 +128,24 @@ describe("guitar-voices.ts — user tuning persistence (B-B1-005)", () => {
 
       expect(loadGuitarUserTuning("steel-dreadnought")).toEqual({});
       expect(getMergedGuitarVoice("steel-dreadnought")).toEqual(getGuitarVoice("steel-dreadnought"));
+    });
+
+    it("loadGuitarUserTuningStatus marks discardedCorrupt on unparseable JSON and not on a clean file (F-aff2d3b7)", () => {
+      mkdirSync(tuningDirPath(), { recursive: true });
+      writeFileSync(tuningFilePath("steel-dreadnought"), "{ not json", "utf-8");
+      const bad = loadGuitarUserTuningStatus("steel-dreadnought");
+      expect(bad.overrides).toEqual({});
+      expect(bad.discardedCorrupt).toBe(true);
+      expect(discardedGuitarTuningWarning("steel-dreadnought")).toBe(
+        "Saved tuning for steel-dreadnought could not be read — showing factory defaults. Re-save to repair.",
+      );
+      expect(withDiscardedGuitarTuningWarning("steel-dreadnought", false, "body")).toBe("body");
+
+      resetGuitarUserTuning("steel-dreadnought");
+      saveGuitarUserTuning("steel-dreadnought", { brightness: 0.22 });
+      const good = loadGuitarUserTuningStatus("steel-dreadnought");
+      expect(good.overrides).toEqual({ brightness: 0.22 });
+      expect(good.discardedCorrupt).toBe(false);
     });
   });
 

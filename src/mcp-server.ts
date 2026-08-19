@@ -83,14 +83,14 @@ import { createGuitarEngine } from "./guitar-engine.js";
 import {
   GUITAR_VOICE_IDS, GUITAR_TUNING_PARAMS, GUITAR_TUNINGS, GUITAR_TUNING_IDS,
   listGuitarVoices, getGuitarVoice, getMergedGuitarVoice,
-  loadGuitarUserTuning, saveGuitarUserTuning, resetGuitarUserTuning,
+  loadGuitarUserTuning, loadGuitarUserTuningStatus, withDiscardedGuitarTuningWarning, saveGuitarUserTuning, resetGuitarUserTuning,
   type GuitarVoiceId, type GuitarUserTuning,
 } from "./guitar-voices.js";
 import { createVmpkConnector } from "./vmpk.js";
 import {
   listVoices, suggestVoice, getVoice, getMergedVoice,
   VOICE_IDS, TUNING_PARAMS,
-  loadUserTuning, saveUserTuning, resetUserTuning,
+  loadUserTuning, loadUserTuningStatus, withDiscardedTuningWarning, saveUserTuning, resetUserTuning,
   type PianoVoiceId, type UserTuning,
 } from "./piano-voices.js";
 import { detectChord, midiNotesToNames } from "./chord-detect.js";
@@ -2692,6 +2692,7 @@ registerTool(
       };
     }
 
+    const prior = loadUserTuningStatus(id);
     try {
       saveUserTuning(id, overrides);
     } catch (err) {
@@ -2710,7 +2711,7 @@ registerTool(
     }
     lines.push(``, `${Object.keys(userTuning).length} total override(s) saved. Use \`reset_keyboard\` to restore factory defaults.`);
 
-    return { content: [{ type: "text", text: lines.join("\n") }] };
+    return { content: [{ type: "text", text: withDiscardedTuningWarning(id, prior.discardedCorrupt, lines.join("\n")) }] };
   }
 );
 
@@ -2724,7 +2725,7 @@ registerTool(
   },
   async ({ id }) => {
     const base = getVoice(id)!;
-    const userTuning = loadUserTuning(id);
+    const { overrides: userTuning, discardedCorrupt } = loadUserTuningStatus(id);
     const merged = getMergedVoice(id)!;
     const hasOverrides = Object.keys(userTuning).length > 0;
 
@@ -2763,7 +2764,7 @@ registerTool(
       lines.push(``, `*No user overrides. Using factory preset.*`);
     }
 
-    return { content: [{ type: "text", text: lines.join("\n") }] };
+    return { content: [{ type: "text", text: withDiscardedTuningWarning(id, discardedCorrupt, lines.join("\n")) }] };
   }
 );
 
@@ -2895,6 +2896,7 @@ registerTool(
       };
     }
 
+    const prior = loadGuitarUserTuningStatus(id);
     try {
       saveGuitarUserTuning(id, overrides);
     } catch (err) {
@@ -2913,7 +2915,7 @@ registerTool(
     }
     lines.push(``, `${Object.keys(userTuning).length} total override(s) saved. Use \`reset_guitar\` to restore factory defaults.`);
 
-    return { content: [{ type: "text", text: lines.join("\n") }] };
+    return { content: [{ type: "text", text: withDiscardedGuitarTuningWarning(id, prior.discardedCorrupt, lines.join("\n")) }] };
   }
 );
 
@@ -2927,7 +2929,7 @@ registerTool(
   },
   async ({ id }) => {
     const base = getGuitarVoice(id)!;
-    const userTuning = loadGuitarUserTuning(id);
+    const { overrides: userTuning, discardedCorrupt } = loadGuitarUserTuningStatus(id);
     const merged = getMergedGuitarVoice(id)!;
     const hasOverrides = Object.keys(userTuning).length > 0;
 
@@ -2966,7 +2968,7 @@ registerTool(
       lines.push(``, `*No user overrides. Using factory preset.*`);
     }
 
-    return { content: [{ type: "text", text: lines.join("\n") }] };
+    return { content: [{ type: "text", text: withDiscardedGuitarTuningWarning(id, discardedCorrupt, lines.join("\n")) }] };
   }
 );
 
