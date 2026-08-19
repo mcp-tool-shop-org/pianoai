@@ -480,6 +480,8 @@ export interface Synth {
   getRefPitch(): number;
   getActiveCount(): number;
   getContext(): AudioContext | null;
+  /** Entry to the shared compressor→master chain — sampler connects here. */
+  getOutputNode(): AudioNode | null;
 
   // ── Tuning Verification API ──
   /** Set custom tuning by providing 12 cent values (C=0..B=11). C must be 0. */
@@ -771,6 +773,7 @@ export function createSynth(options?: {
     getRefPitch() { return refPitch; },
     getActiveCount() { return activeVoices.size; },
     getContext() { return ctx; },
+    getOutputNode() { return compressor; },
 
     // ── Tuning Verification ──
 

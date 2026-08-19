@@ -73,6 +73,10 @@ import {
 import {
   shouldPreviewPitchChange, previewSuppressed, PITCH_PREVIEW_MS, type PreviewGate,
 } from "./preview.js";
+import {
+  createSalamanderSampler, SAMPLES_LOADING_MESSAGE, SAMPLES_UNAVAILABLE_MESSAGE,
+  type SalamanderSampler,
+} from "./salamander-sampler.js";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -167,6 +171,7 @@ const PAUSE_ICON_SVG = '<svg class="icon" width="14" height="14" viewBox="0 0 16
 // panel's working copy of custom cents.
 
 let synth: Synth;
+const sampler: SalamanderSampler = createSalamanderSampler();
 let vocalSynth: VocalSynth;
 let transport: Transport;
 let mode: "instrument" | "vocal" = "instrument";
@@ -702,8 +707,24 @@ function ensureAudioUnlocked(): Promise<void> {
     }
     resumeOrReport(synth.getContext());
     resumeOrReport(vocalSynth.getContext());
+    void beginSampleLoad();
   })();
   return audioUnlockPromise;
+}
+
+async function beginSampleLoad(): Promise<void> {
+  const ctx = synth.getContext();
+  const tap = synth.getOutputNode();
+  if (!ctx || !tap) return;
+  if (sampler.state() !== "idle") return;
+  setScoreStatus(SAMPLES_LOADING_MESSAGE, "ok");
+  const next = await sampler.load(ctx, tap);
+  if (next === "ready") {
+    setScoreStatus("", "ok");
+    clearScoreStatus();
+  } else {
+    setScoreStatus(SAMPLES_UNAVAILABLE_MESSAGE, "error");
+  }
 }
 
 function bindAutoplayUnlock() {
@@ -852,14 +873,22 @@ function getCurrentBreathiness(): number {
 
 /** Route noteOn to active engine */
 function activeNoteOn(midi: number, velocity: number, time?: number) {
-  if (mode === "vocal") vocalSynth.noteOn(midi, velocity, time);
-  else synth.noteOn(midi, velocity, time);
+  if (mode === "vocal") {
+    vocalSynth.noteOn(midi, velocity, time);
+    return;
+  }
+  if (sampler.isReady() && sampler.noteOn(midi, velocity, time)) return;
+  synth.noteOn(midi, velocity, time);
 }
 
 /** Route noteOff to active engine */
 function activeNoteOff(midi: number, time?: number) {
-  if (mode === "vocal") vocalSynth.noteOff(midi, time);
-  else synth.noteOff(midi, time);
+  if (mode === "vocal") {
+    vocalSynth.noteOff(midi, time);
+    return;
+  }
+  if (sampler.isReady()) sampler.noteOff(midi, time);
+  synth.noteOff(midi, time);
 }
 
 /** Current playback/recording context for preview.ts's gating decisions
@@ -889,6 +918,7 @@ function previewPitch(midi: number, velocity: number): void {
  *  transport's pause()/stop() (which must NOT touch held-key state, since
  *  those are live-play concerns independent of score playback). */
 function silenceEngines() {
+  sampler.allNotesOff();
   synth.allNotesOff();
   vocalSynth.allNotesOff();
 }
@@ -4127,6 +4157,7 @@ declare global {
       addNote: (n: NoteInit) => void;
       undo: () => void;
       redo: () => void;
+      samplerState: () => string;
     };
   }
 }
@@ -4146,6 +4177,7 @@ async function boot() {
     panic,
     setMode,
     getScore: () => [...state.getScore()],
+    samplerState: () => sampler.state(),
     addNote: (n) => {
       // Same untrusted-input validation as importScore — addNote is an
       // equally-reachable LLM-facing path that used to copy midi/velocity/
