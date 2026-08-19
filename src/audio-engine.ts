@@ -33,6 +33,7 @@
 import type { VmpkConnector, MidiStatus, MidiNote } from "./types.js";
 import { getMergedVoice, type PianoVoiceId, type PianoVoiceConfig } from "./piano-voices.js";
 import { JamError } from "./errors.js";
+import { PIANO_COMPRESSOR, velocityLowpassHz } from "./piano-timbre.js";
 
 // ─── Lazy Import ────────────────────────────────────────────────────────────
 // Don't load the native binary until the engine is actually used.
@@ -216,10 +217,15 @@ export function createAudioEngine(voiceId?: PianoVoiceId): VmpkConnector {
     const voiceMaster = ctx.createGain();
     voiceMaster.gain.value = velocity01 * voice.voiceGain;
 
-    // ── Stereo panner ──
+    // ── Stereo panner + velocity lowpass (tames oscillator harshness) ──
     const panner = ctx.createStereoPanner();
     panner.pan.value = noteToPan(note, voice.stereoWidth);
-    voiceMaster.connect(panner);
+    const lowpass = ctx.createBiquadFilter();
+    lowpass.type = "lowpass";
+    lowpass.frequency.value = velocityLowpassHz(note, velocity01);
+    lowpass.Q.value = 0.7;
+    voiceMaster.connect(lowpass);
+    lowpass.connect(panner);
     panner.connect(compressor);
 
     // ── Sine partials with per-partial envelopes ──
@@ -416,11 +422,11 @@ export function createAudioEngine(voiceId?: PianoVoiceId): VmpkConnector {
 
         // Master chain: compressor → gain → speakers
         compressor = ctx.createDynamicsCompressor();
-        compressor.threshold.value = -15;
-        compressor.knee.value = 12;
-        compressor.ratio.value = 6;
-        compressor.attack.value = 0.003;
-        compressor.release.value = 0.2;
+        compressor.threshold.value = PIANO_COMPRESSOR.threshold;
+        compressor.knee.value = PIANO_COMPRESSOR.knee;
+        compressor.ratio.value = PIANO_COMPRESSOR.ratio;
+        compressor.attack.value = PIANO_COMPRESSOR.attack;
+        compressor.release.value = PIANO_COMPRESSOR.release;
 
         master = ctx.createGain();
         master.gain.value = voice.masterGain;

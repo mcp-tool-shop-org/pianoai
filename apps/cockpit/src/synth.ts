@@ -1,3 +1,5 @@
+import { PIANO_COMPRESSOR, velocityLowpassHz } from "./piano-timbre.js";
+
 // ─── Cockpit Synth Engine ────────────────────────────────────────────────────
 //
 // Browser-native additive synthesis engine with scientific tuning.
@@ -268,14 +270,14 @@ export type VoiceId = (typeof VOICE_IDS)[number];
 const GRAND: VoiceConfig = {
   id: "grand", name: "Concert Grand", category: "piano",
   description: "9-foot concert grand. Deep sustain, complex overtones, wide dynamic range.",
-  maxPartials: 12, partialRolloff: 0.9, partialDecayRate: 0.10,
-  partialsPerRegister: [4, 6, 8, 10],
+  maxPartials: 8, partialRolloff: 1.15, partialDecayRate: 0.18,
+  partialsPerRegister: [3, 5, 6, 8],
   inharmonicity: [0.00015, 0.00010, 0.00006, 0.000030, 0.000015, 0.000008, 0.000006, 0.000005, 0.000004],
-  attackRange: [0.002, 0.010], decayBase: 6, decayRange: 18, decayPartialExponent: 0.55,
-  releaseTime: 0.18, sustainLevel: 0,
-  hammerNoiseDuration: 30, hammerNoiseAmount: 0.18, hammerNoiseQRange: [1.0, 3.5],
-  detuneSpread: 3.0, stereoWidth: 1.0, voiceGain: 0.30, masterGain: 0.85,
-  brightnessBase: 0.45, brightnessSlope: 0.18,
+  attackRange: [0.003, 0.014], decayBase: 3.2, decayRange: 11, decayPartialExponent: 0.9,
+  releaseTime: 0.14, sustainLevel: 0,
+  hammerNoiseDuration: 30, hammerNoiseAmount: 0.12, hammerNoiseQRange: [1.0, 3.5],
+  detuneSpread: 2.2, stereoWidth: 1.0, voiceGain: 0.28, masterGain: 0.8,
+  brightnessBase: 0.7, brightnessSlope: 0.28,
 };
 
 const UPRIGHT: VoiceConfig = {
@@ -604,11 +606,11 @@ export function createSynth(options?: {
     async connect() {
       ctx = new AudioContext({ sampleRate: 48000, latencyHint: "interactive" });
       compressor = ctx.createDynamicsCompressor();
-      compressor.threshold.value = -15;
-      compressor.knee.value = 12;
-      compressor.ratio.value = 6;
-      compressor.attack.value = 0.003;
-      compressor.release.value = 0.2;
+      compressor.threshold.value = PIANO_COMPRESSOR.threshold;
+      compressor.knee.value = PIANO_COMPRESSOR.knee;
+      compressor.ratio.value = PIANO_COMPRESSOR.ratio;
+      compressor.attack.value = PIANO_COMPRESSOR.attack;
+      compressor.release.value = PIANO_COMPRESSOR.release;
       master = ctx.createGain();
       master.gain.value = voice.masterGain;
       compressor.connect(master);
@@ -650,10 +652,15 @@ export function createSynth(options?: {
       const voiceMaster = c.createGain();
       voiceMaster.gain.value = vel01 * v.voiceGain;
 
-      // Stereo
+      // Stereo + velocity lowpass (tames oscillator harshness)
       const panner = c.createStereoPanner();
       panner.pan.value = noteToPan(note, v.stereoWidth);
-      voiceMaster.connect(panner);
+      const lowpass = c.createBiquadFilter();
+      lowpass.type = "lowpass";
+      lowpass.frequency.value = velocityLowpassHz(note, vel01);
+      lowpass.Q.value = 0.7;
+      voiceMaster.connect(lowpass);
+      lowpass.connect(panner);
       panner.connect(compressor!);
 
       const oscillators: OscillatorNode[] = [];
