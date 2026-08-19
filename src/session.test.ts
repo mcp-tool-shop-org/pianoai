@@ -35,13 +35,13 @@ describe("SessionController", () => {
     const sc = createSession(moonlight, mock);
     expect(sc.state).toBe("loaded");
     expect(sc.session.song.id).toBe("satie-gymnopedie-no1");
-    expect(sc.totalMeasures).toBe(79);
+    expect(sc.totalMeasures).toBe(47);
   });
 
   it("reports correct tempo", () => {
     const mock = createMockVmpkConnector();
     const sc = createSession(moonlight, mock);
-    expect(sc.effectiveTempo()).toBe(89); // song default
+    expect(sc.effectiveTempo()).toBe(60); // song default
   });
 
   it("respects tempo override", () => {
@@ -140,7 +140,7 @@ describe("SessionController", () => {
     expect(summary).toContain("Gymnopedie No. 1");
     expect(summary).toContain("Satie");
     expect(summary).toContain("classical");
-    expect(summary).toContain("89 BPM");
+    expect(summary).toContain("60 BPM");
   });
 
   it("records MIDI events through mock connector", async () => {
@@ -331,12 +331,12 @@ describe("Edge cases: boundary navigation", () => {
     const mock = createMockVmpkConnector();
     const sc = createSession(moonlight, mock);
 
-    sc.goTo(79); // go to last measure (1-based)
-    expect(sc.currentMeasureDisplay).toBe(79);
+    sc.goTo(47); // go to last measure (1-based)
+    expect(sc.currentMeasureDisplay).toBe(47);
 
     sc.next(); // should not go past last
-    expect(sc.currentMeasureDisplay).toBe(79);
-    expect(sc.session.currentMeasure).toBe(78); // 0-based
+    expect(sc.currentMeasureDisplay).toBe(47);
+    expect(sc.session.currentMeasure).toBe(46); // 0-based
   });
 
   it("prev() at first measure stays on first measure", () => {
@@ -372,7 +372,7 @@ describe("Edge cases: boundary navigation", () => {
     const sc = createSession(moonlight, mock);
 
     sc.goTo(3);
-    sc.goTo(100); // way past 79 measures
+    sc.goTo(100); // way past 47 measures
     expect(sc.currentMeasureDisplay).toBe(3); // unchanged
   });
 
@@ -381,8 +381,8 @@ describe("Edge cases: boundary navigation", () => {
     const sc = createSession(moonlight, mock);
 
     sc.goTo(moonlight.measures.length);
-    expect(sc.currentMeasureDisplay).toBe(79);
-    expect(sc.session.currentMeasure).toBe(78);
+    expect(sc.currentMeasureDisplay).toBe(47);
+    expect(sc.session.currentMeasure).toBe(46);
   });
 });
 
@@ -462,7 +462,7 @@ describe("Edge cases: play/pause/stop state machine", () => {
     // Play again — should restart
     await sc.play();
     expect(sc.state).toBe("finished");
-    expect(sc.session.measuresPlayed).toBe(158); // 79 + 79
+    expect(sc.session.measuresPlayed).toBe(94); // 47 + 47
   });
 
   it("pause() on non-playing session is no-op", () => {
