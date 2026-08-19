@@ -16,7 +16,7 @@
     "container": "ogg",
     "maxDurationSec": 8,
     "fadeOutSec": 0.35,
-    "ffmpeg": "C:\\Program Files\\Krita (x64)\\bin\\ffmpeg.exe"
+    "ffmpeg": "ffmpeg"
   },
   "packBytes": 8628267,
   "roots": [

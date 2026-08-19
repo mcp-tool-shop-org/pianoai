@@ -205,7 +205,7 @@ function main(): void {
       sourceArchive: args.archiveName || null,
       sourceSha256: args.archiveSha || null,
       sourceVersion: "V3+20161209",
-      encoder: { ...ENCODER, ffmpeg },
+      encoder: { ...ENCODER, ffmpeg: "ffmpeg" },
       packBytes,
       roots,
       layers: SOURCE_VELOCITY_LAYERS.map((sourceVel, id) => ({
