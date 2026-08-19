@@ -77,6 +77,8 @@ import {
   type EngineId, type ParseWarning, type PlaybackMode, type SyncMode, type VmpkConnector, type Recording,
 } from "./types.js";
 import { createAudioEngine } from "./audio-engine.js";
+import { createSampleEngine } from "./sample-engine.js";
+import { preferredPianoEngineId, resolvePianoSamplesDir } from "./sample-paths.js";
 import { createVocalEngine } from "./vocal-engine.js";
 import { createTractEngine, TRACT_VOICE_IDS, type TractVoiceId } from "./vocal-tract-engine.js";
 import { createGuitarEngine } from "./guitar-engine.js";
@@ -1115,7 +1117,7 @@ async function stopActive(): Promise<void> {
 
 registerTool(
   "play_song",
-  "Play a song through the built-in audio engine. Supports piano (default) and vocal engines. Accepts a library song ID or a path to a .mid file. Returns immediately with session info while playback runs in the background.",
+  "Play a song through the built-in audio engine. Default is sampled piano when Accurate-Salamander is installed, otherwise the oscillator piano. Accepts a library song ID or a path to a .mid file. Returns immediately with session info while playback runs in the background.",
   {
     id: z.string().describe("Song ID (e.g. 'autumn-leaves', 'let-it-be') OR path to a .mid file"),
     speed: z.number().min(0.1).max(4).optional().describe("Speed multiplier (0.5 = half speed, 1.0 = normal, 2.0 = double)"),
@@ -1127,7 +1129,7 @@ registerTool(
     withTeaching: z.boolean().optional().describe("Enable live teaching feedback (encouragement, dynamics tips, difficulty warnings). Default: false"),
     singMode: z.enum(["note-names", "solfege", "contour", "syllables"]).optional().describe("Sing-along mode when withSinging is true. Default: note-names"),
     keyboard: z.enum(VOICE_IDS as unknown as [string, ...string[]]).optional().describe("Piano voice/keyboard: grand (default), upright, electric, honkytonk, musicbox, bright. Each has a different character suited to different genres."),
-    engine: z.enum(ENGINE_IDS as unknown as [string, ...string[]]).optional().describe("Sound engine: 'piano' (default) plays piano, 'vocal' plays sustained vowel tones, 'tract' uses Pink Trombone vocal tract synthesis, 'guitar' plays physically-modeled guitar."),
+    engine: z.enum(ENGINE_IDS as unknown as [string, ...string[]]).optional().describe("Sound engine: omitted picks sampled piano when Accurate-Salamander is installed, else oscillator piano. 'sample' is the Concert Grand pack; 'piano' is the oscillator fallback; 'vocal' / 'tract' / 'guitar' as before."),
     tractVoice: z.enum(TRACT_VOICE_IDS as unknown as [string, ...string[]]).optional().describe("Voice preset for tract engine: soprano (default), alto, tenor, bass. Only used when engine='tract'."),
     guitarVoice: z.enum(GUITAR_VOICE_IDS as unknown as [string, ...string[]]).optional().describe("Guitar voice preset: classical-nylon, steel-dreadnought (default), electric-clean, electric-jazz. Only used when engine='guitar'."),
     syncMode: z.enum(["before", "concurrent"]).optional().describe("Voice sync timing when singing: 'before' (hear voice first, then play together) or 'concurrent' (simultaneous). Default: 'before' when singing only, 'concurrent' with teaching."),
@@ -1189,13 +1191,25 @@ registerTool(
     const voiceId = (keyboard ?? "grand") as PianoVoiceId;
     activeVoiceId = voiceId;
     activeNotes.clear();
-    const connector = engine === "tract"
+    const engineId = (engine ?? preferredPianoEngineId()) as EngineId;
+    if (engineId === "sample") {
+      const samplesDir = resolvePianoSamplesDir();
+      if (!samplesDir) {
+        return {
+          content: [{ type: "text", text: "Sampled piano is not installed. Set AI_JAM_SAMPLES_DIR to an Accurate-Salamander directory, or use engine: \"piano\" for the oscillator fallback." }],
+          isError: true,
+        };
+      }
+    }
+    const connector = engineId === "tract"
       ? createTractEngine({ voice: (tractVoice ?? "soprano") as TractVoiceId })
-      : engine === "vocal"
+      : engineId === "vocal"
         ? createVocalEngine()
-        : engine === "guitar"
+        : engineId === "guitar"
           ? createGuitarEngine({ voice: (guitarVoice ?? "steel-dreadnought") as GuitarVoiceId })
-          : createAudioEngine(voiceId);
+          : engineId === "sample"
+            ? createSampleEngine({ samplesDir: resolvePianoSamplesDir()! })
+            : createAudioEngine(voiceId);
     // Native stdout hardening: on a host without a running JACK server /
     // libjack.so.0, node-web-audio-api's cpal layer prints a backend-probe
     // failure ("Failed to open client because of error:
@@ -1212,7 +1226,7 @@ registerTool(
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       return {
-        content: [{ type: "text", text: `Couldn't start the ${ENGINE_LABELS[(engine ?? "piano") as EngineId]} engine: ${msg}` }],
+        content: [{ type: "text", text: `Couldn't start the ${ENGINE_LABELS[engineId]} engine: ${msg}` }],
         isError: true,
       };
     }
@@ -1601,7 +1615,10 @@ registerTool(
       };
     }
 
-    const connector = createAudioEngine("grand");
+    const samplesDir = resolvePianoSamplesDir();
+    const connector = samplesDir
+      ? createSampleEngine({ samplesDir })
+      : createAudioEngine("grand");
     activeVoiceId = "grand";
     try {
       await connector.connect();

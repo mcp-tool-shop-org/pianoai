@@ -29,6 +29,8 @@ import type { PlaybackProgress, PlaybackMode, SyncMode, VoiceDirective, AsideDir
 import type { SingAlongMode } from "./note-parser.js";
 import type { SingVoiceFilter } from "./teaching/sing-on-midi.js";
 import { createAudioEngine } from "./audio-engine.js";
+import { createSampleEngine } from "./sample-engine.js";
+import { preferredPianoEngineId, resolvePianoSamplesDir } from "./sample-paths.js";
 import { createVocalEngine } from "./vocal-engine.js";
 import { createTractEngine, TRACT_VOICE_IDS, type TractVoiceId } from "./vocal-tract-engine.js";
 import { createGuitarEngine } from "./guitar-engine.js";
@@ -298,7 +300,7 @@ async function cmdPlay(args: string[]): Promise<void> {
   const seekStr = getFlag(args, "--seek");
   const voiceFilterStr = getFlag(args, "--voice-filter") ?? "all";
   const keyboardStr = getFlag(args, "--keyboard") ?? "grand";
-  const engineStr = getFlag(args, "--engine") ?? "piano";
+  const engineStr = getFlag(args, "--engine") ?? preferredPianoEngineId();
   const tractVoiceStr = getFlag(args, "--tract-voice") ?? "soprano";
   const guitarVoiceStr = getFlag(args, "--guitar-voice") ?? "steel-dreadnought";
 
@@ -312,7 +314,7 @@ async function cmdPlay(args: string[]): Promise<void> {
   }
 
   // Validate engine
-  const VALID_ENGINES = ["piano", "vocal", "tract", "synth", "piano+synth", "vocal+synth", "guitar", "guitar+synth"];
+  const VALID_ENGINES = ["piano", "sample", "vocal", "tract", "synth", "piano+synth", "vocal+synth", "guitar", "guitar+synth"];
   if (!VALID_ENGINES.includes(engineStr)) {
     console.error(`Unknown engine: "${engineStr}". Available: ${VALID_ENGINES.join(", ")}`);
     process.exit(1);
@@ -378,6 +380,14 @@ async function cmdPlay(args: string[]): Promise<void> {
       case "tract":  return createTractEngine({ voice: tractVoiceStr as TractVoiceId });
       case "vocal":  return createVocalEngine();
       case "synth":  return createVocalSynthEngine();
+      case "sample": {
+        const samplesDir = resolvePianoSamplesDir();
+        if (!samplesDir) {
+          console.error("Sampled piano is not installed. Set AI_JAM_SAMPLES_DIR to an Accurate-Salamander directory, or use --engine piano.");
+          process.exit(1);
+        }
+        return createSampleEngine({ samplesDir });
+      }
       case "guitar": return createGuitarEngine({ voice: guitarVoiceStr as GuitarVoiceId });
       case "piano+synth":
         return createLayeredEngine([createAudioEngine(keyboardId), createVocalSynthEngine()]);
@@ -397,6 +407,7 @@ async function cmdPlay(args: string[]): Promise<void> {
     tract: `tract engine (${tractVoiceStr})`,
     vocal: "vocal engine",
     synth: "vocal-synth engine",
+    sample: "sampled piano (Accurate-Salamander)",
     guitar: `guitar engine (${guitarVoiceStr})`,
     "piano+synth": `${keyboardStr} piano + vocal-synth`,
     "vocal+synth": "vocal + vocal-synth",
@@ -1425,7 +1436,7 @@ Play options:
   --tempo <bpm>              Override tempo (10-400 BPM, library songs only)
   --mode <mode>              Playback mode: full, measure, hands, loop (library songs only)
   --keyboard <voice>         Piano voice: grand, upright, electric, honkytonk, musicbox, bright
-  --engine <engine>          Sound engine: piano, vocal, tract, guitar, synth, piano+synth, guitar+synth
+  --engine <engine>          Sound engine: piano, sample, vocal, tract, guitar, synth, piano+synth, guitar+synth
   --guitar-voice <voice>     Guitar voice: classical-nylon, steel-dreadnought, electric-clean, electric-jazz
   --midi                     Output via MIDI instead of built-in engine
   --port <name>              MIDI port name (with --midi)

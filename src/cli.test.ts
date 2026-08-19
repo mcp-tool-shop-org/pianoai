@@ -255,6 +255,16 @@ describe("cli.ts — dispatch (spawned subprocess)", () => {
   );
 
   it(
+    "`play fallin --engine sample` without a sample pack exits 1 with an install hint (before audio connect)",
+    () => {
+      const { status, stderr } = runCli(["play", "fallin", "--engine", "sample"]);
+      expect(status).toBe(1);
+      expect(stderr).toMatch(/sampled piano is not installed/i);
+    },
+    20000,
+  );
+
+  it(
     "`play <unknown-song>` exits 1 with a 'not found' message (proves dispatch reaches song lookup, before any audio connect)",
     () => {
       const { status, stderr } = runCli(["play", "not-a-real-song-xyz"]);

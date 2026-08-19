@@ -40,6 +40,8 @@ export { createSession, SessionController } from "./session.js";
 
 // Export piano engine (built-in audio — plays through speakers)
 export { createAudioEngine } from "./audio-engine.js";
+export { createSampleEngine } from "./sample-engine.js";
+export { resolvePianoSamplesDir, preferredPianoEngineId } from "./sample-paths.js";
 
 // Export vocal engine (sustained vowel synthesis — pitched to MIDI notes)
 export { createVocalEngine } from "./vocal-engine.js";
