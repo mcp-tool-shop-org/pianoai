@@ -136,6 +136,11 @@ first prototype died.
    floor-injection rate, side blinding), seed replay (same seed + same votes → identical
    scoring output), gain math from measured RMS pairs, budget/screen/gate label logic,
    systems detection. `pnpm verify` green — cockpit typecheck/build included.
+   **Trap (cost a CI red once):** the cockpit tsconfig has NO Node types — a test under
+   `apps/cockpit/src` importing `node:fs`/`node:path` passes every local gate (the root
+   `@types/node` leaks up the node_modules walk) and fails only CI's isolated cockpit job
+   (TS2307). Any Node-dependent test lives in `src/` and reaches cockpit files by relative
+   path (the piano-timbre lockstep pin and the salamander-pack test are the pattern).
 
 ## Honesty framing (keep it, clean it)
 
