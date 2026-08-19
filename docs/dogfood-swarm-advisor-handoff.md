@@ -96,6 +96,12 @@ subagents (Director 2026-08-16): Sonnet/Opus only, always explicit `model=`.
   eats backslashes into pwsh help-text).
 - The readme-gate hook blocks the first README edit per session until the whole file is
   read — expected, not an error.
+- **The cockpit tsconfig has NO Node types** — a test under `apps/cockpit/src` importing
+  `node:fs`/`node:path` passes every LOCAL gate (the root `@types/node` leaks up the
+  node_modules walk) and fails only on CI's isolated cockpit job (TS2307). Node-dependent
+  tests live in `src/` and reach cockpit files by relative path (the piano-timbre lockstep
+  pin and salamander-pack test are the pattern). Local green is not proof against this
+  class — the post-merge CI watch is.
 
 ## Standing fences
 
