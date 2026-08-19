@@ -4,7 +4,7 @@
 // These bridge ai-music-sheets (the library) with the runtime (MIDI + voice).
 // ─────────────────────────────────────────────────────────────────────────────
 
-import type { SongEntry, Measure, Genre, Difficulty } from "./songs/types.js";
+import type { SongEntry, Measure } from "./songs/types.js";
 import type { MidiNoteEvent } from "./midi/types.js";
 import type { MetronomeEngine } from "./playback/metronome.js";
 
