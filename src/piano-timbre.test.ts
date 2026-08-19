@@ -28,3 +28,20 @@ describe("PIANO_COMPRESSOR", () => {
     expect(PIANO_COMPRESSOR.threshold).toBeLessThan(-15);
   });
 });
+
+describe("cockpit copy lockstep", () => {
+  // apps/cockpit/src/piano-timbre.ts is a structural duplicate (the cockpit
+  // tsconfig cannot import src/). Comments may differ; the CODE may not.
+  // This pin is what makes the "keep in sync" header enforceable — without
+  // it the two surfaces drift the first time one side gets a tweak.
+  it("apps/cockpit/src/piano-timbre.ts code body is byte-identical to src/piano-timbre.ts", async () => {
+    const { readFileSync } = await import("node:fs");
+    const { fileURLToPath } = await import("node:url");
+    const strip = (p: string) =>
+      readFileSync(fileURLToPath(new URL(p, import.meta.url)), "utf8")
+        .split(/\r?\n/)
+        .filter((l) => !/^\s*(\/\/|\*|\/\*)/.test(l) && l.trim() !== "")
+        .join("\n");
+    expect(strip("../apps/cockpit/src/piano-timbre.ts")).toBe(strip("./piano-timbre.ts"));
+  });
+});
