@@ -10,7 +10,6 @@ import {
 import {
   ENGINE_UNAVAILABLE_MESSAGE,
   PANEL_RUNS_STORAGE_KEY,
-  VOTE_BUDGET_STABLE_K4,
   buildTrialList,
   detectSystems,
   deserializePanelRuns,
@@ -38,6 +37,7 @@ import {
   type ClipPlayer,
   type ClipRender,
 } from "./panel-clip.js";
+import { samplerHandlesVoice } from "./salamander-logic.js";
 import type { SamplerPack } from "./salamander-sampler.js";
 import type { Synth, VoiceId } from "./synth.js";
 
@@ -171,34 +171,40 @@ function renderConfigRail(): void {
 }
 
 function countIndependentListeners(): number {
-  const families = new Set(loadStoredRuns().flatMap((r) => r.votes.map((v) => v.at.slice(0, 10))));
-  const n = 1 + Math.max(0, families.size - 1);
-  return loadStoredRuns().length >= 3 ? loadStoredRuns().length : n;
+  // One browser profile is one seat. Run count is NOT listener count — three
+  // runs by one person are still one listener. The ≥3-independent robust
+  // claim only materializes when separately exported runs from different
+  // listeners are aggregated outside this cockpit.
+  return 1;
 }
 
 async function startRun(): Promise<void> {
+  if (preparing) return;
   preparing = true;
-  setStatus("Probing the local model and building trials…");
-  engineProbe = await probeLocalModel(fetch);
-  const systems = detectSystems(engineProbe.reachable);
-  const seed = Number(($("panel-seed-value") as HTMLInputElement).value) >>> 0;
-  const songIds = selectedSongIds();
-  const trials = buildTrialList({ songIds, systems, seed });
-  run = emptyRunRecord({
-    seed,
-    createdAt: new Date().toISOString(),
-    songIds,
-    systems,
-    engineTag: engineProbe.reachable ? "reachable" : "unavailable",
-    engineProbe,
-    trials,
-  });
-  trialIndex = 0;
-  realizations = new Map();
-  renderConfigRail();
-  await prepareCurrentTrial();
-  preparing = false;
-  saveCurrentRun();
+  try {
+    setStatus("Probing the local model and building trials…");
+    engineProbe = await probeLocalModel(fetch);
+    const systems = detectSystems(engineProbe.reachable);
+    const seed = Number(($("panel-seed-value") as HTMLInputElement).value) >>> 0;
+    const songIds = selectedSongIds();
+    const trials = buildTrialList({ songIds, systems, seed });
+    run = emptyRunRecord({
+      seed,
+      createdAt: new Date().toISOString(),
+      songIds,
+      systems,
+      engineTag: engineProbe.reachable ? "reachable" : "unavailable",
+      engineProbe,
+      trials,
+    });
+    trialIndex = 0;
+    realizations = new Map();
+    renderConfigRail();
+    await prepareCurrentTrial();
+    saveCurrentRun();
+  } finally {
+    preparing = false;
+  }
 }
 
 async function realize(songId: string, system: HumanAudioSystemId): Promise<Realization> {
@@ -214,8 +220,15 @@ async function realize(songId: string, system: HumanAudioSystemId): Promise<Real
   else if (system === "refined") {
     real = refineRealization(nearestToneRealization(progression, 4), { voices: 4, style: "lead-sheet" }).realization;
   } else {
+    // Never silently substitute another system for the engine — a faked
+    // engine clip would poison the ranking. Failing loudly is the honest path.
     const engine = await realizeEngine(progression);
-    real = engine ?? refineRealization(nearestToneRealization(progression, 4), { voices: 4, style: "lead-sheet" }).realization;
+    if (!engine) {
+      throw new Error(
+        "the engine system did not return a usable voicing, so this trial cannot be presented honestly. Start a new run — the re-probe will drop the engine system if the local model is not reachable.",
+      );
+    }
+    real = engine;
   }
   realizations.set(key, real);
   return real;
@@ -284,19 +297,29 @@ async function prepareCurrentTrial(): Promise<void> {
   if (!run) return;
   const trial = run.trials[trialIndex];
   if (!trial) { renderTrial(); renderOutcome(); return; }
-  setStatus("Rendering A and B through the Concert Grand path…");
+  setStatus("Rendering the reference, A, and B through the same piano the roll plays…");
   stopPlayback();
   pair = null;
   const ctx = await host.ensureAudio();
   if (!player) player = createClipPlayer(ctx, ctx.destination);
   const song = getPanelSong(trial.songId);
   if (!song) { setStatus("Missing catalog song."); return; }
-  const [realA, realB] = await Promise.all([realize(trial.songId, trial.sideA), realize(trial.songId, trial.sideB)]);
+  let realA: Realization;
+  let realB: Realization;
+  try {
+    [realA, realB] = await Promise.all([realize(trial.songId, trial.sideA), realize(trial.songId, trial.sideB)]);
+  } catch (err) {
+    setStatus(`Audio halt: ${err instanceof Error ? err.message : String(err)}`);
+    return;
+  }
   const notesA = clipNotesFor(song.melody, realA, song.beatsPerMeasure);
   const notesB = clipNotesFor(song.melody, realB, song.beatsPerMeasure);
   const notesR = clipNotesFor(song.melody, undefined, song.beatsPerMeasure);
-  const pack = host.samplerReady() ? host.getSamplerPack() : null;
+  // Same door selection as the roll: the sampler only ever handles the sampled
+  // voice — any other selected voice must sound synth here exactly as it does
+  // when playing notes in the roll (parity is the acceptance test).
   const voiceId = host.voiceId();
+  const pack = samplerHandlesVoice(voiceId) && host.samplerReady() ? host.getSamplerPack() : null;
   const dur = Math.max(
     clipLengthSec(notesA, song.beatsPerMeasure, song.measures, song.bpm),
     clipLengthSec(notesB, song.beatsPerMeasure, song.measures, song.bpm),
@@ -456,7 +479,7 @@ function renderOutcome(): void {
     floorMisPicks: mis,
     remainingFloorWinsForValid: validWins,
     remainingFloorTrials: floorTrials,
-    listenerCount: Math.max(1, loadStoredRuns().length),
+    listenerCount: countIndependentListeners(),
     enginePresent: run.engineTag === "reachable",
   });
   run.outcome = out;
@@ -465,10 +488,12 @@ function renderOutcome(): void {
     `<div class="panel-score">` +
     `<strong>${s.id}</strong>` +
     `<span class="mono">${s.bwsScore.toFixed(2)}  [${s.ci[0].toFixed(2)}, ${s.ci[1].toFixed(2)}]</span>` +
-    `<em>${out.pairLabels[Object.keys(out.pairLabels).find((k) => k.includes(s.id)) ?? ""] ?? ""}</em>` +
     `</div>`
   )).join("");
   const pairLines = Object.entries(out.pairLabels).map(([k, lab]) => `<li><span class="mono">${k}</span> — ${lab}</li>`).join("");
+  const rankingLine = out.uninterpretable
+    ? "Scores are shown for the record only — the floor gate failed, so this is not a system ranking."
+    : `Ranking (best→worst): ${out.result.ranking.join(" > ") || "—"}`;
   box.innerHTML = `
     <div class="panel-verdict ${tone}">
       <h3>${out.rankingHeadline}</h3>
@@ -479,9 +504,9 @@ function renderOutcome(): void {
       out.screened ? "This listener is screened out — votes excluded from the published ranking." : ""
     }</p>
     <div class="panel-scores">${scores}</div>
-    <p class="panel-note">Ranking (best→worst): ${out.result.ranking.join(" > ") || "—"}</p>
+    <p class="panel-note">${rankingLine}</p>
     <ul class="panel-pairs">${pairLines}</ul>
-    <p class="panel-note">Stable k=4 bar is ~${VOTE_BUDGET_STABLE_K4} votes per pair. Bootstrap 95% CIs are shown — never a bare point estimate.</p>
+    <p class="panel-note">Scores carry bootstrap 95% confidence intervals — never a bare point estimate.</p>
   `;
 }
 

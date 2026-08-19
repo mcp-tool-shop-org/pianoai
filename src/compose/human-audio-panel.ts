@@ -9,7 +9,6 @@ import {
   makeRng,
   shuffledOrder,
   aggregatePanel,
-  interpretPanel,
   type BwsVote,
   type PanelSystem,
   type PanelResult,
@@ -33,6 +32,8 @@ export const ENGINE_UNAVAILABLE_MESSAGE =
 export const LOUDNESS_TOLERANCE_DB = 0.5;
 export const VOTE_BUDGET_PROVISIONAL = 15;
 export const VOTE_BUDGET_STABLE_K4 = 66;
+/** BWS-score margin the valid anchor must clear the floor by (same bar the LLM panel uses). */
+export const FLOOR_GATE_MARGIN = 0.15;
 export const FLOOR_SCREEN_RATE = 0.15;
 export const FLOOR_INJECT_RATE = 0.1;
 export const FLOOR_INJECT_MIN = 3;
@@ -359,16 +360,25 @@ export function scoreHumanAudio(opts: {
       : false;
 
   const agg = aggregatePanel(systems, bwsVotes, tuples, { bootstrap: 200, seed: opts.seed });
-  const engineId = opts.enginePresent ? "engine" : "refined";
-  const interpreted = interpretPanel(agg, { floor: "floor", valid: "refined", engine: engineId }, { floorMargin: 0.15 });
 
-  const uninterpretable = screen.screened
-    ? !floorSeparation
-    : !interpreted.interpretable && interpreted.verdict.startsWith("UNINTERPRETABLE");
+  // The discrimination-floor gate, computed directly for this mode.
+  // interpretPanel's verdict prose belongs to the LLM panel (it talks about
+  // the engine's standing and defers to a human panel) — none of it may
+  // render here: the human-audio panel IS the human panel, so it writes its
+  // own verdicts.
+  const byId = new Map(agg.scores.map((s) => [s.id, s]));
+  const floorScore = byId.get("floor");
+  const validScore = byId.get("refined");
+  const gatePassed =
+    !!floorScore && !!validScore && validScore.bwsScore - floorScore.bwsScore >= FLOOR_GATE_MARGIN;
+  const topTwoSettled =
+    agg.scores.length >= 2 ? agg.scores[0].ci[0] > agg.scores[1].ci[1] : false;
+
+  const uninterpretable = screen.screened ? !floorSeparation : !gatePassed;
 
   let rankingHeadline: string;
   let nextStep: string;
-  let verdict = interpreted.verdict;
+  let verdict: string;
 
   if (screen.screened && !floorSeparation) {
     rankingHeadline = "UNINTERPRETABLE";
@@ -376,28 +386,40 @@ export function scoreHumanAudio(opts: {
       "UNINTERPRETABLE — this listener missed the floor side on more than 15% of catch trials, and the remaining votes still cannot separate a valid voicing from the theory-invalid floor. That is a first-class outcome, not a crash: the run says nothing about the systems.";
     nextStep = "Start a new run (new seed). Listen for which backing fits the tune — the floor side is a catch trial mixed in blind.";
   } else if (screen.screened && floorSeparation) {
-    rankingHeadline = provisional ? "PROVISIONAL" : interpreted.interpretable ? "INCONCLUSIVE" : "UNINTERPRETABLE";
+    rankingHeadline = provisional ? "PROVISIONAL" : gatePassed ? "INCONCLUSIVE" : "UNINTERPRETABLE";
     verdict =
       `This listener is screened out (floor mis-pick ${(screen.rate * 100).toFixed(0)}% > 15%). Their votes are excluded from the published ranking. Remaining votes still separate valid from floor.`;
     nextStep = "Keep collecting votes from another listener, or export this run as a screened record.";
   } else if (uninterpretable) {
     rankingHeadline = "UNINTERPRETABLE";
+    verdict =
+      `UNINTERPRETABLE — the theory-valid voicing (${(validScore?.bwsScore ?? 0).toFixed(2)}) does not clearly beat ` +
+      `the theory-invalid floor (${(floorScore?.bwsScore ?? 0).toFixed(2)}) in these votes. That is a first-class ` +
+      `outcome, not an error: these votes cannot rank the systems.`;
     nextStep = "The floor gate failed — do not read the ranking as a system comparison. Run more trials, or treat this as a null.";
   } else if (provisional) {
     rankingHeadline = "PROVISIONAL";
+    verdict =
+      "Floor gate passed so far — these votes separate valid voicings from the theory-invalid floor. " +
+      "The ranking below is provisional until every pair reaches the vote budget.";
     nextStep = `Keep voting. ${budgetLabel}`;
-  } else if (interpreted.verdict.startsWith("INCONCLUSIVE")) {
+  } else if (!topTwoSettled) {
     rankingHeadline = "INCONCLUSIVE";
-    nextStep = "Judges discriminate, but the standing is not clean. Collect toward ~66 votes per pair for a stable k=4 ranking, or stop and export.";
+    verdict =
+      "Floor gate passed and every pair met the vote budget, but the top two systems' confidence intervals overlap — " +
+      "the standing between them is not settled.";
+    nextStep = `Collect toward ~${VOTE_BUDGET_STABLE_K4} votes per pair for a stable ranking, or stop and export.`;
   } else {
     rankingHeadline = "Ranking";
+    verdict =
+      `${agg.ranking[0]} leads this blind ranking — the floor gate passed and its confidence interval clears the runner-up's.`;
     nextStep = `This is ${listenerLabel}. Export the JSON if you want a receipt.`;
   }
 
   const result: PanelResult = {
-    ...interpreted,
+    ...agg,
     verdict,
-    interpretable: !uninterpretable && interpreted.interpretable,
+    interpretable: !uninterpretable,
   };
 
   return {

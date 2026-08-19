@@ -218,6 +218,78 @@ describe("budget / screen / gate labels", () => {
   });
 });
 
+describe("human-audio verdicts belong to this mode (no LLM-panel language leaks)", () => {
+  // interpretPanel's verdicts (bws.ts) are written for the LLM panel and talk
+  // about smoke-screens, $0, and deferring to a human panel — none of that may
+  // ever render inside the human-audio panel, which IS the human panel.
+  const BANNED = /\$0|LLM|smoke.?screen|priced.?ask|proxy/i;
+
+  function consistentVotes(perPair: number, floorLover = false): PairwiseVoteInput[] {
+    const rank: Record<string, number> = { refined: 2, nearest: 1, floor: floorLover ? 3 : 0 };
+    const pairs: Array<[HumanAudioSystemId, HumanAudioSystemId]> = [
+      ["floor", "nearest"],
+      ["floor", "refined"],
+      ["nearest", "refined"],
+    ];
+    const votes: PairwiseVoteInput[] = [];
+    for (const [a, b] of pairs) {
+      for (let i = 0; i < perPair; i++) {
+        votes.push({ sideA: a, sideB: b, picked: rank[a] > rank[b] ? "A" : "B", family: "you" });
+      }
+    }
+    return votes;
+  }
+
+  function score(votes: PairwiseVoteInput[], floorMisPicks: number) {
+    const floorTrials = votes.filter((v) => isFloorTrialPair(v.sideA, v.sideB)).length;
+    return scoreHumanAudio({
+      systems: K3,
+      votes,
+      seed: 11,
+      floorTrials,
+      floorMisPicks,
+      remainingFloorWinsForValid: floorTrials - floorMisPicks,
+      remainingFloorTrials: floorTrials,
+      listenerCount: 1,
+      enginePresent: false,
+    });
+  }
+
+  it("a full-budget consistent run reads as a plain ranking in this mode's own words", () => {
+    const out = score(consistentVotes(15), 0);
+    expect(out.rankingHeadline).toBe("Ranking");
+    expect(out.result.verdict).toMatch(/^refined leads this blind ranking/);
+  });
+
+  it("an under-budget run is PROVISIONAL with its own verdict", () => {
+    const out = score(consistentVotes(2), 0);
+    expect(out.rankingHeadline).toBe("PROVISIONAL");
+    expect(out.result.verdict).toMatch(/Floor gate passed so far/);
+  });
+
+  it("a floor-loving listener gets UNINTERPRETABLE, not a ranking", () => {
+    const votes = consistentVotes(4, true);
+    const floorTrials = votes.filter((v) => isFloorTrialPair(v.sideA, v.sideB)).length;
+    const out = score(votes, floorTrials);
+    expect(out.uninterpretable).toBe(true);
+    expect(out.rankingHeadline).toBe("UNINTERPRETABLE");
+  });
+
+  it("no outcome ever prints LLM-panel vocabulary", () => {
+    const floorVotes = consistentVotes(4, true);
+    const floorTrials = floorVotes.filter((v) => isFloorTrialPair(v.sideA, v.sideB)).length;
+    const outcomes = [
+      score(consistentVotes(15), 0),
+      score(consistentVotes(2), 0),
+      score(floorVotes, floorTrials),
+    ];
+    for (const out of outcomes) {
+      const text = `${out.rankingHeadline} ${out.result.verdict} ${out.nextStep}`;
+      expect(text).not.toMatch(BANNED);
+    }
+  });
+});
+
 describe("clip notes + realizers (shared primitive inputs)", () => {
   it("melody + voicing share one clip list", () => {
     const song = DEFAULT_PANEL_SONGS[0];
