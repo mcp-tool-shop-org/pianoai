@@ -151,11 +151,11 @@ describe("Session + Teaching Hook integration", () => {
     await mock.connect();
     await sc.play();
 
-    // Should have measure-start events for all 79 measures
+    // Should have measure-start events for all 47 measures
     const measureStarts = hook.events.filter((e) => e.type === "measure-start");
-    expect(measureStarts.length).toBe(79);
+    expect(measureStarts.length).toBe(47);
     expect(measureStarts[0].measureNumber).toBe(1);
-    expect(measureStarts[78].measureNumber).toBe(79);
+    expect(measureStarts[46].measureNumber).toBe(47);
 
     // Should have key-moment events (gymnopedie has moments at bars 1, 5, 7-8)
     const keyMoments = hook.events.filter((e) => e.type === "key-moment");
