@@ -11,11 +11,23 @@
   --border: #3d3d5e; --text: #dcdce6; --text-muted: #9c9cbe;
   --accent: #4a9eff; --accent-dim: #4a9eff2b; --accent-hover: #4a9eff88;
   --danger: #ff6b8a; --danger-dim: #ff6b8a22; --danger-border: #ff6b8a55;
+  --warn: #ffa657; --warn-dim: #ffa65718; --warn-border: #ffa65755;
+  --good: #7ee787; --good-dim: #7ee78718; --good-border: #7ee78755; --good-status: #7ee78722;
   --note-c: #79c0ff; --note-d: #7ee787; --note-e: #ffa657;
   --note-f: #ff7b72; --note-g: #d2a8ff; --note-a: #f778ba;
   --note-b: #f0e68c;
+  --pc-0: #79c0ff; --pc-1: #4c8ed9; --pc-2: #7ee787; --pc-3: #3fb950;
+  --pc-4: #ffa657; --pc-5: #ff7b72; --pc-6: #d2a8ff; --pc-7: #9b72cf;
+  --pc-8: #f778ba; --pc-9: #da3633; --pc-10: #f0e68c; --pc-11: #d29922;
+  --vowel-a: #ff7b72; --vowel-e: #7ee787; --vowel-i: #79c0ff;
+  --vowel-o: #ffa657; --vowel-u: #d2a8ff;
   --key-white: #e9e6de; --key-white-hi: #fbfaf6; --key-white-lo: #d6d2c6;
   --key-black: #1a1a2e; --key-black-hi: #2d2d48; --key-black-lo: #0f0f1c;
+  --key-white-border: #aaa; --key-black-border: #000;
+  --key-label: #666; --key-shortcut: #4d4d4d; --key-shortcut-on-black: #8c8c8c;
+  --note-edge: rgba(255,255,255,0.15); --note-edge-vocal: rgba(255,255,255,0.25); --vel-bar-fill: rgba(0,0,0,0.45);
+  --vowel-label: rgba(0,0,0,0.65);
+  --tooltip-bg: #000; --tooltip-fg: #fff;
   --font: 'Segoe UI', system-ui, sans-serif;
   --mono: 'Cascadia Code', 'Fira Code', monospace;
 }
@@ -94,7 +106,7 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
 .pr-beat-line.bar { opacity: 0.8; }
 .pr-note {
   position: absolute; border-radius: 3px; cursor: pointer; min-width: 8px;
-  border: 1px solid rgba(255,255,255,0.15); transition: opacity 0.1s;
+  border: 1px solid var(--note-edge); transition: opacity 0.1s;
   z-index: 2;
   /* Wave C2b — a note is a gesture surface (tap selects, drag moves); no
      native touch behavior (scroll/callout/selection) should intercept it. */
@@ -134,7 +146,7 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
    click/drag the way .pr-vowel-label's own overlay doesn't either. */
 .pr-note .vel-bar {
   position: absolute; bottom: 0; left: 0; height: 3px; border-radius: 0 0 2px 2px;
-  background: rgba(0,0,0,0.45); pointer-events: none;
+  background: var(--vel-bar-fill); pointer-events: none;
 }
 .pr-key-label {
   /* opacity:0.6 previously dropped contrast vs var(--bg) to ~2.97:1 (WCAG AA
@@ -256,7 +268,7 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
   position: absolute; bottom: 0; height: 100%;
   background: linear-gradient(180deg, var(--key-white-hi) 0%, var(--key-white) 55%, var(--key-white-lo) 100%);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -2px 2px -1px rgba(0,0,0,0.22);
-  border: 1px solid #aaa; border-radius: 0 0 4px 4px; cursor: pointer; z-index: 1;
+  border: 1px solid var(--key-white-border); border-radius: 0 0 4px 4px; cursor: pointer; z-index: 1;
   transition: background 0.08s, transform 0.05s;
   /* Wave C2b — a played key is a gesture surface; no native touch
      scroll/callout/selection should intercept press-and-hold or slides. */
@@ -267,14 +279,14 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
   position: absolute; bottom: 40px; height: 60%;
   background: linear-gradient(180deg, var(--key-black-hi) 0%, var(--key-black) 60%, var(--key-black-lo) 100%);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -2px 2px -1px rgba(0,0,0,0.45);
-  border: 1px solid #000; border-radius: 0 0 3px 3px; cursor: pointer; z-index: 2;
+  border: 1px solid var(--key-black-border); border-radius: 0 0 3px 3px; cursor: pointer; z-index: 2;
   transition: background 0.08s, transform 0.05s;
   touch-action: none; -webkit-touch-callout: none;
 }
 .kb-black:active, .kb-black.active { background: var(--accent); transform: translateY(1px); }
 .kb-label {
   position: absolute; bottom: 4px; text-align: center; font-size: 9px;
-  color: #666; pointer-events: none; z-index: 3; width: 100%;
+  color: var(--key-label); pointer-events: none; z-index: 3; width: 100%;
 }
 .kb-shortcut {
   /* #999 @ opacity 0.7 on the light key-white bg was ~1.7:1 (WCAG AA fail);
@@ -283,9 +295,10 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
      --key-white/--key-black base lightness is unchanged, so these ratios
      (~6.8:1 white, ~5.1:1 black) hold exactly as before. */
   position: absolute; bottom: 20px; text-align: center; font-size: 8px;
-  color: #4d4d4d; pointer-events: none; z-index: 3; width: 100%;
+  color: var(--key-shortcut); pointer-events: none; z-index: 3; width: 100%;
   font-family: var(--mono);
 }
+.kb-black .kb-shortcut { color: var(--key-shortcut-on-black); }
 
 /* ─── Controls Panel ─── */
 #controls {
@@ -392,8 +405,8 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
 [data-tip] { position: relative; }
 [data-tip]:hover::after {
   content: attr(data-tip); position: absolute; bottom: 100%; left: 50%;
-  transform: translateX(-50%); padding: 4px 8px; background: #000;
-  color: #fff; font-size: 10px; border-radius: 3px; white-space: nowrap; z-index: 100;
+  transform: translateX(-50%); padding: 4px 8px; background: var(--tooltip-bg);
+  color: var(--tooltip-fg); font-size: 10px; border-radius: 3px; white-space: nowrap; z-index: 100;
 }
 
 /* ─── Tuning Audit Panel ─── */
@@ -414,8 +427,8 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
 .tt-table tr:hover { background: var(--surface2); }
 .tt-table .hz { color: var(--accent); }
 .tt-table .cents { min-width: 48px; }
-.tt-cents-pos { color: #f0e68c; }
-.tt-cents-neg { color: #79c0ff; }
+.tt-cents-pos { color: var(--note-b); }
+.tt-cents-neg { color: var(--note-c); }
 .tt-cents-zero { color: var(--text-muted); }
 .tt-table .note-col { font-weight: 600; min-width: 24px; }
 .tt-ref-btn {
@@ -444,9 +457,9 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
 .ir-row { display: flex; justify-content: space-between; padding: 2px 0; }
 .ir-label { color: var(--text-muted); }
 .ir-value { font-weight: 600; }
-.ir-pure { color: #7ee787; }
-.ir-impure { color: #ffa657; }
-.ir-wolf { color: #ff7b72; }
+.ir-pure { color: var(--good); }
+.ir-impure { color: var(--warn); }
+.ir-wolf { color: var(--note-f); }
 
 /* Custom Tuning Editor */
 .custom-grid { display: grid; grid-template-columns: 32px 1fr 40px; gap: 2px 6px; align-items: center; }
@@ -472,9 +485,6 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
 
 /* ─── Mode Toggle ─── */
 .mode-toggle { display: flex; gap: 0; }
-body.panel-mode {
-  --accent: #4a9eff; --accent-dim: #4a9eff2b; --accent-hover: #4a9eff88;
-}
 body.panel-mode #piano-roll-container,
 body.panel-mode #transport,
 body.panel-mode #keyboard-area,
@@ -523,7 +533,7 @@ body.panel-mode #panel-view {
 .panel-transport, .panel-votes { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0 14px; }
 .panel-verdict { border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin: 12px 0; }
 .panel-verdict.danger { border-color: var(--danger-border); background: var(--danger-dim); }
-.panel-verdict.amber { border-color: #ffa65755; background: #ffa65718; }
+.panel-verdict.amber { border-color: var(--warn-border); background: var(--warn-dim); }
 .panel-verdict.ok { border-color: var(--accent); background: var(--accent-dim); }
 .panel-verdict h3 { margin: 0 0 6px; font-size: 16px; }
 .panel-score { display: flex; gap: 12px; align-items: baseline; padding: 6px 0; border-bottom: 1px solid var(--border); }
@@ -544,9 +554,9 @@ body.panel-mode #panel-view {
   display: inline-block; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
   border-radius: 10px; padding: 2px 8px; border: 1px solid var(--border); font-weight: 600;
 }
-.panel-pill.ok { color: #7ee787; border-color: #7ee78755; background: #7ee78718; }
+.panel-pill.ok { color: var(--good); border-color: var(--good-border); background: var(--good-dim); }
 .panel-pill.danger { color: var(--danger); border-color: var(--danger-border); background: var(--danger-dim); }
-.panel-pill.amber { color: #ffa657; border-color: #ffa65755; background: #ffa65718; }
+.panel-pill.amber { color: var(--warn); border-color: var(--warn-border); background: var(--warn-dim); }
 .panel-kind { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; border: 1px solid var(--border); border-radius: 8px; padding: 1px 6px; margin-right: 6px; }
 .panel-history-item { display: block; width: 100%; text-align: left; margin: 0 0 6px; font-size: 12px; }
 .panel-chart { margin: 10px 0 14px; }
@@ -587,11 +597,11 @@ body.vocal-mode .instr-only { display: none; }
 /* ─── Vocal Piano Roll Notes ─── */
 .pr-vowel-label {
   position: absolute; top: 0; left: 2px; font-size: 8px; font-weight: 700;
-  font-family: var(--mono); pointer-events: none; color: rgba(0,0,0,0.65);
+  font-family: var(--mono); pointer-events: none; color: var(--vowel-label);
   line-height: 13px; display: none;
 }
 body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
-.pr-note-vocal { border: 1px solid rgba(255,255,255,0.25); }
+.pr-note-vocal { border: 1px solid var(--note-edge-vocal); }
 
 /* ─── Inspector Vocal Section ─── */
 #insp-vocal { gap: 4px; align-items: center; font-size: 11px; display: none; }
@@ -616,7 +626,7 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
   border-radius: 4px; word-break: break-word;
 }
 .score-status.error { display: block; background: var(--danger-dim); color: var(--danger); border: 1px solid var(--danger-border); }
-.score-status.ok { display: block; background: #7ee78722; color: #7ee787; border: 1px solid #7ee78755; }
+.score-status.ok { display: block; background: var(--good-status); color: var(--good); border: 1px solid var(--good-border); }
 
 /* ─── Shortcuts Overlay (F-A1-009) ─── */
 #shortcuts-overlay {
