@@ -520,7 +520,10 @@ describe("mcp-server.ts — MCP protocol-level tool tests", () => {
         arguments: { melody: JSON.stringify([]), reharmonization: "not json" },
       })) as ToolResult;
       expect(badJson.isError).toBe(true);
-      expect(extractText(badJson)).toContain("Couldn't parse reharmonization");
+      const badJsonText = extractText(badJson);
+      expect(badJsonText).toContain("Couldn't parse reharmonization");
+      expect(badJsonText).toContain('"code": "bad_reharmonization"');
+      expect(badJsonText).toContain('"hint"');
 
       // Unknown song → structured isError
       const noSong = (await client.callTool({

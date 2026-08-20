@@ -89,6 +89,23 @@ describe("runVoiceLeadingPanel — orchestration with stub judges", () => {
     expect(report.votesCollected).toBeLessThan(report.votesPossible);
     expect(report.votesCollected).toBe(PROGS.length * 2);
   });
+
+  it("onVoteStep fires once per judge × song with 1-based step/total (P9-004)", async () => {
+    const judges = [stubJudge("f1", "engine"), stubJudge("f2", "engine"), stubJudge("f3", "engine")];
+    const steps: Array<{ songId: string; judgeFamily: string; step: number; total: number; dropped: boolean }> = [];
+    await runVoiceLeadingPanel({
+      progressions: PROGS,
+      systems: SYSTEMS,
+      judges,
+      anchors: { floor: "floor", valid: "refined", engine: "engine" },
+      bootstrap: 50,
+      seed: 1,
+      onVoteStep: (info) => { steps.push(info); },
+    });
+    expect(steps).toHaveLength(PROGS.length * judges.length);
+    expect(steps[0]).toMatchObject({ songId: "song-a", judgeFamily: "f1", step: 1, total: 6, dropped: false });
+    expect(steps.at(-1)).toMatchObject({ step: 6, total: 6 });
+  });
 });
 
 describe("runComposePanelTool — validation gates", () => {
