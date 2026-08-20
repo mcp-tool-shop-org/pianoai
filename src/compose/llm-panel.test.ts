@@ -25,7 +25,9 @@ describe("judge-family exclusion", () => {
     expect(isGeneratorFamily("qwen2.5:14b")).toBe(true);
     expect(isGeneratorFamily("qwen2.5-coder:7b")).toBe(true);
     expect(isGeneratorFamily("Qwen2.5:7b")).toBe(true);
+    expect(isGeneratorFamily("jam-ft-b2-qwen25:seed42")).toBe(true);
     expect(isGeneratorFamily("qwen3:8b")).toBe(false);
+    expect(isGeneratorFamily("qwen3.6:27b")).toBe(false);
     expect(isGeneratorFamily("mistral-small:24b")).toBe(false);
   });
 

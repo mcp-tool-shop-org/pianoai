@@ -24,8 +24,11 @@ export interface JudgeSeatStatus extends JudgeSeat {
 }
 
 export function isGeneratorFamily(model: string): boolean {
-  const base = model.trim().toLowerCase().split(":")[0] ?? "";
-  return base === GENERATOR_FAMILY_PREFIX || base.startsWith(`${GENERATOR_FAMILY_PREFIX}-`);
+  const lower = model.trim().toLowerCase();
+  const base = lower.split(":")[0] ?? "";
+  if (base === GENERATOR_FAMILY_PREFIX || base.startsWith(`${GENERATOR_FAMILY_PREFIX}-`)) return true;
+  // Fine-tunes of the generator (jam-ft-*-qwen25, etc.) are the same family.
+  return /qwen2\.?5/.test(lower);
 }
 
 export function judgeFamilyOf(model: string): string {
