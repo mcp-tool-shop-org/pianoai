@@ -78,6 +78,10 @@ import {
   type SalamanderSampler,
 } from "./salamander-sampler.js";
 import { samplerHandlesVoice } from "./salamander-logic.js";
+import {
+  bindPanel, enterPanelMode, leavePanelMode, handlePanelKey,
+  rememberScoreMode, getLastScoreMode,
+} from "./panel.js";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -99,6 +103,7 @@ import { samplerHandlesVoice } from "./salamander-logic.js";
 interface ScoreSnapshot {
   version: 1 | 2;
   mode: "instrument" | "vocal";
+  // Panel is a UI mode only — score snapshots never persist it.
   bpm: number;
   voice: string;
   vocalVoice?: string;
@@ -175,7 +180,7 @@ let synth: Synth;
 const sampler: SalamanderSampler = createSalamanderSampler();
 let vocalSynth: VocalSynth;
 let transport: Transport;
-let mode: "instrument" | "vocal" = "instrument";
+let mode: "instrument" | "vocal" | "panel" = "instrument";
 let looping = false;
 let bpm = DEFAULT_BPM;
 const heldKeys = new Set<string>();
@@ -411,7 +416,7 @@ function saveStateNow() {
     voice: ($("sel-vocal-voice") as HTMLSelectElement).value,
     tuning: ($("sel-tuning") as HTMLSelectElement).value,
     refPitch: synth.getRefPitch(),
-    mode,
+    mode: mode === "panel" ? getLastScoreMode() : mode,
     // Persist the actual cent offsets, not just the "custom" label — a
     // reload otherwise re-labels the badge "Custom" but plays 12-TET
     // (F-A1-004).
@@ -817,6 +822,7 @@ function populateSelectors() {
   // ── Mode toggle ──
   $("mode-instrument").addEventListener("click", () => setMode("instrument"));
   $("mode-vocal").addEventListener("click", () => setMode("vocal"));
+  $("mode-panel").addEventListener("click", () => setMode("panel"));
 
   const ts = $("sel-tuning") as HTMLSelectElement;
   for (const id of TUNING_IDS) {
@@ -852,18 +858,24 @@ function populateSelectors() {
 
 // ─── Mode Switching ──────────────────────────────────────────────────────────
 
-function setMode(m: "instrument" | "vocal") {
+function setMode(m: "instrument" | "vocal" | "panel") {
   if (m === mode) return;
   panic();
+  if (mode === "instrument" || mode === "vocal") rememberScoreMode(mode);
+  if (mode === "panel" && m !== "panel") leavePanelMode();
   mode = m;
   document.body.classList.toggle("vocal-mode", m === "vocal");
   $("mode-instrument").classList.toggle("active", m === "instrument");
   $("mode-vocal").classList.toggle("active", m === "vocal");
   $("mode-instrument").setAttribute("aria-pressed", String(m === "instrument"));
   $("mode-vocal").setAttribute("aria-pressed", String(m === "vocal"));
-  rerenderAllNotes();
-  updateInspector();
-  updateTelemetry();
+  if (m === "panel") enterPanelMode();
+  else {
+    leavePanelMode();
+    rerenderAllNotes();
+    updateInspector();
+    updateTelemetry();
+  }
   onStateChanged();
 }
 
@@ -2501,6 +2513,10 @@ function buildKeyboard() {
     // repeat bail below (unlike the old ordering) since it must apply
     // identically to both a first keydown and a held-key repeat.
     if (isTypingTarget(e)) return;
+    if (mode === "panel") {
+      if (handlePanelKey(e)) e.preventDefault();
+      return;
+    }
 
     // Undo/redo (Wave C1) — carved out of the Ctrl/Cmd-bail below so
     // Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y (+ Cmd on mac, via metaKey) reach the
@@ -2698,6 +2714,7 @@ function buildKeyboard() {
   });
 
   window.addEventListener("keyup", (e) => {
+    if (mode === "panel") return;
     // Lens-J findings 2/3 — the tool-hold release check runs BEFORE the
     // isTypingTarget bail, and checks e.code (physical KeyA — see the
     // matching keydown branch's own rationale above), not e.key: releasing
@@ -3800,11 +3817,12 @@ function clearTuningStatus() {
  *  "before" and "after" snapshot of exactly the same shape and hand both
  *  to applySettings() below. */
 function captureSettings(): ImportSettings {
+  const scoreMode = mode === "panel" ? getLastScoreMode() : mode;
   return {
-    mode,
+    mode: scoreMode,
     bpm,
-    voice: ($(mode === "vocal" ? "sel-vocal-voice" : "sel-voice") as HTMLSelectElement).value,
-    ...(mode === "vocal" ? { vocalVoice: ($("sel-vocal-voice") as HTMLSelectElement).value } : {}),
+    voice: ($(scoreMode === "vocal" ? "sel-vocal-voice" : "sel-voice") as HTMLSelectElement).value,
+    ...(scoreMode === "vocal" ? { vocalVoice: ($("sel-vocal-voice") as HTMLSelectElement).value } : {}),
     tuning: ($("sel-tuning") as HTMLSelectElement).value,
     refPitch: parseInt(($("ref-pitch") as HTMLInputElement).value),
   };
@@ -4154,7 +4172,7 @@ declare global {
       play: () => void;
       stop: () => void;
       panic: () => void;
-      setMode: (m: "instrument" | "vocal") => void;
+      setMode: (m: "instrument" | "vocal" | "panel") => void;
       getScore: () => Note[];
       addNote: (n: NoteInit) => void;
       undo: () => void;
@@ -4169,6 +4187,18 @@ declare global {
 async function boot() {
   await init();
   bindScoreControls();
+  bindPanel({
+    getSynth: () => synth,
+    getSamplerPack: () => sampler.getPack(),
+    samplerReady: () => sampler.isReady(),
+    ensureAudio: async () => {
+      await ensureAudioUnlocked();
+      const ctx = synth.getContext();
+      if (!ctx) throw new Error("audio context unavailable");
+      return ctx;
+    },
+    voiceId: () => ($("sel-voice") as HTMLSelectElement).value as VoiceId,
+  });
 
   // Expose LLM-facing API
   window.__cockpit = {
