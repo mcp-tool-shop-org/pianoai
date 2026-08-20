@@ -11,7 +11,7 @@ import type { HumanAudioRunRecord, HumanAudioSystemId, EngineProbe } from "./hum
 export const GENERATOR_FAMILY_PREFIX = "qwen2.5";
 
 export const NO_ELIGIBLE_JUDGES_MESSAGE =
-  "No eligible judge models are installed. Install at least one local model that is not in the qwen2.5 generator family (for example mistral-small, granite, or gemma), then start again.";
+  "No eligible local judge models are installed. Install at least one local chat model outside the qwen generator family (for example mistral-small, granite, gemma, or hermes), then start again.";
 
 export interface JudgeSeat {
   model: string;
@@ -26,16 +26,34 @@ export interface JudgeSeatStatus extends JudgeSeat {
 export function isGeneratorFamily(model: string): boolean {
   const lower = model.trim().toLowerCase();
   const base = lower.split(":")[0] ?? "";
-  if (base === GENERATOR_FAMILY_PREFIX || base.startsWith(`${GENERATOR_FAMILY_PREFIX}-`)) return true;
+  // The external-verifier rule: the judge must come from a DIFFERENT model
+  // family than the generator. The generator is qwen2.5, so the whole Qwen
+  // lineage is out — qwen3 judging qwen2.5's voicings is still same-family.
+  if (base.startsWith("qwen")) return true;
   // Fine-tunes of the generator (jam-ft-*-qwen25, etc.) are the same family.
   return /qwen2\.?5/.test(lower);
 }
 
+/** Embedding models cannot chat — a judge seat they hold can never be filled. */
+export function isEmbeddingModel(model: string): boolean {
+  return /embed/i.test(model);
+}
+
+/**
+ * Cloud-routed tags are not local judges: the panel's contract is LOCAL
+ * models, and a cloud seat would spend account quota without being asked for.
+ */
+export function isCloudTag(model: string): boolean {
+  return /(?::|-)cloud$/i.test(model.trim());
+}
+
 export function judgeFamilyOf(model: string): string {
   const base = model.trim().toLowerCase().split(":")[0] ?? "unknown";
-  if (base.startsWith("mistral")) return "mistral";
+  // Lineage matters, not just the name prefix: a fine-tune votes with its
+  // base family (one seat per family exists for judge independence).
+  if (base.includes("gemma")) return "gemma"; // gemma4, translategemma, …
+  if (base.startsWith("devstral") || base.startsWith("mistral")) return "mistral";
   if (base.startsWith("granite")) return "granite";
-  if (base.startsWith("gemma")) return "gemma";
   if (base.startsWith("hermes")) return "hermes";
   if (base.startsWith("aya")) return "aya";
   if (base.startsWith("qwen")) return "qwen";
@@ -43,12 +61,16 @@ export function judgeFamilyOf(model: string): string {
   return cut || base;
 }
 
-/** Installed models minus the qwen2.5 generator family. One seat per family. */
+/**
+ * Local chat models eligible to judge: installed tags minus the qwen
+ * generator lineage, embedding models, and cloud-routed tags. One seat per
+ * family.
+ */
 export function eligibleJudges(installed: string[]): JudgeSeat[] {
   const seen = new Set<string>();
   const out: JudgeSeat[] = [];
   for (const model of installed) {
-    if (!model || isGeneratorFamily(model)) continue;
+    if (!model || isGeneratorFamily(model) || isEmbeddingModel(model) || isCloudTag(model)) continue;
     const family = judgeFamilyOf(model);
     if (seen.has(family)) continue;
     seen.add(family);
@@ -131,6 +153,7 @@ export function comparePanelRankings(opts: {
   humanRanking: string[];
   llmRanking: string[];
   humanProvisional: boolean;
+  humanUninterpretable?: boolean;
   humanListenerLabel: string;
   llmVotesCollected: number;
   llmVotesPossible: number;
@@ -147,9 +170,11 @@ export function comparePanelRankings(opts: {
       : engineRankMatch
         ? `The engine lands at rank ${engineRankHuman} on both sides.`
         : `The engine is rank ${engineRankLlm} for the local-model panel and rank ${engineRankHuman} for the human-audio panel.`;
-  const provisional = opts.humanProvisional
-    ? " The human ranking is PROVISIONAL (under 15 votes per pair) — treat τ as a directional hint, not a concordance claim."
-    : "";
+  const provisional = opts.humanUninterpretable
+    ? " The human ranking is UNINTERPRETABLE (its floor gate failed) — τ against it is noise, shown for the record only."
+    : opts.humanProvisional
+      ? " The human ranking is PROVISIONAL (under 15 votes per pair) — treat τ as a directional hint, not a concordance claim."
+      : "";
   return {
     tau,
     engineRankHuman,

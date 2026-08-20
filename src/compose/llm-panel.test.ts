@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import {
   isGeneratorFamily,
+  isEmbeddingModel,
+  isCloudTag,
   eligibleJudges,
   judgeFamilyOf,
   parseOllamaTagNames,
@@ -20,15 +22,29 @@ import { emptyRunRecord, deserializePanelRuns, serializePanelRuns } from "./huma
 import { buildTrialList } from "./human-audio-panel.js";
 
 describe("judge-family exclusion", () => {
-  it("pins every qwen2.5* model out of the roster", () => {
+  it("pins the whole qwen lineage out of the roster (the external-verifier rule)", () => {
     expect(isGeneratorFamily("qwen2.5:7b")).toBe(true);
     expect(isGeneratorFamily("qwen2.5:14b")).toBe(true);
     expect(isGeneratorFamily("qwen2.5-coder:7b")).toBe(true);
     expect(isGeneratorFamily("Qwen2.5:7b")).toBe(true);
     expect(isGeneratorFamily("jam-ft-b2-qwen25:seed42")).toBe(true);
-    expect(isGeneratorFamily("qwen3:8b")).toBe(false);
-    expect(isGeneratorFamily("qwen3.6:27b")).toBe(false);
+    // The generator is qwen2.5 — the judge must be a DIFFERENT family, and
+    // qwen3 is the same lineage. Widened by the Advisor over the slice-B
+    // brief's literal "qwen2.5 only" wording.
+    expect(isGeneratorFamily("qwen3:8b")).toBe(true);
+    expect(isGeneratorFamily("qwen3.6:27b")).toBe(true);
+    expect(isGeneratorFamily("qwen3-coder:480b-cloud")).toBe(true);
     expect(isGeneratorFamily("mistral-small:24b")).toBe(false);
+  });
+
+  it("embedding models and cloud tags never hold a seat", () => {
+    expect(isEmbeddingModel("nomic-embed-text:latest")).toBe(true);
+    expect(isEmbeddingModel("granite-embedding:30m")).toBe(true);
+    expect(isEmbeddingModel("mistral-small:24b")).toBe(false);
+    expect(isCloudTag("gemini-3-flash-preview:cloud")).toBe(true);
+    expect(isCloudTag("gpt-oss:20b-cloud")).toBe(true);
+    expect(isCloudTag("deepseek-v3.1:671b-cloud")).toBe(true);
+    expect(isCloudTag("hermes3:8b")).toBe(false);
   });
 
   it("eligibleJudges drops the generator family and keeps one seat per family", () => {
@@ -44,14 +60,54 @@ describe("judge-family exclusion", () => {
     expect(seats.some((s) => isGeneratorFamily(s.model))).toBe(false);
   });
 
-  it("zero eligible is an empty list, not a fallback", () => {
-    expect(eligibleJudges(["qwen2.5:7b", "qwen2.5:14b"])).toEqual([]);
-    expect(NO_ELIGIBLE_JUDGES_MESSAGE).toMatch(/qwen2\.5 generator family/);
+  it("this rig's live tag list seats exactly the local chat families", () => {
+    const seats = eligibleJudges([
+      "gemma4:31b",
+      "hermes3:8b",
+      "granite4.1:30b",
+      "mistral-small:24b",
+      "gemini-3-flash-preview:cloud",
+      "kimi-k2.6:cloud",
+      "minimax-m3:cloud",
+      "gpt-oss:20b-cloud",
+      "qwen3-coder:480b-cloud",
+      "nomic-embed-text:latest",
+      "deepseek-v3.1:671b-cloud",
+      "glm-4.6:cloud",
+      "aya-expanse:32b",
+      "qwen2.5:7b",
+      "jam-ft-b2-qwen25:seed42",
+    ]);
+    expect(seats.map((s) => s.model)).toEqual([
+      "gemma4:31b",
+      "hermes3:8b",
+      "granite4.1:30b",
+      "mistral-small:24b",
+      "aya-expanse:32b",
+    ]);
   });
 
-  it("tags family from the model name", () => {
+  it("zero eligible is an empty list, not a fallback", () => {
+    expect(eligibleJudges(["qwen2.5:7b", "qwen3:8b", "nomic-embed-text:latest", "glm-4.6:cloud"])).toEqual([]);
+    expect(NO_ELIGIBLE_JUDGES_MESSAGE).toMatch(/qwen generator family/);
+  });
+
+  it("tags family from the model name, folding fine-tunes into their lineage", () => {
     expect(judgeFamilyOf("hermes3:8b")).toBe("hermes");
     expect(judgeFamilyOf("aya-expanse:32b")).toBe("aya");
+    expect(judgeFamilyOf("translategemma:27b")).toBe("gemma");
+    expect(judgeFamilyOf("devstral-small-2:24b")).toBe("mistral");
+  });
+
+  it("lineage dedup keeps one seat per real family on this rig", () => {
+    const seats = eligibleJudges([
+      "gemma4:31b",
+      "translategemma:27b",
+      "mistral-small:24b",
+      "devstral-small-2:24b",
+      "hermes3:8b",
+    ]);
+    expect(seats.map((s) => s.model)).toEqual(["gemma4:31b", "mistral-small:24b", "hermes3:8b"]);
   });
 });
 

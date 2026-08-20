@@ -109,6 +109,8 @@ export {
   NO_ELIGIBLE_JUDGES_MESSAGE,
   BANNED_PANEL_VOCAB,
   isGeneratorFamily,
+  isEmbeddingModel,
+  isCloudTag,
   judgeFamilyOf,
   eligibleJudges,
   parseOllamaTagNames,
