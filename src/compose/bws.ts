@@ -296,13 +296,13 @@ export function interpretPanel(
   if (engineTop && ciClearsFloor && agg.familyAgreement >= 0.5) {
     verdict =
       `DIRECTIONAL POSITIVE — the panel ranks the engine top (rank ${engineRank}/${agg.ranking.length}, ` +
-      `family agreement ${(agg.familyAgreement * 100).toFixed(0)}%). NOT a quality claim: symbolic LLM ` +
-      `smoke-screen; the human-audio BWS panel is deferred (a director priced-ask).`;
+      `family agreement ${(agg.familyAgreement * 100).toFixed(0)}%). Directional only: local models ` +
+      `judging note-names, not a quality claim.`;
   } else {
     verdict =
       `INCONCLUSIVE — judges discriminate (floor gate passed) but the engine's standing is not clean ` +
       `(rank ${engineRank}/${agg.ranking.length}, family agreement ${(agg.familyAgreement * 100).toFixed(0)}%, ` +
-      `engine CI [${engine.ci[0].toFixed(2)}, ${engine.ci[1].toFixed(2)}]). $0 information, honestly null.`;
+      `engine CI [${engine.ci[0].toFixed(2)}, ${engine.ci[1].toFixed(2)}]). Directional only; no quality claim.`;
   }
   return { ...agg, interpretable: true, verdict };
 }
