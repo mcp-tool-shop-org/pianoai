@@ -27,6 +27,14 @@ export interface ComposePanelToolInput {
   bootstrap?: number;
   seed?: number;
   onProgress?: (mark: string) => void;
+  onVoteStep?: (info: {
+    songId: string;
+    judgeFamily: string;
+    judgeModel?: string;
+    step: number;
+    total: number;
+    dropped: boolean;
+  }) => void | Promise<void>;
 }
 
 export interface ComposePanelPayload {
@@ -85,6 +93,7 @@ export async function runComposePanelTool(input: ComposePanelToolInput): Promise
     bootstrap: input.bootstrap,
     seed: input.seed,
     onProgress: input.onProgress,
+    onVoteStep: input.onVoteStep,
   });
 
   const payload: ComposePanelPayload = {

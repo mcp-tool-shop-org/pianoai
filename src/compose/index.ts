@@ -146,6 +146,10 @@ export {
   type ComposePanelPayload,
 } from "./compose-panel-tool.js";
 export {
+  panelProgressNotification,
+  type PanelVoteStep,
+} from "./panel-progress.js";
+export {
   DEFAULT_PANEL_SONGS,
   getPanelSong,
   listPanelSongs,

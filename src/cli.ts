@@ -72,6 +72,7 @@ import { renderPianoRoll } from "./piano-roll.js";
 import { buildJournalEntry, appendJournalEntry } from "./journal.js";
 import type { SessionSnapshot } from "./journal.js";
 import { VERSION } from "./version.js";
+import { EXIT_USER, JamError } from "./errors.js";
 import {
   PracticeLoop,
   resolvePracticeLoopConfig,
@@ -105,10 +106,23 @@ async function openInBrowser(filePath: string): Promise<void> {
   }
 }
 
-/** Standard "song not found" error message with a hint to run `list`. */
-function songNotFoundError(songId: string, extra?: string): string {
-  const base = `Song not found: "${songId}". Run \`ai-jam-sessions list\` to see available songs.`;
-  return extra ? `${base} ${extra}` : base;
+/** Standard "song not found" error (P9-006 JamError grammar). */
+function songNotFoundError(songId: string, extra?: string): JamError {
+  const hint = extra
+    ? `Run \`ai-jam-sessions list\` to see available songs. ${extra}`
+    : "Run `ai-jam-sessions list` to see available songs.";
+  return new JamError({
+    code: "INPUT_INVALID_SONG",
+    message: `Song not found: "${songId}".`,
+    hint,
+  });
+}
+
+/** Pre-flight EXIT_USER with the JamError [CODE]: message + Hint: line. */
+function exitUser(err: JamError): never {
+  console.error(`Error [${err.code}]: ${err.message}`);
+  if (err.hint) console.error(`Hint: ${err.hint}`);
+  process.exit(EXIT_USER);
 }
 
 function printSongTable(songs: SongEntry[]): void {
@@ -276,8 +290,7 @@ function cmdInfo(args: string[]): void {
   }
   const song = getSong(songId);
   if (!song) {
-    console.error(songNotFoundError(songId));
-    process.exit(1);
+    exitUser(songNotFoundError(songId));
   }
   printSongInfo(song);
 }
@@ -369,8 +382,7 @@ async function cmdPlay(args: string[]): Promise<void> {
   if (!isMidiFile) {
     const song = getSong(target);
     if (!song) {
-      console.error(songNotFoundError(target, "Or provide a .mid file path."));
-      process.exit(1);
+      exitUser(songNotFoundError(target, "Or provide a .mid file path."));
     }
   }
 
@@ -506,8 +518,7 @@ async function cmdPlay(args: string[]): Promise<void> {
       // ── Library song playback ──
       const song = getSong(target);
       if (!song) {
-        console.error(songNotFoundError(target, "Or provide a .mid file path."));
-        process.exit(1);
+        exitUser(songNotFoundError(target, "Or provide a .mid file path."));
       }
 
       const tempoStr = getFlag(args, "--tempo");
@@ -655,8 +666,7 @@ async function cmdSing(args: string[]): Promise<void> {
   }
   const song = getSong(songId);
   if (!song) {
-    console.error(songNotFoundError(songId));
-    process.exit(1);
+    exitUser(songNotFoundError(songId));
   }
 
   // Parse flags
@@ -836,34 +846,49 @@ export interface PracticeCliArgs {
  * Pure — no song lookup, no I/O, no process.exit — so it's directly
  * importable/testable (see cli.test.ts) without pulling in cmdPractice's
  * audio-engine/PracticeLoop machinery. Throws a plain Error with a
- * user-facing message on bad input; cmdPractice converts that into this
- * file's usual "print + exit(1)" pattern (see the header comment on the
- * pre-flight-validation convention, above cmdList).
+ * user-facing message on bad input; cmdPractice prints the JamError grammar
+ * (P9-006) and exits 1. See the pre-flight-validation convention above cmdList.
  */
 export function parsePracticeArgs(args: string[]): PracticeCliArgs {
   const songId = args[0];
   if (!songId) {
-    throw new Error(
-      "Usage: ai-jam-sessions practice <song-id> --measures <start-end> [--start-speed N] [--target N] [--step N] [--max-passes N]"
-    );
+    throw new JamError({
+      code: "INPUT_INVALID_ARGS",
+      message: "Usage: ai-jam-sessions practice <song-id> --measures <start-end> [--start-speed N] [--target N] [--step N] [--max-passes N]",
+      hint: "Pass a library song id from `ai-jam-sessions list` and a measure range like --measures 5-8.",
+    });
   }
 
   const measuresStr = getFlag(args, "--measures");
   if (!measuresStr) {
-    throw new Error("Missing required --measures <start-end> (e.g. --measures 5-8).");
+    throw new JamError({
+      code: "INPUT_INVALID_ARGS",
+      message: "Missing required --measures <start-end>.",
+      hint: "Pass a range like --measures 5-8.",
+    });
   }
   const parts = measuresStr.split("-");
   const startMeasure = parseInt(parts[0], 10);
   const endMeasure = parts[1] !== undefined ? parseInt(parts[1], 10) : startMeasure;
   if (isNaN(startMeasure) || isNaN(endMeasure)) {
-    throw new Error(`Invalid --measures range: "${measuresStr}". Use format like "5-8".`);
+    throw new JamError({
+      code: "INPUT_INVALID_ARGS",
+      message: `Invalid --measures range: "${measuresStr}".`,
+      hint: 'Use format like "5-8".',
+    });
   }
 
   const parseOptNum = (flag: string): number | undefined => {
     const v = getFlag(args, flag);
     if (v === null) return undefined;
     const n = parseFloat(v);
-    if (isNaN(n)) throw new Error(`Invalid ${flag}: "${v}" (expected a number).`);
+    if (isNaN(n)) {
+      throw new JamError({
+        code: "INPUT_INVALID_ARGS",
+        message: `Invalid ${flag}: "${v}".`,
+        hint: "Expected a number.",
+      });
+    }
     return n;
   };
   const speedStartPct = parseOptNum("--start-speed");
@@ -875,7 +900,11 @@ export function parsePracticeArgs(args: string[]): PracticeCliArgs {
   if (maxPassesStr !== null) {
     maxPasses = parseInt(maxPassesStr, 10);
     if (isNaN(maxPasses)) {
-      throw new Error(`Invalid --max-passes: "${maxPassesStr}" (expected an integer).`);
+      throw new JamError({
+        code: "INPUT_INVALID_ARGS",
+        message: `Invalid --max-passes: "${maxPassesStr}".`,
+        hint: "Expected an integer.",
+      });
     }
   }
 
@@ -887,14 +916,14 @@ async function cmdPractice(args: string[]): Promise<void> {
   try {
     parsed = parsePracticeArgs(args);
   } catch (err) {
+    if (err instanceof JamError) exitUser(err);
     console.error(err instanceof Error ? err.message : String(err));
     process.exit(1);
   }
 
   const song = getSong(parsed.songId);
   if (!song) {
-    console.error(songNotFoundError(parsed.songId));
-    process.exit(1);
+    exitUser(songNotFoundError(parsed.songId));
   }
 
   // Pre-flight validation (before touching audio) — mirrors cmdPlay's own
@@ -1046,8 +1075,7 @@ async function cmdView(args: string[]): Promise<void> {
   }
   const song = getSong(songId);
   if (!song) {
-    console.error(songNotFoundError(songId));
-    process.exit(1);
+    exitUser(songNotFoundError(songId));
   }
 
   // Parse --measures flag (e.g. "1-8", "9-16")
@@ -1118,8 +1146,7 @@ async function cmdViewGuitar(args: string[]): Promise<void> {
   }
   const song = getSong(songId);
   if (!song) {
-    console.error(songNotFoundError(songId));
-    process.exit(1);
+    exitUser(songNotFoundError(songId));
   }
 
   // Parse --measures flag
@@ -1427,6 +1454,7 @@ Commands:
   guitars                    List available guitar voice presets
   tune-guitar <voice> [opts] Tune a guitar voice (persists across sessions)
   stats                      Registry statistics
+  library                    Show library progress
   ports                      List MIDI output ports
   version                    Show version
   help                       Show this help

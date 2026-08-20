@@ -21,6 +21,9 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { VERSION } from "./version.js";
 import { shouldSuperviseStdio, runStdioSupervisor, openRpcOutputStream } from "./stdio-supervisor.js";
 import { z } from "zod";
+import { zDifficulty, zGenre, zMeasure, zMidiNotes, zSongId } from "./mcp-schema.js";
+import { mcpStructuredError } from "./mcp-error.js";
+import { panelProgressNotification } from "./compose/panel-progress.js";
 import {
   getAllSongs,
   getSong,
@@ -295,7 +298,7 @@ const registerTool = (name: string, description: string, schema: object, cb: (..
 server.prompt(
   "annotate_song",
   "Walk through annotating a raw song with musical language — description, structure, key moments, teaching goals, and style tips. Use this prompt to guide the annotation process for unannotated songs.",
-  { song_id: z.string().describe("Song ID to annotate") },
+  { song_id: zSongId("Song ID to annotate") },
   ({ song_id }) => {
     const song = getSong(song_id);
     const songInfo = song
@@ -330,7 +333,7 @@ server.prompt(
 server.prompt(
   "practice_plan",
   "Create a practice plan for a song — warm-up, section-by-section work, speed progression, and goals. Great for structuring a focused practice session.",
-  { song_id: z.string().describe("Song ID to plan practice for") },
+  { song_id: zSongId("Song ID to plan practice for") },
   ({ song_id }) => {
     const song = getSong(song_id);
     const songInfo = song
@@ -405,7 +408,7 @@ server.prompt(
   "maker_loop",
   "Create a verified reinterpretation of a song — the full maker loop: jam brief → propose a reharmonization → verify_harmony gates it → save, play, and see it. Every generation is verified by the platform's deterministic music tools before it ships.",
   {
-    song_id: z.string().describe("Source song ID to reinterpret (e.g. 'fur-elise')"),
+    song_id: zSongId("Source song ID to reinterpret (e.g. 'fur-elise')"),
     style: z.string().optional().describe("Target genre (e.g. 'jazz', 'blues', 'latin')"),
   },
   ({ song_id, style }) => {
@@ -460,8 +463,8 @@ registerTool(
   "list_songs",
   "Browse and search the piano song library. Filter by genre, difficulty, composer, or search query.",
   {
-    genre: z.enum(GENRES as unknown as [string, ...string[]]).optional().describe("Filter by genre"),
-    difficulty: z.enum(DIFFICULTIES as unknown as [string, ...string[]]).optional().describe("Filter by difficulty"),
+    genre: zGenre("Filter by genre").optional(),
+    difficulty: zDifficulty("Filter by difficulty").optional(),
     query: z.string().optional().describe("Search query (matches title, composer, tags, description)"),
     composer: z.string().optional().describe("Filter by composer (case-insensitive substring match)"),
   },
@@ -491,7 +494,7 @@ registerTool(
   "song_info",
   "Get detailed information about a specific song — musical language, teaching goals, key moments, structure.",
   {
-    id: z.string().describe("Song ID (kebab-case, e.g. 'moonlight-sonata-mvt1')"),
+    id: zSongId("Song ID (kebab-case, e.g. 'moonlight-sonata-mvt1')"),
   },
   async ({ id }) => {
     const song = getSong(id);
@@ -580,8 +583,8 @@ registerTool(
   "teaching_note",
   "Get the teaching note, fingering, and dynamics for a specific measure in a song.",
   {
-    id: z.string().describe("Song ID"),
-    measure: z.number().int().min(1).describe("Measure number (1-based)"),
+    id: zSongId("Song ID"),
+    measure: zMeasure("Measure number (1-based)"),
   },
   async ({ id, measure }) => {
     const song = getSong(id);
@@ -622,8 +625,8 @@ registerTool(
   "suggest_song",
   "Get a song recommendation based on genre preference and/or difficulty level.",
   {
-    genre: z.enum(GENRES as unknown as [string, ...string[]]).optional().describe("Preferred genre"),
-    difficulty: z.enum(DIFFICULTIES as unknown as [string, ...string[]]).optional().describe("Desired difficulty"),
+    genre: zGenre("Preferred genre").optional(),
+    difficulty: zDifficulty("Desired difficulty").optional(),
     maxDuration: z.number().optional().describe("Maximum duration in seconds"),
   },
   async (params) => {
@@ -664,7 +667,7 @@ registerTool(
   "list_measures",
   "Get an overview of all measures in a song, showing right hand, left hand, and any teaching notes.",
   {
-    id: z.string().describe("Song ID"),
+    id: zSongId("Song ID"),
     startMeasure: z.number().int().min(1).optional().describe("Start measure (1-based, default: 1)"),
     endMeasure: z.number().int().min(1).optional().describe("End measure (1-based, default: last)"),
   },
@@ -726,7 +729,7 @@ registerTool(
   "preview_teaching_cues",
   "Preview all teaching cues for a song — teaching notes, dynamics markings, and fingering suggestions per measure. Use this to see what guidance is available before playing.",
   {
-    id: z.string().describe("Song ID"),
+    id: zSongId("Song ID"),
     types: z.array(z.enum(["teaching", "dynamics", "fingering"])).optional()
       .describe("Filter by cue type (default: all). Options: teaching, dynamics, fingering"),
   },
@@ -801,7 +804,7 @@ registerTool(
   "practice_setup",
   "Get a recommended practice configuration for a song — speed, mode, voice settings, and CLI command. Tailored to the song's difficulty and teaching goals.",
   {
-    id: z.string().describe("Song ID"),
+    id: zSongId("Song ID"),
     playerLevel: z.enum(["beginner", "intermediate", "advanced"]).optional()
       .describe("Player's skill level (overrides song-based suggestion)"),
   },
@@ -881,7 +884,7 @@ registerTool(
   "sing_along",
   "Get singable text (note names, solfege, contour, or syllables) for a range of measures. Optionally enable piano accompaniment for synchronized singing + playback.",
   {
-    id: z.string().describe("Song ID"),
+    id: zSongId("Song ID"),
     startMeasure: z.number().int().min(1).optional().describe("Start measure (1-based, default: 1)"),
     endMeasure: z.number().int().min(1).optional().describe("End measure (1-based, default: last)"),
     mode: z.enum(["note-names", "solfege", "contour", "syllables"]).optional()
@@ -1119,7 +1122,7 @@ registerTool(
   "play_song",
   "Play a song through the built-in audio engine. Default is sampled piano when Accurate-Salamander is installed, otherwise the oscillator piano. Accepts a library song ID or a path to a .mid file. Returns immediately with session info while playback runs in the background.",
   {
-    id: z.string().describe("Song ID (e.g. 'autumn-leaves', 'let-it-be') OR path to a .mid file"),
+    id: zSongId("Song ID (e.g. 'autumn-leaves', 'let-it-be') OR path to a .mid file"),
     speed: z.number().min(0.1).max(4).optional().describe("Speed multiplier (0.5 = half speed, 1.0 = normal, 2.0 = double)"),
     tempo: z.number().int().min(10).max(400).optional().describe("Override tempo in BPM (10-400). Omit to use the song's original tempo"),
     mode: z.enum(["full", "measure", "hands", "loop"]).optional().describe("Playback mode: 'full' (default), 'measure' (one at a time), 'hands' (separate then together), 'loop'"),
@@ -1586,7 +1589,7 @@ registerTool(
   "practice_loop",
   "Start a practice loop: drills a measure range at reduced tempo, ramping toward full speed one step at a time — but only after a CLEAN pass (accurate + complete), never on a fixed schedule. Metronome + a count-in are on by default, every pass is recorded and scored. Returns immediately with the first pass's micro-goal while it runs in the background — poll with practice_status, stop with stop_playback.",
   {
-    id: z.string().describe("Song ID from the library (e.g. 'fur-elise')"),
+    id: zSongId("Song ID from the library (e.g. 'fur-elise')"),
     startMeasure: z.number().int().min(1).describe("First measure of the drilled range (1-based)"),
     endMeasure: z.number().int().min(1).describe("Last measure of the drilled range (1-based, inclusive)"),
     speedStartPct: z.number().min(1).max(400).optional().describe("Starting speed, percent of the song's tempo. Default: 70"),
@@ -1936,16 +1939,12 @@ registerTool(
   "ai_jam_sessions",
   "Start a jam session — get a 'jam brief' with chord progression, melody outline, structure, and style hints. Provide a songId for a specific song, or just a genre to jam on a random pick. Use the brief to create your own interpretation, then save with add_song and play with play_song.",
   {
-    songId: z.string().optional()
-      .describe("Source song ID to jam on (e.g. 'autumn-leaves'). Optional if genre is provided."),
-    genre: z.enum(GENRES as unknown as [string, ...string[]]).optional()
-      .describe("Pick a random song from this genre to jam on (e.g., 'jazz', 'blues'). Used when no songId is provided."),
-    style: z.enum(GENRES as unknown as [string, ...string[]]).optional()
-      .describe("Target genre for reinterpretation (e.g., turn a classical piece into jazz)"),
+    songId: zSongId("Source song ID to jam on (e.g. 'autumn-leaves'). Optional if genre is provided.").optional(),
+    genre: zGenre("Pick a random song from this genre to jam on (e.g., 'jazz', 'blues'). Used when no songId is provided.").optional(),
+    style: zGenre("Target genre for reinterpretation (e.g., turn a classical piece into jazz)").optional(),
     mood: z.string().optional()
       .describe("Target mood (e.g., 'upbeat', 'melancholic', 'dreamy', 'energetic', 'gentle', 'playful')"),
-    difficulty: z.enum(DIFFICULTIES as unknown as [string, ...string[]]).optional()
-      .describe("Target difficulty level"),
+    difficulty: zDifficulty("Target difficulty level").optional(),
     measures: z.string().optional()
       .describe("Measure range to focus on (e.g., '1-8' for just the opening)"),
   },
@@ -2000,9 +1999,7 @@ registerTool(
       'Voicings are note tokens (space or "+" separated, optional :duration suffixes). ' +
       "Supported chord suffixes: maj (empty), m, 7, maj7, m7, dim, m7b5, aug, sus4, sus2.",
     ),
-    songId: z.string().optional().describe(
-      "Verify against this library song's right-hand melody (e.g. 'fur-elise'). Combine with measures to select a range.",
-    ),
+    songId: zSongId("Verify against this library song's right-hand melody (e.g. 'fur-elise'). Combine with measures to select a range.").optional(),
     measures: z.string().optional().describe(
       "Measure range within the song, e.g. '1-8'. Only used with songId.",
     ),
@@ -2036,14 +2033,12 @@ registerTool(
         return { measure: rec.measure, intendedChord: rec.intendedChord, voicing: rec.voicing };
       });
     } catch (err) {
-      return {
-        content: [{
-          type: "text",
-          text: `Couldn't parse reharmonization: ${err instanceof Error ? err.message : String(err)}\n` +
-            `Expected: [{"measure": 1, "intendedChord": "Am7", "voicing": "A2 C3 E3 G3"}, ...]`,
-        }],
-        isError: true,
-      };
+      const detail = err instanceof Error ? err.message : String(err);
+      return mcpStructuredError(
+        "bad_reharmonization",
+        `Couldn't parse reharmonization: ${detail}`,
+        'Pass a JSON array: [{"measure": 1, "intendedChord": "Am7", "voicing": "A2 C3 E3 G3"}, ...]',
+      );
     }
 
     // Resolve the melody: library song or inline
@@ -2052,10 +2047,11 @@ registerTool(
     if (songId) {
       const song = getSong(songId);
       if (!song) {
-        return {
-          content: [{ type: "text", text: `No song called "${songId}" in the library. Try list_songs to browse.` }],
-          isError: true,
-        };
+        return mcpStructuredError(
+          "song_not_found",
+          `No song called "${songId}" in the library.`,
+          "Browse with list_songs, then pass an exact song id.",
+        );
       }
       let songMeasures = song.measures;
       if (measures) {
@@ -2063,10 +2059,11 @@ registerTool(
           const [start, end] = parseMeasureRange(measures, song.measures.length);
           songMeasures = song.measures.slice(start, end + 1);
         } catch (err) {
-          return {
-            content: [{ type: "text", text: err instanceof Error ? err.message : String(err) }],
-            isError: true,
-          };
+          return mcpStructuredError(
+            "bad_measure_range",
+            err instanceof Error ? err.message : String(err),
+            'Use "N" or "start-end", e.g. "1-8".',
+          );
         }
       }
       melodyMeasures = songMeasures.map((m) => ({ number: m.number, rightHand: m.rightHand }));
@@ -2083,20 +2080,19 @@ registerTool(
           return { number: rec.number, rightHand: rec.rightHand };
         });
       } catch (err) {
-        return {
-          content: [{
-            type: "text",
-            text: `Couldn't parse melody: ${err instanceof Error ? err.message : String(err)}\n` +
-              `Expected: [{"number": 1, "rightHand": "E5:e D#5:e"}, ...]`,
-          }],
-          isError: true,
-        };
+        const detail = err instanceof Error ? err.message : String(err);
+        return mcpStructuredError(
+          "bad_melody",
+          `Couldn't parse melody: ${detail}`,
+          'Pass a JSON array: [{"number": 1, "rightHand": "E5:e D#5:e"}, ...]',
+        );
       }
     } else {
-      return {
-        content: [{ type: "text", text: "I need either a songId (with optional measures range) or an inline melody to verify against." }],
-        isError: true,
-      };
+      return mcpStructuredError(
+        "missing_input",
+        "I need either a songId (with optional measures range) or an inline melody to verify against.",
+        "Pass songId from list_songs, or an inline melody JSON array.",
+      );
     }
 
     const verdict = verifyHarmony(melodyMeasures, reharm, { key: effectiveKey, maxChromaticRatio });
@@ -2122,7 +2118,7 @@ registerTool(
   "auto_reharmonize",
   "Reharmonize a section of a library song with the local inference maker. The Phase-C loop: a local model proposes chord symbols, a deterministic voicer renders each voicing (chord fidelity guaranteed), and verify_harmony admits or rejects — resampling best-of-n until a reharmonization passes. Returns the verified per-measure {measure, intendedChord, voicing} plus telemetry (samplesUsed, passedAtSample, verified). By default the model emits an ABC lead sheet ('abc' format), which is far more reliable than a JSON chord array (measured on the frozen E-R set: ABC 0% empty output vs JSON 50%). Needs a local Ollama model (default qwen2.5:7b); if Ollama is not running it returns a structured error instead of failing, and every OTHER tool in this server is unaffected. May take up to ~a minute at the default best-of-16 budget.",
   {
-    songId: z.string().describe("Library song to reharmonize (e.g. 'fur-elise'). Browse with list_songs."),
+    songId: zSongId("Library song to reharmonize (e.g. 'fur-elise'). Browse with list_songs."),
     measures: z.string().optional().describe("Measure range (1-based), e.g. '1-8'. Default: measures 1-8."),
     style: z.string().optional().describe("Optional target style hint woven into the brief, e.g. 'jazz', 'bossa nova'."),
     maxSamples: z.number().int().min(1).max(64).optional().describe("Best-of-n budget (default 16, the measured knee). Higher = more coverage, more time."),
@@ -2202,7 +2198,7 @@ registerTool(
 
 registerTool(
   "compose_panel",
-  "Run a cross-family local-LLM 'best-worst' panel over how the composition engine voices library songs — a directional ranking, not a quality measure (local models judging note-names can't hear the music; that needs a blind human-audio panel). It realizes each song four ways (root-position floor, nearest-tone leader, refined, and the engine = model-spec best-of-n + refine), then several disjoint local judge families rank them blind. A discrimination-floor gate returns UNINTERPRETABLE if the judges can't rank the theory-valid system above the theory-invalid floor; INCONCLUSIVE is a normal outcome. Needs local Ollama (judges default to mistral-small/granite/gemma/aya — none is the generator family); fail-soft. Runs slowly (several minutes) since it generates + judges with 24–31B models.",
+  "Run a cross-family local-LLM 'best-worst' panel over how the composition engine voices library songs — a directional ranking, not a quality measure (local models judging note-names can't hear the music; that needs a blind human-audio panel). It realizes each song four ways (root-position floor, nearest-tone leader, refined, and the engine = model-spec best-of-n + refine), then several disjoint local judge families rank them blind. A discrimination-floor gate returns UNINTERPRETABLE if the judges can't rank the theory-valid system above the theory-invalid floor; INCONCLUSIVE is a normal outcome. Needs local Ollama (judges default to mistral-small/granite/gemma/aya — none is the generator family); fail-soft. Runs slowly (several minutes) since it generates + judges with 24–31B models. It runs for minutes and reports progress (per judge × song) when the client sends a progress token.",
   {
     songs: z.string().optional().describe("Comma-separated library song ids (e.g. 'let-it-be,all-of-me'). Default: a genre-diverse set of 10. Browse with list_songs."),
     measures: z.string().optional().describe("Measure range (1-based), e.g. '1-8'. Default: measures 1-8."),
@@ -2211,11 +2207,9 @@ registerTool(
     judges: z.string().optional().describe("Comma-separated judge families as 'model:family' (e.g. 'mistral-small:24b:mistral'). Default four disjoint local families, none of them qwen (the generator)."),
     genModel: z.string().optional().describe("Local Ollama model the engine generates with (default 'qwen2.5:7b')."),
   },
-  async ({ songs, measures, style, n, judges, genModel }) => {
-    const structuredError = (code: string, message: string, hint: string) => ({
-      content: [{ type: "text" as const, text: `❌ ${message}\n\n` + JSON.stringify({ error: { code, message, hint } }, null, 2) }],
-      isError: true,
-    });
+  async ({ songs, measures, style, n, judges, genModel }, extra) => {
+    const structuredError = mcpStructuredError;
+    const progressToken = extra?._meta?.progressToken;
 
     const voices = 4;
     const STYLE_PRESETS = ["common-practice", "lead-sheet", "film-ambient"] as const;
@@ -2281,7 +2275,22 @@ registerTool(
 
     let result;
     try {
-      result = await runComposePanelTool({ progressions, systems, judges: reachableJudges, style: styleName, anchors: { floor: "floor", valid: "refined", engine: "engine" } });
+      result = await runComposePanelTool({
+        progressions,
+        systems,
+        judges: reachableJudges,
+        style: styleName,
+        anchors: { floor: "floor", valid: "refined", engine: "engine" },
+        onVoteStep: progressToken === undefined
+          ? undefined
+          : async (info) => {
+            try {
+              await extra.sendNotification(panelProgressNotification(progressToken, info));
+            } catch {
+              // Progress is best-effort — a dropped client must not fail the panel.
+            }
+          },
+      });
     } catch (err) {
       return structuredError("panel_failed", "The panel errored while running.", err instanceof Error ? err.message : String(err));
     }
@@ -2387,10 +2396,10 @@ registerTool(
   "Import a MIDI file as a song. Provide the file path and metadata. The MIDI is parsed into measures with right/left hand separation, converted to a SongEntry JSON, and saved to ~/.ai-jam-sessions/songs/. User songs persist across server restarts and package updates.",
   {
     midi_path: z.string().describe("Path to .mid file"),
-    id: z.string().describe("Song ID (kebab-case, e.g. 'fur-elise')"),
+    id: zSongId("Song ID (kebab-case, e.g. 'fur-elise')"),
     title: z.string().describe("Song title"),
-    genre: z.enum(GENRES as unknown as [string, ...string[]]).describe("Genre"),
-    difficulty: z.enum(DIFFICULTIES as unknown as [string, ...string[]]).describe("Difficulty"),
+    genre: zGenre("Genre"),
+    difficulty: zDifficulty("Difficulty"),
     key: z.string().describe("Key signature (e.g. 'C major', 'A minor')"),
     composer: z.string().optional().describe("Composer or artist"),
     description: z.string().optional().describe("1-3 sentence description of the piece"),
@@ -2495,7 +2504,7 @@ registerTool(
   "detect_chord",
   "Detect the chord name from a set of currently-sounding MIDI note numbers (0-127). Useful for identifying what chord is being held during live playback. Returns the chord name (e.g. 'C', 'Gm7', 'F#/A#') and the note names involved.",
   {
-    notes: z.array(z.number().int().min(0).max(127)).min(1).max(64).describe("MIDI note numbers currently sounding, e.g. [60, 64, 67] for a C major triad"),
+    notes: zMidiNotes(),
   },
   async ({ notes }) => {
     const names = midiNotesToNames(notes);
@@ -2517,7 +2526,7 @@ registerTool(
   "view_piano_roll",
   "Render a piano roll visualization of a song as SVG. Returns an image showing note positions over time. Color modes: 'hand' (blue RH / coral LH, default) or 'pitch-class' (chromatic rainbow — each pitch class gets its own color, making harmonic patterns visible).",
   {
-    songId: z.string().describe("Song ID from the library (e.g. 'fur-elise')"),
+    songId: zSongId("Song ID from the library (e.g. 'fur-elise')"),
     startMeasure: z.number().int().min(1).optional().describe("First measure to render (1-based). Default: 1"),
     endMeasure: z.number().int().min(1).optional().describe("Last measure to render (1-based). Default: last measure"),
     color_mode: z.enum(["hand", "pitch-class"]).optional().describe("Note coloring: 'hand' (RH/LH, default) or 'pitch-class' (chromatic rainbow)"),
@@ -2594,7 +2603,7 @@ registerTool(
   "view_guitar_tab",
   "Render an interactive guitar tablature editor for a song as a self-contained HTML page. Open the output file in a browser for real-time playback cursor, click-to-add notes, drag editing, string/fret reassignment, and JSON export. Supports configurable guitar tunings.",
   {
-    songId: z.string().describe("Song ID from the library (e.g. 'autumn-leaves')"),
+    songId: zSongId("Song ID from the library (e.g. 'autumn-leaves')"),
     startMeasure: z.number().int().min(1).optional().describe("First measure to render (1-based). Default: 1"),
     endMeasure: z.number().int().min(1).optional().describe("Last measure to render (1-based). Default: last measure"),
     tuning: z.string().optional().describe("Guitar tuning: standard (default), drop-d, open-g, open-d, dadgad, open-e, half-step-down, full-step-down"),
@@ -3111,7 +3120,7 @@ registerTool(
   "Save a practice journal entry. Combines your reflections with auto-captured session data (what you just played, speed, measures, duration). The journal persists across sessions — next time, use read_practice_journal to pick up where you left off.",
   {
     note: z.string().describe("Your reflection — what you learned, what you noticed, what to try next. Write naturally, like a musician's notebook."),
-    song_id: z.string().optional().describe("Override which song this entry is about (defaults to the last song you played)"),
+    song_id: zSongId("Override which song this entry is about (defaults to the last song you played)").optional(),
   },
   async ({ note, song_id }) => {
     // Resolve session: use override song_id or fall back to last played
@@ -3165,7 +3174,7 @@ registerTool(
   "Read your practice journal — reflections, observations, and session history from previous sessions. Use this at the start of a session to remember what you learned before, or to review notes on a specific song.",
   {
     days: z.number().int().min(1).max(90).optional().describe("How many days back to read (default: 7)"),
-    song_id: z.string().optional().describe("Filter entries to a specific song"),
+    song_id: zSongId("Filter entries to a specific song").optional(),
   },
   async ({ days, song_id }) => {
     const journal = readJournal(days ?? 7, song_id);
@@ -3195,7 +3204,7 @@ registerTool(
   "annotate_song",
   "Annotate a raw song with musical language and promote it to 'ready' status. This is how you do your homework — study the exemplar in the genre, then write your own annotation for a raw song. Once annotated, the song becomes playable immediately.",
   {
-    song_id: z.string().describe("The song ID to annotate (must be a raw or annotated song in the library)"),
+    song_id: zSongId("The song ID to annotate (must be a raw or annotated song in the library)"),
     description: z.string().describe("1-3 sentence musical description of the piece"),
     structure: z.string().describe("Form/structure description (e.g. 'AABA 32-bar form', '12-bar blues')"),
     key_moments: z.array(z.string()).min(1).max(5).describe("Notable musical moments (1-5 items)"),
@@ -3274,7 +3283,7 @@ registerTool(
   "score_performance",
   "Score a MIDI performance against a song from the library. Compares note-by-note: pitch accuracy, timing, missed notes, and extra notes. Returns a structured assessment with metrics and practice suggestions. Use this after recording yourself playing a song to see how you did.",
   {
-    song_id: z.string().describe("Song ID to compare against (e.g. 'fur-elise')"),
+    song_id: zSongId("Song ID to compare against (e.g. 'fur-elise')"),
     midi_path: z.string().describe("Path to the recorded performance .mid file"),
     tolerance_ms: z.number().min(10).max(500).optional()
       .describe("Timing tolerance in ms (default 150). Lower = stricter grading."),
@@ -3425,7 +3434,7 @@ registerTool(
   "score_annotation",
   "Score the quality of a song's annotation (musicalLanguage) against exemplar standards. Evaluates completeness, depth, specificity, teaching value, and musical vocabulary. Use this after annotating a raw song to check your work before moving on.",
   {
-    song_id: z.string().describe("Song ID to evaluate (must have musicalLanguage)"),
+    song_id: zSongId("Song ID to evaluate (must have musicalLanguage)"),
   },
   async ({ song_id }) => {
     const song = getSong(song_id);
@@ -3510,8 +3519,8 @@ registerTool(
   "compare_songs",
   "Compare two songs to find shared harmonic, structural, and rhythmic patterns. Surfaces cross-genre connections and teaching opportunities. Use this to understand how different pieces relate musically.",
   {
-    song_a: z.string().describe("First song ID (e.g. 'fur-elise')"),
-    song_b: z.string().describe("Second song ID (e.g. 'autumn-leaves')"),
+    song_a: zSongId("First song ID (e.g. 'fur-elise')"),
+    song_b: zSongId("Second song ID (e.g. 'autumn-leaves')"),
   },
   async ({ song_a, song_b }) => {
     const a = getSong(song_a);
@@ -3542,7 +3551,7 @@ registerTool(
   "list_sections",
   "List the structural sections of a song (Intro, Verse, Chorus, etc.). Sections help with navigation, practice planning, and understanding song form.",
   {
-    id: z.string().describe("Song ID"),
+    id: zSongId("Song ID"),
   },
   async ({ id }) => {
     const song = getSong(id);
@@ -3591,7 +3600,7 @@ registerTool(
   "add_section",
   "Add a structural section marker to a song. Sections label parts like Intro, Verse, Chorus, Bridge, Coda — useful for teaching, navigation, and practice planning.",
   {
-    id: z.string().describe("Song ID"),
+    id: zSongId("Song ID"),
     name: z.string().min(1).max(50).describe("Section label (e.g., 'Intro', 'Verse 1', 'Chorus', 'Bridge')"),
     startMeasure: z.number().int().min(1).describe("First measure of this section (1-based)"),
     endMeasure: z.number().int().min(1).describe("Last measure of this section (1-based)"),
@@ -3670,7 +3679,7 @@ registerTool(
   "transpose_song",
   "Transpose a song to a different key. Shifts all notes by the specified number of semitones and registers the transposed version as a new song. Useful for matching student range or practicing in different keys.",
   {
-    id: z.string().describe("Song ID to transpose"),
+    id: zSongId("Song ID to transpose"),
     semitones: z.number().int().min(-12).max(12).describe("Semitones to shift: positive = up, negative = down (e.g., 2 = up a whole step, -3 = down a minor third)"),
   },
   async ({ id, semitones }) => {
