@@ -78,6 +78,11 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
   border-radius: 10px; background: var(--surface2); color: var(--text-muted);
 }
 .spacer { flex: 1; }
+.chrome-credit {
+  font-size: 10px; color: var(--text-muted); white-space: nowrap;
+  max-width: 240px; overflow: hidden; text-overflow: ellipsis;
+}
+.chrome-credit a { color: var(--text-muted); }
 
 /* ─── Piano Roll ─── */
 #piano-roll-container {
@@ -514,7 +519,7 @@ body.panel-mode #panel-view {
 .panel-rail {
   border-right: 1px solid var(--border);
   background: var(--surface);
-  padding: 14px 14px 24px;
+  padding: 12px 16px;
   overflow: auto;
   min-width: 0;
 }
@@ -527,7 +532,7 @@ body.panel-mode #panel-view {
 .panel-banner.loading { background: var(--warn-dim); color: var(--warn); border-color: var(--warn-border); }
 .panel-banner.failed { background: var(--danger-dim); color: var(--danger); border-color: var(--danger-border); }
 .panel-rail h2, .panel-main h2 {
-  font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+  font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;
   color: var(--text-muted); margin: 0 0 10px;
 }
 .panel-song { display: flex; flex-direction: column; gap: 2px; font-size: 13px; margin: 0 0 8px; min-width: 0; }
@@ -542,7 +547,8 @@ body.panel-mode #panel-view {
 .panel-ab { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
 .panel-ab button, .panel-transport button, .panel-votes button, .panel-rail button {
   background: var(--surface2); color: var(--text); border: 1px solid var(--border);
-  border-radius: 6px; padding: 10px 12px; font: inherit; cursor: pointer;
+  border-radius: 4px; padding: 4px 8px; font-size: 11px; font-family: var(--font); cursor: pointer;
+  min-height: 24px;
 }
 .panel-ab button { min-height: 88px; font-size: 22px; font-weight: 700; }
 .panel-ab button.active, .panel-transport button.active { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); }
@@ -551,7 +557,7 @@ body.panel-mode #panel-view {
 .panel-verdict.danger { border-color: var(--danger-border); background: var(--danger-dim); }
 .panel-verdict.amber { border-color: var(--warn-border); background: var(--warn-dim); }
 .panel-verdict.ok { border-color: var(--good-border); background: var(--good-dim); }
-.panel-verdict h3 { margin: 0 0 6px; font-size: 16px; }
+.panel-verdict h3 { margin: 0 0 6px; font-size: 15px; }
 .panel-score { display: flex; gap: 12px; align-items: baseline; padding: 6px 0; border-bottom: 1px solid var(--border); }
 .panel-score .mono, .panel-pairs .mono { font-family: var(--mono); font-size: 12px; }
 .panel-honesty {
@@ -561,10 +567,10 @@ body.panel-mode #panel-view {
 .panel-sub { display: flex; gap: 0; margin: 0 0 12px; }
 .panel-sub button {
   flex: 1; background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border);
-  padding: 6px 8px; font: inherit; font-size: 12px; cursor: pointer;
+  padding: 4px 8px; font: inherit; font-size: 11px; cursor: pointer; min-height: 24px;
 }
-.panel-sub button:first-child { border-radius: 6px 0 0 6px; }
-.panel-sub button:last-child { border-radius: 0 6px 6px 0; border-left: none; }
+.panel-sub button:first-child { border-radius: 4px 0 0 4px; }
+.panel-sub button:last-child { border-radius: 0 4px 4px 0; border-left: none; }
 .panel-sub button.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); font-weight: 600; }
 .panel-pill {
   display: inline-block; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
@@ -735,6 +741,30 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
   #keyboard { height: 120px; }
   #controls { border-left: none; border-top: 1px solid var(--border); }
 }
+
+/* VIS-016: Panel rail stacks above the audition column. Does not change
+   the roll UI's 1000px / 700px behavior. */
+@media (max-width: 720px) {
+  html:has(body.panel-mode),
+  body.panel-mode {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: auto;
+  }
+  body.panel-mode #app {
+    height: auto;
+    min-height: 100vh;
+    grid-template-rows: auto 1fr;
+  }
+  body.panel-mode #panel-view {
+    grid-template-columns: 1fr;
+    overflow: visible;
+  }
+  body.panel-mode .panel-rail {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+}
 </style>
 </head>
 <body>
@@ -812,6 +842,7 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
     </div>
 
     <div class="spacer"></div>
+    <span class="chrome-credit" id="chrome-credit" title="Concert Grand samples: Salamander Grand Piano by Alexander Holm, CC-BY 3.0">Concert Grand: <a href="https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html">Salamander</a> · <a href="http://creativecommons.org/licenses/by/3.0/">CC-BY 3.0</a> Holm</span>
     <span class="status-badge" id="badge-voices">0 voices</span>
     <span class="status-badge" id="badge-tuning">12-TET</span>
   </header>
