@@ -29,6 +29,7 @@ import { mkdtempSync, rmSync, existsSync, symlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { parsePlaySessionFlags, parsePracticeArgs } from "./cli.js";
+import { JamError } from "./errors.js";
 
 const CLI_PATH = fileURLToPath(new URL("./cli.ts", import.meta.url));
 const REPO_ROOT = dirname(dirname(CLI_PATH)); // .../src/cli.ts -> .../src -> repo root
@@ -100,6 +101,17 @@ describe("parsePracticeArgs", () => {
     expect(() => parsePracticeArgs(["fur-elise"])).toThrow(/--measures/);
   });
 
+  it("missing --measures is a JamError INPUT_INVALID_ARGS (P9-006)", () => {
+    try {
+      parsePracticeArgs(["fur-elise"]);
+      expect.unreachable();
+    } catch (err) {
+      expect(err).toBeInstanceOf(JamError);
+      expect((err as JamError).code).toBe("INPUT_INVALID_ARGS");
+      expect((err as JamError).hint).toMatch(/5-8/);
+    }
+  });
+
   it("parses a start-end measure range", () => {
     const parsed = parsePracticeArgs(["fur-elise", "--measures", "5-8"]);
     expect(parsed.songId).toBe("fur-elise");
@@ -162,21 +174,37 @@ describe("parsePracticeArgs", () => {
 
 describe("cli.ts — dispatch (spawned subprocess)", () => {
   it(
-    "`practice` with no song id prints usage to stderr and exits 1",
+    "`practice` with no song id prints JamError grammar to stderr and exits 1",
     () => {
       const { status, stderr } = runCli(["practice"]);
       expect(status).toBe(1);
       expect(stderr).toMatch(/usage/i);
+      expect(stderr).toMatch(/\[INPUT_INVALID_ARGS\]/);
+      expect(stderr).toMatch(/^Hint:/m);
     },
     20000,
   );
 
   it(
-    "`practice <unknown-song> --measures 1-2` exits 1 with a 'not found' message (proves dispatch reaches song lookup)",
+    "`practice fur-elise` without --measures prints JamError INPUT_INVALID_ARGS + Hint",
+    () => {
+      const { status, stderr } = runCli(["practice", "fur-elise"]);
+      expect(status).toBe(1);
+      expect(stderr).toMatch(/--measures/);
+      expect(stderr).toMatch(/\[INPUT_INVALID_ARGS\]/);
+      expect(stderr).toMatch(/^Hint:/m);
+    },
+    20000,
+  );
+
+  it(
+    "`practice <unknown-song> --measures 1-2` exits 1 with JamError INPUT_INVALID_SONG + Hint",
     () => {
       const { status, stderr } = runCli(["practice", "not-a-real-song-xyz", "--measures", "1-2"]);
       expect(status).toBe(1);
       expect(stderr).toMatch(/not found/i);
+      expect(stderr).toMatch(/\[INPUT_INVALID_SONG\]/);
+      expect(stderr).toMatch(/^Hint:/m);
     },
     20000,
   );
@@ -207,6 +235,16 @@ describe("cli.ts — dispatch (spawned subprocess)", () => {
       const { status, stdout } = runCli(["help"]);
       expect(status).toBe(0);
       expect(stdout).toMatch(/practice/);
+    },
+    20000,
+  );
+
+  it(
+    "`help` lists the `library` command (P9-005)",
+    () => {
+      const { status, stdout } = runCli(["help"]);
+      expect(status).toBe(0);
+      expect(stdout).toMatch(/library\s+Show library progress/);
     },
     20000,
   );
@@ -265,11 +303,13 @@ describe("cli.ts — dispatch (spawned subprocess)", () => {
   );
 
   it(
-    "`play <unknown-song>` exits 1 with a 'not found' message (proves dispatch reaches song lookup, before any audio connect)",
+    "`play <unknown-song>` exits 1 with JamError INPUT_INVALID_SONG + Hint",
     () => {
       const { status, stderr } = runCli(["play", "not-a-real-song-xyz"]);
       expect(status).toBe(1);
       expect(stderr).toMatch(/not found/i);
+      expect(stderr).toMatch(/\[INPUT_INVALID_SONG\]/);
+      expect(stderr).toMatch(/^Hint:/m);
     },
     20000,
   );
