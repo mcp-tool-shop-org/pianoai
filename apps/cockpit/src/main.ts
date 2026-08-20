@@ -2436,6 +2436,9 @@ function bindOnScreenKeyPointer(key: HTMLElement, midi: number): void {
 }
 
 function buildKeyboard() {
+  // VIS-010 close-as-designed: painted keys stay pointer-only. QWERTY
+  // (event.code map) and MIDI are the named keyboard paths; a tabindex on
+  // every key would trap tab-order inside two octaves. No focus ring here.
   const kb = $("keyboard");
 
   // White keys
