@@ -13,6 +13,7 @@ import {
   deserializeAllPanelRuns,
   emptyLlmRunRecord,
   rankingChartModel,
+  CHART_BAR_MIN_PX,
   BANNED_PANEL_VOCAB,
   NO_ELIGIBLE_JUDGES_MESSAGE,
   type LlmPanelRunRecord,
@@ -232,6 +233,16 @@ describe("interpretPanel + ranking chart — honesty sweep", () => {
     expect(bars[1].negative).toBe(true);
     expect(bars[1].leftPct).toBeLessThan(bars[1].zeroPct);
     expect(bars[0].leftPct).toBeCloseTo(bars[0].zeroPct, 5);
+  });
+
+  it("floors bar width at CHART_BAR_MIN_PX even when BWS is near zero", () => {
+    const scores: PanelScore[] = [
+      { id: "a", bwsScore: 0.001, btStrength: 1, best: 1, worst: 1, appearances: 4, ci: [0, 0.002] },
+    ];
+    const bars = rankingChartModel(scores, 200);
+    expect(CHART_BAR_MIN_PX).toBe(8);
+    expect(bars[0].widthPx).toBe(CHART_BAR_MIN_PX);
+    expect(bars[0].widthPct).toBeCloseTo((CHART_BAR_MIN_PX / 200) * 100, 8);
   });
 
   it("interpretPanel outputs stay inside the banned-vocab sweep", () => {

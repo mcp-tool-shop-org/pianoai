@@ -508,6 +508,7 @@ body.panel-mode #panel-view {
   grid-column: 1 / -1;
   grid-row: 2;
   min-height: 0;
+  min-width: 0;
   overflow: hidden;
 }
 .panel-rail {
@@ -515,17 +516,27 @@ body.panel-mode #panel-view {
   background: var(--surface);
   padding: 14px 14px 24px;
   overflow: auto;
+  min-width: 0;
 }
-.panel-main { padding: 16px 20px 32px; overflow: auto; }
+.panel-main { padding: 16px 20px 32px; overflow: auto; min-width: 0; }
+.panel-banner {
+  padding: 8px 10px; border-radius: 4px; border: 1px solid var(--border);
+  font-size: 12px; line-height: 1.45; margin: 8px 0;
+}
+.panel-banner.empty { background: var(--surface2); color: var(--text-muted); border-style: dashed; }
+.panel-banner.loading { background: var(--warn-dim); color: var(--warn); border-color: var(--warn-border); }
+.panel-banner.failed { background: var(--danger-dim); color: var(--danger); border-color: var(--danger-border); }
 .panel-rail h2, .panel-main h2 {
   font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
   color: var(--text-muted); margin: 0 0 10px;
 }
-.panel-song { display: flex; flex-direction: column; gap: 2px; font-size: 13px; margin: 0 0 8px; }
+.panel-song { display: flex; flex-direction: column; gap: 2px; font-size: 13px; margin: 0 0 8px; min-width: 0; }
+.panel-song span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .panel-song em { font-style: normal; color: var(--text-muted); font-size: 11px; }
 .panel-chip {
   display: inline-block; font-family: var(--mono); font-size: 11px;
   border: 1px solid var(--border); border-radius: 10px; padding: 2px 8px; margin: 0 4px 4px 0;
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom;
 }
 .panel-note { font-size: 12px; color: var(--text-muted); line-height: 1.45; margin: 8px 0; }
 .panel-ab { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
@@ -539,7 +550,7 @@ body.panel-mode #panel-view {
 .panel-verdict { border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin: 12px 0; }
 .panel-verdict.danger { border-color: var(--danger-border); background: var(--danger-dim); }
 .panel-verdict.amber { border-color: var(--warn-border); background: var(--warn-dim); }
-.panel-verdict.ok { border-color: var(--accent); background: var(--accent-dim); }
+.panel-verdict.ok { border-color: var(--good-border); background: var(--good-dim); }
 .panel-verdict h3 { margin: 0 0 6px; font-size: 16px; }
 .panel-score { display: flex; gap: 12px; align-items: baseline; padding: 6px 0; border-bottom: 1px solid var(--border); }
 .panel-score .mono, .panel-pairs .mono { font-family: var(--mono); font-size: 12px; }
@@ -563,12 +574,13 @@ body.panel-mode #panel-view {
 .panel-pill.danger { color: var(--danger); border-color: var(--danger-border); background: var(--danger-dim); }
 .panel-pill.amber { color: var(--warn); border-color: var(--warn-border); background: var(--warn-dim); }
 .panel-kind { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; border: 1px solid var(--border); border-radius: 8px; padding: 1px 6px; margin-right: 6px; }
-.panel-history-item { display: block; width: 100%; text-align: left; margin: 0 0 6px; font-size: 12px; }
-.panel-chart { margin: 10px 0 14px; }
-.panel-chart-row { display: grid; grid-template-columns: 72px 1fr 56px; gap: 8px; align-items: center; margin: 6px 0; }
-.panel-chart-track { position: relative; height: 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 3px; }
+.panel-history-item { display: block; width: 100%; text-align: left; margin: 0 0 6px; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.panel-chart { margin: 10px 0 14px; min-width: 0; }
+.panel-chart-row { display: grid; grid-template-columns: minmax(0, 72px) minmax(0, 1fr) 56px; gap: 8px; align-items: center; margin: 6px 0; min-width: 0; }
+.panel-chart-row > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.panel-chart-track { position: relative; height: 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 3px; min-width: 0; }
 .panel-chart-zero { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--text-muted); }
-.panel-chart-bar { position: absolute; top: 2px; height: 8px; border-radius: 2px; }
+.panel-chart-bar { position: absolute; top: 2px; height: 8px; border-radius: 2px; min-width: 8px; }
 .panel-chart-bar.pos { background: var(--accent); }
 .panel-chart-bar.neg { background: var(--danger); }
 .panel-chart-wh { position: absolute; top: 6px; height: 2px; background: var(--text); opacity: 0.7; }

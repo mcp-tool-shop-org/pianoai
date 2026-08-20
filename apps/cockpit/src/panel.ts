@@ -197,16 +197,16 @@ function renderConfigRail(): void {
   const list = $("panel-songs");
   if (!list.dataset.ready) {
     list.innerHTML = DEFAULT_PANEL_SONGS.map((s) => (
-      `<label class="panel-song"><input type="checkbox" value="${s.id}" checked> ` +
+      `<label class="panel-song" title="${s.title}"><input type="checkbox" value="${s.id}" checked> ` +
       `<span>${s.title}</span><em>${s.genre} · ${s.key}</em></label>`
     )).join("");
     list.dataset.ready = "1";
   }
   const systems = detectSystems(engineProbe.reachable);
-  $("panel-systems").innerHTML = systems.map((id) => `<span class="panel-chip">${id}</span>`).join("")
-    + (engineProbe.reachable ? "" : `<p class="panel-note">${ENGINE_UNAVAILABLE_MESSAGE}</p>`);
+  $("panel-systems").innerHTML = systems.map((id) => `<span class="panel-chip" title="${id}">${id}</span>`).join("")
+    + (engineProbe.reachable ? "" : `<p class="panel-banner failed">${ENGINE_UNAVAILABLE_MESSAGE}. Start Ollama locally and open Panel again.</p>`);
   if (engineProbe.corsBlocked) {
-    $("panel-systems").innerHTML += `<p class="panel-note">Browser could not reach the local model (CORS or no server). Slice B owns the bridge.</p>`;
+    $("panel-systems").innerHTML += `<p class="panel-banner failed">This origin cannot reach the local model (CORS). Start Ollama, or run the cockpit from a same-origin page.</p>`;
   }
   $("panel-n-label").textContent = listenerCountLabel(countIndependentListeners());
 }
@@ -223,7 +223,7 @@ async function startRun(): Promise<void> {
   if (preparing) return;
   preparing = true;
   try {
-    setStatus("Probing the local model and building trials…");
+    setStatus("Probing the local model and building trials…", "loading");
     engineProbe = await probeLocalModel(fetch);
     const systems = detectSystems(engineProbe.reachable);
     const seed = Number(($("panel-seed-value") as HTMLInputElement).value) >>> 0;
@@ -330,19 +330,19 @@ async function prepareCurrentTrial(): Promise<void> {
   if (!run) return;
   const trial = run.trials[trialIndex];
   if (!trial) { renderTrial(); renderOutcome(); return; }
-  setStatus("Rendering the reference, A, and B through the same piano the roll plays…");
+  setStatus("Rendering the reference, A, and B through the same piano the roll plays…", "loading");
   stopPlayback();
   pair = null;
   const ctx = await host.ensureAudio();
   if (!player) player = createClipPlayer(ctx, ctx.destination);
   const song = getPanelSong(trial.songId);
-  if (!song) { setStatus("Missing catalog song."); return; }
+  if (!song) { setStatus("This song is not in the catalog. Pick another song and start again.", "failed"); return; }
   let realA: Realization;
   let realB: Realization;
   try {
     [realA, realB] = await Promise.all([realize(trial.songId, trial.sideA), realize(trial.songId, trial.sideB)]);
   } catch (err) {
-    setStatus(`Audio halt: ${err instanceof Error ? err.message : String(err)}`);
+    setStatus(`Could not realize a voicing (${err instanceof Error ? err.message : String(err)}). Start a new run.`, "failed");
     return;
   }
   const notesA = clipNotesFor(song.melody, realA, song.beatsPerMeasure);
@@ -367,12 +367,12 @@ async function prepareCurrentTrial(): Promise<void> {
       renderClipOffline({ notes: notesR, durationSec: dur, bpm: song.bpm, voiceId, pack }),
     ]);
   } catch (err) {
-    setStatus(`Audio halt: ${err instanceof Error ? err.message : String(err)}`);
+    setStatus(`Could not realize a voicing (${err instanceof Error ? err.message : String(err)}). Start a new run.`, "failed");
     return;
   }
   const match = matchPair(a, b);
   if (!match.ok) {
-    setStatus(`ANDON — ${match.reason}. Unmatched A/B will not be presented.`);
+    setStatus(`ANDON — ${match.reason}. This trial will not play. Start a new run.`, "failed");
     return;
   }
   pair = { a, b, ref, gainA: match.gainA, gainB: match.gainB };
@@ -452,8 +452,10 @@ function vote(picked: "A" | "B"): void {
   void prepareCurrentTrial();
 }
 
-function setStatus(msg: string): void {
-  $("panel-status").textContent = msg;
+function setStatus(msg: string, kind: "info" | "loading" | "empty" | "failed" = "info"): void {
+  const el = $("panel-status");
+  el.textContent = msg;
+  el.className = kind === "info" ? "" : `panel-banner ${kind}`;
 }
 
 function renderTrial(): void {
@@ -497,7 +499,7 @@ function floorStats(r: HumanAudioRunRecord): { floorTrials: number; mis: number;
 function renderOutcome(): void {
   const box = $("panel-outcome");
   if (!run || run.votes.length === 0) {
-    box.innerHTML = `<p class="panel-note">No votes yet. Start a run and pick which backing fits the tune.</p>`;
+    box.innerHTML = `<p class="panel-banner empty">No votes yet. Start a run, then pick which backing fits the tune.</p>`;
     return;
   }
   const { floorTrials, mis, validWins } = floorStats(run);
@@ -547,7 +549,7 @@ function renderOutcome(): void {
 
 function exportRun(): void {
   if (!run) {
-    setStatus("No run to export yet.");
+    setStatus("No run to export yet. Finish at least one trial, then export.", "empty");
     return;
   }
   renderOutcome();
@@ -588,7 +590,7 @@ function rankingChartHtml(scores: { id: string; bwsScore: number; ci: [number, n
   const bars = rankingChartModel(scores);
   const rows = bars.map((b) => (
     `<div class="panel-chart-row">` +
-    `<span>${b.id}</span>` +
+    `<span title="${b.id}">${b.id}</span>` +
     `<div class="panel-chart-track" aria-hidden="true">` +
     `<i class="panel-chart-zero" style="left:${b.zeroPct}%"></i>` +
     `<i class="panel-chart-bar ${b.negative ? "neg" : "pos"}" style="left:${b.leftPct}%;width:${b.widthPct}%"></i>` +
@@ -611,7 +613,8 @@ async function refreshJudgeRoster(): Promise<void> {
     judgeSeats = [];
     box.innerHTML = "";
     empty.hidden = false;
-    empty.textContent = ENGINE_UNAVAILABLE_MESSAGE + " — install or start Ollama, then open this tab again.";
+    empty.className = "panel-banner failed";
+    empty.textContent = ENGINE_UNAVAILABLE_MESSAGE + " Start Ollama locally, then open this tab again.";
     start.disabled = true;
     return;
   }
@@ -625,13 +628,14 @@ async function refreshJudgeRoster(): Promise<void> {
   if (judgeSeats.length === 0) {
     box.innerHTML = "";
     empty.hidden = false;
+    empty.className = "panel-banner failed";
     empty.textContent = NO_ELIGIBLE_JUDGES_MESSAGE;
     start.disabled = true;
     return;
   }
   empty.hidden = true;
   start.disabled = false;
-  box.innerHTML = judgeSeats.map((s) => `<span class="panel-chip">${s.model} <em>(${s.family})</em></span>`).join("");
+  box.innerHTML = judgeSeats.map((s) => `<span class="panel-chip" title="${s.model} (${s.family})">${s.model} <em>(${s.family})</em></span>`).join("");
 }
 
 async function startLlmRun(): Promise<void> {
@@ -641,7 +645,7 @@ async function startLlmRun(): Promise<void> {
   try {
     await refreshJudgeRoster();
     if (judgeSeats.length === 0) {
-      setStatus(NO_ELIGIBLE_JUDGES_MESSAGE);
+      setStatus(NO_ELIGIBLE_JUDGES_MESSAGE, "failed");
       return;
     }
     const seed = Number(($("panel-seed-value") as HTMLInputElement).value) >>> 0;
@@ -664,7 +668,7 @@ async function startLlmRun(): Promise<void> {
     for (const songId of songIds) {
       reals[songId] = {};
       for (const sys of systems) {
-        setStatus(`Realizing ${songId} / ${sys}…`);
+        setStatus(`Realizing ${songId} / ${sys}…`, "loading");
         reals[songId][sys] = await realize(songId, sys);
       }
     }
@@ -675,7 +679,7 @@ async function startLlmRun(): Promise<void> {
       for (let fi = 0; fi < judgeSeats.length; fi++) {
         const seat = judgeSeats[fi];
         step++;
-        setStatus(`Judging ${songId} with ${seat.model} (${step}/${total})…`);
+        setStatus(`Judging ${songId} with ${seat.model} (${step}/${total})…`, "loading");
         if (failed.has(seat.model)) {
           continue;
         }
@@ -716,7 +720,7 @@ async function startLlmRun(): Promise<void> {
     renderHistory();
     setStatus(`Local-model run complete — ${llmRun.votesCollected}/${llmRun.votesPossible} votes. Directional only.`);
   } catch (err) {
-    setStatus(`Local-model run halted: ${err instanceof Error ? err.message : String(err)}`);
+    setStatus(`Local-model run halted: ${err instanceof Error ? err.message : String(err)}. Start a new run.`, "failed");
   } finally {
     preparing = false;
     ($("panel-llm-start") as HTMLButtonElement).disabled = judgeSeats.length === 0;
@@ -765,7 +769,7 @@ function renderLlmView(): void {
   }
   box.hidden = false;
   if (!llmRun || !llmRun.result) {
-    box.innerHTML = `<p class="panel-note">Start a local-model run from the rail. Eligible judges are locally installed chat models outside the qwen generator family.</p>`;
+    box.innerHTML = `<p class="panel-banner empty">No local-model run yet. Choose songs, confirm judges on the rail, then start. Eligible judges are installed chat models outside the qwen2.5 generator family.</p>`;
     return;
   }
   const r = llmRun.result;
@@ -776,7 +780,7 @@ function renderLlmView(): void {
   )).join("");
   const failed = llmRun.judges.filter((j) => j.status === "failed");
   const failNote = failed.length
-    ? `<p class="panel-note">Judges marked unusable this run: ${failed.map((j) => `${j.model} (${j.failReason ?? "failed"})`).join("; ")}. Votes they already cast stay in the record.</p>`
+    ? `<p class="panel-banner failed">Judges marked unusable this run: ${failed.map((j) => `${j.model} (${j.failReason ?? "failed"})`).join("; ")}. Votes they already cast stay in the record. Start a new run to retry them.</p>`
     : "";
   const drills = llmRun.songIds.map((songId) => {
     const title = getPanelSong(songId)?.title ?? songId;
@@ -805,7 +809,7 @@ function renderLlmView(): void {
 async function playDrillDown(songId: string, sys: string): Promise<void> {
   const song = getPanelSong(songId);
   if (!song || !host) return;
-  setStatus(`Rendering ${song.title} / ${sys}…`);
+  setStatus(`Rendering ${song.title} / ${sys}…`, "loading");
   const real = await realize(songId, sys as HumanAudioSystemId);
   const notes = clipNotesFor(song.melody, real, song.beatsPerMeasure);
   const ctx = await host.ensureAudio();
@@ -822,7 +826,7 @@ async function playDrillDown(songId: string, sys: string): Promise<void> {
 
 function exportLlmRun(): void {
   if (!llmRun) {
-    setStatus("No local-model run to export yet.");
+    setStatus("No local-model run to export yet. Start a local-model run first.", "empty");
     return;
   }
   const blob = new Blob([JSON.stringify(llmRun, null, 2)], { type: "application/json" });
@@ -839,7 +843,7 @@ function renderHistory(): void {
   const llmSel = $("panel-cmp-llm") as HTMLSelectElement;
   const runs = loadAllRuns();
   if (runs.length === 0) {
-    box.innerHTML = `<p class="panel-note">No stored runs yet.</p>`;
+    box.innerHTML = `<p class="panel-banner empty">No stored runs yet. Finish a by-ear or local-model run to see it here.</p>`;
     humanSel.innerHTML = "";
     llmSel.innerHTML = "";
     return;
@@ -849,7 +853,8 @@ function renderHistory(): void {
     const verdict = r.kind === "llm"
       ? (r.result?.verdict.split(" — ")[0] ?? "in progress")
       : (r.outcome?.rankingHeadline ?? "in progress");
-    return `<button type="button" class="panel-history-item" data-hist="${r.createdAt}">` +
+    const label = `${kind} · ${r.songIds.join(", ")} · seed ${r.seed} · ${verdict}`;
+    return `<button type="button" class="panel-history-item" data-hist="${r.createdAt}" title="${label}">` +
       `<span class="panel-kind">${kind}</span>${r.songIds.join(", ")} · seed ${r.seed} · ${verdict}</button>`;
   }).join("");
   box.querySelectorAll<HTMLButtonElement>("[data-hist]").forEach((btn) => {
@@ -888,13 +893,13 @@ function renderCompare(): void {
   const human = runs.find((r): r is HumanAudioRunRecord => isHumanAudioRun(r) && r.createdAt === humanId);
   const llm = runs.find((r): r is LlmPanelRunRecord => isLlmRun(r) && r.createdAt === llmId);
   if (!human || !llm) {
-    out.innerHTML = `<p class="panel-note">Need one stored human-audio run and one local-model run.</p>`;
+    out.innerHTML = `<p class="panel-banner empty">Need one stored human-audio run and one local-model run. Run both modes, then compare.</p>`;
     return;
   }
   const humanRanking = human.outcome?.result.ranking ?? [];
   const llmRanking = llm.result?.ranking ?? [];
   if (humanRanking.length === 0 || llmRanking.length === 0) {
-    out.innerHTML = `<p class="panel-note">Both runs need a ranking before they can be compared.</p>`;
+    out.innerHTML = `<p class="panel-banner empty">Both runs need a ranking before they can be compared. Collect votes on the human side, or finish the local-model run.</p>`;
     return;
   }
   const cmp = comparePanelRankings({
