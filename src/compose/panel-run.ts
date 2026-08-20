@@ -57,6 +57,8 @@ export interface PanelRunOptions {
     step: number;
     total: number;
     dropped: boolean;
+    /** "start" = realization or a judgment is beginning; "done" = a vote completed. */
+    phase?: "start" | "done";
   }) => void | Promise<void>;
 }
 
@@ -86,11 +88,31 @@ export async function runVoiceLeadingPanel(opts: PanelRunOptions): Promise<Panel
 
   for (let si = 0; si < progressions.length; si++) {
     const { id: songId, progression } = progressions[si];
+    // Start events keep progress notifications flowing from the first second
+    // (P9-004): realization and a cold first judgment can each run past the
+    // SDK's 60s default client window if the stream were completion-only.
+    await opts.onVoteStep?.({
+      songId,
+      judgeFamily: "realize",
+      step,
+      total: votesPossible,
+      dropped: false,
+      phase: "start",
+    });
     const real: Record<string, Realization> = {};
     for (const s of systems) real[s.id] = await s.realize(progression);
 
     for (let fi = 0; fi < judges.length; fi++) {
       const judge = judges[fi];
+      await opts.onVoteStep?.({
+        songId,
+        judgeFamily: judge.family,
+        judgeModel: judge.model,
+        step,
+        total: votesPossible,
+        dropped: false,
+        phase: "start",
+      });
       const order = shuffledOrder(systems.length, makeRng(1000 * (si + 1) + 31 * (fi + 1)));
       const orderedIds = order.map((k) => systems[k].id);
       const optionsText = orderedIds.map((id) => renderVoicingText(real[id]));
@@ -108,6 +130,7 @@ export async function runVoiceLeadingPanel(opts: PanelRunOptions): Promise<Panel
         step,
         total: votesPossible,
         dropped: !v,
+        phase: "done",
       });
     }
   }

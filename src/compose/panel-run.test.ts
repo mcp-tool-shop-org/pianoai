@@ -90,9 +90,9 @@ describe("runVoiceLeadingPanel — orchestration with stub judges", () => {
     expect(report.votesCollected).toBe(PROGS.length * 2);
   });
 
-  it("onVoteStep fires once per judge × song with 1-based step/total (P9-004)", async () => {
+  it("onVoteStep streams start events from the first moment and a done per judge × song (P9-004)", async () => {
     const judges = [stubJudge("f1", "engine"), stubJudge("f2", "engine"), stubJudge("f3", "engine")];
-    const steps: Array<{ songId: string; judgeFamily: string; step: number; total: number; dropped: boolean }> = [];
+    const steps: Array<{ songId: string; judgeFamily: string; step: number; total: number; dropped: boolean; phase?: "start" | "done" }> = [];
     await runVoiceLeadingPanel({
       progressions: PROGS,
       systems: SYSTEMS,
@@ -102,9 +102,20 @@ describe("runVoiceLeadingPanel — orchestration with stub judges", () => {
       seed: 1,
       onVoteStep: (info) => { steps.push(info); },
     });
-    expect(steps).toHaveLength(PROGS.length * judges.length);
-    expect(steps[0]).toMatchObject({ songId: "song-a", judgeFamily: "f1", step: 1, total: 6, dropped: false });
-    expect(steps.at(-1)).toMatchObject({ step: 6, total: 6 });
+    // Per song: one realize start + (start + done) per judge.
+    expect(steps).toHaveLength(PROGS.length * (1 + judges.length * 2));
+    // The very first event fires before any model work — the cold-start timeout shield.
+    expect(steps[0]).toMatchObject({ songId: "song-a", judgeFamily: "realize", phase: "start", step: 0, total: 6 });
+    // Every done is immediately preceded by its own start.
+    for (let i = 0; i < steps.length; i++) {
+      if (steps[i].phase === "done") {
+        expect(steps[i - 1]).toMatchObject({ judgeFamily: steps[i].judgeFamily, songId: steps[i].songId, phase: "start" });
+      }
+    }
+    const dones = steps.filter((s) => s.phase === "done");
+    expect(dones).toHaveLength(PROGS.length * judges.length);
+    expect(dones[0]).toMatchObject({ songId: "song-a", judgeFamily: "f1", step: 1, total: 6, dropped: false });
+    expect(dones.at(-1)).toMatchObject({ step: 6, total: 6 });
   });
 });
 

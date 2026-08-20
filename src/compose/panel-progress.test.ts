@@ -27,4 +27,20 @@ describe("panelProgressNotification — P9-004 wiring", () => {
     expect(n.params.progressToken).toBe(7);
     expect(n.params.message).toBe("fur-elise × mistral: unparseable vote dropped");
   });
+
+  it("a judge start event says judging — the cold-start timeout shield (P9-004)", () => {
+    const n = panelProgressNotification("tok-1", { ...base, step: 1, phase: "start" });
+    expect(n.params.message).toBe("fur-elise × mistral: judging…");
+    expect(n.params.progress).toBe(1);
+  });
+
+  it("a realization start event names the song, not a judge", () => {
+    const n = panelProgressNotification("tok-1", {
+      ...base,
+      judgeFamily: "realize",
+      step: 0,
+      phase: "start",
+    });
+    expect(n.params.message).toBe("fur-elise: realizing the systems…");
+  });
 });
