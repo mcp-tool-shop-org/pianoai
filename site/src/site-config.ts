@@ -13,7 +13,7 @@ export const config: SiteConfig = {
     badge: 'MCP Server',
     headline: 'AI Jam Sessions.',
     headlineAccent: 'Machine learning the old fashioned way.',
-    description: 'An MCP server that teaches AI to play piano and guitar — and sing. 120 songs across 12 genres. Six sound engines. Interactive guitar tablature. A browser cockpit with vocal synthesizer. A practice journal that remembers everything. Plus jam-actions-v0, a 115-record public dataset of multi-turn MCP tool-use traces over classical piano.',
+    description: 'An MCP server that teaches AI to play piano and guitar — and sing. 120 songs across 12 genres. Six sound engines. Interactive guitar tablature. A browser cockpit with a sampled Concert Grand, a vocal synthesizer, and a blind listening panel. A practice journal that remembers everything. Plus jam-actions-v0, a 115-record public dataset of multi-turn MCP tool-use traces over classical piano.',
     primaryCta: { href: '#quick-start', label: 'Get started' },
     secondaryCta: { href: 'handbook/', label: 'Read the Handbook' },
     previews: [

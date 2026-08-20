@@ -49,6 +49,28 @@ Click any note in the piano roll to edit its velocity, vowel shape, and breathin
 
 Serialize the entire score as JSON and load it back. Use this to save compositions, share them, or feed them to another tool.
 
+## The Composition Panel
+
+The cockpit's third header mode (beside **Instr** and **Vocal**) is a listening room: it ranks the composition engine's accompaniments by ear, under real listening-test discipline, using your speakers as the measurement instrument.
+
+### By ear — the blind A/B audition
+
+Pick songs, press **Start run**, and the panel builds a seeded, shuffled trial list. Each trial gives you three buttons — **Reference** (the tune alone), **A**, and **B** — where A and B are the same melody over two different accompaniment voicings, blind. You vote for whichever backing fits the tune.
+
+The honesty machinery under it:
+
+- **Loudness-matched clips.** Every clip is rendered offline through the cockpit's real voice path (the sampled grand when loaded, the synth otherwise), and the louder side is attenuated so the pair matches within 0.5 dB — a merely-louder voicing can't win for the wrong reason. The measured offsets are stored in the run record.
+- **Floor catch-trials.** Some trials blindly pit a valid voicing against a theory-invalid floor. Mis-pick the floor too often (more than 15%) and the run screens you; if even screened votes can't separate valid from floor, the run is **UNINTERPRETABLE** — a first-class outcome that says the votes can't rank the systems, not an error.
+- **Honest rankings.** Votes aggregate into a Bradley-Terry ranking with bootstrap confidence intervals. The ranking stays **PROVISIONAL** until every pair reaches its vote budget (15 votes; ~66 per pair is the stable bar for four systems). One listener is labeled what it is — *your blind preference* — and three or more independent listeners is *the robust claim*.
+
+Keyboard: **1**/**2** switch A↔B at the same playhead, **Space** play/pause, **Esc** stop, **R** reference, **Enter** votes the clip you're hearing.
+
+### Local models — the directional panel
+
+The second sub-mode runs the same ranking with locally installed LLM judges over Ollama — one seat per model family, never the composition engine's own lineage, never embedding models or cloud-routed tags. A judge that fails mid-run is marked unusable for the rest of that run; its cast votes stay, and nothing is ever substituted in its name. The result is directional only — local models judging note-names can't hear the music.
+
+**History** lists both kinds of stored runs. **Compare** answers the panel's real question: pick one human run and one LLM run and it reports Kendall τ and whether the engine lands at the same rank — does the cheap proxy track the human truth? A provisional or uninterpretable human side is named for what it is.
+
 ## Tuning lab
 
 ### Seven tuning systems
@@ -83,8 +105,9 @@ The cockpit exposes `window.__cockpit` for programmatic control by an LLM:
 | `play()` | Start playback |
 | `stop()` | Stop playback |
 | `panic()` | All notes off (emergency stop) |
-| `setMode()` | Switch between instrument and vocal mode |
+| `setMode()` | Switch between instrument, vocal, and panel mode |
 | `getScore()` | Get current score without serializing |
+| `samplerState()` | The sampled Concert Grand's load state (`idle` / `loading` / `ready` / `failed`) |
 
 ## Practice journal
 

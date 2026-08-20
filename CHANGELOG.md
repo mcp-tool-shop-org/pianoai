@@ -5,6 +5,37 @@ All notable changes to AI Jam Sessions will be documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-08-20
+
+**The release where the instrument got real ears and a listening room.** Every prior release played through synthesized approximations; this one ships a sampled Concert Grand as the default piano and a blind listening room — the Composition Panel — where the composition engine's output is ranked by ear under real listening-test discipline. Around them: a full health pass, receipted public-domain re-sourcing of two library works, and a stranger-test hardening pass over the packed artifact.
+
+### Added — the sampled Concert Grand
+
+- **`sample` is a first-class server engine and the default when a pack is installed** (`samples/AccurateSalamander` or `AI_JAM_SAMPLES_DIR`); the npm tarball stays sample-free by design. The oscillator piano remains the zero-dependency fallback, now with velocity-shaped brightness (a 1.4–7.2 kHz velocity lowpass) and a gentler master compressor on both synthesis doors.
+- **The cockpit ships its own pruned pack** — 90 OGGs (30 roots at minor-third spacing × 3 velocity layers, ~8 MB) regenerable via a deterministic pruner script with a full provenance manifest (source archive sha256, encoder settings, per-file map). Loads on the first user gesture, plays through the synth's own output chain, falls back seamlessly, and reports its state via `window.__cockpit.samplerState()`. Only the Concert Grand preset routes to samples — the other nine voices keep their synth characters. Samples: Salamander Grand Piano by Alexander Holm, CC-BY 3.0, credited in-app and here.
+
+### Added — the Composition Panel (cockpit)
+
+- **By ear** — blind pairwise A/B auditions of the composition engine's voicings over real library melodies: reference/A/B clips offline-rendered through the *real* voice path and loudness-matched (attenuate-only, ≤0.5 dB RMS, offsets recorded per trial); seeded, shuffled trial lists with hidden floor catch-trials; Bradley-Terry rankings with bootstrap CIs; a MUSHRA-style >15% post-screen; PROVISIONAL until every pair meets its vote budget and UNINTERPRETABLE when the floor gate fails — first-class outcomes, not errors. Matched-playhead A/B switching with keyboard control; runs persist beside (never inside) the score and export as JSON.
+- **Local models** — the same ranking run by locally installed cross-family LLM judges (one seat per model family; the generator's whole lineage, embedding models, and cloud-routed tags never judge), with per-seat failure marked honestly and never substituted. **History** lists both run kinds; **Compare** reports Kendall τ-b and engine-rank match between a human run and an LLM run, naming a PROVISIONAL or UNINTERPRETABLE human side for what it is.
+- The panel's engine system honors the maker contract: the local model's voicing spec is repaired by the part-at-a-time refiner before it competes.
+
+### Added — the composition engine (`src/compose/`)
+
+- A deterministic voice-leading gate with a style-invariant hard floor plus named style presets (`common-practice`, `lead-sheet`, `film-ambient`), membership-by-construction voicing specs, a part-at-a-time refiner, best-of-n scoring, and the **`compose_panel`** MCP tool — a blind cross-family ranking panel with the discrimination-floor gate (directional signal only, never a quality score).
+
+### Changed
+
+- **Long tool calls stream progress**: `compose_panel` emits MCP progress notifications from the first second (realization and per-judgment start events plus completions), so default 60-second clients survive multi-minute runs instead of timing out.
+- **Errors teach**: invalid tool inputs return the protocol's `-32602` with messages that name the field, the expected shape, and an example (`notes must be an array of MIDI numbers, e.g. [60, 64, 67]`); `verify_harmony`'s failure paths join the structured `{code, message, hint}` envelope its siblings use; provoked CLI failures print `Error [CODE]` + `Hint:` with non-zero exits.
+- **The tarball ships user docs, not the project's process history** — packed size 6.8 → 4.9 MB, held by a pack regression test.
+- **Satie Gymnopédie No. 1 and Debussy Arabesque No. 1 re-sourced from Mutopia public-domain bytes** with receipts (license page, archive sha256, typesetter credit) after the original arrangement provenance could not be verified; the frozen musical baselines were proven unchanged (120/120 songs, 12,982/12,982 implied-chord labels identical).
+- A full health pass closed 45 findings across four audit stages — dependency/security currency, proactive hardening, humanized user-facing strings, and a look-preserving visual amend of the cockpit (design tokens, 24 px hit targets, focus-ring clearance, truncation, a Panel responsive breakpoint, and the CC-BY credit made visible on desktop).
+
+### Tests
+
+- 2,506 → **3,033 passing (1 skipped)** across the server, cockpit, compose engine, panel machinery, pack integrity, and eval harnesses.
+
 ## [2.1.0] - 2026-07-22
 
 **The release where the analyst became a maker.** The finetune line proved the model can *analyze* music through grounded tools; this release ships the loop that lets it *make* music under the same discipline. A model proposes a reharmonization; the platform's own deterministic tools gate it — the chord engine must confirm every intended voicing, every melody note is labeled against the new harmony — and only a verified interpretation goes on to be saved, played, and seen. Generation verified by construction: no rubric, no self-grading, no forced-choice proxy.

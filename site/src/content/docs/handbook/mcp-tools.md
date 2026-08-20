@@ -61,7 +61,7 @@ Tools for vocal performance, jam sessions, and the verified maker loop.
 | `ai_jam_sessions` | Generate a jam brief — chord progression, melody outline, and style hints for reinterpretation |
 | `verify_harmony` | The maker loop's verification gate — a proposed reharmonization is checked by the platform's own deterministic tools: chord fidelity, melody consonance, bass voice-leading, key membership |
 | `auto_reharmonize` | The maker loop in one call — a local model proposes a reharmonization, the deterministic gate checks every voicing, best-of-n until a verified interpretation comes back |
-| `compose_panel` | Run the voice-leading composition panel — four systems realize accompaniments, blind cross-family LLM judges rank them, Bradley-Terry aggregates, and a discrimination-floor gate voids uninterpretable runs |
+| `compose_panel` | Run the voice-leading composition panel — four systems realize accompaniments, blind cross-family LLM judges rank them, Bradley-Terry aggregates, and a discrimination-floor gate voids uninterpretable runs. Runs for minutes and streams progress notifications while it works. |
 
 ## Guitar (6 tools)
 
