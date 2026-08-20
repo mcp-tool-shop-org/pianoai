@@ -312,7 +312,13 @@ async function realizeEngine(progression: ChordProgression): Promise<Realization
       const data = await res.json() as { message?: { content?: string } };
       const specs = parseEngineSpecArray(data.message?.content ?? "");
       if (specs.length < progression.chords.length) continue;
-      return renderSpecRealization(progression, specs, 4);
+      // The engine system is RefiningProposer(OllamaSpecRealizer): the model
+      // proposes the voicing spec, then the part-at-a-time refiner repairs it
+      // (the S2 finding — refine is what takes a raw proposal to valid).
+      // Rendering the raw spec alone would be a weaker system than the one
+      // the panel claims to rank.
+      const proposed = renderSpecRealization(progression, specs, 4);
+      return refineRealization(proposed, { voices: 4, style: "lead-sheet" }).realization;
     } catch {
       // fall through to the retry, then to null
     }
@@ -759,7 +765,7 @@ function renderLlmView(): void {
   }
   box.hidden = false;
   if (!llmRun || !llmRun.result) {
-    box.innerHTML = `<p class="panel-note">Start a local-model run from the rail. Eligible judges are installed models minus the qwen2.5 generator family.</p>`;
+    box.innerHTML = `<p class="panel-note">Start a local-model run from the rail. Eligible judges are locally installed chat models outside the qwen generator family.</p>`;
     return;
   }
   const r = llmRun.result;
@@ -895,6 +901,7 @@ function renderCompare(): void {
     humanRanking,
     llmRanking,
     humanProvisional: !!human.outcome?.provisional,
+    humanUninterpretable: !!human.outcome?.uninterpretable,
     humanListenerLabel: human.outcome?.listenerLabel ?? listenerCountLabel(1),
     llmVotesCollected: llm.votesCollected,
     llmVotesPossible: llm.votesPossible,
