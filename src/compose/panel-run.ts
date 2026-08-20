@@ -148,9 +148,8 @@ export function renderPanelReport(r: {
   lines.push(`⇒ ${r.result.verdict}`);
   lines.push("");
   lines.push(
-    "This is a DIRECTIONAL symbolic smoke-screen, NOT a quality measure. Local LLMs judging note-names " +
-      "cannot make a quality claim (findings 18–20) — that is a blind human-AUDIO BWS panel. It only says " +
-      "whether that (deferred, priced) human panel is worth scheduling.",
+    "This ranking is directional only. Local models judging note-names cannot hear the music — " +
+      "the human-audio panel is the quality claim.",
   );
   return lines.join("\n");
 }

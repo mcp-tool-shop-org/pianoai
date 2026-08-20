@@ -9,22 +9,39 @@ import {
 } from "../../../src/compose/human-audio-catalog.js";
 import {
   ENGINE_UNAVAILABLE_MESSAGE,
+  HUMAN_AUDIO_SYSTEMS,
   PANEL_RUNS_STORAGE_KEY,
   buildTrialList,
   detectSystems,
-  deserializePanelRuns,
   emptyRunRecord,
   isFloorTrialPair,
   listenerCountLabel,
   parseEngineSpecArray,
   probeLocalModel,
   scoreHumanAudio,
-  serializePanelRuns,
   type EngineProbe,
   type HumanAudioRunRecord,
   type HumanAudioSystemId,
   type PairwiseVoteInput,
 } from "../../../src/compose/human-audio-panel.js";
+import {
+  NO_ELIGIBLE_JUDGES_MESSAGE,
+  comparePanelRankings,
+  deserializeAllPanelRuns,
+  eligibleJudges,
+  emptyLlmRunRecord,
+  isHumanAudioRun,
+  isLlmRun,
+  parseJudgeReply,
+  parseOllamaTagNames,
+  rankingChartModel,
+  serializeAllPanelRuns,
+  type JudgeSeat,
+  type LlmPanelRunRecord,
+  type PanelStoredRun,
+} from "../../../src/compose/llm-panel.js";
+import { aggregatePanel, interpretPanel, renderVoicingText, makeRng, shuffledOrder } from "../../../src/compose/bws.js";
+import { buildJudgePrompt } from "../../../src/compose/bws-judge-text.js";
 import { nearestToneRealization, rootPositionRealization, type ChordProgression } from "../../../src/compose/realize.js";
 import { refineRealization } from "../../../src/compose/refine.js";
 import { renderSpecRealization } from "../../../src/compose/voicing-spec.js";
@@ -65,6 +82,9 @@ let realizations = new Map<string, Realization>();
 let engineProbe: EngineProbe = { reachable: false, reason: "not probed" };
 let lastScoreMode: "instrument" | "vocal" = "instrument";
 let preparing = false;
+let subMode: "human" | "llm" = "human";
+let llmRun: LlmPanelRunRecord | null = null;
+let judgeSeats: JudgeSeat[] = [];
 
 const ENGINE_URL = "http://127.0.0.1:11434";
 
@@ -90,7 +110,17 @@ export function bindPanel(h: PanelHost): void {
   $("panel-vote-b").addEventListener("click", () => vote("B"));
   $("panel-seed").addEventListener("click", rerollSeed);
   ($("panel-seed-value") as HTMLInputElement).value = String((Math.random() * 1e9) | 0);
+  $("panel-sub-human").addEventListener("click", () => setSubMode("human"));
+  $("panel-sub-llm").addEventListener("click", () => setSubMode("llm"));
+  $("panel-llm-start").addEventListener("click", () => { void startLlmRun(); });
+  $("panel-llm-export").addEventListener("click", exportLlmRun);
+  $("panel-cmp-go").addEventListener("click", renderCompare);
+  $("panel-llm-view").addEventListener("click", (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>("[data-drill]");
+    if (btn) void playDrillDown(btn.dataset.drillSong ?? "", btn.dataset.drillSys ?? "");
+  });
   renderConfigRail();
+  renderHistory();
 }
 
 export function enterPanelMode(): void {
@@ -105,6 +135,8 @@ export function enterPanelMode(): void {
   renderConfigRail();
   renderTrial();
   renderOutcome();
+  renderHistory();
+  void refreshJudgeRoster();
 }
 
 export function leavePanelMode(): void {
@@ -117,6 +149,10 @@ export function leavePanelMode(): void {
 /** @returns true when the event was handled (caller should preventDefault). */
 export function handlePanelKey(e: KeyboardEvent): boolean {
   if (e.ctrlKey || e.metaKey || e.altKey) return false;
+  if (subMode === "llm") {
+    if (e.key === "Escape") { stopPlayback(); return true; }
+    return false;
+  }
   if (e.code === "Digit1" || e.key === "1") { void playSide("A"); return true; }
   if (e.code === "Digit2" || e.key === "2") { void playSide("B"); return true; }
   if (e.code === "Space" || e.key === " ") { void togglePlay(); return true; }
@@ -126,21 +162,25 @@ export function handlePanelKey(e: KeyboardEvent): boolean {
   return false;
 }
 
-export function loadStoredRuns(): HumanAudioRunRecord[] {
+function loadAllRuns(): PanelStoredRun[] {
   try {
     const raw = localStorage.getItem(PANEL_RUNS_STORAGE_KEY);
-    return raw ? deserializePanelRuns(raw) : [];
+    return raw ? deserializeAllPanelRuns(raw) : [];
   } catch {
     return [];
   }
 }
 
-function saveCurrentRun(): void {
-  if (!run) return;
+function saveStoredRun(rec: PanelStoredRun): void {
   try {
-    const prev = loadStoredRuns().filter((r) => r.createdAt !== run!.createdAt);
-    localStorage.setItem(PANEL_RUNS_STORAGE_KEY, serializePanelRuns([run, ...prev].slice(0, 20)));
+    const prev = loadAllRuns().filter((r) => r.createdAt !== rec.createdAt);
+    localStorage.setItem(PANEL_RUNS_STORAGE_KEY, serializeAllPanelRuns([rec, ...prev].slice(0, 20)));
+    renderHistory();
   } catch { /* private mode / quota */ }
+}
+
+function saveCurrentRun(): void {
+  if (run) saveStoredRun(run);
 }
 
 function selectedSongIds(): string[] {
@@ -272,7 +312,13 @@ async function realizeEngine(progression: ChordProgression): Promise<Realization
       const data = await res.json() as { message?: { content?: string } };
       const specs = parseEngineSpecArray(data.message?.content ?? "");
       if (specs.length < progression.chords.length) continue;
-      return renderSpecRealization(progression, specs, 4);
+      // The engine system is RefiningProposer(OllamaSpecRealizer): the model
+      // proposes the voicing spec, then the part-at-a-time refiner repairs it
+      // (the S2 finding — refine is what takes a raw proposal to valid).
+      // Rendering the raw spec alone would be a weaker system than the one
+      // the panel claims to rank.
+      const proposed = renderSpecRealization(progression, specs, 4);
+      return refineRealization(proposed, { voices: 4, style: "lead-sheet" }).realization;
     } catch {
       // fall through to the retry, then to null
     }
@@ -484,8 +530,10 @@ function renderOutcome(): void {
   box.innerHTML = `
     <div class="panel-verdict ${tone}">
       <h3>${out.rankingHeadline}</h3>
+      ${floorGatePill(out.result.interpretable)}
       <p>${out.result.verdict}</p>
     </div>
+    ${rankingChartHtml(out.result.scores)}
     <p class="panel-note">${out.nextStep}</p>
     <p class="panel-note">Listener framing: <strong>${out.listenerLabel}</strong>. ${
       out.screened ? "This listener is screened out — votes excluded from the published ranking." : ""
@@ -509,4 +557,354 @@ function exportRun(): void {
   a.download = `panel-run-${run.seed}.json`;
   a.click();
   URL.revokeObjectURL(a.href);
+}
+
+function setSubMode(next: "human" | "llm"): void {
+  subMode = next;
+  stopPlayback();
+  $("panel-sub-human").classList.toggle("active", next === "human");
+  $("panel-sub-llm").classList.toggle("active", next === "llm");
+  $("panel-sub-human").setAttribute("aria-selected", String(next === "human"));
+  $("panel-sub-llm").setAttribute("aria-selected", String(next === "llm"));
+  $("panel-human-config").hidden = next !== "human";
+  $("panel-llm-config").hidden = next !== "llm";
+  $("panel-trial").hidden = next !== "human" || !run;
+  $("panel-outcome").hidden = next !== "human";
+  $("panel-llm-view").hidden = next !== "llm";
+  if (next === "llm") {
+    void refreshJudgeRoster();
+    renderLlmView();
+  } else {
+    renderTrial();
+    renderOutcome();
+  }
+}
+
+function floorGatePill(passed: boolean): string {
+  return `<span class="panel-pill ${passed ? "ok" : "danger"}">Floor gate ${passed ? "PASSED" : "FAILED"}</span>`;
+}
+
+function rankingChartHtml(scores: { id: string; bwsScore: number; ci: [number, number]; btStrength: number; best: number; worst: number; appearances: number }[]): string {
+  const bars = rankingChartModel(scores);
+  const rows = bars.map((b) => (
+    `<div class="panel-chart-row">` +
+    `<span>${b.id}</span>` +
+    `<div class="panel-chart-track" aria-hidden="true">` +
+    `<i class="panel-chart-zero" style="left:${b.zeroPct}%"></i>` +
+    `<i class="panel-chart-bar ${b.negative ? "neg" : "pos"}" style="left:${b.leftPct}%;width:${b.widthPct}%"></i>` +
+    `<i class="panel-chart-wh" style="left:${Math.min(b.whiskerLoPct, b.whiskerHiPct)}%;width:${Math.max(0.5, Math.abs(b.whiskerHiPct - b.whiskerLoPct))}%"></i>` +
+    `</div>` +
+    `<span class="mono">${b.score.toFixed(2)}</span>` +
+    `</div>`
+  )).join("");
+  return `<div class="panel-chart" role="img" aria-label="Bradley-Terry BWS scores from −1 to 1 with 95% confidence whiskers">${rows}</div>`;
+}
+
+async function refreshJudgeRoster(): Promise<void> {
+  const empty = $("panel-llm-empty");
+  const start = $("panel-llm-start") as HTMLButtonElement;
+  const box = $("panel-llm-judges");
+  const probe = await probeLocalModel(fetch);
+  engineProbe = probe;
+  renderConfigRail();
+  if (!probe.reachable) {
+    judgeSeats = [];
+    box.innerHTML = "";
+    empty.hidden = false;
+    empty.textContent = ENGINE_UNAVAILABLE_MESSAGE + " — install or start Ollama, then open this tab again.";
+    start.disabled = true;
+    return;
+  }
+  try {
+    const res = await fetch(`${ENGINE_URL}/api/tags`);
+    const names = parseOllamaTagNames(await res.json());
+    judgeSeats = eligibleJudges(names);
+  } catch {
+    judgeSeats = [];
+  }
+  if (judgeSeats.length === 0) {
+    box.innerHTML = "";
+    empty.hidden = false;
+    empty.textContent = NO_ELIGIBLE_JUDGES_MESSAGE;
+    start.disabled = true;
+    return;
+  }
+  empty.hidden = true;
+  start.disabled = false;
+  box.innerHTML = judgeSeats.map((s) => `<span class="panel-chip">${s.model} <em>(${s.family})</em></span>`).join("");
+}
+
+async function startLlmRun(): Promise<void> {
+  if (preparing) return;
+  preparing = true;
+  ($("panel-llm-start") as HTMLButtonElement).disabled = true;
+  try {
+    await refreshJudgeRoster();
+    if (judgeSeats.length === 0) {
+      setStatus(NO_ELIGIBLE_JUDGES_MESSAGE);
+      return;
+    }
+    const seed = Number(($("panel-seed-value") as HTMLInputElement).value) >>> 0;
+    const songIds = selectedSongIds();
+    const systems = detectSystems(engineProbe.reachable);
+    llmRun = emptyLlmRunRecord({
+      seed,
+      createdAt: new Date().toISOString(),
+      songIds,
+      systems,
+      engineTag: engineProbe.reachable ? "reachable" : "unavailable",
+      engineProbe,
+      judges: judgeSeats.map((s) => ({ ...s, status: "ok" })),
+    });
+    const failed = new Set<string>();
+    let step = 0;
+    const total = songIds.length * judgeSeats.length;
+    llmRun.votesPossible = total;
+    const reals: Record<string, Record<string, Awaited<ReturnType<typeof realize>>>> = {};
+    for (const songId of songIds) {
+      reals[songId] = {};
+      for (const sys of systems) {
+        setStatus(`Realizing ${songId} / ${sys}…`);
+        reals[songId][sys] = await realize(songId, sys);
+      }
+    }
+    for (let si = 0; si < songIds.length; si++) {
+      const songId = songIds[si];
+      const song = getPanelSong(songId);
+      const progression = song ? { key: song.key, chords: song.chords } : { key: "C major", chords: [] };
+      for (let fi = 0; fi < judgeSeats.length; fi++) {
+        const seat = judgeSeats[fi];
+        step++;
+        setStatus(`Judging ${songId} with ${seat.model} (${step}/${total})…`);
+        if (failed.has(seat.model)) {
+          continue;
+        }
+        const order = shuffledOrder(systems.length, makeRng(1000 * (si + 1) + 31 * (fi + 1) + seed));
+        const orderedIds = order.map((k) => systems[k]);
+        const optionsText = orderedIds.map((id) => renderVoicingText(reals[songId][id]));
+        const prompt = buildJudgePrompt(progression.key, optionsText);
+        const vote = await askJudge(seat.model, prompt.system, prompt.user, seed + si * 10 + fi, systems.length);
+        if (!vote) {
+          failed.add(seat.model);
+          const rec = llmRun.judges.find((j) => j.model === seat.model);
+          if (rec) {
+            rec.status = "failed";
+            rec.failReason = "unusable reply or unreachable — not asked again this run";
+          }
+          continue;
+        }
+        llmRun.votes.push({
+          songId,
+          judgeModel: seat.model,
+          family: seat.family,
+          options: order,
+          best: vote.best,
+          worst: vote.worst,
+          tuple: orderedIds,
+        });
+        llmRun.bwsVotes.push({ options: order, best: vote.best, worst: vote.worst, family: seat.family });
+        llmRun.tupleSystems.push(orderedIds);
+      }
+    }
+    llmRun.votesCollected = llmRun.bwsVotes.length;
+    const bare = systems.map((id) => HUMAN_AUDIO_SYSTEMS[id]);
+    const agg = aggregatePanel(bare, llmRun.bwsVotes, llmRun.tupleSystems, { bootstrap: 200, seed });
+    const engineId = systems.includes("engine") ? "engine" : "refined";
+    llmRun.result = interpretPanel(agg, { floor: "floor", valid: "refined", engine: engineId });
+    saveStoredRun(llmRun);
+    renderLlmView();
+    renderHistory();
+    setStatus(`Local-model run complete — ${llmRun.votesCollected}/${llmRun.votesPossible} votes. Directional only.`);
+  } catch (err) {
+    setStatus(`Local-model run halted: ${err instanceof Error ? err.message : String(err)}`);
+  } finally {
+    preparing = false;
+    ($("panel-llm-start") as HTMLButtonElement).disabled = judgeSeats.length === 0;
+  }
+}
+
+async function askJudge(
+  model: string,
+  system: string,
+  user: string,
+  seed: number,
+  k: number,
+): Promise<{ best: number; worst: number } | null> {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const res = await fetch(`${ENGINE_URL}/api/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model,
+          stream: false,
+          format: "json",
+          messages: [
+            { role: "system", content: system },
+            { role: "user", content: user },
+          ],
+          options: { seed: seed + attempt },
+        }),
+      });
+      if (!res.ok) continue;
+      const data = await res.json() as { message?: { content?: string } };
+      const parsed = parseJudgeReply(data.message?.content ?? "", k);
+      if (parsed) return parsed;
+    } catch {
+      /* retry once */
+    }
+  }
+  return null;
+}
+
+function renderLlmView(): void {
+  const box = $("panel-llm-view");
+  if (subMode !== "llm") {
+    box.hidden = true;
+    return;
+  }
+  box.hidden = false;
+  if (!llmRun || !llmRun.result) {
+    box.innerHTML = `<p class="panel-note">Start a local-model run from the rail. Eligible judges are locally installed chat models outside the qwen generator family.</p>`;
+    return;
+  }
+  const r = llmRun.result;
+  const tone = r.interpretable ? (r.verdict.startsWith("INCONCLUSIVE") ? "amber" : "ok") : "danger";
+  const tiles = r.scores.map((s) => (
+    `<div class="panel-score"><strong>${s.id}</strong>` +
+    `<span class="mono">${s.bwsScore.toFixed(2)}  [${s.ci[0].toFixed(2)}, ${s.ci[1].toFixed(2)}]</span></div>`
+  )).join("");
+  const failed = llmRun.judges.filter((j) => j.status === "failed");
+  const failNote = failed.length
+    ? `<p class="panel-note">Judges marked unusable this run: ${failed.map((j) => `${j.model} (${j.failReason ?? "failed"})`).join("; ")}. Votes they already cast stay in the record.</p>`
+    : "";
+  const drills = llmRun.songIds.map((songId) => {
+    const title = getPanelSong(songId)?.title ?? songId;
+    const btns = llmRun!.systems.map((sys) =>
+      `<button type="button" data-drill data-drill-song="${songId}" data-drill-sys="${sys}">${title} · ${sys}</button>`,
+    ).join("");
+    return `<div class="panel-drill">${btns}</div>`;
+  }).join("");
+  box.innerHTML = `
+    <div class="panel-verdict ${tone}">
+      <h3>${r.verdict.split(" — ")[0]}</h3>
+      ${floorGatePill(r.interpretable)}
+      <p>${r.verdict}</p>
+    </div>
+    ${rankingChartHtml(r.scores)}
+    <div class="panel-scores">${tiles}</div>
+    <p class="panel-note">Ranking (best→worst): ${r.ranking.join(" > ")}</p>
+    <p class="panel-note">Votes ${llmRun.votesCollected}/${llmRun.votesPossible}. Seed ${llmRun.seed}. Directional only.</p>
+    ${failNote}
+    <h2>Hear a voicing</h2>
+    <p class="panel-note">Plays through the same piano as the roll. Nothing starts until you press a button.</p>
+    ${drills}
+  `;
+}
+
+async function playDrillDown(songId: string, sys: string): Promise<void> {
+  const song = getPanelSong(songId);
+  if (!song || !host) return;
+  setStatus(`Rendering ${song.title} / ${sys}…`);
+  const real = await realize(songId, sys as HumanAudioSystemId);
+  const notes = clipNotesFor(song.melody, real, song.beatsPerMeasure);
+  const ctx = await host.ensureAudio();
+  if (ctx.state === "suspended") await ctx.resume();
+  if (!player) player = createClipPlayer(ctx, ctx.destination);
+  const pack = samplerHandlesVoice(host.voiceId()) && host.samplerReady() ? host.getSamplerPack() : null;
+  const dur = clipLengthSec(notes, song.beatsPerMeasure, song.measures, song.bpm);
+  const clip = await renderClipOffline({
+    notes, durationSec: dur, bpm: song.bpm, voiceId: host.voiceId(), pack,
+  });
+  player.play(clip.buffer, 1, 0);
+  setStatus(`Playing ${song.title} · ${sys}. Esc stops.`);
+}
+
+function exportLlmRun(): void {
+  if (!llmRun) {
+    setStatus("No local-model run to export yet.");
+    return;
+  }
+  const blob = new Blob([JSON.stringify(llmRun, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `panel-llm-${llmRun.seed}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function renderHistory(): void {
+  const box = $("panel-history");
+  const humanSel = $("panel-cmp-human") as HTMLSelectElement;
+  const llmSel = $("panel-cmp-llm") as HTMLSelectElement;
+  const runs = loadAllRuns();
+  if (runs.length === 0) {
+    box.innerHTML = `<p class="panel-note">No stored runs yet.</p>`;
+    humanSel.innerHTML = "";
+    llmSel.innerHTML = "";
+    return;
+  }
+  box.innerHTML = runs.map((r) => {
+    const kind = r.kind === "llm" ? "local-model" : "human-audio";
+    const verdict = r.kind === "llm"
+      ? (r.result?.verdict.split(" — ")[0] ?? "in progress")
+      : (r.outcome?.rankingHeadline ?? "in progress");
+    return `<button type="button" class="panel-history-item" data-hist="${r.createdAt}">` +
+      `<span class="panel-kind">${kind}</span>${r.songIds.join(", ")} · seed ${r.seed} · ${verdict}</button>`;
+  }).join("");
+  box.querySelectorAll<HTMLButtonElement>("[data-hist]").forEach((btn) => {
+    btn.addEventListener("click", () => openHistoryRun(btn.dataset.hist ?? ""));
+  });
+  const humans = runs.filter(isHumanAudioRun);
+  const llms = runs.filter(isLlmRun);
+  humanSel.innerHTML = humans.map((r) =>
+    `<option value="${r.createdAt}">${r.createdAt.slice(0, 16)} · ${r.songIds.join(",")}</option>`,
+  ).join("");
+  llmSel.innerHTML = llms.map((r) =>
+    `<option value="${r.createdAt}">${r.createdAt.slice(0, 16)} · ${r.songIds.join(",")}</option>`,
+  ).join("");
+}
+
+function openHistoryRun(createdAt: string): void {
+  const rec = loadAllRuns().find((r) => r.createdAt === createdAt);
+  if (!rec) return;
+  if (isHumanAudioRun(rec)) {
+    run = rec;
+    trialIndex = rec.votes.length;
+    setSubMode("human");
+    renderOutcome();
+  } else {
+    llmRun = rec;
+    setSubMode("llm");
+    renderLlmView();
+  }
+}
+
+function renderCompare(): void {
+  const out = $("panel-cmp-out");
+  const humanId = ($("panel-cmp-human") as HTMLSelectElement).value;
+  const llmId = ($("panel-cmp-llm") as HTMLSelectElement).value;
+  const runs = loadAllRuns();
+  const human = runs.find((r): r is HumanAudioRunRecord => isHumanAudioRun(r) && r.createdAt === humanId);
+  const llm = runs.find((r): r is LlmPanelRunRecord => isLlmRun(r) && r.createdAt === llmId);
+  if (!human || !llm) {
+    out.innerHTML = `<p class="panel-note">Need one stored human-audio run and one local-model run.</p>`;
+    return;
+  }
+  const humanRanking = human.outcome?.result.ranking ?? [];
+  const llmRanking = llm.result?.ranking ?? [];
+  if (humanRanking.length === 0 || llmRanking.length === 0) {
+    out.innerHTML = `<p class="panel-note">Both runs need a ranking before they can be compared.</p>`;
+    return;
+  }
+  const cmp = comparePanelRankings({
+    humanRanking,
+    llmRanking,
+    humanProvisional: !!human.outcome?.provisional,
+    humanUninterpretable: !!human.outcome?.uninterpretable,
+    humanListenerLabel: human.outcome?.listenerLabel ?? listenerCountLabel(1),
+    llmVotesCollected: llm.votesCollected,
+    llmVotesPossible: llm.votesPossible,
+  });
+  out.innerHTML = `<p class="panel-note"><strong>${cmp.headline}</strong></p><p class="panel-note">${cmp.detail}</p>`;
 }
