@@ -118,6 +118,7 @@ export {
   kendallTau,
   comparePanelRankings,
   rankingChartModel,
+  CHART_BAR_MIN_PX,
   serializeAllPanelRuns,
   deserializeAllPanelRuns,
   emptyLlmRunRecord,

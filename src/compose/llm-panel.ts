@@ -251,13 +251,20 @@ export function humanRunProvisional(run: HumanAudioRunRecord): boolean {
   return !!run.outcome?.provisional;
 }
 
-export function rankingChartModel(scores: PanelScore[]): Array<{
+/** Readable floor for a ranking bar, in CSS pixels (VIS-013). */
+export const CHART_BAR_MIN_PX = 8;
+
+export function rankingChartModel(
+  scores: PanelScore[],
+  trackWidthPx = 200,
+): Array<{
   id: string;
   score: number;
   ciLo: number;
   ciHi: number;
   leftPct: number;
   widthPct: number;
+  widthPx: number;
   zeroPct: number;
   whiskerLoPct: number;
   whiskerHiPct: number;
@@ -265,18 +272,23 @@ export function rankingChartModel(scores: PanelScore[]): Array<{
 }> {
   const domain = 1; // BWS in [-1, 1]
   const toPct = (x: number) => ((x + domain) / (2 * domain)) * 100;
+  const track = Math.max(1, trackWidthPx);
+  const minPct = (CHART_BAR_MIN_PX / track) * 100;
   return scores.map((s) => {
     const a = Math.min(s.bwsScore, 0);
     const b = Math.max(s.bwsScore, 0);
     const left = s.bwsScore >= 0 ? toPct(0) : toPct(a);
     const right = s.bwsScore >= 0 ? toPct(b) : toPct(0);
+    const rawPct = Math.max(0, right - left);
+    const widthPct = Math.max(minPct, rawPct);
     return {
       id: s.id,
       score: s.bwsScore,
       ciLo: s.ci[0],
       ciHi: s.ci[1],
       leftPct: left,
-      widthPct: Math.max(0.5, right - left),
+      widthPct,
+      widthPx: (widthPct / 100) * track,
       zeroPct: toPct(0),
       whiskerLoPct: toPct(s.ci[0]),
       whiskerHiPct: toPct(s.ci[1]),

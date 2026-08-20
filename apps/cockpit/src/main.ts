@@ -136,19 +136,19 @@ const MAX_IMPORT_NOTES = 5000;
 const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const IS_BLACK = [false, true, false, true, false, false, true, false, true, false, true, false];
 const PC_COLORS = [
-  "#79c0ff", "#4c8ed9", "#7ee787", "#3fb950", "#ffa657", "#ff7b72",
-  "#d2a8ff", "#9b72cf", "#f778ba", "#da3633", "#f0e68c", "#d29922",
+  "var(--pc-0)", "var(--pc-1)", "var(--pc-2)", "var(--pc-3)", "var(--pc-4)", "var(--pc-5)",
+  "var(--pc-6)", "var(--pc-7)", "var(--pc-8)", "var(--pc-9)", "var(--pc-10)", "var(--pc-11)",
 ];
 
 function noteName(midi: number) { return NOTE_NAMES[midi % 12] + (Math.floor(midi / 12) - 1); }
 
 // Vowel → color mapping (vocal mode notes)
 const VOWEL_COLORS: Record<VowelId, string> = {
-  a: "#ff7b72", // open-red
-  e: "#7ee787", // front-green
-  i: "#79c0ff", // close-blue
-  o: "#ffa657", // back-orange
-  u: "#d2a8ff", // round-purple
+  a: "var(--vowel-a)",
+  e: "var(--vowel-e)",
+  i: "var(--vowel-i)",
+  o: "var(--vowel-o)",
+  u: "var(--vowel-u)",
 };
 const VOWEL_LABELS: Record<VowelId, string> = { a: "/a/", e: "/e/", i: "/i/", o: "/o/", u: "/u/" };
 
@@ -2436,6 +2436,9 @@ function bindOnScreenKeyPointer(key: HTMLElement, midi: number): void {
 }
 
 function buildKeyboard() {
+  // VIS-010 close-as-designed: painted keys stay pointer-only. QWERTY
+  // (event.code map) and MIDI are the named keyboard paths; a tabindex on
+  // every key would trap tab-order inside two octaves. No focus ring here.
   const kb = $("keyboard");
 
   // White keys
@@ -2478,9 +2481,6 @@ function buildKeyboard() {
       sc.className = "kb-shortcut";
       sc.textContent = QWERTY_LABELS[m];
       sc.style.bottom = "8px";
-      // #666 (~2.1:1 on key-black incl. the shared .kb-shortcut opacity) failed
-      // WCAG AA; #8c8c8c is solid (no opacity) at ~5.1:1 (F-B1-007).
-      sc.style.color = "#8c8c8c";
       key.appendChild(sc);
     }
 
