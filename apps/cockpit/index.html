@@ -532,6 +532,32 @@ body.panel-mode #panel-view {
   margin-top: 16px; padding: 10px 12px; border: 1px dashed var(--border); border-radius: 6px;
   font-size: 12px; color: var(--text-muted); line-height: 1.45;
 }
+.panel-sub { display: flex; gap: 0; margin: 0 0 12px; }
+.panel-sub button {
+  flex: 1; background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border);
+  padding: 6px 8px; font: inherit; font-size: 12px; cursor: pointer;
+}
+.panel-sub button:first-child { border-radius: 6px 0 0 6px; }
+.panel-sub button:last-child { border-radius: 0 6px 6px 0; border-left: none; }
+.panel-sub button.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.panel-pill {
+  display: inline-block; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+  border-radius: 10px; padding: 2px 8px; border: 1px solid var(--border); font-weight: 600;
+}
+.panel-pill.ok { color: #7ee787; border-color: #7ee78755; background: #7ee78718; }
+.panel-pill.danger { color: var(--danger); border-color: var(--danger-border); background: var(--danger-dim); }
+.panel-pill.amber { color: #ffa657; border-color: #ffa65755; background: #ffa65718; }
+.panel-kind { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; border: 1px solid var(--border); border-radius: 8px; padding: 1px 6px; margin-right: 6px; }
+.panel-history-item { display: block; width: 100%; text-align: left; margin: 0 0 6px; font-size: 12px; }
+.panel-chart { margin: 10px 0 14px; }
+.panel-chart-row { display: grid; grid-template-columns: 72px 1fr 56px; gap: 8px; align-items: center; margin: 6px 0; }
+.panel-chart-track { position: relative; height: 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 3px; }
+.panel-chart-zero { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--text-muted); }
+.panel-chart-bar { position: absolute; top: 2px; height: 8px; border-radius: 2px; }
+.panel-chart-bar.pos { background: var(--accent); }
+.panel-chart-bar.neg { background: var(--danger); }
+.panel-chart-wh { position: absolute; top: 6px; height: 2px; background: var(--text); opacity: 0.7; }
+.panel-drill { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
 #panel-status { font-size: 13px; color: var(--text); margin: 0 0 10px; }
 .mode-btn {  display: inline-flex; align-items: center; justify-content: center; gap: 5px;
   background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border);
@@ -761,8 +787,10 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
 
   <div id="panel-view">
     <aside class="panel-rail" aria-label="Panel run config">
-      <h2>Run config</h2>
-      <p class="panel-note">Blind A/B through the same piano the roll plays. No LLM judge in this mode.</p>
+      <div class="panel-sub" role="tablist" aria-label="Panel sub-mode">
+        <button type="button" id="panel-sub-human" class="active" aria-selected="true">By ear</button>
+        <button type="button" id="panel-sub-llm" aria-selected="false">Local models</button>
+      </div>
       <h2>Songs</h2>
       <div id="panel-songs"></div>
       <h2>Systems</h2>
@@ -772,18 +800,46 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
         <input id="panel-seed-value" type="number" style="width:120px;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:4px 8px;font-family:var(--mono);font-size:12px">
         <button type="button" id="panel-seed">New seed</button>
       </div>
-      <p class="panel-note" id="panel-n-label"></p>
-      <div style="display:flex;gap:6px;margin-top:12px">
-        <button type="button" id="panel-start">Start run</button>
-        <button type="button" id="panel-export">Export JSON</button>
+      <div id="panel-human-config">
+        <p class="panel-note">Blind A/B through the same piano the roll plays.</p>
+        <p class="panel-note" id="panel-n-label"></p>
+        <div style="display:flex;gap:6px;margin-top:12px">
+          <button type="button" id="panel-start">Start run</button>
+          <button type="button" id="panel-export">Export JSON</button>
+        </div>
+        <div class="panel-honesty">
+          Human-audio is the quality claim, honest about N: 1 listener is your blind preference; ≥3 independent listeners is the robust claim.
+          UNINTERPRETABLE and INCONCLUSIVE are first-class outcomes — not errors.
+        </div>
       </div>
-      <div class="panel-honesty">
-        Human-audio is the quality claim, honest about N: 1 listener is your blind preference; ≥3 independent listeners is the robust claim.
-        UNINTERPRETABLE and INCONCLUSIVE are first-class outcomes — not errors.
+      <div id="panel-llm-config" hidden>
+        <h2>Judges</h2>
+        <div id="panel-llm-judges"></div>
+        <p class="panel-note" id="panel-llm-empty" hidden></p>
+        <div style="display:flex;gap:6px;margin-top:12px">
+          <button type="button" id="panel-llm-start">Start local-model run</button>
+          <button type="button" id="panel-llm-export">Export JSON</button>
+        </div>
+        <div class="panel-honesty">
+          Local models judging note-names are directional only. The human-audio panel is the quality claim.
+        </div>
       </div>
+      <h2>History</h2>
+      <div id="panel-history"></div>
+      <h2>Compare</h2>
+      <p class="panel-note">One local-model run against one human-audio run, same songs/systems when you can.</p>
+      <label class="panel-note">Human-audio
+        <select id="panel-cmp-human" style="width:100%;margin-top:4px;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:4px"></select>
+      </label>
+      <label class="panel-note">Local-model
+        <select id="panel-cmp-llm" style="width:100%;margin-top:4px;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:4px"></select>
+      </label>
+      <button type="button" id="panel-cmp-go" style="margin-top:8px">Compare rankings</button>
+      <div id="panel-cmp-out"></div>
     </aside>
     <section class="panel-main" aria-label="Blind audition">
       <p id="panel-status">Choose songs, then start a run. Nothing plays until you press a clip.</p>
+      <div id="panel-llm-view" hidden></div>
       <div id="panel-trial" hidden>
         <h2 id="panel-progress">Trial</h2>
         <p id="panel-song-name" class="panel-note"></p>
