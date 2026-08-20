@@ -769,7 +769,7 @@ function renderLlmView(): void {
   }
   box.hidden = false;
   if (!llmRun || !llmRun.result) {
-    box.innerHTML = `<p class="panel-banner empty">No local-model run yet. Choose songs, confirm judges on the rail, then start. Eligible judges are installed chat models outside the qwen2.5 generator family.</p>`;
+    box.innerHTML = `<p class="panel-banner empty">No local-model run yet. Choose songs, confirm judges on the rail, then start. Eligible judges are locally installed chat models outside the qwen generator family.</p>`;
     return;
   }
   const r = llmRun.result;

@@ -715,7 +715,9 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
    zero — this query does not fire. Width ≤1000px already takes transport
    out of overlay (position:static). Do not restyle the transport. */
 @media (min-width: 1001px) and (max-height: 800px) {
-  #piano-roll-container { margin-bottom: 40px; }
+  /* Clearance = roll-bottom minus transport-top (47px at 620px tall), not the
+     overlap height (37px) — plus daylight so the inset ring never touches. */
+  #piano-roll-container { margin-bottom: 52px; }
 }
 
 @media (max-width: 1000px) {
