@@ -13,22 +13,8 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const outDir = join(root, "tmp", "kokoro-lock");
 mkdirSync(outDir, { recursive: true });
 
-const SYLLABLES = [
-  "Ah",
-  "mah",
-  "zing",
-  "grace",
-  "how",
-  "sweet",
-  "the",
-  "sound",
-  "that",
-  "saved",
-  "a",
-  "wretch",
-  "like",
-  "me",
-];
+const VERSE =
+  "Amazing grace, how sweet the sound, that saved a wretch like me.";
 
 function floatToWav(pcm, sampleRate) {
   const data = Buffer.alloc(pcm.length * 2);
@@ -71,35 +57,18 @@ async function loadKokoro() {
 
 async function main() {
   const tts = await loadKokoro();
-  const verse = [];
-  for (let i = 0; i < SYLLABLES.length; i++) {
-    const text = SYLLABLES[i];
-    console.log(`CAST ${i + 1}/${SYLLABLES.length}: ${text}`);
-    const audio = await tts.generate(text, { voice: "af_heart", speed: 0.85 });
-    const pcm = audio.audio ?? audio.data ?? audio;
-    const sr = audio.sampling_rate ?? audio.sampleRate ?? 24000;
-    const samples = pcm instanceof Float32Array ? pcm : Float32Array.from(pcm);
-    const wavPath = join(outDir, `${String(i).padStart(2, "0")}-${text.toLowerCase()}.wav`);
-    writeFileSync(wavPath, floatToWav(samples, sr));
-    verse.push({ path: wavPath, samples, sr });
-  }
-  const sr = verse[0].sr;
-  const gap = Math.floor(sr * 0.08);
-  let total = gap;
-  for (const v of verse) total += v.samples.length + gap;
-  const concat = new Float32Array(total);
-  let o = gap;
-  for (const v of verse) {
-    concat.set(v.samples, o);
-    o += v.samples.length + gap;
-  }
+  console.log(`CAST one take: ${VERSE}`);
+  const audio = await tts.generate(VERSE, { voice: "af_heart", speed: 0.8 });
+  const pcm = audio.audio ?? audio.data ?? audio;
+  const sr = audio.sampling_rate ?? audio.sampleRate ?? 24000;
+  const samples = pcm instanceof Float32Array ? pcm : Float32Array.from(pcm);
   const lockPath = join(outDir, "lock.wav");
-  writeFileSync(lockPath, floatToWav(concat, sr));
+  writeFileSync(lockPath, floatToWav(samples, sr));
   writeFileSync(
     join(outDir, "manifest.json"),
-    JSON.stringify({ voice: "af_heart", syllables: SYLLABLES, lock: lockPath, files: verse.map((v) => v.path) }, null, 2),
+    JSON.stringify({ voice: "af_heart", verse: VERSE, lock: lockPath, takes: 1 }, null, 2),
   );
-  console.log(`LOCK ${lockPath}`);
+  console.log(`LOCK ${lockPath} (${(samples.length / sr).toFixed(2)}s, one voice)`);
 }
 
 main().catch((err) => {

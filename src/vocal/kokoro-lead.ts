@@ -87,12 +87,8 @@ export function readMonoWav(path: string): { pcm: Float32Array; sampleRate: numb
   return { pcm, sampleRate: sr };
 }
 
-/**
- * PERFORM the locked Kokoro take onto the score: one retuned grain per note,
- * placed on the MIDI clock. Rests stay silent (fx-dub `place`).
- */
-function fadeEdges(pcm: Float32Array, sr: number, fadeSec = 0.012): void {
-  const n = Math.min(pcm.length, Math.floor(sr * fadeSec));
+function fadeEdges(pcm: Float32Array, sr: number, fadeSec = 0.02): void {
+  const n = Math.min(Math.floor(pcm.length / 3), Math.floor(sr * fadeSec));
   for (let i = 0; i < n; i++) {
     const w = i / n;
     pcm[i] *= w;
@@ -100,21 +96,31 @@ function fadeEdges(pcm: Float32Array, sr: number, fadeSec = 0.012): void {
   }
 }
 
+/**
+ * PERFORM one locked take: splice the *same recording* in lyric order onto
+ * the MIDI clock (fx-dub splice + pitch_rate). Never a new TTS per syllable.
+ */
 export function renderKokoroLead(
   score: BuiltVocalScore,
   lockPcm: Float32Array,
   lockRate: number,
-  syllableClips?: { pcm: Float32Array; sampleRate: number }[],
+  _unusedSyllableClips?: { pcm: Float32Array; sampleRate: number }[],
 ): { pcm: Float32Array; sampleRate: number } {
-  const sr = syllableClips?.[0]?.sampleRate ?? lockRate;
+  const sr = lockRate;
   const duration = scoreDurationSec(score) + 0.2;
   const total = Math.ceil(duration * sr);
   const pcm = new Float32Array(total);
-  for (let i = 0; i < score.notes.length; i++) {
+  const voiced = trimSilence(lockPcm, sr);
+  const nNotes = score.notes.length;
+  if (nNotes === 0 || voiced.length === 0) return { pcm, sampleRate: sr };
+
+  for (let i = 0; i < nNotes; i++) {
     const note = score.notes[i];
-    const src = syllableClips?.[i] ?? { pcm: lockPcm, sampleRate: lockRate };
-    const grain = retuneLockedTake(src.pcm, src.sampleRate, note.midi, note.durationSec);
-    fadeEdges(grain, sr);
+    const a = Math.floor((i / nNotes) * voiced.length);
+    const b = Math.floor(((i + 1) / nNotes) * voiced.length);
+    const slice = voiced.subarray(a, Math.max(a + 1, b));
+    const grain = retuneLockedTake(slice, sr, note.midi, note.durationSec);
+    fadeEdges(grain, sr, 0.025);
     const start = Math.max(0, Math.floor(note.startSec * sr));
     const n = Math.min(grain.length, total - start);
     for (let j = 0; j < n; j++) pcm[start + j] += grain[j];

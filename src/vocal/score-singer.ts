@@ -11,10 +11,8 @@ import { getSharedAudioContext, setSharedAudioContext } from "../audio-shared.js
 import { renderTractScore } from "./tract-render.js";
 import {
   kokoroLeadHint,
-  loadKokoroSyllableClips,
   readMonoWav,
   renderKokoroLead,
-  resolveKokoroLockDir,
   resolveKokoroLockWav,
 } from "./kokoro-lead.js";
 
@@ -162,15 +160,11 @@ export function createScoreSinger(
       let rendered: { pcm: Float32Array; sampleRate: number };
       if (backend === "kokoro") {
         const lockPath = resolveKokoroLockWav();
-        const lockDir = resolveKokoroLockDir();
-        if (!lockPath && !lockDir) {
+        if (!lockPath) {
           throw new Error(kokoroLeadHint());
         }
-        const clips = lockDir ? loadKokoroSyllableClips(lockDir) : [];
-        const lock = lockPath
-          ? readMonoWav(lockPath)
-          : clips[0] ?? { pcm: new Float32Array(1), sampleRate: 24000 };
-        rendered = renderKokoroLead(score, lock.pcm, lock.sampleRate, clips.length > 0 ? clips : undefined);
+        const lock = readMonoWav(lockPath);
+        rendered = renderKokoroLead(score, lock.pcm, lock.sampleRate);
       } else if (backend === "additive") {
         rendered = await renderScoreLockedPcm(score, options);
       } else {
