@@ -42,6 +42,10 @@ import {
 } from "./guitar-voices.js";
 import { createVocalSynthEngine } from "./vocal-synth-adapter.js";
 import { createLayeredEngine } from "./layered-engine.js";
+import { accompanimentEngineForLyrics, prepareScoreLocked } from "./vocal/prepare.js";
+import { renderOfflineSvs } from "./vocal/svs-offline.js";
+import { generateFullSong } from "./vocal/song-generate.js";
+import type { SvsBackend } from "./vocal/svs-offline.js";
 import { createVmpkConnector } from "./vmpk.js";
 import {
   listVoices, getVoice, getMergedVoice, VOICE_IDS,
@@ -316,6 +320,9 @@ async function cmdPlay(args: string[]): Promise<void> {
   const engineStr = getFlag(args, "--engine") ?? preferredPianoEngineId();
   const tractVoiceStr = getFlag(args, "--tract-voice") ?? "soprano";
   const guitarVoiceStr = getFlag(args, "--guitar-voice") ?? "steel-dreadnought";
+  const lyricsFlag = getFlag(args, "--lyrics");
+  const lyricsFile = getFlag(args, "--lyrics-file");
+  const lyricsMeasuresStr = getFlag(args, "--measures");
 
   // Session-recording flags (library songs only — see parsePlaySessionFlags).
   let sessionFlags: PlaySessionFlags;
@@ -387,6 +394,28 @@ async function cmdPlay(args: string[]): Promise<void> {
   }
 
   // Create connector
+  let lyricsStart: number | undefined;
+  let lyricsEnd: number | undefined;
+  if (lyricsMeasuresStr) {
+    const m = lyricsMeasuresStr.match(/^(\d+)-(\d+)$/);
+    if (!m) {
+      console.error(`Invalid --measures range: "${lyricsMeasuresStr}". Use format like "1-8".`);
+      process.exit(1);
+    }
+    lyricsStart = parseInt(m[1], 10);
+    lyricsEnd = parseInt(m[2], 10);
+    if (lyricsStart < 1 || lyricsEnd < lyricsStart) {
+      console.error(`Invalid --measures range: "${lyricsMeasuresStr}".`);
+      process.exit(1);
+    }
+  }
+
+  const wantsLyrics = Boolean(lyricsFlag || lyricsFile);
+  let engineForAccompaniment = engineStr;
+  if (wantsLyrics) {
+    engineForAccompaniment = accompanimentEngineForLyrics(engineStr);
+  }
+
   function buildEngine(engine: string): VmpkConnector {
     switch (engine) {
       case "tract":  return createTractEngine({ voice: tractVoiceStr as TractVoiceId });
@@ -413,7 +442,7 @@ async function cmdPlay(args: string[]): Promise<void> {
 
   const connector: VmpkConnector = useMidi
     ? createVmpkConnector(portName ? { portName } : undefined)
-    : buildEngine(engineStr);
+    : buildEngine(engineForAccompaniment);
 
   const ENGINE_LABELS: Record<string, string> = {
     tract: `tract engine (${tractVoiceStr})`,
@@ -425,7 +454,9 @@ async function cmdPlay(args: string[]): Promise<void> {
     "vocal+synth": "vocal + vocal-synth",
     "guitar+synth": `${guitarVoiceStr} guitar + vocal-synth`,
   };
-  const engineLabel = useMidi ? "MIDI" : ENGINE_LABELS[engineStr] ?? `${keyboardStr} piano`;
+  const engineLabel = useMidi
+    ? "MIDI"
+    : ENGINE_LABELS[engineForAccompaniment] ?? `${keyboardStr} piano`;
   console.log(`\nStarting ${engineLabel}...`);
 
   try {
@@ -562,11 +593,77 @@ async function cmdPlay(args: string[]): Promise<void> {
       const teachingHook = composeTeachingHooks(...libHooks);
 
       const syncMode: SyncMode = (withSinging && !withTeaching) ? "before" : "concurrent";
+      let loopRange: [number, number] | undefined;
+      let playMode = mode;
+      if (wantsLyrics && lyricsStart !== undefined && lyricsEnd !== undefined) {
+        if (lyricsEnd > song.measures.length) {
+          console.error(`--measures ${lyricsStart}-${lyricsEnd} exceeds "${song.title}" (${song.measures.length} measures).`);
+          process.exit(1);
+        }
+        loopRange = [lyricsStart, lyricsEnd];
+        playMode = "loop";
+      }
+
+      let scoreSinger: Awaited<ReturnType<typeof prepareScoreLocked>> = null;
+      if (wantsLyrics) {
+        try {
+          scoreSinger = await prepareScoreLocked(song, {
+            lyrics: lyricsFlag ?? undefined,
+            lyricsFile: lyricsFile ?? undefined,
+            startMeasure: lyricsStart,
+            endMeasure: lyricsEnd,
+            tempo,
+            speed,
+          });
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          console.error(`Couldn't build sung lyrics: ${msg}`);
+          process.exit(1);
+        }
+        if (scoreSinger) {
+          for (const w of scoreSinger.score.warnings.slice(0, 8)) {
+            console.log(`  ⚠ ${w}`);
+          }
+          if (scoreSinger.score.warnings.length > 8) {
+            console.log(`  … and ${scoreSinger.score.warnings.length - 8} more lyric warnings`);
+          }
+          console.log(
+            `  Sung lead: ${scoreSinger.score.notes.length} melody notes, ${scoreSinger.score.phonemes.filter((p) => p.kind === "vowel").length} vowels, ${scoreSinger.singer.durationSec.toFixed(1)}s`,
+          );
+        }
+      }
+
+      const lyricsOut = getFlag(args, "--out");
+      if (lyricsOut) {
+        if (!scoreSinger) {
+          console.error("--out with no --lyrics: nothing to render. Pass --lyrics or --lyrics-file.");
+          process.exit(1);
+        }
+        const backendStr = getFlag(args, "--svs-backend") ?? "dsp";
+        if (backendStr !== "dsp" && backendStr !== "diffsinger") {
+          console.error(`Unknown --svs-backend: "${backendStr}". Use dsp or diffsinger.`);
+          process.exit(1);
+        }
+        try {
+          const rendered = await renderOfflineSvs(scoreSinger.score, {
+            backend: backendStr as SvsBackend,
+            outPath: lyricsOut,
+          });
+          console.log(`  Wrote sung lead: ${rendered.outPath} (${rendered.durationSec.toFixed(1)}s, ${rendered.backend})`);
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          console.error(`Couldn't render sung lead: ${msg}`);
+          process.exit(1);
+        }
+      }
+
       const session = createSession(song, connector, {
-        mode,
+        mode: playMode,
         syncMode,
         tempo,
         speed,
+        loopRange,
+        loopOnce: playMode === "loop",
         teachingHook,
         onProgress: printProgress,
         progressInterval: 0,
@@ -593,12 +690,15 @@ async function cmdPlay(args: string[]): Promise<void> {
       const effectiveTempo = tempo ?? song.tempo;
       const effectiveSpeed = speed ?? 1.0;
       const beatsPerMeasure = song.timeSignature === "3/4" ? 3 : song.timeSignature === "6/8" ? 6 : 4;
-      const estSeconds = Math.round((song.measures.length * beatsPerMeasure * 60) / (effectiveTempo * effectiveSpeed));
+      const measureCount = loopRange
+        ? loopRange[1] - loopRange[0] + 1
+        : song.measures.length;
+      const estSeconds = Math.round((measureCount * beatsPerMeasure * 60) / (effectiveTempo * effectiveSpeed));
       const estMin = Math.floor(estSeconds / 60);
       const estSec = estSeconds % 60;
       const estStr = estMin > 0 ? `~${estMin}m ${estSec}s` : `~${estSec}s`;
 
-      console.log(`Playing: ${song.title}${tempoLabel} [${mode} mode] (${estStr})\n`);
+      console.log(`Playing: ${song.title}${tempoLabel} [${playMode} mode] (${estStr})\n`);
 
       // SIGINT handler for graceful stop
       const sigintHandler = () => {
@@ -608,7 +708,18 @@ async function cmdPlay(args: string[]): Promise<void> {
       process.on("SIGINT", sigintHandler);
 
       const playStart = Date.now();
-      await session.play();
+      if (scoreSinger) {
+        await scoreSinger.singer.connect();
+        scoreSinger.singer.start();
+        console.log("  Sung lead: Pink Trombone tract (LF glottis), mixed on the piano graph.");
+      }
+      try {
+        await session.play();
+      } finally {
+        if (scoreSinger) {
+          await scoreSinger.singer.stop();
+        }
+      }
       process.removeListener("SIGINT", sigintHandler);
 
       const durationSec = Math.round((Date.now() - playStart) / 1000);
@@ -1340,6 +1451,23 @@ function cmdTuneGuitar(args: string[]): void {
   console.log(`\n${totalOverrides} total override(s) saved. Use --reset to restore factory.\n`);
 }
 
+function cmdGenerateSong(args: string[]): void {
+  const lyrics = getFlag(args, "--lyrics") ?? args.find((a) => !a.startsWith("--")) ?? "";
+  if (!lyrics.trim()) {
+    console.error("Usage: ai-jam-sessions generate-song --lyrics \"...\" [--generator ace-step|diffrhythm|yue]");
+    process.exit(1);
+  }
+  const gen = getFlag(args, "--generator") ?? "ace-step";
+  if (gen !== "ace-step" && gen !== "diffrhythm" && gen !== "yue") {
+    console.error(`Unknown --generator: "${gen}". Use ace-step, diffrhythm, or yue.`);
+    process.exit(1);
+  }
+  const result = generateFullSong({ lyrics, generator: gen });
+  console.error(`Error [INPUT_INVALID_ARGS]: ${result.reason}`);
+  console.error(`Hint: ${result.hint}`);
+  process.exit(1);
+}
+
 function cmdTune(args: string[]): void {
   const voiceId = args[0];
   if (!voiceId) {
@@ -1456,6 +1584,7 @@ Commands:
   stats                      Registry statistics
   library                    Show library progress
   ports                      List MIDI output ports
+  generate-song              Full-song generator side door (ACE-Step / DiffRhythm / YuE — not MIDI-locked)
   version                    Show version
   help                       Show this help
 
@@ -1465,6 +1594,11 @@ Play options:
   --mode <mode>              Playback mode: full, measure, hands, loop (library songs only)
   --keyboard <voice>         Piano voice: grand, upright, electric, honkytonk, musicbox, bright
   --engine <engine>          Sound engine: piano, sample, vocal, tract, guitar, synth, piano+synth, guitar+synth
+  --lyrics <text>            Sung lead (English): align lyrics to the RH melody (vowel on the beat)
+  --lyrics-file <path>       Read sung lyrics from a UTF-8 text file
+  --measures <start-end>     With --lyrics, clip melody + accompaniment to this range (e.g. 1-8)
+  --out <file.wav>           With --lyrics, also write the sung lead as a WAV (score-locked DSP)
+  --svs-backend <dsp|diffsinger>  Offline render backend (default dsp). diffsinger refuses until DIFFSINGER_ROOT is pinned.
   --guitar-voice <voice>     Guitar voice: classical-nylon, steel-dreadnought, electric-clean, electric-jazz
   --midi                     Output via MIDI instead of built-in engine
   --port <name>              MIDI port name (with --midi)
@@ -1505,6 +1639,7 @@ Sing options:
 
 Examples:
   ai-jam-sessions play song.mid                          # play a MIDI file
+  ai-jam-sessions play amazing-grace --lyrics "Amazing grace how sweet the sound" --measures 1-8
   ai-jam-sessions play amazing-grace --keyboard upright   # folk on an upright
   ai-jam-sessions play the-entertainer --keyboard honkytonk # ragtime on honky-tonk
   ai-jam-sessions play autumn-leaves --keyboard electric  # jazz on electric piano
@@ -1648,6 +1783,9 @@ async function main(): Promise<void> {
       break;
     case "ports":
       cmdPorts();
+      break;
+    case "generate-song":
+      cmdGenerateSong(args.slice(1));
       break;
     case "version":
     case "--version":

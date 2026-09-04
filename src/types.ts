@@ -120,6 +120,9 @@ export interface Session {
   /** Measure range for loop mode [start, end] (1-based, inclusive). */
   loopRange: [number, number] | null;
 
+  /** When true with mode "loop", play the range once then finish. */
+  loopOnce?: boolean;
+
   /** Session start time. */
   startedAt: Date;
 
@@ -214,6 +217,9 @@ export interface SessionOptions {
 
   /** Loop range [start, end] for loop mode. */
   loopRange?: [number, number];
+
+  /** Play the loop range once instead of forever (lyrics --measures). */
+  loopOnce?: boolean;
 
   /** Enable voice feedback (default: true). */
   voice?: boolean;

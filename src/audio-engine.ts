@@ -33,6 +33,7 @@
 import type { VmpkConnector, MidiStatus, MidiNote } from "./types.js";
 import { getMergedVoice, type PianoVoiceId, type PianoVoiceConfig } from "./piano-voices.js";
 import { JamError } from "./errors.js";
+import { getSharedAudioContext, setSharedAudioContext } from "./audio-shared.js";
 import { PIANO_COMPRESSOR, velocityLowpassHz } from "./piano-timbre.js";
 
 // ─── Lazy Import ────────────────────────────────────────────────────────────
@@ -433,6 +434,7 @@ export function createAudioEngine(voiceId?: PianoVoiceId): VmpkConnector {
 
         compressor.connect(master);
         master.connect(ctx.destination);
+        setSharedAudioContext(ctx);
 
         // Pre-generate shared noise buffer
         createHammerNoiseBuffer();
@@ -468,6 +470,7 @@ export function createAudioEngine(voiceId?: PianoVoiceId): VmpkConnector {
       voiceOrder.length = 0;
 
       if (ctx) {
+        if (getSharedAudioContext() === ctx) setSharedAudioContext(null);
         try {
           await ctx.close();
         } catch {

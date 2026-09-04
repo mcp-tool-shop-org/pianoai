@@ -97,6 +97,7 @@ export function createSession(
     tempoOverride: options.tempo ?? null,
     speed,
     loopRange: options.loopRange ?? null,
+    loopOnce: options.loopOnce ?? false,
     startedAt: new Date(),
     measuresPlayed: 0,
     voiceEnabled: options.voice ?? true,
@@ -354,6 +355,7 @@ export class SessionController {
             // COMPLETED iteration rewinds the position to the loop start.
             // (Bailing here also keeps hands off stop()'s currentMeasure=0.)
             if (signal.aborted) break;
+            if (this.session.loopOnce) break;
             this.session.currentMeasure = startIdx;
             iterStartIdx = startIdx;
           }

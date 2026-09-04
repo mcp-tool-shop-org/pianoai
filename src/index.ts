@@ -47,6 +47,16 @@ export { resolvePianoSamplesDir, preferredPianoEngineId } from "./sample-paths.j
 export { createVocalEngine } from "./vocal-engine.js";
 export type { VocalEngineOptions } from "./vocal-engine.js";
 
+export {
+  alignLyricsToNotes,
+  alignSyllablesToNotes,
+  extractMelodyNotes,
+  buildScoreLockedVocals,
+  createScoreSinger,
+  loadEngineG2P,
+} from "./vocal/index.js";
+export type { ScoreNote, ScorePhoneme, BuiltVocalScore } from "./vocal/index.js";
+
 // Export tract engine (Pink Trombone physical vocal tract model)
 export { createTractEngine, TRACT_VOICE_IDS } from "./vocal-tract-engine.js";
 export type { TractEngineOptions, TractVoiceId } from "./vocal-tract-engine.js";
