@@ -77,6 +77,13 @@ describe("parsePlaySessionFlags", () => {
     expect(() => parsePlaySessionFlags(["--count-in", "-1"])).toThrow(/count-in/i);
   });
 
+  it("lists --lyrics on help", () => {
+    const { status, stdout } = runCli(["help"]);
+    expect(status).toBe(0);
+    expect(stdout).toMatch(/--lyrics/);
+    expect(stdout).toMatch(/generate-song/);
+  });
+
   it("throws a descriptive Error for a non-numeric --count-in", () => {
     expect(() => parsePlaySessionFlags(["--count-in", "abc"])).toThrow(/count-in/i);
   });

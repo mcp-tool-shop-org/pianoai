@@ -5,6 +5,18 @@ All notable changes to AI Jam Sessions will be documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added — score-locked sung lead (Route A)
+
+- **`--lyrics` / `--lyrics-file` on `play`** (and `play_song.lyrics`) align English lyrics to the right-hand melody: vowel nucleus on the MIDI beat, onset consonants in the preceding gap, leftover duration on the nucleus, diphthong split on long notes, leftover notes as melisma. The additive vocal-synth engine renders that score; `synth`/`vocal`/`tract` engines are not used as the lead when lyrics are set (they become piano accompaniment).
+- First slice: `ai-jam-sessions play amazing-grace --lyrics "Amazing grace how sweet the sound" --measures 1-8`.
+- Sung melody is octave-placed into G3–E4 so F0 stays under front-vowel F1. Default voice is `kokoro-af-heart`; extra phrase vibrato is off. `--measures` with lyrics plays the range **once**, not a loop.
+- Live lead is mixed on the **same AudioContext as the piano**. The renderer is **Pink Trombone** (LF glottis + waveguide), not vocal-synth-engine's additive Kokoro tables — those are a vowel instrument and were the metallic shriek.
+- **`--out file.wav`** (with `--lyrics`) writes the score-locked lead offline (`--svs-backend dsp`, default). `--svs-backend diffsinger` refuses until `DIFFSINGER_ROOT` is a commercial-safe OpenVPI pin (Route B).
+- **`generate-song`** is the ACE-Step / DiffRhythm / YuE side door — it **refuses to run as a play engine** because those models cannot honor library MIDI (Route C).
+- Route D (DSP dry + SVC timbre) is a handoff only — not in this package (AGPL / F0-from-audio; see the vocology-knowledge Route D note in the private readouts repo).
+
 ## [2.2.0] - 2026-08-20
 
 **The release where the instrument got real ears and a listening room.** Every prior release played through synthesized approximations; this one ships a sampled Concert Grand as the default piano and a blind listening room — the Composition Panel — where the composition engine's output is ranked by ear under real listening-test discipline. Around them: a full health pass, receipted public-domain re-sourcing of two library works, and a stranger-test hardening pass over the packed artifact.

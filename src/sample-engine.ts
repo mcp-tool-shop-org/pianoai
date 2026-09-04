@@ -18,6 +18,7 @@ import { join } from "node:path";
 import type { VmpkConnector, MidiStatus, MidiNote } from "./types.js";
 import { parseSfzFile, type SfzRegion, type SfzData } from "./sfz-parser.js";
 import { JamError } from "./errors.js";
+import { getSharedAudioContext, setSharedAudioContext } from "./audio-shared.js";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -397,6 +398,7 @@ export function createSampleEngine(options: SampleEngineOptions): VmpkConnector 
 
         compressor.connect(master);
         master.connect(ctx.destination);
+        setSharedAudioContext(ctx);
 
         // 3. Parse SFZ
         const sfzFilename = "Accurate-SalamanderGrandPiano_flat.Recommended.sfz";
@@ -431,6 +433,7 @@ export function createSampleEngine(options: SampleEngineOptions): VmpkConnector 
       regionMap = null;
 
       if (ctx) {
+        if (getSharedAudioContext() === ctx) setSharedAudioContext(null);
         try { await ctx.close(); } catch { /* ok */ }
         ctx = null;
         compressor = null;

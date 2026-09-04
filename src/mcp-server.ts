@@ -83,6 +83,8 @@ import { createAudioEngine } from "./audio-engine.js";
 import { createSampleEngine } from "./sample-engine.js";
 import { preferredPianoEngineId, resolvePianoSamplesDir } from "./sample-paths.js";
 import { createVocalEngine } from "./vocal-engine.js";
+import { accompanimentEngineForLyrics, prepareScoreLocked } from "./vocal/prepare.js";
+import type { ScoreSinger } from "./vocal/score-singer.js";
 import { createTractEngine, TRACT_VOICE_IDS, type TractVoiceId } from "./vocal-tract-engine.js";
 import { createGuitarEngine } from "./guitar-engine.js";
 import {
@@ -974,6 +976,7 @@ let activeSession: SessionController | null = null;
 let activeMidiEngine: MidiPlaybackEngine | null = null;
 let activeController: PlaybackController | null = null;
 let activeConnector: VmpkConnector | null = null;
+let activeScoreSinger: ScoreSinger | null = null;
 let activeVoiceId: string = "grand";
 let activeNotes: Set<number> = new Set();
 let activePracticeLoop: PracticeLoop | null = null;
@@ -1105,6 +1108,14 @@ async function stopActive(): Promise<void> {
   }
   activeController = null;
 
+  if (activeScoreSinger) {
+    try {
+      await activeScoreSinger.stop();
+    } catch (err) {
+      console.error(`Score-singer stop error: ${err instanceof Error ? err.message : String(err)}`);
+    }
+    activeScoreSinger = null;
+  }
   if (activeConnector) {
     try {
       await activeConnector.disconnect();
@@ -1139,8 +1150,9 @@ registerTool(
     metronome: z.boolean().optional().describe("Enable the metronome click track (library songs only). Default: false."),
     countIn: z.number().int().min(0).max(8).optional().describe("Count-in length in bars before playback starts (library songs only). Only takes effect when metronome is true. Default: 1 bar when metronome is true and this is omitted, 0 otherwise."),
     record: z.boolean().optional().describe("Record played notes for later scoring (library songs only) — retrieve with score_last_take. Default: false."),
+    lyrics: z.string().optional().describe("English lyrics to sing as a score-locked lead (vowel on the MIDI beat). Aligns to the right-hand melody of the selected measures. The --engine aah/tract/synth path is not used for the lead when lyrics are set."),
   },
-  async ({ id, speed, tempo, mode, startMeasure, endMeasure, withSinging, withTeaching, singMode, keyboard, engine, tractVoice, guitarVoice, syncMode: syncModeParam, metronome, countIn, record }) => withStateLock(async () => {
+  async ({ id, speed, tempo, mode, startMeasure, endMeasure, withSinging, withTeaching, singMode, keyboard, engine, tractVoice, guitarVoice, syncMode: syncModeParam, metronome, countIn, record, lyrics }) => withStateLock(async () => {
     // Stop whatever is currently playing
     await stopActive();
 
@@ -1194,7 +1206,10 @@ registerTool(
     const voiceId = (keyboard ?? "grand") as PianoVoiceId;
     activeVoiceId = voiceId;
     activeNotes.clear();
-    const engineId = (engine ?? preferredPianoEngineId()) as EngineId;
+    const requestedEngine = (engine ?? preferredPianoEngineId()) as EngineId;
+    const engineId = (lyrics
+      ? accompanimentEngineForLyrics(requestedEngine)
+      : requestedEngine) as EngineId;
     if (engineId === "sample") {
       const samplesDir = resolvePianoSamplesDir();
       if (!samplesDir) {
@@ -1452,17 +1467,42 @@ registerTool(
 
     const syncMode: SyncMode = syncModeParam ?? ((withSinging && !withTeaching) ? "before" : "concurrent");
     const session = createSession(song, connector, {
-      mode: playbackMode,
+      mode: lyrics && loopRange ? "loop" : playbackMode,
       syncMode,
       speed,
       tempo,
       loopRange,
+      loopOnce: Boolean(lyrics && loopRange),
       teachingHook,
       metronome,
       countIn,
       record,
     });
     activeSession = session;
+
+    if (lyrics && lyrics.trim().length > 0) {
+      try {
+        const prepared = await prepareScoreLocked(song, {
+          lyrics,
+          startMeasure,
+          endMeasure,
+          tempo,
+          speed,
+        });
+        if (prepared) {
+          await prepared.singer.connect();
+          prepared.singer.start();
+          activeScoreSinger = prepared.singer;
+        }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        await stopActive();
+        return {
+          content: [{ type: "text", text: `Couldn't start the sung lead: ${msg}` }],
+          isError: true,
+        };
+      }
+    }
 
     // Play in background
     lastPlaybackError = null;
@@ -1504,6 +1544,10 @@ registerTool(
         // (finished, errored, or stopped/superseded elsewhere) — a no-op
         // when `record` wasn't enabled (see captureLastRecording()).
         captureLastRecording(session);
+        if (activeScoreSinger) {
+          activeScoreSinger.stop().catch((e) => console.error(`Score-singer stop error: ${e instanceof Error ? e.message : String(e)}`));
+          activeScoreSinger = null;
+        }
         connector.disconnect().catch((e) => console.error(`Disconnect error: ${e instanceof Error ? e.message : String(e)}`));
         if (activeSession === session) activeSession = null;
         if (activeConnector === connector) activeConnector = null;
@@ -1528,6 +1572,9 @@ registerTool(
     if (loopRange) {
       const loopMeasureCount = loopRange[1] - loopRange[0] + 1;
       lines.push(`- **Loop range:** measures ${loopRange[0]}–${loopRange[1]} (${loopMeasureCount} measures)`);
+    }
+    if (lyrics && lyrics.trim().length > 0) {
+      lines.push(`- **Sung lead:** score-locked lyrics (${lyrics.trim().split(/\s+/).length} words) on the right-hand melody`);
     }
     if (metronome) {
       lines.push(`- **Metronome:** on${session.session.countInBars ? ` (${session.session.countInBars}-bar count-in)` : ""}`);
