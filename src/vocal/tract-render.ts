@@ -11,9 +11,7 @@ import type { BuiltVocalScore } from "./score-locked.js";
 import { scoreDurationSec } from "./score-locked.js";
 import {
   BreathContext,
-  applyCents,
   gainFromBreath,
-  residualCents,
   tensenessFromBreath,
   vibratoFromBreath,
 } from "./breath.js";
@@ -68,6 +66,27 @@ function noteAt(notes: ScoreNote[], t: number): ScoreNote | null {
   return null;
 }
 
+function vowelOnNote(events: ScorePhoneme[], note: ScoreNote): string {
+  for (const e of events) {
+    if (e.kind !== "vowel") continue;
+    if (e.tSec >= note.startSec - 0.02 && e.tSec < note.startSec + note.durationSec) {
+      return e.phoneme;
+    }
+  }
+  return "AH";
+}
+
+function snapGlottisFrequency(synth: InstanceType<typeof Synthesizer>, hz: number): void {
+  const g = synth.glottis as unknown as {
+    smoothFrequency: number;
+    oldFrequency: number;
+    newFrequency: number;
+  };
+  g.smoothFrequency = hz;
+  g.oldFrequency = hz;
+  g.newFrequency = hz;
+}
+
 export interface TractRenderOptions {
   sampleRate?: number;
   tractLength?: number;
@@ -113,12 +132,14 @@ export function renderTractScore(
   const total = Math.ceil(duration * sampleRate);
   const pcm = new Float32Array(total);
   const synth = new Synthesizer(sampleRate, options.tractLength ?? 38);
-  synth.glottis.alwaysVoice = true;
+  // Discrete sung pitches, not trombone gliss (alwaysVoice kept intensity
+  // high so calculateNewFrequency never snapped).
+  synth.glottis.alwaysVoice = false;
   synth.glottis.autoWobble = false;
-  synth.glottis.vibratoAmount = 0.004;
+  synth.glottis.vibratoAmount = 0.003;
   synth.glottis.vibratoFrequency = 5.6;
   synth.glottis.targetTenseness = 0.55;
-  synth.glottis.isTouched = true;
+  synth.glottis.isTouched = false;
   synth.tractShaper.velumTarget = 0.01;
 
   const breath = new BreathContext();
@@ -127,13 +148,14 @@ export function renderTractScore(
   const tmp = new Float32Array(block);
   let gain = 0;
   let offset = 0;
+  let lastMidi: number | null = null;
 
   while (offset < total) {
     const n = Math.min(block, total - offset);
     const t = offset / sampleRate;
     const note = noteAt(score.notes, t);
-    const ph = phonemeAt(score.phonemes, t);
-    const voicing = Boolean(note && ph);
+    const vowel = note ? vowelOnNote(score.phonemes, note) : null;
+    const voicing = Boolean(note);
     const intensity = note ? (note.velocity ?? 0.7) : 0.7;
     const air = breath.step(n / sampleRate, voicing, intensity);
     const vib = vibratoFromBreath(air.level);
@@ -141,38 +163,35 @@ export function renderTractScore(
     synth.glottis.vibratoAmount = vib.amount;
 
     if (note) {
-      const f0 = applyCents(midiToHz(note.midi), residualCents(t, air.level));
+      const f0 = midiToHz(note.midi);
       synth.glottis.targetFrequency = f0;
+      if (lastMidi !== note.midi) {
+        snapGlottisFrequency(synth, f0);
+        lastMidi = note.midi;
+      }
     }
 
     let targetGain = 0;
-    if (air.inhaling) {
+    if (air.inhaling && !note) {
       synth.glottis.targetTenseness = 0.22;
       synth.glottis.isTouched = false;
       targetGain = 0;
-    } else if (note && ph) {
+    } else if (note) {
       synth.glottis.isTouched = true;
-      if (ph.kind === "vowel") {
-        const shape = TRACT_VOWELS[ph.phoneme] ?? DEFAULT_VOWEL;
-        let diameter = shape.tongueDiameter;
-        const f0 = midiToHz(note.midi);
-        // Cover only above A4 — G4 hymn /i/ must stay distinct from /ɑ/.
-        if (f0 > 440 && diameter < 2.2) diameter = 2.2;
-        synth.tractShaper.tongueIndex = shape.tongueIndex;
-        synth.tractShaper.tongueDiameter = diameter;
-        applyTongueTargets(synth);
-        synth.glottis.targetTenseness = tensenessFromBreath(shape.tenseness, air.level);
-        synth.tractShaper.velumTarget = 0.01;
-        targetGain = 0.9 * intensity * gainFromBreath(air.level);
-      } else {
-        synth.tractShaper.velumTarget = NASALS.has(ph.phoneme) ? 0.4 : 0.01;
-        synth.glottis.targetTenseness = tensenessFromBreath(
-          STOPS.has(ph.phoneme) ? 0.35 : 0.45,
-          air.level,
-        );
-        constrictForConsonant(synth, ph.phoneme);
-        targetGain = (STOPS.has(ph.phoneme) ? 0.2 : 0.5) * gainFromBreath(air.level);
-      }
+      const shape = TRACT_VOWELS[vowel ?? "AH"] ?? DEFAULT_VOWEL;
+      let diameter = shape.tongueDiameter;
+      const f0 = midiToHz(note.midi);
+      if (f0 > 440 && diameter < 2.2) diameter = 2.2;
+      synth.tractShaper.tongueIndex = shape.tongueIndex;
+      synth.tractShaper.tongueDiameter = diameter;
+      applyTongueTargets(synth);
+      synth.glottis.targetTenseness = tensenessFromBreath(shape.tenseness, air.level);
+      synth.tractShaper.velumTarget = 0.01;
+      const intoNote = t - note.startSec;
+      const consonantDip = intoNote >= 0 && intoNote < 0.04 ? 0.55 : 1;
+      targetGain = 0.95 * intensity * gainFromBreath(air.level) * consonantDip;
+    } else {
+      synth.glottis.isTouched = false;
     }
 
     const slice = n === block ? tmp : tmp.subarray(0, n);

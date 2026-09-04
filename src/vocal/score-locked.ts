@@ -3,6 +3,7 @@
 import type { SongEntry } from "../songs/types.js";
 import { alignLyricsToNotes } from "./align-lyrics.js";
 import { applyPhraseVibrato, extractMelodyNotes, type MelodyNoteOptions } from "./melody-notes.js";
+import { getVocalTune, realizeVocalTune } from "./tunes.js";
 import type { LyricG2P, ScoreNote, ScorePhoneme } from "./types.js";
 
 export interface BuildScoreOptions extends MelodyNoteOptions {
@@ -26,22 +27,32 @@ export function buildScoreLockedVocals(
   song: SongEntry,
   options: BuildScoreOptions,
 ): BuiltVocalScore {
-  const melody = extractMelodyNotes(song, options);
-  // Engine presets already carry ~35-cent vibrato. Stacking another 50-cent
-  // LFO on long notes is what turned the first listen into a siren.
-  const notes = options.vibrato === true
-    ? applyPhraseVibrato(melody.notes)
-    : melody.notes;
-  const aligned = alignLyricsToNotes(options.lyrics, notes, options.g2p);
+  const tune = getVocalTune(song.id);
+  const lyrics = options.lyrics.trim().length > 0 ? options.lyrics : (tune?.lyrics ?? "");
+  const extracted = extractMelodyNotes(song, options);
+  const realized = tune
+    ? realizeVocalTune(song, tune, options)
+    : {
+        notes: extracted.notes,
+        lyrics,
+        warnings: extracted.warnings,
+        effectiveBpm: extracted.effectiveBpm,
+      };
+  const rawNotes = realized.notes;
+  const notes = options.vibrato === true ? applyPhraseVibrato(rawNotes) : rawNotes;
+  const aligned = alignLyricsToNotes(lyrics, notes, options.g2p, {
+    // One nucleus per sung note. Diphthong splits turn a hymn into gabble.
+    diphthongSplitSec: 99,
+  });
   const phonemes = coverFrontVowels(notes, aligned.events);
   return {
-    bpm: melody.effectiveBpm,
+    bpm: realized.effectiveBpm,
     notes,
-    lyrics: { text: options.lyrics, language: options.language ?? "en-US" },
+    lyrics: { text: lyrics, language: options.language ?? "en-US" },
     phonemes,
-    warnings: [...melody.warnings, ...aligned.warnings],
-    startMeasure: melody.startMeasure,
-    endMeasure: melody.endMeasure,
+    warnings: [...extracted.warnings, ...realized.warnings, ...aligned.warnings],
+    startMeasure: extracted.startMeasure,
+    endMeasure: extracted.endMeasure,
   };
 }
 

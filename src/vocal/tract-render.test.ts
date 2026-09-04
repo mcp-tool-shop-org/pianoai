@@ -1,5 +1,21 @@
 import { describe, it, expect } from "vitest";
 import { renderTractScore, TRACT_VOWELS } from "./tract-render.js";
+
+function estimateF0(pcm: Float32Array, sr: number, start: number, len: number): number {
+  const minP = Math.floor(sr / 500);
+  const maxP = Math.floor(sr / 80);
+  let best = -Infinity;
+  let bestP = minP;
+  for (let p = minP; p < maxP; p++) {
+    let c = 0;
+    for (let i = 0; i < len - p; i++) c += pcm[start + i] * pcm[start + i + p];
+    if (c > best) {
+      best = c;
+      bestP = p;
+    }
+  }
+  return sr / bestP;
+}
 import type { BuiltVocalScore } from "./score-locked.js";
 
 describe("TRACT_VOWELS", () => {
@@ -52,6 +68,23 @@ describe("renderTractScore", () => {
     const n = Math.min(aa.pcm.length, iy.pcm.length);
     for (let i = 0; i < n; i++) diff += Math.abs(aa.pcm[i] - iy.pcm[i]);
     expect(diff / n).toBeGreaterThan(0.01);
+  });
+
+  it("locks F0 to the MIDI note so a G4 is near 392 Hz, not a smear", () => {
+    const { pcm, sampleRate } = renderTractScore({
+      bpm: 60,
+      notes: [{ id: "n0", startSec: 0.05, durationSec: 0.45, midi: 67, velocity: 0.85 }],
+      lyrics: { text: "ah", language: "en-US" },
+      phonemes: [{ tSec: 0.05, durSec: 0.45, phoneme: "AH", kind: "vowel" }],
+      warnings: [],
+      startMeasure: 1,
+      endMeasure: 1,
+    });
+    const start = Math.floor(0.2 * sampleRate);
+    const len = Math.floor(0.15 * sampleRate);
+    const f0 = estimateF0(pcm, sampleRate, start, len);
+    expect(f0).toBeGreaterThan(350);
+    expect(f0).toBeLessThan(440);
   });
 
   it("puts inhale noise in an opening rest (breath context filling)", () => {
