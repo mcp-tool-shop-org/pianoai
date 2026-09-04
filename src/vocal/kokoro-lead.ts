@@ -17,17 +17,54 @@
  * `place`). Mix with the piano is `mix_dialogue_anchored`.
  */
 
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { retuneLockedTake } from "./voice-changer.js";
 import type { BuiltVocalScore } from "./score-locked.js";
 import { scoreDurationSec } from "./score-locked.js";
 
 export const KOKORO_LOCK_ENV = "JAM_KOKORO_LOCK_WAV";
 
+export const KOKORO_LOCK_DIR_ENV = "JAM_KOKORO_LOCK_DIR";
+
+export function resolveKokoroLockDir(): string | null {
+  const fromEnv = process.env[KOKORO_LOCK_DIR_ENV];
+  if (fromEnv && existsSync(fromEnv)) return fromEnv;
+  const def = join(process.cwd(), "tmp", "kokoro-lock");
+  if (existsSync(def)) return def;
+  return null;
+}
+
 export function resolveKokoroLockWav(): string | null {
   const p = process.env[KOKORO_LOCK_ENV];
   if (p && existsSync(p)) return p;
-  return null;
+  const dir = resolveKokoroLockDir();
+  if (!dir) return null;
+  const lock = join(dir, "lock.wav");
+  return existsSync(lock) ? lock : null;
+}
+
+function trimSilence(pcm: Float32Array, sr: number): Float32Array {
+  const thr = 0.02;
+  let a = 0;
+  let b = pcm.length - 1;
+  while (a < b && Math.abs(pcm[a]) < thr) a++;
+  while (b > a && Math.abs(pcm[b]) < thr) b--;
+  const pad = Math.floor(sr * 0.02);
+  a = Math.max(0, a - pad);
+  b = Math.min(pcm.length - 1, b + pad);
+  return pcm.subarray(a, b + 1);
+}
+
+/** Numbered CAST clips (`00-ah.wav` …) — one per sung note. */
+export function loadKokoroSyllableClips(dir: string): { pcm: Float32Array; sampleRate: number }[] {
+  const names = readdirSync(dir)
+    .filter((n) => /^\d{2}-.*\.wav$/i.test(n))
+    .sort();
+  return names.map((n) => {
+    const wav = readMonoWav(join(dir, n));
+    return { pcm: trimSilence(wav.pcm, wav.sampleRate), sampleRate: wav.sampleRate };
+  });
 }
 
 /** Minimal PCM from a 16-bit mono WAV. */
@@ -54,20 +91,33 @@ export function readMonoWav(path: string): { pcm: Float32Array; sampleRate: numb
  * PERFORM the locked Kokoro take onto the score: one retuned grain per note,
  * placed on the MIDI clock. Rests stay silent (fx-dub `place`).
  */
+function fadeEdges(pcm: Float32Array, sr: number, fadeSec = 0.012): void {
+  const n = Math.min(pcm.length, Math.floor(sr * fadeSec));
+  for (let i = 0; i < n; i++) {
+    const w = i / n;
+    pcm[i] *= w;
+    pcm[pcm.length - 1 - i] *= w;
+  }
+}
+
 export function renderKokoroLead(
   score: BuiltVocalScore,
   lockPcm: Float32Array,
   lockRate: number,
+  syllableClips?: { pcm: Float32Array; sampleRate: number }[],
 ): { pcm: Float32Array; sampleRate: number } {
-  const sr = lockRate;
+  const sr = syllableClips?.[0]?.sampleRate ?? lockRate;
   const duration = scoreDurationSec(score) + 0.2;
   const total = Math.ceil(duration * sr);
   const pcm = new Float32Array(total);
-  for (const note of score.notes) {
+  for (let i = 0; i < score.notes.length; i++) {
+    const note = score.notes[i];
+    const src = syllableClips?.[i] ?? { pcm: lockPcm, sampleRate: lockRate };
+    const grain = retuneLockedTake(src.pcm, src.sampleRate, note.midi, note.durationSec);
+    fadeEdges(grain, sr);
     const start = Math.max(0, Math.floor(note.startSec * sr));
-    const grain = retuneLockedTake(lockPcm, sr, note.midi, note.durationSec);
     const n = Math.min(grain.length, total - start);
-    for (let i = 0; i < n; i++) pcm[start + i] += grain[i];
+    for (let j = 0; j < n; j++) pcm[start + j] += grain[j];
   }
   return { pcm, sampleRate: sr };
 }
