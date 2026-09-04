@@ -6,6 +6,7 @@ export { loadEngineG2P } from "./g2p.js";
 export { renderOfflineSvs } from "./svs-offline.js";
 export { generateFullSong } from "./song-generate.js";
 export { renderTractScore, TRACT_VOWELS } from "./tract-render.js";
+export { BreathContext, BREATH } from "./breath.js";
 export type { ScoreNote, ScorePhoneme, LyricSyllable, AlignResult, LyricG2P } from "./types.js";
 export type { BuiltVocalScore } from "./score-locked.js";
 export type { ScoreSinger } from "./score-singer.js";

@@ -53,4 +53,22 @@ describe("renderTractScore", () => {
     for (let i = 0; i < n; i++) diff += Math.abs(aa.pcm[i] - iy.pcm[i]);
     expect(diff / n).toBeGreaterThan(0.01);
   });
+
+  it("puts inhale noise in an opening rest (breath context filling)", () => {
+    const { pcm, sampleRate } = renderTractScore({
+      bpm: 60,
+      notes: [{ id: "n0", startSec: 0.4, durationSec: 0.2, midi: 60, velocity: 0.8 }],
+      lyrics: { text: "ah", language: "en-US" },
+      phonemes: [{ tSec: 0.4, durSec: 0.2, phoneme: "AH", kind: "vowel" }],
+      warnings: [],
+      startMeasure: 1,
+      endMeasure: 1,
+    });
+    const from = Math.floor(0.15 * sampleRate);
+    const to = Math.floor(0.35 * sampleRate);
+    let sum = 0;
+    for (let i = from; i < to; i++) sum += pcm[i] * pcm[i];
+    const rms = Math.sqrt(sum / (to - from));
+    expect(rms).toBeGreaterThan(0.005);
+  });
 });

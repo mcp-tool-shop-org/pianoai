@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - First slice: `ai-jam-sessions play amazing-grace --lyrics "Amazing grace how sweet the sound" --measures 1-8`.
 - Sung melody is octave-placed into G3–E4 so F0 stays under front-vowel F1. Default voice is `kokoro-af-heart`; extra phrase vibrato is off. `--measures` with lyrics plays the range **once**, not a loop.
 - Live lead is mixed on the **same AudioContext as the piano**. The renderer is **Pink Trombone** (LF glottis + waveguide), not vocal-synth-engine's additive Kokoro tables — those are a vowel instrument and were the metallic shriek.
+- **Breath is context:** a tank that fills only after a brief pause (~0.45 s catch-breath, professional ~14 s phrase) and thins the tone as it empties (Klatt aspiration, Prame vibrato-rate rise, small F0 residual). Opening rests are inhales.
 - **`--out file.wav`** (with `--lyrics`) writes the score-locked lead offline (`--svs-backend dsp`, default). `--svs-backend diffsinger` refuses until `DIFFSINGER_ROOT` is a commercial-safe OpenVPI pin (Route B).
 - **`generate-song`** is the ACE-Step / DiffRhythm / YuE side door — it **refuses to run as a play engine** because those models cannot honor library MIDI (Route C).
 - Route D (DSP dry + SVC timbre) is a handoff only — not in this package (AGPL / F0-from-audio; see the vocology-knowledge Route D note in the private readouts repo).

@@ -9,6 +9,14 @@ import { Synthesizer } from "../vendor/pink-trombone.js";
 import type { ScoreNote, ScorePhoneme } from "./types.js";
 import type { BuiltVocalScore } from "./score-locked.js";
 import { scoreDurationSec } from "./score-locked.js";
+import {
+  BreathContext,
+  applyCents,
+  gainFromBreath,
+  residualCents,
+  tensenessFromBreath,
+  vibratoFromBreath,
+} from "./breath.js";
 
 export interface TractVowelShape {
   tongueIndex: number;
@@ -113,6 +121,8 @@ export function renderTractScore(
   synth.glottis.isTouched = true;
   synth.tractShaper.velumTarget = 0.01;
 
+  const breath = new BreathContext();
+  const noise = makeInhaleNoise(0x91a2b3c4);
   const block = 256;
   const tmp = new Float32Array(block);
   let gain = 0;
@@ -123,31 +133,45 @@ export function renderTractScore(
     const t = offset / sampleRate;
     const note = noteAt(score.notes, t);
     const ph = phonemeAt(score.phonemes, t);
+    const voicing = Boolean(note && ph);
+    const intensity = note ? (note.velocity ?? 0.7) : 0.7;
+    const air = breath.step(n / sampleRate, voicing, intensity);
+    const vib = vibratoFromBreath(air.level);
+    synth.glottis.vibratoFrequency = vib.rateHz;
+    synth.glottis.vibratoAmount = vib.amount;
 
     if (note) {
-      synth.glottis.targetFrequency = midiToHz(note.midi);
+      const f0 = applyCents(midiToHz(note.midi), residualCents(t, air.level));
+      synth.glottis.targetFrequency = f0;
     }
 
     let targetGain = 0;
-    if (note && ph) {
+    if (air.inhaling) {
+      synth.glottis.targetTenseness = 0.22;
+      synth.glottis.isTouched = false;
+      targetGain = 0;
+    } else if (note && ph) {
+      synth.glottis.isTouched = true;
       if (ph.kind === "vowel") {
         const shape = TRACT_VOWELS[ph.phoneme] ?? DEFAULT_VOWEL;
         let diameter = shape.tongueDiameter;
         const f0 = midiToHz(note.midi);
-        // Covering: don't let a close front vowel sit under a high F0.
         // Cover only above A4 — G4 hymn /i/ must stay distinct from /ɑ/.
         if (f0 > 440 && diameter < 2.2) diameter = 2.2;
         synth.tractShaper.tongueIndex = shape.tongueIndex;
         synth.tractShaper.tongueDiameter = diameter;
         applyTongueTargets(synth);
-        synth.glottis.targetTenseness = shape.tenseness;
+        synth.glottis.targetTenseness = tensenessFromBreath(shape.tenseness, air.level);
         synth.tractShaper.velumTarget = 0.01;
-        targetGain = 0.9 * (note.velocity ?? 0.7);
+        targetGain = 0.9 * intensity * gainFromBreath(air.level);
       } else {
         synth.tractShaper.velumTarget = NASALS.has(ph.phoneme) ? 0.4 : 0.01;
-        synth.glottis.targetTenseness = STOPS.has(ph.phoneme) ? 0.35 : 0.45;
+        synth.glottis.targetTenseness = tensenessFromBreath(
+          STOPS.has(ph.phoneme) ? 0.35 : 0.45,
+          air.level,
+        );
         constrictForConsonant(synth, ph.phoneme);
-        targetGain = STOPS.has(ph.phoneme) ? 0.2 : 0.5;
+        targetGain = (STOPS.has(ph.phoneme) ? 0.2 : 0.5) * gainFromBreath(air.level);
       }
     }
 
@@ -155,10 +179,30 @@ export function renderTractScore(
     synth.synthesize(slice);
     for (let i = 0; i < n; i++) {
       gain += (targetGain - gain) * 0.002;
-      pcm[offset + i] = slice[i] * gain;
+      let s = slice[i] * gain;
+      if (air.inhaling) {
+        s += noise.next() * 0.11 * air.inhaleGain;
+      } else if (voicing && air.level < 0.45) {
+        // Klatt: leftover air is heard as aspiration on the tone.
+        s += noise.next() * 0.03 * (0.45 - air.level);
+      }
+      pcm[offset + i] = s;
     }
     offset += n;
   }
 
   return { pcm, sampleRate };
+}
+
+function makeInhaleNoise(seed: number): { next: () => number } {
+  let s = seed >>> 0;
+  let lp = 0;
+  return {
+    next(): number {
+      s = (Math.imul(s, 1664525) + 1013904223) >>> 0;
+      const white = (s / 0xffffffff) * 2 - 1;
+      lp += 0.12 * (white - lp);
+      return lp;
+    },
+  };
 }
