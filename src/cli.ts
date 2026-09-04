@@ -630,6 +630,15 @@ async function cmdPlay(args: string[]): Promise<void> {
           process.exit(1);
         }
         if (scoreSinger) {
+          try {
+            await scoreSinger.singer.connect();
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : String(err);
+            console.error(`  Sung lead skipped: ${msg}`);
+            scoreSinger = null;
+          }
+        }
+        if (scoreSinger) {
           for (const w of scoreSinger.score.warnings.slice(0, 8)) {
             console.log(`  ⚠ ${w}`);
           }
@@ -722,9 +731,8 @@ async function cmdPlay(args: string[]): Promise<void> {
 
       const playStart = Date.now();
       if (scoreSinger) {
-        await scoreSinger.singer.connect();
         scoreSinger.singer.start();
-        console.log("  Sung lead: Pink Trombone tract (LF glottis), mixed on the piano graph.");
+        console.log("  Sung lead: Kokoro lock + voice-changer (fx-dub CAST/LOCK/PERFORM).");
       }
       try {
         await session.play();

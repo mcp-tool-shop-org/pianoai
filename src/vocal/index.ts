@@ -8,6 +8,8 @@ export { generateFullSong } from "./song-generate.js";
 export { renderTractScore, TRACT_VOWELS } from "./tract-render.js";
 export { BreathContext, BREATH } from "./breath.js";
 export { getVocalTune, realizeVocalTune, AMAZING_GRACE_TUNE } from "./tunes.js";
+export { retuneLockedTake, pitchShiftPreserveDuration } from "./voice-changer.js";
+export { renderKokoroLead, resolveKokoroLockWav, kokoroLeadHint } from "./kokoro-lead.js";
 export type { ScoreNote, ScorePhoneme, LyricSyllable, AlignResult, LyricG2P } from "./types.js";
 export type { BuiltVocalScore } from "./score-locked.js";
 export type { ScoreSinger } from "./score-singer.js";

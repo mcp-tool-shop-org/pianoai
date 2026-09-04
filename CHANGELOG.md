@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Live lead is mixed on the **same AudioContext as the piano**. The renderer is **Pink Trombone** (LF glottis + waveguide), not vocal-synth-engine's additive Kokoro tables — those are a vowel instrument and were the metallic shriek.
 - **Breath is context:** a tank that fills only after a brief pause (~0.45 s catch-breath, professional ~14 s phrase) and thins the tone as it empties (Klatt aspiration, Prame vibrato-rate rise, small F0 residual). Opening rests are inhales.
 - **Amazing Grace sings New Britain** (Eb: Bb–Eb–G…), not the piano arrangement's chord tops. `play amazing-grace` uses the first-verse lyric line without `--lyrics`.
+- **Lead path is fx-dub CAST/LOCK/PERFORM:** a locked Kokoro take is pitch-shifted onto the MIDI (`src/vocal/voice-changer.ts`). Set `JAM_KOKORO_LOCK_WAV`. Tract/additive are not the singer. Kokoro is local Apache TTS (not Comfy Cloud).
 - **`--out file.wav`** (with `--lyrics`) writes the score-locked lead offline (`--svs-backend dsp`, default). `--svs-backend diffsinger` refuses until `DIFFSINGER_ROOT` is a commercial-safe OpenVPI pin (Route B).
 - **`generate-song`** is the ACE-Step / DiffRhythm / YuE side door — it **refuses to run as a play engine** because those models cannot honor library MIDI (Route C).
 - Route D (DSP dry + SVC timbre) is a handoff only — not in this package (AGPL / F0-from-audio; see the vocology-knowledge Route D note in the private readouts repo).
