@@ -82,7 +82,7 @@ describe("parsePlaySessionFlags", () => {
     expect(status).toBe(0);
     expect(stdout).toMatch(/--lyrics/);
     expect(stdout).toMatch(/generate-song/);
-  });
+  }, 20000); // spawns the CLI; under CI coverage instrumentation it took 5.3 s against the 5 s default (main run 33966889379)
 
   it("throws a descriptive Error for a non-numeric --count-in", () => {
     expect(() => parsePlaySessionFlags(["--count-in", "abc"])).toThrow(/count-in/i);
