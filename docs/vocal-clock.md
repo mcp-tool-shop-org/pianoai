@@ -123,6 +123,30 @@ and the gate measures the downloaded FLAC, not the plan.
   beats differ from the MIDI melody) — irrelevant to timing, relevant to
   the day pitch is gated (optional P1: F0 cents at the vowel nucleus).
 
+## Second run: held takes (bag of takes), 2026-09-05
+
+The Director heard the first mix and said the voice keeps cutting out. It
+does: Seed sang each syllable at speech length (0.2–2 s) into slots of
+0.6–5.6 s. Two more Seed takes were generated from the same Kokoro lock at
+`speech_rate −50` (0.5x) with a "hold every syllable as a long sustained
+note" instruction (`vocal_clock.py seed-take`), each planned leniently (a
+take may fail to date a syllable and simply not offer it), and merged per
+event by longest clip (`vocal_clock.py merge`; cuts now carry their own
+`source_key`, and the place graph loads one `LoadAudio` per take).
+Receipts: [`scores/receipts/amazing-grace/held/`](../scores/receipts/amazing-grace/held/).
+Gate: **PASS**, worst 4.8 ms; clips now fill 9 of 14 slots.
+
+**Finding (Director, second listen): still breaking up, and the melody is
+wrong.** Seed Audio 1.0 is a speech model: no melody input, no note
+durations, will not hold a vowel for 3 s, and its pitches are speech
+intonation. Prompt wording is not the lever. The clock pipeline places
+what a take contains; it cannot put a tune into a take that has none.
+Next route (Director-approved): a guide track on the clock from the
+repo's score-locked singer, re-voiced by ElevenLabs Speech-to-Speech on
+Comfy Cloud, with a pitch gate added — pending an Opus study-swarm on the
+September-2026 state of singing models, since the June ruling ("only
+DiffSinger honors MIDI") may be stale.
+
 ## Standards compliance
 
 | standard | score | evidence |

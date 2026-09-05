@@ -22,7 +22,9 @@ Subcommands (run in this order; each writes what the next reads):
 
   bed-check   measure the rendered bed's piano onsets against the clock
   transcribe  fx-dub `transcribe` graph on a cloud key -> word JSON
+  seed-take   a Seed Audio take from the Kokoro lock (speech_rate -50 = held slow)
   plan        words + take -> per-event cut spans and leads (local, free)
+  merge       several plans -> one: per event the take that fills its slot best
   place       one Comfy job: TrimAudioDuration + place_exact shapes + AudioMix
   verify      gate the downloaded placed stem (energy + transcript + lengths)
   mix         upload the bed, fx-dub `mix_dialogue_anchored`, download
@@ -236,6 +238,7 @@ class Cut:
     lyric: str
     word: str
     t_sec: float
+    source_key: str
     src_word_start: float
     src_word_end: float
     src_vowel_onset: float
@@ -259,7 +262,11 @@ def detector_info() -> dict:
             "principle": "vowel onset = sung tone start (Sundberg 2007); the same detector and per-event method date the source take and the placed artifact"}
 
 
-def build_plan(clock: dict, words: list[dict], mono: np.ndarray, sr: int) -> dict:
+class NoOnset(SystemExit):
+    pass
+
+
+def build_plan(clock: dict, words: list[dict], mono: np.ndarray, sr: int, source_key: str = "", strict: bool = True) -> dict:
     """Per event: where its vowel is in the take, what to cut, where it lands.
 
     The transcript places the WORD (to ~100 ms; Scribe dated "a" 170 ms late
@@ -275,6 +282,7 @@ def build_plan(clock: dict, words: list[dict], mono: np.ndarray, sr: int) -> dic
     take_end = len(mono) / sr
     total = float(clock["total_seconds"])
     cuts: list[Cut] = []
+    skipped: list[dict] = []
     for gi, g in enumerate(groups):
         wi = al["map"][gi]
         w = words[wi]
@@ -288,7 +296,11 @@ def build_plan(clock: dict, words: list[dict], mono: np.ndarray, sr: int) -> dic
         if n == 1:
             onset = rise_onset(times, env, peak_lo, peak_hi, search_lo=search_lo)
             if onset["t"] is None:
-                raise SystemExit(f"no vowel onset for '{g['word']}' in [{peak_lo:.3f},{peak_hi:.3f}] ({onset['reason']})")
+                msg = f"no vowel onset for '{g['word']}' in [{peak_lo:.3f},{peak_hi:.3f}] ({onset['reason']})"
+                if strict:
+                    raise NoOnset(msg)
+                skipped.append({"id": g["events"][0]["id"], "reason": msg})
+                continue
             starts = [max(0.0, min(w["start"] - 0.02, onset["t"] - CUT_LEAD_IN_S))]
             ends = [max(cut_hi, onset["t"] + 0.08)]
             onsets = [onset["t"]]
@@ -298,7 +310,11 @@ def build_plan(clock: dict, words: list[dict], mono: np.ndarray, sr: int) -> dic
         else:
             nuclei = syllable_nuclei(times, env, max(0.0, w["start"] - 0.05, prev_start + 0.05), min(w["end"] + 0.05, next_start - 0.005), n)
             if len(nuclei) != n:
-                raise SystemExit(f"'{g['word']}' needs {n} syllable nuclei, found {len(nuclei)} at {nuclei}")
+                msg = f"'{g['word']}' needs {n} syllable nuclei, found {len(nuclei)} at {nuclei}"
+                if strict:
+                    raise NoOnset(msg)
+                skipped.extend({"id": ev["id"], "reason": msg} for ev in g["events"])
+                continue
             bounds = [None]
             for i in range(1, n):
                 bounds.append(valley_between(times, env, nuclei[i - 1], nuclei[i]))
@@ -310,7 +326,11 @@ def build_plan(clock: dict, words: list[dict], mono: np.ndarray, sr: int) -> dic
                 else:
                     onset = rise_onset(times, env, bounds[i], nuclei[i] + 0.001, search_lo=bounds[i])
                 if onset["t"] is None:
-                    raise SystemExit(f"no vowel onset for syllable {i + 1} of '{g['word']}' ({onset['reason']})")
+                    msg = f"no vowel onset for syllable {i + 1} of '{g['word']}' ({onset['reason']})"
+                    if strict:
+                        raise NoOnset(msg)
+                    skipped.extend({"id": ev["id"], "reason": msg} for ev in g["events"])
+                    break
                 if i == 0:
                     starts.append(max(0.0, min(w["start"] - 0.02, onset["t"] - CUT_LEAD_IN_S)))
                 else:
@@ -319,9 +339,11 @@ def build_plan(clock: dict, words: list[dict], mono: np.ndarray, sr: int) -> dic
                 onsets.append(max(onset["t"], starts[-1]))
                 methods.append(onset["method"])
                 notes.append(f"syllable {i + 1}/{n} nucleus {nuclei[i]:.3f} {onset['method']}")
+            if len(onsets) != n:
+                continue
         for i, ev in enumerate(g["events"]):
             cuts.append(Cut(
-                id=ev["id"], lyric=ev["lyric"], word=g["word"], t_sec=float(ev["t_sec"]),
+                id=ev["id"], lyric=ev["lyric"], word=g["word"], t_sec=float(ev["t_sec"]), source_key=source_key,
                 src_word_start=w["start"], src_word_end=w["end"], src_vowel_onset=onsets[i], method=methods[i],
                 cut_start=starts[i], cut_end=ends[i], lead=0.0, clip_seconds=0.0,
                 placed_start=0.0, placed_end=0.0, note=notes[i]))
@@ -358,6 +380,7 @@ def build_plan(clock: dict, words: list[dict], mono: np.ndarray, sr: int) -> dic
         "sample_rate": int(clock["sample_rate"]),
         "alignment": {"missing": al["missing"], "extra": al["extra"]},
         "detector": detector_info(),
+        "skipped": skipped,
         "cuts": [asdict(c) for c in cuts],
     }
 
@@ -372,13 +395,23 @@ def placed_vocal_graph(source_key: str, plan: dict, prefix: str, sample_rate: in
     vo = _vo_graphs()
     total = float(plan["total_seconds"])
     graph = {}
-    graph.update(vo.load_audio("1", source_key))
+    # one LoadAudio per distinct take (a merged bag of takes has several)
+    keys = []
+    for c in plan["cuts"]:
+        k = c.get("source_key") or source_key
+        if k not in keys:
+            keys.append(k)
+    loaders = {}
+    for i, k in enumerate(keys):
+        nid_load = str(1 + i)
+        graph.update(vo.load_audio(nid_load, k))
+        loaders[k] = [nid_load, 0]
     placed = []
     nid = 10
     for c in plan["cuts"]:
         trim = str(nid)
         graph[trim] = {"class_type": "TrimAudioDuration",
-                       "inputs": {"audio": ["1", 0], "start_index": float(c["cut_start"]), "duration": float(c["clip_seconds"])}}
+                       "inputs": {"audio": loaders[c.get("source_key") or source_key], "start_index": float(c["cut_start"]), "duration": float(c["clip_seconds"])}}
         # place_exact shape, node-for-node (vo_graphs.place_exact)
         lead = float(c["lead"])
         tail = total - lead - float(c["clip_seconds"])
@@ -397,6 +430,42 @@ def placed_vocal_graph(source_key: str, plan: dict, prefix: str, sample_rate: in
         nid += 1
     graph.update(vo._save(str(nid), acc, prefix))
     return graph
+
+
+# ─── merge several takes: a bag of takes, one cut per event ──────────────────
+
+def merge_plans(plans: list[dict]) -> dict:
+    """Per event, take the cut whose clip covers the most of its slot (before
+    capping), i.e. the longest sung syllable; ties go to the earlier plan.
+    Leads are recomputed and clips re-capped so nothing overlaps."""
+    if not plans:
+        raise SystemExit("merge needs at least one plan")
+    base = plans[0]
+    total = float(base["total_seconds"])
+    clock = json.load(open(base["clock"], encoding="utf-8"))
+    ids = [ev["id"] for ev in clock["events"]]
+    by_id = [{c["id"]: c for c in p["cuts"]} for p in plans]
+    chosen = []
+    for cid in ids:
+        cands = [(m[cid], pi) for pi, m in enumerate(by_id) if cid in m]
+        if not cands:
+            raise SystemExit(f"no take offers event {cid}: " + "; ".join(sk["reason"] for p in plans for sk in p.get("skipped", []) if sk["id"] == cid))
+        best = max(cands, key=lambda cp: (cp[0]["cut_end"] - cp[0]["cut_start"], -cp[1]))
+        c = dict(best[0])
+        c["note"] += f"; from take {best[1]} ({len(cands)} candidates)"
+        chosen.append(c)
+    for k, c in enumerate(chosen):
+        limit = chosen[k + 1]["placed_start"] - CLIP_GAP_S if k + 1 < len(chosen) else total
+        clip = snap(min(c["cut_end"] - c["cut_start"], limit - c["lead"]))
+        c["clip_seconds"] = clip
+        c["cut_end"] = snap(c["cut_start"] + clip)
+        c["placed_end"] = snap(c["lead"] + clip)
+    out = dict(base)
+    out["cuts"] = chosen
+    out["merged_from"] = [p.get("take", {}).get("path") for p in plans]
+    out.pop("take", None)
+    out.pop("words", None)
+    return out
 
 
 # ─── measure the artifact ────────────────────────────────────────────────────
@@ -618,13 +687,44 @@ def cmd_plan(a):
     mono, sr, frames = read_audio(a.take)
     if sr != int(clock["sample_rate"]):
         raise SystemExit(f"take is {sr} Hz, clock is {clock['sample_rate']} Hz")
-    plan = build_plan(clock, words, mono, sr)
+    plan = build_plan(clock, words, mono, sr, source_key=a.source_key or "", strict=not a.lenient)
+    for sk in plan["skipped"]:
+        print(f"SKIP {sk['id']}: {sk['reason']}")
     plan["take"] = {"path": a.take.replace("\\", "/"), "frames": frames, "seconds": frames / sr, "sha256": sha256(a.take)}
     plan["words"] = a.words.replace("\\", "/")
     json.dump(plan, open(a.out, "w", encoding="utf-8"), indent=2)
     print(f"{'id':4} {'lyric':7} {'t_sec':>8} {'vowel@src':>9} {'cut':>15} {'clip':>6} {'lead':>8}  note")
     for c in plan["cuts"]:
         print(f"{c['id']:4} {c['lyric']:7} {c['t_sec']:8.4f} {c['src_vowel_onset']:9.4f} [{c['cut_start']:6.3f},{c['cut_end']:6.3f}] {c['clip_seconds']:6.3f} {c['lead']:8.4f}  {c['note']}")
+    print(f"wrote {a.out}")
+    return 0
+
+
+def cmd_seed_take(a):
+    """A Seed Audio take from the Kokoro lock, held slow: the bag of takes."""
+    import comfy_rest
+    vo = _vo_graphs()
+    key = comfy_rest.api_key()
+    ref = a.reference_key or comfy_rest.upload_file(a.reference, key, "audio/wav")
+    graph = vo.bytedance_audio_reference(ref, a.prompt, a.prefix, seed=a.seed)
+    graph["2"]["inputs"]["speech_rate"] = int(a.speech_rate)
+    recs = comfy_rest.run_graph(graph, key, a.out_dir, want_ext=(".flac", ".wav"))
+    rec = recs[0]
+    mono, sr, frames = read_audio(rec["path"])
+    info = {"job": rec["job"], "key": rec["filename"], "path": rec["path"].replace("\\", "/"), "frames": frames, "sample_rate": sr,
+            "seconds": frames / sr, "sha256": sha256(rec["path"]), "reference_key": ref, "prompt": a.prompt,
+            "speech_rate": int(a.speech_rate), "seed": a.seed}
+    json.dump(info, open(a.out_info, "w", encoding="utf-8"), indent=2)
+    print(f"take key {rec['filename']} {frames / sr:.2f}s -> {a.out_info}")
+    return 0
+
+
+def cmd_merge(a):
+    plans = [json.load(open(p, encoding="utf-8")) for p in a.plans]
+    out = merge_plans(plans)
+    json.dump(out, open(a.out, "w", encoding="utf-8"), indent=2)
+    for c in out["cuts"]:
+        print(f"{c['id']:4} {c['lyric']:7} clip {c['clip_seconds']:6.3f} placed [{c['placed_start']:7.3f},{c['placed_end']:7.3f}] {c['source_key'][:12]}  {c['note'].split('; ')[-1]}")
     print(f"wrote {a.out}")
     return 0
 
@@ -719,7 +819,10 @@ def main(argv=None) -> int:
     sub = p.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("bed-check"); s.add_argument("--clock", required=True); s.add_argument("--bed", required=True); s.add_argument("--render-receipt"); s.add_argument("--out"); s.set_defaults(fn=cmd_bed_check)
     s = sub.add_parser("transcribe"); s.add_argument("--key", required=True); s.add_argument("--out", required=True); s.add_argument("--prefix", default="jam/vocal-clock/words"); s.set_defaults(fn=cmd_transcribe)
-    s = sub.add_parser("plan"); s.add_argument("--clock", required=True); s.add_argument("--words", required=True); s.add_argument("--take", required=True); s.add_argument("--out", required=True); s.set_defaults(fn=cmd_plan)
+    s = sub.add_parser("plan"); s.add_argument("--clock", required=True); s.add_argument("--words", required=True); s.add_argument("--take", required=True); s.add_argument("--source-key", default=""); s.add_argument("--lenient", action="store_true", help="skip events this take cannot date (bag of takes)"); s.add_argument("--out", required=True); s.set_defaults(fn=cmd_plan)
+    s = sub.add_parser("seed-take"); s.add_argument("--reference", default="tmp/kokoro-lock/lock.wav"); s.add_argument("--reference-key"); s.add_argument("--prompt", required=True)
+    s.add_argument("--speech-rate", type=int, default=-50); s.add_argument("--seed", type=int, default=42); s.add_argument("--out-dir", required=True); s.add_argument("--out-info", required=True); s.add_argument("--prefix", default="jam/vocal-clock/take"); s.set_defaults(fn=cmd_seed_take)
+    s = sub.add_parser("merge"); s.add_argument("--plans", nargs="+", required=True); s.add_argument("--out", required=True); s.set_defaults(fn=cmd_merge)
     s = sub.add_parser("place"); s.add_argument("--plan", required=True); s.add_argument("--key", required=True); s.add_argument("--out-dir", required=True)
     s.add_argument("--out-info", required=True); s.add_argument("--out-graph", required=True); s.add_argument("--prefix", default="jam/vocal-clock/placed"); s.add_argument("--dry-run", action="store_true"); s.set_defaults(fn=cmd_place)
     s = sub.add_parser("verify"); s.add_argument("--clock", required=True); s.add_argument("--vocal", required=True); s.add_argument("--bed"); s.add_argument("--words"); s.add_argument("--plan"); s.add_argument("--receipt"); s.set_defaults(fn=cmd_verify)
