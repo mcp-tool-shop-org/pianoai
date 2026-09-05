@@ -1,6 +1,12 @@
 /**
  * Play the Comfy Seed vocal over the Amazing Grace piano (measures 1–10).
  * Same shared AudioContext — two contexts would mute one of them.
+ *
+ * Both start at t=0, so the vocal must ALREADY be on the score clock
+ * (scores/amazing-grace.score-clock.v1.json): a raw generator take is not —
+ * run scripts/vocal_clock.py (plan → place → verify) first and pass the
+ * placed stem. Live playback here sleeps beat by beat (timer jitter); the
+ * gated artifact is the offline mix from `vocal_clock.py mix`.
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -31,7 +37,7 @@ function readWav(path) {
 }
 
 async function main() {
-  const wavPath = process.argv[2] ?? join("tmp", "kokoro-lock", "amazing-grace-seed-mcp.wav");
+  const wavPath = process.argv[2] ?? join("tmp", "vocal-clock", "amazing-grace-vocal-placed.wav");
   const vocal = readWav(wavPath);
   initializeFromLibrary(join(process.cwd(), "songs", "library"), join(process.env.USERPROFILE ?? "", ".ai-jam-sessions", "songs"));
   const song = getSong("amazing-grace");

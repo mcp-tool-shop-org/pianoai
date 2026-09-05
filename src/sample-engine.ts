@@ -29,6 +29,12 @@ export interface SampleEngineOptions {
   sfzProfile?: "sfz_minimum" | "sfz_daw" | "sfz_live";
   /** Maximum simultaneous voices. Default: 48. */
   maxPolyphony?: number;
+  /**
+   * Use this AudioContext (or OfflineAudioContext) instead of creating a
+   * live 48 kHz one. Lets a renderer bounce the piano deterministically —
+   * see scripts/render-piano-bed.mjs. Default: create a live context.
+   */
+  audioContext?: any;
 }
 
 interface Voice {
@@ -133,6 +139,7 @@ export function createSampleEngine(options: SampleEngineOptions): VmpkConnector 
     samplesDir,
     sfzProfile = "sfz_minimum",
     maxPolyphony = 48,
+    audioContext: injectedContext = null,
   } = options;
 
   let ctx: any = null;
@@ -381,9 +388,13 @@ export function createSampleEngine(options: SampleEngineOptions): VmpkConnector 
       currentStatus = "connecting";
 
       try {
-        // 1. Create audio context
-        const AC = await loadAudioContext();
-        ctx = new AC({ sampleRate: 48000, latencyHint: "playback" });
+        // 1. Create audio context (or adopt the injected one — offline renders)
+        if (injectedContext) {
+          ctx = injectedContext;
+        } else {
+          const AC = await loadAudioContext();
+          ctx = new AC({ sampleRate: 48000, latencyHint: "playback" });
+        }
 
         // 2. Master chain: compressor → gain → speakers
         compressor = ctx.createDynamicsCompressor();

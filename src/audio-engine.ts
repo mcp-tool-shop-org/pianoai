@@ -169,9 +169,16 @@ interface Voice {
  * the codebase uses a connector (sessions, CLI, MCP server).
  *
  * @param voiceId — Piano voice preset. Default: "grand" (Concert Grand).
+ * @param options.audioContext — adopt this (Offline)AudioContext instead of
+ *   creating a live one; used by scripts/render-piano-bed.mjs to bounce the
+ *   piano deterministically.
  */
-export function createAudioEngine(voiceId?: PianoVoiceId): VmpkConnector {
+export function createAudioEngine(
+  voiceId?: PianoVoiceId,
+  options: { audioContext?: any } = {},
+): VmpkConnector {
   const voice = getMergedVoice(voiceId ?? "grand") ?? getMergedVoice("grand")!;
+  const injectedContext = options.audioContext ?? null;
 
   let ctx: any = null;
   let currentStatus: MidiStatus = "disconnected";
@@ -418,8 +425,12 @@ export function createAudioEngine(voiceId?: PianoVoiceId): VmpkConnector {
       currentStatus = "connecting";
 
       try {
-        const AC = await loadAudioContext();
-        ctx = new AC({ latencyHint: "playback" });
+        if (injectedContext) {
+          ctx = injectedContext;
+        } else {
+          const AC = await loadAudioContext();
+          ctx = new AC({ latencyHint: "playback" });
+        }
 
         // Master chain: compressor → gain → speakers
         compressor = ctx.createDynamicsCompressor();
