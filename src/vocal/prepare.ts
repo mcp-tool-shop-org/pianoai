@@ -3,6 +3,7 @@ import type { SongEntry } from "../songs/types.js";
 import { loadEngineG2P } from "./g2p.js";
 import { buildScoreLockedVocals, type BuiltVocalScore } from "./score-locked.js";
 import { createScoreSinger, type ScoreSinger } from "./score-singer.js";
+import { getVocalTune } from "./tunes.js";
 
 export interface LyricsRequest {
   lyrics?: string;
@@ -14,11 +15,15 @@ export interface LyricsRequest {
   preset?: string;
 }
 
-export function resolveLyricsText(req: LyricsRequest): string | null {
+export function resolveLyricsText(req: LyricsRequest, songId?: string): string | null {
   if (req.lyricsFile) {
     return readFileSync(req.lyricsFile, "utf8");
   }
   if (req.lyrics && req.lyrics.trim().length > 0) return req.lyrics;
+  if (songId) {
+    const tune = getVocalTune(songId);
+    if (tune?.lyrics) return tune.lyrics;
+  }
   return null;
 }
 
@@ -26,7 +31,7 @@ export async function prepareScoreLocked(
   song: SongEntry,
   req: LyricsRequest,
 ): Promise<{ score: BuiltVocalScore; singer: ScoreSinger } | null> {
-  const text = resolveLyricsText(req);
+  const text = resolveLyricsText(req, song.id);
   if (!text) return null;
   const g2p = await loadEngineG2P();
   const score = buildScoreLockedVocals(song, {

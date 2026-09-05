@@ -1,0 +1,14 @@
+{
+  "mode": "local",
+  "path": "tmp/vocal-clock/soulx/syl-run/mix-local.wav",
+  "frames": 1680000,
+  "sample_rate": 48000,
+  "vo_gain_db": -9,
+  "bed_gain_db": -9.0,
+  "bed_rms_db": -17.36,
+  "vocal_clip_rms_db": -13.85,
+  "mix_peak": 0.40423258810021484,
+  "mix_rms_db": -21.95,
+  "sha256": "6b8bf2ec518589afb382e77102ffb55d1e78373a40413db1aa8c2c0547ead818",
+  "length_match": true
+}

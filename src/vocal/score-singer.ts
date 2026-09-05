@@ -9,6 +9,12 @@ import type { BuiltVocalScore } from "./score-locked.js";
 import { scoreDurationSec } from "./score-locked.js";
 import { getSharedAudioContext, setSharedAudioContext } from "../audio-shared.js";
 import { renderTractScore } from "./tract-render.js";
+import {
+  kokoroLeadHint,
+  readMonoWav,
+  renderKokoroLead,
+  resolveKokoroLockWav,
+} from "./kokoro-lead.js";
 
 export interface ScoreSingerOptions {
   preset?: string;
@@ -16,8 +22,11 @@ export interface ScoreSingerOptions {
   blockSize?: number;
   seed?: number;
   masterGain?: number;
-  /** `tract` = Pink Trombone (default). `additive` = Kokoro tables (not a voice). */
-  backend?: "tract" | "additive";
+  /**
+   * `kokoro` — locked Kokoro take + voice-changer (fx-dub PERFORM). Default.
+   * `tract` / `additive` — leftover engines; not the singing lead.
+   */
+  backend?: "kokoro" | "tract" | "additive";
 }
 
 function findPresetsDir(): string {
@@ -147,11 +156,21 @@ export function createScoreSinger(
     warnings: score.warnings,
 
     async connect(): Promise<void> {
-      const backend = options.backend ?? "tract";
-      const rendered = backend === "additive"
-        ? await renderScoreLockedPcm(score, options)
-        : renderTractScore(score, { sampleRate: options.sampleRate });
-      pcm = peakNormalize(rendered.pcm, backend === "additive" ? 0.35 : 0.4);
+      const backend = options.backend ?? "kokoro";
+      let rendered: { pcm: Float32Array; sampleRate: number };
+      if (backend === "kokoro") {
+        const lockPath = resolveKokoroLockWav();
+        if (!lockPath) {
+          throw new Error(kokoroLeadHint());
+        }
+        const lock = readMonoWav(lockPath);
+        rendered = renderKokoroLead(score, lock.pcm, lock.sampleRate);
+      } else if (backend === "additive") {
+        rendered = await renderScoreLockedPcm(score, options);
+      } else {
+        rendered = renderTractScore(score, { sampleRate: options.sampleRate });
+      }
+      pcm = peakNormalize(rendered.pcm, 0.45);
       pcmRate = rendered.sampleRate;
       const mod = await import("node-web-audio-api");
       AudioContextCtor = mod.AudioContext as new (o: object) => any;

@@ -43,6 +43,7 @@ import {
 import { createVocalSynthEngine } from "./vocal-synth-adapter.js";
 import { createLayeredEngine } from "./layered-engine.js";
 import { accompanimentEngineForLyrics, prepareScoreLocked } from "./vocal/prepare.js";
+import { getVocalTune } from "./vocal/tunes.js";
 import { renderOfflineSvs } from "./vocal/svs-offline.js";
 import { generateFullSong } from "./vocal/song-generate.js";
 import type { SvsBackend } from "./vocal/svs-offline.js";
@@ -410,7 +411,7 @@ async function cmdPlay(args: string[]): Promise<void> {
     }
   }
 
-  const wantsLyrics = Boolean(lyricsFlag || lyricsFile);
+  let wantsLyrics = Boolean(lyricsFlag || lyricsFile);
   let engineForAccompaniment = engineStr;
   if (wantsLyrics) {
     engineForAccompaniment = accompanimentEngineForLyrics(engineStr);
@@ -551,6 +552,14 @@ async function cmdPlay(args: string[]): Promise<void> {
       if (!song) {
         exitUser(songNotFoundError(target, "Or provide a .mid file path."));
       }
+      const vocalTune = getVocalTune(song.id);
+      if (vocalTune) {
+        wantsLyrics = true;
+        if (lyricsStart === undefined && lyricsEnd === undefined) {
+          lyricsStart = 1;
+          lyricsEnd = Math.max(...vocalTune.notes.map((n) => n.measure));
+        }
+      }
 
       const tempoStr = getFlag(args, "--tempo");
       const tempo = tempoStr ? parseInt(tempoStr, 10) : undefined;
@@ -621,14 +630,27 @@ async function cmdPlay(args: string[]): Promise<void> {
           process.exit(1);
         }
         if (scoreSinger) {
+          try {
+            await scoreSinger.singer.connect();
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : String(err);
+            console.error(`  Sung lead skipped: ${msg}`);
+            scoreSinger = null;
+          }
+        }
+        if (scoreSinger) {
           for (const w of scoreSinger.score.warnings.slice(0, 8)) {
             console.log(`  ⚠ ${w}`);
           }
           if (scoreSinger.score.warnings.length > 8) {
             console.log(`  … and ${scoreSinger.score.warnings.length - 8} more lyric warnings`);
           }
+          const names = scoreSinger.score.notes
+            .slice(0, 12)
+            .map((n) => midiName(n.midi))
+            .join(" ");
           console.log(
-            `  Sung lead: ${scoreSinger.score.notes.length} melody notes, ${scoreSinger.score.phonemes.filter((p) => p.kind === "vowel").length} vowels, ${scoreSinger.singer.durationSec.toFixed(1)}s`,
+            `  Sung lead: ${scoreSinger.score.notes.length} notes [${names}${scoreSinger.score.notes.length > 12 ? " …" : ""}] ${scoreSinger.singer.durationSec.toFixed(1)}s`,
           );
         }
       }
@@ -709,9 +731,8 @@ async function cmdPlay(args: string[]): Promise<void> {
 
       const playStart = Date.now();
       if (scoreSinger) {
-        await scoreSinger.singer.connect();
         scoreSinger.singer.start();
-        console.log("  Sung lead: Pink Trombone tract (LF glottis), mixed on the piano graph.");
+        console.log("  Sung lead: Kokoro lock + voice-changer (fx-dub CAST/LOCK/PERFORM).");
       }
       try {
         await session.play();
@@ -1708,6 +1729,11 @@ function cmdLibrary(args: string[], libraryDir: string): void {
 }
 
 // ─── CLI Router ─────────────────────────────────────────────────────────────
+
+function midiName(midi: number): string {
+  const names = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+  return `${names[((midi % 12) + 12) % 12]}${Math.floor(midi / 12) - 1}`;
+}
 
 function getFlag(args: string[], flag: string): string | null {
   const idx = args.indexOf(flag);

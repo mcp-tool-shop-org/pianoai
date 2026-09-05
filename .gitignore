@@ -34,3 +34,6 @@ songs/library/**/zz-test-fixture-*
 
 # B1 eval runner console dumps (b2 convention: logs are not committed; b1-run.log predates it)
 experiments/finetune-arc-v2/evals/b1-runner-*.log
+
+# python
+__pycache__/

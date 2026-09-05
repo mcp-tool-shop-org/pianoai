@@ -7,12 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — the score-clock vocal route (SoulX-Singer, local) — the vocal route
+
+The Director-ratified way to put a sung line on a library song (2026-09-05). Route A below remains the live-play lead; this is how a mixed vocal is produced and proven.
+
+- **One clock.** `scripts/build-score-clock.mjs` derives `scores/<song>.score-clock.v1.json` from the song's MIDI melody track (`--track`, `--list-tracks`) and lyrics (`--lyrics`, one token per note, syllables joined by `-`), on the **session's own timeline** — measures start when the longer hand finishes, so the bars the player actually plays (3.2–4.0 s here) rather than the MIDI's 2.4 s or `bar.dur/3`. Sample-rounded at 48 kHz; `--check` is a drift guard. `src/vocal/score-clock.ts` (+ tests).
+- **A deterministic bed.** `scripts/render-piano-bed.mjs` bounces the piano offline through an injected `OfflineAudioContext` (both engines accept `audioContext`) to exactly the clock's length; live playback sleeps beat by beat and is not on the clock.
+- **The singer.** [SoulX-Singer](https://github.com/Soul-AILab/SoulX-Singer) (Apache-2.0, score-conditioned, zero-shot timbre), run locally: `scripts/export_soulx_target.py` (clock → SoulX metadata; `--syllable-words` makes every syllable its own re-articulated word) and `scripts/soulx_take.py` (one take ≈ 5 s of GPU). Local patch for Windows in `scripts/patches/`.
+- **The instrument.** `scripts/vocal_clock.py`: `verify` dates every vowel onset on the artifact (400–3000 Hz band, −6 dB rise) and gates |onset − t_sec| ≤ 40 ms, word order, one voice, timeline fit, sample-exact length; `pitch` gates score MIDI vs pYIN F0 at the vowel nucleus (fail > 50 c, warn > 25 c, global offset > 20 c; SwiftF0 cross-check); `repin --candidate` picks, per word, the take whose syllables are internally on the clock and cuts only between words; `place --local` splices with 50 ms crossfades (cloud `place_exact` path kept); `mix --local` gain-stages from a meter with a headroom rule; `transcribe` (ElevenLabs scribe on Comfy Cloud) for order and one-voice. **Any FAIL and it is not a mix.** Receipts under `scores/receipts/`.
+- **Grounding.** `docs/vocal-singing-study-2026-09.md` — five Opus lanes: music models still cannot take MIDI (June ruling holds); ElevenLabs STS has no pitch contract (route withdrawn); SoulX-Singer refutes "only DiffSinger honors MIDI"; the pitch-gate thresholds carry their citations. Handbook: *Vocals — sing a song on the clock*.
+- **Measured on the way (see `docs/vocal-clock.md`):** the kickoff's piano table was 0.8 s early from m4 (an RH-only walk); Scribe word starts are ±100–700 ms on sung audio; SwiftF0 reads a ±40 c vibrato +20 c sharp; a voiced consonant is already at the next pitch 150 ms before its vowel; a sung word is legato inside ("A"→"ma" glides Bb3→Eb4 over 180 ms), so cuts happen only between words; feeding timing errors back into the next target does not converge (stochastic, not a bias); Seed Audio cannot sing a melody or hold a note, whatever the prompt.
+
 ### Added — score-locked sung lead (Route A)
 
 - **`--lyrics` / `--lyrics-file` on `play`** (and `play_song.lyrics`) align English lyrics to the right-hand melody: vowel nucleus on the MIDI beat, onset consonants in the preceding gap, leftover duration on the nucleus, diphthong split on long notes, leftover notes as melisma. The additive vocal-synth engine renders that score; `synth`/`vocal`/`tract` engines are not used as the lead when lyrics are set (they become piano accompaniment).
 - First slice: `ai-jam-sessions play amazing-grace --lyrics "Amazing grace how sweet the sound" --measures 1-8`.
 - Sung melody is octave-placed into G3–E4 so F0 stays under front-vowel F1. Default voice is `kokoro-af-heart`; extra phrase vibrato is off. `--measures` with lyrics plays the range **once**, not a loop.
 - Live lead is mixed on the **same AudioContext as the piano**. The renderer is **Pink Trombone** (LF glottis + waveguide), not vocal-synth-engine's additive Kokoro tables — those are a vowel instrument and were the metallic shriek.
+- **Breath is context:** a tank that fills only after a brief pause (~0.45 s catch-breath, professional ~14 s phrase) and thins the tone as it empties (Klatt aspiration, Prame vibrato-rate rise, small F0 residual). Opening rests are inhales.
+- **Amazing Grace sings New Britain** (Eb: Bb–Eb–G…), not the piano arrangement's chord tops. `play amazing-grace` uses the first-verse lyric line without `--lyrics`.
+- **Lead path is fx-dub CAST/LOCK/PERFORM:** a locked Kokoro take is pitch-shifted onto the MIDI (`src/vocal/voice-changer.ts`). Set `JAM_KOKORO_LOCK_WAV`. Tract/additive are not the singer. Kokoro is local Apache TTS (not Comfy Cloud).
 - **`--out file.wav`** (with `--lyrics`) writes the score-locked lead offline (`--svs-backend dsp`, default). `--svs-backend diffsinger` refuses until `DIFFSINGER_ROOT` is a commercial-safe OpenVPI pin (Route B).
 - **`generate-song`** is the ACE-Step / DiffRhythm / YuE side door — it **refuses to run as a play engine** because those models cannot honor library MIDI (Route C).
 - Route D (DSP dry + SVC timbre) is a handoff only — not in this package (AGPL / F0-from-audio; see the vocology-knowledge Route D note in the private readouts repo).

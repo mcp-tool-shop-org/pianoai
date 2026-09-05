@@ -1,0 +1,12 @@
+{
+  "job": "0b702f24-a5d0-40cc-908d-39bfb2929150",
+  "key": "b3360d655ffe71fce846c8bd215305805f84a32bfac1e52233dc797e393340ba.flac",
+  "subfolder": "jam/vocal-clock",
+  "path": "tmp/vocal-clock/soulx/take-01/b3360d655ffe71fce846c8bd215305805f84a32bfac1e52233dc797e393340ba.flac",
+  "frames": 1680000,
+  "sample_rate": 48000,
+  "seconds": 35.0,
+  "sha256": "4298d3f1efb33593fb1540e032992290cb721b0b708b840ca0d5ea148bb38a57",
+  "plan": "tmp/vocal-clock/soulx/take-01/plan.json",
+  "graph_nodes": 85
+}
