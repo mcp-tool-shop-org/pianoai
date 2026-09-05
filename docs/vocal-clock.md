@@ -147,6 +147,80 @@ Comfy Cloud, with a pitch gate added — pending an Opus study-swarm on the
 September-2026 state of singing models, since the June ruling ("only
 DiffSinger honors MIDI") may be stale.
 
+## Third run: SoulX-Singer, score-conditioned, local (2026-09-05) — BOTH GATES PASS
+
+Director's go after the study-swarm ([research grounding](vocal-singing-study-2026-09.md)):
+the singer is **SoulX-Singer** (Apache-2.0, MIDI score + lyrics, zero-shot
+timbre), run locally on the 5090 (`E:/AI/SoulX-Singer`, uv venv Python 3.10,
+torch 2.11 cu128; one local patch: `load_wav` falls back to soundfile because
+torchaudio ≥ 2.9 needs torchcodec/FFmpeg on Windows — `scripts/patches/`).
+
+```
+pnpm exec tsx scripts/build-score-clock.mjs                      # the clock (unchanged)
+<venv> scripts/export_soulx_target.py --clock … --out target.json  # 16 notes tiling 35.000 s
+<venv> scripts/soulx_take.py --target … --prompt-wav … --out-dir … # 5.5 s of GPU for 35 s
+python scripts/vocal_clock.py verify   (energy gate on the raw take)
+python scripts/vocal_clock.py upload / transcribe / repin / place / transcribe / verify
+<venv> scripts/vocal_clock.py pitch --verify-receipt … --cross-check
+python scripts/vocal_clock.py mix
+```
+
+**Raw take** (prompt = the repo's English example voice): pitch gate PASS at
+once (global −4.2 c, 14/14 within 50 c) — the tune is New Britain; timing
+loose, 9/14 vowels off by up to 182 ms (an SVS sings rubato and puts
+consonants where it likes). **Re-pinned** (`repin`: cut 120 ms before each
+measured vowel, `place_exact` on `t_sec`): timing PASS worst 31.9 ms, order
+PASS, one voice, lengths exact; pitch PASS 14/14 with no warnings, global
+−3.7 c, scatter 8.9 c. Receipts: [`scores/receipts/amazing-grace/soulx-01/`](../scores/receipts/amazing-grace/soulx-01/).
+
+Instrument lessons from this run (kept):
+- **SwiftF0 is biased on vibrato** (+20.6 c mean on a ±40 c synthetic, clipped
+  swing) — pYIN reads +2.8 c with the full swing, so pYIN is the primary
+  tracker and SwiftF0 a cross-check column.
+- **The next syllable's voiced consonant is already at the next pitch.** A
+  nasal /m/ starts ~150 ms before its vowel; the nucleus window now stops
+  150 ms before the next onset or "A" reads as an octave split.
+- **Valley-based syllable cutting is for speech.** On a sung 1 s vowel it
+  cut the wrong place; `repin` cuts a fixed lead-in before the measured
+  vowel instead.
+- Mix gain landed at vocal −9 dB (the SVS take is hot, peak 0.91); peak 0.36.
+
+Open: timbre — this is the example prompt's voice, not a cast one. The
+prompt needs SoulX metadata (lyrics + notes of the reference clip), so the
+Kokoro lock or any female clip must go through SoulX's preprocess (its
+weights are a separate download) or a hand-written prompt JSON.
+
+### The Director listened, twice — and the joins became the work
+
+"Very good, but the voice breaks a couple of times" → "still breaks at
+about 3 seconds in." Measured: the first placement was butt-cut with 10 ms
+of air; the second had 15 ms fades but the "A"→"ma" join still jumped,
+because the take sings "A-ma" as a **portamento** (Bb3→Eb4 over 180 ms, no
+dip) and re-pinning "ma" 152 ms early cut through it. Three things fixed it,
+all in `scripts/vocal_clock.py` / `export_soulx_target.py`:
+
+1. **Crossfade splices** (`place --local`, `XFADE_S` 50 ms): the earlier
+   clip keeps running from its own source under the next one, never past
+   the next syllable's lead-in; the measurement window opens after the
+   overlap.
+2. **Cut only where the singer articulates.** `export_soulx_target.py
+   --syllable-words` writes every syllable as its own word with its own
+   phonemes (maximal-onset split: `A | M-EY1 | Z-IH0-NG`), so the model
+   re-articulates instead of gliding and a cut between syllables is a word
+   boundary. (`repin --candidate` without it picks whole words — the right
+   mode when legato inside a word is wanted and the take is tight enough.)
+3. **Pick by clarity, then by least shift.** Every measured onset now
+   carries `dip_db` (how far the envelope drops in the 100 ms before the
+   rise); the picker prefers onsets with ≥ 12 dB of dip, then the take that
+   needs the smallest move. Feeding measured errors back into the next
+   target was tried and does **not** converge — the singer's placement is
+   stochastic (± ~150 ms per syllable between renders), not biased.
+
+**Syllable run (6 takes, `scores/receipts/amazing-grace/soulx-syllables/`):**
+timing PASS worst **6.05 ms**, no gaps at any join, order PASS, one voice,
+lengths exact; pitch PASS 14/14 (two WARNs at +28 c), global **−2.7 c**,
+scatter 14 c. `scripts/sing_clock.py` runs the whole chain in one command.
+
 ## Standards compliance
 
 | standard | score | evidence |

@@ -1,0 +1,98 @@
+{
+  "mode": "local",
+  "key": null,
+  "path": "tmp/vocal-clock/soulx/take-01/placed-local.wav",
+  "frames": 1680000,
+  "sample_rate": 48000,
+  "seconds": 35.0,
+  "sha256": "5d336dfc7b038dc27fab6d1deadb0c60a1dae0a09dd3cb86669e1d10c1e2ab61",
+  "plan": "tmp/vocal-clock/soulx/take-01/plan.json",
+  "fade_s": 0.015,
+  "join_overlap_s": 0.06,
+  "joins": [
+    {
+      "id": "v00",
+      "placed_start": 2.013333333333333,
+      "placed_end": 3.095,
+      "extended_ms": 25.0
+    },
+    {
+      "id": "v01",
+      "placed_start": 3.08,
+      "placed_end": 6.2482291666666665,
+      "extended_ms": 60.0
+    },
+    {
+      "id": "v02",
+      "placed_start": 6.28,
+      "placed_end": 6.869916666666667,
+      "extended_ms": 60.0
+    },
+    {
+      "id": "v03",
+      "placed_start": 6.88,
+      "placed_end": 8.438916666666668,
+      "extended_ms": 60.0
+    },
+    {
+      "id": "v04",
+      "placed_start": 8.48,
+      "placed_end": 10.095,
+      "extended_ms": 25.0
+    },
+    {
+      "id": "v05",
+      "placed_start": 10.08,
+      "placed_end": 13.293916666666666,
+      "extended_ms": 60.0
+    },
+    {
+      "id": "v06",
+      "placed_start": 13.28,
+      "placed_end": 14.094020833333333,
+      "extended_ms": 60.0
+    },
+    {
+      "id": "v07",
+      "placed_start": 14.08,
+      "placed_end": 17.295,
+      "extended_ms": 42.0
+    },
+    {
+      "id": "v08",
+      "placed_start": 17.28,
+      "placed_end": 18.095,
+      "extended_ms": 25.0
+    },
+    {
+      "id": "v09",
+      "placed_start": 18.08,
+      "placed_end": 19.538541666666667,
+      "extended_ms": 60.0
+    },
+    {
+      "id": "v10",
+      "placed_start": 19.68,
+      "placed_end": 21.295,
+      "extended_ms": 25.0
+    },
+    {
+      "id": "v11",
+      "placed_start": 21.28,
+      "placed_end": 22.850395833333334,
+      "extended_ms": 60.0
+    },
+    {
+      "id": "v12",
+      "placed_start": 22.88,
+      "placed_end": 24.4526875,
+      "extended_ms": 60.0
+    },
+    {
+      "id": "v13",
+      "placed_start": 24.48,
+      "placed_end": 30.2,
+      "extended_ms": 0.0
+    }
+  ]
+}

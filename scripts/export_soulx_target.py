@@ -38,7 +38,60 @@ def arpabet(word: str, g2p) -> str:
     return "en_" + "-".join(phones)
 
 
-def build_target(clock: dict, g2p, language: str = "English") -> list[dict]:
+def compensate(clock: dict, receipt: dict, gain: float = 1.0, max_shift: float = 0.3) -> tuple[dict, list[dict]]:
+    """Shift each note's onset by minus the vowel error a previous take showed
+    (from a `vocal_clock.py verify` receipt), so the model's own placement
+    lands on the clock and no re-pin cut is needed. Onsets stay monotonic with
+    ≥ 0.1 s per note; the clock's `t_sec` is untouched (it is the truth the
+    gate measures against) — only the note boundaries handed to the singer move."""
+    err = {t["id"]: t.get("err_ms") for t in receipt["table"]}
+    events = [dict(ev) for ev in clock["events"]]
+    log = []
+    prev = 0.0
+    for k, ev in enumerate(events):
+        e = err.get(ev["id"])
+        shift = 0.0 if e is None else -gain * e / 1000.0
+        shift = max(-max_shift, min(max_shift, shift))
+        onset = max(prev + 0.1, float(ev["t_sec"]) + shift)
+        ev["_onset"] = onset
+        log.append({"id": ev["id"], "err_ms": e, "shift_ms": round((onset - float(ev["t_sec"])) * 1000, 1)})
+        prev = onset
+    total = float(clock["total_seconds"])
+    for k, ev in enumerate(events):
+        nxt = events[k + 1]["_onset"] if k + 1 < len(events) else min(total, ev["_onset"] + float(ev["dur_sec"]))
+        ev["t_sec"] = ev["_onset"]
+        ev["dur_sec"] = nxt - ev["_onset"]
+        del ev["_onset"]
+    out = dict(clock)
+    out["events"] = events
+    return out, log
+
+
+def syllabify_arpabet(phones: list[str], n: int) -> list[list[str]]:
+    """Split ARPAbet phones into n syllables by the maximal-onset rule: every
+    vowel (phone ending in a stress digit) is a nucleus; consonants between two
+    nuclei go to the following syllable; the final coda stays. If the word has
+    a different vowel count than n, the caller falls back to whole-word."""
+    vowels = [i for i, p in enumerate(phones) if p[-1].isdigit()]
+    if len(vowels) != n:
+        return []
+    out = []
+    start = 0
+    for si, vi in enumerate(vowels):
+        if si + 1 < len(vowels):
+            between = vowels[si + 1] - vi - 1          # consonants between this nucleus and the next
+            end = vi + 1 + (1 if between >= 2 else 0)  # one coda only when a cluster sits between; the rest is onset
+        else:
+            end = len(phones)
+        out.append(phones[start:end])
+        start = end
+    return out
+
+
+def build_target(clock: dict, g2p, language: str = "English", syllable_words: bool = False) -> list[dict]:
+    """`syllable_words`: emit every syllable as its own word (note_type 2) with
+    its own phonemes, so the singer re-articulates each one instead of gliding
+    through the word — then a cut between syllables is a word boundary."""
     events = clock["events"]
     total = float(clock["total_seconds"])
     notes: list[tuple[str, str, int, int, float]] = []  # text, phoneme, pitch, type, dur
@@ -56,6 +109,12 @@ def build_target(clock: dict, g2p, language: str = "English") -> list[dict]:
         word = ev["word"]
         ph = arpabet(word, g2p)
         ntype = 2 if ev["syllable"] == 0 else 3
+        if syllable_words and ev["syllables"] > 1:
+            parts = syllabify_arpabet(ph[3:].split("-"), ev["syllables"])
+            if parts:
+                word = ev["lyric"]
+                ph = "en_" + "-".join(parts[ev["syllable"]])
+                ntype = 2
         notes.append((word, ph, int(ev["midi"]), ntype, float(ev["dur_sec"])))
         cursor += float(ev["dur_sec"])
     if total - cursor > 1e-6:
@@ -78,17 +137,28 @@ def main() -> int:
     ap.add_argument("--clock", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--language", default="English")
+    ap.add_argument("--compensate", help="verify receipt of a previous take: shift note onsets by minus its vowel errors")
+    ap.add_argument("--gain", type=float, default=1.0, help="fraction of the measured error to feed back (default 1.0)")
+    ap.add_argument("--syllable-words", action="store_true", help="every syllable is its own word with its own phonemes (re-articulated, cuttable between)")
     a = ap.parse_args()
     clock = json.load(open(a.clock, encoding="utf-8"))
     if clock.get("schema") != "ai-jam-sessions/score-clock/v1":
         raise SystemExit("not a score-clock v1")
+    comp_log = None
+    if a.compensate:
+        clock, comp_log = compensate(clock, json.load(open(a.compensate, encoding="utf-8")), a.gain)
+        for row in comp_log:
+            print(f"  {row['id']} err {row['err_ms']} ms -> shift {row['shift_ms']:+.1f} ms")
     try:
         from g2p_en import G2p
     except ImportError:
         raise SystemExit("g2p_en is not installed in this interpreter; run inside the SoulX venv")
     g2p = G2p()
-    target = build_target(clock, g2p, a.language)
+    target = build_target(clock, g2p, a.language, syllable_words=a.syllable_words)
     os.makedirs(os.path.dirname(a.out) or ".", exist_ok=True)
+    if comp_log is not None:
+        target[0]["_compensation"] = {"from": a.compensate.replace("\\", "/"), "gain": a.gain, "shifts": comp_log}
+    target[0]["_syllable_words"] = bool(a.syllable_words)
     json.dump(target, open(a.out, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     seg = target[0]
     durs = [float(x) for x in seg["duration"].split()]

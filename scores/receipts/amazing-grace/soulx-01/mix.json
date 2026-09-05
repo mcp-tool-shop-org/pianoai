@@ -1,0 +1,17 @@
+{
+  "job": "2ad893bb-2612-4434-8af0-aa3d3cddf075",
+  "key": "86a1a96e6339ddc5a9f4f366d5b69cf8f96f536b560070bdc876f5383e11c1d3.flac",
+  "path": "tmp/vocal-clock/soulx/take-01/86a1a96e6339ddc5a9f4f366d5b69cf8f96f536b560070bdc876f5383e11c1d3.flac",
+  "frames": 1680000,
+  "sample_rate": 48000,
+  "bed_key": "4ff19b962af5e83e1c6105c1bd6e9d6ad7e7bb4f2739816da4980b4b48858fce.wav",
+  "vocal_key": "b3360d655ffe71fce846c8bd215305805f84a32bfac1e52233dc797e393340ba.flac",
+  "vo_gain_db": -9,
+  "bed_gain_db": -9.0,
+  "bed_rms_db": -17.36,
+  "vocal_clip_rms_db": -13.72,
+  "sha256": "970e3d98a24ba044576f40225470762255a4a263f32d93f6ee0f078aa02089ce",
+  "mix_peak": 0.3613433837890625,
+  "mix_rms_db": -21.86,
+  "length_match": true
+}

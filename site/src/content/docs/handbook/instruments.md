@@ -32,6 +32,8 @@ The browser cockpit needs no setup at all — it ships its own pruned 8 MB pack 
 
 ## Vocal engines
 
+> Looking for a **sung line on the piano's clock** — real lyrics, real pitches, gated on timing and pitch? That is the [Vocals](/ai-jam-sessions/handbook/vocals/) route (a local score-conditioned singer), not one of the live engines below.
+
 ### Vocal (Sample)
 
 Pitch-shifted sustained vowel tones with portamento and legato mode. Good for melodic lines where natural vocal timbre matters.

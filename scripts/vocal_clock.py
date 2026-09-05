@@ -25,6 +25,8 @@ Subcommands (run in this order; each writes what the next reads):
   seed-take   a Seed Audio take from the Kokoro lock (speech_rate -50 = held slow)
   plan        words + take -> per-event cut spans and leads (local, free)
   merge       several plans -> one: per event the take that fills its slot best
+  repin       a take already near the clock: cut at verify's measured vowels, place on t_sec;
+              --candidate take=receipt (repeat) = word-level bag of takes, cuts only between words
   place       one Comfy job: TrimAudioDuration + place_exact shapes + AudioMix
   verify      gate the downloaded placed stem (energy + transcript + lengths)
   pitch       score MIDI vs measured F0 at each vowel nucleus (fail >50 c, warn >25 c)
@@ -134,7 +136,12 @@ def rise_onset(times: np.ndarray, env: np.ndarray, lo: float, hi: float, frac=RI
         t0, t1 = times[back[k]], times[back[k + 1]]
         e0, e1 = segb[k], segb[k + 1]
         t = t0 + (thr - e0) / (e1 - e0) * (t1 - t0) if e1 > e0 else t1
-        return {"t": float(t), "peak": peak, "t_peak": t_peak, "reason": "ok", "method": "rise"}
+        # how deep the dip before this rise is (dB below the peak over the 100 ms
+        # before the crossing): a clear consonant/rest reads 15–40 dB, a soft
+        # nasal-to-vowel transition a few dB — the picker prefers clear ones
+        pre = np.where((times >= t - 0.10) & (times <= t))[0]
+        dip_db = float(20 * np.log10(peak / (env[pre].min() + 1e-9))) if len(pre) else 0.0
+        return {"t": float(t), "peak": peak, "t_peak": t_peak, "reason": "ok", "method": "rise", "dip_db": round(dip_db, 1)}
     # slope fallback
     win = np.where((times >= max(search_lo, t_peak - 0.15)) & (times <= t_peak))[0]
     if len(win) < 3:
@@ -386,6 +393,188 @@ def build_plan(clock: dict, words: list[dict], mono: np.ndarray, sr: int, source
     }
 
 
+# ─── repin: a take already near the clock -> cut at measured vowel onsets ─────
+
+REPIN_LEAD_IN_S = 0.12       # keep this much before the measured vowel (the consonant / nasal)
+
+
+def repin_plan(clock: dict, verify_rows: list[dict], take_seconds: float, source_key: str) -> dict:
+    """Plan from `verify`'s measured vowel onsets (t_vowel per event) instead of
+    a transcript search. Each syllable is cut REPIN_LEAD_IN_S before its vowel
+    (bounded by the previous vowel + 50 ms), runs to the next cut, and lands
+    with its vowel on t_sec. Overlaps are trimmed, gaps stay (both ≤ the
+    take's own drift)."""
+    evs = clock["events"]
+    total = float(clock["total_seconds"])
+    rows = {r["id"]: r for r in verify_rows}
+    onsets = []
+    for ev in evs:
+        r = rows.get(ev["id"])
+        if r is None or r.get("t_vowel") is None:
+            raise SystemExit(f"{ev['id']} '{ev['lyric']}': no measured vowel onset to re-pin")
+        onsets.append(float(r["t_vowel"]))
+    cuts: list[Cut] = []
+    for k, ev in enumerate(evs):
+        on = onsets[k]
+        lo = onsets[k - 1] + 0.05 if k > 0 else 0.0
+        cut_start = snap(max(lo, on - REPIN_LEAD_IN_S))
+        if k + 1 < len(evs):
+            cut_end = snap(max(cut_start + 0.05, min(onsets[k + 1] - REPIN_LEAD_IN_S, take_seconds)))
+        else:
+            cut_end = snap(min(take_seconds, on + float(ev["dur_sec"])))
+        vowel_off = on - cut_start
+        lead = snap(float(ev["t_sec"]) - vowel_off)
+        if lead < 0:
+            cut_start = snap(cut_start - lead); lead = 0.0; vowel_off = on - cut_start
+        cuts.append(Cut(id=ev["id"], lyric=ev["lyric"], word=norm_word(ev["word"]), t_sec=float(ev["t_sec"]),
+                        source_key=source_key, src_word_start=cut_start, src_word_end=cut_end, src_vowel_onset=on, method=rows[ev["id"]].get("method") or "rise",
+                        cut_start=cut_start, cut_end=cut_end, lead=lead, clip_seconds=0.0, placed_start=lead, placed_end=0.0,
+                        note=f"repin: take vowel {on:.4f} -> {ev['t_sec']:.4f} ({(ev['t_sec'] - on) * 1000:+.0f} ms)"))
+    for k, c in enumerate(cuts):
+        limit = cuts[k + 1].placed_start - CLIP_GAP_S if k + 1 < len(cuts) else total
+        clip = snap(min(c.cut_end - c.cut_start, limit - c.lead))
+        if clip <= snap(c.src_vowel_onset - c.cut_start) + 0.03:
+            raise SystemExit(f"{c.id} '{c.lyric}': clip {clip:.3f}s too short to carry its vowel")
+        c.clip_seconds = clip
+        c.cut_end = snap(c.cut_start + clip)
+        c.placed_end = snap(c.lead + clip)
+    return {"clock": clock.get("_path"), "total_seconds": total, "total_samples": int(clock["total_samples"]), "sample_rate": int(clock["sample_rate"]),
+            "alignment": {"missing": [], "extra": []}, "detector": detector_info(), "skipped": [], "mode": "repin",
+            "cuts": [asdict(c) for c in cuts]}
+
+
+DIP_CLEAR_DB = 12.0          # an onset preceded by at least this much dip is "clear"; the picker prefers clear onsets
+WORD_INTERNAL_MAX_MS = 35.0  # a word is usable from a take only if its syllables sit this close to the clock relative to each other
+
+
+def repin_words(clock: dict, candidates: list[dict], total_seconds_of: dict[str, float], split_words: bool = False) -> dict:
+    """Word-level bag of takes. A sung word is legato inside (portamento between
+    its syllables — measured on SoulX take-01: "A"→"ma" glides Bb3→Eb4 over
+    180 ms with no dip), so cutting inside a word breaks the line. Instead,
+    for every word pick the take whose syllables are internally on the clock
+    (max |e_i − e_0| ≤ WORD_INTERNAL_MAX_MS after re-pinning the first vowel),
+    cut the whole word from that take, and join only at word boundaries.
+
+    `candidates`: [{"key": take path, "rows": verify table}]. Returns a plan
+    whose `cuts` has one entry per EVENT (so the gate can address every
+    syllable) but interior syllables share their word's clip (`word_clip_id`);
+    placement places each word clip once."""
+    evs = clock["events"]
+    total = float(clock["total_seconds"])
+    groups: list[list[int]] = []
+    for k, ev in enumerate(evs):
+        if ev["syllable"] == 0 or split_words:
+            groups.append([k])
+        else:
+            groups[-1].append(k)
+    tables = [{r["id"]: r for r in c["rows"]} for c in candidates]
+    chosen = []   # per group: (candidate index, internal_ms, e0)
+    for g in groups:
+        best = None
+        for ci, tab in enumerate(tables):
+            vow = [tab.get(evs[k]["id"], {}).get("t_vowel") for k in g]
+            if any(v is None for v in vow):
+                continue
+            errs = [float(v) - float(evs[k]["t_sec"]) for v, k in zip(vow, g)]
+            internal = max(abs(e - errs[0]) for e in errs) * 1000.0
+            # tightest inside the word first; among equals, the take that needs the
+            # smallest shift (least splicing), then the earlier take
+            dips = [tab[evs[k]["id"]].get("dip_db") for k in g]
+            clarity = min((d if d is not None else 0.0) for d in dips)      # weakest onset in the word
+            score = (round(internal, 1), -min(clarity, DIP_CLEAR_DB), round(abs(errs[0]) * 1000, 1))
+            if best is None or score < best[3]:
+                best = (ci, internal, errs[0], score)
+        if best is None:
+            raise SystemExit(f"no take offers the word '{evs[g[0]]['word']}' with every syllable dated")
+        if best[1] > WORD_INTERNAL_MAX_MS:
+            raise SystemExit(f"word '{evs[g[0]]['word']}': best take still {best[1]:.0f} ms out inside the word (> {WORD_INTERNAL_MAX_MS}); render more takes")
+        chosen.append(best)
+    cuts: list[Cut] = []
+    for gi, g in enumerate(groups):
+        ci, internal, e0, _score = chosen[gi]
+        cand = candidates[ci]
+        tab = tables[ci]
+        key = cand["key"]
+        first_id, last_id = evs[g[0]]["id"], evs[g[-1]]["id"]
+        v_first = float(tab[first_id]["t_vowel"])
+        v_last = float(tab[last_id]["t_vowel"])
+        # previous / next vowel IN THIS TAKE bound the cut
+        prev_v = float(tab[evs[g[0] - 1]["id"]]["t_vowel"]) if g[0] > 0 and tab.get(evs[g[0] - 1]["id"], {}).get("t_vowel") is not None else 0.0
+        next_v = float(tab[evs[g[-1] + 1]["id"]]["t_vowel"]) if g[-1] + 1 < len(evs) and tab.get(evs[g[-1] + 1]["id"], {}).get("t_vowel") is not None else None
+        cut_start = snap(max(prev_v + 0.05 if g[0] > 0 else 0.0, v_first - REPIN_LEAD_IN_S))
+        if next_v is not None:
+            cut_end = snap(max(v_last + 0.1, min(next_v - REPIN_LEAD_IN_S, total_seconds_of[key])))
+        else:
+            cut_end = snap(min(total_seconds_of[key], v_last + float(evs[g[-1]]["dur_sec"])))
+        vowel_off = v_first - cut_start
+        lead = snap(float(evs[g[0]]["t_sec"]) - vowel_off)
+        if lead < 0:
+            cut_start = snap(cut_start - lead); lead = 0.0; vowel_off = v_first - cut_start
+        for j, k in enumerate(g):
+            ev = evs[k]
+            cuts.append(Cut(id=ev["id"], lyric=ev["lyric"], word=norm_word(ev["word"]), t_sec=float(ev["t_sec"]), source_key=key,
+                            src_word_start=cut_start, src_word_end=cut_end, src_vowel_onset=float(tab[ev["id"]]["t_vowel"]),
+                            method=tab[ev["id"]].get("method") or "rise", cut_start=cut_start, cut_end=cut_end, lead=lead,
+                            clip_seconds=0.0, placed_start=lead, placed_end=0.0,
+                            note=f"word '{ev['word']}' from take {ci} ({os.path.basename(os.path.dirname(key))}), internal {internal:.0f} ms, shift {-e0 * 1000:+.0f} ms, dip {tab[ev['id']].get('dip_db')} dB" + ("" if j == 0 else "; shares the word clip")))
+    # cap word clips so they never overlap the next word clip; interior syllables mirror their word
+    word_first = [c for c in cuts if c.id in {evs[g[0]]["id"] for g in groups}]
+    for i, c in enumerate(word_first):
+        limit = word_first[i + 1].placed_start - CLIP_GAP_S if i + 1 < len(word_first) else total
+        clip = snap(min(c.cut_end - c.cut_start, limit - c.lead))
+        if clip <= snap(c.src_vowel_onset - c.cut_start) + 0.03:
+            raise SystemExit(f"{c.id} '{c.lyric}': word clip {clip:.3f}s too short to carry its vowel")
+        c.clip_seconds = clip
+        c.cut_end = snap(c.cut_start + clip)
+        c.placed_end = snap(c.lead + clip)
+    by_id = {c.id: c for c in cuts}
+    out_cuts = []
+    for g in groups:
+        head = by_id[evs[g[0]]["id"]]
+        for k in g:
+            c = by_id[evs[k]["id"]]
+            d = asdict(c)
+            d.update({"cut_end": head.cut_end, "clip_seconds": head.clip_seconds, "placed_end": head.placed_end, "word_clip_id": head.id})
+            out_cuts.append(d)
+    return {"clock": clock.get("_path"), "total_seconds": total, "total_samples": int(clock["total_samples"]), "sample_rate": int(clock["sample_rate"]),
+            "alignment": {"missing": [], "extra": []}, "detector": detector_info(), "skipped": [], "mode": "repin-words",
+            "word_internal_max_ms": WORD_INTERNAL_MAX_MS,
+            "candidates": [{"key": c["key"], "receipt": c.get("receipt")} for c in candidates],
+            "cuts": out_cuts}
+
+
+def cmd_repin(a):
+    clock = load_clock(a.clock)
+    if a.candidate:
+        cands = []
+        totals = {}
+        for spec in a.candidate:
+            take, receipt = spec.split("=", 1)
+            rec = json.load(open(receipt, encoding="utf-8"))
+            mono, sr, frames = read_audio(take)
+            key = take.replace("\\", "/")
+            totals[key] = frames / sr
+            cands.append({"key": key, "rows": rec["table"], "receipt": receipt.replace("\\", "/"), "sha256": sha256(take)})
+        plan = repin_words(clock, cands, totals, split_words=a.split_words)
+        json.dump(plan, open(a.out, "w", encoding="utf-8"), indent=2)
+        for c in plan["cuts"]:
+            if c["word_clip_id"] != c["id"]:
+                continue
+            print(f"{c['id']:4} {c['word']:8} cut [{c['cut_start']:7.3f},{c['cut_end']:7.3f}] clip {c['clip_seconds']:6.3f} lead {c['lead']:8.4f}  {c['note']}")
+        print(f"wrote {a.out}")
+        return 0
+    rec = json.load(open(a.verify_receipt, encoding="utf-8"))
+    mono, sr, frames = read_audio(a.take)
+    plan = repin_plan(clock, rec["table"], frames / sr, a.source_key)
+    plan["take"] = {"path": a.take.replace("\\", "/"), "frames": frames, "seconds": frames / sr, "sha256": sha256(a.take)}
+    plan["verify_receipt"] = a.verify_receipt.replace("\\", "/")
+    json.dump(plan, open(a.out, "w", encoding="utf-8"), indent=2)
+    for c in plan["cuts"]:
+        print(f"{c['id']:4} {c['lyric']:7} cut [{c['cut_start']:7.3f},{c['cut_end']:7.3f}] clip {c['clip_seconds']:6.3f} lead {c['lead']:8.4f}  {c['note']}")
+    print(f"wrote {a.out}")
+    return 0
+
+
 # ─── graphs (fx-dub shapes) ───────────────────────────────────────────────────
 
 def placed_vocal_graph(source_key: str, plan: dict, prefix: str, sample_rate: int = SR, channels: int = 2) -> dict:
@@ -410,6 +599,8 @@ def placed_vocal_graph(source_key: str, plan: dict, prefix: str, sample_rate: in
     placed = []
     nid = 10
     for c in plan["cuts"]:
+        if c.get("word_clip_id", c["id"]) != c["id"]:
+            continue  # interior syllable: its word clip is placed once
         trim = str(nid)
         graph[trim] = {"class_type": "TrimAudioDuration",
                        "inputs": {"audio": loaders[c.get("source_key") or source_key], "start_index": float(c["cut_start"]), "duration": float(c["clip_seconds"])}}
@@ -469,6 +660,75 @@ def merge_plans(plans: list[dict]) -> dict:
     return out
 
 
+# ─── local placement / mix (numpy; the singer is local, so can the splice be) ─
+
+FADE_S = 0.015               # raised-cosine at a clip's outer edges (no clicks)
+XFADE_S = 0.05               # crossfade at every join: the earlier clip keeps singing under the next one
+JOIN_EXTEND_MAX_S = REPIN_LEAD_IN_S + XFADE_S   # never reach past the next syllable's lead-in into its vowel
+
+
+def _fade(n: int) -> np.ndarray:
+    return 0.5 - 0.5 * np.cos(np.pi * np.arange(n) / max(1, n))
+
+
+def place_local(plan: dict, sources: dict[str, np.ndarray], sr: int) -> tuple[np.ndarray, list[dict]]:
+    """Sample-exact placement of the plan's cuts on a `total_samples` timeline.
+
+    Same arithmetic as the cloud `place_exact` chain (lead = placed_start,
+    clip = cut span) but spliced like an editor would: at every join the
+    earlier clip keeps running from its own source until XFADE_S after the
+    next clip starts and the two crossfade (equal-power); a clip never
+    reaches past the next syllable's lead-in into its vowel, so a gap wider
+    than that stays as faded air. Outer edges get FADE_S raised cosines."""
+    total = int(plan["total_samples"])
+    out = np.zeros((total, 2))
+    cuts = plan["cuts"]
+    joins = []
+    nf = int(FADE_S * sr)
+    nx = int(XFADE_S * sr)
+    cuts = [c for c in cuts if c.get("word_clip_id", c["id"]) == c["id"]]   # one clip per word
+    for k, c in enumerate(cuts):
+        src = sources[c["source_key"]]
+        if src.ndim == 1:
+            src = np.repeat(src[:, None], 2, axis=1)
+        a0 = int(round(c["cut_start"] * sr))
+        start = int(round(c["placed_start"] * sr))
+        nat_end = a0 + int(round(c["clip_seconds"] * sr))
+        if k + 1 < len(cuts):
+            next_start = int(round(cuts[k + 1]["placed_start"] * sr))
+            want_end = a0 + (next_start + nx - start)          # run until XFADE after the next clip starts
+            ext_cap = nat_end + int(JOIN_EXTEND_MAX_S * sr)
+            b0 = min(want_end, ext_cap, len(src))
+            b0 = max(b0, a0 + 1)
+            seg = src[a0:b0].copy()
+            n = len(seg)
+            head = min(nx if k > 0 else nf, n // 2)
+            tail = min(nx, n // 2)
+            seg[:head] *= _fade(head)[:, None]
+            seg[n - tail:] *= _fade(tail)[::-1][:, None]
+            gap_ms = max(0.0, (next_start - (start + n)) / sr * 1000)
+        else:
+            seg = src[a0:nat_end].copy()
+            n = len(seg)
+            head = min(nx, n // 2)
+            tail = min(nf, n // 2)
+            seg[:head] *= _fade(head)[:, None]
+            seg[n - tail:] *= _fade(tail)[::-1][:, None]
+            gap_ms = 0.0
+        end = min(total, start + n)
+        out[start:end] += seg[: end - start]
+        joins.append({"id": c["id"], "placed_start": start / sr, "placed_end": end / sr,
+                      "extended_ms": round((n - (nat_end - a0)) / sr * 1000, 1), "gap_ms": round(gap_ms, 1)})
+    peak = float(np.abs(out).max())
+    if peak > 1.0:
+        out /= peak
+    return out, joins
+
+
+def mix_local(bed: np.ndarray, vocal: np.ndarray, vo_gain_db: float, bed_gain_db: float) -> np.ndarray:
+    return bed * 10 ** (bed_gain_db / 20) + vocal * 10 ** (vo_gain_db / 20)
+
+
 # ─── measure the artifact ────────────────────────────────────────────────────
 
 def measure_events(clock: dict, mono: np.ndarray, sr: int, plan: dict | None = None) -> list[dict]:
@@ -485,8 +745,13 @@ def measure_events(clock: dict, mono: np.ndarray, sr: int, plan: dict | None = N
         lo = max(0.0, t - PEAK_BEFORE_S)
         search_lo = max(0.0, t - SEARCH_BEFORE_S)
         if c is not None:
-            lo = max(lo, c["placed_start"] + 0.012)
-            search_lo = max(search_lo, c["placed_start"] + 0.012)
+            # open after the clip's own edge — and after a crossfaded join's overlap
+            # (the previous syllable keeps sounding for XFADE_S), but never past the
+            # consonant lead-in that precedes this vowel
+            vowel_off = float(c["src_vowel_onset"]) - float(c["cut_start"])
+            margin = min(max(0.012, vowel_off - 0.02), XFADE_S + 0.01)
+            lo = max(lo, c["placed_start"] + margin)
+            search_lo = max(search_lo, c["placed_start"] + margin)
         hi = t + SEARCH_AFTER_S
         if k + 1 < len(evs):
             nxt = cuts.get(evs[k + 1]["id"])
@@ -498,7 +763,7 @@ def measure_events(clock: dict, mono: np.ndarray, sr: int, plan: dict | None = N
         if onset["t"] is not None and want is not None and onset["method"] != want:
             onset = dict(onset, reason=f"method-mismatch:{onset['method']}!={want}")
         rows.append({"id": ev["id"], "lyric": ev["lyric"], "t_score": t, "method": onset.get("method"),
-                     "t_vowel": onset["t"], "peak": onset["peak"], "reason": onset["reason"]})
+                     "t_vowel": onset["t"], "peak": onset["peak"], "reason": onset["reason"], "dip_db": onset.get("dip_db")})
     return rows
 
 
@@ -634,6 +899,7 @@ PITCH_OCTAVE_TRIP_CENTS = 40.0     # |mean - median| beyond this = untrackable, 
 NUCLEUS_HEAD_S = 0.08
 NUCLEUS_HEAD_FRAC = 0.15
 NUCLEUS_TAIL_S = 0.05
+NUCLEUS_NEXT_GUARD_S = 0.15      # a nasal/glide before the next vowel is already at the next pitch
 VOICING_MIN = 0.5
 
 
@@ -680,7 +946,9 @@ def pitch_rows(clock: dict, trk: dict, onsets: dict | None = None) -> list[dict]
         t_on = float((onsets or {}).get(ev["id"], ev["t_sec"]))
         t_off = float(ev["t_sec"]) + float(ev["dur_sec"])
         if k + 1 < len(evs):
-            t_off = min(t_off, float((onsets or {}).get(evs[k + 1]["id"], evs[k + 1]["t_sec"])))
+            # the next syllable's voiced consonant (a nasal, a glide) carries the
+            # NEXT pitch and begins up to a lead-in before its vowel: stop there
+            t_off = min(t_off, float((onsets or {}).get(evs[k + 1]["id"], evs[k + 1]["t_sec"])) - NUCLEUS_NEXT_GUARD_S)
         a, b = nucleus_window(t_on, t_off)
         sel = np.where((trk["times"] >= a) & (trk["times"] <= b))[0]
         f0 = trk["f0"][sel]
@@ -877,9 +1145,43 @@ def cmd_merge(a):
     return 0
 
 
-def cmd_place(a):
+def cmd_upload(a):
+    """Push a local wav to the cloud as an input; print the key LoadAudio accepts."""
     import comfy_rest
+    key = comfy_rest.api_key()
+    name = comfy_rest.upload_file(a.path, key, "audio/wav")
+    print(f"KEY {name}")
+    return 0
+
+
+def cmd_place(a):
     plan = json.load(open(a.plan, encoding="utf-8"))
+    if a.local:
+        import soundfile as sf
+        take_paths = dict(kv.split("=", 1) for kv in a.take) if a.take else {}
+        keys = sorted({c.get("source_key") or a.key or "" for c in plan["cuts"]})
+        sources = {}
+        for k in keys:
+            path = take_paths.get(k) or (k if os.path.exists(k) else None) or (plan.get("take", {}) or {}).get("path")
+            if not path or not os.path.exists(path):
+                raise SystemExit(f"--local needs the take for key {k}: pass --take {k}=<wav>")
+            data, sr = sf.read(path, always_2d=True, dtype="float64")
+            if sr != plan["sample_rate"]:
+                raise SystemExit(f"{path} is {sr} Hz, plan is {plan['sample_rate']} Hz")
+            sources[k] = data
+        out, joins = place_local(plan, sources, int(plan["sample_rate"]))
+        os.makedirs(a.out_dir, exist_ok=True)
+        path = os.path.join(a.out_dir, "placed-local.wav")
+        sf.write(path, out, int(plan["sample_rate"]), subtype="PCM_16")
+        info = {"mode": "local", "key": None, "path": path.replace("\\", "/"), "frames": int(out.shape[0]), "sample_rate": int(plan["sample_rate"]),
+                "seconds": out.shape[0] / plan["sample_rate"], "sha256": sha256(path), "plan": a.plan.replace("\\", "/"),
+                "fade_s": FADE_S, "xfade_s": XFADE_S, "join_extend_max_s": JOIN_EXTEND_MAX_S, "joins": joins}
+        json.dump(info, open(a.out_info, "w", encoding="utf-8"), indent=2)
+        gaps = [j for j in joins if j["gap_ms"] > 0]
+        print(f"placed (local) {path} frames {out.shape[0]} ({out.shape[0] / plan['sample_rate']:.4f}s); crossfade {XFADE_S * 1000:.0f} ms; "
+              f"{len(gaps)} joins left air: " + (", ".join(f"{j['id']} {j['gap_ms']}ms" for j in gaps) or "none"))
+        return 0
+    import comfy_rest
     graph = placed_vocal_graph(a.key, plan, a.prefix)
     if a.dry_run:
         json.dump(graph, open(a.out_graph, "w", encoding="utf-8"), indent=1)
@@ -920,9 +1222,10 @@ def cmd_verify(a):
 
 
 def cmd_mix(a):
-    import comfy_rest
-    vo = _vo_graphs()
-    key = comfy_rest.api_key()
+    if not a.local:
+        import comfy_rest
+        vo = _vo_graphs()
+        key = comfy_rest.api_key()
     bed_mono, sr, bed_frames = read_audio(a.bed)
     vo_mono, vsr, vo_frames = read_audio(a.vocal)
     if abs(bed_frames - vo_frames) > 1:
@@ -931,7 +1234,7 @@ def cmd_mix(a):
     # gain-stage from a meter: vocal measured over its placed clips, bed over its whole length
     idx = np.zeros(vo_frames, dtype=bool)
     for c in plan["cuts"]:
-        idx[int(c["placed_start"] * vsr):int(c["placed_end"] * vsr)] = True
+        idx[int(c["placed_start"] * vsr):int(c["placed_end"] * vsr)] = True   # interior syllables mirror their word clip
     vo_db = rms_db(vo_mono[idx])
     bed_db = rms_db(bed_mono)
     bed_lin = 10 ** (a.bed_gain_db / 20)
@@ -947,6 +1250,21 @@ def cmd_mix(a):
     print(f"bed {bed_db:.1f} dB RMS peak {bed_peak / bed_lin:.2f} (@{a.bed_gain_db:+.1f} dB -> {bed_peak:.2f}); "
           f"vocal (in clips) {vo_db:.1f} dB RMS peak {vo_peak:.2f}; wanted {want:+.1f} dB, headroom cap {cap:+.1f} dB "
           f"-> AudioAdjustVolume {vo_gain:+d} dB (vocal {vo_db + vo_gain - bed_db - a.bed_gain_db:+.1f} dB over bed)")
+    if a.local:
+        import soundfile as sf
+        bed_st, _ = sf.read(a.bed, always_2d=True, dtype="float64")
+        vo_st, _ = sf.read(a.vocal, always_2d=True, dtype="float64")
+        n = min(len(bed_st), len(vo_st))
+        out = mix_local(bed_st[:n], vo_st[:n], vo_gain, a.bed_gain_db)
+        os.makedirs(a.out_dir, exist_ok=True)
+        path = os.path.join(a.out_dir, "mix-local.wav")
+        sf.write(path, out, sr, subtype="PCM_16")
+        info = {"mode": "local", "path": path.replace("\\", "/"), "frames": int(n), "sample_rate": sr, "vo_gain_db": vo_gain, "bed_gain_db": a.bed_gain_db,
+                "bed_rms_db": round(bed_db, 2), "vocal_clip_rms_db": round(vo_db, 2), "mix_peak": float(np.abs(out).max()), "mix_rms_db": round(rms_db(out.mean(axis=1)), 2),
+                "sha256": sha256(path), "length_match": abs(len(bed_st) - len(vo_st)) <= 1}
+        json.dump(info, open(a.out_info, "w", encoding="utf-8"), indent=2)
+        print(f"mix (local) {path} frames {n} peak {info['mix_peak']:.3f} length_match={info['length_match']} -> {a.out_info}")
+        return 0 if info["length_match"] else 1
     bed_key = comfy_rest.upload_file(a.bed, key, "audio/wav")
     graph = vo.mix_dialogue_anchored(bed_key, a.vocal_key, a.prefix, vo_gain_db=vo_gain, bed_gain_db=a.bed_gain_db)
     recs = comfy_rest.run_graph(graph, key, a.out_dir, want_ext=(".flac", ".wav"))
@@ -971,11 +1289,16 @@ def main(argv=None) -> int:
     s = sub.add_parser("seed-take"); s.add_argument("--reference", default="tmp/kokoro-lock/lock.wav"); s.add_argument("--reference-key"); s.add_argument("--prompt", required=True)
     s.add_argument("--speech-rate", type=int, default=-50); s.add_argument("--seed", type=int, default=42); s.add_argument("--out-dir", required=True); s.add_argument("--out-info", required=True); s.add_argument("--prefix", default="jam/vocal-clock/take"); s.set_defaults(fn=cmd_seed_take)
     s = sub.add_parser("merge"); s.add_argument("--plans", nargs="+", required=True); s.add_argument("--out", required=True); s.set_defaults(fn=cmd_merge)
-    s = sub.add_parser("place"); s.add_argument("--plan", required=True); s.add_argument("--key", required=True); s.add_argument("--out-dir", required=True)
-    s.add_argument("--out-info", required=True); s.add_argument("--out-graph", required=True); s.add_argument("--prefix", default="jam/vocal-clock/placed"); s.add_argument("--dry-run", action="store_true"); s.set_defaults(fn=cmd_place)
+    s = sub.add_parser("upload"); s.add_argument("--path", required=True); s.set_defaults(fn=cmd_upload)
+    s = sub.add_parser("repin"); s.add_argument("--clock", required=True); s.add_argument("--verify-receipt"); s.add_argument("--take"); s.add_argument("--source-key", default="")
+    s.add_argument("--candidate", action="append", help="word-level bag of takes: <take.wav>=<verify receipt.json> (repeat)")
+    s.add_argument("--split-words", action="store_true", help="treat every syllable as its own word (use with a --syllable-words target)"); s.add_argument("--out", required=True); s.set_defaults(fn=cmd_repin)
+    s = sub.add_parser("place"); s.add_argument("--plan", required=True); s.add_argument("--key", default=""); s.add_argument("--out-dir", required=True)
+    s.add_argument("--out-info", required=True); s.add_argument("--out-graph", required=True); s.add_argument("--prefix", default="jam/vocal-clock/placed"); s.add_argument("--dry-run", action="store_true")
+    s.add_argument("--local", action="store_true", help="place with numpy (fades + crossfaded joins) instead of the cloud"); s.add_argument("--take", action="append", help="--local: <source_key>=<wav path>"); s.set_defaults(fn=cmd_place)
     s = sub.add_parser("verify"); s.add_argument("--clock", required=True); s.add_argument("--vocal", required=True); s.add_argument("--bed"); s.add_argument("--words"); s.add_argument("--plan"); s.add_argument("--receipt"); s.set_defaults(fn=cmd_verify)
     s = sub.add_parser("pitch"); s.add_argument("--clock", required=True); s.add_argument("--vocal", required=True); s.add_argument("--verify-receipt"); s.add_argument("--tracker", default="auto", choices=["auto", "swift", "pyin"]); s.add_argument("--cross-check", action="store_true"); s.add_argument("--receipt"); s.set_defaults(fn=cmd_pitch)
-    s = sub.add_parser("mix"); s.add_argument("--bed", required=True); s.add_argument("--vocal", required=True); s.add_argument("--vocal-key", required=True); s.add_argument("--plan", required=True)
+    s = sub.add_parser("mix"); s.add_argument("--bed", required=True); s.add_argument("--vocal", required=True); s.add_argument("--vocal-key", default=""); s.add_argument("--plan", required=True); s.add_argument("--local", action="store_true", help="mix with numpy instead of the cloud")
     s.add_argument("--out-dir", required=True); s.add_argument("--out-info", required=True); s.add_argument("--prefix", default="jam/vocal-clock/mix")
     s.add_argument("--vocal-over-bed-db", type=float, default=4.0); s.add_argument("--bed-gain-db", type=float, default=-9.0); s.set_defaults(fn=cmd_mix)
     a = p.parse_args(argv)

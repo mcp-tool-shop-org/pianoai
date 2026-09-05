@@ -1,0 +1,113 @@
+{
+  "mode": "local",
+  "key": null,
+  "path": "tmp/vocal-clock/soulx/syl-run/placed-local.wav",
+  "frames": 1680000,
+  "sample_rate": 48000,
+  "seconds": 35.0,
+  "sha256": "ae017ae1cebc26ad3be1d82e28042cd66c60b0112c969180117b816440251318",
+  "plan": "tmp/vocal-clock/soulx/syl-run/plan.json",
+  "fade_s": 0.015,
+  "xfade_s": 0.05,
+  "join_extend_max_s": 0.16999999999999998,
+  "joins": [
+    {
+      "id": "v00",
+      "placed_start": 2.013333333333333,
+      "placed_end": 3.13,
+      "extended_ms": 169.5,
+      "gap_ms": 0.0
+    },
+    {
+      "id": "v01",
+      "placed_start": 3.08,
+      "placed_end": 6.33,
+      "extended_ms": 60.0,
+      "gap_ms": 0.0
+    },
+    {
+      "id": "v02",
+      "placed_start": 6.28,
+      "placed_end": 6.93,
+      "extended_ms": 76.0,
+      "gap_ms": 0.0
+    },
+    {
+      "id": "v03",
+      "placed_start": 6.88,
+      "placed_end": 8.53,
+      "extended_ms": 60.0,
+      "gap_ms": 0.0
+    },
+    {
+      "id": "v04",
+      "placed_start": 8.48,
+      "placed_end": 10.13,
+      "extended_ms": 60.0,
+      "gap_ms": 0.0
+    },
+    {
+      "id": "v05",
+      "placed_start": 10.08,
+      "placed_end": 13.283,
+      "extended_ms": 170.0,
+      "gap_ms": 0.0
+    },
+    {
+      "id": "v06",
+      "placed_start": 13.28,
+      "placed_end": 14.13,
+      "extended_ms": 60.0,
+      "gap_ms": 0.0
+    },
+    {
+      "id": "v07",
+      "placed_start": 14.08,
+      "placed_end": 17.33,
+      "extended_ms": 74.0,
+      "gap_ms": 0.0
+    },
+    {
+      "id": "v08",
+      "placed_start": 17.28,
+      "placed_end": 18.13,
+      "extended_ms": 60.0,
+      "gap_ms": 0.0
+    },
+    {
+      "id": "v09",
+      "placed_start": 18.08,
+      "placed_end": 19.73,
+      "extended_ms": 151.0,
+      "gap_ms": 0.0
+    },
+    {
+      "id": "v10",
+      "placed_start": 19.68,
+      "placed_end": 21.33,
+      "extended_ms": 60.1,
+      "gap_ms": 0.0
+    },
+    {
+      "id": "v11",
+      "placed_start": 21.28,
+      "placed_end": 22.93,
+      "extended_ms": 60.0,
+      "gap_ms": 0.0
+    },
+    {
+      "id": "v12",
+      "placed_start": 22.88,
+      "placed_end": 24.53,
+      "extended_ms": 60.0,
+      "gap_ms": 0.0
+    },
+    {
+      "id": "v13",
+      "placed_start": 24.48,
+      "placed_end": 30.2,
+      "extended_ms": 0.0,
+      "gap_ms": 0.0
+    }
+  ]
+}

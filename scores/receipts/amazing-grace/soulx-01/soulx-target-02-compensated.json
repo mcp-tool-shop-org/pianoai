@@ -1,0 +1,91 @@
+[
+ {
+  "index": "amazing-grace_0_35000",
+  "language": "English",
+  "time": [
+   0,
+   35000
+  ],
+  "duration": "2.2541 0.7944 3.2918 0.6701 1.7011 1.3578 3.2461 0.8460 3.2270 0.7925 1.8015 1.3512 1.6896 1.6873 5.6000 4.6897",
+  "text": "<SP> Amazing Amazing Amazing grace how sweet the sound that saved a wretch like me <SP>",
+  "phoneme": "<SP> en_AH0-M-EY1-Z-IH0-NG en_AH0-M-EY1-Z-IH0-NG en_AH0-M-EY1-Z-IH0-NG en_G-R-EY1-S en_HH-AW1 en_S-W-IY1-T en_DH-AH0 en_S-AW1-N-D en_DH-AE1-T en_S-EY1-V-D en_AH0 en_R-EH1-CH en_L-AY1-K en_M-IY1 <SP>",
+  "note_pitch": "0 58 63 67 67 65 63 60 58 58 63 67 67 65 70 0",
+  "note_type": "1 2 3 3 2 2 2 2 2 2 2 2 2 2 2 1",
+  "_compensation": {
+   "from": "tmp/vocal-clock/soulx/take-01/verify-energy.json",
+   "gain": 1.0,
+   "shifts": [
+    {
+     "id": "v00",
+     "err_ms": -120.76,
+     "shift_ms": 120.8
+    },
+    {
+     "id": "v01",
+     "err_ms": 151.52,
+     "shift_ms": -151.5
+    },
+    {
+     "id": "v02",
+     "err_ms": 59.74,
+     "shift_ms": -59.7
+    },
+    {
+     "id": "v03",
+     "err_ms": -10.34,
+     "shift_ms": 10.3
+    },
+    {
+     "id": "v04",
+     "err_ms": -111.42,
+     "shift_ms": 111.4
+    },
+    {
+     "id": "v05",
+     "err_ms": 130.76,
+     "shift_ms": -130.8
+    },
+    {
+     "id": "v06",
+     "err_ms": 84.66,
+     "shift_ms": -84.7
+    },
+    {
+     "id": "v07",
+     "err_ms": 38.69,
+     "shift_ms": -38.7
+    },
+    {
+     "id": "v08",
+     "err_ms": 11.72,
+     "shift_ms": -11.7
+    },
+    {
+     "id": "v09",
+     "err_ms": 19.22,
+     "shift_ms": -19.2
+    },
+    {
+     "id": "v10",
+     "err_ms": -182.25,
+     "shift_ms": 182.2
+    },
+    {
+     "id": "v11",
+     "err_ms": 66.57,
+     "shift_ms": -66.6
+    },
+    {
+     "id": "v12",
+     "err_ms": -23.04,
+     "shift_ms": 23.0
+    },
+    {
+     "id": "v13",
+     "err_ms": -110.35,
+     "shift_ms": 110.4
+    }
+   ]
+  }
+ }
+]
