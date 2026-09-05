@@ -27,6 +27,7 @@ Subcommands (run in this order; each writes what the next reads):
   merge       several plans -> one: per event the take that fills its slot best
   place       one Comfy job: TrimAudioDuration + place_exact shapes + AudioMix
   verify      gate the downloaded placed stem (energy + transcript + lengths)
+  pitch       score MIDI vs measured F0 at each vowel nucleus (fail >50 c, warn >25 c)
   mix         upload the bed, fx-dub `mix_dialogue_anchored`, download
 
 Graph builders come from E:/AI/fx-dub/tools/vo_graphs.py (FXDUB_TOOLS env
@@ -616,6 +617,153 @@ def bed_onsets(clock: dict, mono: np.ndarray, sr: int, render_receipt: dict | No
             "engine": (render_receipt or {}).get("engine")}
 
 
+# ─── pitch gate (score MIDI vs measured F0 at the vowel nucleus) ─────────────
+#
+# Grounding (docs/vocal-singing-study-2026-09.md, F8): listeners forgive the
+# voice ~50 cents (Hutchins, Roquet & Peretz 2012); ±50 c tracks lay judgments
+# (Larrouy-Maestri 2018); mistuning (global offset) and imprecision (scatter)
+# are separate failures (Pfordresher & Brown 2007); the perceived pitch of a
+# vibrato tone is its mean f0 (Sundberg); MIR's note convention is 50 ms +
+# 50 c (mir_eval). Trackers: SwiftF0 / RMVPE / CREPE / pYIN (Nieradzik 2025).
+
+PITCH_FAIL_CENTS = 50.0
+PITCH_WARN_CENTS = 25.0
+PITCH_GLOBAL_FAIL_CENTS = 20.0     # median offset over all notes = transposition / tuning drift
+PITCH_SCATTER_WARN_CENTS = 30.0    # SD of per-note means
+PITCH_OCTAVE_TRIP_CENTS = 40.0     # |mean - median| beyond this = untrackable, not out of tune
+NUCLEUS_HEAD_S = 0.08
+NUCLEUS_HEAD_FRAC = 0.15
+NUCLEUS_TAIL_S = 0.05
+VOICING_MIN = 0.5
+
+
+def midi_hz(midi: float) -> float:
+    return 440.0 * 2 ** ((midi - 69) / 12)
+
+
+def track_f0(mono: np.ndarray, sr: int, tracker: str = "auto") -> dict:
+    """(times, f0_hz, confidence). Primary = librosa.pyin: on a synthetic ±40 c
+    vibrato it reads +2.8 c mean with the full swing; SwiftF0 read +20.6 c mean
+    and clipped the excursion (measured 2026-09-05), a bias a 25/50 c gate
+    cannot afford. SwiftF0 stays available as a cross-check (`tracker="swift"`).
+    Returns which tracker answered so the receipt can say so."""
+    if tracker == "swift":
+        try:
+            from swift_f0 import SwiftF0
+        except ImportError:
+            raise SystemExit("swift-f0 is not installed in this interpreter")
+        x = mono.astype(np.float32)
+        r = SwiftF0(confidence_threshold=0.0).detect_from_array(x, sr)
+        return {"tracker": "swift-f0", "times": np.asarray(r.timestamps, dtype=float),
+                "f0": np.asarray(r.pitch_hz, dtype=float), "conf": np.asarray(r.confidence, dtype=float)}
+    import librosa
+    f0, voiced, prob = librosa.pyin(mono.astype(np.float32), fmin=librosa.note_to_hz("C2"), fmax=librosa.note_to_hz("C7"),
+                                   sr=sr, frame_length=2048, hop_length=240)
+    times = librosa.times_like(f0, sr=sr, hop_length=240)
+    f0 = np.where(np.isnan(f0), 0.0, f0)
+    return {"tracker": "pyin", "times": times, "f0": f0, "conf": np.where(voiced, prob, 0.0)}
+
+
+def nucleus_window(onset: float, offset: float) -> tuple[float, float]:
+    dur = max(0.0, offset - onset)
+    a = onset + max(NUCLEUS_HEAD_S, NUCLEUS_HEAD_FRAC * dur)
+    b = offset - NUCLEUS_TAIL_S
+    if b - a < 0.1:
+        a, b = onset + min(0.05, dur / 3), offset - min(0.02, dur / 3)
+    return a, b
+
+
+def pitch_rows(clock: dict, trk: dict, onsets: dict | None = None) -> list[dict]:
+    evs = clock["events"]
+    rows = []
+    for k, ev in enumerate(evs):
+        t_on = float((onsets or {}).get(ev["id"], ev["t_sec"]))
+        t_off = float(ev["t_sec"]) + float(ev["dur_sec"])
+        if k + 1 < len(evs):
+            t_off = min(t_off, float((onsets or {}).get(evs[k + 1]["id"], evs[k + 1]["t_sec"])))
+        a, b = nucleus_window(t_on, t_off)
+        sel = np.where((trk["times"] >= a) & (trk["times"] <= b))[0]
+        f0 = trk["f0"][sel]
+        conf = trk["conf"][sel]
+        ok = (f0 > 0) & (conf >= VOICING_MIN)
+        ref = midi_hz(ev["midi"])
+        row = {"id": ev["id"], "lyric": ev["lyric"], "midi": ev["midi"], "ref_hz": round(ref, 2),
+               "window": [round(a, 3), round(b, 3)], "frames": int(len(sel)), "voiced_fraction": float(ok.mean()) if len(sel) else 0.0,
+               "cents_mean": None, "cents_median": None, "cents_sd": None, "status": "unvoiced", "reason": ""}
+        if ok.sum() >= 3:
+            cents = 1200 * np.log2(f0[ok] / ref)
+            w = conf[ok]
+            mean = float(np.sum(cents * w) / np.sum(w))
+            med = float(np.median(cents))
+            row.update({"cents_mean": round(mean, 1), "cents_median": round(med, 1), "cents_sd": round(float(np.std(cents)), 1)})
+            if abs(mean - med) > PITCH_OCTAVE_TRIP_CENTS:
+                row["status"], row["reason"] = "untrackable", f"mean/median split {abs(mean - med):.0f} c"
+            elif abs(mean) > PITCH_FAIL_CENTS:
+                row["status"] = "FAIL"
+            elif abs(mean) > PITCH_WARN_CENTS:
+                row["status"] = "WARN"
+            else:
+                row["status"] = "PASS"
+        elif row["voiced_fraction"] < VOICING_MIN:
+            row["status"], row["reason"] = "unvoiced", f"voiced {row['voiced_fraction']:.0%} of the nucleus"
+        rows.append(row)
+    return rows
+
+
+def pitch_gate(rows: list[dict]) -> dict:
+    means = [r["cents_mean"] for r in rows if r["cents_mean"] is not None and r["status"] in ("PASS", "WARN", "FAIL")]
+    global_offset = float(np.median(means)) if means else None
+    scatter = float(np.std(means)) if len(means) > 1 else None
+    per_note_pass = all(r["status"] in ("PASS", "WARN") for r in rows)
+    global_pass = global_offset is not None and abs(global_offset) <= PITCH_GLOBAL_FAIL_CENTS
+    return {"verdict": "PASS" if per_note_pass and global_pass else "FAIL",
+            "per_note": {"pass": per_note_pass, "fail_cents": PITCH_FAIL_CENTS, "warn_cents": PITCH_WARN_CENTS,
+                         "warn": [r["id"] for r in rows if r["status"] == "WARN"],
+                         "fail": [r["id"] for r in rows if r["status"] not in ("PASS", "WARN")]},
+            "global_offset_cents": None if global_offset is None else round(global_offset, 1),
+            "global_pass": global_pass, "global_fail_cents": PITCH_GLOBAL_FAIL_CENTS,
+            "scatter_sd_cents": None if scatter is None else round(scatter, 1),
+            "scatter_warn": scatter is not None and scatter > PITCH_SCATTER_WARN_CENTS,
+            "rows": rows}
+
+
+def cmd_pitch(a):
+    clock = load_clock(a.clock)
+    mono, sr, frames = read_audio(a.vocal)
+    onsets = None
+    if a.verify_receipt:
+        rec = json.load(open(a.verify_receipt, encoding="utf-8"))
+        onsets = {t["id"]: t["t_vowel"] for t in rec["table"] if t.get("t_vowel") is not None}
+    trk = track_f0(mono, sr, a.tracker)
+    rows = pitch_rows(clock, trk, onsets)
+    res = pitch_gate(rows)
+    res["tracker"] = trk["tracker"]
+    if a.cross_check and trk["tracker"] != "swift-f0":
+        try:
+            alt = pitch_rows(clock, track_f0(mono, sr, "swift"), onsets)
+            for r, x in zip(rows, alt):
+                r["cents_swift"] = x["cents_mean"]
+                r["tracker_disagree"] = (r["cents_mean"] is not None and x["cents_mean"] is not None and abs(r["cents_mean"] - x["cents_mean"]) > 20)
+            res["cross_check"] = {"tracker": "swift-f0", "disagree_ids": [r["id"] for r in rows if r.get("tracker_disagree")]}
+        except SystemExit as e:
+            res["cross_check"] = {"tracker": "swift-f0", "error": str(e)}
+    res["vocal"] = a.vocal.replace("\\", "/")
+    res["vocal_sha256"] = sha256(a.vocal)
+    res["onsets_from"] = a.verify_receipt.replace("\\", "/") if a.verify_receipt else "clock t_sec"
+    print(f"{'id':4} {'lyric':7} {'midi':>4} {'ref_hz':>7} {'mean_c':>7} {'med_c':>7} {'sd_c':>6} {'voiced':>6}  status")
+    for r in rows:
+        f = lambda v, w: ("-" * 1).rjust(w) if v is None else f"{v:{w}.1f}"
+        sw = "" if r.get("cents_swift") is None else f" swift {r['cents_swift']:+.0f}c{' DISAGREE' if r.get('tracker_disagree') else ''}"
+        print(f"{r['id']:4} {r['lyric']:7} {r['midi']:4d} {r['ref_hz']:7.1f} {f(r['cents_mean'], 7)} {f(r['cents_median'], 7)} {f(r['cents_sd'], 6)} {r['voiced_fraction']:6.0%}  {r['status']} {r['reason']}{sw}")
+    print(f"  tracker {trk['tracker']}; global offset {res['global_offset_cents']} c ({'PASS' if res['global_pass'] else 'FAIL'} @ {PITCH_GLOBAL_FAIL_CENTS}); "
+          f"scatter SD {res['scatter_sd_cents']} c{' WARN' if res['scatter_warn'] else ''}")
+    print(f"PITCH {res['verdict']}")
+    if a.receipt:
+        json.dump(res, open(a.receipt, "w", encoding="utf-8"), indent=2)
+        print(f"receipt -> {a.receipt}")
+    return 0 if res["verdict"] == "PASS" else 1
+
+
 # ─── CLI ─────────────────────────────────────────────────────────────────────
 
 def load_clock(path: str) -> dict:
@@ -826,6 +974,7 @@ def main(argv=None) -> int:
     s = sub.add_parser("place"); s.add_argument("--plan", required=True); s.add_argument("--key", required=True); s.add_argument("--out-dir", required=True)
     s.add_argument("--out-info", required=True); s.add_argument("--out-graph", required=True); s.add_argument("--prefix", default="jam/vocal-clock/placed"); s.add_argument("--dry-run", action="store_true"); s.set_defaults(fn=cmd_place)
     s = sub.add_parser("verify"); s.add_argument("--clock", required=True); s.add_argument("--vocal", required=True); s.add_argument("--bed"); s.add_argument("--words"); s.add_argument("--plan"); s.add_argument("--receipt"); s.set_defaults(fn=cmd_verify)
+    s = sub.add_parser("pitch"); s.add_argument("--clock", required=True); s.add_argument("--vocal", required=True); s.add_argument("--verify-receipt"); s.add_argument("--tracker", default="auto", choices=["auto", "swift", "pyin"]); s.add_argument("--cross-check", action="store_true"); s.add_argument("--receipt"); s.set_defaults(fn=cmd_pitch)
     s = sub.add_parser("mix"); s.add_argument("--bed", required=True); s.add_argument("--vocal", required=True); s.add_argument("--vocal-key", required=True); s.add_argument("--plan", required=True)
     s.add_argument("--out-dir", required=True); s.add_argument("--out-info", required=True); s.add_argument("--prefix", default="jam/vocal-clock/mix")
     s.add_argument("--vocal-over-bed-db", type=float, default=4.0); s.add_argument("--bed-gain-db", type=float, default=-9.0); s.set_defaults(fn=cmd_mix)

@@ -175,3 +175,79 @@ def test_placed_vocal_graph_refuses_a_clip_past_the_timeline():
     plan = {"total_seconds": 10.0, "cuts": [{"id": "v00", "cut_start": 0.0, "clip_seconds": 2.0, "lead": 9.0}]}
     with pytest.raises(ValueError, match="does not fit"):
         vc.placed_vocal_graph("KEY.flac", plan, "jam/test")
+
+
+# ─── pitch gate (needs a tracker: swift-f0 or librosa; run under the SoulX venv) ───
+
+def _tone(sr, seconds, hz, vib_cents=0.0, vib_hz=6.0, amp=0.3):
+    t = np.arange(int(seconds * sr)) / sr
+    inst = hz * 2 ** (vib_cents * np.sin(2 * np.pi * vib_hz * t) / 1200)
+    phase = 2 * np.pi * np.cumsum(inst) / sr
+    return amp * (np.sin(phase) + 0.4 * np.sin(2 * phase) + 0.2 * np.sin(3 * phase))
+
+
+def _have_tracker():
+    try:
+        import swift_f0  # noqa: F401
+        return True
+    except ImportError:
+        try:
+            import librosa  # noqa: F401
+            return True
+        except ImportError:
+            return False
+
+
+@pytest.mark.skipif(not _have_tracker(), reason="no F0 tracker installed (swift-f0 or librosa)")
+def test_pitch_gate_passes_in_tune_vibrato_and_fails_a_detuned_note():
+    clock = json.load(open(CLOCK))
+    sr = clock["sample_rate"]
+    x = np.zeros(int(clock["total_seconds"] * sr))
+    evs = clock["events"]
+    for k, ev in enumerate(evs):
+        end = ev["t_sec"] + ev["dur_sec"]
+        if k + 1 < len(evs):
+            end = min(end, evs[k + 1]["t_sec"])
+        hz = vc.midi_hz(ev["midi"])
+        if ev["id"] == "v05":
+            hz *= 2 ** (70 / 1200)          # 70 cents sharp: must FAIL
+        if ev["id"] == "v09":
+            hz *= 2 ** (30 / 1200)          # 30 cents sharp: WARN, still passes
+        y = _tone(sr, end - ev["t_sec"], hz, vib_cents=40.0)   # ±40 c vibrato must not trip a 50 c gate
+        i = int(ev["t_sec"] * sr)
+        x[i:i + len(y)] += y[: len(x) - i]
+    trk = vc.track_f0(x, sr)
+    rows = vc.pitch_rows(clock, trk)
+    res = vc.pitch_gate(rows)
+    by = {r["id"]: r for r in rows}
+    assert by["v05"]["status"] == "FAIL" and by["v05"]["cents_mean"] > 50
+    assert by["v09"]["status"] == "WARN"
+    assert all(by[e["id"]]["status"] == "PASS" for e in evs if e["id"] not in ("v05", "v09"))
+    assert abs(by["v01"]["cents_mean"]) < 12               # vibrato averages out at the nucleus
+    assert res["verdict"] == "FAIL" and res["per_note"]["fail"] == ["v05"]
+    assert abs(res["global_offset_cents"]) < 12
+
+
+@pytest.mark.skipif(not _have_tracker(), reason="no F0 tracker installed (swift-f0 or librosa)")
+def test_pitch_gate_flags_global_transposition_not_per_note():
+    clock = json.load(open(CLOCK))
+    sr = clock["sample_rate"]
+    x = np.zeros(int(clock["total_seconds"] * sr))
+    evs = clock["events"]
+    for k, ev in enumerate(evs):
+        end = min(ev["t_sec"] + ev["dur_sec"], evs[k + 1]["t_sec"]) if k + 1 < len(evs) else ev["t_sec"] + ev["dur_sec"]
+        y = _tone(sr, end - ev["t_sec"], vc.midi_hz(ev["midi"]) * 2 ** (35 / 1200))   # everything 35 c sharp
+        i = int(ev["t_sec"] * sr)
+        x[i:i + len(y)] += y[: len(x) - i]
+    res = vc.pitch_gate(vc.pitch_rows(clock, vc.track_f0(x, sr)))
+    assert res["per_note"]["pass"]                       # each note only WARNs
+    assert not res["global_pass"] and res["verdict"] == "FAIL"   # but the take is transposed
+
+
+def test_nucleus_window_skips_the_attack_and_the_release():
+    a, b = vc.nucleus_window(10.0, 13.2)
+    assert a == pytest.approx(10.0 + 0.15 * 3.2) and b == pytest.approx(13.15)
+    a, b = vc.nucleus_window(10.0, 10.6)
+    assert a == pytest.approx(10.09) and b == pytest.approx(10.55)
+    a, b = vc.nucleus_window(10.0, 10.12)   # too short: shrink instead of collapsing
+    assert a < b
