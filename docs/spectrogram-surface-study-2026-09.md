@@ -135,7 +135,10 @@ across takes before comparing.
 
 **39–41.** essentia.js is AGPL-3.0 and last published 2021; Meyda is MIT but has MFCC, not mel
 bands; tfjs has `stft` but no mel filterbank; `fft.js` is a MIT radix-4 FFT (npm registry and
-docs). → No batteries-included library; ~200 lines of our own DSP on fft.js.
+docs). → No batteries-included library; ~200 lines of our own DSP. **Amended in build: we
+wrote our own radix-2 FFT rather than taking `fft.js`, since every n_fft here is a power of
+two, a zero-dependency MIT tree is easier to audit, and pure float64 is deterministic across
+platforms where a WASM build is not. The finding stands; only the dependency choice changed.**
 
 **42.** The Web Audio spec mandates a Blackman window and 0.8 smoothing on `AnalyserNode`,
 reading only the most recent frames (W3C Web Audio 1.1 §1.8.5–1.8.6). → Excluded from the
@@ -216,7 +219,7 @@ attached model including local ones, which is what makes the surface cheap.
    existing SwiftF0 / pYIN gate (35, 18) in cents vs target, RMVPE when the reference is a
    produced mix (36); log-mel L1 as "timbre deviation" only (29); no FAD, no CLAP (30, 31); the
    SingMOS-Pro caveat string is part of the output (37, 38).
-6. **Stack.** `audio-decode` (MIT) → own STFT on `fft.js` (MIT) → own mel matrix with
+6. **Stack.** `audio-decode` (MIT) → own STFT on our own radix-2 FFT → own mel matrix with
    `melScale: 'slaney'|'htk'` and `norm` pinned in the zod schema (43, 44) → own CQT kernels with
    `cqt-web` as the browser reference (47) → `pngjs` in Node, `OffscreenCanvas.convertToBlob()` in
    the cockpit (49). Goldens from pinned librosa 0.11, relative tolerance ~1e-4, `ref=1.0,

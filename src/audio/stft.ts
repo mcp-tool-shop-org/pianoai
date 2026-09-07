@@ -44,11 +44,21 @@ export interface StftOptions {
   center?: boolean;
 }
 
-/** A computed spectrogram, stored row-major as `frameCount × binCount`. */
-export interface Spectrogram {
+/**
+ * A time-frequency matrix, independent of which transform produced it.
+ *
+ * The STFT and the constant-Q transform disagree about what their parameters
+ * are and about what a "bin" means, but they agree on this much: a row-major
+ * matrix of frames by bins, plus a time for each frame. Renderers, onset
+ * detectors and anything else that walks the grid should take THIS type, so a
+ * caller can hand them either transform's output without a conversion step.
+ *
+ * Transform-specific detail belongs on `params` in the extending interface.
+ */
+export interface TimeFrequencyData {
   /** Number of time frames. */
   frameCount: number;
-  /** Number of frequency bins per frame: nFft / 2 + 1. */
+  /** Number of frequency bins per frame. */
   binCount: number;
   /**
    * Flat `frameCount * binCount` matrix, row-major: frame t bin k is at
@@ -57,6 +67,13 @@ export interface Spectrogram {
   data: Float64Array;
   /** Centre time in seconds of each frame. */
   frameTimes: Float64Array;
+}
+
+/**
+ * A computed STFT spectrogram. `binCount` is nFft / 2 + 1 and bins are linearly
+ * spaced in frequency.
+ */
+export interface Spectrogram extends TimeFrequencyData {
   /** The resolved parameters, for stamping into a render sidecar. */
   params: Required<StftOptions>;
 }
@@ -199,10 +216,26 @@ export function stft(
   const data = new Float64Array(frameCount * binCount);
   const scratch = new Float64Array(nFft);
 
+  // Pad-centre the windowed segment inside the transform buffer, which is what
+  // librosa's `pad_center(window, n_fft)` does when win_length < n_fft.
+  //
+  // This is phase-only. Shifting a segment within the FFT buffer multiplies the
+  // spectrum by a linear phase term and leaves every magnitude untouched, so on
+  // the magnitude and power paths this line is unobservable. It matters the
+  // moment anything reads phase: an inverse STFT, complex-domain onset
+  // detection, or a phase vocoder would all be quietly wrong against a librosa
+  // reference without it. Cheap to get right now, expensive to find later.
+  //
+  // On the default path (winLength === nFft) the offset is zero and this is a
+  // no-op.
+  const bufferOffset = Math.floor((nFft - frameLength) / 2);
+
   for (let t = 0; t < frameCount; t++) {
     scratch.fill(0);
     const row = t * frameLength;
-    for (let i = 0; i < frameLength; i++) scratch[i] = frames[row + i]!;
+    for (let i = 0; i < frameLength; i++) {
+      scratch[bufferOffset + i] = frames[row + i]!;
+    }
 
     const spectrum = power === 2 ? fft.power(scratch) : fft.magnitude(scratch);
     data.set(spectrum, t * binCount);

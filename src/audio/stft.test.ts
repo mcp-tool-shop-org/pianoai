@@ -172,6 +172,33 @@ describe("stft", () => {
     expect(spec.params.center).toBe(true);
   });
 
+  it("resolves a tone correctly with a window shorter than the transform", () => {
+    // win_length < n_fft is the path where the windowed segment has to be
+    // pad-centred inside the transform buffer to match librosa. That placement
+    // is phase-only, so a magnitude assertion cannot distinguish it — this test
+    // pins the observable half (the tone still lands in the right bin) and the
+    // module comment carries the reason for the unobservable half. A real
+    // parity test becomes possible once an inverse transform exposes phase.
+    const nFft = 4096;
+    const spec = stft(sine(440, 1.0), {
+      sampleRate, nFft, hopLength: 1024, winLength: 1024,
+    });
+
+    const t = 10;
+    let peakBin = 0;
+    let peak = -Infinity;
+    for (let k = 0; k < spec.binCount; k++) {
+      const v = spec.data[t * spec.binCount + k]!;
+      if (v > peak) { peak = v; peakBin = k; }
+    }
+
+    // A 1024-sample window inside a 4096 transform widens the main lobe about
+    // fourfold, so allow a correspondingly wider tolerance than the full-window
+    // case above.
+    const peakHz = (peakBin * sampleRate) / nFft;
+    expect(Math.abs(peakHz - 440)).toBeLessThan(45);
+  });
+
   it("produces more frames centred than uncentred, from the padding", () => {
     const samples = sine(440, 0.5);
     const centred = stft(samples, { sampleRate, nFft: 2048, hopLength: 512 });

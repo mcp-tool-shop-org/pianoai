@@ -39,6 +39,7 @@ export {
   stft,
   type StftOptions,
   type Spectrogram,
+  type TimeFrequencyData,
 } from "./stft.js";
 
 export {
