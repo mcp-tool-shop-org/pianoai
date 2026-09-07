@@ -87,6 +87,19 @@ verified that seam: `scorePerformance(song, playedEvents, options)` takes a flat
 plus ghosts for extra notes. **If you can produce that array from audio, every one of those
 existing capabilities starts working over real sound with no changes to them at all.**
 
+> **CORRECTION (posted with the chunk-4 plan review).** The four-field sketch of `MidiNoteEvent`
+> below is WRONG. `src/midi/types.ts` defines five required fields: `note`, `velocity`, `time`,
+> `duration`, **and `channel`**. Set `channel: 0` on conversion. Grok caught this; adding it is
+> not the widening forbidden in constraint 1, it is conforming to the type that already exists.
+>
+> Two further rulings from that review, both binding:
+> - **`time` is the ONSET time from `detectOnsets`, not the first voiced frame.** An attack
+>   transient is broadband and the pitch tracker will not call it voiced until the tone settles,
+>   so first-voiced would read every note systematically late by the attack length and eat the
+>   40 ms budget. `duration` = last voiced frame minus the onset time.
+> - **Clamp velocity to a minimum of 1.** `scorePerformance` filters `e.velocity > 0`, so a note
+>   whose RMS rounds to velocity 0 silently VANISHES from scoring and presents as missed.
+
 **B1. `src/audio/transcribe.ts` plus `transcribe.test.ts`.**
 
 Segment a monophonic signal into notes, using what already exists:
