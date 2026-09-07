@@ -15,6 +15,9 @@
 //   stft                framing, padding, the transform itself
 //   mel                 the mel scale and filterbank, both conventions pinned
 //   db                  decibel scaling, absolute for analysis, peak for display
+//   cqt                 true constant-Q, sparse Brown–Puckette kernels
+//   onsets              SuperFlux on log-mel (or any TimeFrequencyData)
+//   fixtures            synthetic generators for tests and later goldens
 //
 // Everything here is pure and synchronous. Nothing reads a file, touches the
 // network, or depends on Web Audio, so the same code runs in Node and in the
@@ -59,3 +62,63 @@ export {
   amplitudeToDb,
   type DbOptions,
 } from "./db.js";
+
+export {
+  C1_HZ,
+  KERNEL_SPARSITY,
+  qFactor,
+  binToMidi,
+  midiToBin,
+  cqtBinFrequencies,
+  cqtKernels,
+  cqt,
+  type CqtOptions,
+  type CqtParams,
+  type CqtKernels,
+  type CqtSpectrogram,
+} from "./cqt.js";
+
+export {
+  HOUSE_TOLERANCE_MS,
+  MIR_EVAL_TOLERANCE_MS,
+  ONSET_DETECTOR_CAVEAT,
+  maxFilterFrame,
+  superfluxNovelty,
+  spectralFluxNovelty,
+  detectOnsets,
+  scoreOnsets,
+  type OnsetOptions,
+  type OnsetEvent,
+  type OnsetResult,
+  type OnsetScore,
+} from "./onsets.js";
+
+export {
+  YIN_THRESHOLD,
+  PITCH_FAIL_CENTS,
+  PITCH_WARN_CENTS,
+  OCTAVE_TRIPWIRE_CENTS,
+  hzToMidi,
+  midiToHz,
+  centsFromTarget,
+  yinFrame,
+  trackPitch,
+  scorePitchWindow,
+  type PitchOptions,
+  type PitchFrame,
+  type PitchTrack,
+  type PitchVerdict,
+} from "./pitch.js";
+
+export {
+  sine,
+  harmonicStack,
+  clickTrain,
+  chirp,
+  vibratoNote,
+  type SineOptions,
+  type HarmonicStackOptions,
+  type ClickTrainOptions,
+  type ChirpOptions,
+  type VibratoNoteOptions,
+} from "./fixtures.js";

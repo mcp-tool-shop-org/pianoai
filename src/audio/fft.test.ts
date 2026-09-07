@@ -116,6 +116,47 @@ describe("Fft.transform", () => {
   });
 });
 
+describe("Fft.inverse", () => {
+  it("round-trips a real cosine through transform then inverse", () => {
+    const N = 16;
+    const k0 = 3;
+    const fft = new Fft(N);
+    const re = new Float64Array(N);
+    const im = new Float64Array(N);
+    for (let n = 0; n < N; n++) {
+      re[n] = Math.cos((2 * Math.PI * k0 * n) / N);
+    }
+    const original = Float64Array.from(re);
+
+    fft.transform(re, im);
+    fft.inverse(re, im);
+
+    for (let n = 0; n < N; n++) {
+      expect(re[n]).toBeCloseTo(original[n]!, 10);
+      expect(im[n]).toBeCloseTo(0, 10);
+    }
+  });
+
+  it("turns a spectrum of all ones into an impulse of amplitude 1", () => {
+    // IFFT of [1, 1, …, 1] is δ[n], which is the pair of the unnormalised
+    // forward convention (DFT of [1, 1, …, 1] is [N, 0, …, 0]).
+    const N = 8;
+    const fft = new Fft(N);
+    const re = new Float64Array(N).fill(1);
+    const im = new Float64Array(N);
+    fft.inverse(re, im);
+    expect(re[0]).toBeCloseTo(1, 10);
+    for (let n = 1; n < N; n++) expect(re[n]).toBeCloseTo(0, 10);
+    for (let n = 0; n < N; n++) expect(im[n]).toBeCloseTo(0, 10);
+  });
+
+  it("rejects mismatched buffer lengths", () => {
+    const fft = new Fft(8);
+    expect(() => fft.inverse(new Float64Array(4), new Float64Array(8)))
+      .toThrow(/length mismatch/i);
+  });
+});
+
 describe("fftFrequencies", () => {
   it("spans DC to Nyquist inclusive", () => {
     const f = fftFrequencies(44100, 2048);

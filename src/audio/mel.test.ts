@@ -56,7 +56,10 @@ describe("hzToMel / melToHz — HTK", () => {
   });
 
   it("follows 2595·log10(1 + f/700)", () => {
-    expect(hzToMel(1000, "htk")).toBeCloseTo(1000.65, 1);
+    // The formula's defining property: 1 kHz lands within a mel of 1000, which
+    // is the calibration point the HTK scale was constructed around.
+    expect(hzToMel(1000, "htk")).toBeCloseTo(999.9855, 3);
+    expect(hzToMel(1000, "htk")).toBeCloseTo(1000, 0);
     expect(hzToMel(700, "htk")).toBeCloseTo(2595 * Math.log10(2), 8);
   });
 

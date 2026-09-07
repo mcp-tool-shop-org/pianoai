@@ -129,6 +129,33 @@ export class Fft {
   }
 
   /**
+   * In-place inverse FFT. `re` and `im` must both be exactly `size` long.
+   *
+   * Implemented via the conjugate trick, `IFFT(X) = conj(FFT(conj(X))) / N`,
+   * so it reuses {@link transform} rather than a second set of twiddles.
+   * `transform` itself is unchanged: it remains the unnormalised forward DFT.
+   *
+   * The 1/N lives here, which is the convention that makes a round-trip
+   * `transform` then `inverse` recover the original samples.
+   */
+  inverse(re: Float64Array, im: Float64Array): void {
+    const n = this.size;
+    if (re.length !== n || im.length !== n) {
+      throw new Error(
+        `IFFT input length mismatch: expected ${n} real and ${n} imaginary ` +
+        `samples, got ${re.length} and ${im.length}.`,
+      );
+    }
+    for (let i = 0; i < n; i++) im[i] = -im[i]!;
+    this.transform(re, im);
+    const scale = 1 / n;
+    for (let i = 0; i < n; i++) {
+      re[i] = re[i]! * scale;
+      im[i] = -im[i]! * scale;
+    }
+  }
+
+  /**
    * Magnitude spectrum of a real-valued frame.
    *
    * The frame is zero-padded if shorter than the transform size, which is what
