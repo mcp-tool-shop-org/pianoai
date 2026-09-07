@@ -1,3 +1,14 @@
+# --- Measured CI cost (dogfood-swarm SKILL item 8) --------------------------
+# 11 billable min per push across 6 jobs (7.5 min actual wall time),
+# measured 2026-09-07 from run 34122798410. Most expensive jobs:
+#     4 min  ci (22)  (3.3 min wall)
+#     2 min  ci (24)  (1.8 min wall)
+#     2 min  Modern pnpm cold-start (pnpm 10, Node 22)  (1.7 min wall)
+# GitHub bills per JOB, rounded UP to the minute, x2 Windows / x10 macOS, so
+# billable minutes exceed wall time — many short jobs cost more than one long
+# one. This number is measured, never estimated; re-measure after any change:
+#   gh api repos/mcp-tool-shop-org/ai-jam-sessions/actions/runs/<id>/jobs
+# ---------------------------------------------------------------------------
 name: CI
 
 permissions:
