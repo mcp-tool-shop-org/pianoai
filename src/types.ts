@@ -312,9 +312,17 @@ export interface VmpkConnector {
   /**
    * Optional dedicated tap bus. Observers connect here, never to the engine
    * master, so a tap cannot silence the instrument. Absent on connectors
-   * that have no audio graph.
+   * that have no audio graph. A layered engine does NOT implement this —
+   * tapping the mix would collapse N instruments into one signal.
    */
   createTapOutput?(): unknown;
+
+  /**
+   * Optional child roster. Present on a layered engine; absent on a
+   * plain connector. Read-only names, not handles — observers tap each
+   * child, never the mix.
+   */
+  children?(): ReadonlyArray<{ id: string; label: string }>;
 }
 
 // ─── Recording Types ────────────────────────────────────────────────────────

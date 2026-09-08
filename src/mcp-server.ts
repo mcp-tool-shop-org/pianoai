@@ -113,6 +113,7 @@ import { createLiveMidiFeedbackHook } from "./teaching/live-midi-feedback.js";
 import { scorePerformance, flattenSongToExpected, type PerformanceResult } from "./score-performance.js";
 import { Ensemble } from "./audio/ensemble.js";
 import { subscribeEnsemble } from "./audio/bridge.js";
+import { rosterFor, soloInstrument } from "./audio/roster.js";
 import { getSharedAudioContext } from "./audio-shared.js";
 import {
   decodeWav,
@@ -1326,15 +1327,26 @@ registerTool(
         // was SENT rather than anything inferred from audio. It is torn down on
         // the same paths the controller is, so a finished song does not leave
         // notes hanging on forever.
-        // The roster is whatever is ACTUALLY playing. play_song drives one
-        // engine chosen by `engine:`, so hardcoding "piano" here reported a
-        // guitar performance as a piano one — a wrong answer delivered
-        // confidently, which is the worst kind this surface can give.
+        // The roster is whatever is ACTUALLY playing, derived from the
+        // connector rather than assumed by the caller. Assuming is what made an
+        // earlier version report a guitar performance as a piano one.
+        //
+        // On this path the connector is a single engine, so the roster is one
+        // row. A layered connector answers with one row per child, and every
+        // child is subscribed, because layering sends every note to every child
+        // and the view should say so per instrument rather than collapse them.
         const ensemble = new Ensemble();
-        ensemble.addInstrument({ id: engineId, label: ENGINE_LABELS[engineId] });
-        const unsubscribeEnsemble = subscribeEnsemble(ensemble, controller, {
-          instrumentId: engineId,
-        });
+        const roster = rosterFor(connector, soloInstrument(engineId));
+        const unsubscribers: Array<() => void> = [];
+        for (const entry of roster) {
+          ensemble.addInstrument({ id: entry.id, label: entry.label });
+          unsubscribers.push(
+            subscribeEnsemble(ensemble, controller, { instrumentId: entry.id }),
+          );
+        }
+        const unsubscribeEnsemble = () => {
+          for (const off of unsubscribers) off();
+        };
         setLiveEnsemble(ensemble);
 
         const midiPlayStart = Date.now();

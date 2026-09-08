@@ -35,6 +35,7 @@ import { getMergedVoice, type PianoVoiceId, type PianoVoiceConfig } from "./pian
 import { JamError } from "./errors.js";
 import { getSharedAudioContext, setSharedAudioContext } from "./audio-shared.js";
 import { PIANO_COMPRESSOR, velocityLowpassHz } from "./piano-timbre.js";
+import { createTapBus } from "./audio/tap-bus.js";
 
 // ─── Lazy Import ────────────────────────────────────────────────────────────
 // Don't load the native binary until the engine is actually used.
@@ -514,11 +515,7 @@ export function createAudioEngine(
      */
     createTapOutput(): unknown {
       ensureConnected();
-      if (!tapBus) {
-        tapBus = ctx.createGain();
-        tapBus.gain.value = 1;
-        master.connect(tapBus);
-      }
+      if (!tapBus) tapBus = createTapBus(ctx, master);
       return tapBus;
     },
 

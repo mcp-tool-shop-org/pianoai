@@ -25,11 +25,13 @@
 //   stream              incremental ring-buffer analyser (live path; reuses offline)
 //   ensemble            live intent + acoustic view, per instrument
 //   tap                 ScriptProcessor fan-out from a dedicated tap bus
+//   tap-bus             the GainNode helper every engine's createTapOutput uses
 //   bridge              PlaybackController events → Ensemble (audio clock)
+//   roster              connector → instrument list (solo vs layered)
 //
 // The inspector stack (fft through fixtures) is pure and synchronous: no
-// files, no network, no Web Audio. stream and ensemble stay pure DSP.
-// tap and bridge are the live-graph layer — they take a node and a
+// files, no network, no Web Audio. stream, ensemble and roster stay pure
+// DSP. tap and bridge are the live-graph layer — they take a node and a
 // controller; they never create an AudioContext.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -196,7 +198,20 @@ export {
 } from "./tap.js";
 
 export {
+  createTapBus,
+  type TapBusGain,
+  type TapBusContext,
+  type TapBusSource,
+} from "./tap-bus.js";
+
+export {
   subscribeEnsemble,
   audioClockSeconds,
   type BridgeOptions,
 } from "./bridge.js";
+
+export {
+  rosterFor,
+  soloInstrument,
+  type SoloIdentity,
+} from "./roster.js";

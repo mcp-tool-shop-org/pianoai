@@ -19,6 +19,7 @@ import type { VmpkConnector, MidiStatus, MidiNote } from "./types.js";
 import { parseSfzFile, type SfzRegion, type SfzData } from "./sfz-parser.js";
 import { JamError } from "./errors.js";
 import { getSharedAudioContext, setSharedAudioContext } from "./audio-shared.js";
+import { createTapBus } from "./audio/tap-bus.js";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -146,6 +147,8 @@ export function createSampleEngine(options: SampleEngineOptions): VmpkConnector 
   let currentStatus: MidiStatus = "disconnected";
   let compressor: any = null;
   let master: any = null;
+  /** Dedicated fan-out for observers. Never sits between master and destination. */
+  let tapBus: any = null;
 
   // Sample data
   let sfzData: SfzData | null = null;
@@ -449,6 +452,7 @@ export function createSampleEngine(options: SampleEngineOptions): VmpkConnector 
         ctx = null;
         compressor = null;
         master = null;
+        tapBus = null;
       }
       currentStatus = "disconnected";
     },
@@ -459,6 +463,19 @@ export function createSampleEngine(options: SampleEngineOptions): VmpkConnector 
 
     listPorts(): string[] {
       return ["Accurate-Salamander Grand Piano"];
+    },
+
+    /**
+     * Fan-out bus for observers. Lazily `master.connect(tapBus)`. The
+     * existing master → destination edge is not touched, so a tap cannot
+     * silence the instrument. Callers pass this node to attachTap().
+     */
+    createTapOutput(): unknown {
+      if (!ctx || currentStatus !== "connected" || !master) {
+        throw new Error("Sample engine not connected");
+      }
+      if (!tapBus) tapBus = createTapBus(ctx, master);
+      return tapBus;
     },
 
     noteOn(note: number, velocity: number, channel?: number): void {

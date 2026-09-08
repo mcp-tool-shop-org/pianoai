@@ -24,6 +24,7 @@
 import type { VmpkConnector, MidiStatus, MidiNote } from "./types.js";
 import { Synthesizer } from "./vendor/pink-trombone.js";
 import { JamError } from "./errors.js";
+import { createTapBus } from "./audio/tap-bus.js";
 
 // ─── Voice Presets ────────────────────────────────────────────────────────
 
@@ -212,6 +213,8 @@ export function createTractEngine(options?: TractEngineOptions): VmpkConnector &
   let currentStatus: MidiStatus = "disconnected";
   let compressor: any = null;
   let master: any = null;
+  /** Dedicated fan-out for observers. Never sits between master and destination. */
+  let tapBus: any = null;
   let scriptNode: any = null;
   let synth: any = null;         // Pink Trombone Synthesizer instance
   let connectTime = 0;
@@ -378,6 +381,7 @@ export function createTractEngine(options?: TractEngineOptions): VmpkConnector &
         try { master.disconnect(); } catch { /* ok */ }
         master = null;
       }
+      tapBus = null;
       if (ctx) {
         try { await ctx.close(); } catch { /* ok */ }
         ctx = null;
@@ -392,6 +396,19 @@ export function createTractEngine(options?: TractEngineOptions): VmpkConnector &
 
     listPorts(): string[] {
       return ["Tract Engine (Pink Trombone)"];
+    },
+
+    /**
+     * Fan-out bus for observers. Lazily `master.connect(tapBus)`. The
+     * existing master → destination edge is not touched, so a tap cannot
+     * silence the instrument. Callers pass this node to attachTap().
+     */
+    createTapOutput(): unknown {
+      if (!ctx || currentStatus !== "connected" || !master) {
+        throw new Error("Tract engine not connected");
+      }
+      if (!tapBus) tapBus = createTapBus(ctx, master);
+      return tapBus;
     },
 
     noteOn(note: number, velocity: number, _channel?: number): void {

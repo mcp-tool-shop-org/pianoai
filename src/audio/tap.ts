@@ -2,7 +2,7 @@
 //
 // Observe one engine's output without sitting in its signal path.
 //
-// Fan-out from a DEDICATED tap bus (createTapOutput on the piano engine),
+// Fan-out from a DEDICATED tap bus (createTapOutput on each engine),
 // never from master. Disconnecting or mangling the tap cannot silence the
 // instrument: master → destination is untouched.
 //

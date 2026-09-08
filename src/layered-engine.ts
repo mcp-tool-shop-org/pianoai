@@ -12,14 +12,30 @@
 //   await layered.connect();       // connects all children
 //   layered.noteOn(60, 100);       // both engines fire
 //   await layered.disconnect();    // disconnects all children
+//
+// There is no createTapOutput on the layered connector. Tapping the mix
+// would collapse N instruments into one signal and throw away the
+// isolation this arc is built on. You tap children. The mix is the
+// thing we are deliberately not analysing.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { VmpkConnector, MidiStatus, MidiNote } from "./types.js";
+
+/** One named child of a layered engine. */
+export interface LayeredChild {
+  id: string;
+  label: string;
+}
 
 /** Options for the layered engine. */
 export interface LayeredEngineOptions {
   /** Optional label shown in status / port listing. Default: "Layered". */
   label?: string;
+  /**
+   * Names for `children()`. Must match `engines.length` when provided.
+   * Omitted: `{ id: "child-N", label: engines[N].listPorts()[0] }`.
+   */
+  children?: ReadonlyArray<LayeredChild>;
 }
 
 /**
@@ -35,8 +51,16 @@ export function createLayeredEngine(
   if (engines.length === 0) {
     throw new Error("createLayeredEngine requires at least one engine");
   }
+  if (options?.children && options.children.length !== engines.length) {
+    throw new Error(
+      `createLayeredEngine children metadata length (${options.children.length}) must match engines (${engines.length})`,
+    );
+  }
 
   const label = options?.label ?? "Layered";
+  const childMeta = options?.children
+    ? options.children.map((c) => ({ id: c.id, label: c.label }))
+    : null;
 
   const connector: VmpkConnector = {
     async connect(): Promise<void> {
@@ -99,6 +123,14 @@ export function createLayeredEngine(
           console.error(`Layered engine child ${i} playNote error: ${msg}`);
         }
       }
+    },
+
+    children(): ReadonlyArray<LayeredChild> {
+      if (childMeta) return childMeta;
+      return engines.map((e, i) => ({
+        id: `child-${i}`,
+        label: e.listPorts()[0] ?? `child ${i}`,
+      }));
     },
   };
 
