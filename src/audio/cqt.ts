@@ -393,6 +393,8 @@ export function cqt(
     binCount,
     data,
     frameTimes,
+    // Math.hypot of the accumulated complex sum: magnitude, not power.
+    scale: "magnitude",
     params: resolved,
     frequencies,
   };

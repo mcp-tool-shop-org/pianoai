@@ -206,3 +206,17 @@ describe("stft", () => {
     expect(centred.frameCount).toBeGreaterThan(raw.frameCount);
   });
 });
+
+describe("TimeFrequencyData.scale", () => {
+  it("labels a power spectrogram as power", () => {
+    const spec = stft(new Float64Array(4096).fill(0.1), { sampleRate: 44100, nFft: 512 });
+    expect(spec.scale).toBe("power");
+  });
+
+  it("labels a magnitude spectrogram as magnitude", () => {
+    const spec = stft(new Float64Array(4096).fill(0.1), {
+      sampleRate: 44100, nFft: 512, power: 1,
+    });
+    expect(spec.scale).toBe("magnitude");
+  });
+});

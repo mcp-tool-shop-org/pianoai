@@ -67,7 +67,21 @@ export interface TimeFrequencyData {
   data: Float64Array;
   /** Centre time in seconds of each frame. */
   frameTimes: Float64Array;
+  /**
+   * What the numbers in `data` ACTUALLY ARE.
+   *
+   * Added after chunk 6 raised it: the producers in this repo genuinely
+   * disagree. `stft` returns power by default, `cqt` returns magnitude, and the
+   * onset detector's internal mel spectrogram returns decibels. A consumer that
+   * guesses wrong is not obviously broken, it is off by a factor of two in dB
+   * (magnitude vs power) or double-converted (dB), which looks like a plausible
+   * picture. Carrying it on the data removes the guess.
+   */
+  scale: TimeFrequencyScale;
 }
+
+/** What a time-frequency cell holds. */
+export type TimeFrequencyScale = "magnitude" | "power" | "db";
 
 /**
  * A computed STFT spectrogram. `binCount` is nFft / 2 + 1 and bins are linearly
@@ -246,5 +260,12 @@ export function stft(
     frameTimes[t] = (t * hopLength) / sampleRate;
   }
 
-  return { frameCount, binCount, data, frameTimes, params: opts };
+  return {
+    frameCount,
+    binCount,
+    data,
+    frameTimes,
+    scale: power === 2 ? "power" : "magnitude",
+    params: opts,
+  };
 }

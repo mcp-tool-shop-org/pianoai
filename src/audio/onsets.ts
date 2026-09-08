@@ -315,6 +315,9 @@ function logMelSpectrogram(
     binCount: fb.nMels,
     data: logData,
     frameTimes: spec.frameTimes,
+    // powerToDb has already run: these cells are decibels, and a consumer that
+    // converts them again gets a plausible-looking picture of nothing.
+    scale: "db",
   };
 }
 

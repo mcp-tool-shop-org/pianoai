@@ -221,8 +221,10 @@ attached model including local ones, which is what makes the surface cheap.
    SingMOS-Pro caveat string is part of the output (37, 38).
 6. **Stack.** `audio-decode` (MIT) → own STFT on our own radix-2 FFT → own mel matrix with
    `melScale: 'slaney'|'htk'` and `norm` pinned in the zod schema (43, 44) → own CQT kernels with
-   `cqt-web` as the browser reference (47) → `pngjs` in Node, `OffscreenCanvas.convertToBlob()` in
-   the cockpit (49). Goldens from pinned librosa 0.11, relative tolerance ~1e-4, `ref=1.0,
+   `cqt-web` as the browser reference (47) → a hand-written PNG encoder (49). **Amended in build: `pngjs` was the
+   recommendation, but the analysis layer reached tier 3 with zero dependencies and a
+   palette PNG with stored deflate blocks is ~120 lines. Same class of amendment as the
+   FFT. The finding stands; the dependency choice changed.** Goldens from pinned librosa 0.11, relative tolerance ~1e-4, `ref=1.0,
    top_db=null` (45, 46). `AnalyserNode` excluded (42); essentia.js excluded (39); tfjs and sharp
    not adopted (41, 49). Tests ship with the code, per hard-rules.
 7. **Return shape** matches `view_scored_piano_roll`: temp file path, inline image block, short
@@ -240,6 +242,14 @@ attached model including local ones, which is what makes the surface cheap.
    for orientation only, in which case mel-only at 229 bins is sufficient (15).*
 
 ## What this study does not claim
+
+- **One raster, not a raster plus an SVG overlay.** Findings 47-49 suggested keeping the axes
+  and overlay as SVG over a raster spectrogram. The lock's fixed 1568x784 render makes that a
+  two-file answer to a one-file problem, and the vision-pipeline constraint that motivated the
+  fixed size applies to the composite image, not its layers. So the keyboard strip, gridlines
+  and note overlay are burned into the same PNG, which stays self-describing through its
+  sidecar. Departure recorded rather than silently taken.
+
 
 - That the model can *hear* through the picture. Findings 3–6 and 10 bound what the image gives.
 - A locked colormap. The canonical human colormap-accuracy study (Liu & Heer 2018) could not be
