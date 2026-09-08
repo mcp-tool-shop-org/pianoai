@@ -3001,7 +3001,11 @@ registerTool(
     const events = toMidiNoteEvents(notes);
     // 40 ms, not scorePerformance's own 150 ms default. This repo's timing gate
     // is the stricter number, and silently inheriting the looser one would look
-    // like a pass that had never actually been tested.
+    // like a pass that had never actually been tested. toleranceMs is both the
+    // matching window and the cap on the "correct" verdict window
+    // (computeVerdictWindows clamps its 50 ms mir_eval floor to the gate), so
+    // the effective rule here is the binary two-sided ±40 ms gate: a
+    // correct-pitch note inside it is "correct", outside it is "missed".
     const result = scorePerformance(song, events, {
       toleranceMs: HOUSE_TOLERANCE_MS,
       ...(bpm === undefined ? {} : { bpm }),

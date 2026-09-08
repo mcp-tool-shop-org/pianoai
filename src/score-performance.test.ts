@@ -5,6 +5,7 @@ import {
 } from "./score-performance.js";
 import type { SongEntry } from "./songs/types.js";
 import type { MidiNoteEvent } from "./midi/types.js";
+import { HOUSE_TOLERANCE_MS, MIR_EVAL_TOLERANCE_MS } from "./audio/onsets.js";
 
 // Minimal song factory for testing
 function makeSong(overrides: Partial<SongEntry> = {}): SongEntry {
@@ -268,6 +269,29 @@ describe("computeVerdictWindows", () => {
   it("uses toleranceMs directly for the orange window when it's tighter than 150ms", () => {
     expect(computeVerdictWindows(120, 80).orangeMs).toBe(80);
   });
+
+  it("pins the effective correct window at the house tolerance, not the 50ms mir_eval floor", () => {
+    // The repo's gate is stricter than mir_eval's convention; the floor may
+    // never loosen the verdict past the gate the caller asked for.
+    expect(HOUSE_TOLERANCE_MS).toBeLessThan(MIR_EVAL_TOLERANCE_MS);
+    const w = computeVerdictWindows(120, HOUSE_TOLERANCE_MS);
+    expect(w.greenMs).toBe(HOUSE_TOLERANCE_MS);
+    expect(w.orangeMs).toBe(HOUSE_TOLERANCE_MS);
+  });
+
+  it("keeps the house gate at every tempo — the 2.5%-of-beat scaling widens only up to the gate", () => {
+    // 20bpm: 0.025 * 3000ms = 75 > 50 floor, but still capped at the 40ms gate
+    expect(computeVerdictWindows(20, HOUSE_TOLERANCE_MS).greenMs).toBe(HOUSE_TOLERANCE_MS);
+    expect(computeVerdictWindows(300, HOUSE_TOLERANCE_MS).greenMs).toBe(HOUSE_TOLERANCE_MS);
+  });
+
+  it("never returns a green window wider than toleranceMs", () => {
+    for (const bpm of [20, 60, 120, 300]) {
+      for (const tol of [10, 40, 50, 80, 150, 300]) {
+        expect(computeVerdictWindows(bpm, tol).greenMs).toBeLessThanOrEqual(tol);
+      }
+    }
+  });
 });
 
 describe("computeMeasureStartTimes", () => {
@@ -374,6 +398,63 @@ describe("scorePerformance — noteVerdicts", () => {
     const v = result.details.noteVerdicts![0];
     expect(v.status).toBe("missed");
     expect(v.offsetMs).toBeUndefined();
+  });
+
+  describe("under the house tolerance (the score-by-ear path in mcp-server)", () => {
+    // Two notes so the probe (D4, second beat) sits at a nonzero expected
+    // time; C4 is played exactly on the clock.
+    const song = (tempo = 120) => makeSong({
+      measures: [{ number: 1, rightHand: "C4:q D4:q", leftHand: "" }],
+      tempo,
+    });
+    const opts = { toleranceMs: HOUSE_TOLERANCE_MS };
+    const probe = (offsetSec: number, tempo = 120) => {
+      const s = song(tempo);
+      const [c4, d4] = flattenSongToExpected(s);
+      const r = scorePerformance(s, [makeEvent(c4.note, c4.time), makeEvent(d4.note, d4.time + offsetSec)], opts);
+      return { r, v: r.details.noteVerdicts![1] };
+    };
+
+    it("marks a correct-pitch note inside ±40ms as correct", () => {
+      for (const off of [0, 0.02, 0.039, -0.02, -0.039]) {
+        expect(probe(off).v.status, `offset ${off * 1000}ms`).toBe("correct");
+      }
+    });
+
+    it("marks a correct-pitch note just outside the gate as missed — 'timing' is unreachable", () => {
+      // 41ms late would be "timing" under the 150ms default (past the 50ms
+      // floor); under the house gate it was never matched, so it is "missed".
+      for (const off of [0.041, -0.041, 0.045, 0.1]) {
+        const { r, v } = probe(off);
+        expect(v.status, `offset ${off * 1000}ms`).toBe("missed");
+        expect(v.offsetMs).toBeUndefined();
+        expect(r.details.matched).toBe(1); // only the on-time C4
+        expect(r.details.extras).toHaveLength(1);
+      }
+    });
+
+    it("agrees with the matcher on a note sitting on the gate: matched implies correct, never timing", () => {
+      // 0.54 - 0.5 is 0.040000000000000036 in floating point, so whether
+      // this note is matched at all is a rounding question. Whatever the
+      // matcher decides, the verdict must not disagree with it.
+      const { r, v } = probe(0.04);
+      expect(v.status).not.toBe("timing");
+      expect(v.status).toBe(r.details.matched === 2 ? "correct" : "missed");
+    });
+
+    it("produces no 'timing' verdicts at any tempo under the house gate", () => {
+      for (const tempo of [20, 60, 120, 300]) {
+        const s = makeSong({
+          measures: [{ number: 1, rightHand: "C4:q D4:q E4:q F4:q", leftHand: "" }],
+          tempo,
+        });
+        const expected = flattenSongToExpected(s);
+        const offsets = [0.01, -0.03, 0.039, 0.06];
+        const played = expected.map((e, i) => makeEvent(e.note, e.time + offsets[i]));
+        const verdicts = scorePerformance(s, played, opts).details.noteVerdicts!;
+        expect(verdicts.map(v => v.status), `tempo ${tempo}`).toEqual(["correct", "correct", "correct", "missed"]);
+      }
+    });
   });
 
   it("marks a wrong-pitch near-match as missed (finding 33: red = miss/wrong pitch)", () => {
