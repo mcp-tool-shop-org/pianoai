@@ -3,7 +3,7 @@
 // The impersonation guard is the load-bearing one: schema_version must be
 // jam-actions-acoustic-v0, never jam-actions-v0.
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import {
   ACOUSTIC_SCHEMA_VERSION,
   AcousticRecordSchema,
@@ -12,6 +12,15 @@ import {
   parseAcousticRecord,
 } from "./schema.js";
 import { buildRecord, fixturePhrase } from "./builder.js";
+
+// Every test here synthesises audio and runs the real pitch and onset code over it.
+// That is the point of the suite, and it is not fast: the 108-record corpus measures
+// 1407 ms on the rig, and CI coverage instrumentation on the slower matrix cell pushed
+// two of these past vitest's 5 s default while the faster cell passed the same commit.
+// One budget for the whole file, so the next slow case here does not have to be found
+// by a red build the way the first two were.
+vi.setConfig({ testTimeout: 30_000 });
+
 
 describe("schema id", () => {
   it("is jam-actions-acoustic-v0/1.0.0, not the DOI corpus", () => {

@@ -6,12 +6,21 @@
 // and assert the MEASURED verdict matches the gold. Checking only the recipe
 // cannot catch that class.
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { trackPitch, scorePitchWindow } from "../../audio/pitch.js";
 import { detectOnsets, HOUSE_TOLERANCE_MS } from "../../audio/onsets.js";
 import { transcribe } from "../../audio/transcribe.js";
 import { buildRecord, fixturePhrase, renderTake } from "./builder.js";
 import type { AcousticRecord } from "./schema.js";
+
+// Every test here synthesises audio and runs the real pitch and onset code over it.
+// That is the point of the suite, and it is not fast: the 108-record corpus measures
+// 1407 ms on the rig, and CI coverage instrumentation on the slower matrix cell pushed
+// two of these past vitest's 5 s default while the faster cell passed the same commit.
+// One budget for the whole file, so the next slow case here does not have to be found
+// by a red build the way the first two were.
+vi.setConfig({ testTimeout: 30_000 });
+
 
 function samplesOf(rec: AcousticRecord): Float64Array {
   return renderTake(rec.observation.render.recipe);

@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { PERTURBATION_KINDS } from "./schema.js";
 import { smallestSeedForIndex } from "./builder.js";
 import { PHRASE_SPECS, TEST_SONG_ID, TRAIN_SONG_IDS } from "./phrases.js";
@@ -6,11 +6,14 @@ import { buildAllRecords, targetIndexSeeds } from "./generate-corpus.js";
 import { toSftLine } from "../../../experiments/acoustic-sft/format-sft.js";
 import { trivialBaselines } from "../../../experiments/acoustic-sft/eval.js";
 
-// Each of these builds the whole 108-record corpus, which renders audio and runs the
-// real analysis code. 1407 ms on the rig; CI coverage on the slower matrix cell
-// overran vitest's 5 s default in the sibling eval test. Same budget here rather
-// than waiting for the same flake.
-const BUILD_BUDGET_MS = 30_000;
+// Every test here synthesises audio and runs the real pitch and onset code over it.
+// That is the point of the suite, and it is not fast: the 108-record corpus measures
+// 1407 ms on the rig, and CI coverage instrumentation on the slower matrix cell pushed
+// two of these past vitest's 5 s default while the faster cell passed the same commit.
+// One budget for the whole file, so the next slow case here does not have to be found
+// by a red build the way the first two were.
+vi.setConfig({ testTimeout: 30_000 });
+
 
 describe("4-note reductions", () => {
   it("loads three distinct library phrases and never clair-de-lune", () => {
@@ -58,7 +61,7 @@ describe("108-record phrase split", () => {
       expect(n.filter((r) => r.observation.perturbation.kind === "silence")).toHaveLength(4);
     }
     expect(PERTURBATION_KINDS).toHaveLength(9);
-  }, BUILD_BUDGET_MS);
+  });
 });
 
 describe("SFT formatter holdout", () => {
@@ -68,7 +71,7 @@ describe("SFT formatter holdout", () => {
     expect(train).toHaveLength(72);
     expect(train.every((l) => l.song_id !== TEST_SONG_ID)).toBe(true);
     expect(train.every((l) => l.messages[0]?.role === "system")).toBe(true);
-  }, BUILD_BUDGET_MS);
+  });
 });
 
 describe("eval baselines", () => {
@@ -77,5 +80,5 @@ describe("eval baselines", () => {
     const b = trivialBaselines(records);
     expect(b.uniform).toBeCloseTo(1 / 9, 10);
     expect(b.majority).toBeCloseTo(1 / 9, 10);
-  }, BUILD_BUDGET_MS);
+  });
 });

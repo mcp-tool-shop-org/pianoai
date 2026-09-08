@@ -1,16 +1,18 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { evaluateAcousticSplit, type PredLine } from "./eval.js";
 import { buildAllRecords } from "../../src/dataset/acoustic/generate-corpus.js";
 import { writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 
-// buildAllRecords() renders 108 takes and runs the real pitch and onset code over
-// each one. Measured at 1407 ms on the rig; under CI's coverage instrumentation on
-// the slower matrix cell that overran vitest's 5 s default and failed Node 22 while
-// Node 24 passed. The work is real, not hung, so it gets an explicit budget rather
-// than a smaller corpus — same call as the spawned-CLI help test.
-const BUILD_BUDGET_MS = 30_000;
+// Every test here synthesises audio and runs the real pitch and onset code over it.
+// That is the point of the suite, and it is not fast: the 108-record corpus measures
+// 1407 ms on the rig, and CI coverage instrumentation on the slower matrix cell pushed
+// two of these past vitest's 5 s default while the faster cell passed the same commit.
+// One budget for the whole file, so the next slow case here does not have to be found
+// by a red build the way the first two were.
+vi.setConfig({ testTimeout: 30_000 });
+
 
 describe("evaluateAcousticSplit", () => {
   it("warns an aggregate LoRA number without a base-model number is unfalsifiable", () => {
@@ -37,5 +39,5 @@ describe("evaluateAcousticSplit", () => {
     });
     expect(withBoth.base_model_overall).toBeGreaterThanOrEqual(0);
     expect(withBoth.base_model_overall).toBeLessThan(1);
-  }, BUILD_BUDGET_MS);
+  });
 });

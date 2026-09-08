@@ -4,10 +4,19 @@
 // Re-rendering the recipe must match wav_sha256. Traces must pass the
 // existing catalog validator — finding that out at J4 is the expensive way.
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { validateTrace } from "../trace-validator.js";
 import { DRAW_BANDS, PERTURBATION_KINDS, parseAcousticRecord, type PerturbationKind } from "./schema.js";
 import {
+
+// Every test here synthesises audio and runs the real pitch and onset code over it.
+// That is the point of the suite, and it is not fast: the 108-record corpus measures
+// 1407 ms on the rig, and CI coverage instrumentation on the slower matrix cell pushed
+// two of these past vitest's 5 s default while the faster cell passed the same commit.
+// One budget for the whole file, so the next slow case here does not have to be found
+// by a red build the way the first two were.
+vi.setConfig({ testTimeout: 30_000 });
+
   buildKindSet,
   buildRecord,
   fixturePhrase,
