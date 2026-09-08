@@ -1,0 +1,125 @@
+{
+  "id": "teaching_note:pathetique-mvt2:m1",
+  "schema_version": "jam-actions-v1/1.0.0",
+  "family": "teaching_note",
+  "provenance": {
+    "source_url": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
+    "source_collected_at": "library-scan",
+    "source_type": "transcribed-by-author",
+    "composition_title": "Pathetique Sonata, 2nd Movement (Adagio cantabile)",
+    "composer": "Ludwig van Beethoven",
+    "composition_year": 1,
+    "composition_pd_status_us": "public_domain",
+    "composition_pd_status_eu": "public_domain",
+    "arrangement_creator": null,
+    "arrangement_license": "CC-BY-SA",
+    "arrangement_license_version": null,
+    "arrangement_evidence_url": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
+    "record_verdict": "public",
+    "verdict_reason": "Publishable shelf: classical, ragtime, or folk. clair-de-lune excluded.",
+    "verifier": "v1-builder",
+    "verified_at": "library-scan",
+    "training_use_permitted": true
+  },
+  "scope": {
+    "song_id": "pathetique-mvt2",
+    "phrase_window": "full:153",
+    "instrument": "piano",
+    "key": "Ab major",
+    "tempo_bpm": 120,
+    "time_signature": "4/4",
+    "window_role": "standalone"
+  },
+  "observation": {
+    "thresholds": {
+      "min_pitch_classes": 2
+    },
+    "gold": {
+      "family": "teaching_note",
+      "answer": "(none)",
+      "engine": "measure.teachingNote"
+    }
+  },
+  "annotation_target": {
+    "measure_range": [
+      1,
+      153
+    ],
+    "structure": "Fourteen structural regions from the section-lens pass, with novelty scores climbing steadily higher through the middle of the piece — the sharpest boundary of all opens at measure 56 (novelty 11.854), right before the dramatic left-hand-heavy passage at measures 84-86. The A theme (measures 1-13) returns twice more in exactly the same 15-note right-hand shape, at measures 59-71 and 99-111, confirmed as strong pattern evidence — the clearest structural spine in the piece. A second recurring idea, a 26-note left-hand figure at measures 2-7, restates at measures 59-65 (moderate evidence), overlapping with the start of the A theme's second return. Around the climax at measures 84-86, the harmony itself becomes the structural marker: G#m windows cluster at measures 77, 80, 82, and 83 immediately before the loudest passage, and E major windows take over right after it at measures 87-92 — a harmonic detour that the section lens also flags as a boundary at measure 85 within the climax itself.",
+    "key_moments": [
+      "The 15-note right-hand figure that opens the piece (measures 1-13) returns twice more, untransposed, at measures 59-71 and 99-111 — this is the rondo's A theme made visible in the data, and recognizing the shape once teaches all three of its appearances at once.",
+      "Measures 84-86 are the busiest in the piece, 20 or more combined onsets each and dominated by the left hand (17-18 onsets), arriving right after a run of implied G# minor windows at measures 77-83 — demonstrating how a shift to the parallel minor can set up a climax before the loudest measures even begin.",
+      "The implied harmony pivots to an E major color at measures 87-92, immediately after the loudest passage — a chromatic third relationship to the stated Ab major that teaches how Romantic-era harmony can pull toward an unexpected, remote key right at a moment of maximum intensity.",
+      "The section lens's single sharpest boundary in the entire piece opens at measure 56 (novelty 11.854), well before the climax itself — showing that the buildup to a dramatic passage often begins several measures earlier than the loudest bar."
+    ],
+    "teaching_goals": [
+      "Learn the 15-note right-hand A theme (measures 1-13) thoroughly, since it returns note-for-note at measures 59-71 and 99-111 — three appearances for one piece of learning.",
+      "Practice the left-hand-dominant climax at measures 84-86 hands separately first, building control over 17-18 left-hand onsets per measure before adding the right hand back in.",
+      "Listen for the implied shift from G# minor (measures 77-83) into E major (measures 87-92) around the climax, and develop the ear to recognize a chromatic-third modulation arriving at a moment of high intensity.",
+      "Recognize the section boundary at measure 56 (the sharpest novelty shift in the piece) as the true start of the buildup toward the climax — practice the transition into that region deliberately rather than treating measures 84-86 as an isolated event."
+    ],
+    "style_tips": [
+      "Let the melody sing above everything in the A theme's three appearances (measures 1-13, 59-71, 99-111) — listen for the same singing line coming through clearly each time despite the surrounding material changing.",
+      "Use the sustain pedal for a full legato through the cantabile theme, but change it with each new implied harmony — listen for the G#-D# tonic-dominant frame staying clear rather than blurring together.",
+      "Build real weight and intensity into the left hand through measures 84-86 — listen for the implied G# minor color at measures 77-83 already signaling the darker turn before the loudest bars arrive.",
+      "Take rubato at phrase endings as a tradition of this style, especially around the E major detour at measures 87-92 — listen for the harmony's chromatic pull justifying a small give in tempo rather than a strict, metronomic pulse."
+    ],
+    "teaching_notes": [
+      {
+        "measure": 1,
+        "note": "none"
+      }
+    ]
+  },
+  "target_trace": {
+    "task_family": "teaching_note",
+    "objective": "Answer using tools. Do not guess from the question text.",
+    "session": [
+      {
+        "turn": 1,
+        "role": "user",
+        "content": "What teaching note is on measure 1 of \"Pathetique Sonata, 2nd Movement (Adagio cantabile)\"?"
+      },
+      {
+        "turn": 2,
+        "role": "assistant",
+        "content": "Reading the measure's teaching note.",
+        "tool_calls": [
+          {
+            "tool": "teaching_note",
+            "arguments": {
+              "id": "pathetique-mvt2",
+              "measure": 1
+            }
+          }
+        ]
+      },
+      {
+        "turn": 3,
+        "role": "tool",
+        "tool": "teaching_note",
+        "content": {
+          "measure": 1,
+          "note": "(none)"
+        }
+      },
+      {
+        "turn": 4,
+        "role": "assistant",
+        "content": "(none)"
+      }
+    ]
+  },
+  "eval_metadata": {
+    "split": "train",
+    "split_strategy": "hold out by song_id",
+    "leakage_check": "passed",
+    "eval_eligibility": [
+      "tool_use",
+      "teaching_note"
+    ],
+    "phrase_continuation_eligible": false,
+    "phrase_continuation_eligible_reason": "standalone tool-use items"
+  },
+  "split": "train"
+}

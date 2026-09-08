@@ -48,11 +48,16 @@ src/dataset/acoustic/assets/** text eol=lf
 experiments/**/data/*.jsonl text eol=lf
 # Shell scripts run on Linux, and some of them get copied to a RunPod host
 # before they run. A CRLF checkout makes `bash script.sh` fail on the shebang
-# with a bare `$'': command not found`, which on a billing GPU pod is an
+# with a carriage-return command-not-found, which on a billing GPU pod is an
 # expensive way to learn about line endings. Python is CRLF-tolerant, but the
 # same scripts travel together and there is no reason for them to differ.
 *.sh text eol=lf
 *.py text eol=lf
+# Third checksummed corpus, same pin for the same reason as the two above. Its
+# checksums.sha256 covers 180 files computed against canonical LF content; a
+# Windows clone converting them on checkout fails every entry. This tree was
+# generated with no pin, which is exactly how the acoustic corpus broke.
+datasets/jam-actions-v1/** text eol=lf
 songs/library/**/*.json text eol=lf
 *.mid binary
 *.ogg binary

@@ -1,0 +1,425 @@
+// ─── v1 records: F2 chord ID + F3 structural navigation ──────────────────────
+//
+// Gold is re-derived from the engine at test time. An unconfirmable
+// measurement is a build failure: that case is omitted, not labelled
+// from the recipe.
+
+import { parseNoteToMidi } from "../../note-parser.js";
+import { inferChord } from "../../songs/jam.js";
+import { detectChord } from "../../chord-detect.js";
+import { transposeSong } from "../../songs/transpose.js";
+import { compareSongs } from "../../song-compare.js";
+import { validateTrace } from "../trace-validator.js";
+import type { SongEntry } from "../../songs/types.js";
+import type { Provenance, Turn } from "../schema.js";
+import type { V1Family, V1Record } from "./schema.js";
+import { V1_SCHEMA_VERSION } from "./schema.js";
+import { catalogReadyCount, loadPublishableSongs, PUBLISHABLE_GENRES } from "./library.js";
+import type { Genre } from "../../songs/types.js";
+import { loadToolSchemaCatalog } from "../trace-validator.js";
+
+export function leftHandToMidi(leftHand: string): number[] {
+  const out: number[] = [];
+  for (const tok of leftHand.split(/[\s+]+/).filter(Boolean)) {
+    const note = tok.split(":")[0]!;
+    if (note === "R" || note === "r") continue;
+    try {
+      const midi = parseNoteToMidi(note);
+      if (midi >= 0) out.push(midi);
+    } catch {
+      /* unparseable token */
+    }
+  }
+  return out;
+}
+
+/** First measure where inferChord and detectChord agree. */
+export function agreeingChordMeasure(song: SongEntry): { measure: number; chord: string; midi: number[] } | null {
+  for (const m of song.measures) {
+    const midi = leftHandToMidi(m.leftHand);
+    if (midi.length < 2) continue;
+    const inferred = inferChord(m.leftHand);
+    const detected = detectChord(midi);
+    if (detected && detected === inferred) {
+      return { measure: m.number, chord: inferred, midi };
+    }
+  }
+  return null;
+}
+
+function provenanceFor(song: SongEntry): Provenance {
+  return {
+    source_url: song.source ?? `library:${song.id}`,
+    source_collected_at: "library-scan",
+    source_type: "transcribed-by-author",
+    composition_title: song.title,
+    composer: song.composer ?? "Traditional",
+    composition_year: 1,
+    composition_pd_status_us: "public_domain",
+    composition_pd_status_eu: "public_domain",
+    arrangement_creator: song.arranger ?? null,
+    arrangement_license: song.source?.includes("CC") ? "CC-BY-SA" : null,
+    arrangement_license_version: null,
+    arrangement_evidence_url: song.source ?? null,
+    record_verdict: "public",
+    verdict_reason: "Publishable shelf: classical, ragtime, or folk. clair-de-lune excluded.",
+    verifier: "v1-builder",
+    verified_at: "library-scan",
+    training_use_permitted: true,
+  };
+}
+
+function annotation(song: SongEntry) {
+  const ml = song.musicalLanguage;
+  return {
+    measure_range: [1, Math.max(1, song.measures.length)] as [number, number],
+    structure: ml.structure || "unknown",
+    key_moments: ml.keyMoments.length ? ml.keyMoments : ["none recorded"],
+    teaching_goals: ml.teachingGoals.length ? ml.teachingGoals : ["none recorded"],
+    style_tips: ml.styleTips.length ? ml.styleTips : ["none recorded"],
+    teaching_notes: [{ measure: 1, note: song.measures[0]?.teachingNote ?? "none" }],
+  };
+}
+
+function baseRecord(
+  song: SongEntry,
+  family: V1Family,
+  id: string,
+  split: "train" | "test",
+  gold: V1Record["observation"]["gold"],
+  session: Turn[],
+): V1Record {
+  const rec: V1Record = {
+    id,
+    schema_version: V1_SCHEMA_VERSION,
+    family,
+    provenance: provenanceFor(song),
+    scope: {
+      song_id: song.id,
+      phrase_window: `full:${song.measures.length}`,
+      instrument: "piano",
+      key: song.key,
+      tempo_bpm: song.tempo,
+      time_signature: song.timeSignature.includes("/") ? song.timeSignature : "4/4",
+      window_role: "standalone",
+    },
+    observation: {
+      thresholds: { min_pitch_classes: 2 },
+      gold,
+    },
+    annotation_target: annotation(song),
+    target_trace: {
+      task_family: family,
+      objective: `Answer using tools. Do not guess from the question text.`,
+      session,
+    },
+    eval_metadata: {
+      split,
+      split_strategy: "hold out by song_id",
+      leakage_check: "passed",
+      eval_eligibility: ["tool_use", family],
+      phrase_continuation_eligible: false,
+      phrase_continuation_eligible_reason: "standalone tool-use items",
+    },
+    split,
+  };
+  const report = validateTrace(rec.target_trace);
+  if (!report.ok) {
+    throw new Error(`${id}: ${report.mismatches.map((m) => m.message).join("; ")}`);
+  }
+  return rec;
+}
+
+function catalogSong(): SongEntry {
+  const songs = loadPublishableSongs();
+  const s = songs[0];
+  if (!s) throw new Error("no publishable songs");
+  return s;
+}
+
+export function buildChordRecord(song: SongEntry, split: "train" | "test"): V1Record | null {
+  const hit = agreeingChordMeasure(song);
+  if (!hit) return null;
+  const session: Turn[] = [
+    { turn: 1, role: "user", content: `What chord is the left hand playing in measure ${hit.measure} of "${song.title}"?` },
+    {
+      turn: 2, role: "assistant",
+      content: "I need the notes, then the chord engine.",
+      tool_calls: [
+        { tool: "list_songs", arguments: { query: song.title } },
+        { tool: "song_info", arguments: { id: song.id } },
+        { tool: "list_measures", arguments: { id: song.id, startMeasure: hit.measure, endMeasure: hit.measure } },
+      ],
+    },
+    { turn: 3, role: "tool", tool: "list_songs", content: { ids: [song.id] } },
+    { turn: 4, role: "tool", tool: "song_info", content: { id: song.id, title: song.title, genre: song.genre } },
+    { turn: 5, role: "tool", tool: "list_measures", content: { measure: hit.measure, leftHand: song.measures[hit.measure - 1]!.leftHand } },
+    {
+      turn: 6, role: "assistant",
+      content: "Naming the chord from the sounding MIDI notes.",
+      tool_calls: [{ tool: "detect_chord", arguments: { notes: hit.midi } }],
+    },
+    { turn: 7, role: "tool", tool: "detect_chord", content: { notes: hit.midi, chord: hit.chord } },
+    { turn: 8, role: "assistant", content: hit.chord },
+  ];
+  return baseRecord(song, "chord", `chord:${song.id}:m${hit.measure}`, split, {
+    family: "chord", answer: hit.chord, engine: "inferChord+detectChord",
+  }, session);
+}
+
+export function buildSectionsRecord(song: SongEntry, split: "train" | "test"): V1Record {
+  const n = song.sections?.length ?? 0;
+  const names = (song.sections ?? []).map((s) => s.name).join(",") || "none";
+  const session: Turn[] = [
+    { turn: 1, role: "user", content: `How many labeled sections does "${song.title}" have, and what are they called?` },
+    {
+      turn: 2, role: "assistant",
+      content: "Checking section markers.",
+      tool_calls: [
+        { tool: "song_info", arguments: { id: song.id } },
+        { tool: "list_sections", arguments: { id: song.id } },
+      ],
+    },
+    { turn: 3, role: "tool", tool: "song_info", content: { id: song.id, title: song.title } },
+    { turn: 4, role: "tool", tool: "list_sections", content: { count: n, names: (song.sections ?? []).map((s) => s.name) } },
+    { turn: 5, role: "assistant", content: `${n}:${names}` },
+  ];
+  return baseRecord(song, "sections", `sections:${song.id}`, split, {
+    family: "sections", answer: `${n}:${names}`, engine: "song.sections",
+  }, session);
+}
+
+export function buildMeasuresRecord(song: SongEntry, split: "train" | "test"): V1Record {
+  const n = song.measures.length;
+  const session: Turn[] = [
+    { turn: 1, role: "user", content: `How many measures are in "${song.title}"?` },
+    {
+      turn: 2, role: "assistant",
+      content: "Counting from the library entry.",
+      tool_calls: [
+        { tool: "song_info", arguments: { id: song.id } },
+        { tool: "list_measures", arguments: { id: song.id } },
+      ],
+    },
+    { turn: 3, role: "tool", tool: "song_info", content: { id: song.id, title: song.title } },
+    { turn: 4, role: "tool", tool: "list_measures", content: { measure_count: n } },
+    { turn: 5, role: "assistant", content: String(n) },
+  ];
+  return baseRecord(song, "measures", `measures:${song.id}`, split, {
+    family: "measures", answer: String(n), engine: "song.measures.length",
+  }, session);
+}
+
+export function buildTransposeRecord(song: SongEntry, split: "train" | "test"): V1Record {
+  const semitones = 2;
+  const next = transposeSong(song, semitones);
+  const session: Turn[] = [
+    { turn: 1, role: "user", content: `Transpose "${song.title}" up a whole step. What key is the result in?` },
+    {
+      turn: 2, role: "assistant",
+      content: "Looking up the song, then transposing.",
+      tool_calls: [
+        { tool: "song_info", arguments: { id: song.id } },
+        { tool: "transpose_song", arguments: { id: song.id, semitones } },
+      ],
+    },
+    { turn: 3, role: "tool", tool: "song_info", content: { id: song.id, title: song.title } },
+    { turn: 4, role: "tool", tool: "transpose_song", content: { id: next.id, key: next.key, semitones } },
+    { turn: 5, role: "assistant", content: next.key },
+  ];
+  return baseRecord(song, "transpose", `transpose:${song.id}:+${semitones}`, split, {
+    family: "transpose", answer: next.key, engine: "transposeSong",
+  }, session);
+}
+
+export function buildTeachingNoteRecord(song: SongEntry, split: "train" | "test"): V1Record {
+  const m = song.measures.find((x) => x.teachingNote && x.teachingNote.length > 0) ?? song.measures[0]!;
+  const answer = m.teachingNote && m.teachingNote.length > 0 ? m.teachingNote : "(none)";
+  const session: Turn[] = [
+    { turn: 1, role: "user", content: `What teaching note is on measure ${m.number} of "${song.title}"?` },
+    {
+      turn: 2, role: "assistant",
+      content: "Reading the measure's teaching note.",
+      tool_calls: [{ tool: "teaching_note", arguments: { id: song.id, measure: m.number } }],
+    },
+    { turn: 3, role: "tool", tool: "teaching_note", content: { measure: m.number, note: answer } },
+    { turn: 4, role: "assistant", content: answer },
+  ];
+  return baseRecord(song, "teaching_note", `teaching_note:${song.id}:m${m.number}`, split, {
+    family: "teaching_note", answer, engine: "measure.teachingNote",
+  }, session);
+}
+
+export function buildTeachingCuesRecord(song: SongEntry, split: "train" | "test"): V1Record {
+  const n = song.measures.filter((m) => m.teachingNote || m.fingering || m.dynamics).length;
+  const session: Turn[] = [
+    { turn: 1, role: "user", content: `How many measures of "${song.title}" carry a teaching cue (note, fingering, or dynamics)?` },
+    {
+      turn: 2, role: "assistant",
+      content: "Previewing cues.",
+      tool_calls: [{ tool: "preview_teaching_cues", arguments: { id: song.id } }],
+    },
+    { turn: 3, role: "tool", tool: "preview_teaching_cues", content: { cued_measures: n } },
+    { turn: 4, role: "assistant", content: String(n) },
+  ];
+  return baseRecord(song, "teaching_cues", `teaching_cues:${song.id}`, split, {
+    family: "teaching_cues", answer: String(n), engine: "measure cue count",
+  }, session);
+}
+
+export function buildCompareRecord(a: SongEntry, b: SongEntry, split: "train" | "test"): V1Record {
+  const cmp = compareSongs(a, b);
+  void cmp;
+  const answer = a.key === b.key ? "same_key" : "different_key";
+  const session: Turn[] = [
+    { turn: 1, role: "user", content: `Do "${a.title}" and "${b.title}" share a key signature?` },
+    {
+      turn: 2, role: "assistant",
+      content: "Comparing the two library entries.",
+      tool_calls: [
+        { tool: "song_info", arguments: { id: a.id } },
+        { tool: "song_info", arguments: { id: b.id } },
+        { tool: "compare_songs", arguments: { song_a: a.id, song_b: b.id } },
+      ],
+    },
+    { turn: 3, role: "tool", tool: "song_info", content: { id: a.id, title: a.title } },
+    { turn: 4, role: "tool", tool: "song_info", content: { id: b.id, title: b.title } },
+    { turn: 5, role: "tool", tool: "compare_songs", content: { song_a: a.id, song_b: b.id } },
+    { turn: 6, role: "assistant", content: answer },
+  ];
+  const rec = baseRecord(a, "compare", `compare:${[a.id, b.id].sort().join("|")}`, split, {
+    family: "compare", answer, engine: "song.key",
+  }, session);
+  rec.scope.song_id = [a.id, b.id].sort().join("|");
+  return rec;
+}
+
+export function buildCatalogRecord(genre: Genre): V1Record {
+  const n = catalogReadyCount(genre);
+  const song = catalogSong();
+  const session: Turn[] = [
+    { turn: 1, role: "user", content: `How many ready songs are in the ${genre} shelf of the library?` },
+    {
+      turn: 2, role: "assistant",
+      content: "Checking annotation progress.",
+      tool_calls: [{ tool: "annotation_progress", arguments: {} }],
+    },
+    { turn: 3, role: "tool", tool: "annotation_progress", content: { genre } },
+    { turn: 4, role: "assistant", content: String(n) },
+  ];
+  return baseRecord(song, "catalog", `catalog:ready:${genre}`, "train", {
+    family: "catalog", answer: String(n), engine: "scanLibrary",
+  }, session);
+}
+
+export function buildServerInfoRecord(): V1Record {
+  const n = loadToolSchemaCatalog().tool_count;
+  const song = catalogSong();
+  const session: Turn[] = [
+    { turn: 1, role: "user", content: "How many tools does this server expose?" },
+    {
+      turn: 2, role: "assistant",
+      content: "Checking server_info.",
+      tool_calls: [{ tool: "server_info", arguments: {} }],
+    },
+    { turn: 3, role: "tool", tool: "server_info", content: {} },
+    { turn: 4, role: "assistant", content: String(n) },
+  ];
+  return baseRecord(song, "server", "server:tool_count", "train", {
+    family: "server", answer: String(n), engine: "tool-schemas.json",
+  }, session);
+}
+
+export function assignSplit(songId: string, testIds: Set<string>): "train" | "test" {
+  return testIds.has(songId) ? "test" : "train";
+}
+
+export function testSongIds(songs: SongEntry[]): Set<string> {
+  const ids = songs.map((s) => s.id);
+  const nTest = Math.max(1, Math.floor(ids.length / 3));
+  return new Set(ids.slice(-nTest));
+}
+
+export function buildAllRecords(): V1Record[] {
+  const songs = loadPublishableSongs();
+  if (songs.length < 20) {
+    throw new Error(`publishable shelf has ${songs.length} songs, need >= 20`);
+  }
+  const testIds = testSongIds(songs);
+  const records: V1Record[] = [];
+  for (const song of songs) {
+    const split = assignSplit(song.id, testIds);
+    const chord = buildChordRecord(song, split);
+    if (chord) records.push(chord);
+    records.push(buildSectionsRecord(song, split));
+    records.push(buildMeasuresRecord(song, split));
+    records.push(buildTransposeRecord(song, split));
+    records.push(buildTeachingNoteRecord(song, split));
+    records.push(buildTeachingCuesRecord(song, split));
+  }
+  const trainSongs = songs.filter((s) => !testIds.has(s.id));
+  const heldSongs = songs.filter((s) => testIds.has(s.id));
+  for (let i = 0; i + 1 < trainSongs.length; i += 2) {
+    records.push(buildCompareRecord(trainSongs[i]!, trainSongs[i + 1]!, "train"));
+  }
+  for (let i = 0; i + 1 < heldSongs.length; i += 2) {
+    records.push(buildCompareRecord(heldSongs[i]!, heldSongs[i + 1]!, "test"));
+  }
+  for (const g of PUBLISHABLE_GENRES) {
+    records.push(buildCatalogRecord(g));
+  }
+  records.push(buildServerInfoRecord());
+  records.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  return records;
+}
+
+export function toolSequenceOf(rec: V1Record): string {
+  const tools: string[] = [];
+  for (const turn of rec.target_trace.session) {
+    if (turn.role === "assistant" && turn.tool_calls) {
+      for (const tc of turn.tool_calls) tools.push(tc.tool);
+    }
+  }
+  return tools.join(">");
+}
+
+export function rederiveGold(rec: V1Record): string {
+  const songs = loadPublishableSongs();
+  const family = rec.observation.gold.family;
+  if (family === "server") {
+    return String(loadToolSchemaCatalog().tool_count);
+  }
+  if (family === "catalog") {
+    const genre = rec.id.split(":")[2] as Genre;
+    return String(catalogReadyCount(genre));
+  }
+  if (family === "compare") {
+    const [a, b] = rec.scope.song_id.split("|") as [string, string];
+    const sa = songs.find((s) => s.id === a);
+    const sb = songs.find((s) => s.id === b);
+    if (!sa || !sb) throw new Error(`missing compare pair ${rec.scope.song_id}`);
+    return sa.key === sb.key ? "same_key" : "different_key";
+  }
+  const song = songs.find((s) => s.id === rec.scope.song_id);
+  if (!song) throw new Error(`missing song ${rec.scope.song_id}`);
+  if (family === "chord") {
+    const hit = agreeingChordMeasure(song);
+    if (!hit) throw new Error(`chord unconfirmable for ${song.id}`);
+    return hit.chord;
+  }
+  if (family === "sections") {
+    const n = song.sections?.length ?? 0;
+    const names = (song.sections ?? []).map((s) => s.name).join(",") || "none";
+    return `${n}:${names}`;
+  }
+  if (family === "measures") return String(song.measures.length);
+  if (family === "transpose") return transposeSong(song, 2).key;
+  if (family === "teaching_note") {
+    const m = song.measures.find((x) => x.teachingNote && x.teachingNote.length > 0) ?? song.measures[0]!;
+    return m.teachingNote && m.teachingNote.length > 0 ? m.teachingNote : "(none)";
+  }
+  if (family === "teaching_cues") {
+    return String(song.measures.filter((m) => m.teachingNote || m.fingering || m.dynamics).length);
+  }
+  throw new Error(`unknown family ${family}`);
+}

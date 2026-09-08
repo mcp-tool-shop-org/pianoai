@@ -1,0 +1,124 @@
+{
+  "id": "teaching_cues:the-water-is-wide",
+  "schema_version": "jam-actions-v1/1.0.0",
+  "family": "teaching_cues",
+  "provenance": {
+    "source_url": "library:the-water-is-wide",
+    "source_collected_at": "library-scan",
+    "source_type": "transcribed-by-author",
+    "composition_title": "The Water Is Wide",
+    "composer": "Traditional Scottish",
+    "composition_year": 1,
+    "composition_pd_status_us": "public_domain",
+    "composition_pd_status_eu": "public_domain",
+    "arrangement_creator": null,
+    "arrangement_license": null,
+    "arrangement_license_version": null,
+    "arrangement_evidence_url": null,
+    "record_verdict": "public",
+    "verdict_reason": "Publishable shelf: classical, ragtime, or folk. clair-de-lune excluded.",
+    "verifier": "v1-builder",
+    "verified_at": "library-scan",
+    "training_use_permitted": true
+  },
+  "scope": {
+    "song_id": "the-water-is-wide",
+    "phrase_window": "full:105",
+    "instrument": "piano",
+    "key": "G major",
+    "tempo_bpm": 100,
+    "time_signature": "2/4",
+    "window_role": "standalone"
+  },
+  "observation": {
+    "thresholds": {
+      "min_pitch_classes": 2
+    },
+    "gold": {
+      "family": "teaching_cues",
+      "answer": "0",
+      "engine": "measure cue count"
+    }
+  },
+  "annotation_target": {
+    "measure_range": [
+      1,
+      105
+    ],
+    "structure": "A strophic ballad built over a single repeating accompaniment cell. Chord-window analysis shows this cell is G-rooted: G major accounts for 72 of the 98 labeled chord windows (73%) and D/D7 another 22 (D7 12%, D 10%), with no C or F chord detected anywhere in the piece — a G-D(7) (I-V) vamp, not the C-F-G (I-IV-V) cadence the C major label this transcription originally carried would predict (the key field has been corrected to G major accordingly). The eleven-measure group (10, 14, 18, 34, 42, 62, 66, 70, 86, 90, 98) and an even larger near-identical group of thirteen measures sharing the same figure show this G-rooted pattern recurring roughly every 4 measures within each verse and then again across every subsequent verse. Density stays gentle and even throughout — among the busiest measures are 7, 23, 31, 47, and 55 (all 11 onsets), spread evenly across the form rather than clustering at a climax, matching the song's plain, walking-tempo accompaniment.",
+    "key_moments": [
+      "Measure 10, measure 14, measure 18, and measure 34 are the start of an eleven-measure repeat group (also including 42, 62, 66, 70, 86, 90, and 98) — eleven of the piece's 105 measures sharing identical content, direct evidence of one recurring accompaniment figure carrying nearly the whole piece. Chord-window analysis across the piece reads this harmonic world as G major-centered (72 of 98 labeled chord windows, 73%) — the basis for correcting the C major label this transcription originally carried.",
+      "That same figure appears in near-identical form across thirteen measures total, including measure 38 and measure 46 alongside the eleven exact matches — meaning across 105 measures, this one accompaniment cell is doing the majority of the harmonic work.",
+      "Among the busiest measures, 7, 23, 31, 47, and 55 (all 11 onsets) are spaced roughly every 8 measures early in the piece — a gentle, regular pulse of slightly increased activity rather than one dramatic peak.",
+      "The right hand's range stays comfortably singable throughout (C4 to G5, just over an octave), appropriate to a ballad meant to be carried by a solo voice.",
+      "Measure 1 opens at just 1 onset, and the left hand doesn't sound until measure 2 — a brief unaccompanied pickup before the recurring G-rooted accompaniment figure establishes itself."
+    ],
+    "teaching_goals": [
+      "Repeating accompaniment vamp technique: practice the G-rooted figure that recurs at measures 10, 14, 18, 34, 42, 62, 66, 70, 86, 90, and 98 until it's completely automatic — chord-window analysis shows G major and D/D7 (a I-V vamp, not I-IV-V) covering the great majority of this 105-measure piece, with no C or F chord detected anywhere.",
+      "Long-form strophic awareness: learn to recognize where the accompaniment cell restarts for each new verse so you can keep your place across a piece this long without losing count.",
+      "Even, walking-tempo phrasing: with density spread gently and evenly (no measure exceeding 11 onsets), practice a steady, unhurried 2/4 pulse rather than reaching for dynamic drama.",
+      "Solo ballad range: use the right hand's comfortably singable octave-plus range to practice supporting a vocal line without ever overpowering it."
+    ],
+    "style_tips": [
+      "Once the recurring G-rooted accompaniment figure is secure, let your attention go entirely to the melody and its long, singing phrases — the accompaniment should feel automatic, not effortful.",
+      "Keep the 2/4 tempo walking and unhurried — this is a ballad about longing and distance, not urgency.",
+      "Give the one-note pickup at measure 1 real space before the accompaniment enters on measure 2 — a small breath that sets the reflective tone for what follows.",
+      "Avoid adding dynamic swells the data doesn't support — with density this evenly distributed, use phrasing and touch, not volume contrast, to carry the expressive weight."
+    ],
+    "teaching_notes": [
+      {
+        "measure": 1,
+        "note": "none"
+      }
+    ]
+  },
+  "target_trace": {
+    "task_family": "teaching_cues",
+    "objective": "Answer using tools. Do not guess from the question text.",
+    "session": [
+      {
+        "turn": 1,
+        "role": "user",
+        "content": "How many measures of \"The Water Is Wide\" carry a teaching cue (note, fingering, or dynamics)?"
+      },
+      {
+        "turn": 2,
+        "role": "assistant",
+        "content": "Previewing cues.",
+        "tool_calls": [
+          {
+            "tool": "preview_teaching_cues",
+            "arguments": {
+              "id": "the-water-is-wide"
+            }
+          }
+        ]
+      },
+      {
+        "turn": 3,
+        "role": "tool",
+        "tool": "preview_teaching_cues",
+        "content": {
+          "cued_measures": 0
+        }
+      },
+      {
+        "turn": 4,
+        "role": "assistant",
+        "content": "0"
+      }
+    ]
+  },
+  "eval_metadata": {
+    "split": "test",
+    "split_strategy": "hold out by song_id",
+    "leakage_check": "passed",
+    "eval_eligibility": [
+      "tool_use",
+      "teaching_cues"
+    ],
+    "phrase_continuation_eligible": false,
+    "phrase_continuation_eligible_reason": "standalone tool-use items"
+  },
+  "split": "test"
+}

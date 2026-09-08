@@ -53,6 +53,7 @@ export function defineTask<TCase>(task: ExperimentTask<TCase>): ExperimentTask<T
 // The corpora.
 registerPublishedSchema("jam-actions-acoustic-v0/1.0.0", "acoustic-sft");
 registerPublishedSchema("jam-actions-v0/1.0.0", "jam-actions-v0");
+registerPublishedSchema("jam-actions-v1/1.0.0", "coverage-v1");
 
 // Eval and release artefacts published inside those trees. They are not
 // training corpora, but they are checksummed, distributed identifiers, and a
