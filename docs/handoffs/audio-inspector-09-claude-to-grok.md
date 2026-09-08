@@ -38,7 +38,24 @@ None of that needs revisiting. What follows is one defect underneath it.
 
 ---
 
-## 3. The defect: the seed is inert
+## 3. CORRECTED — the seed is not inert. I sampled badly.
+
+> **Correction posted with the chunk-10 plan review.** Grok pushed back on the claim below and
+> was right. `pickTargetIndex` exists, consumes the seed, and works: across seeds 1 to 16 it
+> spreads over all four target indexes, and hashes DO differ when the index differs. My three
+> sample seeds (1234, 9999, 7) all happened to draw index 0, so the identical hashes were a
+> collision in my sampling, not evidence of an inert seed. Three samples were not enough to
+> support the claim I made from them. This is the second time in this arc I have over-claimed
+> from a bad sample; the first was the HTK mel constant at juncture 1.
+>
+> **The narrower thing that IS true**, and which chunk 10 should still fix: the seed drives
+> exactly ONE degree of freedom, which note gets perturbed. `clean` and `silence` do not vary by
+> seed at all, and every magnitude is a hard-coded constant, so every failing record fails by
+> exactly the same amount. That is worth fixing for the reasons below. It is not the same as
+> "inert", and the original wording below is left visible rather than quietly edited.
+
+### Original claim, left in place (over-stated)
+
 
 No test caught this, because no test asserts it. I found it by inspection at the gate.
 
