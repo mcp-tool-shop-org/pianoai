@@ -282,6 +282,42 @@ pnpm exec tsx scripts/check-release-gate.ts /tmp/b.json
 
 > The MIDI arrangements are by Bernd Krueger (piano-midi.de), licensed CC-BY-SA-3.0-DE. The annotations, traces, and eval artifacts are by the AI Jam Sessions team, released under the same license so the share-alike chain is preserved end-to-end. **License boundary:** the repository's MIT license covers the code; everything under `datasets/` is CC-BY-SA-3.0-DE. The working corpus at `datasets/jam-actions-v0/` additionally contains two works (Satie Gymnopédie No. 1, Debussy Arabesque No. 1) that are *excluded* from the published subset because their arrangement provenance could not be verified — see [`datasets/jam-actions-v0/PROVENANCE-NOTE.md`](datasets/jam-actions-v0/PROVENANCE-NOTE.md).
 
+### The acoustic corpus
+
+**jam-actions-acoustic-v0** — the counterpart to the traces above, over **audio** rather than
+symbolic music. 108 records, each pairing a deliberately perturbed synthetic rendering of a
+public-domain phrase with the verdict the analysis tools actually return, so every label is checked
+against the instrument rather than only against itself.
+
+| | |
+|---|---|
+| Records | 108 — 3 phrases × 9 perturbation kinds × 4 target notes |
+| Held out | by **phrase** (Für Elise), not by record, so a perturbed twin of the same melody cannot leak |
+| Classes | match, pitch fail/warn, timing fail/pass, missed, extra, in-tune vibrato, nothing-to-grade silence |
+| Audio | none distributed — each record carries a deterministic recipe and the SHA-256 of the waveform it produces |
+| Schema | `jam-actions-acoustic-v0/1.0.0` |
+
+Two of the nine classes are there because a naive model answers them confidently and wrongly: a
+vibrato note whose correct verdict is *in tune*, and silence whose correct verdict is *nothing to
+grade*. Every threshold the verdict depends on is copied into the record, because both of them
+moved once during the build.
+
+The corpus is reproducible from this repository. Regenerating it produces all 115 published files
+and a byte-identical `checksums.sha256`, and a test asserts exactly that without writing the
+published tree.
+
+### Build your own
+
+The scaffolding that corpus runs on is available for your own experiments.
+[`experiments/_template/`](experiments/_template/) is a working example you can copy: declare a
+task, and you get SFT formatting, per-class scoring, trivial baselines over your declared verdict
+set, and a check that no holdout unit straddles the split.
+
+The [contract](experiments/_template/README.md) is the part worth reading. Ground truth is
+constructible rather than hand-written, labels are verified against what the tools measure, you
+split by the unit that leaks, and you report the baselines and the base model beside any result.
+Each of those rules cost something to learn.
+
 ## Install
 
 ```bash
