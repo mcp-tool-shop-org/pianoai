@@ -137,6 +137,12 @@ export function renderF5(
   return { samples: mix(overlay, clicks), cents_shift, delay_sec, target_index };
 }
 
+export interface F5Measurements {
+  f0_hz: number;
+  cents_from_target: number;
+  onset_ms: number;
+}
+
 export interface F5Kept {
   kind: F5Kind;
   notes: F5PhraseNote[];
@@ -147,8 +153,74 @@ export interface F5Kept {
   sample_rate: number;
   pre_roll_sec: number;
   gold: "match" | "pitch_fail" | "timing_fail";
-  measured_cents: number | null;
-  measured_onset_ms: number | null;
+  measured_f0_hz: number;
+  measured_cents: number;
+  measured_onset_ms: number;
+}
+
+function median(xs: number[]): number {
+  const s = [...xs].sort((a, b) => a - b);
+  const mid = Math.floor(s.length / 2);
+  return s.length % 2 === 1 ? s[mid]! : (s[mid - 1]! + s[mid]!) / 2;
+}
+
+/** Pitch and onset on every take. Null if either tracker cannot lock. */
+export function measureF5(notes: F5PhraseNote[], kind: F5Kind): {
+  samples: Float64Array;
+  cents_shift: number;
+  delay_sec: number;
+  target_index: number;
+  measurements: F5Measurements | null;
+} {
+  const rendered = renderF5(notes, kind);
+  const { samples, cents_shift, delay_sec, target_index } = rendered;
+  const target = notes[target_index]!;
+  const start = PRE_ROLL + target.time + delay_sec;
+  const end = start + target.duration;
+  const winStart = Math.max(0, start - 0.05);
+  const winEnd = end + 0.05;
+
+  const track = trackPitch(samples, { sampleRate: SR });
+  const pitch = scorePitchWindow(track, target.midi, winStart, winEnd);
+  const voicedHz = track.frames
+    .filter((f) => f.timeSec >= winStart && f.timeSec <= winEnd)
+    .filter((f) => f.f0Hz !== null && f.confidence >= 0.5)
+    .map((f) => f.f0Hz!);
+  if (pitch.status === "untrackable" || pitch.centsMedian == null || voicedHz.length === 0) {
+    return { samples, cents_shift, delay_sec, target_index, measurements: null };
+  }
+
+  const expected = PRE_ROLL + target.time;
+  const onsets = detectOnsets(samples, { sampleRate: SR });
+  if (onsets.onsets.length === 0) {
+    return { samples, cents_shift, delay_sec, target_index, measurements: null };
+  }
+  const sounded = expected + delay_sec;
+  let nearest = onsets.onsets[0]!;
+  for (const o of onsets.onsets) {
+    if (Math.abs(o.time - sounded) < Math.abs(nearest.time - sounded)) nearest = o;
+  }
+
+  return {
+    samples,
+    cents_shift,
+    delay_sec,
+    target_index,
+    measurements: {
+      f0_hz: median(voicedHz),
+      cents_from_target: pitch.centsMedian,
+      onset_ms: (nearest.time - expected) * 1000,
+    },
+  };
+}
+
+function goldFromKind(kind: F5Kind, m: F5Measurements): "match" | "pitch_fail" | "timing_fail" | null {
+  const mag = Math.abs(m.cents_from_target);
+  if (kind === "clean") return mag < V1_PITCH_WARN_CENTS ? "match" : null;
+  if (kind === "sharp_fail") {
+    return mag - V1_PITCH_FAIL_CENTS >= V1_PITCH_CLEARANCE_CENTS ? "pitch_fail" : null;
+  }
+  return m.onset_ms > V1_TIMING_MS ? "timing_fail" : null;
 }
 
 export function tryBuildF5(song: SongEntry, kind: F5Kind): F5Kept | null {
@@ -158,64 +230,40 @@ export function tryBuildF5(song: SongEntry, kind: F5Kind): F5Kept | null {
     f5DropStats.droppedShortPhrase++;
     return null;
   }
-  const { samples, cents_shift, delay_sec, target_index } = renderF5(notes, kind);
-  const target = notes[target_index]!;
-  const start = PRE_ROLL + target.time + delay_sec;
-  const end = start + target.duration;
-  const track = trackPitch(samples, { sampleRate: SR });
-  const pitch = scorePitchWindow(track, target.midi, Math.max(0, start - 0.05), end + 0.05);
-
-  if (kind === "clean" || kind === "sharp_fail") {
-    if (pitch.status === "untrackable" || pitch.centsMedian == null) {
-      f5DropStats.droppedUntrackable++;
-      return null;
-    }
-    const mag = Math.abs(pitch.centsMedian);
-    if (kind === "clean") {
-      if (mag >= V1_PITCH_WARN_CENTS) {
-        f5DropStats.droppedClearance++;
-        return null;
-      }
-      return {
-        kind, notes, cents_shift, delay_sec, target_index,
-        wav_sha256: sha256Samples(samples), sample_rate: SR, pre_roll_sec: PRE_ROLL,
-        gold: "match", measured_cents: pitch.centsMedian, measured_onset_ms: null,
-      };
-    }
-    // sharp_fail: must clear the fail gate by the stated multiple
-    if (mag - V1_PITCH_FAIL_CENTS < V1_PITCH_CLEARANCE_CENTS) {
-      f5DropStats.droppedClearance++;
-      return null;
-    }
-    return {
-      kind, notes, cents_shift, delay_sec, target_index,
-      wav_sha256: sha256Samples(samples), sample_rate: SR, pre_roll_sec: PRE_ROLL,
-      gold: "pitch_fail", measured_cents: pitch.centsMedian, measured_onset_ms: null,
-    };
-  }
-
-  // late_fail
-  const expected = PRE_ROLL + target.time;
-  const onsets = detectOnsets(samples, { sampleRate: SR });
-  if (onsets.onsets.length === 0) {
+  const { samples, cents_shift, delay_sec, target_index, measurements } = measureF5(notes, kind);
+  if (!measurements) {
     f5DropStats.droppedUntrackable++;
     return null;
   }
-  const sounded = expected + delay_sec;
-  let nearest = onsets.onsets[0]!;
-  for (const o of onsets.onsets) {
-    if (Math.abs(o.time - sounded) < Math.abs(nearest.time - sounded)) nearest = o;
-  }
-  const onsetMs = (nearest.time - expected) * 1000;
-  if (onsetMs <= V1_TIMING_MS) {
+  const gold = goldFromKind(kind, measurements);
+  if (!gold) {
     f5DropStats.droppedClearance++;
     return null;
   }
   return {
     kind, notes, cents_shift, delay_sec, target_index,
     wav_sha256: sha256Samples(samples), sample_rate: SR, pre_roll_sec: PRE_ROLL,
-    gold: "timing_fail", measured_cents: null, measured_onset_ms: onsetMs,
+    gold,
+    measured_f0_hz: measurements.f0_hz,
+    measured_cents: measurements.cents_from_target,
+    measured_onset_ms: measurements.onset_ms,
   };
+}
+
+/** Opaque path: hash of the recipe, never the kind or the song id in the name. */
+export function opaqueTakePath(songId: string, kept: F5Kept): string {
+  const digest = createHash("sha256")
+    .update(JSON.stringify({
+      songId,
+      midi: kept.notes.map((n) => n.midi),
+      time: kept.notes.map((n) => n.time),
+      cents_shift: kept.cents_shift,
+      delay_sec: kept.delay_sec,
+      target_index: kept.target_index,
+    }))
+    .digest("hex")
+    .slice(0, 6);
+  return `/acoustic-v1/take-${digest}.wav`;
 }
 
 /** Re-measure a kept F5 take; throws if untrackable (build/test failure). */
@@ -238,28 +286,24 @@ export function remeasureF5(kept: {
   return { gold: built?.gold ?? "match", untrackable: built == null };
 }
 
-export function rederiveF5Gold(kind: F5Kind, notes: F5PhraseNote[]): string | null {
-  const { samples, cents_shift, delay_sec, target_index } = renderF5(notes, kind);
-  void cents_shift;
-  const target = notes[target_index]!;
-  const start = PRE_ROLL + target.time + delay_sec;
-  const end = start + target.duration;
-  if (kind === "late_fail") {
-    const expected = PRE_ROLL + target.time;
-    const onsets = detectOnsets(samples, { sampleRate: SR });
-    if (onsets.onsets.length === 0) return null;
-    const sounded = expected + delay_sec;
-    let nearest = onsets.onsets[0]!;
-    for (const o of onsets.onsets) {
-      if (Math.abs(o.time - sounded) < Math.abs(nearest.time - sounded)) nearest = o;
-    }
-    const onsetMs = (nearest.time - expected) * 1000;
-    return onsetMs > V1_TIMING_MS ? "timing_fail" : null;
+export function rederiveF5Measurements(kind: F5Kind, notes: F5PhraseNote[]): {
+  gold: string | null;
+  f0_hz: number | null;
+  cents_from_target: number | null;
+  onset_ms: number | null;
+} {
+  const { measurements } = measureF5(notes, kind);
+  if (!measurements) {
+    return { gold: null, f0_hz: null, cents_from_target: null, onset_ms: null };
   }
-  const track = trackPitch(samples, { sampleRate: SR });
-  const pitch = scorePitchWindow(track, target.midi, Math.max(0, start - 0.05), end + 0.05);
-  if (pitch.status === "untrackable" || pitch.centsMedian == null) return null;
-  const mag = Math.abs(pitch.centsMedian);
-  if (kind === "clean") return mag < V1_PITCH_WARN_CENTS ? "match" : null;
-  return mag - V1_PITCH_FAIL_CENTS >= V1_PITCH_CLEARANCE_CENTS ? "pitch_fail" : null;
+  return {
+    gold: goldFromKind(kind, measurements),
+    f0_hz: measurements.f0_hz,
+    cents_from_target: measurements.cents_from_target,
+    onset_ms: measurements.onset_ms,
+  };
+}
+
+export function rederiveF5Gold(kind: F5Kind, notes: F5PhraseNote[]): string | null {
+  return rederiveF5Measurements(kind, notes).gold;
 }

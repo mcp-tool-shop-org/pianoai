@@ -143,7 +143,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Grade this take of \"Danny Boy\"."
+        "content": "Grade this take of \"Danny Boy\". Answer with exactly one of: match, pitch_fail, timing_fail."
       },
       {
         "turn": 2,
@@ -153,13 +153,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/danny-boy-clean.wav"
+              "path": "/acoustic-v1/take-0998ca.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/danny-boy-clean.wav",
+              "path": "/acoustic-v1/take-0998ca.wav",
               "song_id": "danny-boy"
             }
           }
@@ -178,9 +178,9 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 440,
+          "f0_hz": 293.6707953937364,
           "cents_from_target": 0.035533255272308266,
-          "onset_ms": null
+          "onset_ms": -21.36054421768707
         }
       },
       {

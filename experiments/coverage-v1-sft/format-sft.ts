@@ -67,6 +67,10 @@ if (trainOnly.length > 0) {
 mkdirSync(OUT, { recursive: true });
 writeFileSync(join(OUT, "sft-train.jsonl"), train.map((l) => JSON.stringify(l)).join("\n") + "\n", "utf8");
 writeFileSync(join(OUT, "sft-test.jsonl"), test.map((l) => JSON.stringify(l)).join("\n") + "\n", "utf8");
+const goldTest = records
+  .filter((r) => r.split === "test")
+  .map((r) => ({ id: r.id, family: r.family, gold: r.observation.gold.answer }));
+writeFileSync(join(OUT, "gold-test.jsonl"), goldTest.map((l) => JSON.stringify(l)).join("\n") + "\n", "utf8");
 process.stdout.write(
-  `sft-train ${train.length}  sft-test ${test.length}  families ${[...trainFamilies].sort().join(",")}\n`,
+  `sft-train ${train.length}  sft-test ${test.length}  gold-test ${goldTest.length}  families ${[...trainFamilies].sort().join(",")}\n`,
 );

@@ -5,7 +5,13 @@ import { fileURLToPath } from "node:url";
 import { defineTask, publishedOwner, assertNoStraddle } from "../experiment/index.js";
 import { v1Records, coverageV1Task } from "./task.js";
 import { rederiveGold, toolSequenceOf, f5DropStats } from "./builder.js";
-import { F5_PITCH_CLEARANCE_MULTIPLE, F5_ONSET_CLEARANCE_MULTIPLE, F5_THRESHOLDS } from "./f5-acoustic.js";
+import {
+  F5_KINDS,
+  F5_PITCH_CLEARANCE_MULTIPLE,
+  F5_ONSET_CLEARANCE_MULTIPLE,
+  F5_THRESHOLDS,
+  rederiveF5Measurements,
+} from "./f5-acoustic.js";
 import { MEASURED_YIN_LOCKED_P95_CENTS, MEASURED_ONSET_ABS_P95_MS } from "./tracker-error.js";
 import { coverageReport, assertCoverageFloors } from "./coverage.js";
 import { loadPublishableSongs } from "./library.js";
@@ -115,7 +121,9 @@ describe("prompt-visible fields contain no gates", () => {
       expect(visible, r.id).not.toMatch(/pitch_fail_cents|pitch_warn_cents|timing_ms|onset_delta/);
       expect(visible, r.id).not.toContain('"thresholds"');
       const user = r.target_trace.session.filter((t) => t.role === "user").map((t) => t.content).join("\n");
-      if (r.observation.gold.answer.length > 3) {
+      // Acoustic user turns name the closed verdict set (chunk 18 B3). The gold
+      // token is one of three listed answers, not leaked as the unique answer.
+      if (r.family !== "acoustic" && r.observation.gold.answer.length > 3) {
         expect(user, r.id).not.toContain(r.observation.gold.answer);
       }
     }
@@ -179,6 +187,53 @@ describe("F5 acoustic — the guard bands", () => {
   it("exposes no gate in any acoustic prompt", () => {
     for (const r of committedRecords().filter((r) => r.family === "acoustic")) {
       expect(JSON.stringify(r.target_trace), r.id).not.toMatch(/pitch_fail_cents|timing_ms/);
+    }
+  });
+});
+
+function scoreTakeContent(r: V1Record): { f0_hz: unknown; cents_from_target: unknown; onset_ms: unknown } {
+  const turn = r.target_trace.session.find((t) => t.role === "tool" && t.tool === "score_audio_take");
+  expect(turn, r.id).toBeDefined();
+  return (turn as { content: { f0_hz: unknown; cents_from_target: unknown; onset_ms: unknown } }).content;
+}
+
+describe("F5 acoustic — prompt-visible measurements (chunk 18)", () => {
+  const KIND_TOKEN = new RegExp(`\\b(${F5_KINDS.join("|")})\\b`);
+
+  it("serialises no perturbation-kind token in any prompt-visible field", () => {
+    for (const r of committedRecords()) {
+      expect(JSON.stringify(r.target_trace), r.id).not.toMatch(KIND_TOKEN);
+    }
+  });
+
+  it("puts a real number in every score_audio_take measurement field", () => {
+    const rows = committedRecords().filter((r) => r.family === "acoustic");
+    expect(rows.length).toBeGreaterThan(0);
+    for (const r of rows) {
+      const c = scoreTakeContent(r);
+      expect(typeof c.f0_hz, `${r.id} f0_hz`).toBe("number");
+      expect(Number.isFinite(c.f0_hz as number), `${r.id} f0_hz finite`).toBe(true);
+      expect(typeof c.cents_from_target, `${r.id} cents`).toBe("number");
+      expect(Number.isFinite(c.cents_from_target as number), `${r.id} cents finite`).toBe(true);
+      expect(typeof c.onset_ms, `${r.id} onset`).toBe("number");
+      expect(Number.isFinite(c.onset_ms as number), `${r.id} onset finite`).toBe(true);
+    }
+  });
+
+  it("has f0_hz that varies across records", () => {
+    const rows = committedRecords().filter((r) => r.family === "acoustic");
+    const hz = rows.map((r) => scoreTakeContent(r).f0_hz as number);
+    expect(new Set(hz.map((x) => x.toFixed(6))).size).toBeGreaterThan(1);
+  });
+
+  it("names the verdict set in every acoustic user turn, equal to the family's golds", () => {
+    const rows = committedRecords().filter((r) => r.family === "acoustic");
+    const golds = [...new Set(rows.map((r) => r.observation.gold.answer))].sort();
+    expect(golds.length).toBeGreaterThanOrEqual(2);
+    for (const r of rows) {
+      const user = r.target_trace.session.filter((t) => t.role === "user").map((t) => t.content).join("\n");
+      const named = [...new Set(user.match(/\b(?:match|pitch_fail|timing_fail)\b/g) ?? [])].sort();
+      expect(named, r.id).toEqual(golds);
     }
   });
 });
@@ -368,6 +423,17 @@ describe.runIf(RUN_DSP)("engine verification (skipped under SKIP_DSP_VERIFICATIO
     expect(rows.length).toBeGreaterThan(0);
     for (const r of rows) {
       expect(rederiveGold(r), r.id).toBe(r.observation.gold.answer);
+    }
+  });
+
+  it("matches committed f0_hz to a fresh track within 1e-6", () => {
+    const rows = committedRecords().filter((r) => r.family === "acoustic");
+    for (const r of rows) {
+      const a = r.observation.acoustic as { kind: (typeof F5_KINDS)[number]; notes: { midi: number; name: string; time: number; duration: number }[] };
+      const m = rederiveF5Measurements(a.kind, a.notes);
+      expect(m.f0_hz, r.id).not.toBeNull();
+      const got = scoreTakeContent(r).f0_hz as number;
+      expect(Math.abs(got - m.f0_hz!), r.id).toBeLessThanOrEqual(1e-6);
     }
   });
 });

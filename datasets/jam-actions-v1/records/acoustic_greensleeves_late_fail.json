@@ -145,7 +145,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Grade this take of \"Greensleeves\"."
+        "content": "Grade this take of \"Greensleeves\". Answer with exactly one of: match, pitch_fail, timing_fail."
       },
       {
         "turn": 2,
@@ -155,13 +155,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/greensleeves-late_fail.wav"
+              "path": "/acoustic-v1/take-bdeb18.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/greensleeves-late_fail.wav",
+              "path": "/acoustic-v1/take-bdeb18.wav",
               "song_id": "greensleeves"
             }
           }
@@ -180,8 +180,8 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": null,
-          "cents_from_target": null,
+          "f0_hz": 440.01909516512546,
+          "cents_from_target": 0.07513064256112086,
           "onset_ms": 59.9092970521542
         }
       },

@@ -81,13 +81,11 @@ def main() -> None:
         "--terse",
         action="store_true",
         help=(
-            "append a final instruction to answer with the bare value. THE FAIR "
-            "BASE CONDITION. Without it the base model continues the "
-            "conversation in prose -- 'The left hand is playing a Dm (D minor) "
-            "chord' where gold is 'Dm' -- and scores 0 on knowledge it plainly "
-            "has. A fine-tune compared against that overstates its gain by the "
-            "entire formatting difference. The system prompt already asks for "
-            "the value alone; mid-conversation, the base model does not obey it."
+            "append a final instruction to answer with the bare value. Default "
+            "off. Now redundant for jam-actions-v1: every record's user turn "
+            "already names the format, so training, the fair base and the "
+            "adapter all see the same prompt. Kept so older runs remain "
+            "replayable."
         ),
     )
     args = ap.parse_args()

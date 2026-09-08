@@ -17,6 +17,7 @@ import {
   resetF5DropStats,
   tryBuildF5,
   rederiveF5Gold,
+  opaqueTakePath,
   f5DropStats,
 } from "./f5-acoustic.js";
 import type { SongEntry } from "../../songs/types.js";
@@ -388,22 +389,29 @@ export function buildHarmonyRecords(song: SongEntry, split: "train" | "test"): V
 
 export function buildAcousticRecord(song: SongEntry, split: "train" | "test"): V1Record[] {
   const out: V1Record[] = [];
+  const usedPaths = new Set<string>();
   for (const kind of F5_KINDS) {
     const kept = tryBuildF5(song, kind);
     if (!kept) continue;
+    const path = opaqueTakePath(song.id, kept);
+    if (usedPaths.has(path)) throw new Error(`opaque take path collision ${path}`);
+    usedPaths.add(path);
     const session: Turn[] = [
-      { turn: 1, role: "user", content: `Grade this take of "${song.title}".` },
+      {
+        turn: 1, role: "user",
+        content: `Grade this take of "${song.title}". Answer with exactly one of: match, pitch_fail, timing_fail.`,
+      },
       {
         turn: 2, role: "assistant",
         content: "Transcribing, then scoring with raw measurements.",
         tool_calls: [
-          { tool: "transcribe_audio", arguments: { path: `/acoustic-v1/${song.id}-${kind}.wav` } },
-          { tool: "score_audio_take", arguments: { path: `/acoustic-v1/${song.id}-${kind}.wav`, song_id: song.id } },
+          { tool: "transcribe_audio", arguments: { path } },
+          { tool: "score_audio_take", arguments: { path, song_id: song.id } },
         ],
       },
       { turn: 3, role: "tool", tool: "transcribe_audio", content: { note_count: kept.notes.length } },
       { turn: 4, role: "tool", tool: "score_audio_take", content: {
-        f0_hz: kept.measured_cents == null ? null : 440,
+        f0_hz: kept.measured_f0_hz,
         cents_from_target: kept.measured_cents,
         onset_ms: kept.measured_onset_ms,
       } },
@@ -584,6 +592,22 @@ export function buildAllRecords(): V1Record[] {
   records.push(...buildEnsembleRecords());
   for (const p of pickComparePairs(songs, testIds)) {
     records.push(buildCompareRecord(p.a, p.b, p.split));
+  }
+  const takePaths = new Set<string>();
+  for (const r of records) {
+    if (r.family !== "acoustic") continue;
+    const paths = new Set<string>();
+    for (const turn of r.target_trace.session) {
+      if (turn.role !== "assistant" || !turn.tool_calls) continue;
+      for (const tc of turn.tool_calls) {
+        const p = tc.arguments.path;
+        if (typeof p === "string") paths.add(p);
+      }
+    }
+    if (paths.size !== 1) throw new Error(`${r.id}: expected one opaque take path, got ${[...paths].join(",")}`);
+    const path = [...paths][0]!;
+    if (takePaths.has(path)) throw new Error(`opaque take path collision ${path} on ${r.id}`);
+    takePaths.add(path);
   }
   records.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
   return records;

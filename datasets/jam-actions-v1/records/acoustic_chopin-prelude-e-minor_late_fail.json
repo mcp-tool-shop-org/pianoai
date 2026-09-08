@@ -142,7 +142,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Grade this take of \"Prelude in E Minor, Op. 28 No. 4\"."
+        "content": "Grade this take of \"Prelude in E Minor, Op. 28 No. 4\". Answer with exactly one of: match, pitch_fail, timing_fail."
       },
       {
         "turn": 2,
@@ -152,13 +152,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/chopin-prelude-e-minor-late_fail.wav"
+              "path": "/acoustic-v1/take-9309d0.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/chopin-prelude-e-minor-late_fail.wav",
+              "path": "/acoustic-v1/take-9309d0.wav",
               "song_id": "chopin-prelude-e-minor"
             }
           }
@@ -177,8 +177,8 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": null,
-          "cents_from_target": null,
+          "f0_hz": 493.90703090228686,
+          "cents_from_target": 0.08317872746799441,
           "onset_ms": 59.9092970521542
         }
       },

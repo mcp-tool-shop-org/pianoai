@@ -142,7 +142,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Grade this take of \"Prelude in C Major, BWV 846 (Well-Tempered Clavier)\"."
+        "content": "Grade this take of \"Prelude in C Major, BWV 846 (Well-Tempered Clavier)\". Answer with exactly one of: match, pitch_fail, timing_fail."
       },
       {
         "turn": 2,
@@ -152,13 +152,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/bach-prelude-c-major-bwv846-sharp_fail.wav"
+              "path": "/acoustic-v1/take-c7b2a0.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/bach-prelude-c-major-bwv846-sharp_fail.wav",
+              "path": "/acoustic-v1/take-c7b2a0.wav",
               "song_id": "bach-prelude-c-major-bwv846"
             }
           }
@@ -177,9 +177,9 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 440,
+          "f0_hz": 270.07456674571125,
           "cents_from_target": 55.02511455157677,
-          "onset_ms": null
+          "onset_ms": -21.36054421768707
         }
       },
       {

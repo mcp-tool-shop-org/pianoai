@@ -145,7 +145,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Grade this take of \"The Entertainer\"."
+        "content": "Grade this take of \"The Entertainer\". Answer with exactly one of: match, pitch_fail, timing_fail."
       },
       {
         "turn": 2,
@@ -155,13 +155,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/the-entertainer-late_fail.wav"
+              "path": "/acoustic-v1/take-531393.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/the-entertainer-late_fail.wav",
+              "path": "/acoustic-v1/take-531393.wav",
               "song_id": "the-entertainer"
             }
           }
@@ -180,8 +180,8 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": null,
-          "cents_from_target": null,
+          "f0_hz": 587.3812270085015,
+          "cents_from_target": 0.15236009205053178,
           "onset_ms": 59.9092970521542
         }
       },

@@ -143,7 +143,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Grade this take of \"Shenandoah\"."
+        "content": "Grade this take of \"Shenandoah\". Answer with exactly one of: match, pitch_fail, timing_fail."
       },
       {
         "turn": 2,
@@ -153,13 +153,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/shenandoah-late_fail.wav"
+              "path": "/acoustic-v1/take-4c5b62.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/shenandoah-late_fail.wav",
+              "path": "/acoustic-v1/take-4c5b62.wav",
               "song_id": "shenandoah"
             }
           }
@@ -178,8 +178,8 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": null,
-          "cents_from_target": null,
+          "f0_hz": 311.13309673532996,
+          "cents_from_target": 0.03401489831001316,
           "onset_ms": 59.9092970521542
         }
       },

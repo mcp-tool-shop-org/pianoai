@@ -142,7 +142,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Grade this take of \"Piano Sonata No. 16 in C Major, K. 545, I. Allegro\"."
+        "content": "Grade this take of \"Piano Sonata No. 16 in C Major, K. 545, I. Allegro\". Answer with exactly one of: match, pitch_fail, timing_fail."
       },
       {
         "turn": 2,
@@ -152,13 +152,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/mozart-k545-mvt1-late_fail.wav"
+              "path": "/acoustic-v1/take-1237cb.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/mozart-k545-mvt1-late_fail.wav",
+              "path": "/acoustic-v1/take-1237cb.wav",
               "song_id": "mozart-k545-mvt1"
             }
           }
@@ -177,8 +177,8 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": null,
-          "cents_from_target": null,
+          "f0_hz": 261.6274808735222,
+          "cents_from_target": 0.0126757219782722,
           "onset_ms": 59.9092970521542
         }
       },

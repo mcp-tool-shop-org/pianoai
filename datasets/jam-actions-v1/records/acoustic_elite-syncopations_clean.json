@@ -142,7 +142,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Grade this take of \"Elite Syncopations\"."
+        "content": "Grade this take of \"Elite Syncopations\". Answer with exactly one of: match, pitch_fail, timing_fail."
       },
       {
         "turn": 2,
@@ -152,13 +152,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/elite-syncopations-clean.wav"
+              "path": "/acoustic-v1/take-f471ae.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/elite-syncopations-clean.wav",
+              "path": "/acoustic-v1/take-f471ae.wav",
               "song_id": "elite-syncopations"
             }
           }
@@ -177,9 +177,9 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 440,
+          "f0_hz": 523.2800655118924,
           "cents_from_target": 0.09573169476880106,
-          "onset_ms": null
+          "onset_ms": -21.36054421768707
         }
       },
       {
