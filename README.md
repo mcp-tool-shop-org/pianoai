@@ -34,7 +34,7 @@ A piano and guitar that AI learns to play. Not a synthesizer, not a MIDI library
 An LLM can read and write text, but it can't experience music the way we do. No ears, no fingers, no muscle memory. AI Jam Sessions closes that gap by giving the model senses it can actually use:
 
 - **Reading** — real MIDI sheet music with deep musical annotations. Not hand-written approximations — parsed, analyzed, and explained.
-- **Hearing** — six audio engines (oscillator piano, sample piano, vocal samples, physical vocal tract, additive vocal synth, physically-modeled guitar) that play through your speakers, so the humans in the room become the AI's ears. And now the model has ears of its own: it can measure a recording it made, or one you made, and say what is actually in it — see [Listening](#listening).
+- **Hearing** — six audio engines (oscillator piano, sample piano, vocal samples, physical vocal tract, additive vocal synth, physically-modeled guitar) that play through your speakers, so the humans in the room become the AI's ears. And now the model has ears of its own, twice over: it can measure a recording after the fact (see [Listening](#listening)) and it can watch the band **while the music is still going** (see [The Live Ensemble](#the-live-ensemble)).
 - **Seeing** — a piano roll that renders what was played as SVG the model can read back and verify. An interactive guitar tablature editor. A browser cockpit with a visual keyboard, dual-mode note editor, and tuning lab.
 - **Remembering** — a practice journal that persists across sessions, so learning compounds over time.
 - **Singing** — vocal tract synthesis with 20 voice presets, from operatic soprano to electronic choir. Sing-along mode with solfege, contour, and syllable narration. And a real sung lead on the piano's clock: a score-conditioned singer driven by the song's MIDI, gated on timing (40 ms) and pitch (50 cents) before you hear it — see [Sing](#sing).
@@ -74,6 +74,50 @@ own output rather than burying it here.
 The whole surface is dependency-free: the transform, the pitch tracker, the onset detector, the
 WAV decoder and the PNG encoder are all in this repo, and they produce identical numbers in Node
 and in the browser.
+
+## The Live Ensemble
+
+Listening grades a recording once it has finished. This is the other half: asking what every
+instrument is doing **right now**, mid-performance.
+
+```
+ensemble_now()
+```
+
+It answers with each instrument's held notes, how long each has been held, and the combined chord
+across the whole ensemble. During a duet the two voices are reported separately, so you can see the
+piano holding a triad while the synth carries the melody over it.
+
+### Two channels, and the cheap one is the accurate one
+
+This is the part worth understanding, because it decides which number to trust.
+
+**Intent — what each engine was told to play.** When the model is the one performing, this is not
+an estimate. A piano chord is not something to transcribe; it is three note-ons that were sent. The
+notes are exact, free, and immediate.
+
+**Acoustic — what actually came out.** Each engine can fan its output into a private analysis bus,
+so every instrument is measured at the source with no separation and no ambiguity. This channel is
+**verification, not discovery**: it is how you learn that a voice drifted off the clock, a take
+clipped, or an engine went silent while still being sent notes.
+
+When the two disagree, that is a fact about the render, not a correction to the notes.
+
+### What it costs
+
+Watching an instrument costs about **9 microseconds per audio callback** against a 42.67 ms block,
+which is roughly 0.02% of the audio budget, measured with zero dropped samples. An instrument with
+no observer attached costs nothing at all.
+
+### What it will not tell you
+
+The acoustic channel lags, and says by how much: about 23 ms for pitch, and 70 ms for a confirmed
+onset, because an onset cannot be confirmed until the audio after it has arrived. Onsets near that
+edge are withheld rather than reported and later retracted.
+
+The acoustic tracker follows one line at a time, so it will not name the notes of a chord — and it
+does not pretend to. A chord it cannot resolve is its known limitation rather than a finding, and
+the ensemble stays quiet about it instead of crying wolf on every chord the piano plays.
 
 ## The Piano Roll
 
