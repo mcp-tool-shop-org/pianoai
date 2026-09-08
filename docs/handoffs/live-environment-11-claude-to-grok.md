@@ -1,160 +1,165 @@
-# Handoff 11 — Claude to Grok Build: a corpus that can actually measure something
+# Handoff 11 — Claude to Grok Build: a dataset that covers the product
 
 **Paste target:** the Grok Build session on the live-environment arc.
-**Chunk 12.** Branch `main` at `11ef6d6`. **Pull first** — a lot landed: v2.5.0 shipped, both
-Hugging Face datasets corrected, the experiment scaffolding you built is in, and the acoustic LoRA
-has been trained.
+**Chunk 12.** Branch `main`. **Pull first.**
+
+**This replaces the version of this file pushed an hour ago.** That one asked you to make the
+acoustic corpus *harder* — boundary cases, more conversation shapes. It was the wrong brief. It
+took the existing corpus's frame as given and asked for a tougher version of something that covers
+2% of the product. The Director called that out and was right. What follows is the brief I should
+have written.
 
 ---
 
-## 1. The run happened, and the result is a null one
+## 1. What we have, measured
 
-Your scaffolding worked. The corpus regenerates byte-identical, the trainer ran on an L40S for 34.6
-minutes, and every gate held. Then the numbers came back.
+The acoustic LoRA trained fine and returned a null result: a fairly-prompted base model scores
+0.972 on the held-out phrase, the fine-tune 1.000. One record of gain out of 36. Details in
+`experiments/acoustic-sft/RESULTS.md`.
 
-Held-out phrase, 36 records, seed 13, Qwen2.5-3B-Instruct:
+I then went looking for why, and found something bigger than difficulty.
 
-| condition | accuracy |
-|---|---|
-| uniform / majority baseline | 0.111 |
-| base model, format-naive prompt | 0.333 |
-| **base model, fair prompt** | **0.972** |
-| LoRA epoch 5 | **1.000** |
+| dimension | the product has | the acoustic corpus uses |
+|---|---|---|
+| MCP tools | **54** | **3** — `transcribe_audio`, `score_audio_take`, `analyze_audio` |
+| songs | **120**, each with MIDI on disk (122 `.mid` files) | **3** |
+| genres | **12** — blues, classical, film, folk, jazz, latin, new-age, pop, ragtime, rnb, rock, soul | **1** |
+| distinct keys | **20** | a handful |
+| per-song teaching content | **120 hand-written** `musicalLanguage` blocks: `description`, `structure`, `keyMoments`, `teachingGoals`, `styleTips` | **none** |
+| conversation shapes | — | **2** |
+| notes per example | whole pieces | **4** |
 
-**The fine-tune gains one record out of 36.** Against the trivial baselines alone it reads 1.000
-versus 0.111 — a nine-fold win, and meaningless. Rule 4 of the contract is the only reason we know.
+The published symbolic corpus, `jam-actions-v0`, is better but not by much: 8 songs, all classical
+piano, and its records mention 2 tools.
 
-Full write-up in `experiments/acoustic-sft/RESULTS.md`, including a grader defect of mine that
-inverted the result on the first pass and how it was caught.
+So between both published datasets we cover roughly **9% of the tool surface, one genre of twelve,
+and none of the musical language that is the actual product.** Harmony, chords, voice leading,
+sections, transposition, guitar, tunings, vocals, practice loops, the piano roll, the spectrogram
+and the live ensemble this arc just built are all at zero.
 
-## 2. Why it cannot measure anything, measured
+The corpus is not weak because the perturbations are too easy. It is weak because it grades a
+four-note fragment with three tools and calls that a dataset about a music platform.
 
-Two facts, both checked against the corpus rather than assumed.
+## 2. The one real constraint, stated honestly so nobody hides behind it
 
-**The observation contains the answer.** Each record carries the resolved tool outputs — measured
-onset times, pitch in cents — and copies the gates in beside them. Producing the verdict is reading
-two numbers and comparing them to two printed thresholds. That is comprehension, not analysis, and
-a 3B model does it cold.
+**Licence, not capability.** The library spans twelve genres, but most of it is in copyright:
+Arlen, Kern, Morricone, Jobim, Einaudi, Perri, Keys, The Who, Cooke. A *published* corpus cannot
+redistribute those or anything derived from them.
 
-**Every record is the same shape.** Across all 108 there are exactly **two** tool-call sequences and
-**two** conversation shapes:
+What is publishable is the public-domain shelf — **classical, ragtime (Joplin, d. 1917) and folk
+(traditional)**, roughly thirty songs across three genres, each with verified arrangement
+provenance the way `jam-actions-v0` already did it.
 
-| sequence | records |
-|---|---|
-| `transcribe_audio` → `score_audio_take` | 96 |
-| `analyze_audio` alone | 12 (every silence case) |
+Thirty songs and three genres is **ten times the songs and three times the genres** of what we have
+now. And this repo already has the pattern for the rest: `datasets/jam-actions-v0/` is a working
+corpus, `datasets/jam-actions-v0-public/` is the published subset, with a provenance note
+explaining the difference. Use it.
 
-So the other obvious thing to grade — which tools the model chooses — is a two-class problem
-perfectly correlated with "is this silence". Also free. There is no hard step anywhere in this
-corpus. It is one template with substituted numbers.
+**Licence explains the genre ceiling. It explains nothing about using 3 tools of 54, ignoring 120
+hand-written teaching annotations, or four-note examples.** Do not let it.
 
-**This is not a criticism of the build.** The corpus is correct, reproducible and published, and it
-proved the whole pipeline end to end. It just cannot discriminate, and that is what training it was
-for.
+## 3. The design principle, and it is one sentence
 
-## 3. What this chunk is
+**The model must have to call a tool to know the answer.**
 
-**`jam-actions-acoustic-v1` — a new corpus that has a hard step in it.**
+That is what both existing corpora violate. They hand over the resolved measurement and then ask
+for a verdict, which is reading comprehension. If an example can be answered from the prompt alone,
+it teaches nothing and measures nothing, and a base model will match you.
 
-New `schemaVersion`, new directory, new `ExperimentTask`. **Do not touch v0.** It is published on
-Hugging Face with checksums, its reproducibility test must keep passing untouched, and the registry
-already owns `jam-actions-acoustic-v0/1.0.0`.
+The repo makes this easy in a way we have not used: it is **full of deterministic music engines**,
+and every one of them generates constructible gold for a question that cannot be answered without
+it. `inferChord` decides chords. `verify_harmony` gates voicings by construction. `list_sections`,
+`list_measures` and `transpose_song` are exact. The scorers are deterministic given the thresholds.
+The ensemble's intent channel is exact by definition.
 
-Four changes, and the first two are the ones that matter.
+Gold by construction, from an engine, on a question the prompt does not answer. That is the shape.
 
-**B1. The prompt must not contain the resolved answer.**
+## 4. Task families
 
-Today the tool result the model reads is effectively the verdict in longhand. Make the tool result
-carry **raw measurements only** — onset times, f0 in Hz or cents, durations — and keep the gates out
-of the prompt window.
+Build **families**, not one template with substituted numbers. Each needs constructible gold, a
+declared closed verdict set, and the property above. These are candidates — take them, improve
+them, drop any that cannot get honest gold, and say which and why.
 
-Rule 5 still applies and is not in conflict: every threshold the answer depends on still goes **in
-the record**, because that is what lets a run be re-scored later. What changes is that it stops
-being **in the prompt**. Those are different places and the corpus currently conflates them. Say in
-the record schema which fields are prompt-visible, so this cannot quietly regress.
+**F1 — Harmony verification.** Propose a reharmonization; `verify_harmony` gates it. Gold is the
+gate's verdict, deterministic. Generate both valid and deliberately invalid voicings so the classes
+are balanced by construction rather than by luck. The model cannot know the answer without running
+the gate.
 
-**B2. Vary the shape, so tool choice is a real decision.**
+**F2 — Chord identification.** Name the chord sounding at a given measure, over real library MIDI.
+Gold from `inferChord`. Spans keys and genres for free, and a 4-note reduction cannot fake it.
 
-Two sequences across 108 records is not tool use, it is a fixed pipeline. Add cases where the right
-move genuinely differs. Some candidates, take them or better ones:
+**F3 — Structural navigation.** Sections, measure ranges, transposition. `list_sections`,
+`list_measures`, `transpose_song`. Gold exact. Cheap to build, and it exercises tools no corpus has
+ever touched.
 
-- a take where `transcribe_audio` returns nothing usable and the correct next move is
-  `analyze_audio` rather than scoring garbage;
-- a take that needs `view_spectrogram` before a judgement is possible;
-- a take that is clean, where the correct answer is to stop rather than keep calling tools;
-- a chord, where the monophonic tracker must be *declined* rather than trusted — we have a
-  documented limitation and no record exercises it.
+**F4 — Teaching selection.** Given a song's `musicalLanguage` and a described student error, choose
+the practice setup. This is the one where gold is hardest — be careful, and if you cannot construct
+it honestly, say so rather than hand-labelling. **Hand-written labels are forbidden by rule 1 of the
+contract.** A defensible version: derive gold from what the deterministic scorer would flag, not
+from taste.
 
-The target is a corpus where a model that always emits the same two calls is measurably wrong.
+**F5 — Acoustic, but across the shelf.** The existing task, on thirty public-domain songs instead of
+three, over whole phrases instead of four notes, with the resolved measurements out of the prompt.
 
-**B3. Boundary cases, and this one has a trap in it.**
+**F6 — The live ensemble.** Which instrument stopped, drifted, or is playing the wrong chord tone.
+Cross-source comparison, exact by construction, and it uses what this arc built. The template's
+`who-first` task is the trivial version; this is the real one.
 
-Current perturbations sit comfortably clear of the gates:
+## 5. Scope for THIS chunk
 
-| kind | applied | gate | clearance |
-|---|---|---|---|
-| `sharp_60` | 62.1 cents | 50 | 12.1 |
-| `sharp_30` | 28.0 cents | 25 | 3.0 |
-| `late_80` | 91.6 ms | 40 | 51.6 |
-| `late_25` | 18.5 ms | 40 | 21.5 |
+Do not build all six. Build the **spine plus two families**, so the shape is proven before it is
+mass-produced:
 
-A model can pass by learning "sharp means fail, late means pass" without ever comparing to a gate.
-Cases near the boundary break that shortcut.
+- **B1.** The v1 task/schema: prompt-visible versus record-only fields as an explicit, tested
+  distinction. Thresholds stay in the record for re-scoring and leave the prompt.
+- **B2.** **F2 and F3** — chord identification and structural navigation. Chosen because their gold
+  is unarguable, they span the whole library, and between them they touch tools no corpus has used.
+- **B3.** A coverage report the corpus builds for itself: tools touched, songs, genres, keys,
+  distinct conversation shapes. Committed as an artifact, so "what does this cover" is a number
+  rather than an argument. This is the thing whose absence let a 3-tool corpus look finished.
+- **B4.** Tests, below.
 
-**But rule 6 says a guard band clears the gate by more than the estimator's own error, and that
-still holds.** The resolution is that you must **measure the tracker's error first** and derive the
-minimum clearance from it, rather than picking 48 and 52 because they look tight. Run the pitch and
-onset trackers over the existing synthetic takes, get the distribution of measured-versus-applied
-error, and set the closest boundary case at more than that. If the tracker is good to 3 cents, a
-5-cent clearance is honest and 1 cent is not. **Report the measured error in the handoff** — it is
-the number the whole boundary design rests on, and `sharp_30` at 3.0 cents of clearance may already
-be inside it, which would make four of the nine existing classes unsound.
+New `schemaVersion`, new directory. **`jam-actions-acoustic-v0` is published and must not move** —
+its reproduction gate has to keep passing untouched.
 
-**B4. Scale, and say what n buys.**
+## 6. Tests
 
-36 test records means one record is 2.8 percentage points, so the entire fine-tune result this week
-was inside a single record's worth of noise. Decide the size from the effect you want to detect, not
-from a round number, and write that reasoning into the corpus README. More phrases matters more than
-more perturbations per phrase — the split is by phrase, so phrases are the unit that buys power.
-
-## 4. Tests
-
-- v0 still reproduces byte-identical. Its existing test must pass untouched.
-- v1 declares a new `schemaVersion` and the registry accepts it; a task reusing v0's is rejected.
-- No `splitKey` straddles the split.
-- **Prompt-visibility is enforced, not documented:** a test asserts no gate value appears in any
-  prompt-visible field of a v1 record. This is the whole point of B1 and it will regress silently
+- v0 still reproduces byte-identical; existing gate passes unchanged.
+- v1's `schemaVersion` is new and the registry rejects a task reusing v0's.
+- **No gate value appears in any prompt-visible field.** The point of B1, and it regresses silently
   without a test.
-- Tool-call sequences: assert the corpus contains more than two distinct ones, and that no single
-  sequence covers a majority.
-- The measured tracker error is recorded and every boundary case clears the gate by more than it.
+- **Coverage floors, asserted:** more than 10 distinct tools, more than 20 songs, more than 3
+  distinct conversation shapes, and no single shape covering a majority. Fail the build if the
+  corpus regresses toward a template.
+- Gold agrees with the engine that produced it, re-derived at test time — rule 2, the same
+  `measured.test.ts` pattern.
+- No `splitKey` straddles the split.
 
-## 5. Do not
+## 7. Do not
 
 - Do not modify `datasets/jam-actions-acoustic-v0/` or its schema version. Published.
-- Do not train anything. The pod is torn down and training is mine.
-- Do not run the full suite; the juncture is mine.
-- Do not install anything.
-- Do not write the corpus README's public framing — that is mine.
-- Do not commit or push.
+- Do not hand-write a single label.
+- Do not include copyrighted works in anything destined for publication. Working corpus only, with
+  a provenance note, following the `jam-actions-v0` precedent.
+- Do not train. Do not run the full suite. Do not install. Do not commit or push.
+- Do not write the corpus README's public framing — mine.
 
-## 6. What to say back
+## 8. What to say back
 
-`docs/handoffs/live-environment-12-grok-to-claude.md`, five parts. Two things I want stated plainly
-whatever else you find:
+`docs/handoffs/live-environment-12-grok-to-claude.md`, five parts. State plainly:
 
-1. **The measured tracker error**, and whether `sharp_30`'s 3.0-cent clearance survives it. If it
-   does not, that is a defect in the *published* v0 and I need to hear it as a finding rather than
-   see it quietly fixed in v1.
-2. **How many distinct conversation shapes v1 actually has**, counted, not intended.
+1. **The coverage report's actual numbers** — tools, songs, genres, shapes. Counted, not intended.
+2. **Which families you dropped and why.** If F4's gold cannot be constructed honestly, I would
+   rather have that as a finding than a corpus with taste baked into it.
 
-## 7. Junctures
+## 9. Junctures
 
 | # | When | What runs | Status |
 |---|---|---|---|
-| J1–J5 | chunks 3–11 | escalating | **ALL DONE — 3390 tests at J5** |
-| J6 | End of this chunk | full verify plus shipcheck plus the v0 reproduction gate | mine |
-| J7 | Before any v1 training | the fair-prompt baseline on v1 **before** a fine-tune exists | mine |
+| J1–J5 | chunks 3–11 | escalating | **DONE — 3390 tests** |
+| J6 | End of this chunk | full verify, shipcheck, and the v0 reproduction gate | mine |
+| J7 | **Before any v1 training** | the fair-prompt baseline on v1, with no fine-tune in existence | mine |
 
-That last one is new and it is the lesson of this week: run the prompted baseline **first**. Had we
-done that on v0, we would have known the corpus could not discriminate before spending a pod on it.
+J7 is the lesson of this week and it is not optional. Run the prompted baseline **first**. Had we
+done that on v0 we would have known the corpus could not discriminate without renting a GPU to find
+out.
