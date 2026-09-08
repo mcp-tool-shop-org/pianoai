@@ -8,6 +8,12 @@ import { describe, it, expect, vi } from "vitest";
 import { validateTrace } from "../trace-validator.js";
 import { DRAW_BANDS, PERTURBATION_KINDS, parseAcousticRecord, type PerturbationKind } from "./schema.js";
 import {
+  buildKindSet,
+  buildRecord,
+  fixturePhrase,
+  renderTake,
+  sha256Samples,
+} from "./builder.js";
 
 // Every test here synthesises audio and runs the real pitch and onset code over it.
 // That is the point of the suite, and it is not fast: the 108-record corpus measures
@@ -16,13 +22,6 @@ import {
 // One budget for the whole file, so the next slow case here does not have to be found
 // by a red build the way the first two were.
 vi.setConfig({ testTimeout: 30_000 });
-
-  buildKindSet,
-  buildRecord,
-  fixturePhrase,
-  renderTake,
-  sha256Samples,
-} from "./builder.js";
 
 const GOLD: Record<PerturbationKind, string> = {
   clean: "match",
