@@ -46,6 +46,13 @@ src/dataset/acoustic/assets/** text eol=lf
 # with zero content change -- noise that hides a real one. Same class as the
 # corpus pin above, lower stakes only because these files are not checksummed.
 experiments/**/data/*.jsonl text eol=lf
+# Shell scripts run on Linux, and some of them get copied to a RunPod host
+# before they run. A CRLF checkout makes `bash script.sh` fail on the shebang
+# with a bare `$'': command not found`, which on a billing GPU pod is an
+# expensive way to learn about line endings. Python is CRLF-tolerant, but the
+# same scripts travel together and there is no reason for them to differ.
+*.sh text eol=lf
+*.py text eol=lf
 songs/library/**/*.json text eol=lf
 *.mid binary
 *.ogg binary
