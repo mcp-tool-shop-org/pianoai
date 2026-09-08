@@ -31,13 +31,13 @@
 //   node runpod.mjs sync                   # push data + scripts to the pod
 //   node runpod.mjs fetch                  # pull the trained adapters back
 //   node runpod.mjs list                   # what is running (and billing)
-//   node runpod.mjs down <podId|--all>     # the compensator
+//   node runpod.mjs down [podId]           # the pod in the state file, or an explicit id. Nothing else.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { readFileSync, existsSync, writeFileSync, mkdirSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { homedir } from "node:os";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const BASE = "https://rest.runpod.io/v1";
@@ -65,7 +65,16 @@ const IMAGE = "runpod/pytorch:1.1.0-cu1290-torch280-ubuntu2404";
 // checkpointing and chunked cross-entropy is roughly 15-25 GB at 16k context,
 // so a 48 GB card is comfortable. The image is CUDA 12.9, which Blackwell
 // (sm_120) requires and every older card here accepts.
-const GPU_CHAIN = [
+// RUNPOD_GPU pins a single type, to move pools when a host is broken. On
+// 2026-09-08 three consecutive L40S deploys landed on the same host
+// (60.249.37.148), each handing the container a non-zero device node
+// (/dev/nvidia4, /dev/nvidia1) with torch.cuda.is_available() false while
+// nvidia-smi worked. The image and config were the same ones that had trained
+// cleanly hours earlier, so that implicates the host, and the only lever the
+// API gives you is which GPU type to ask for.
+const PINNED = process.env.RUNPOD_GPU;
+
+const GPU_CHAIN = PINNED ? [PINNED] : [
   // What was asked for: RTX PRO 6000 Blackwell, 96 GB.
   "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
   "NVIDIA RTX PRO 6000 Blackwell Server Edition",
@@ -87,6 +96,54 @@ const CLOUD_TYPE = process.env.RUNPOD_CLOUD_TYPE === "SECURE" ? "SECURE" : "COMM
 
 const PUBKEY_PATH = join(homedir(), ".ssh", "runpod_rustline.pub");
 const STATE_PATH = join(homedir(), ".ssh", "runpod_acoustic_pod.json");
+
+/** Directory name is the experiment; override with RUNPOD_EXPERIMENT. */
+export function experimentName() {
+  return process.env.RUNPOD_EXPERIMENT
+    ?? dirname(fileURLToPath(import.meta.url)).split(/[/\\]/).filter(Boolean).at(-1)
+    ?? "acoustic-sft";
+}
+
+/** ${experiment}-${YYYYMMDD-HHMM} — five pods named acoustic-sft is how listings stop meaning anything. */
+export function podSessionName(now = new Date(), experiment = experimentName()) {
+  const p = (n) => String(n).padStart(2, "0");
+  const tag = `${now.getFullYear()}${p(now.getMonth() + 1)}${p(now.getDate())}-${p(now.getHours())}${p(now.getMinutes())}`;
+  return `${experiment}-${tag}`;
+}
+
+/**
+ * One pod. `--all` is not a mode. No arg means the state file. Explicit id
+ * is accepted. Missing state file with no id is a refusal, not a listing.
+ */
+export function resolveDownTarget(arg, state) {
+  if (arg === "--all") {
+    throw new Error(
+      "--all is not a recognised argument. down terminates one pod: the id in the state file, or an explicit id.",
+    );
+  }
+  if (arg) return arg;
+  if (!state?.id) {
+    throw new Error(
+      "no pod state file (or it has no id). down refuses to guess. Pass an explicit id, or run up first.",
+    );
+  }
+  return state.id;
+}
+
+/** Pods this tool did not create: not our session-named pods and not the state-file id. */
+export function foreignPods(pods, { experiment, oursId }) {
+  const prefix = `${experiment}-`;
+  return (Array.isArray(pods) ? pods : []).filter((p) => {
+    if (oursId && p.id === oursId) return false;
+    const n = String(p.name || "");
+    if (n.startsWith(prefix)) return false;
+    return true;
+  });
+}
+
+export function receipt(id, at = new Date()) {
+  return { terminated_id: id, terminated_at: at.toISOString() };
+}
 
 const POLL_TIMEOUT_MS = 15 * 60_000; // memory: give a pod 10-15 min, do not judge early
 const POLL_INTERVAL_MS = 15_000;
@@ -153,6 +210,20 @@ async function cmdVerify() {
   console.log(`  gpu fallback chain ${GPU_CHAIN.length} types, ${GPU_CHAIN[0]} first`);
   console.log(`  cloud tier         ${CLOUD_TYPE} (explicit — the API default is SECURE and dearer)`);
   console.log(`  volume             pod-local, dies with the pod (never a network volume)`);
+
+  const experiment = experimentName();
+  const oursId = existsSync(STATE_PATH) ? JSON.parse(readFileSync(STATE_PATH, "utf8")).id : undefined;
+  const foreign = foreignPods(running, { experiment, oursId });
+  if (foreign.length && process.env.RUNPOD_ALLOW_OTHERS !== "1") {
+    console.error(`\nERROR: ${foreign.length} pod(s) not created by this tool are running:`);
+    for (const p of foreign) console.error(`      ${p.id}  ${p.name}`);
+    console.error("Refusing to deploy. Set RUNPOD_ALLOW_OTHERS=1 to override.");
+    process.exit(1);
+  }
+  if (foreign.length) {
+    console.log(`  foreign pods       ${foreign.length} (RUNPOD_ALLOW_OTHERS=1, deploy allowed)`);
+  }
+
   console.log("\nPreflight OK. `node runpod.mjs up` will spend money.");
 }
 
@@ -163,7 +234,19 @@ async function cmdUp() {
   need(existsSync(PUBKEY_PATH), `no public key at ${PUBKEY_PATH}`);
   const publicKey = readFileSync(PUBKEY_PATH, "utf8").trim();
 
+  const running = await api("/pods");
+  const experiment = experimentName();
+  const oursId = existsSync(STATE_PATH) ? JSON.parse(readFileSync(STATE_PATH, "utf8")).id : undefined;
+  const foreign = foreignPods(Array.isArray(running) ? running : [], { experiment, oursId });
+  if (foreign.length && process.env.RUNPOD_ALLOW_OTHERS !== "1") {
+    console.error(`ERROR: ${foreign.length} pod(s) not created by this tool are running. Refusing to deploy.`);
+    for (const p of foreign) console.error(`      ${p.id}  ${p.name}`);
+    process.exit(1);
+  }
+
+  const name = podSessionName();
   console.log(`Deploying: ${IMAGE}`);
+  console.log(`name:      ${name}`);
   console.log(`GPU chain: ${GPU_CHAIN.join(" | ")}`);
 
   let pod;
@@ -171,7 +254,7 @@ async function cmdUp() {
     pod = await api("/pods", {
       method: "POST",
       body: JSON.stringify({
-        name: "acoustic-sft",
+        name,
         imageName: IMAGE,
         gpuTypeIds: GPU_CHAIN,     // array = native fallback chain
         gpuCount: 1,
@@ -255,21 +338,43 @@ async function cmdList() {
   console.log(`\n  total $${total.toFixed(3)}/hr`);
 }
 
+export async function terminateOne(id, apiFn, io = {
+  log: (s) => { console.log(s); console.error(s); },
+  now: () => new Date(),
+  statePath: STATE_PATH,
+  existsSync,
+  readFileSync,
+  writeFileSync,
+}) {
+  await apiFn(`/pods/${id}`, { method: "DELETE" });
+  const line = `terminated ${id}`;
+  io.log(line);
+  let prev = {};
+  if (io.existsSync(io.statePath)) {
+    try { prev = JSON.parse(io.readFileSync(io.statePath, "utf8")); } catch { prev = {}; }
+  }
+  const rec = receipt(id, io.now());
+  io.writeFileSync(io.statePath, JSON.stringify({ ...prev, ...rec }, null, 2));
+  return rec;
+}
+
 async function cmdDown(arg) {
-  need(arg, "which pod? Pass an id, or --all.");
-  let ids = [arg];
-  if (arg === "--all") {
-    const pods = await api("/pods");
-    ids = (Array.isArray(pods) ? pods : []).map((p) => p.id);
-    if (!ids.length) { console.log("No pods to tear down."); return; }
+  let id;
+  try {
+    const state = existsSync(STATE_PATH)
+      ? JSON.parse(readFileSync(STATE_PATH, "utf8"))
+      : null;
+    id = resolveDownTarget(arg, state);
+  } catch (err) {
+    console.error(`ERROR: ${err.message}`);
+    process.exit(1);
   }
-  for (const id of ids) {
-    await api(`/pods/${id}`, { method: "DELETE" });
-    console.log(`terminated ${id}`);
-  }
+  await terminateOne(id, api);
   const left = await api("/pods");
   const n = Array.isArray(left) ? left.length : 0;
-  console.log(n ? `\nWARNING: ${n} pod(s) STILL BILLING.` : "\nNothing is billing.");
+  const leftover = n ? `\nWARNING: ${n} pod(s) STILL BILLING.` : "\nNothing is billing.";
+  console.log(leftover);
+  console.error(leftover.trim());
 }
 
 // ─── sync / fetch ────────────────────────────────────────────────────────────
@@ -347,17 +452,22 @@ async function cmdFetch() {
   sh("scp", ["-r", "-P", String(sshPort), "-i", key, "-o", "StrictHostKeyChecking=accept-new",
     `root@${publicIp}:${WORK}/runs/.`, dest]);
   console.log(`\nAdapters are local. The pod is STILL BILLING — tear it down now:`);
-  console.log(`  node runpod.mjs down --all`);
+  console.log(`  node runpod.mjs down`);
 }
 
-const [cmd, arg] = process.argv.slice(2);
-const table = { verify: cmdVerify, up: cmdUp, sync: cmdSync, fetch: cmdFetch, list: cmdList, down: () => cmdDown(arg) };
-if (!table[cmd]) {
-  console.log("usage: node runpod.mjs <verify|up|sync|fetch|list|down <podId|--all>>");
-  process.exit(1);
+const invokedAsCli = process.argv[1]
+  && resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url));
+
+if (invokedAsCli) {
+  const [cmd, arg] = process.argv.slice(2);
+  const table = { verify: cmdVerify, up: cmdUp, sync: cmdSync, fetch: cmdFetch, list: cmdList, down: () => cmdDown(arg) };
+  if (!table[cmd]) {
+    console.log("usage: node runpod.mjs <verify|up|sync|fetch|list|down [podId]>");
+    process.exit(1);
+  }
+  table[cmd]().catch((err) => {
+    console.error(`\n${err.message}`);
+    console.error("If a pod was created before this failed, it is BILLING. Run: node runpod.mjs list");
+    process.exit(1);
+  });
 }
-table[cmd]().catch((err) => {
-  console.error(`\n${err.message}`);
-  console.error("If a pod was created before this failed, it is BILLING. Run: node runpod.mjs list");
-  process.exit(1);
-});

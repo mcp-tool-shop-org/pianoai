@@ -60,5 +60,8 @@ process.stdout.write("blank".padEnd(w) +
 // a reader does not have to notice the absence.
 process.stdout.write(
   "\nNote: catalog (3) and server (1) are train-only -- no song_id, split is by " +
-  "song -- so they are trained on and never scored.\n",
+  "song -- so they are trained on and never scored.\n" +
+  "Note: sections and compare have CONSTANT gold (\"0:none\", \"different_key\") " +
+  "in every record, so 100% is the majority-class baseline and they measure " +
+  "nothing. 13 of the 100 held-out records; the effective set is 87.\n",
 );
