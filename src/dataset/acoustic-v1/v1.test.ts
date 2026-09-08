@@ -453,7 +453,15 @@ describe("teaching gold is musicalLanguage, not measure-level empty fields", () 
 // the reproduction gate and the acoustic half of rule 2 in one pass: if the
 // generator no longer produces the committed corpus, or an acoustic label no
 // longer agrees with what YIN and the onset detector measure, it fails here.
-describe.runIf(RUN_DSP)("engine verification (skipped under SKIP_DSP_VERIFICATION=1)", () => {
+// Each engine test below re-renders and re-tracks all 81 acoustic takes.
+// Measured on the rig after chunk 20 doubled the phrase clock: 36.7 s and
+// 36.6 s. On a CI runner that crossed the file's 60 s per-test budget and went
+// red while the same suite was green here. The cost is the work we want paid
+// for -- every label and every f0 re-derived from a fresh render -- so the
+// budget follows the measurement rather than the other way round. This block
+// is skipped under coverage, so the number only ever applies to the two plain
+// legs.
+describe.runIf(RUN_DSP)("engine verification (skipped under SKIP_DSP_VERIFICATION=1)", { timeout: 600_000 }, () => {
   let built: V1Record[] = [];
 
   beforeAll(() => {
