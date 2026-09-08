@@ -95,7 +95,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Proposed reharmonization of measure 12 of \"Auld Lang Syne\": [{\"measure\":12,\"intendedChord\":\"Cdim\",\"voicing\":\"C2 F2 F#2 D#3 F3 F#2 D2 F2 F#2 D#3 C3 C2 F2 F#2\"}]\nDoes it clear the harmony verifier?"
+        "content": "Proposed reharmonization of measure 12 of \"Auld Lang Syne\": [{\"measure\":12,\"intendedChord\":\"Cdim\",\"voicing\":\"C2 F2 F#2 D#3 F3 F#2 D2 F2 F#2 D#3 C3 C2 F2 F#2\"}]\nDoes it clear the harmony verifier? Answer with exactly one of: verified, rejected."
       },
       {
         "turn": 2,

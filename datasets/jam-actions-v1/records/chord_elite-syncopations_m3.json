@@ -78,7 +78,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "What chord is the left hand playing in measure 3 of \"Elite Syncopations\"?"
+        "content": "What chord is the left hand playing in measure 3 of \"Elite Syncopations\"? Answer with the chord symbol alone."
       },
       {
         "turn": 2,

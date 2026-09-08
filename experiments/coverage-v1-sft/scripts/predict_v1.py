@@ -67,6 +67,20 @@ def first_line(text: str) -> str:
     return ""
 
 
+def extract_answer(text: str) -> str:
+    """Label after the final colon, else the first line.
+
+    Acoustic comparison lines are `cents …: pitch_fail`. Other families have
+    no colon. Same extraction for base and adapter.
+    """
+    line = first_line(text)
+    if ":" in line:
+        tail = line.rsplit(":", 1)[-1].strip()
+        if tail:
+            return tail
+    return line
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", default=str(EXP / "lora-config.json"))
@@ -77,17 +91,6 @@ def main() -> None:
     ap.add_argument("--adapter", default=None, help="LoRA dir; omit for the base model")
     ap.add_argument("--out", required=True)
     ap.add_argument("--max-new-tokens", type=int, default=48)
-    ap.add_argument(
-        "--terse",
-        action="store_true",
-        help=(
-            "append a final instruction to answer with the bare value. Default "
-            "off. Now redundant for jam-actions-v1: every record's user turn "
-            "already names the format, so training, the fair base and the "
-            "adapter all see the same prompt. Kept so older runs remain "
-            "replayable."
-        ),
-    )
     args = ap.parse_args()
 
     import torch
@@ -134,15 +137,6 @@ def main() -> None:
                 idx for idx, m in enumerate(tmpl) if m["role"] == "assistant"
             )
             prompt_msgs = tmpl[:last_assistant]
-            if args.terse:
-                prompt_msgs = list(prompt_msgs) + [{
-                    "role": "system",
-                    "content": (
-                        "Reply with the answer value alone. No sentence, no "
-                        "explanation, no markdown, no units, no restating the "
-                        "question."
-                    ),
-                }]
             text = tokenizer.apply_chat_template(
                 prompt_msgs, tokenize=False, add_generation_prompt=True, tools=tools
             )
@@ -160,7 +154,7 @@ def main() -> None:
             fh.write(json.dumps({
                 "id": line["id"],
                 "family": line["kind"],
-                "answer": first_line(completion),
+                "answer": extract_answer(completion),
                 # The full completion, always. Without it there is no telling
                 # "the model was wrong" from "the grader could not read it", and
                 # those support opposite conclusions. That distinction inverted

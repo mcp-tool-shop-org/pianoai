@@ -16,6 +16,16 @@ const norm = (s) =>
   String(s ?? "").trim().replace(/^["']|["']$/g, "").trim()
     .replace(/\s+/g, " ").replace(/\.$/, "").toLowerCase();
 
+/** Label after the final colon, else the whole string. Matches predict_v1.py. */
+const labelOf = (s) => {
+  const t = String(s ?? "").trim().split(/\n/).find((l) => l.trim()) ?? "";
+  if (t.includes(":")) {
+    const tail = t.split(":").pop().trim();
+    if (tail) return norm(tail);
+  }
+  return norm(t);
+};
+
 const read = (p) => readFileSync(p, "utf8").trim().split("\n").map((l) => JSON.parse(l));
 
 const [goldPath, ...conds] = process.argv.slice(2);
@@ -30,7 +40,7 @@ for (const spec of conds) {
   for (const p of read(path)) {
     const g = gold.get(p.id);
     if (!g) continue;
-    const hit = norm(p.answer) === norm(g.gold);
+    const hit = labelOf(p.answer) === norm(g.gold);
     if (!String(p.answer ?? "").trim()) blank++;
     per[g.family].n++; n++;
     if (hit) { per[g.family].correct++; correct++; }

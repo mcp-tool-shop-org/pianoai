@@ -79,7 +79,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Do \"Scarborough Fair\" and \"Traumerei (Dreaming) from Kinderszenen\" share a key signature?"
+        "content": "Do \"Scarborough Fair\" and \"Traumerei (Dreaming) from Kinderszenen\" share a key signature? Answer with exactly one of: same_key, different_key."
       },
       {
         "turn": 2,

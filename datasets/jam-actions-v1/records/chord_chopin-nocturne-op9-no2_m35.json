@@ -78,7 +78,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "What chord is the left hand playing in measure 35 of \"Nocturne in Eb Major, Op. 9 No. 2\"?"
+        "content": "What chord is the left hand playing in measure 35 of \"Nocturne in Eb Major, Op. 9 No. 2\"? Answer with the chord symbol alone."
       },
       {
         "turn": 2,

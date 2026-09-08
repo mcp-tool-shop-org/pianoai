@@ -78,7 +78,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "What chord is the left hand playing in measure 7 of \"The Easy Winners\"?"
+        "content": "What chord is the left hand playing in measure 7 of \"The Easy Winners\"? Answer with the chord symbol alone."
       },
       {
         "turn": 2,

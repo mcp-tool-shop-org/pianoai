@@ -94,7 +94,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Proposed reharmonization of measure 12 of \"Pineapple Rag\": [{\"measure\":12,\"intendedChord\":\"F\",\"voicing\":\"F2 F3 C3 A2 F2\"}]\nDoes it clear the harmony verifier?"
+        "content": "Proposed reharmonization of measure 12 of \"Pineapple Rag\": [{\"measure\":12,\"intendedChord\":\"F\",\"voicing\":\"F2 F3 C3 A2 F2\"}]\nDoes it clear the harmony verifier? Answer with exactly one of: verified, rejected."
       },
       {
         "turn": 2,

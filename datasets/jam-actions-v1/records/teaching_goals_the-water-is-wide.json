@@ -79,7 +79,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "How many teaching goals does \"The Water Is Wide\" declare?"
+        "content": "How many teaching goals does \"The Water Is Wide\" declare? Answer with a single integer."
       },
       {
         "turn": 2,

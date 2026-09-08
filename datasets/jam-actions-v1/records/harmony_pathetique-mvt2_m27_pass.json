@@ -94,7 +94,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Proposed reharmonization of measure 27 of \"Pathetique Sonata, 2nd Movement (Adagio cantabile)\": [{\"measure\":27,\"intendedChord\":\"Cm\",\"voicing\":\"G3 C#3 C3 D#3\"}]\nDoes it clear the harmony verifier?"
+        "content": "Proposed reharmonization of measure 27 of \"Pathetique Sonata, 2nd Movement (Adagio cantabile)\": [{\"measure\":27,\"intendedChord\":\"Cm\",\"voicing\":\"G3 C#3 C3 D#3\"}]\nDoes it clear the harmony verifier? Answer with exactly one of: verified, rejected."
       },
       {
         "turn": 2,

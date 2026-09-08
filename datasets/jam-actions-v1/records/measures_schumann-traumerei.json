@@ -78,7 +78,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "How many measures are in \"Traumerei (Dreaming) from Kinderszenen\"?"
+        "content": "How many measures are in \"Traumerei (Dreaming) from Kinderszenen\"? Answer with a single integer."
       },
       {
         "turn": 2,

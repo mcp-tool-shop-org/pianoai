@@ -94,7 +94,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Proposed reharmonization of measure 69 of \"Piano Sonata No. 16 in C Major, K. 545, I. Allegro\": [{\"measure\":69,\"intendedChord\":\"Csus2\",\"voicing\":\"D#3 C#3 G#3 B3\"}]\nDoes it clear the harmony verifier?"
+        "content": "Proposed reharmonization of measure 69 of \"Piano Sonata No. 16 in C Major, K. 545, I. Allegro\": [{\"measure\":69,\"intendedChord\":\"Csus2\",\"voicing\":\"D#3 C#3 G#3 B3\"}]\nDoes it clear the harmony verifier? Answer with exactly one of: verified, rejected."
       },
       {
         "turn": 2,

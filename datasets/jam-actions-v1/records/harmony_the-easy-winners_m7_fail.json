@@ -94,7 +94,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Proposed reharmonization of measure 7 of \"The Easy Winners\": [{\"measure\":7,\"intendedChord\":\"C#\",\"voicing\":\"D2 F#3 A3 D2 F#3 A3\"}]\nDoes it clear the harmony verifier?"
+        "content": "Proposed reharmonization of measure 7 of \"The Easy Winners\": [{\"measure\":7,\"intendedChord\":\"C#\",\"voicing\":\"D2 F#3 A3 D2 F#3 A3\"}]\nDoes it clear the harmony verifier? Answer with exactly one of: verified, rejected."
       },
       {
         "turn": 2,

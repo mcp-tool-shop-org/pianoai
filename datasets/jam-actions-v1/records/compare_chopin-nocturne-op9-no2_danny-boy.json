@@ -78,7 +78,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Do \"Nocturne in Eb Major, Op. 9 No. 2\" and \"Danny Boy\" share a key signature?"
+        "content": "Do \"Nocturne in Eb Major, Op. 9 No. 2\" and \"Danny Boy\" share a key signature? Answer with exactly one of: same_key, different_key."
       },
       {
         "turn": 2,

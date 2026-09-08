@@ -93,7 +93,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Two instruments should be in unison. Which one drifted?"
+        "content": "Two instruments should be in unison. Which one drifted? Answer with the instrument id alone."
       },
       {
         "turn": 2,

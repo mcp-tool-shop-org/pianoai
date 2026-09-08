@@ -79,7 +79,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Which measure range does the first key moment of \"Scarborough Fair\" name?"
+        "content": "Which measure range does the first key moment of \"Scarborough Fair\" name? Answer with a measure number or range."
       },
       {
         "turn": 2,

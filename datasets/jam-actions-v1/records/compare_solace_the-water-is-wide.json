@@ -78,7 +78,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Do \"Solace\" and \"The Water Is Wide\" share a key signature?"
+        "content": "Do \"Solace\" and \"The Water Is Wide\" share a key signature? Answer with exactly one of: same_key, different_key."
       },
       {
         "turn": 2,

@@ -94,7 +94,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Proposed reharmonization of measure 6 of \"Weeping Willow\": [{\"measure\":6,\"intendedChord\":\"G\",\"voicing\":\"G#2 D#3 G#3 C4 C3 D#3 G#3 C4\"}]\nDoes it clear the harmony verifier?"
+        "content": "Proposed reharmonization of measure 6 of \"Weeping Willow\": [{\"measure\":6,\"intendedChord\":\"G\",\"voicing\":\"G#2 D#3 G#3 C4 C3 D#3 G#3 C4\"}]\nDoes it clear the harmony verifier? Answer with exactly one of: verified, rejected."
       },
       {
         "turn": 2,

@@ -81,7 +81,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "How many teaching goals does \"The Entertainer\" declare?"
+        "content": "How many teaching goals does \"The Entertainer\" declare? Answer with a single integer."
       },
       {
         "turn": 2,

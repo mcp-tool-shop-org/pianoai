@@ -79,7 +79,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "What chord is the left hand playing in measure 31 of \"Danny Boy\"?"
+        "content": "What chord is the left hand playing in measure 31 of \"Danny Boy\"? Answer with the chord symbol alone."
       },
       {
         "turn": 2,

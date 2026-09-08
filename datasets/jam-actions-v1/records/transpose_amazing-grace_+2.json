@@ -79,7 +79,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Transpose \"Amazing Grace\" up a whole step. What key is the result in?"
+        "content": "Transpose \"Amazing Grace\" up a whole step. What key is the result in? Answer with the resulting key name alone."
       },
       {
         "turn": 2,

@@ -79,7 +79,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "What chord is the left hand playing in measure 11 of \"Simple Gifts\"?"
+        "content": "What chord is the left hand playing in measure 11 of \"Simple Gifts\"? Answer with the chord symbol alone."
       },
       {
         "turn": 2,

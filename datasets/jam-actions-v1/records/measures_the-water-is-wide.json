@@ -79,7 +79,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "How many measures are in \"The Water Is Wide\"?"
+        "content": "How many measures are in \"The Water Is Wide\"? Answer with a single integer."
       },
       {
         "turn": 2,

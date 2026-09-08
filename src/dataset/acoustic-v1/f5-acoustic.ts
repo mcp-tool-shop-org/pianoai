@@ -23,6 +23,37 @@ import {
 } from "./tracker-error.js";
 
 export const F5_KINDS = ["clean", "sharp_fail", "late_fail"] as const;
+
+/** Instrument resolution for prompt-visible measurements. */
+export function round1(n: number): number {
+  return Math.round(n * 10) / 10;
+}
+
+/** Assistant-turn comparison. Gates live here, not in the prompt. */
+export function acousticComparisonLine(cents: number, onsetMs: number, gold: string): string {
+  const cR = round1(cents);
+  const oR = round1(onsetMs);
+  const pitchRel = Math.abs(cR) >= V1_PITCH_FAIL_CENTS ? "against a 50-cent gate" : "inside a 50-cent gate";
+  const onsetRel = oR > V1_TIMING_MS ? "against a 40-ms gate" : "inside 40";
+  return `cents ${cR.toFixed(1)} ${pitchRel}, onset ${oR.toFixed(1)} ms ${onsetRel}: ${gold}`;
+}
+
+export function acousticAssistantContent(
+  cents: number,
+  onsetMs: number,
+  gold: string,
+  bareLabel: boolean,
+): string {
+  return bareLabel ? gold : acousticComparisonLine(cents, onsetMs, gold);
+}
+
+export function parseAcousticAssistant(line: string): { cents: number; onset: number; label: string } | null {
+  const m = line.match(
+    /^cents (-?\d+\.\d) (?:against|inside) a 50-cent gate, onset (-?\d+\.\d) ms (?:against a 40-ms gate|inside 40): (\S+)$/,
+  );
+  if (!m) return null;
+  return { cents: Number(m[1]), onset: Number(m[2]), label: m[3]! };
+}
 export type F5Kind = (typeof F5_KINDS)[number];
 
 /** Pitch clearance / locked YIN p95. Stated in every F5 record. */

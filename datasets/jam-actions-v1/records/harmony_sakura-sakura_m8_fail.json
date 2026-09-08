@@ -95,7 +95,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Proposed reharmonization of measure 8 of \"Sakura Sakura\": [{\"measure\":8,\"intendedChord\":\"Edim\",\"voicing\":\"F3 G#3 B3 B3 G#3\"}]\nDoes it clear the harmony verifier?"
+        "content": "Proposed reharmonization of measure 8 of \"Sakura Sakura\": [{\"measure\":8,\"intendedChord\":\"Edim\",\"voicing\":\"F3 G#3 B3 B3 G#3\"}]\nDoes it clear the harmony verifier? Answer with exactly one of: verified, rejected."
       },
       {
         "turn": 2,

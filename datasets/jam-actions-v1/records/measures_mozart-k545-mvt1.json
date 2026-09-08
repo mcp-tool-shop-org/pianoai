@@ -78,7 +78,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "How many measures are in \"Piano Sonata No. 16 in C Major, K. 545, I. Allegro\"?"
+        "content": "How many measures are in \"Piano Sonata No. 16 in C Major, K. 545, I. Allegro\"? Answer with a single integer."
       },
       {
         "turn": 2,

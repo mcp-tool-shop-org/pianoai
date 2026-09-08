@@ -10,7 +10,7 @@ import {
 } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { v1Records } from "./task.js";
+import { buildAllRecords, type V1BuildOpts } from "./builder.js";
 import { coverageReport, assertCoverageFloors } from "./coverage.js";
 import { loadPublishableSongs } from "./library.js";
 import { V1_SCHEMA_VERSION } from "./schema.js";
@@ -20,13 +20,13 @@ function sha256(content: string | Buffer): string {
   return createHash("sha256").update(content).digest("hex");
 }
 
-export function writeV1Corpus(outDir?: string): { n: number; outDir: string } {
+export function writeV1Corpus(outDir?: string, opts: V1BuildOpts = {}): { n: number; outDir: string } {
   const dest = outDir ?? join(
     dirname(fileURLToPath(import.meta.url)),
     "..", "..", "..",
     "datasets", "jam-actions-v1",
   );
-  const records = v1Records();
+  const records = buildAllRecords(opts);
   const songs = loadPublishableSongs();
   const report = coverageReport(records);
   report.genres = [...new Set(songs.map((s) => s.genre))].sort();
@@ -138,6 +138,7 @@ const invoked = Boolean(
   process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url)),
 );
 if (invoked) {
-  const r = writeV1Corpus();
-  process.stdout.write(`wrote ${r.n} records to ${r.outDir}\n`);
+  const bare = process.argv.includes("--bare-label");
+  const r = writeV1Corpus(undefined, { acousticBareLabel: bare });
+  process.stdout.write(`wrote ${r.n} records (${bare ? "bare-label" : "comparison"}) to ${r.outDir}\n`);
 }

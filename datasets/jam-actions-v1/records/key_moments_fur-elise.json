@@ -81,7 +81,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Which measure range does the first key moment of \"Fur Elise (Bagatelle No. 25 in A minor)\" name?"
+        "content": "Which measure range does the first key moment of \"Fur Elise (Bagatelle No. 25 in A minor)\" name? Answer with a measure number or range."
       },
       {
         "turn": 2,

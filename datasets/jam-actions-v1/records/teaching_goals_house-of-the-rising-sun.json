@@ -79,7 +79,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "How many teaching goals does \"House of the Rising Sun\" declare?"
+        "content": "How many teaching goals does \"House of the Rising Sun\" declare? Answer with a single integer."
       },
       {
         "turn": 2,

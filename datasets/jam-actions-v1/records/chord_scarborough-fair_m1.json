@@ -79,7 +79,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "What chord is the left hand playing in measure 1 of \"Scarborough Fair\"?"
+        "content": "What chord is the left hand playing in measure 1 of \"Scarborough Fair\"? Answer with the chord symbol alone."
       },
       {
         "turn": 2,

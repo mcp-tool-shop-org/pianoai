@@ -4,7 +4,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineTask, publishedOwner, assertNoStraddle } from "../experiment/index.js";
 import { v1Records, coverageV1Task } from "./task.js";
-import { rederiveGold, toolSequenceOf, f5DropStats } from "./builder.js";
+import { rederiveGold, toolSequenceOf, f5DropStats, USER_TURN_FORMAT, userTurnNamesClosedSet } from "./builder.js";
 import {
   F5_KINDS,
   F5_PITCH_CLEARANCE_MULTIPLE,
@@ -19,6 +19,8 @@ import {
   F5_INSIDE_MS_MIN,
   F5_INSIDE_MS_MAX,
   rederiveF5Measurements,
+  parseAcousticAssistant,
+  round1,
 } from "./f5-acoustic.js";
 import {
   MEASURED_YIN_LOCKED_P95_CENTS,
@@ -135,11 +137,84 @@ describe("prompt-visible fields contain no gates", () => {
       expect(visible, r.id).not.toMatch(/pitch_fail_cents|pitch_warn_cents|timing_ms|onset_delta/);
       expect(visible, r.id).not.toContain('"thresholds"');
       const user = r.target_trace.session.filter((t) => t.role === "user").map((t) => t.content).join("\n");
-      // Acoustic user turns name the closed verdict set (chunk 18 B3). The gold
-      // token is one of three listed answers, not leaked as the unique answer.
-      if (r.family !== "acoustic" && r.observation.gold.answer.length > 3) {
+      // Closed-set families name the vocabulary in the user turn (chunk 22 B1).
+      // The gold token is one of the listed answers, not leaked as unique.
+      if (!userTurnNamesClosedSet(r.family) && r.observation.gold.answer.length > 3) {
         expect(user, r.id).not.toContain(r.observation.gold.answer);
       }
+    }
+  });
+});
+
+describe("v1 user turns name the answer shape (chunk 22 B1)", () => {
+  it("matches a per-family format pattern", () => {
+    for (const r of committedRecords()) {
+      const user = r.target_trace.session.filter((t) => t.role === "user").map((t) => t.content).join("\n");
+      const spec = USER_TURN_FORMAT[r.family as keyof typeof USER_TURN_FORMAT];
+      expect(spec, r.family).toBeDefined();
+      expect(user, r.id).toMatch(spec.pattern);
+    }
+  });
+});
+
+function walkNumbers(node: unknown, path: string, out: Array<{ path: string; n: number }>): void {
+  if (typeof node === "number" && Number.isFinite(node)) {
+    out.push({ path, n: node });
+    return;
+  }
+  if (Array.isArray(node)) {
+    node.forEach((x, i) => walkNumbers(x, `${path}[${i}]`, out));
+    return;
+  }
+  if (node && typeof node === "object") {
+    for (const [k, v] of Object.entries(node as Record<string, unknown>)) {
+      walkNumbers(v, path ? `${path}.${k}` : k, out);
+    }
+  }
+}
+
+describe("v1 prompt-visible floats are instrument resolution (chunk 22 B2)", () => {
+  it("has no prompt-visible float with more than one decimal", () => {
+    for (const r of committedRecords()) {
+      const nums: Array<{ path: string; n: number }> = [];
+      walkNumbers(r.target_trace, "target_trace", nums);
+      for (const { path, n } of nums) {
+        const places = JSON.stringify(n).split(".")[1]?.length ?? 0;
+        expect(places, `${r.id} ${path} = ${n}`).toBeLessThanOrEqual(1);
+      }
+    }
+  });
+
+  it("keeps full precision on acoustic observation measurements", () => {
+    const rows = committedRecords().filter((r) => r.family === "acoustic");
+    expect(rows.some((r) => {
+      const a = r.observation.acoustic as { measured_cents: number };
+      const t = scoreTakeContent(r).cents_from_target as number;
+      return a.measured_cents !== t;
+    })).toBe(true);
+    for (const r of rows) {
+      const a = r.observation.acoustic as { measured_cents: number; measured_onset_ms: number; measured_f0_hz: number };
+      const t = scoreTakeContent(r);
+      expect(round1(a.measured_cents), r.id).toBe(t.cents_from_target);
+      expect(round1(a.measured_onset_ms), r.id).toBe(t.onset_ms);
+      expect(round1(a.measured_f0_hz), r.id).toBe(t.f0_hz);
+    }
+  });
+});
+
+describe("v1 acoustic assistant comparison (chunk 22 B3)", () => {
+  it("parses as <comparison>: <label> matching gold and rounded tool result", () => {
+    const rows = committedRecords().filter((r) => r.family === "acoustic");
+    expect(rows.length).toBeGreaterThan(0);
+    for (const r of rows) {
+      const last = [...r.target_trace.session].reverse().find((t) => t.role === "assistant");
+      expect(last, r.id).toBeDefined();
+      const parsed = parseAcousticAssistant((last as { content: string }).content);
+      expect(parsed, `${r.id} ${(last as { content: string }).content}`).not.toBeNull();
+      expect(parsed!.label, r.id).toBe(r.observation.gold.answer);
+      const t = scoreTakeContent(r);
+      expect(parsed!.cents, r.id).toBe(t.cents_from_target);
+      expect(parsed!.onset, r.id).toBe(t.onset_ms);
     }
   });
 });
@@ -540,11 +615,12 @@ describe.runIf(RUN_DSP)("engine verification (skipped under SKIP_DSP_VERIFICATIO
         notes: { midi: number; name: string; time: number; duration: number }[];
         cents_shift: number;
         delay_sec: number;
+        measured_f0_hz: number;
       };
       const m = rederiveF5Measurements(a.kind, a.notes, a.cents_shift, a.delay_sec);
       expect(m.f0_hz, r.id).not.toBeNull();
-      const got = scoreTakeContent(r).f0_hz as number;
-      expect(Math.abs(got - m.f0_hz!), r.id).toBeLessThanOrEqual(1e-6);
+      expect(Math.abs(a.measured_f0_hz - m.f0_hz!), r.id).toBeLessThanOrEqual(1e-6);
+      expect(scoreTakeContent(r).f0_hz as number, r.id).toBe(round1(m.f0_hz!));
     }
   });
 });

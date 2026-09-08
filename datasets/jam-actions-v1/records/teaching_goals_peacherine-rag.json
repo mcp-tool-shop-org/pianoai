@@ -78,7 +78,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "How many teaching goals does \"Peacherine Rag\" declare?"
+        "content": "How many teaching goals does \"Peacherine Rag\" declare? Answer with a single integer."
       },
       {
         "turn": 2,

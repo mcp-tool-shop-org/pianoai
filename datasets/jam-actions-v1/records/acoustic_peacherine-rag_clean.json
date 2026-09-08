@@ -101,7 +101,10 @@
       ],
       "cents_shift": 20.071153846153845,
       "delay_sec": 0.0019615384615384616,
-      "target_index": 0
+      "target_index": 0,
+      "measured_f0_hz": 629.5742997041376,
+      "measured_cents": 20.247750032662253,
+      "measured_onset_ms": -9.750566893424018
     }
   },
   "annotation_target": {
@@ -177,15 +180,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 629.5742997041376,
-          "cents_from_target": 20.247750032662253,
-          "onset_ms": -9.750566893424018
+          "f0_hz": 629.6,
+          "cents_from_target": 20.2,
+          "onset_ms": -9.8
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "match"
+        "content": "cents 20.2 inside a 50-cent gate, onset -9.8 ms inside 40: match"
       }
     ]
   },

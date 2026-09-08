@@ -78,7 +78,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "What chord is the left hand playing in measure 43 of \"Prelude in E Minor, Op. 28 No. 4\"?"
+        "content": "What chord is the left hand playing in measure 43 of \"Prelude in E Minor, Op. 28 No. 4\"? Answer with the chord symbol alone."
       },
       {
         "turn": 2,

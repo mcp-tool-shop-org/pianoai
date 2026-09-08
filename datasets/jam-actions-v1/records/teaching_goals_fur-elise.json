@@ -81,7 +81,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "How many teaching goals does \"Fur Elise (Bagatelle No. 25 in A minor)\" declare?"
+        "content": "How many teaching goals does \"Fur Elise (Bagatelle No. 25 in A minor)\" declare? Answer with a single integer."
       },
       {
         "turn": 2,

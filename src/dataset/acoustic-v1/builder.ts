@@ -19,6 +19,8 @@ import {
   rederiveF5Gold,
   opaqueTakePath,
   f5DropStats,
+  round1,
+  acousticAssistantContent,
 } from "./f5-acoustic.js";
 import type { SongEntry } from "../../songs/types.js";
 import type { Provenance, Turn } from "../schema.js";
@@ -26,7 +28,44 @@ import type { V1Family, V1Record } from "./schema.js";
 import { V1_SCHEMA_VERSION } from "./schema.js";
 import { loadPublishableSongs } from "./library.js";
 
-export { f5DropStats } from "./f5-acoustic.js";
+export { f5DropStats, acousticAssistantContent, acousticComparisonLine, parseAcousticAssistant, round1 } from "./f5-acoustic.js";
+
+export const USER_TURN_FORMAT: Record<V1Family, { instruction: string; pattern: RegExp }> = {
+  chord: { instruction: "Answer with the chord symbol alone.", pattern: /Answer with the chord symbol alone\./ },
+  measures: { instruction: "Answer with a single integer.", pattern: /Answer with a single integer\./ },
+  teaching_goals: { instruction: "Answer with a single integer.", pattern: /Answer with a single integer\./ },
+  key_moments: { instruction: "Answer with a measure number or range.", pattern: /Answer with a measure number or range\./ },
+  transpose: { instruction: "Answer with the resulting key name alone.", pattern: /Answer with the resulting key name alone\./ },
+  compare: { instruction: "Answer with exactly one of: same_key, different_key.", pattern: /Answer with exactly one of: same_key, different_key\./ },
+  harmony: { instruction: "Answer with exactly one of: verified, rejected.", pattern: /Answer with exactly one of: verified, rejected\./ },
+  acoustic: { instruction: "Answer with exactly one of: match, pitch_fail, timing_fail.", pattern: /Answer with exactly one of: match, pitch_fail, timing_fail\./ },
+  ensemble: { instruction: "Answer with the instrument id alone.", pattern: /Answer with the instrument id alone\./ },
+};
+
+const CLOSED_SET_FAMILIES = new Set<V1Family>(["acoustic", "compare", "harmony", "ensemble"]);
+export function userTurnNamesClosedSet(family: string): boolean {
+  return CLOSED_SET_FAMILIES.has(family as V1Family);
+}
+
+function ask(family: V1Family, question: string): string {
+  return `${question} ${USER_TURN_FORMAT[family].instruction}`;
+}
+
+function roundToolNumbers(x: unknown): unknown {
+  if (typeof x === "number" && !Number.isInteger(x)) return round1(x);
+  if (Array.isArray(x)) return x.map(roundToolNumbers);
+  if (x && typeof x === "object") {
+    const o: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(x as Record<string, unknown>)) o[k] = roundToolNumbers(v);
+    return o;
+  }
+  return x;
+}
+
+export interface V1BuildOpts {
+  /** Bare acoustic assistant label. Default is the comparison line (chunk 22 B3). */
+  acousticBareLabel?: boolean;
+}
 
 export function leftHandToMidi(leftHand: string): number[] {
   const out: number[] = [];
@@ -153,7 +192,7 @@ export function buildChordRecord(song: SongEntry, split: "train" | "test"): V1Re
   const hit = agreeingChordMeasure(song);
   if (!hit) return null;
   const session: Turn[] = [
-    { turn: 1, role: "user", content: `What chord is the left hand playing in measure ${hit.measure} of "${song.title}"?` },
+    { turn: 1, role: "user", content: ask("chord", `What chord is the left hand playing in measure ${hit.measure} of "${song.title}"?`) },
     {
       turn: 2, role: "assistant",
       content: "I need the notes, then the chord engine.",
@@ -200,7 +239,7 @@ export function firstMeasureSpan(text: string): string | null {
 export function buildTeachingGoalsRecord(song: SongEntry, split: "train" | "test"): V1Record {
   const n = song.musicalLanguage.teachingGoals.length;
   const session: Turn[] = [
-    { turn: 1, role: "user", content: `How many teaching goals does "${song.title}" declare?` },
+    { turn: 1, role: "user", content: ask("teaching_goals", `How many teaching goals does "${song.title}" declare?`) },
     {
       turn: 2, role: "assistant",
       content: "Reading the song's musicalLanguage.",
@@ -220,7 +259,7 @@ export function buildKeyMomentsRecord(song: SongEntry, split: "train" | "test"):
   const span = firstMeasureSpan(first);
   if (!span) return null;
   const session: Turn[] = [
-    { turn: 1, role: "user", content: `Which measure range does the first key moment of "${song.title}" name?` },
+    { turn: 1, role: "user", content: ask("key_moments", `Which measure range does the first key moment of "${song.title}" name?`) },
     {
       turn: 2, role: "assistant",
       content: "Reading keyMoments from song_info.",
@@ -237,7 +276,7 @@ export function buildKeyMomentsRecord(song: SongEntry, split: "train" | "test"):
 export function buildMeasuresRecord(song: SongEntry, split: "train" | "test"): V1Record {
   const n = song.measures.length;
   const session: Turn[] = [
-    { turn: 1, role: "user", content: `How many measures are in "${song.title}"?` },
+    { turn: 1, role: "user", content: ask("measures", `How many measures are in "${song.title}"?`) },
     {
       turn: 2, role: "assistant",
       content: "Counting from the library entry.",
@@ -259,7 +298,7 @@ export function buildTransposeRecord(song: SongEntry, split: "train" | "test"): 
   const semitones = 2;
   const next = transposeSong(song, semitones);
   const session: Turn[] = [
-    { turn: 1, role: "user", content: `Transpose "${song.title}" up a whole step. What key is the result in?` },
+    { turn: 1, role: "user", content: ask("transpose", `Transpose "${song.title}" up a whole step. What key is the result in?`) },
     {
       turn: 2, role: "assistant",
       content: "Looking up the song, then transposing.",
@@ -325,7 +364,7 @@ export function pickComparePairs(songs: SongEntry[], testIds: Set<string>) {
 export function buildCompareRecord(a: SongEntry, b: SongEntry, split: "train" | "test"): V1Record {
   const answer = a.key === b.key ? "same_key" : "different_key";
   const session: Turn[] = [
-    { turn: 1, role: "user", content: `Do "${a.title}" and "${b.title}" share a key signature?` },
+    { turn: 1, role: "user", content: ask("compare", `Do "${a.title}" and "${b.title}" share a key signature?`) },
     {
       turn: 2, role: "assistant",
       content: "Comparing the two library entries.",
@@ -366,7 +405,7 @@ export function buildHarmonyRecords(song: SongEntry, split: "train" | "test"): V
     if (tag === "fail" && answer !== "rejected") continue;
     const payload = JSON.stringify(reharmonization);
     const session: Turn[] = [
-      { turn: 1, role: "user", content: `Proposed reharmonization of measure ${measure} of "${song.title}": ${payload}\nDoes it clear the harmony verifier?` },
+      { turn: 1, role: "user", content: ask("harmony", `Proposed reharmonization of measure ${measure} of "${song.title}": ${payload}\nDoes it clear the harmony verifier?`) },
       {
         turn: 2, role: "assistant",
         content: "Running the deterministic harmony verifier.",
@@ -387,9 +426,14 @@ export function buildHarmonyRecords(song: SongEntry, split: "train" | "test"): V
   return out;
 }
 
-export function buildAcousticRecord(song: SongEntry, split: "train" | "test"): V1Record[] {
+export function buildAcousticRecord(
+  song: SongEntry,
+  split: "train" | "test",
+  opts: V1BuildOpts = {},
+): V1Record[] {
   const out: V1Record[] = [];
   const usedPaths = new Set<string>();
+  const bare = opts.acousticBareLabel === true;
   for (const kind of F5_KINDS) {
     const kept = tryBuildF5(song, kind);
     if (!kept) continue;
@@ -399,7 +443,7 @@ export function buildAcousticRecord(song: SongEntry, split: "train" | "test"): V
     const session: Turn[] = [
       {
         turn: 1, role: "user",
-        content: `Grade this take of "${song.title}". Answer with exactly one of: match, pitch_fail, timing_fail.`,
+        content: ask("acoustic", `Grade this take of "${song.title}".`),
       },
       {
         turn: 2, role: "assistant",
@@ -411,11 +455,11 @@ export function buildAcousticRecord(song: SongEntry, split: "train" | "test"): V
       },
       { turn: 3, role: "tool", tool: "transcribe_audio", content: { note_count: kept.notes.length } },
       { turn: 4, role: "tool", tool: "score_audio_take", content: {
-        f0_hz: kept.measured_f0_hz,
-        cents_from_target: kept.measured_cents,
-        onset_ms: kept.measured_onset_ms,
+        f0_hz: round1(kept.measured_f0_hz),
+        cents_from_target: round1(kept.measured_cents),
+        onset_ms: round1(kept.measured_onset_ms),
       } },
-      { turn: 5, role: "assistant", content: kept.gold },
+      { turn: 5, role: "assistant", content: acousticAssistantContent(kept.measured_cents, kept.measured_onset_ms, kept.gold, bare) },
     ];
     out.push(baseRecord(song, "acoustic", `acoustic:${song.id}:${kind}`, split, {
       family: "acoustic", answer: kept.gold, engine: "YIN+SuperFlux",
@@ -428,6 +472,9 @@ export function buildAcousticRecord(song: SongEntry, split: "train" | "test"): V
           cents_shift: kept.cents_shift,
           delay_sec: kept.delay_sec,
           target_index: kept.target_index,
+          measured_f0_hz: kept.measured_f0_hz,
+          measured_cents: kept.measured_cents,
+          measured_onset_ms: kept.measured_onset_ms,
         },
       },
     }));
@@ -529,13 +576,13 @@ export function buildEnsembleRecords(): V1Record[] {
           ? "Two instruments are holding a triad. Which one is playing the wrong chord tone?"
           : "Two instruments should be in unison. Which one drifted?";
     const session: Turn[] = [
-      { turn: 1, role: "user", content: user },
+      { turn: 1, role: "user", content: ask("ensemble", user) },
       {
         turn: 2, role: "assistant",
         content: "Reading the live ensemble.",
         tool_calls: [{ tool: "ensemble_now", arguments: {} }],
       },
-      { turn: 3, role: "tool", tool: "ensemble_now", content: slim },
+      { turn: 3, role: "tool", tool: "ensemble_now", content: roundToolNumbers(slim) },
       { turn: 4, role: "assistant", content: c.gold },
     ];
     const rec = baseRecord(song, "ensemble", c.id, c.splitKey === "G" ? "test" : "train", {
@@ -569,7 +616,7 @@ export function testSongIds(songs: SongEntry[]): Set<string> {
   return new Set(ids.slice(-nTest));
 }
 
-export function buildAllRecords(): V1Record[] {
+export function buildAllRecords(opts: V1BuildOpts = {}): V1Record[] {
   resetF5DropStats();
   const songs = loadPublishableSongs();
   if (songs.length < 20) {
@@ -587,7 +634,7 @@ export function buildAllRecords(): V1Record[] {
     const km = buildKeyMomentsRecord(song, split);
     if (km) records.push(km);
     records.push(...buildHarmonyRecords(song, split));
-    records.push(...buildAcousticRecord(song, split));
+    records.push(...buildAcousticRecord(song, split, opts));
   }
   records.push(...buildEnsembleRecords());
   for (const p of pickComparePairs(songs, testIds)) {

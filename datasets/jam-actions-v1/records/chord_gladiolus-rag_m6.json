@@ -78,7 +78,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "What chord is the left hand playing in measure 6 of \"Gladiolus Rag\"?"
+        "content": "What chord is the left hand playing in measure 6 of \"Gladiolus Rag\"? Answer with the chord symbol alone."
       },
       {
         "turn": 2,

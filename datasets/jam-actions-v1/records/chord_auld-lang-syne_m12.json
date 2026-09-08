@@ -79,7 +79,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "What chord is the left hand playing in measure 12 of \"Auld Lang Syne\"?"
+        "content": "What chord is the left hand playing in measure 12 of \"Auld Lang Syne\"? Answer with the chord symbol alone."
       },
       {
         "turn": 2,

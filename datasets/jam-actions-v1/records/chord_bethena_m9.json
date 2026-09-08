@@ -78,7 +78,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "What chord is the left hand playing in measure 9 of \"Bethena\"?"
+        "content": "What chord is the left hand playing in measure 9 of \"Bethena\"? Answer with the chord symbol alone."
       },
       {
         "turn": 2,

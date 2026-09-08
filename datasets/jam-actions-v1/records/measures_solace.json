@@ -78,7 +78,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "How many measures are in \"Solace\"?"
+        "content": "How many measures are in \"Solace\"? Answer with a single integer."
       },
       {
         "turn": 2,

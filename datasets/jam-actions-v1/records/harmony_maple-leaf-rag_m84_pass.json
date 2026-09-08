@@ -94,7 +94,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Proposed reharmonization of measure 84 of \"Maple Leaf Rag\": [{\"measure\":84,\"intendedChord\":\"C#\",\"voicing\":\"G#3 F2 F3 G#3 C#2 C#3\"}]\nDoes it clear the harmony verifier?"
+        "content": "Proposed reharmonization of measure 84 of \"Maple Leaf Rag\": [{\"measure\":84,\"intendedChord\":\"C#\",\"voicing\":\"G#3 F2 F3 G#3 C#2 C#3\"}]\nDoes it clear the harmony verifier? Answer with exactly one of: verified, rejected."
       },
       {
         "turn": 2,

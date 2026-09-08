@@ -78,7 +78,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "How many teaching goals does \"Pathetique Sonata, 2nd Movement (Adagio cantabile)\" declare?"
+        "content": "How many teaching goals does \"Pathetique Sonata, 2nd Movement (Adagio cantabile)\" declare? Answer with a single integer."
       },
       {
         "turn": 2,

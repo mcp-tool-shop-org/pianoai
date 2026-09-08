@@ -78,7 +78,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "How many measures are in \"The Easy Winners\"?"
+        "content": "How many measures are in \"The Easy Winners\"? Answer with a single integer."
       },
       {
         "turn": 2,

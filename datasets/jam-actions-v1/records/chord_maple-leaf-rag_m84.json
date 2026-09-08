@@ -78,7 +78,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "What chord is the left hand playing in measure 84 of \"Maple Leaf Rag\"?"
+        "content": "What chord is the left hand playing in measure 84 of \"Maple Leaf Rag\"? Answer with the chord symbol alone."
       },
       {
         "turn": 2,

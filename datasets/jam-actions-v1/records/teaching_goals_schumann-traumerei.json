@@ -78,7 +78,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "How many teaching goals does \"Traumerei (Dreaming) from Kinderszenen\" declare?"
+        "content": "How many teaching goals does \"Traumerei (Dreaming) from Kinderszenen\" declare? Answer with a single integer."
       },
       {
         "turn": 2,

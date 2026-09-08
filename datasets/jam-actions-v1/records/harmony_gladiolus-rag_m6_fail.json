@@ -94,7 +94,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Proposed reharmonization of measure 6 of \"Gladiolus Rag\": [{\"measure\":6,\"intendedChord\":\"Fsus4\",\"voicing\":\"F#2 F#3 B2 B3 C#3\"}]\nDoes it clear the harmony verifier?"
+        "content": "Proposed reharmonization of measure 6 of \"Gladiolus Rag\": [{\"measure\":6,\"intendedChord\":\"Fsus4\",\"voicing\":\"F#2 F#3 B2 B3 C#3\"}]\nDoes it clear the harmony verifier? Answer with exactly one of: verified, rejected."
       },
       {
         "turn": 2,

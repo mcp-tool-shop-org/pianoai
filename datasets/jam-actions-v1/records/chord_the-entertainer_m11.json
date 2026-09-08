@@ -81,7 +81,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "What chord is the left hand playing in measure 11 of \"The Entertainer\"?"
+        "content": "What chord is the left hand playing in measure 11 of \"The Entertainer\"? Answer with the chord symbol alone."
       },
       {
         "turn": 2,

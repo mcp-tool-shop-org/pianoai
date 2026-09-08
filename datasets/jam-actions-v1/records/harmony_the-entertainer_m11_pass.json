@@ -97,7 +97,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Proposed reharmonization of measure 11 of \"The Entertainer\": [{\"measure\":11,\"intendedChord\":\"D\",\"voicing\":\"D2 D3 D3 F#3 A3 D3 F#3 A3\"}]\nDoes it clear the harmony verifier?"
+        "content": "Proposed reharmonization of measure 11 of \"The Entertainer\": [{\"measure\":11,\"intendedChord\":\"D\",\"voicing\":\"D2 D3 D3 F#3 A3 D3 F#3 A3\"}]\nDoes it clear the harmony verifier? Answer with exactly one of: verified, rejected."
       },
       {
         "turn": 2,

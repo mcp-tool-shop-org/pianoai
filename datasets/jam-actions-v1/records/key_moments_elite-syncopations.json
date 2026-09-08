@@ -78,7 +78,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Which measure range does the first key moment of \"Elite Syncopations\" name?"
+        "content": "Which measure range does the first key moment of \"Elite Syncopations\" name? Answer with a measure number or range."
       },
       {
         "turn": 2,

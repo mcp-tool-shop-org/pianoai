@@ -94,7 +94,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "Proposed reharmonization of measure 35 of \"Nocturne in Eb Major, Op. 9 No. 2\": [{\"measure\":35,\"intendedChord\":\"Edim\",\"voicing\":\"G#3 B3 F2 F3\"}]\nDoes it clear the harmony verifier?"
+        "content": "Proposed reharmonization of measure 35 of \"Nocturne in Eb Major, Op. 9 No. 2\": [{\"measure\":35,\"intendedChord\":\"Edim\",\"voicing\":\"G#3 B3 F2 F3\"}]\nDoes it clear the harmony verifier? Answer with exactly one of: verified, rejected."
       },
       {
         "turn": 2,

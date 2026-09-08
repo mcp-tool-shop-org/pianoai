@@ -78,7 +78,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "What chord is the left hand playing in measure 23 of \"Peacherine Rag\"?"
+        "content": "What chord is the left hand playing in measure 23 of \"Peacherine Rag\"? Answer with the chord symbol alone."
       },
       {
         "turn": 2,

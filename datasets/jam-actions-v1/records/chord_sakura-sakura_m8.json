@@ -79,7 +79,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "What chord is the left hand playing in measure 8 of \"Sakura Sakura\"?"
+        "content": "What chord is the left hand playing in measure 8 of \"Sakura Sakura\"? Answer with the chord symbol alone."
       },
       {
         "turn": 2,

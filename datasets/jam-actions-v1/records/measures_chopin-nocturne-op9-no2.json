@@ -78,7 +78,7 @@
       {
         "turn": 1,
         "role": "user",
-        "content": "How many measures are in \"Nocturne in Eb Major, Op. 9 No. 2\"?"
+        "content": "How many measures are in \"Nocturne in Eb Major, Op. 9 No. 2\"? Answer with a single integer."
       },
       {
         "turn": 2,
