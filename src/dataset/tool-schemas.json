@@ -1,8 +1,8 @@
 {
   "server_name": "ai-jam-sessions",
   "derived_from": "dist/mcp-server.js via MCP tools/list",
-  "derived_at": "2026-09-08T00:10:12.682Z",
-  "tool_count": 52,
+  "derived_at": "2026-09-08T00:32:06.199Z",
+  "tool_count": 53,
   "tools": [
     {
       "name": "add_section",
@@ -1663,6 +1663,48 @@
       "inputSchema": {
         "type": "object",
         "properties": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "view_spectrogram",
+      "description": "SEE a recording as a picture: a constant-Q spectrogram of a WAV file, with a piano keyboard down the left edge so pitch is readable at a glance. Use it to spot what is wrong and where — a smeared attack, a note that drifts, a bar that is muddier than the rest — then measure it with analyze_audio or score_audio_take. Describe what you see BEFORE asking for the overlay: with overlay set to true it draws the song's intended notes on top, and seeing them first makes it easy to agree with what you expected rather than with what is there. The picture localises; it does not measure. Every number belongs to the other tools.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Absolute path to an uncompressed WAV file."
+          },
+          "song_id": {
+            "description": "Song to draw intended notes from. Only used when overlay is true.",
+            "type": "string"
+          },
+          "start_sec": {
+            "description": "Start of the window to draw. Defaults to 0.",
+            "type": "number"
+          },
+          "end_sec": {
+            "description": "End of the window to draw. Defaults to 6 seconds after the start, which is one page.",
+            "type": "number"
+          },
+          "overlay": {
+            "description": "Draw the song's intended notes over the audio. Defaults to false, so you look at the sound first.",
+            "type": "boolean"
+          },
+          "colormap": {
+            "description": "Colour scheme. Defaults to viridis.",
+            "type": "string",
+            "enum": [
+              "viridis",
+              "magma",
+              "grey"
+            ]
+          }
+        },
+        "required": [
+          "path"
+        ],
         "$schema": "http://json-schema.org/draft-07/schema#"
       }
     }

@@ -20,6 +20,7 @@
 //   pitch               YIN plus the cents-against-target gate
 //   wav                 minimal RIFF/WAVE decode, the way audio gets in
 //   transcribe          monophonic notes → MidiNoteEvent[] (lossy at the convert)
+//   render              spectrogram → PNG bytes (tier 3, orientation only)
 //   fixtures            synthetic generators for tests and later goldens
 //
 // Everything here is pure and synchronous. Nothing reads a file, touches the
@@ -130,6 +131,22 @@ export {
   type DecodedAudio,
   type DecodeWavOptions,
 } from "./wav.js";
+
+export {
+  renderSpectrogram,
+  encodeIndexedPng,
+  indexedPngByteLength,
+  DEFAULT_WIDTH,
+  DEFAULT_HEIGHT,
+  DEFAULT_TOP_DB,
+  type ColormapName,
+  type ZlibCompressor,
+  type OverlayNote,
+  type ContourPoint,
+  type Gridline,
+  type RenderOptions,
+  type RenderSidecar,
+} from "./render.js";
 
 export {
   sine,

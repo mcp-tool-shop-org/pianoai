@@ -110,17 +110,21 @@ import { PlaybackController } from "./playback/controls.js";
 import { createSingOnMidiHook } from "./teaching/sing-on-midi.js";
 import { createMidiFeedbackHook } from "./teaching/midi-feedback.js";
 import { createLiveMidiFeedbackHook } from "./teaching/live-midi-feedback.js";
-import { scorePerformance, type PerformanceResult } from "./score-performance.js";
+import { scorePerformance, flattenSongToExpected, type PerformanceResult } from "./score-performance.js";
 import {
   decodeWav,
   detectOnsets,
   trackPitch,
   transcribe,
   toMidiNoteEvents,
+  cqt,
+  renderSpectrogram,
+  C1_HZ,
   HOUSE_TOLERANCE_MS,
   ONSET_DETECTOR_CAVEAT,
   type DecodedAudio,
 } from "./audio/index.js";
+import { deflateSync } from "node:zlib";
 import { scoreAnnotation, formatAnnotationScore } from "./annotation-scorer.js";
 import { compareSongs, formatComparison } from "./song-compare.js";
 import type { VoiceDirective, AsideDirective } from "./types.js";
@@ -2958,6 +2962,136 @@ registerTool(
     ];
 
     return { content: [{ type: "text" as const, text: lines.join("\n") }] };
+  },
+);
+
+registerTool(
+  "view_spectrogram",
+  "SEE a recording as a picture: a constant-Q spectrogram of a WAV file, with a piano keyboard down the left edge so pitch is readable at a glance. Use it to spot what is wrong and where — a smeared attack, a note that drifts, a bar that is muddier than the rest — then measure it with analyze_audio or score_audio_take. Describe what you see BEFORE asking for the overlay: with overlay set to true it draws the song's intended notes on top, and seeing them first makes it easy to agree with what you expected rather than with what is there. The picture localises; it does not measure. Every number belongs to the other tools.",
+  {
+    path: z.string().describe("Absolute path to an uncompressed WAV file."),
+    song_id: z.string().optional().describe("Song to draw intended notes from. Only used when overlay is true."),
+    start_sec: z.number().optional().describe("Start of the window to draw. Defaults to 0."),
+    end_sec: z.number().optional().describe("End of the window to draw. Defaults to 6 seconds after the start, which is one page."),
+    overlay: z.boolean().optional().describe("Draw the song's intended notes over the audio. Defaults to false, so you look at the sound first."),
+    colormap: z.enum(["viridis", "magma", "grey"]).optional().describe("Colour scheme. Defaults to viridis."),
+  },
+  async (
+    { path, song_id, start_sec, end_sec, overlay, colormap }:
+    { path: string; song_id?: string; start_sec?: number; end_sec?: number; overlay?: boolean; colormap?: "viridis" | "magma" | "grey" },
+  ) => {
+    const loaded = loadAudioFile(path);
+    if (!loaded.ok) return loaded.result;
+    const { audio } = loaded;
+
+    const from = Math.max(0, start_sec ?? 0);
+    // One page is 6 seconds. Longer than that and a 40 ms event is under 2 px
+    // wide at the fixed render width, which is below what a vision model can
+    // resolve at all.
+    const to = Math.min(audio.durationSec, end_sec ?? from + 6);
+    if (!(to > from)) {
+      return {
+        content: [{
+          type: "text" as const,
+          text: `The window from ${from} s to ${to} s is empty. The file is ${audio.durationSec.toFixed(2)} s long.`,
+        }],
+        isError: true as const,
+      };
+    }
+
+    const window = audio.samples.subarray(
+      Math.floor(from * audio.sampleRate),
+      Math.ceil(to * audio.sampleRate),
+    );
+
+    const cqtOptions = {
+      sampleRate: audio.sampleRate,
+      fmin: C1_HZ,
+      binsPerOctave: 60,
+      octaves: 7,
+      hopLength: 512,
+    };
+    const spec = cqt(window, cqtOptions);
+
+    let overlayNotes: { midi: number; time: number; duration: number; hand?: "left" | "right" }[] = [];
+    let overlayNote = "";
+    if (overlay) {
+      if (!song_id) {
+        return {
+          content: [{
+            type: "text" as const,
+            text: "overlay needs a song_id to know which notes to draw. Pass one, or leave overlay off to look at the audio alone.",
+          }],
+          isError: true as const,
+        };
+      }
+      const song = getSong(song_id);
+      if (!song) {
+        return {
+          content: [{
+            type: "text" as const,
+            text: `No song called "${song_id}" in the library. Try list_songs to browse.`,
+          }],
+          isError: true as const,
+        };
+      }
+      overlayNotes = flattenSongToExpected(song)
+        .filter((n) => n.time + n.duration >= from && n.time <= to)
+        .map((n) => ({
+          midi: n.note,
+          time: n.time - from,
+          duration: n.duration,
+          hand: n.hand,
+        }));
+      overlayNote =
+        `\nIntended notes from **${song.title}** are drawn as hollow outlines, ` +
+        `offset just above the sound they describe so the two never overlap: ` +
+        `blue right hand, coral left.`;
+    }
+
+    const { png, sidecar } = renderSpectrogram(spec, spec.frequencies, {
+      ...(colormap ? { colormap } : {}),
+      overlay: overlayNotes,
+      // Node has zlib in its standard library, so the server pays none of the
+      // portability cost that keeps the renderer's own default uncompressed.
+      // Measured on a full-size page: 1.23 MB stored becomes about 55 KB here.
+      compress: (raw: Uint8Array) => new Uint8Array(deflateSync(Buffer.from(raw))),
+    });
+
+    const { tmpdir } = await import("node:os");
+    const { join } = await import("node:path");
+    const tempPath = join(tmpdir(), `spectrogram-${Date.now()}.png`);
+    try {
+      writeFileSync(tempPath, png);
+    } catch (err) {
+      return fsErrorResult(err, `write the spectrogram for "${path}"`);
+    }
+
+    const text =
+      `# Spectrogram\n\n` +
+      `${describeAudio(audio, path)}\n` +
+      `Showing ${from.toFixed(2)} s to ${to.toFixed(2)} s, ` +
+      `constant-Q at ${sidecar.colormap === "grey" ? "grey" : sidecar.colormap}, ` +
+      `${cqtOptions.binsPerOctave} bins per octave (20 cents), C1 upward.\n` +
+      `Written to: ${tempPath}${overlayNote}\n\n` +
+      (overlay
+        ? `You are seeing the intended notes as well as the sound.`
+        : `This is the SOUND ONLY — no score is drawn on it. Say what you see ` +
+          `before asking for the overlay.`) +
+      `\n\nRead the picture for WHERE something is wrong. For what it is worth ` +
+      `in cents or milliseconds, use analyze_audio or score_audio_take: a ` +
+      `spectrogram is not a measuring instrument and neither is a model reading one.`;
+
+    return {
+      content: [
+        { type: "text" as const, text },
+        {
+          type: "image" as const,
+          data: Buffer.from(png).toString("base64"),
+          mimeType: "image/png",
+        },
+      ],
+    };
   },
 );
 
