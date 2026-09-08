@@ -1,0 +1,282 @@
+{
+  "id": "bach-prelude-c-major-bwv846:mm.1RH4-notereduction:late_80:s7",
+  "schema_version": "jam-actions-acoustic-v0/1.0.0",
+  "provenance": {
+    "source_url": "http://piano-midi.de/",
+    "source_collected_at": "2026-05-16",
+    "source_type": "transcribed-by-author",
+    "composition_title": "Prelude in C Major, BWV 846 (Well-Tempered Clavier)",
+    "composer": "Johann Sebastian Bach",
+    "composition_year": 1722,
+    "composition_pd_status_us": "public_domain",
+    "composition_pd_status_eu": "public_domain",
+    "arrangement_creator": "Bernd Krueger",
+    "arrangement_license": "CC-BY-SA",
+    "arrangement_license_version": "3.0",
+    "arrangement_evidence_url": "http://piano-midi.de/bach.htm",
+    "record_verdict": "public",
+    "verdict_reason": "Prelude in C Major, BWV 846 (Well-Tempered Clavier). Slice 2.5 URL verification. License confirmed: CC-BY-SA-3.0. Evidence URL: http://piano-midi.de/bach.htm. Verdict: public — all site-level + per-song verification conditions passed. Acoustic take is a 4-note monophonic right-hand reduction rendered with fixtures-sine-v1, not the arrangement MIDI performance.",
+    "verifier": "auto-rule-engine+slice2.5-url-verifier",
+    "verified_at": "2026-05-17",
+    "training_use_permitted": true
+  },
+  "scope": {
+    "song_id": "bach-prelude-c-major-bwv846",
+    "phrase_window": "mm.1 RH 4-note reduction",
+    "instrument": "monophonic-reduction",
+    "key": "C major",
+    "tempo_bpm": 74,
+    "time_signature": "4/4",
+    "window_role": "standalone"
+  },
+  "observation": {
+    "midi_sidecar": {
+      "midi_sha256": "872a3fb5cd66d4466fd9f1417152edf81f0805e421fcdf2bcfcc3f990518a64c",
+      "ticks_per_beat": 480,
+      "timed_events": [
+        {
+          "t_seconds": 0.3,
+          "t_ticks": 178,
+          "dur_seconds": 0.5,
+          "dur_ticks": 296,
+          "note": 60,
+          "name": "C4",
+          "velocity": 80,
+          "channel": 0,
+          "hand": "right",
+          "measure": 1,
+          "beat": 0.36999999999999994
+        },
+        {
+          "t_seconds": 0.502703,
+          "t_ticks": 298,
+          "dur_seconds": 0.5,
+          "dur_ticks": 296,
+          "note": 64,
+          "name": "E4",
+          "velocity": 80,
+          "channel": 0,
+          "hand": "right",
+          "measure": 1,
+          "beat": 0.6200003666666667
+        },
+        {
+          "t_seconds": 0.705406,
+          "t_ticks": 418,
+          "dur_seconds": 0.202703,
+          "dur_ticks": 120,
+          "note": 67,
+          "name": "G4",
+          "velocity": 80,
+          "channel": 0,
+          "hand": "right",
+          "measure": 1,
+          "beat": 0.8700007333333333
+        },
+        {
+          "t_seconds": 0.9081079999999999,
+          "t_ticks": 538,
+          "dur_seconds": 0.202703,
+          "dur_ticks": 120,
+          "note": 72,
+          "name": "C5",
+          "velocity": 80,
+          "channel": 0,
+          "hand": "right",
+          "measure": 1,
+          "beat": 1.1199998666666664
+        }
+      ]
+    },
+    "render": {
+      "engine": "fixtures-sine-v1",
+      "seed": 7,
+      "recipe": {
+        "engine": "fixtures-sine-v1",
+        "seed": 7,
+        "song_id": "bach-prelude-c-major-bwv846",
+        "phrase_window": "mm.1 RH 4-note reduction",
+        "notes": [
+          {
+            "midi": 60,
+            "name": "C4",
+            "time": 0,
+            "duration": 0.5
+          },
+          {
+            "midi": 64,
+            "name": "E4",
+            "time": 0.202703,
+            "duration": 0.5
+          },
+          {
+            "midi": 67,
+            "name": "G4",
+            "time": 0.405406,
+            "duration": 0.202703
+          },
+          {
+            "midi": 72,
+            "name": "C5",
+            "time": 0.608108,
+            "duration": 0.202703
+          }
+        ],
+        "kind": "late_80",
+        "target_index": 0,
+        "cents_shift": null,
+        "delay_sec": 0.1186144579667598,
+        "silence_duration_sec": 1.2097086117137223,
+        "note_jitter": [
+          {
+            "time_offset_sec": 0,
+            "amplitude": 0.8311043376103043
+          },
+          {
+            "time_offset_sec": -0.0005402778796851635,
+            "amplitude": 0.7979850371833891
+          },
+          {
+            "time_offset_sec": 0.000853209663182497,
+            "amplitude": 0.8959644179791212
+          },
+          {
+            "time_offset_sec": -0.003874951023608446,
+            "amplitude": 0.7811896727886051
+          }
+        ],
+        "sample_rate": 44100,
+        "pre_roll_sec": 0.3,
+        "gap_sec": 0.15,
+        "click_amplitude": 1
+      },
+      "wav_sha256": "eff577a357f888bcce6fb7a4e77e4ea31525683564a0ca14b441fd22e8c884c8",
+      "sample_rate": 44100
+    },
+    "perturbation": {
+      "kind": "late_80",
+      "target_index": 0,
+      "cents": null,
+      "delay_ms": 118.6144579667598
+    },
+    "thresholds": {
+      "timing_ms": 40,
+      "pitch_fail_cents": 50,
+      "pitch_warn_cents": 25,
+      "onset_delta": 0.15,
+      "min_duration_sec": 0.05
+    },
+    "gold": {
+      "verdict": "timing_fail",
+      "thresholds": {
+        "timing_ms": 40,
+        "pitch_fail_cents": 50,
+        "pitch_warn_cents": 25,
+        "onset_delta": 0.15,
+        "min_duration_sec": 0.05
+      },
+      "target_index": 0,
+      "expected_cents": null,
+      "expected_timing_ms": 118.6144579667598
+    }
+  },
+  "annotation_target": {
+    "measure_range": [
+      1,
+      1
+    ],
+    "structure": "monophonic reduction of mm.1 RH 4-note reduction",
+    "key_moments": [
+      "perturbation late_80"
+    ],
+    "teaching_goals": [
+      "Identify gold verdict timing_fail"
+    ],
+    "style_tips": [
+      "timing_ms=40",
+      "pitch_fail_cents=50",
+      "pitch_warn_cents=25",
+      "onset_delta=0.15",
+      "min_duration_sec=0.05"
+    ],
+    "teaching_notes": [
+      {
+        "measure": 1,
+        "note": "late_80 at score index 0"
+      }
+    ]
+  },
+  "target_trace": {
+    "task_family": "grade-audio-take",
+    "objective": "Grade the take at /acoustic-corpus/bach-prelude-c-major-bwv846:mm.1RH4-notereduction:late_80:s7.wav against bach-prelude-c-major-bwv846 using the audio inspector, not the picture.",
+    "session": [
+      {
+        "turn": 1,
+        "role": "user",
+        "content": "Grade this recording of bach-prelude-c-major-bwv846: /acoustic-corpus/bach-prelude-c-major-bwv846:mm.1RH4-notereduction:late_80:s7.wav"
+      },
+      {
+        "turn": 2,
+        "role": "assistant",
+        "content": "I will transcribe the take and score it against the song at the house gates.",
+        "tool_calls": [
+          {
+            "tool": "transcribe_audio",
+            "arguments": {
+              "path": "/acoustic-corpus/bach-prelude-c-major-bwv846:mm.1RH4-notereduction:late_80:s7.wav"
+            }
+          },
+          {
+            "tool": "score_audio_take",
+            "arguments": {
+              "path": "/acoustic-corpus/bach-prelude-c-major-bwv846:mm.1RH4-notereduction:late_80:s7.wav",
+              "song_id": "bach-prelude-c-major-bwv846"
+            }
+          }
+        ]
+      },
+      {
+        "turn": 3,
+        "role": "tool",
+        "tool": "transcribe_audio",
+        "content": {
+          "monophonic": true
+        }
+      },
+      {
+        "turn": 4,
+        "role": "tool",
+        "tool": "score_audio_take",
+        "content": {
+          "verdict": "timing_fail",
+          "thresholds": {
+            "timing_ms": 40,
+            "pitch_fail_cents": 50,
+            "pitch_warn_cents": 25,
+            "onset_delta": 0.15,
+            "min_duration_sec": 0.05
+          },
+          "expected_cents": null,
+          "expected_timing_ms": 118.6144579667598
+        }
+      },
+      {
+        "turn": 5,
+        "role": "assistant",
+        "content": "Gold verdict: timing_fail. Gates on this record: timing_ms=40, pitch_fail_cents=50, pitch_warn_cents=25. "
+      }
+    ]
+  },
+  "eval_metadata": {
+    "split": "train",
+    "split_strategy": "exhaustive perturbation kinds × phrase, keyed by seed",
+    "leakage_check": "passed",
+    "eval_eligibility": [
+      "E1_tool_use",
+      "acoustic_gate"
+    ],
+    "phrase_continuation_eligible": false,
+    "phrase_continuation_eligible_reason": "acoustic records are standalone grading tasks, not continuation pairs"
+  },
+  "split": "train"
+}

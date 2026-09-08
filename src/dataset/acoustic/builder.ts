@@ -76,6 +76,17 @@ function pickTargetIndex(rng: () => number, n: number): number {
   return Math.floor(rng() * n);
 }
 
+/** Smallest seed ≥ 1 whose first mulberry32 draw yields `index` in `0..n-1`. */
+export function smallestSeedForIndex(index: number, n: number): number {
+  if (!Number.isInteger(index) || index < 0 || index >= n) {
+    throw new Error(`index must be in 0..${n - 1}, got ${index}`);
+  }
+  for (let seed = 1; seed < 1_000_000; seed++) {
+    if (pickTargetIndex(mulberry32(seed), n) === index) return seed;
+  }
+  throw new Error(`No seed found for target_index ${index} with n=${n}`);
+}
+
 export function sha256Samples(samples: Float64Array): string {
   return createHash("sha256")
     .update(Buffer.from(samples.buffer, samples.byteOffset, samples.byteLength))

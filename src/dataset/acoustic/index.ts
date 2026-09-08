@@ -24,10 +24,24 @@ export {
   buildKindSet,
   renderTake,
   sha256Samples,
+  smallestSeedForIndex,
   fixturePhrase,
   type PhraseSpec,
   type BuildOptions,
 } from "./builder.js";
+
+export {
+  PHRASE_SPECS,
+  TRAIN_SONG_IDS,
+  TEST_SONG_ID,
+  assertNoClairDeLune,
+} from "./phrases.js";
+
+export {
+  buildAllRecords,
+  targetIndexSeeds,
+  generateAcousticCorpus,
+} from "./generate-corpus.js";
 
 export {
   NO_ENRICHMENT_SPLIT_DECLARATION,

@@ -34,7 +34,7 @@ A piano and guitar that AI learns to play. Not a synthesizer, not a MIDI library
 An LLM can read and write text, but it can't experience music the way we do. No ears, no fingers, no muscle memory. AI Jam Sessions closes that gap by giving the model senses it can actually use:
 
 - **Reading** — real MIDI sheet music with deep musical annotations. Not hand-written approximations — parsed, analyzed, and explained.
-- **Hearing** — six audio engines (oscillator piano, sample piano, vocal samples, physical vocal tract, additive vocal synth, physically-modeled guitar) that play through your speakers, so the humans in the room become the AI's ears.
+- **Hearing** — six audio engines (oscillator piano, sample piano, vocal samples, physical vocal tract, additive vocal synth, physically-modeled guitar) that play through your speakers, so the humans in the room become the AI's ears. And now the model has ears of its own: it can measure a recording it made, or one you made, and say what is actually in it — see [Listening](#listening).
 - **Seeing** — a piano roll that renders what was played as SVG the model can read back and verify. An interactive guitar tablature editor. A browser cockpit with a visual keyboard, dual-mode note editor, and tuning lab.
 - **Remembering** — a practice journal that persists across sessions, so learning compounds over time.
 - **Singing** — vocal tract synthesis with 20 voice presets, from operatic soprano to electronic choir. Sing-along mode with solfege, contour, and syllable narration. And a real sung lead on the piano's clock: a score-conditioned singer driven by the song's MIDI, gated on timing (40 ms) and pitch (50 cents) before you hear it — see [Sing](#sing).
@@ -42,6 +42,38 @@ An LLM can read and write text, but it can't experience music the way we do. No 
 Every one of the 120 songs is now fully annotated — historical context, bar-by-bar structural analysis, key moments, teaching goals, and performance tips, in all 12 genres. An earlier version of this README said the raw songs were "waiting for the AI to absorb the patterns, play the music, and write its own annotations." That is exactly what happened: the annotations were written by AI against a deterministic per-song analysis (chords, repetition structure, section boundaries, content-verified keys), gated by a quality rubric, and adversarially fact-checked claim by claim — measure numbers, chord windows, and structural counts all verified against the actual MIDI before anything shipped.
 
 Out of this same work, we also publish **[jam-actions-v0](#training-dataset)** — a public dataset of 115 multi-turn MCP tool-use traces over real classical piano. It teaches LLMs to do *grounded tool-use over symbolic music*, not just text generation, and ships with a 7-axis release gate that distinguishes "passing on evidence" from "passing because the task is trivial." See [Training Dataset](#training-dataset) below for the full story.
+
+## Listening
+
+For a long time this server could make sound but never examine it. The model played, a human
+listened, and the model took their word for it. That gap is now closed.
+
+Point it at a WAV and it measures what is there. Not by looking at a picture and guessing —
+by running the signal through the same kind of tools it already uses on the score:
+
+- **`analyze_audio`** — onsets, the pitch contour, and level. Pitch comes back as note names with
+  cent deviations, never as raw frequencies.
+- **`transcribe_audio`** — the recording as notes: pitch, start, duration, and how far each note
+  sits from concert pitch.
+- **`score_audio_take`** — grade a performance against a song in the library **by ear**. It
+  transcribes the recording, matches it to the score, and reports which notes landed, which
+  drifted, and which were missed. Then `view_scored_piano_roll` draws the result over the score,
+  exactly as it does for a captured MIDI take. This is how you grade a real instrument, a sung
+  take, or anything where there is no MIDI to capture.
+- **`view_spectrogram`** — see the sound. A constant-Q spectrogram with a piano keyboard down the
+  left edge, so pitch is readable at a glance, and the song's intended notes drawn over it on
+  request.
+
+**What it will not tell you.** The picture is for finding *where* something is wrong; every number
+comes from signal processing, never from a model reading an image. The transcriber follows one
+line at a time, so a chord or a full mix will produce something confident and wrong, and it says
+so. Onset detection runs around F1 0.88 at the state of the art, so a "missed" note may be one the
+transcriber could not hear rather than one you did not play — the tools carry that caveat in their
+own output rather than burying it here.
+
+The whole surface is dependency-free: the transform, the pitch tracker, the onset detector, the
+WAV decoder and the PNG encoder are all in this repo, and they produce identical numbers in Node
+and in the browser.
 
 ## The Piano Roll
 

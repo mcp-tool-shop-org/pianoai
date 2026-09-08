@@ -1,0 +1,38 @@
+{
+  "base_model": "Qwen/Qwen2.5-3B-Instruct",
+  "hf_home": "E:/AI-Models/hf-cache",
+  "local_files_only": true,
+  "refuse_download": true,
+  "method": "lora",
+  "precision": "bf16",
+  "lora": {
+    "r": 16,
+    "alpha": 32,
+    "dropout": 0.1,
+    "target_modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ]
+  },
+  "lr": 0.00015,
+  "schedule": "cosine",
+  "warmup_steps": 10,
+  "effective_batch": 8,
+  "per_device_train_batch_size": 2,
+  "gradient_accumulation_steps": 4,
+  "weight_decay": 0.0,
+  "max_grad_norm": 1.0,
+  "max_seq_len": 4096,
+  "epochs": 5,
+  "packing": false,
+  "gradient_checkpointing": true,
+  "seed": 13,
+  "train_examples": 72,
+  "test_examples": 36,
+  "notes": "72 examples. 3B not 7B. No inner-val. Weights must already exist under hf_home; this config never downloads."
+}
