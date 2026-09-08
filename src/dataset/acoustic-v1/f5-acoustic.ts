@@ -11,6 +11,7 @@ import { midiToHz, trackPitch, scorePitchWindow } from "../../audio/pitch.js";
 import { detectOnsets } from "../../audio/onsets.js";
 import { parseNoteToMidi, midiToNoteName } from "../../note-parser.js";
 import type { SongEntry } from "../../songs/types.js";
+import { loadPublishableSongs } from "./library.js";
 import {
   MEASURED_ONSET_ABS_P95_MS,
   MEASURED_YIN_LOCKED_P95_CENTS,
@@ -35,7 +36,23 @@ export const F5_ONSET_CLEARANCE_MULTIPLE =
 const SR = 44100;
 const PRE_ROLL = 0.3;
 const NOTE_DUR = 0.45;
-const NOTE_GAP = 0.6;
+// 1.2 s so a late first-note delay of F5_LATE_MS_MAX plus NOTE_DUR stays
+// inside the next onset. 0.6 s only had 150 ms of room, which is ~13 SuperFlux
+// hops — not enough for the spread the gate-only experiment needs.
+const NOTE_GAP = 1.2;
+
+/** sharp_fail cents: gate + clearance … under the octave-jump region. */
+export const F5_SHARP_CENTS_MIN = V1_PITCH_FAIL_CENTS + V1_PITCH_CLEARANCE_CENTS;
+export const F5_SHARP_CENTS_MAX = 90;
+/** match / late_fail cents: above tracker noise … gate − clearance. */
+export const F5_INSIDE_CENTS_MIN = 10 * MEASURED_YIN_LOCKED_P95_CENTS;
+export const F5_INSIDE_CENTS_MAX = V1_PITCH_FAIL_CENTS - V1_PITCH_CLEARANCE_CENTS;
+/** late_fail onset: gate + clearance … chosen so measured max−min > 10× onset p95. */
+export const F5_LATE_MS_MIN = V1_TIMING_MS + V1_ONSET_CLEARANCE_MS;
+export const F5_LATE_MS_MAX = 400;
+/** match / sharp_fail onset: small non-zero … gate − clearance. */
+export const F5_INSIDE_MS_MIN = 1;
+export const F5_INSIDE_MS_MAX = V1_TIMING_MS - V1_ONSET_CLEARANCE_MS;
 
 export interface F5PhraseNote {
   midi: number;
@@ -112,13 +129,42 @@ function sha256Samples(samples: Float64Array): string {
     .digest("hex");
 }
 
+function unit01(seed: string): number {
+  return createHash("sha256").update(seed).digest().readUInt32BE(0) / 4294967296;
+}
+
+/** Even spacing in [0,1], scrambled by hash so the song-split does not slice the range. */
+function rank01(songId: string, salt: string): number {
+  const ids = loadPublishableSongs().map((s) => s.id);
+  const keyed = ids
+    .map((id) => ({ id, k: unit01(`${id}:${salt}`) }))
+    .sort((a, b) => a.k - b.k || a.id.localeCompare(b.id));
+  const i = keyed.findIndex((x) => x.id === songId);
+  if (i < 0) return unit01(`${songId}:${salt}`);
+  return keyed.length <= 1 ? 0.5 : i / (keyed.length - 1);
+}
+
+function lerp(lo: number, hi: number, t: number): number {
+  return lo + t * (hi - lo);
+}
+
+/** Deterministic per-take magnitudes. Never Math.random. */
+export function perturbationFor(songId: string, kind: F5Kind): { cents_shift: number; delay_sec: number } {
+  const centsLo = kind === "sharp_fail" ? F5_SHARP_CENTS_MIN : F5_INSIDE_CENTS_MIN;
+  const centsHi = kind === "sharp_fail" ? F5_SHARP_CENTS_MAX : F5_INSIDE_CENTS_MAX;
+  const msLo = kind === "late_fail" ? F5_LATE_MS_MIN : F5_INSIDE_MS_MIN;
+  const msHi = kind === "late_fail" ? F5_LATE_MS_MAX : F5_INSIDE_MS_MAX;
+  const cents_shift = lerp(centsLo, centsHi, rank01(songId, `${kind}:cents`));
+  const delay_sec = lerp(msLo, msHi, rank01(songId, `${kind}:onset`)) / 1000;
+  return { cents_shift, delay_sec };
+}
+
 export function renderF5(
   notes: F5PhraseNote[],
-  kind: F5Kind,
+  cents_shift: number,
+  delay_sec: number,
 ): { samples: Float64Array; cents_shift: number; delay_sec: number; target_index: number } {
   const target_index = 0;
-  const cents_shift = kind === "sharp_fail" ? V1_PITCH_FAIL_CENTS + V1_PITCH_CLEARANCE_CENTS : 0;
-  const delay_sec = kind === "late_fail" ? (V1_TIMING_MS + V1_ONSET_CLEARANCE_MS) / 1000 : 0;
   const last = notes[notes.length - 1]!;
   const duration = PRE_ROLL + last.time + last.duration + delay_sec + 0.2;
   const overlay = new Float64Array(Math.round(duration * SR));
@@ -165,15 +211,15 @@ function median(xs: number[]): number {
 }
 
 /** Pitch and onset on every take. Null if either tracker cannot lock. */
-export function measureF5(notes: F5PhraseNote[], kind: F5Kind): {
+export function measureF5(notes: F5PhraseNote[], cents_shift: number, delay_sec: number): {
   samples: Float64Array;
   cents_shift: number;
   delay_sec: number;
   target_index: number;
   measurements: F5Measurements | null;
 } {
-  const rendered = renderF5(notes, kind);
-  const { samples, cents_shift, delay_sec, target_index } = rendered;
+  const rendered = renderF5(notes, cents_shift, delay_sec);
+  const { samples, target_index } = rendered;
   const target = notes[target_index]!;
   const start = PRE_ROLL + target.time + delay_sec;
   const end = start + target.duration;
@@ -216,11 +262,19 @@ export function measureF5(notes: F5PhraseNote[], kind: F5Kind): {
 
 function goldFromKind(kind: F5Kind, m: F5Measurements): "match" | "pitch_fail" | "timing_fail" | null {
   const mag = Math.abs(m.cents_from_target);
-  if (kind === "clean") return mag < V1_PITCH_WARN_CENTS ? "match" : null;
-  if (kind === "sharp_fail") {
-    return mag - V1_PITCH_FAIL_CENTS >= V1_PITCH_CLEARANCE_CENTS ? "pitch_fail" : null;
+  if (kind === "clean") {
+    if (mag >= V1_PITCH_FAIL_CENTS) return null;
+    if (m.onset_ms > V1_TIMING_MS) return null;
+    return "match";
   }
-  return m.onset_ms > V1_TIMING_MS ? "timing_fail" : null;
+  if (kind === "sharp_fail") {
+    if (mag - V1_PITCH_FAIL_CENTS < V1_PITCH_CLEARANCE_CENTS) return null;
+    if (m.onset_ms > V1_TIMING_MS) return null;
+    return "pitch_fail";
+  }
+  if (m.onset_ms <= V1_TIMING_MS) return null;
+  if (mag >= V1_PITCH_FAIL_CENTS) return null;
+  return "timing_fail";
 }
 
 export function tryBuildF5(song: SongEntry, kind: F5Kind): F5Kept | null {
@@ -230,7 +284,8 @@ export function tryBuildF5(song: SongEntry, kind: F5Kind): F5Kept | null {
     f5DropStats.droppedShortPhrase++;
     return null;
   }
-  const { samples, cents_shift, delay_sec, target_index, measurements } = measureF5(notes, kind);
+  const { cents_shift, delay_sec } = perturbationFor(song.id, kind);
+  const { samples, target_index, measurements } = measureF5(notes, cents_shift, delay_sec);
   if (!measurements) {
     f5DropStats.droppedUntrackable++;
     return null;
@@ -270,29 +325,27 @@ export function opaqueTakePath(songId: string, kept: F5Kept): string {
 export function remeasureF5(kept: {
   notes: F5PhraseNote[];
   kind: F5Kind;
+  cents_shift: number;
+  delay_sec: number;
 }): { gold: F5Kept["gold"]; untrackable: boolean } {
-  const built = tryBuildF5(
-    {
-      measures: kept.notes.map((n, i) => ({
-        number: i + 1,
-        rightHand: n.name,
-        leftHand: "R",
-      })),
-    } as unknown as SongEntry,
-    kept.kind,
-  );
-  // tryBuildF5 increments drop stats — not wanted on remeasure. Caller should
-  // compare gold strings via a dedicated path. See rederiveF5Gold.
-  return { gold: built?.gold ?? "match", untrackable: built == null };
+  const { measurements } = measureF5(kept.notes, kept.cents_shift, kept.delay_sec);
+  if (!measurements) return { gold: "match", untrackable: true };
+  const gold = goldFromKind(kept.kind, measurements);
+  return { gold: gold ?? "match", untrackable: gold == null };
 }
 
-export function rederiveF5Measurements(kind: F5Kind, notes: F5PhraseNote[]): {
+export function rederiveF5Measurements(
+  kind: F5Kind,
+  notes: F5PhraseNote[],
+  cents_shift: number,
+  delay_sec: number,
+): {
   gold: string | null;
   f0_hz: number | null;
   cents_from_target: number | null;
   onset_ms: number | null;
 } {
-  const { measurements } = measureF5(notes, kind);
+  const { measurements } = measureF5(notes, cents_shift, delay_sec);
   if (!measurements) {
     return { gold: null, f0_hz: null, cents_from_target: null, onset_ms: null };
   }
@@ -304,6 +357,11 @@ export function rederiveF5Measurements(kind: F5Kind, notes: F5PhraseNote[]): {
   };
 }
 
-export function rederiveF5Gold(kind: F5Kind, notes: F5PhraseNote[]): string | null {
-  return rederiveF5Measurements(kind, notes).gold;
+export function rederiveF5Gold(
+  kind: F5Kind,
+  notes: F5PhraseNote[],
+  cents_shift: number,
+  delay_sec: number,
+): string | null {
+  return rederiveF5Measurements(kind, notes, cents_shift, delay_sec).gold;
 }

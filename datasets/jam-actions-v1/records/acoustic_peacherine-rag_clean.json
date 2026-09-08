@@ -59,48 +59,48 @@
         {
           "midi": 77,
           "name": "F5",
-          "time": 0.6,
+          "time": 1.2,
           "duration": 0.45
         },
         {
           "midi": 79,
           "name": "G5",
-          "time": 1.2,
-          "duration": 0.45
-        },
-        {
-          "midi": 77,
-          "name": "F5",
-          "time": 1.7999999999999998,
-          "duration": 0.45
-        },
-        {
-          "midi": 70,
-          "name": "A#4",
           "time": 2.4,
           "duration": 0.45
         },
         {
           "midi": 77,
           "name": "F5",
-          "time": 3,
+          "time": 3.5999999999999996,
+          "duration": 0.45
+        },
+        {
+          "midi": 70,
+          "name": "A#4",
+          "time": 4.8,
+          "duration": 0.45
+        },
+        {
+          "midi": 77,
+          "name": "F5",
+          "time": 6,
           "duration": 0.45
         },
         {
           "midi": 79,
           "name": "G5",
-          "time": 3.6,
+          "time": 7.2,
           "duration": 0.45
         },
         {
           "midi": 80,
           "name": "G#5",
-          "time": 4.2,
+          "time": 8.4,
           "duration": 0.45
         }
       ],
-      "cents_shift": 0,
-      "delay_sec": 0,
+      "cents_shift": 20.071153846153845,
+      "delay_sec": 0.0019615384615384616,
       "target_index": 0
     }
   },
@@ -152,13 +152,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-71f687.wav"
+              "path": "/acoustic-v1/take-6b0b96.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-71f687.wav",
+              "path": "/acoustic-v1/take-6b0b96.wav",
               "song_id": "peacherine-rag"
             }
           }
@@ -177,9 +177,9 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 622.3118964099408,
-          "cents_from_target": 0.161162379534254,
-          "onset_ms": -21.36054421768707
+          "f0_hz": 629.5742997041376,
+          "cents_from_target": 20.247750032662253,
+          "onset_ms": -9.750566893424018
         }
       },
       {

@@ -10,9 +10,23 @@ import {
   F5_PITCH_CLEARANCE_MULTIPLE,
   F5_ONSET_CLEARANCE_MULTIPLE,
   F5_THRESHOLDS,
+  F5_SHARP_CENTS_MIN,
+  F5_SHARP_CENTS_MAX,
+  F5_INSIDE_CENTS_MIN,
+  F5_INSIDE_CENTS_MAX,
+  F5_LATE_MS_MIN,
+  F5_LATE_MS_MAX,
+  F5_INSIDE_MS_MIN,
+  F5_INSIDE_MS_MAX,
   rederiveF5Measurements,
 } from "./f5-acoustic.js";
-import { MEASURED_YIN_LOCKED_P95_CENTS, MEASURED_ONSET_ABS_P95_MS } from "./tracker-error.js";
+import {
+  MEASURED_YIN_LOCKED_P95_CENTS,
+  MEASURED_ONSET_ABS_P95_MS,
+  V1_PITCH_FAIL_CENTS,
+  V1_PITCH_CLEARANCE_CENTS,
+  V1_TIMING_MS,
+} from "./tracker-error.js";
 import { coverageReport, assertCoverageFloors } from "./coverage.js";
 import { loadPublishableSongs } from "./library.js";
 import {
@@ -238,6 +252,84 @@ describe("F5 acoustic — prompt-visible measurements (chunk 18)", () => {
   });
 });
 
+describe("F5 acoustic — gate-only magnitudes (chunk 20)", () => {
+  function acousticOf(r: V1Record) {
+    return r.observation.acoustic as {
+      kind: (typeof F5_KINDS)[number];
+      cents_shift: number;
+      delay_sec: number;
+    };
+  }
+
+  it("has distinct cents_from_target (≥ n/2) and onset_ms (≥ late takes) — catches two-value onset", () => {
+    const rows = committedRecords().filter((r) => r.family === "acoustic");
+    expect(rows.length).toBeGreaterThan(0);
+    const cents = new Set(rows.map((r) => (scoreTakeContent(r).cents_from_target as number).toFixed(6)));
+    const onset = new Set(rows.map((r) => (scoreTakeContent(r).onset_ms as number).toFixed(6)));
+    expect(cents.size, "cents_from_target").toBeGreaterThanOrEqual(Math.ceil(rows.length / 2));
+    // SuperFlux reports frame centres (hop ≈ 11.6 ms). Inside-gate delays of
+    // 1–2 ms occupy one bin; 27 late magnitudes occupy at most 27 more.
+    // Half of 81 is more bins than that geometry has. The two-value bug is
+    // caught by requiring at least one distinct onset per late take.
+    const lateN = rows.filter((r) => acousticOf(r).kind === "late_fail").length;
+    expect(onset.size, "onset_ms").toBeGreaterThanOrEqual(Math.max(lateN, Math.ceil(rows.length / 4)));
+  });
+
+  it("clears its class gate by the stated multiple and sits inside the other", () => {
+    const rows = committedRecords().filter((r) => r.family === "acoustic");
+    for (const r of rows) {
+      const a = acousticOf(r);
+      const c = scoreTakeContent(r);
+      const mag = Math.abs(c.cents_from_target as number);
+      const onset = c.onset_ms as number;
+      const delayMs = a.delay_sec * 1000;
+      if (a.kind === "sharp_fail") {
+        expect(a.cents_shift, r.id).toBeGreaterThanOrEqual(F5_SHARP_CENTS_MIN);
+        expect(a.cents_shift, r.id).toBeLessThanOrEqual(F5_SHARP_CENTS_MAX);
+        expect(mag, r.id).toBeGreaterThan(V1_PITCH_FAIL_CENTS);
+        expect(mag - V1_PITCH_FAIL_CENTS, r.id).toBeGreaterThanOrEqual(V1_PITCH_CLEARANCE_CENTS * 0.5);
+        expect(delayMs, r.id).toBeGreaterThanOrEqual(F5_INSIDE_MS_MIN);
+        expect(delayMs, r.id).toBeLessThanOrEqual(F5_INSIDE_MS_MAX);
+        expect(onset, r.id).toBeLessThan(V1_TIMING_MS);
+      } else if (a.kind === "late_fail") {
+        expect(delayMs, r.id).toBeGreaterThanOrEqual(F5_LATE_MS_MIN);
+        expect(delayMs, r.id).toBeLessThanOrEqual(F5_LATE_MS_MAX);
+        expect(onset, r.id).toBeGreaterThan(V1_TIMING_MS);
+        expect(a.cents_shift, r.id).toBeGreaterThanOrEqual(F5_INSIDE_CENTS_MIN);
+        expect(a.cents_shift, r.id).toBeLessThanOrEqual(F5_INSIDE_CENTS_MAX);
+        expect(mag, r.id).toBeLessThan(V1_PITCH_FAIL_CENTS);
+      } else {
+        expect(a.cents_shift, r.id).toBeGreaterThanOrEqual(F5_INSIDE_CENTS_MIN);
+        expect(a.cents_shift, r.id).toBeLessThanOrEqual(F5_INSIDE_CENTS_MAX);
+        expect(mag, r.id).toBeLessThan(V1_PITCH_FAIL_CENTS);
+        expect(delayMs, r.id).toBeGreaterThanOrEqual(F5_INSIDE_MS_MIN);
+        expect(delayMs, r.id).toBeLessThanOrEqual(F5_INSIDE_MS_MAX);
+        expect(onset, r.id).toBeLessThan(V1_TIMING_MS);
+      }
+    }
+  });
+
+  it("has within-class spread exceeding 10× tracker p95 on the defining axis", () => {
+    const rows = committedRecords().filter((r) => r.family === "acoustic");
+    const byKind = new Map<string, V1Record[]>();
+    for (const r of rows) {
+      const k = acousticOf(r).kind;
+      if (!byKind.has(k)) byKind.set(k, []);
+      byKind.get(k)!.push(r);
+    }
+    const spread = (xs: number[]) => Math.max(...xs) - Math.min(...xs);
+    const sharp = (byKind.get("sharp_fail") ?? []).map((r) => scoreTakeContent(r).cents_from_target as number);
+    const late = (byKind.get("late_fail") ?? []).map((r) => scoreTakeContent(r).onset_ms as number);
+    const matchC = (byKind.get("clean") ?? []).map((r) => scoreTakeContent(r).cents_from_target as number);
+    expect(sharp.length).toBeGreaterThan(3);
+    expect(late.length).toBeGreaterThan(3);
+    expect(matchC.length).toBeGreaterThan(3);
+    expect(spread(sharp)).toBeGreaterThan(10 * MEASURED_YIN_LOCKED_P95_CENTS);
+    expect(spread(late)).toBeGreaterThan(10 * MEASURED_ONSET_ABS_P95_MS);
+    expect(spread(matchC)).toBeGreaterThan(10 * MEASURED_YIN_LOCKED_P95_CENTS);
+  });
+});
+
 describe("F6 ensemble", () => {
   it("serialises no createTapOutput and no live-graph types", () => {
     const rows = committedRecords().filter((r) => r.family === "ensemble");
@@ -411,9 +503,15 @@ describe.runIf(RUN_DSP)("engine verification (skipped under SKIP_DSP_VERIFICATIO
     }
   });
 
-  it("dropped no take as untrackable, and would have counted it if it had", () => {
+  it("counts every untrackable drop instead of labelling it from the recipe", () => {
     expect(f5DropStats.attempted).toBeGreaterThan(0);
-    expect(f5DropStats.droppedUntrackable).toBe(0);
+    const acousticKept = committedRecords().filter((r) => r.family === "acoustic").length;
+    expect(
+      f5DropStats.droppedUntrackable +
+        f5DropStats.droppedClearance +
+        f5DropStats.droppedShortPhrase +
+        acousticKept,
+    ).toBe(f5DropStats.attempted);
     // The counter is live: sweeping NOTE_GAP to 0.15 s drops 42 of 81. See
     // docs/findings/v1-f5-untrackable-gate-proved.md.
   });
@@ -429,8 +527,13 @@ describe.runIf(RUN_DSP)("engine verification (skipped under SKIP_DSP_VERIFICATIO
   it("matches committed f0_hz to a fresh track within 1e-6", () => {
     const rows = committedRecords().filter((r) => r.family === "acoustic");
     for (const r of rows) {
-      const a = r.observation.acoustic as { kind: (typeof F5_KINDS)[number]; notes: { midi: number; name: string; time: number; duration: number }[] };
-      const m = rederiveF5Measurements(a.kind, a.notes);
+      const a = r.observation.acoustic as {
+        kind: (typeof F5_KINDS)[number];
+        notes: { midi: number; name: string; time: number; duration: number }[];
+        cents_shift: number;
+        delay_sec: number;
+      };
+      const m = rederiveF5Measurements(a.kind, a.notes, a.cents_shift, a.delay_sec);
       expect(m.f0_hz, r.id).not.toBeNull();
       const got = scoreTakeContent(r).f0_hz as number;
       expect(Math.abs(got - m.f0_hz!), r.id).toBeLessThanOrEqual(1e-6);

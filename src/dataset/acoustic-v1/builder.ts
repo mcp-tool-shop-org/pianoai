@@ -653,8 +653,13 @@ export function rederiveGold(rec: V1Record): string {
     return verifyHarmony(h.melody, h.reharmonization, { key: h.key }).verified ? "verified" : "rejected";
   }
   if (family === "acoustic") {
-    const a = rec.observation.acoustic as { kind: "clean" | "sharp_fail" | "late_fail"; notes: { midi: number; name: string; time: number; duration: number }[] };
-    const gold = rederiveF5Gold(a.kind, a.notes);
+    const a = rec.observation.acoustic as {
+      kind: "clean" | "sharp_fail" | "late_fail";
+      notes: { midi: number; name: string; time: number; duration: number }[];
+      cents_shift: number;
+      delay_sec: number;
+    };
+    const gold = rederiveF5Gold(a.kind, a.notes, a.cents_shift, a.delay_sec);
     if (gold == null) throw new Error(`F5 untrackable on rederive ${rec.id}`);
     return gold;
   }

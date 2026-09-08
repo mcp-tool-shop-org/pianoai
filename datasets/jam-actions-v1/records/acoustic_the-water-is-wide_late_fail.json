@@ -59,48 +59,48 @@
         {
           "midi": 67,
           "name": "G4",
-          "time": 0.6,
+          "time": 1.2,
           "duration": 0.45
         },
         {
           "midi": 62,
           "name": "D4",
-          "time": 1.2,
+          "time": 2.4,
           "duration": 0.45
         },
         {
           "midi": 71,
           "name": "B4",
-          "time": 1.7999999999999998,
+          "time": 3.5999999999999996,
           "duration": 0.45
         },
         {
           "midi": 69,
           "name": "A4",
-          "time": 2.4,
+          "time": 4.8,
           "duration": 0.45
         },
         {
           "midi": 62,
           "name": "D4",
-          "time": 3,
+          "time": 6,
           "duration": 0.45
         },
         {
           "midi": 72,
           "name": "C5",
-          "time": 3.6,
+          "time": 7.2,
           "duration": 0.45
         },
         {
           "midi": 71,
           "name": "B4",
-          "time": 4.2,
+          "time": 8.4,
           "duration": 0.45
         }
       ],
-      "cents_shift": 0,
-      "delay_sec": 0.078,
+      "cents_shift": 33.36653846153846,
+      "delay_sec": 0.20184615384615387,
       "target_index": 0
     }
   },
@@ -153,13 +153,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-9af9dd.wav"
+              "path": "/acoustic-v1/take-796e2e.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-9af9dd.wav",
+              "path": "/acoustic-v1/take-796e2e.wav",
               "song_id": "the-water-is-wide"
             }
           }
@@ -178,9 +178,9 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 293.6708575308645,
-          "cents_from_target": 0.035899563063659025,
-          "onset_ms": 59.9092970521542
+          "f0_hz": 299.3845985318049,
+          "cents_from_target": 33.39577828465917,
+          "onset_ms": 187.61904761904762
         }
       },
       {

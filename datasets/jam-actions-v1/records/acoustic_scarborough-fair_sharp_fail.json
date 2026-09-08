@@ -59,48 +59,48 @@
         {
           "midi": 62,
           "name": "D4",
-          "time": 0.6,
-          "duration": 0.45
-        },
-        {
-          "midi": 69,
-          "name": "A4",
           "time": 1.2,
           "duration": 0.45
         },
         {
           "midi": 69,
           "name": "A4",
-          "time": 1.7999999999999998,
+          "time": 2.4,
+          "duration": 0.45
+        },
+        {
+          "midi": 69,
+          "name": "A4",
+          "time": 3.5999999999999996,
           "duration": 0.45
         },
         {
           "midi": 64,
           "name": "E4",
-          "time": 2.4,
+          "time": 4.8,
           "duration": 0.45
         },
         {
           "midi": 65,
           "name": "F4",
-          "time": 3,
+          "time": 6,
           "duration": 0.45
         },
         {
           "midi": 64,
           "name": "E4",
-          "time": 3.6,
+          "time": 7.2,
           "duration": 0.45
         },
         {
           "midi": 62,
           "name": "D4",
-          "time": 4.2,
+          "time": 8.4,
           "duration": 0.45
         }
       ],
-      "cents_shift": 55,
-      "delay_sec": 0,
+      "cents_shift": 56.34615384615385,
+      "delay_sec": 0.0012307692307692308,
       "target_index": 0
     }
   },
@@ -153,13 +153,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-a72cb9.wav"
+              "path": "/acoustic-v1/take-29809d.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-a72cb9.wav",
+              "path": "/acoustic-v1/take-29809d.wav",
               "song_id": "scarborough-fair"
             }
           }
@@ -178,9 +178,9 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 303.14638271723106,
-          "cents_from_target": 55.0133006649505,
-          "onset_ms": -21.36054421768707
+          "f0_hz": 303.38435877134026,
+          "cents_from_target": 56.371821315911525,
+          "onset_ms": -9.750566893424018
         }
       },
       {
