@@ -10815,6 +10815,258 @@
       "timestamp": 1788613516105,
       "source": "The same release carries the composition engine that feeds the panel (⟦0⟧: a deterministic voice-leading gate with named style presets, membership-by-construction voicing specs, a part-at-a-time refiner), a full health pass (45 findings fixed — security currency, humanized strings, a look-preserving visual amend), Satie and Debussy library entries re-sourced from receipted Mutopia public-domain bytes, and a stranger-test hardening pass: descriptive validation errors, structured ⟦1⟧ error envelopes, a curated tarball, progress notifications on long tools, and CLI error grammar. That release shipped as [⟦2⟧](https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions) with 49 tools, 4 prompt templates, and 3,033 tests.\r",
       "targetLang": "pt"
+    },
+    "751648f277f34804": {
+      "translation": "- **演奏** — 豊富な音楽的な注釈が加えられた、実際の MIDI 譜面。手書きの近似ではなく、解析、分析、説明が行われます。\n- **聴取** — 6 つのオーディオエンジン（オシレーターピアノ、サンプルピアノ、ボーカルサンプル、物理的な声帯、加算型ボーカルシンセ、物理的にモデル化されたギター）がスピーカーを通して再生され、部屋にいる人々が AI の「耳」となります。そして今、このモデルは独自の「耳」を持つようになりました。録音した音、またはあなたが録音した音を測定し、実際に何が含まれているかを判断できます。詳細は [Listening](#listening) を参照してください。\n- **視覚化** — ピアノロールは、再生された内容を SVG としてレンダリングし、モデルがそれを読み込んで検証できるようにします。インタラクティブなギタータブ譜エディター。視覚的なキーボード、デュアルモードのノートエディター、チューニングラボを備えたブラウザのインターフェース。\n- **記憶** — セッション間で保持される練習ジャーナルにより、時間の経過とともに学習が積み重ねられます。\n- **歌唱** — 20 種類の音声プリセット（オペラ歌手からエレクトロニックコーラスまで）を備えた声帯合成。ソルフレーゼ、音程、音節によるナレーションを備えた、一緒に歌えるモード。そして、ピアノのクロックに合わせて実際に歌うことができます。曲の MIDI に基づいて、タイミング（40 ミリ秒）と音程（50 セント）でゲート処理され、あなたがそれを聞く前に、スコアに沿った歌声が生成されます。詳細は [Sing](#sing) を参照してください。",
+      "model": "translategemma:27b",
+      "timestamp": 1788831745888,
+      "source": "- **Reading** — real MIDI sheet music with deep musical annotations. Not hand-written approximations — parsed, analyzed, and explained.\r\n- **Hearing** — six audio engines (oscillator piano, sample piano, vocal samples, physical vocal tract, additive vocal synth, physically-modeled guitar) that play through your speakers, so the humans in the room become the AI's ears. And now the model has ears of its own: it can measure a recording it made, or one you made, and say what is actually in it — see [Listening](#listening).\r\n- **Seeing** — a piano roll that renders what was played as SVG the model can read back and verify. An interactive guitar tablature editor. A browser cockpit with a visual keyboard, dual-mode note editor, and tuning lab.\r\n- **Remembering** — a practice journal that persists across sessions, so learning compounds over time.\r\n- **Singing** — vocal tract synthesis with 20 voice presets, from operatic soprano to electronic choir. Sing-along mode with solfege, contour, and syllable narration. And a real sung lead on the piano's clock: a score-conditioned singer driven by the song's MIDI, gated on timing (40 ms) and pitch (50 cents) before you hear it — see [Sing](#sing).\r",
+      "targetLang": "ja"
+    },
+    "e87a15d39aeb45fb": {
+      "translation": "聴取",
+      "model": "translategemma:27b",
+      "timestamp": 1788831745888,
+      "source": "Listening",
+      "targetLang": "ja"
+    },
+    "4b69c3846cb23dd1": {
+      "translation": "長い間、このサーバーは音を出すことはできましたが、それを分析することはできませんでした。モデルが演奏し、人間がそれを聴き、モデルはその人間の意見を鵜呑みにしていたのです。しかし、そのギャップは今や解消されました。",
+      "model": "translategemma:27b",
+      "timestamp": 1788831745888,
+      "source": "For a long time this server could make sound but never examine it. The model played, a human\r\nlistened, and the model took their word for it. That gap is now closed.\r",
+      "targetLang": "ja"
+    },
+    "7f12fd7582dd050e": {
+      "translation": "WAV ファイルを読み込ませると、その中に何が含まれているかを測定します。画像を見て推測するのではなく、スコアに対してすでに使用しているのと同じ種類のツールを使用して信号を処理します。",
+      "model": "translategemma:27b",
+      "timestamp": 1788831745888,
+      "source": "Point it at a WAV and it measures what is there. Not by looking at a picture and guessing —\r\nby running the signal through the same kind of tools it already uses on the score:\r",
+      "targetLang": "ja"
+    },
+    "88deb479f0c8959c": {
+      "translation": "- **⟦0⟧** — 音の開始点、音程の輪郭、音量。音程は、生の周波数ではなく、音名とセント単位のずれとして返されます。\n- **⟦1⟧** — 録音された音をノートとして表現します。音程、開始時間、持続時間、および各ノートがコンサートピッチからどれだけ離れているか。\n- **⟦2⟧** — ライブラリ内の曲に対して、耳でパフォーマンスを評価します。録音された音をトランスクライブし、スコアと照合し、どのノートが正しく演奏されたか、どのノートがずれていたか、どのノートが演奏されなかったかを報告します。その後、⟦3⟧ がその結果をスコア上に表示します。これは、キャプチャされた MIDI データに対して行われるのと同じように行われます。これにより、実際の楽器、歌声、または MIDI データがないものを評価できます。\n- **⟦4⟧** — 音を視覚化します。ピアノのキーボードが左端に配置された、一定の Q 値を持つスペクトログラムです。これにより、音程を一目で確認でき、曲の意図されたノートを必要に応じて重ねて表示できます。",
+      "model": "translategemma:27b",
+      "timestamp": 1788831745888,
+      "source": "- **⟦0⟧** — onsets, the pitch contour, and level. Pitch comes back as note names with\r\n  cent deviations, never as raw frequencies.\r\n- **⟦1⟧** — the recording as notes: pitch, start, duration, and how far each note\r\n  sits from concert pitch.\r\n- **⟦2⟧** — grade a performance against a song in the library **by ear**. It\r\n  transcribes the recording, matches it to the score, and reports which notes landed, which\r\n  drifted, and which were missed. Then ⟦3⟧ draws the result over the score,\r\n  exactly as it does for a captured MIDI take. This is how you grade a real instrument, a sung\r\n  take, or anything where there is no MIDI to capture.\r\n- **⟦4⟧** — see the sound. A constant-Q spectrogram with a piano keyboard down the\r\n  left edge, so pitch is readable at a glance, and the song's intended notes drawn over it on\r\n  request.\r",
+      "targetLang": "ja"
+    },
+    "47e07f7218ff1a30": {
+      "translation": "**この機能では、以下のことはわかりません。** この画像は、どこに問題があるかを見つけるためのものです。すべての数値は、信号処理から得られたものであり、モデルが画像を読み取って判断したものではありません。トランスクライバーは、一度に 1 行を処理するため、コードや複数の音源が混ざった音を処理すると、確信を持って誤った結果を生成することがあります。また、その旨も表示されます。最新の技術では、音の開始点の検出精度は約 88% です。したがって、「見逃された」ノートは、あなたが演奏しなかったノートではなく、トランスクライバーが聞き取れなかったノートである可能性があります。これらのツールは、その点に注意を払い、出力にその情報を記載します。",
+      "model": "translategemma:27b",
+      "timestamp": 1788831745888,
+      "source": "**What it will not tell you.** The picture is for finding *where* something is wrong; every number\r\ncomes from signal processing, never from a model reading an image. The transcriber follows one\r\nline at a time, so a chord or a full mix will produce something confident and wrong, and it says\r\nso. Onset detection runs around F1 0.88 at the state of the art, so a \"missed\" note may be one the\r\ntranscriber could not hear rather than one you did not play — the tools carry that caveat in their\r\nown output rather than burying it here.\r",
+      "targetLang": "ja"
+    },
+    "fd4cd295af7ef15a": {
+      "translation": "このインターフェース全体は、依存関係がありません。変換、音程追跡、音の開始点検出、WAV デコーダー、PNG エンコーダーはすべてこのリポジトリに含まれており、Node とブラウザの両方で同じ数値を生成します。",
+      "model": "translategemma:27b",
+      "timestamp": 1788831745888,
+      "source": "The whole surface is dependency-free: the transform, the pitch tracker, the onset detector, the\r\nWAV decoder and the PNG encoder are all in this repo, and they produce identical numbers in Node\r\nand in the browser.\r",
+      "targetLang": "ja"
+    },
+    "c5af84965f82606d": {
+      "translation": "**クロックに合わせて歌う歌声 — ボーカルルート。** ライブラリ内の任意の曲に、ピアノに合わせて再生される実際の歌声を付加できます。**スコアクロック**（⟦0⟧）は、曲の MIDI から、各音節の音程、開始点、持続時間を、プレイヤー自身のタイムライン上で抽出します。ローカルの Apache-2.0 ライセンスの、スコアに沿った歌声生成モデル（[SoulX-Singer](https://github.com/Soul-AILab/SoulX-Singer)）が、そのクロックに基づいて歌声を生成します。そして、2 つのゲートが、最終的なミックスとして出力される前に、その歌声を測定します。**タイミング**：すべての母音の開始点が、スコアから 40 ミリ秒以内であること。**音程**：すべてのノートが 50 セント以内であり、全体的な音程のずれが 20 セント以内であること。単語は、録音された歌声の断片から選択され、単語の境界でのみクロスフェードを使用して結合されます。調整可能なパラメータ：⟦1⟧（どの MIDI トラックが曲であるか、確認用）、⟦2⟧、⟦3⟧（1 つのノートにつき 1 つのトークン、音節は ⟦4⟧ で結合）、⟦5⟧、プロンプトクリップ（声）、録音回数、およびゲートの閾値。それぞれについて、⟦6⟧ に引用が記載されています。ルート、調整可能なパラメータ、および結果：[ハンドブック → ボーカル](https://mcp-tool-shop-org.github.io/ai-jam-sessions/handbook/vocals/)、[⟦7⟧](docs/vocal-clock.md)。この選択の背後にある研究：[⟦8⟧](docs/vocal-singing-study-2026-09.md)。",
+      "model": "translategemma:27b",
+      "timestamp": 1788831745888,
+      "source": "**A sung line on the clock — the vocal route.** Any library song can carry a real sung vocal that lands on the piano: a **score clock** (⟦0⟧) derives every syllable's pitch, onset and duration from the song's MIDI on the player's own timeline; a local, Apache-2.0, score-conditioned singer ([SoulX-Singer](https://github.com/Soul-AILab/SoulX-Singer)) sings from that clock on your GPU; and two gates measure the artifact before anything is called a mix — **timing**: every vowel onset within 40 ms of the score; **pitch**: every note within 50 cents, global offset within 20. Words are picked from a bag of takes and joined only at word boundaries with crossfades. Levers: ⟦1⟧ (which MIDI track is the tune; ⟦2⟧ to look), ⟦3⟧ (one token per note, syllables joined by ⟦4⟧), ⟦5⟧, the prompt clip (the voice), how many takes, and the gate thresholds — each with its citation in ⟦6⟧. Route, levers and receipts: [handbook → Vocals](https://mcp-tool-shop-org.github.io/ai-jam-sessions/handbook/vocals/), [⟦7⟧](docs/vocal-clock.md); the research behind the choices: [⟦8⟧](docs/vocal-singing-study-2026-09.md).\r",
+      "targetLang": "ja"
+    },
+    "9ab33e94af435394": {
+      "translation": "**v2.3.0 — 楽器がクロックに合わせて歌うことを学習したリリース**（[CHANGELOG](CHANGELOG.md) を参照）。ライブラリ内の任意の曲に、ピアノに合わせて再生される実際の歌声を付加できるようになりました。**スコアクロック**は、曲の MIDI から、各音節の音程、開始点、持続時間を、プレイヤー自身のタイムライン上で抽出します。ローカルの Apache-2.0 ライセンスの、スコアに沿った歌声生成モデル（[SoulX-Singer](https://github.com/Soul-AILab/SoulX-Singer)）が、そのクロックに基づいて歌声を生成します。そして、2 つのゲートが、最終的なミックスとして出力される前に、その歌声を測定します。タイミング（すべての母音は、スコアから 40 ミリ秒以内）、音程（すべてのノートは 50 セント以内）。配信される Amazing Grace の録音では、最悪のタイミングのずれが 6 ミリ秒、全体の音程のずれが -2.7 セントであり、その結果はコミットされています。ランディングページには、正直な状態として表示されており、残っている唯一の欠陥（冒頭のスプライス）も明記されています。ルート、調整可能なパラメータ、および各選択の背後にある研究（5 つの研究分野、引用付き）は、[ハンドブック](https://mcp-tool-shop-org.github.io/ai-jam-sessions/handbook/vocals/) と [⟦0⟧](docs/) に記載されています。ライブインターフェースは変更されておらず、**49 個のツールと 4 つのプロンプトテンプレート**があり、**3,080 個のテストが合格（1 個はスキップ）**し、さらにボーカル楽器自身の pytest スイートがあります。**公開状態**：公開済み — [⟦1⟧](https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions) で npm に公開され、プロビナンスが証明されています。",
+      "model": "translategemma:27b",
+      "timestamp": 1788831745888,
+      "source": "**v2.3.0 — the release where the instrument learned to sing on the clock** (see [CHANGELOG](CHANGELOG.md)). Any library song can now carry a real sung line that lands on the piano: a **score clock** derives every syllable's pitch, onset and duration from the song's MIDI on the player's own timeline; a local, Apache-2.0, score-conditioned singer ([SoulX-Singer](https://github.com/Soul-AILab/SoulX-Singer)) sings from it; and two gates measure the artifact before anything is called a mix — timing (every vowel within 40 ms of the score) and pitch (every note within 50 cents). The shipped Amazing Grace run measures 6 ms worst timing and −2.7 cents global pitch, with receipts committed; the landing page carries it as an honest state, with the one remaining defect named (the opening splice, handed off). The route, its levers, and the research behind each choice (five study lanes, cited) are in the [handbook](https://mcp-tool-shop-org.github.io/ai-jam-sessions/handbook/vocals/) and [⟦0⟧](docs/). The live surface is unchanged at **49 tools and 4 prompt templates**, with **3,080 tests passing (1 skipped)** plus the vocal instrument's own pytest suite. **Publication state:** published — [⟦1⟧](https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions) on npm, provenance-attested.\r",
+      "targetLang": "ja"
+    },
+    "d31986755f87279a": {
+      "translation": "今回のリリースには、パネルに音響効果を与えるコンポジションエンジン（⟦0⟧：名前付きのスタイルプリセット、構成によるボイシング仕様、パートごとに処理を行うリファイナーを備えた、決定的なボイスリーディングゲート）が含まれています。また、完全な品質改善（45件の不具合を修正：セキュリティの強化、より自然な表現の文字列、視覚的な修正による外観の維持）、Mutopiaのパブリックドメインのデータから再構成されたサティとドビュッシーのライブラリのエントリー、および、より堅牢なテスト（詳細な検証エラー、構造化された⟦1⟧エラーエンベロープ、厳選されたtarball、長時間実行されるツールの進捗状況の通知、およびCLIエラーの文法）が含まれています。このリリースは、49個のツール、4つのプロンプトテンプレート、および3,033個のテストとともに、[⟦2⟧](https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions)として公開されました。",
+      "model": "translategemma:27b",
+      "timestamp": 1788831745888,
+      "source": "The same release carries the composition engine that feeds the panel (⟦0⟧: a deterministic voice-leading gate with named style presets, membership-by-construction voicing specs, a part-at-a-time refiner), a full health pass (45 findings fixed — security currency, humanized strings, a look-preserving visual amend), Satie and Debussy library entries re-sourced from receipted Mutopia public-domain bytes, and a stranger-test hardening pass: descriptive validation errors, structured ⟦1⟧ error envelopes, a curated tarball, progress notifications on long tools, and CLI error grammar. That release shipped as [⟦2⟧](https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions) with 49 tools, 4 prompt templates, and 3,033 tests.\r",
+      "targetLang": "ja"
+    },
+    "446d1b5ff4b63af4": {
+      "translation": "- **Lecture** — partition MIDI réelle avec des annotations musicales approfondies. Pas d’approximations manuscrites, mais des données analysées, interprétées et expliquées.\n- **Audition** — six moteurs audio (piano oscillateur, piano échantillonné, échantillons vocaux, tractus vocal physique, synthétiseur vocal additif, guitare modélisée physiquement) qui diffusent le son via vos haut-parleurs, transformant ainsi les personnes présentes dans la pièce en les « oreilles » de l’IA. Et maintenant, le modèle a ses propres oreilles : il peut mesurer un enregistrement qu’il a réalisé, ou un que vous avez réalisé, et indiquer ce qu’il contient réellement — voir [Écoute](#écoute).\n- **Visualisation** — un piano-rouleau qui affiche ce qui a été joué sous forme de SVG, que le modèle peut relire et vérifier. Un éditeur interactif de tablatures de guitare. Un cockpit de navigateur avec un clavier visuel, un éditeur de notes à deux modes et un laboratoire d’accordage.\n- **Mémorisation** — un journal de pratique qui est conservé entre les sessions, afin que l’apprentissage s’accumule avec le temps.\n- **Chant** — synthèse du tractus vocal avec 20 préréglages vocaux, allant du soprano d’opéra au chœur électronique. Mode « chant en chœur » avec solfège, contour et narration syllabique. Et une véritable ligne mélodique chantée sur le tempo du piano : un chanteur conditionné par la partition, piloté par le MIDI de la chanson, avec une porte temporelle (40 ms) et une porte de hauteur (50 cents) avant que vous ne l’entendiez — voir [Chant](#chant).",
+      "model": "translategemma:27b",
+      "timestamp": 1788831787233,
+      "source": "- **Reading** — real MIDI sheet music with deep musical annotations. Not hand-written approximations — parsed, analyzed, and explained.\r\n- **Hearing** — six audio engines (oscillator piano, sample piano, vocal samples, physical vocal tract, additive vocal synth, physically-modeled guitar) that play through your speakers, so the humans in the room become the AI's ears. And now the model has ears of its own: it can measure a recording it made, or one you made, and say what is actually in it — see [Listening](#listening).\r\n- **Seeing** — a piano roll that renders what was played as SVG the model can read back and verify. An interactive guitar tablature editor. A browser cockpit with a visual keyboard, dual-mode note editor, and tuning lab.\r\n- **Remembering** — a practice journal that persists across sessions, so learning compounds over time.\r\n- **Singing** — vocal tract synthesis with 20 voice presets, from operatic soprano to electronic choir. Sing-along mode with solfege, contour, and syllable narration. And a real sung lead on the piano's clock: a score-conditioned singer driven by the song's MIDI, gated on timing (40 ms) and pitch (50 cents) before you hear it — see [Sing](#sing).\r",
+      "targetLang": "fr"
+    },
+    "3c23967758dc0901": {
+      "translation": "Écoute",
+      "model": "translategemma:27b",
+      "timestamp": 1788831787233,
+      "source": "Listening",
+      "targetLang": "fr"
+    },
+    "3a4674aad2c1c10a": {
+      "translation": "Pendant longtemps, ce serveur pouvait produire du son, mais ne pouvait pas l’analyser. Le modèle jouait, un humain écoutait, et le modèle se basait sur son avis. Cette lacune est désormais comblée.",
+      "model": "translategemma:27b",
+      "timestamp": 1788831787233,
+      "source": "For a long time this server could make sound but never examine it. The model played, a human\r\nlistened, and the model took their word for it. That gap is now closed.\r",
+      "targetLang": "fr"
+    },
+    "e5c9d1ec3864c997": {
+      "translation": "Si vous le pointez vers un fichier WAV, il mesure ce qu’il contient. Pas en regardant une image et en devinant, mais en faisant passer le signal à travers les mêmes types d’outils qu’il utilise déjà pour la partition :",
+      "model": "translategemma:27b",
+      "timestamp": 1788831787233,
+      "source": "Point it at a WAV and it measures what is there. Not by looking at a picture and guessing —\r\nby running the signal through the same kind of tools it already uses on the score:\r",
+      "targetLang": "fr"
+    },
+    "be742858281c2fd4": {
+      "translation": "- **⟦0⟧** — débuts, contour de la hauteur et niveau. La hauteur est renvoyée sous forme de noms de notes avec des déviations en cents, jamais sous forme de fréquences brutes.\n- **⟦1⟧** — l’enregistrement sous forme de notes : hauteur, début, durée et écart de chaque note par rapport à la hauteur de référence.\n- **⟦2⟧** — évaluation d’une performance par rapport à une chanson de la bibliothèque, à l’oreille. Il transcrit l’enregistrement, le compare à la partition et indique quelles notes ont été jouées correctement, lesquelles ont dévié et lesquelles ont été manquées. Ensuite, ⟦3⟧ affiche le résultat sur la partition, exactement comme il le fait pour un enregistrement MIDI. C’est ainsi que vous évaluez un instrument réel, un enregistrement vocal ou tout autre élément pour lequel il n’y a pas de MIDI à enregistrer.\n- **⟦4⟧** — visualisez le son. Un spectrogramme à Q constant avec un clavier de piano sur le bord gauche, de sorte que la hauteur soit lisible en un coup d’œil, et que les notes prévues de la chanson soient affichées dessus, sur demande.",
+      "model": "translategemma:27b",
+      "timestamp": 1788831787233,
+      "source": "- **⟦0⟧** — onsets, the pitch contour, and level. Pitch comes back as note names with\r\n  cent deviations, never as raw frequencies.\r\n- **⟦1⟧** — the recording as notes: pitch, start, duration, and how far each note\r\n  sits from concert pitch.\r\n- **⟦2⟧** — grade a performance against a song in the library **by ear**. It\r\n  transcribes the recording, matches it to the score, and reports which notes landed, which\r\n  drifted, and which were missed. Then ⟦3⟧ draws the result over the score,\r\n  exactly as it does for a captured MIDI take. This is how you grade a real instrument, a sung\r\n  take, or anything where there is no MIDI to capture.\r\n- **⟦4⟧** — see the sound. A constant-Q spectrogram with a piano keyboard down the\r\n  left edge, so pitch is readable at a glance, and the song's intended notes drawn over it on\r\n  request.\r",
+      "targetLang": "fr"
+    },
+    "eb0ccca4851116df": {
+      "translation": "**Ce que cela ne vous dira pas.** L’image sert à déterminer *où* se trouve le problème ; chaque nombre provient du traitement du signal, et non d’un modèle qui lit une image. Le transcripteur suit une ligne à la fois, de sorte qu’un accord ou un mixage complet produira quelque chose de convaincant, mais incorrect, et il l’indiquera. La détection des débuts atteint environ 0,88 F1 à l’état de l’art, de sorte qu’une note « manquée » peut être une note que le transcripteur n’a pas pu entendre, plutôt qu’une note que vous n’avez pas jouée — les outils incluent cette réserve dans leurs propres résultats, plutôt que de la masquer ici.",
+      "model": "translategemma:27b",
+      "timestamp": 1788831787233,
+      "source": "**What it will not tell you.** The picture is for finding *where* something is wrong; every number\r\ncomes from signal processing, never from a model reading an image. The transcriber follows one\r\nline at a time, so a chord or a full mix will produce something confident and wrong, and it says\r\nso. Onset detection runs around F1 0.88 at the state of the art, so a \"missed\" note may be one the\r\ntranscriber could not hear rather than one you did not play — the tools carry that caveat in their\r\nown output rather than burying it here.\r",
+      "targetLang": "fr"
+    },
+    "ae5fd649cc48e46c": {
+      "translation": "L’ensemble de la surface est indépendant : la transformation, le suivi de la hauteur, le détecteur de débuts, le décodeur WAV et l’encodeur PNG sont tous inclus dans ce dépôt, et ils produisent des nombres identiques dans Node et dans le navigateur.",
+      "model": "translategemma:27b",
+      "timestamp": 1788831787233,
+      "source": "The whole surface is dependency-free: the transform, the pitch tracker, the onset detector, the\r\nWAV decoder and the PNG encoder are all in this repo, and they produce identical numbers in Node\r\nand in the browser.\r",
+      "targetLang": "fr"
+    },
+    "a6c4ff1911c3fb81": {
+      "translation": "**Une ligne chantée sur le tempo — la voie vocale.** N’importe quelle chanson de la bibliothèque peut contenir une véritable ligne vocale chantée qui s’intègre au piano : un **tempo de partition** (⟦0⟧) dérive la hauteur, le début et la durée de chaque syllabe à partir du MIDI de la chanson sur la propre ligne de temps du lecteur ; un chanteur local, Apache-2.0, conditionné par la partition ([SoulX-Singer](https://github.com/Soul-AILab/SoulX-Singer)) chante à partir de ce tempo sur votre GPU ; et deux portes mesurent l’artefact avant que quoi que ce soit ne soit considéré comme un mixage — **tempo** : chaque début de voyelle dans les 40 ms de la partition ; **hauteur** : chaque note dans les 50 cents, décalage global dans les 20. Les mots sont choisis dans un ensemble d’enregistrements et joints uniquement aux limites des mots, avec des fondus enchaînés. Leviers : ⟦1⟧ (quelle piste MIDI est la mélodie ; ⟦2⟧ pour regarder), ⟦3⟧ (un jeton par note, les syllabes jointes par ⟦4⟧), ⟦5⟧, le clip d’invite (la voix), le nombre d’enregistrements et les seuils de la porte — chacun avec sa citation dans ⟦6⟧. Itinéraire, leviers et reçus : [manuel → Vocales](https://mcp-tool-shop-org.github.io/ai-jam-sessions/handbook/vocals/), [⟦7⟧](docs/vocal-clock.md) ; la recherche derrière les choix : [⟦8⟧](docs/vocal-singing-study-2026-09.md).",
+      "model": "translategemma:27b",
+      "timestamp": 1788831787233,
+      "source": "**A sung line on the clock — the vocal route.** Any library song can carry a real sung vocal that lands on the piano: a **score clock** (⟦0⟧) derives every syllable's pitch, onset and duration from the song's MIDI on the player's own timeline; a local, Apache-2.0, score-conditioned singer ([SoulX-Singer](https://github.com/Soul-AILab/SoulX-Singer)) sings from that clock on your GPU; and two gates measure the artifact before anything is called a mix — **timing**: every vowel onset within 40 ms of the score; **pitch**: every note within 50 cents, global offset within 20. Words are picked from a bag of takes and joined only at word boundaries with crossfades. Levers: ⟦1⟧ (which MIDI track is the tune; ⟦2⟧ to look), ⟦3⟧ (one token per note, syllables joined by ⟦4⟧), ⟦5⟧, the prompt clip (the voice), how many takes, and the gate thresholds — each with its citation in ⟦6⟧. Route, levers and receipts: [handbook → Vocals](https://mcp-tool-shop-org.github.io/ai-jam-sessions/handbook/vocals/), [⟦7⟧](docs/vocal-clock.md); the research behind the choices: [⟦8⟧](docs/vocal-singing-study-2026-09.md).\r",
+      "targetLang": "fr"
+    },
+    "f83cec34e376b32f": {
+      "translation": "**v2.3.0 — la version dans laquelle l’instrument a appris à chanter sur le tempo** (voir [JOURNAL DES MODIFICATIONS](CHANGELOG.md)). N’importe quelle chanson de la bibliothèque peut désormais contenir une véritable ligne chantée qui s’intègre au piano : un **tempo de partition** dérive la hauteur, le début et la durée de chaque syllabe à partir du MIDI de la chanson sur la propre ligne de temps du lecteur ; un chanteur local, Apache-2.0, conditionné par la partition ([SoulX-Singer](https://github.com/Soul-AILab/SoulX-Singer)) chante à partir de celui-ci ; et deux portes mesurent l’artefact avant que quoi que ce soit ne soit considéré comme un mixage — tempo (chaque voyelle dans les 40 ms de la partition) et hauteur (chaque note dans les 50 cents). L’exécution d’Amazing Grace incluse mesure 6 ms au pire pour le tempo et -2,7 cents pour la hauteur globale, avec les reçus enregistrés ; la page d’accueil l’affiche comme un état honnête, avec le seul défaut restant nommé (l’épissure d’ouverture, transmise). L’itinéraire, ses leviers et la recherche derrière chaque choix (cinq axes d’étude, cités) se trouvent dans le [manuel](https://mcp-tool-shop-org.github.io/ai-jam-sessions/handbook/vocals/) et [⟦0⟧](docs/). La surface en direct est inchangée, avec **49 outils et 4 modèles d’invite**, avec **3 080 tests réussis (1 ignoré)**, ainsi que la propre suite de tests pytest de l’instrument vocal. **État de la publication** : publié — [⟦1⟧](https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions) sur npm, avec une traçabilité attestée.",
+      "model": "translategemma:27b",
+      "timestamp": 1788831787233,
+      "source": "**v2.3.0 — the release where the instrument learned to sing on the clock** (see [CHANGELOG](CHANGELOG.md)). Any library song can now carry a real sung line that lands on the piano: a **score clock** derives every syllable's pitch, onset and duration from the song's MIDI on the player's own timeline; a local, Apache-2.0, score-conditioned singer ([SoulX-Singer](https://github.com/Soul-AILab/SoulX-Singer)) sings from it; and two gates measure the artifact before anything is called a mix — timing (every vowel within 40 ms of the score) and pitch (every note within 50 cents). The shipped Amazing Grace run measures 6 ms worst timing and −2.7 cents global pitch, with receipts committed; the landing page carries it as an honest state, with the one remaining defect named (the opening splice, handed off). The route, its levers, and the research behind each choice (five study lanes, cited) are in the [handbook](https://mcp-tool-shop-org.github.io/ai-jam-sessions/handbook/vocals/) and [⟦0⟧](docs/). The live surface is unchanged at **49 tools and 4 prompt templates**, with **3,080 tests passing (1 skipped)** plus the vocal instrument's own pytest suite. **Publication state:** published — [⟦1⟧](https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions) on npm, provenance-attested.\r",
+      "targetLang": "fr"
+    },
+    "234c0c55acb7e537": {
+      "translation": "La même version contient le moteur de composition qui alimente le panneau (⟦0⟧ : une porte déterministe de guidage vocal avec des préréglages de style nommés, des spécifications de tessiture basées sur la construction, un raffineur qui traite les parties une par une), une mise à jour complète (45 problèmes corrigés : sécurité renforcée, chaînes de caractères plus conviviales, amélioration visuelle qui préserve l’aspect), des entrées de bibliothèque Satie et Debussy révisées à partir de données du domaine public de Mutopia, et une mise à jour de renforcement pour les tests avec des utilisateurs inconnus : erreurs de validation descriptives, enveloppes d’erreurs structurées ⟦1⟧, une archive tar sélectionnée, notifications de progression pour les outils longs et grammaire des erreurs en ligne de commande. Cette version a été publiée sous le nom de [⟦2⟧](https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions) et comprend 49 outils, 4 modèles d’invite et 3 033 tests.",
+      "model": "translategemma:27b",
+      "timestamp": 1788831787233,
+      "source": "The same release carries the composition engine that feeds the panel (⟦0⟧: a deterministic voice-leading gate with named style presets, membership-by-construction voicing specs, a part-at-a-time refiner), a full health pass (45 findings fixed — security currency, humanized strings, a look-preserving visual amend), Satie and Debussy library entries re-sourced from receipted Mutopia public-domain bytes, and a stranger-test hardening pass: descriptive validation errors, structured ⟦1⟧ error envelopes, a curated tarball, progress notifications on long tools, and CLI error grammar. That release shipped as [⟦2⟧](https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions) with 49 tools, 4 prompt templates, and 3,033 tests.\r",
+      "targetLang": "fr"
+    },
+    "7f666bf2d4a42026": {
+      "translation": "- **Lettura:** spartiti MIDI reali con annotazioni musicali approfondite. Non semplici approssimazioni scritte a mano, ma dati analizzati, interpretati e spiegati.\n- **Ascolto:** sei motori audio (pianoforte a oscillatore, pianoforte a campioni, campioni vocali, tratto vocale fisico, sintetizzatore vocale additivo, chitarra modellata fisicamente) che riproducono il suono attraverso gli altoparlanti, trasformando le persone presenti nella stanza nelle \"orecchie\" dell'IA. E ora il modello ha le proprie orecchie: può misurare una registrazione che ha creato o una che hai creato tu, e dire cosa contiene effettivamente — vedi [Ascolto](#ascolto).\n- **Visione:** una tastiera virtuale che visualizza ciò che è stato suonato in formato SVG, in modo che il modello possa leggerlo e verificarlo. Un editor interattivo di tablature per chitarra. Un'interfaccia di controllo con una tastiera visiva, un editor di note a doppia modalità e un laboratorio di accordatura.\n- **Memorizzazione:** un diario di pratica che persiste tra le sessioni, in modo che l'apprendimento si accumuli nel tempo.\n- **Canto:** sintesi del tratto vocale con 20 preset vocali, da soprano d'opera a coro elettronico. Modalità di accompagnamento con solfeggio, contorno e narrazione delle sillabe. E una vera linea melodica cantata sincronizzata con il tempo del pianoforte: un cantante guidato dalla partitura MIDI della canzone, con limitazioni temporali (40 ms) e di intonazione (50 centesimi) prima che tu lo senta — vedi [Canto](#canto).",
+      "model": "translategemma:27b",
+      "timestamp": 1788831828001,
+      "source": "- **Reading** — real MIDI sheet music with deep musical annotations. Not hand-written approximations — parsed, analyzed, and explained.\r\n- **Hearing** — six audio engines (oscillator piano, sample piano, vocal samples, physical vocal tract, additive vocal synth, physically-modeled guitar) that play through your speakers, so the humans in the room become the AI's ears. And now the model has ears of its own: it can measure a recording it made, or one you made, and say what is actually in it — see [Listening](#listening).\r\n- **Seeing** — a piano roll that renders what was played as SVG the model can read back and verify. An interactive guitar tablature editor. A browser cockpit with a visual keyboard, dual-mode note editor, and tuning lab.\r\n- **Remembering** — a practice journal that persists across sessions, so learning compounds over time.\r\n- **Singing** — vocal tract synthesis with 20 voice presets, from operatic soprano to electronic choir. Sing-along mode with solfege, contour, and syllable narration. And a real sung lead on the piano's clock: a score-conditioned singer driven by the song's MIDI, gated on timing (40 ms) and pitch (50 cents) before you hear it — see [Sing](#sing).\r",
+      "targetLang": "it"
+    },
+    "8215bb1e4d42d87a": {
+      "translation": "Ascolto",
+      "model": "translategemma:27b",
+      "timestamp": 1788831828001,
+      "source": "Listening",
+      "targetLang": "it"
+    },
+    "02a85edbdac93f63": {
+      "translation": "Per molto tempo, questo server poteva produrre suoni ma non analizzarli. Il modello suonava, un essere umano ascoltava e il modello si basava sul suo giudizio. Questa lacuna è ora colmata.",
+      "model": "translategemma:27b",
+      "timestamp": 1788831828001,
+      "source": "For a long time this server could make sound but never examine it. The model played, a human\r\nlistened, and the model took their word for it. That gap is now closed.\r",
+      "targetLang": "it"
+    },
+    "d5f9210761bec6c9": {
+      "translation": "Se gli si fornisce un file WAV, questo misura ciò che contiene. Non analizzando un'immagine e facendo delle congetture, ma elaborando il segnale attraverso gli stessi strumenti che già utilizza per la partitura:",
+      "model": "translategemma:27b",
+      "timestamp": 1788831828001,
+      "source": "Point it at a WAV and it measures what is there. Not by looking at a picture and guessing —\r\nby running the signal through the same kind of tools it already uses on the score:\r",
+      "targetLang": "it"
+    },
+    "bdc831621068cf93": {
+      "translation": "- **⟦0⟧:** attacchi, il contorno dell'intonazione e il livello. L'intonazione viene restituita come nomi di note con deviazioni in centesimi, mai come frequenze grezze.\n- **⟦1⟧:** la registrazione come note: intonazione, inizio, durata e quanto ogni nota si discosta dall'intonazione di riferimento.\n- **⟦2⟧:** valuta una performance rispetto a una canzone presente nella libreria **ad orecchio**. Trascrive la registrazione, la confronta con la partitura e indica quali note sono state suonate correttamente, quali sono state alterate e quali sono state omesse. Quindi ⟦3⟧ disegna il risultato sulla partitura, esattamente come fa per una registrazione MIDI. In questo modo è possibile valutare uno strumento reale, una performance cantata o qualsiasi altra cosa in cui non ci sia una registrazione MIDI.\n- **⟦4⟧:** visualizza il suono. Uno spettrogramma a Q costante con una tastiera di pianoforte sul bordo sinistro, in modo che l'intonazione sia facilmente leggibile, e le note previste dalla canzone vengono disegnate sopra, su richiesta.",
+      "model": "translategemma:27b",
+      "timestamp": 1788831828001,
+      "source": "- **⟦0⟧** — onsets, the pitch contour, and level. Pitch comes back as note names with\r\n  cent deviations, never as raw frequencies.\r\n- **⟦1⟧** — the recording as notes: pitch, start, duration, and how far each note\r\n  sits from concert pitch.\r\n- **⟦2⟧** — grade a performance against a song in the library **by ear**. It\r\n  transcribes the recording, matches it to the score, and reports which notes landed, which\r\n  drifted, and which were missed. Then ⟦3⟧ draws the result over the score,\r\n  exactly as it does for a captured MIDI take. This is how you grade a real instrument, a sung\r\n  take, or anything where there is no MIDI to capture.\r\n- **⟦4⟧** — see the sound. A constant-Q spectrogram with a piano keyboard down the\r\n  left edge, so pitch is readable at a glance, and the song's intended notes drawn over it on\r\n  request.\r",
+      "targetLang": "it"
+    },
+    "fbd43db694845011": {
+      "translation": "**Cosa non ti dirà.** L'immagine serve per individuare *dove* c'è un problema; ogni numero deriva dall'elaborazione del segnale, mai dalla lettura di un'immagine da parte del modello. Il trascrittore segue una linea alla volta, quindi un accordo o un mix completo produrranno un risultato affidabile ma errato, e lo indicherà. Il rilevamento degli attacchi raggiunge circa 0,88 nello stato dell'arte, quindi una nota \"omessa\" potrebbe essere una nota che il trascrittore non è stato in grado di rilevare, piuttosto che una nota che non hai suonato: gli strumenti riportano questa limitazione nei loro risultati, anziché nasconderla.",
+      "model": "translategemma:27b",
+      "timestamp": 1788831828001,
+      "source": "**What it will not tell you.** The picture is for finding *where* something is wrong; every number\r\ncomes from signal processing, never from a model reading an image. The transcriber follows one\r\nline at a time, so a chord or a full mix will produce something confident and wrong, and it says\r\nso. Onset detection runs around F1 0.88 at the state of the art, so a \"missed\" note may be one the\r\ntranscriber could not hear rather than one you did not play — the tools carry that caveat in their\r\nown output rather than burying it here.\r",
+      "targetLang": "it"
+    },
+    "84cf43bdc006e47a": {
+      "translation": "L'intera interfaccia è indipendente da qualsiasi libreria esterna: la trasformazione, il tracciatore di intonazione, il rilevatore di attacchi, il decodificatore WAV e il codificatore PNG sono tutti presenti in questo repository e producono numeri identici in Node e nel browser.",
+      "model": "translategemma:27b",
+      "timestamp": 1788831828001,
+      "source": "The whole surface is dependency-free: the transform, the pitch tracker, the onset detector, the\r\nWAV decoder and the PNG encoder are all in this repo, and they produce identical numbers in Node\r\nand in the browser.\r",
+      "targetLang": "it"
+    },
+    "4b9fa8eb94771ebe": {
+      "translation": "**Una linea cantata sincronizzata con il tempo: il percorso vocale.** Qualsiasi canzone presente nella libreria può contenere una vera linea melodica cantata che si sincronizza con il pianoforte: un **clock della partitura** (⟦0⟧) deriva l'intonazione, l'attacco e la durata di ogni sillaba dalla MIDI della canzone sulla timeline del lettore; un cantante locale, con licenza Apache 2.0 e basato sulla partitura ([SoulX-Singer](https://github.com/Soul-AILab/SoulX-Singer)), canta da questo clock sulla tua GPU; e due gate misurano il risultato prima che venga considerato un mix: **tempo:** ogni vocale entro 40 ms dalla partitura; **intonazione:** ogni nota entro 50 centesimi, con un offset globale entro 20. Le parole vengono scelte da un insieme di registrazioni e unite solo ai confini delle parole con dissolvenze incrociate. Le impostazioni: ⟦1⟧ (quale traccia MIDI è la melodia; ⟦2⟧ per visualizzarla), ⟦3⟧ (un token per nota, le sillabe unite da ⟦4⟧), ⟦5⟧, il clip di prompt (la voce), il numero di registrazioni e le soglie del gate: ognuna con la sua citazione in ⟦6⟧. Percorso, impostazioni e risultati: [manuale → Voci](https://mcp-tool-shop-org.github.io/ai-jam-sessions/handbook/vocals/), [⟦7⟧](docs/vocal-clock.md); la ricerca alla base delle scelte: [⟦8⟧](docs/vocal-singing-study-2026-09.md).",
+      "model": "translategemma:27b",
+      "timestamp": 1788831828001,
+      "source": "**A sung line on the clock — the vocal route.** Any library song can carry a real sung vocal that lands on the piano: a **score clock** (⟦0⟧) derives every syllable's pitch, onset and duration from the song's MIDI on the player's own timeline; a local, Apache-2.0, score-conditioned singer ([SoulX-Singer](https://github.com/Soul-AILab/SoulX-Singer)) sings from that clock on your GPU; and two gates measure the artifact before anything is called a mix — **timing**: every vowel onset within 40 ms of the score; **pitch**: every note within 50 cents, global offset within 20. Words are picked from a bag of takes and joined only at word boundaries with crossfades. Levers: ⟦1⟧ (which MIDI track is the tune; ⟦2⟧ to look), ⟦3⟧ (one token per note, syllables joined by ⟦4⟧), ⟦5⟧, the prompt clip (the voice), how many takes, and the gate thresholds — each with its citation in ⟦6⟧. Route, levers and receipts: [handbook → Vocals](https://mcp-tool-shop-org.github.io/ai-jam-sessions/handbook/vocals/), [⟦7⟧](docs/vocal-clock.md); the research behind the choices: [⟦8⟧](docs/vocal-singing-study-2026-09.md).\r",
+      "targetLang": "it"
+    },
+    "955b8daa2705faf5": {
+      "translation": "**v2.3.0: la versione in cui lo strumento ha imparato a cantare sincronizzato con il tempo** (vedi [CHANGELOG](CHANGELOG.md)). Ora, qualsiasi canzone presente nella libreria può contenere una vera linea melodica cantata che si sincronizza con il pianoforte: un **clock della partitura** deriva l'intonazione, l'attacco e la durata di ogni sillaba dalla MIDI della canzone sulla timeline del lettore; un cantante locale, con licenza Apache 2.0 e basato sulla partitura ([SoulX-Singer](https://github.com/Soul-AILab/SoulX-Singer)), canta da questo clock; e due gate misurano il risultato prima che venga considerato un mix: tempo (ogni vocale entro 40 ms dalla partitura) e intonazione (ogni nota entro 50 centesimi). La registrazione di Amazing Grace inclusa presenta un errore massimo di 6 ms nel tempo e di -2,7 centesimi nell'intonazione globale, con i risultati registrati; la pagina di destinazione la presenta come uno stato onesto, con l'unico difetto rimanente indicato (la giunzione iniziale). Il percorso, le sue impostazioni e la ricerca alla base di ogni scelta (cinque aree di studio, citate) sono presenti nel [manuale](https://mcp-tool-shop-org.github.io/ai-jam-sessions/handbook/vocals/) e in [⟦0⟧](docs/). L'interfaccia live è invariata, con **49 strumenti e 4 modelli di prompt**, con **3.080 test superati (1 saltato)** più la suite pytest dello strumento vocale. **Stato della pubblicazione:** pubblicato — [⟦1⟧](https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions) su npm, con tracciabilità della provenienza.",
+      "model": "translategemma:27b",
+      "timestamp": 1788831828001,
+      "source": "**v2.3.0 — the release where the instrument learned to sing on the clock** (see [CHANGELOG](CHANGELOG.md)). Any library song can now carry a real sung line that lands on the piano: a **score clock** derives every syllable's pitch, onset and duration from the song's MIDI on the player's own timeline; a local, Apache-2.0, score-conditioned singer ([SoulX-Singer](https://github.com/Soul-AILab/SoulX-Singer)) sings from it; and two gates measure the artifact before anything is called a mix — timing (every vowel within 40 ms of the score) and pitch (every note within 50 cents). The shipped Amazing Grace run measures 6 ms worst timing and −2.7 cents global pitch, with receipts committed; the landing page carries it as an honest state, with the one remaining defect named (the opening splice, handed off). The route, its levers, and the research behind each choice (five study lanes, cited) are in the [handbook](https://mcp-tool-shop-org.github.io/ai-jam-sessions/handbook/vocals/) and [⟦0⟧](docs/). The live surface is unchanged at **49 tools and 4 prompt templates**, with **3,080 tests passing (1 skipped)** plus the vocal instrument's own pytest suite. **Publication state:** published — [⟦1⟧](https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions) on npm, provenance-attested.\r",
+      "targetLang": "it"
+    },
+    "6a57190b5aa97de4": {
+      "translation": "La stessa versione include il motore di composizione che alimenta il pannello (⟦0⟧: un gate deterministico per la conduzione delle voci con preset di stile predefiniti, specifiche di armonizzazione basate sulla costruzione, un raffinatore che elabora una parte alla volta), un aggiornamento completo per la stabilità (45 problemi risolti: miglioramenti alla sicurezza, stringhe più chiare, modifiche visive che preservano l’aspetto), voci della libreria di Satie e Debussy rielaborate a partire dai dati di Mutopia, di pubblico dominio, e un aggiornamento per migliorare la robustezza contro test esterni: messaggi di errore descrittivi, buste di errore strutturate ⟦1⟧, un pacchetto tar curato, notifiche sullo stato di avanzamento per gli strumenti che richiedono più tempo e una grammatica per gli errori della riga di comando. Questa versione è stata rilasciata come [⟦2⟧](https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions) e include 49 strumenti, 4 modelli di prompt e 3.033 test.",
+      "model": "translategemma:27b",
+      "timestamp": 1788831828001,
+      "source": "The same release carries the composition engine that feeds the panel (⟦0⟧: a deterministic voice-leading gate with named style presets, membership-by-construction voicing specs, a part-at-a-time refiner), a full health pass (45 findings fixed — security currency, humanized strings, a look-preserving visual amend), Satie and Debussy library entries re-sourced from receipted Mutopia public-domain bytes, and a stranger-test hardening pass: descriptive validation errors, structured ⟦1⟧ error envelopes, a curated tarball, progress notifications on long tools, and CLI error grammar. That release shipped as [⟦2⟧](https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions) with 49 tools, 4 prompt templates, and 3,033 tests.\r",
+      "targetLang": "it"
+    },
+    "a3ff52c6a3a277e6": {
+      "translation": "Ouvir",
+      "model": "translategemma:27b",
+      "timestamp": 1788831837368,
+      "source": "Listening",
+      "targetLang": "pt"
+    },
+    "a8116a730a8564f5": {
+      "translation": "Por muito tempo, este servidor podia gerar som, mas nunca analisá-lo. O modelo tocava, uma pessoa\nouvia e o modelo aceitava a opinião dessa pessoa. Essa lacuna agora foi preenchida.",
+      "model": "translategemma:27b",
+      "timestamp": 1788831837368,
+      "source": "For a long time this server could make sound but never examine it. The model played, a human\r\nlistened, and the model took their word for it. That gap is now closed.\r",
+      "targetLang": "pt"
+    },
+    "2472f678e6204ec8": {
+      "translation": "Aponte-o para um arquivo WAV e ele medirá o que está presente. Não analisando uma imagem e\nadivinhando, mas processando o sinal através das mesmas ferramentas que já usa na partitura:",
+      "model": "translategemma:27b",
+      "timestamp": 1788831837368,
+      "source": "Point it at a WAV and it measures what is there. Not by looking at a picture and guessing —\r\nby running the signal through the same kind of tools it already uses on the score:\r",
+      "targetLang": "pt"
+    },
+    "f06bc4f571ff7902": {
+      "translation": "- **⟦0⟧** — início, contorno da altura e nível. A altura é retornada como nomes de notas com\ndesvios em centésimos, nunca como frequências brutas.\n- **⟦1⟧** — a gravação como notas: altura, início, duração e a distância de cada nota em relação à\naltura de referência.\n- **⟦2⟧** — avalia uma performance em relação a uma música na biblioteca **de ouvido**. Ele\ntranscreve a gravação, compara-a com a partitura e informa quais notas foram tocadas corretamente,\nquais foram ligeiramente diferentes e quais foram omitidas. Em seguida, ⟦3⟧ desenha o resultado\nsobre a partitura, exatamente como faz com uma gravação MIDI. É assim que você avalia um\ninstrumento real, uma gravação vocal ou qualquer coisa em que não haja MIDI para capturar.\n- **⟦4⟧** — visualize o som. Um espectrograma de Q constante com um teclado de piano na borda\nesquerda, para que a altura seja legível rapidamente, e as notas pretendidas da música sejam\ndesenhadas sobre ele, quando solicitado.",
+      "model": "translategemma:27b",
+      "timestamp": 1788831837368,
+      "source": "- **⟦0⟧** — onsets, the pitch contour, and level. Pitch comes back as note names with\r\n  cent deviations, never as raw frequencies.\r\n- **⟦1⟧** — the recording as notes: pitch, start, duration, and how far each note\r\n  sits from concert pitch.\r\n- **⟦2⟧** — grade a performance against a song in the library **by ear**. It\r\n  transcribes the recording, matches it to the score, and reports which notes landed, which\r\n  drifted, and which were missed. Then ⟦3⟧ draws the result over the score,\r\n  exactly as it does for a captured MIDI take. This is how you grade a real instrument, a sung\r\n  take, or anything where there is no MIDI to capture.\r\n- **⟦4⟧** — see the sound. A constant-Q spectrogram with a piano keyboard down the\r\n  left edge, so pitch is readable at a glance, and the song's intended notes drawn over it on\r\n  request.\r",
+      "targetLang": "pt"
+    },
+    "86e0b967323bd8fc": {
+      "translation": "**O que ele não lhe dirá.** A imagem serve para identificar *onde* algo está errado; cada número\nprovém do processamento de sinal, nunca da leitura de uma imagem por um modelo. O transcriptor\nsegue uma linha de cada vez, portanto, um acorde ou uma mixagem completa produzirão algo\nconfiante, mas incorreto, e ele o indicará. A detecção de início opera em torno de F1 0,88 no\nestado da arte, portanto, uma nota \"omitida\" pode ser uma que o transcriptor não conseguiu ouvir,\ne não uma que você não tocou — as ferramentas carregam essa ressalva em sua própria saída, em vez\nde escondê-la aqui.",
+      "model": "translategemma:27b",
+      "timestamp": 1788831837368,
+      "source": "**What it will not tell you.** The picture is for finding *where* something is wrong; every number\r\ncomes from signal processing, never from a model reading an image. The transcriber follows one\r\nline at a time, so a chord or a full mix will produce something confident and wrong, and it says\r\nso. Onset detection runs around F1 0.88 at the state of the art, so a \"missed\" note may be one the\r\ntranscriber could not hear rather than one you did not play — the tools carry that caveat in their\r\nown output rather than burying it here.\r",
+      "targetLang": "pt"
+    },
+    "f0b580e39ebb8472": {
+      "translation": "Toda a estrutura é independente: a transformação, o rastreador de altura, o detector de início, o\ndecodificador WAV e o codificador PNG estão todos neste repositório e produzem números idênticos\nno Node e no navegador.",
+      "model": "translategemma:27b",
+      "timestamp": 1788831837368,
+      "source": "The whole surface is dependency-free: the transform, the pitch tracker, the onset detector, the\r\nWAV decoder and the PNG encoder are all in this repo, and they produce identical numbers in Node\r\nand in the browser.\r",
+      "targetLang": "pt"
     }
   }
 }

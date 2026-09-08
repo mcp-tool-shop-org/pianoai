@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.0] - 2026-09-07
+
 ### Added — the audio inspector: the model can measure sound, not just make it
 
 Until now this server could render audio but never examine it. The model played, a human listened,
