@@ -1,0 +1,209 @@
+{
+  "id": "acoustic:scarborough-fair:sharp_fail:0",
+  "schema_version": "jam-actions-v1/1.0.0",
+  "family": "acoustic",
+  "provenance": {
+    "source_url": "library:scarborough-fair",
+    "source_collected_at": "library-scan",
+    "source_type": "transcribed-by-author",
+    "composition_title": "Scarborough Fair",
+    "composer": "Traditional English",
+    "composition_year": 1,
+    "composition_pd_status_us": "public_domain",
+    "composition_pd_status_eu": "public_domain",
+    "arrangement_creator": null,
+    "arrangement_license": null,
+    "arrangement_license_version": null,
+    "arrangement_evidence_url": null,
+    "record_verdict": "public",
+    "verdict_reason": "Publishable shelf: classical, ragtime, or folk. clair-de-lune excluded.",
+    "verifier": "v1-builder",
+    "verified_at": "library-scan",
+    "training_use_permitted": true
+  },
+  "scope": {
+    "song_id": "scarborough-fair",
+    "phrase_window": "full:23",
+    "instrument": "piano",
+    "key": "D minor",
+    "tempo_bpm": 72,
+    "time_signature": "6/8",
+    "window_role": "standalone"
+  },
+  "observation": {
+    "thresholds": {
+      "timing_ms": 40,
+      "pitch_fail_cents": 50,
+      "pitch_warn_cents": 25,
+      "yin_locked_p95_cents": 0.179,
+      "pitch_clearance_cents": 5,
+      "pitch_clearance_multiple": 27.93,
+      "onset_p95_ms": 28.025,
+      "onset_clearance_ms": 38,
+      "onset_clearance_multiple": 1.36
+    },
+    "gold": {
+      "family": "acoustic",
+      "answer": "pitch_fail",
+      "engine": "YIN+SuperFlux"
+    },
+    "acoustic": {
+      "kind": "sharp_fail",
+      "notes": [
+        {
+          "midi": 62,
+          "name": "D4",
+          "time": 0,
+          "duration": 0.45
+        },
+        {
+          "midi": 62,
+          "name": "D4",
+          "time": 1.2,
+          "duration": 0.45
+        },
+        {
+          "midi": 69,
+          "name": "A4",
+          "time": 2.4,
+          "duration": 0.45
+        },
+        {
+          "midi": 69,
+          "name": "A4",
+          "time": 3.5999999999999996,
+          "duration": 0.45
+        },
+        {
+          "midi": 64,
+          "name": "E4",
+          "time": 4.8,
+          "duration": 0.45
+        },
+        {
+          "midi": 65,
+          "name": "F4",
+          "time": 6,
+          "duration": 0.45
+        },
+        {
+          "midi": 64,
+          "name": "E4",
+          "time": 7.2,
+          "duration": 0.45
+        },
+        {
+          "midi": 62,
+          "name": "D4",
+          "time": 8.4,
+          "duration": 0.45
+        }
+      ],
+      "cents_shift": 67.54716981132076,
+      "delay_sec": 0.003962264150943396,
+      "target_index": 0,
+      "measured_f0_hz": 305.35252340159036,
+      "measured_cents": 67.56669251525409,
+      "measured_onset_ms": -9.750566893424018,
+      "draw": 0
+    }
+  },
+  "annotation_target": {
+    "measure_range": [
+      1,
+      23
+    ],
+    "structure": "A short strophic ballad built on a repeating opening phrase — measures 1 and 2 are an exact repeat of each other, and that same two-measure cell reappears again (in near-identical form) at measure 12, showing the opening idea returning partway through the piece. The right hand rests for the first two measures (a brief instrumental pickup) before the melody proper enters, and the piece trails off to its sparsest measure (23, just 1 onset) at the very close.",
+    "key_moments": [
+      "Measures 1 and 2, both silent in the right hand: a brief instrumental opening before the melody itself enters, giving the singer a clear cue to come in.",
+      "Measures 1 and 2 are also an exact repeat of each other as accompaniment material, and that same two-measure cell returns again at measure 12 — the opening idea reappears almost exactly a third of the way through the piece.",
+      "Measures 8, 14, 16, and 21 are all tied for busiest (11 onsets each) — spread evenly across the piece rather than clustering at one climax, matching this ballad's gentle, undulating character.",
+      "The right hand never exceeds D5, and the left hand stays within a single octave (A2 to A3) — both hands operate within genuinely narrow ranges, appropriate to a simple, drone-like modal accompaniment.",
+      "Measure 23, the final measure, drops to just 1 onset — the ballad simply fades rather than closing on a strong final gesture, consistent with its unresolved Dorian character."
+    ],
+    "teaching_goals": [
+      "Dorian mode recognition: listen for the raised sixth degree against the D minor tonic — the same modal ambiguity documented in this genre's own exemplar, Greensleeves.",
+      "Brief instrumental pickups: practice the two silent right-hand measures at the opening as a real cue for an imaginary singer, not just an empty gap to rush through.",
+      "Even-energy strophic phrasing: with the busiest measures spread evenly (8, 14, 16, 21) rather than building to one climax, practice keeping dynamics gentle and consistent across the whole short form.",
+      "Narrow-range modal accompaniment: with the left hand confined to a single octave, practice a simple drone-like accompaniment pattern rather than a harmonically busy one."
+    ],
+    "style_tips": [
+      "The Dorian raised sixth appears only fleetingly in this arrangement — listen for it at those moments rather than expecting it to color the whole piece, and let it stand rather than 'correcting' it toward a more familiar natural minor sound.",
+      "Play the opening two silent measures with real stillness, as if waiting for a singer to draw breath.",
+      "Keep the 6/8 pulse gentle and rocking rather than driving — this is a spacious pastoral ballad, not a dance tune.",
+      "Let the final measure's single note simply fade rather than adding a closing flourish — the unresolved ending is true to the modal character of the piece."
+    ],
+    "teaching_notes": [
+      {
+        "measure": 1,
+        "note": "none"
+      }
+    ]
+  },
+  "target_trace": {
+    "task_family": "acoustic",
+    "objective": "Answer using tools. Do not guess from the question text.",
+    "session": [
+      {
+        "turn": 1,
+        "role": "user",
+        "content": "Grade this take of \"Scarborough Fair\". Answer with exactly one of: match, pitch_fail, timing_fail."
+      },
+      {
+        "turn": 2,
+        "role": "assistant",
+        "content": "Transcribing, then scoring with raw measurements.",
+        "tool_calls": [
+          {
+            "tool": "transcribe_audio",
+            "arguments": {
+              "path": "/acoustic-v1/take-8839d7.wav"
+            }
+          },
+          {
+            "tool": "score_audio_take",
+            "arguments": {
+              "path": "/acoustic-v1/take-8839d7.wav",
+              "song_id": "scarborough-fair"
+            }
+          }
+        ]
+      },
+      {
+        "turn": 3,
+        "role": "tool",
+        "tool": "transcribe_audio",
+        "content": {
+          "note_count": 8
+        }
+      },
+      {
+        "turn": 4,
+        "role": "tool",
+        "tool": "score_audio_take",
+        "content": {
+          "f0_hz": 305.4,
+          "cents_from_target": 67.6,
+          "onset_ms": -9.8
+        }
+      },
+      {
+        "turn": 5,
+        "role": "assistant",
+        "content": "cents 67.6 against a 50-cent gate, onset -9.8 ms inside 40: pitch_fail"
+      }
+    ]
+  },
+  "eval_metadata": {
+    "split": "test",
+    "split_strategy": "hold out by song_id",
+    "leakage_check": "passed",
+    "eval_eligibility": [
+      "tool_use",
+      "acoustic"
+    ],
+    "phrase_continuation_eligible": false,
+    "phrase_continuation_eligible_reason": "standalone tool-use items"
+  },
+  "split": "test"
+}

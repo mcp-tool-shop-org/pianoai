@@ -13,6 +13,7 @@ import { Ensemble } from "../../audio/ensemble.js";
 import { validateTrace } from "../trace-validator.js";
 import {
   F5_KINDS,
+  F5_DRAWS,
   F5_THRESHOLDS,
   resetF5DropStats,
   tryBuildF5,
@@ -435,49 +436,52 @@ export function buildAcousticRecord(
   const usedPaths = new Set<string>();
   const bare = opts.acousticBareLabel === true;
   for (const kind of F5_KINDS) {
-    const kept = tryBuildF5(song, kind);
-    if (!kept) continue;
-    const path = opaqueTakePath(song.id, kept);
-    if (usedPaths.has(path)) throw new Error(`opaque take path collision ${path}`);
-    usedPaths.add(path);
-    const session: Turn[] = [
-      {
-        turn: 1, role: "user",
-        content: ask("acoustic", `Grade this take of "${song.title}".`),
-      },
-      {
-        turn: 2, role: "assistant",
-        content: "Transcribing, then scoring with raw measurements.",
-        tool_calls: [
-          { tool: "transcribe_audio", arguments: { path } },
-          { tool: "score_audio_take", arguments: { path, song_id: song.id } },
-        ],
-      },
-      { turn: 3, role: "tool", tool: "transcribe_audio", content: { note_count: kept.notes.length } },
-      { turn: 4, role: "tool", tool: "score_audio_take", content: {
-        f0_hz: round1(kept.measured_f0_hz),
-        cents_from_target: round1(kept.measured_cents),
-        onset_ms: round1(kept.measured_onset_ms),
-      } },
-      { turn: 5, role: "assistant", content: acousticAssistantContent(kept.measured_cents, kept.measured_onset_ms, kept.gold, bare) },
-    ];
-    out.push(baseRecord(song, "acoustic", `acoustic:${song.id}:${kind}`, split, {
-      family: "acoustic", answer: kept.gold, engine: "YIN+SuperFlux",
-    }, session, {
-      thresholds: F5_THRESHOLDS,
-      observation: {
-        acoustic: {
-          kind: kept.kind,
-          notes: kept.notes,
-          cents_shift: kept.cents_shift,
-          delay_sec: kept.delay_sec,
-          target_index: kept.target_index,
-          measured_f0_hz: kept.measured_f0_hz,
-          measured_cents: kept.measured_cents,
-          measured_onset_ms: kept.measured_onset_ms,
+    for (let draw = 0; draw < F5_DRAWS; draw++) {
+      const kept = tryBuildF5(song, kind, draw);
+      if (!kept) continue;
+      const path = opaqueTakePath(song.id, kept);
+      if (usedPaths.has(path)) throw new Error(`opaque take path collision ${path}`);
+      usedPaths.add(path);
+      const session: Turn[] = [
+        {
+          turn: 1, role: "user",
+          content: ask("acoustic", `Grade this take of "${song.title}".`),
         },
-      },
-    }));
+        {
+          turn: 2, role: "assistant",
+          content: "Transcribing, then scoring with raw measurements.",
+          tool_calls: [
+            { tool: "transcribe_audio", arguments: { path } },
+            { tool: "score_audio_take", arguments: { path, song_id: song.id } },
+          ],
+        },
+        { turn: 3, role: "tool", tool: "transcribe_audio", content: { note_count: kept.notes.length } },
+        { turn: 4, role: "tool", tool: "score_audio_take", content: {
+          f0_hz: round1(kept.measured_f0_hz),
+          cents_from_target: round1(kept.measured_cents),
+          onset_ms: round1(kept.measured_onset_ms),
+        } },
+        { turn: 5, role: "assistant", content: acousticAssistantContent(kept.measured_cents, kept.measured_onset_ms, kept.gold, bare) },
+      ];
+      out.push(baseRecord(song, "acoustic", `acoustic:${song.id}:${kind}:${draw}`, split, {
+        family: "acoustic", answer: kept.gold, engine: "YIN+SuperFlux",
+      }, session, {
+        thresholds: F5_THRESHOLDS,
+        observation: {
+          acoustic: {
+            kind: kept.kind,
+            notes: kept.notes,
+            cents_shift: kept.cents_shift,
+            delay_sec: kept.delay_sec,
+            target_index: kept.target_index,
+            measured_f0_hz: kept.measured_f0_hz,
+            measured_cents: kept.measured_cents,
+            measured_onset_ms: kept.measured_onset_ms,
+            draw,
+          },
+        },
+      }));
+    }
   }
   return out;
 }

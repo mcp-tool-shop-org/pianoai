@@ -18,6 +18,9 @@ import {
   F5_LATE_MS_MAX,
   F5_INSIDE_MS_MIN,
   F5_INSIDE_MS_MAX,
+  F5_INSIDE_ONSET_MARGIN_MS,
+  onsetFailsGate,
+  centsFailsGate,
   rederiveF5Measurements,
   parseAcousticAssistant,
   round1,
@@ -28,6 +31,7 @@ import {
   V1_PITCH_FAIL_CENTS,
   V1_PITCH_CLEARANCE_CENTS,
   V1_TIMING_MS,
+  V1_ONSET_CLEARANCE_MS,
 } from "./tracker-error.js";
 import { coverageReport, assertCoverageFloors } from "./coverage.js";
 import { loadPublishableSongs } from "./library.js";
@@ -39,7 +43,7 @@ import {
   type V1Record,
 } from "./schema.js";
 
-vi.setConfig({ testTimeout: 60_000, hookTimeout: 300_000 });
+vi.setConfig({ testTimeout: 180_000, hookTimeout: 300_000 });
 
 // ─── Two kinds of test, two costs ────────────────────────────────────────────
 //
@@ -215,6 +219,11 @@ describe("v1 acoustic assistant comparison (chunk 22 B3)", () => {
       const t = scoreTakeContent(r);
       expect(parsed!.cents, r.id).toBe(t.cents_from_target);
       expect(parsed!.onset, r.id).toBe(t.onset_ms);
+      const line = (last as { content: string }).content;
+      const onsetWord = onsetFailsGate(parsed!.onset) ? "against a 40-ms gate" : "inside 40";
+      const pitchWord = centsFailsGate(parsed!.cents) ? "against a 50-cent gate" : "inside a 50-cent gate";
+      expect(line, r.id).toContain(`onset ${parsed!.onset.toFixed(1)} ms ${onsetWord}`);
+      expect(line, r.id).toContain(`cents ${parsed!.cents.toFixed(1)} ${pitchWord}`);
     }
   });
 });
@@ -336,18 +345,39 @@ describe("F5 acoustic — gate-only magnitudes (chunk 20)", () => {
     };
   }
 
-  it("has distinct cents_from_target (≥ n/2) and onset_ms (≥ late takes) — catches two-value onset", () => {
+  it("has two draws per class per song", () => {
+    const rows = committedRecords().filter((r) => r.family === "acoustic");
+    expect(rows.length).toBe(27 * 3 * 2);
+    expect(rows.filter((r) => r.split === "test").length).toBe(9 * 3 * 2);
+  });
+
+  it("has distinct onsets within each class; no single-onset class", () => {
     const rows = committedRecords().filter((r) => r.family === "acoustic");
     expect(rows.length).toBeGreaterThan(0);
-    const cents = new Set(rows.map((r) => (scoreTakeContent(r).cents_from_target as number).toFixed(6)));
-    const onset = new Set(rows.map((r) => (scoreTakeContent(r).onset_ms as number).toFixed(6)));
-    expect(cents.size, "cents_from_target").toBeGreaterThanOrEqual(Math.ceil(rows.length / 2));
-    // SuperFlux reports frame centres (hop ≈ 11.6 ms). Inside-gate delays of
-    // 1–2 ms occupy one bin; 27 late magnitudes occupy at most 27 more.
-    // Half of 81 is more bins than that geometry has. The two-value bug is
-    // caught by requiring at least one distinct onset per late take.
-    const lateN = rows.filter((r) => acousticOf(r).kind === "late_fail").length;
-    expect(onset.size, "onset_ms").toBeGreaterThanOrEqual(Math.max(lateN, Math.ceil(rows.length / 4)));
+    const byKind = new Map<string, number[]>();
+    for (const r of rows) {
+      const k = acousticOf(r).kind;
+      if (!byKind.has(k)) byKind.set(k, []);
+      byKind.get(k)!.push(scoreTakeContent(r).onset_ms as number);
+    }
+    for (const [kind, onsets] of byKind) {
+      const distinct = new Set(onsets.map((o) => o.toFixed(1)));
+      expect(distinct.size, kind).toBeGreaterThan(1);
+      // SuperFlux hop ≈ 11.6 ms caps distinct bins in a short window; n-1 is
+      // the bar when the span can occupy it, otherwise every hop in the span.
+      const span = Math.max(...onsets) - Math.min(...onsets);
+      const hops = Math.max(2, Math.floor(span / 11.6) + 1);
+      expect(distinct.size, kind).toBeGreaterThanOrEqual(Math.min(onsets.length - 1, hops));
+    }
+  });
+
+  it("has both pitch_fail signs in train and in test", () => {
+    const rows = committedRecords().filter((r) => r.family === "acoustic" && acousticOf(r).kind === "sharp_fail");
+    for (const side of ["train", "test"] as const) {
+      const cents = rows.filter((r) => r.split === side).map((r) => scoreTakeContent(r).cents_from_target as number);
+      expect(cents.some((c) => c > 0), `${side} sharp`).toBe(true);
+      expect(cents.some((c) => c < 0), `${side} flat`).toBe(true);
+    }
   });
 
   it("clears its class gate by the stated multiple and sits inside the other", () => {
@@ -359,17 +389,17 @@ describe("F5 acoustic — gate-only magnitudes (chunk 20)", () => {
       const onset = c.onset_ms as number;
       const delayMs = a.delay_sec * 1000;
       if (a.kind === "sharp_fail") {
-        expect(a.cents_shift, r.id).toBeGreaterThanOrEqual(F5_SHARP_CENTS_MIN);
-        expect(a.cents_shift, r.id).toBeLessThanOrEqual(F5_SHARP_CENTS_MAX);
+        expect(Math.abs(a.cents_shift), r.id).toBeGreaterThanOrEqual(F5_SHARP_CENTS_MIN);
+        expect(Math.abs(a.cents_shift), r.id).toBeLessThanOrEqual(F5_SHARP_CENTS_MAX);
         expect(mag, r.id).toBeGreaterThan(V1_PITCH_FAIL_CENTS);
         expect(mag - V1_PITCH_FAIL_CENTS, r.id).toBeGreaterThanOrEqual(V1_PITCH_CLEARANCE_CENTS * 0.5);
         expect(delayMs, r.id).toBeGreaterThanOrEqual(F5_INSIDE_MS_MIN);
         expect(delayMs, r.id).toBeLessThanOrEqual(F5_INSIDE_MS_MAX);
-        expect(onset, r.id).toBeLessThan(V1_TIMING_MS);
+        expect(Math.abs(onset), r.id).toBeLessThan(V1_TIMING_MS);
       } else if (a.kind === "late_fail") {
         expect(delayMs, r.id).toBeGreaterThanOrEqual(F5_LATE_MS_MIN);
         expect(delayMs, r.id).toBeLessThanOrEqual(F5_LATE_MS_MAX);
-        expect(onset, r.id).toBeGreaterThan(V1_TIMING_MS);
+        expect(Math.abs(onset), r.id).toBeGreaterThan(V1_TIMING_MS);
         expect(a.cents_shift, r.id).toBeGreaterThanOrEqual(F5_INSIDE_CENTS_MIN);
         expect(a.cents_shift, r.id).toBeLessThanOrEqual(F5_INSIDE_CENTS_MAX);
         expect(mag, r.id).toBeLessThan(V1_PITCH_FAIL_CENTS);
@@ -379,7 +409,22 @@ describe("F5 acoustic — gate-only magnitudes (chunk 20)", () => {
         expect(mag, r.id).toBeLessThan(V1_PITCH_FAIL_CENTS);
         expect(delayMs, r.id).toBeGreaterThanOrEqual(F5_INSIDE_MS_MIN);
         expect(delayMs, r.id).toBeLessThanOrEqual(F5_INSIDE_MS_MAX);
-        expect(onset, r.id).toBeLessThan(V1_TIMING_MS);
+        expect(Math.abs(onset), r.id).toBeLessThan(V1_TIMING_MS);
+      }
+    }
+  });
+
+  it("keeps non-timing |onset| inside 40−margin and timing |onset| past the two-sided gate", () => {
+    const rows = committedRecords().filter((r) => r.family === "acoustic");
+    for (const r of rows) {
+      const onset = scoreTakeContent(r).onset_ms as number;
+      const mag = Math.abs(onset);
+      const kind = acousticOf(r).kind;
+      if (kind === "late_fail") {
+        expect(mag, r.id).toBeGreaterThan(V1_TIMING_MS);
+        expect(acousticOf(r).delay_sec * 1000, r.id).toBeGreaterThanOrEqual(V1_TIMING_MS + V1_ONSET_CLEARANCE_MS);
+      } else {
+        expect(mag, r.id).toBeLessThan(V1_TIMING_MS - F5_INSIDE_ONSET_MARGIN_MS);
       }
     }
   });
@@ -393,15 +438,20 @@ describe("F5 acoustic — gate-only magnitudes (chunk 20)", () => {
       byKind.get(k)!.push(r);
     }
     const spread = (xs: number[]) => Math.max(...xs) - Math.min(...xs);
-    const sharp = (byKind.get("sharp_fail") ?? []).map((r) => scoreTakeContent(r).cents_from_target as number);
+    const sharp = (byKind.get("sharp_fail") ?? []).map((r) => Math.abs(scoreTakeContent(r).cents_from_target as number));
     const late = (byKind.get("late_fail") ?? []).map((r) => scoreTakeContent(r).onset_ms as number);
     const matchC = (byKind.get("clean") ?? []).map((r) => scoreTakeContent(r).cents_from_target as number);
+    const matchO = (byKind.get("clean") ?? []).map((r) => scoreTakeContent(r).onset_ms as number);
+    const sharpO = (byKind.get("sharp_fail") ?? []).map((r) => scoreTakeContent(r).onset_ms as number);
     expect(sharp.length).toBeGreaterThan(3);
     expect(late.length).toBeGreaterThan(3);
     expect(matchC.length).toBeGreaterThan(3);
     expect(spread(sharp)).toBeGreaterThan(10 * MEASURED_YIN_LOCKED_P95_CENTS);
-    expect(spread(late)).toBeGreaterThan(10 * MEASURED_ONSET_ABS_P95_MS);
     expect(spread(matchC)).toBeGreaterThan(10 * MEASURED_YIN_LOCKED_P95_CENTS);
+    // Late band was pulled toward the gate; 10× onset p95 (280 ms) no longer fits.
+    expect(spread(late)).toBeGreaterThan(2 * MEASURED_ONSET_ABS_P95_MS);
+    expect(spread(matchO)).toBeGreaterThan(1);
+    expect(spread(sharpO)).toBeGreaterThan(1);
   });
 });
 

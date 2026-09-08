@@ -1,0 +1,209 @@
+{
+  "id": "acoustic:auld-lang-syne:sharp_fail:0",
+  "schema_version": "jam-actions-v1/1.0.0",
+  "family": "acoustic",
+  "provenance": {
+    "source_url": "library:auld-lang-syne",
+    "source_collected_at": "library-scan",
+    "source_type": "transcribed-by-author",
+    "composition_title": "Auld Lang Syne",
+    "composer": "Traditional Scottish",
+    "composition_year": 1,
+    "composition_pd_status_us": "public_domain",
+    "composition_pd_status_eu": "public_domain",
+    "arrangement_creator": null,
+    "arrangement_license": null,
+    "arrangement_license_version": null,
+    "arrangement_evidence_url": null,
+    "record_verdict": "public",
+    "verdict_reason": "Publishable shelf: classical, ragtime, or folk. clair-de-lune excluded.",
+    "verifier": "v1-builder",
+    "verified_at": "library-scan",
+    "training_use_permitted": true
+  },
+  "scope": {
+    "song_id": "auld-lang-syne",
+    "phrase_window": "full:68",
+    "instrument": "piano",
+    "key": "F major",
+    "tempo_bpm": 119,
+    "time_signature": "4/4",
+    "window_role": "standalone"
+  },
+  "observation": {
+    "thresholds": {
+      "timing_ms": 40,
+      "pitch_fail_cents": 50,
+      "pitch_warn_cents": 25,
+      "yin_locked_p95_cents": 0.179,
+      "pitch_clearance_cents": 5,
+      "pitch_clearance_multiple": 27.93,
+      "onset_p95_ms": 28.025,
+      "onset_clearance_ms": 38,
+      "onset_clearance_multiple": 1.36
+    },
+    "gold": {
+      "family": "acoustic",
+      "answer": "pitch_fail",
+      "engine": "YIN+SuperFlux"
+    },
+    "acoustic": {
+      "kind": "sharp_fail",
+      "notes": [
+        {
+          "midi": 60,
+          "name": "C4",
+          "time": 0,
+          "duration": 0.45
+        },
+        {
+          "midi": 64,
+          "name": "E4",
+          "time": 1.2,
+          "duration": 0.45
+        },
+        {
+          "midi": 67,
+          "name": "G4",
+          "time": 2.4,
+          "duration": 0.45
+        },
+        {
+          "midi": 72,
+          "name": "C5",
+          "time": 3.5999999999999996,
+          "duration": 0.45
+        },
+        {
+          "midi": 76,
+          "name": "E5",
+          "time": 4.8,
+          "duration": 0.45
+        },
+        {
+          "midi": 67,
+          "name": "G4",
+          "time": 6,
+          "duration": 0.45
+        },
+        {
+          "midi": 72,
+          "name": "C5",
+          "time": 7.2,
+          "duration": 0.45
+        },
+        {
+          "midi": 76,
+          "name": "E5",
+          "time": 8.4,
+          "duration": 0.45
+        }
+      ],
+      "cents_shift": 55,
+      "delay_sec": 0.014528301886792454,
+      "target_index": 0,
+      "measured_f0_hz": 270.0744445096649,
+      "measured_cents": 55.0243309929552,
+      "measured_onset_ms": 1.859410430839037,
+      "draw": 0
+    }
+  },
+  "annotation_target": {
+    "measure_range": [
+      1,
+      68
+    ],
+    "structure": "Two nearly-identical 33-measure strains built on the plain F-Bb-C-F (I-IV-V-I) folk cadence, confirmed directly by the data — measures 4 through roughly 33 repeat almost exactly at measures 37 through 66 (a near-constant 33-measure offset across dozens of paired measures), which maps naturally onto a verse-then-chorus structure using the same melodic material for both, exactly as the song is actually sung. The piece opens with a full measure of silence (measure 1) before the tune begins, and closes with its busiest measure (67, 28 onsets) right at the very end.",
+    "key_moments": [
+      "Measure 1 is completely silent — a breath or pickup before the familiar tune begins, appropriate for a song traditionally sung a cappella before instruments join.",
+      "Measures 4 through roughly 33 repeat almost exactly 33 measures later (measures 37-66), which demonstrates that the verse and its repeat (or verse-and-chorus sharing the same tune) are essentially the same melodic material twice over, confirmed across more than two dozen matched measure pairs.",
+      "Measure 67, the very last measure, is also the busiest in the entire piece (28 onsets) — the arrangement ends on its most active measure over a firm F cadence rather than winding down, a strong final flourish rather than a fade.",
+      "The right hand's highest note, C6, arrives at measure 34 — right at the seam between the two repeating 33-measure strains, an example of a registral peak marking a structural hinge point.",
+      "Measures 2 and 35 (21 and 20 onsets) are each the busiest measure near the start of their respective strain — the two halves of the form don't just share pitches, they share the same energy contour."
+    ],
+    "teaching_goals": [
+      "Strophic repetition at scale: with the same ~33-measure strain appearing twice, learn the first occurrence thoroughly and practice it until it's secure — you're effectively learning half the piece twice over.",
+      "Recognizing structural seams: the highest note of the piece (C6, measure 34) lands exactly at the boundary between the two repeating strains — practice using registral peaks like this as landmarks when you learn long repetitive forms.",
+      "Ending on energy rather than fading: this piece's busiest measure is also its last — practice bringing a performance to a firm F-major close rather than trailing off.",
+      "Communal, unhurried phrasing: since this melody is traditionally sung by a group linking hands, learn to favor a steady, singable tempo over rhythmic display."
+    ],
+    "style_tips": [
+      "Once you've learned and can play the first strain (roughly measures 4-33) securely, trust that the second (37-66) is nearly identical — don't relearn it from scratch.",
+      "Give the opening silence real weight, like the breath before a group begins singing together.",
+      "Play the final measure (67) with real energy — this piece wants a warm, full-voiced F-major ending, not a diminuendo.",
+      "Keep the tempo steady and singable throughout — this is a communal song built for voices linking arms, not a showcase for rubato."
+    ],
+    "teaching_notes": [
+      {
+        "measure": 1,
+        "note": "none"
+      }
+    ]
+  },
+  "target_trace": {
+    "task_family": "acoustic",
+    "objective": "Answer using tools. Do not guess from the question text.",
+    "session": [
+      {
+        "turn": 1,
+        "role": "user",
+        "content": "Grade this take of \"Auld Lang Syne\". Answer with exactly one of: match, pitch_fail, timing_fail."
+      },
+      {
+        "turn": 2,
+        "role": "assistant",
+        "content": "Transcribing, then scoring with raw measurements.",
+        "tool_calls": [
+          {
+            "tool": "transcribe_audio",
+            "arguments": {
+              "path": "/acoustic-v1/take-8d1e0e.wav"
+            }
+          },
+          {
+            "tool": "score_audio_take",
+            "arguments": {
+              "path": "/acoustic-v1/take-8d1e0e.wav",
+              "song_id": "auld-lang-syne"
+            }
+          }
+        ]
+      },
+      {
+        "turn": 3,
+        "role": "tool",
+        "tool": "transcribe_audio",
+        "content": {
+          "note_count": 8
+        }
+      },
+      {
+        "turn": 4,
+        "role": "tool",
+        "tool": "score_audio_take",
+        "content": {
+          "f0_hz": 270.1,
+          "cents_from_target": 55,
+          "onset_ms": 1.9
+        }
+      },
+      {
+        "turn": 5,
+        "role": "assistant",
+        "content": "cents 55.0 against a 50-cent gate, onset 1.9 ms inside 40: pitch_fail"
+      }
+    ]
+  },
+  "eval_metadata": {
+    "split": "train",
+    "split_strategy": "hold out by song_id",
+    "leakage_check": "passed",
+    "eval_eligibility": [
+      "tool_use",
+      "acoustic"
+    ],
+    "phrase_continuation_eligible": false,
+    "phrase_continuation_eligible_reason": "standalone tool-use items"
+  },
+  "split": "train"
+}

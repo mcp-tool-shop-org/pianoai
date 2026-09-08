@@ -29,12 +29,22 @@ export function round1(n: number): number {
   return Math.round(n * 10) / 10;
 }
 
+/** Two-sided timing gate. Same predicate for gold and the comparison line. */
+export function onsetFailsGate(onsetMs: number): boolean {
+  return Math.abs(onsetMs) > V1_TIMING_MS;
+}
+
+/** Two-sided pitch gate. Same predicate for gold and the comparison line. */
+export function centsFailsGate(cents: number): boolean {
+  return Math.abs(cents) >= V1_PITCH_FAIL_CENTS;
+}
+
 /** Assistant-turn comparison. Gates live here, not in the prompt. */
 export function acousticComparisonLine(cents: number, onsetMs: number, gold: string): string {
   const cR = round1(cents);
   const oR = round1(onsetMs);
-  const pitchRel = Math.abs(cR) >= V1_PITCH_FAIL_CENTS ? "against a 50-cent gate" : "inside a 50-cent gate";
-  const onsetRel = oR > V1_TIMING_MS ? "against a 40-ms gate" : "inside 40";
+  const pitchRel = centsFailsGate(cR) ? "against a 50-cent gate" : "inside a 50-cent gate";
+  const onsetRel = onsetFailsGate(oR) ? "against a 40-ms gate" : "inside 40";
   return `cents ${cR.toFixed(1)} ${pitchRel}, onset ${oR.toFixed(1)} ms ${onsetRel}: ${gold}`;
 }
 
@@ -78,12 +88,20 @@ export const F5_SHARP_CENTS_MAX = 90;
 /** match / late_fail cents: above tracker noise … gate − clearance. */
 export const F5_INSIDE_CENTS_MIN = 10 * MEASURED_YIN_LOCKED_P95_CENTS;
 export const F5_INSIDE_CENTS_MAX = V1_PITCH_FAIL_CENTS - V1_PITCH_CLEARANCE_CENTS;
-/** late_fail onset: gate + clearance … chosen so measured max−min > 10× onset p95. */
+/** late_fail onset: gate + clearance … drawn down toward the gate (was 400 ms). */
 export const F5_LATE_MS_MIN = V1_TIMING_MS + V1_ONSET_CLEARANCE_MS;
-export const F5_LATE_MS_MAX = 400;
-/** match / sharp_fail onset: small non-zero … gate − clearance. */
-export const F5_INSIDE_MS_MIN = 1;
-export const F5_INSIDE_MS_MAX = V1_TIMING_MS - V1_ONSET_CLEARANCE_MS;
+export const F5_LATE_MS_MAX = 160;
+/**
+ * match / pitch_fail onset: delay so measured |onset_ms| stays inside 40
+ * minus F5_INSIDE_ONSET_MARGIN_MS after the tracker's ~20 ms early bias
+ * and SuperFlux hop. The 38 ms late clearance cannot fit in a ±40 window.
+ * MIN was -25; that produced measured -44.6, past the two-sided gate.
+ */
+export const F5_INSIDE_ONSET_MARGIN_MS = 12;
+export const F5_INSIDE_MS_MIN = 0;
+export const F5_INSIDE_MS_MAX = 35;
+/** Two independent draws per (song, class). */
+export const F5_DRAWS = 2;
 
 export interface F5PhraseNote {
   midi: number;
@@ -164,14 +182,20 @@ function unit01(seed: string): number {
   return createHash("sha256").update(seed).digest().readUInt32BE(0) / 4294967296;
 }
 
-/** Even spacing in [0,1], scrambled by hash so the song-split does not slice the range. */
-function rank01(songId: string, salt: string): number {
-  const ids = loadPublishableSongs().map((s) => s.id);
+function drawKeys(): string[] {
+  return loadPublishableSongs().flatMap((s) =>
+    Array.from({ length: F5_DRAWS }, (_, d) => `${s.id}#${d}`),
+  );
+}
+
+/** Even spacing in [0,1] over song×draw, scrambled so the split does not slice the range. */
+function rank01(key: string, salt: string): number {
+  const ids = drawKeys();
   const keyed = ids
     .map((id) => ({ id, k: unit01(`${id}:${salt}`) }))
     .sort((a, b) => a.k - b.k || a.id.localeCompare(b.id));
-  const i = keyed.findIndex((x) => x.id === songId);
-  if (i < 0) return unit01(`${songId}:${salt}`);
+  const i = keyed.findIndex((x) => x.id === key);
+  if (i < 0) return unit01(`${key}:${salt}`);
   return keyed.length <= 1 ? 0.5 : i / (keyed.length - 1);
 }
 
@@ -179,14 +203,18 @@ function lerp(lo: number, hi: number, t: number): number {
   return lo + t * (hi - lo);
 }
 
-/** Deterministic per-take magnitudes. Never Math.random. */
-export function perturbationFor(songId: string, kind: F5Kind): { cents_shift: number; delay_sec: number } {
-  const centsLo = kind === "sharp_fail" ? F5_SHARP_CENTS_MIN : F5_INSIDE_CENTS_MIN;
-  const centsHi = kind === "sharp_fail" ? F5_SHARP_CENTS_MAX : F5_INSIDE_CENTS_MAX;
+/** Deterministic per-take magnitudes. Never Math.random. draw 0 = sharp, draw 1 = flat. */
+export function perturbationFor(songId: string, kind: F5Kind, draw = 0): { cents_shift: number; delay_sec: number } {
+  const key = `${songId}#${draw}`;
   const msLo = kind === "late_fail" ? F5_LATE_MS_MIN : F5_INSIDE_MS_MIN;
   const msHi = kind === "late_fail" ? F5_LATE_MS_MAX : F5_INSIDE_MS_MAX;
-  const cents_shift = lerp(centsLo, centsHi, rank01(songId, `${kind}:cents`));
-  const delay_sec = lerp(msLo, msHi, rank01(songId, `${kind}:onset`)) / 1000;
+  const delay_sec = lerp(msLo, msHi, rank01(key, `${kind}:onset`)) / 1000;
+  if (kind === "sharp_fail") {
+    const mag = lerp(F5_SHARP_CENTS_MIN, F5_SHARP_CENTS_MAX, rank01(key, `${kind}:cents`));
+    const sign = draw % 2 === 0 ? 1 : -1;
+    return { cents_shift: sign * mag, delay_sec };
+  }
+  const cents_shift = lerp(F5_INSIDE_CENTS_MIN, F5_INSIDE_CENTS_MAX, rank01(key, `${kind}:cents`));
   return { cents_shift, delay_sec };
 }
 
@@ -293,29 +321,30 @@ export function measureF5(notes: F5PhraseNote[], cents_shift: number, delay_sec:
 
 function goldFromKind(kind: F5Kind, m: F5Measurements): "match" | "pitch_fail" | "timing_fail" | null {
   const mag = Math.abs(m.cents_from_target);
+  const late = onsetFailsGate(m.onset_ms);
   if (kind === "clean") {
-    if (mag >= V1_PITCH_FAIL_CENTS) return null;
-    if (m.onset_ms > V1_TIMING_MS) return null;
+    if (centsFailsGate(m.cents_from_target)) return null;
+    if (late) return null;
     return "match";
   }
   if (kind === "sharp_fail") {
     if (mag - V1_PITCH_FAIL_CENTS < V1_PITCH_CLEARANCE_CENTS) return null;
-    if (m.onset_ms > V1_TIMING_MS) return null;
+    if (late) return null;
     return "pitch_fail";
   }
-  if (m.onset_ms <= V1_TIMING_MS) return null;
-  if (mag >= V1_PITCH_FAIL_CENTS) return null;
+  if (!late) return null;
+  if (centsFailsGate(m.cents_from_target)) return null;
   return "timing_fail";
 }
 
-export function tryBuildF5(song: SongEntry, kind: F5Kind): F5Kept | null {
+export function tryBuildF5(song: SongEntry, kind: F5Kind, draw = 0): F5Kept | null {
   f5DropStats.attempted++;
   const notes = phraseFromSong(song);
   if (notes.length < 4) {
     f5DropStats.droppedShortPhrase++;
     return null;
   }
-  const { cents_shift, delay_sec } = perturbationFor(song.id, kind);
+  const { cents_shift, delay_sec } = perturbationFor(song.id, kind, draw);
   const { samples, target_index, measurements } = measureF5(notes, cents_shift, delay_sec);
   if (!measurements) {
     f5DropStats.droppedUntrackable++;
