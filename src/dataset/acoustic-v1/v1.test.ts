@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeAll } from "vitest";
 import { defineTask, publishedOwner, assertNoStraddle } from "../experiment/index.js";
 import { v1Records, coverageV1Task } from "./task.js";
 import { rederiveGold, toolSequenceOf, f5DropStats } from "./builder.js";
@@ -8,7 +8,23 @@ import { coverageReport, assertCoverageFloors } from "./coverage.js";
 import { loadPublishableSongs } from "./library.js";
 import { COVERAGE_FLOORS, PROMPT_VISIBLE_PATHS, RECORD_ONLY_PATHS, V1_SCHEMA_VERSION } from "./schema.js";
 
-vi.setConfig({ testTimeout: 60_000 });
+vi.setConfig({ testTimeout: 60_000, hookTimeout: 300_000 });
+
+// Build the corpus ONCE, here, rather than letting whichever test happens to
+// run first absorb the cost.
+//
+// v1Records() is memoised, so only the first caller pays -- but that caller was
+// a test, and the bill is 21.9 s locally: 81 acoustic records each render a
+// take and run YIN and onset detection over it. On a CI runner that crossed the
+// 60 s per-test budget and failed the coverage-floors test, which does nothing
+// slow itself and simply had the misfortune of going first.
+//
+// A per-test timeout should measure the test. One-time setup belongs in a hook
+// with its own budget, and this one is deliberately generous because the corpus
+// grows with every family added.
+beforeAll(() => {
+  v1Records();
+});
 
 describe("v1 schema spine", () => {
   it("declares a new schemaVersion and rejects reuse of v0's", () => {
