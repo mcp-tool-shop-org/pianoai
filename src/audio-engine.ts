@@ -35,6 +35,7 @@ import { getMergedVoice, type PianoVoiceId, type PianoVoiceConfig } from "./pian
 import { JamError } from "./errors.js";
 import { getSharedAudioContext, setSharedAudioContext } from "./audio-shared.js";
 import { PIANO_COMPRESSOR, velocityLowpassHz } from "./piano-timbre.js";
+import { createTapBus } from "./audio/tap-bus.js";
 
 // ─── Lazy Import ────────────────────────────────────────────────────────────
 // Don't load the native binary until the engine is actually used.
@@ -184,6 +185,8 @@ export function createAudioEngine(
   let currentStatus: MidiStatus = "disconnected";
   let compressor: any = null;
   let master: any = null;
+  /** Dedicated fan-out for observers. Never sits between master and destination. */
+  let tapBus: any = null;
   // FIFO queue per note (not a single Voice) — see MAX_VOICES_PER_NOTE.
   const activeVoices = new Map<number, Voice[]>();
   const voiceOrder: Voice[] = []; // Global LRU across all voice instances, oldest first
@@ -458,6 +461,7 @@ export function createAudioEngine(
         ctx = null as any;
         compressor = null as any;
         master = null as any;
+        tapBus = null as any;
         currentStatus = "disconnected";
         throw new JamError({
           code: 'RUNTIME_ENGINE',
@@ -490,6 +494,7 @@ export function createAudioEngine(
         ctx = null;
         compressor = null;
         master = null;
+        tapBus = null;
         hammerNoiseBuffer = null;
       }
       currentStatus = "disconnected";
@@ -501,6 +506,17 @@ export function createAudioEngine(
 
     listPorts(): string[] {
       return [`Built-in Piano (${voice.name})`];
+    },
+
+    /**
+     * Fan-out bus for observers. Lazily `master.connect(tapBus)`. The
+     * existing master → destination edge is not touched, so a tap cannot
+     * silence the instrument. Callers pass this node to attachTap().
+     */
+    createTapOutput(): unknown {
+      ensureConnected();
+      if (!tapBus) tapBus = createTapBus(ctx, master);
+      return tapBus;
     },
 
     noteOn(note: number, velocity: number, channel?: number): void {

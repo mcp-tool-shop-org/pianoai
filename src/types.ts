@@ -308,6 +308,25 @@ export interface VmpkConnector {
 
   /** Play a single MidiNote (note-on, wait, note-off). */
   playNote(note: MidiNote): Promise<void>;
+
+  /**
+   * Optional dedicated tap bus. Observers connect here, never to the engine
+   * master, so a tap cannot silence the instrument. Absent on connectors
+   * that have no audio graph. A layered engine does NOT implement this —
+   * tapping the mix would collapse N instruments into one signal.
+   */
+  createTapOutput?(): unknown;
+
+  /**
+   * Optional child roster. Present on a layered engine; absent on a
+   * plain connector. Names plus, when that child offers one, a tap
+   * factory — never the child connector itself.
+   */
+  children?(): ReadonlyArray<{
+    id: string;
+    label: string;
+    createTapOutput?: () => unknown;
+  }>;
 }
 
 // ─── Recording Types ────────────────────────────────────────────────────────

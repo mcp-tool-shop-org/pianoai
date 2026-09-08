@@ -35,6 +35,12 @@ datasets/jam-actions-v0-public/** text eol=lf
 # every one of the 115 entries fails verification — which is exactly what the new
 # pre-upload checksum gate caught before the first publish.
 datasets/jam-actions-acoustic-v0/** text eol=lf
+# The acoustic generator now reads its two static documents (LICENSE-DATASET.md,
+# CITATION.cff) from source and emits them into the corpus, so the published
+# tree is constructible end to end. That makes them hashed content: a Windows
+# checkout converting them to CRLF breaks the reproducibility gate the same way
+# the corpus itself broke before the pin above.
+src/dataset/acoustic/assets/** text eol=lf
 songs/library/**/*.json text eol=lf
 *.mid binary
 *.ogg binary

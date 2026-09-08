@@ -1,8 +1,8 @@
 {
   "server_name": "ai-jam-sessions",
   "derived_from": "dist/mcp-server.js via MCP tools/list",
-  "derived_at": "2026-09-08T00:32:06.199Z",
-  "tool_count": 53,
+  "derived_at": "2026-09-08T03:45:18.498Z",
+  "tool_count": 54,
   "tools": [
     {
       "name": "add_section",
@@ -344,6 +344,15 @@
         "required": [
           "notes"
         ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "ensemble_now",
+      "description": "Ask what every instrument is playing RIGHT NOW, mid-performance — which notes each one is holding, how long it has held them, and the combined chord across the whole ensemble. This is the live counterpart to score_audio_take, which grades a finished recording: use this one while the music is still going. The notes come from the events sent to each engine, so for anything this server plays they are exact rather than estimated, and a chord is reported as the chord it is rather than guessed from audio. Where an instrument has an acoustic tap attached, its measured signal is reported alongside as verification, which is how you catch a voice drifting off pitch or an engine that has gone silent while still being sent notes.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
         "$schema": "http://json-schema.org/draft-07/schema#"
       }
     },

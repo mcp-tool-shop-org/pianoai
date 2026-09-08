@@ -42,6 +42,7 @@ import {
   type GuitarVoiceConfig,
 } from "./guitar-voices.js";
 import { JamError } from "./errors.js";
+import { createTapBus } from "./audio/tap-bus.js";
 
 // ─── Lazy Import ────────────────────────────────────────────────────────────
 
@@ -251,6 +252,8 @@ export function createGuitarEngine(options: GuitarEngineOptions = {}): VmpkConne
   let currentStatus: MidiStatus = "disconnected";
   let compressor: any = null;
   let master: any = null;
+  /** Dedicated fan-out for observers. Never sits between master and destination. */
+  let tapBus: any = null;
   let bodyFilter1: any = null;
   let bodyFilter2: any = null;
   // FIFO queue per note (not a single Voice) — see MAX_VOICES_PER_NOTE.
@@ -565,6 +568,7 @@ export function createGuitarEngine(options: GuitarEngineOptions = {}): VmpkConne
         ctx = null as any;
         compressor = null as any;
         master = null as any;
+        tapBus = null as any;
         currentStatus = "disconnected";
         throw new JamError({
           code: 'RUNTIME_ENGINE',
@@ -598,6 +602,7 @@ export function createGuitarEngine(options: GuitarEngineOptions = {}): VmpkConne
         bodyFilter1 = null;
         bodyFilter2 = null;
         master = null;
+        tapBus = null;
         pluckNoiseBuffer = null;
       }
       currentStatus = "disconnected";
@@ -609,6 +614,17 @@ export function createGuitarEngine(options: GuitarEngineOptions = {}): VmpkConne
 
     listPorts(): string[] {
       return [`Built-in Guitar (${voice.name}, A4=${a4} Hz)`];
+    },
+
+    /**
+     * Fan-out bus for observers. Lazily `master.connect(tapBus)`. The
+     * existing master → destination edge is not touched, so a tap cannot
+     * silence the instrument. Callers pass this node to attachTap().
+     */
+    createTapOutput(): unknown {
+      ensureConnected();
+      if (!tapBus) tapBus = createTapBus(ctx, master);
+      return tapBus;
     },
 
     noteOn(note: number, velocity: number, _channel?: number): void {

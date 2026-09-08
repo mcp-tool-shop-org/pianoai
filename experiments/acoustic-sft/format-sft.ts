@@ -9,53 +9,30 @@ import { fileURLToPath } from "node:url";
 import { validateTrace } from "../../src/dataset/trace-validator.js";
 import { TEST_SONG_ID } from "../../src/dataset/acoustic/phrases.js";
 import type { AcousticRecord } from "../../src/dataset/acoustic/schema.js";
+import {
+  toSftLine as genericToSftLine,
+  formatRecords,
+  DEFAULT_SYSTEM_TEXT,
+  type SftLine,
+  type SftMessage,
+} from "../../src/dataset/experiment/format-sft.js";
 
-const SYSTEM_TEXT = "You are operating AI Jam Sessions, a music education platform.";
+export type { SftLine, SftMessage };
 
-export interface SftMessage {
-  role: "system" | "user" | "assistant" | "tool";
-  content: string;
-  tool_calls?: Array<{ name: string; arguments: Record<string, unknown> }>;
-  name?: string;
-}
+const SYSTEM_TEXT = DEFAULT_SYSTEM_TEXT;
 
-export interface SftLine {
-  id: string;
-  song_id: string;
-  split: "train" | "test";
-  kind: string;
-  messages: SftMessage[];
-}
-
-export function toSftLine(r: AcousticRecord & { split: "train" | "test" }): SftLine {
-  const messages: SftMessage[] = [{ role: "system", content: SYSTEM_TEXT }];
-  for (const turn of r.target_trace.session) {
-    if (turn.role === "user") {
-      messages.push({ role: "user", content: turn.content });
-    } else if (turn.role === "assistant") {
-      const msg: SftMessage = { role: "assistant", content: turn.content ?? "" };
-      if (turn.tool_calls && turn.tool_calls.length > 0) {
-        msg.tool_calls = turn.tool_calls.map((tc) => ({
-          name: tc.tool,
-          arguments: tc.arguments,
-        }));
-      }
-      messages.push(msg);
-    } else {
-      messages.push({
-        role: "tool",
-        name: turn.tool,
-        content: JSON.stringify(turn.content),
-      });
-    }
-  }
+function asSource(r: AcousticRecord & { split: "train" | "test" }) {
   return {
     id: r.id,
     song_id: r.scope.song_id,
     split: r.split,
     kind: r.observation.perturbation.kind,
-    messages,
+    session: r.target_trace.session,
   };
+}
+
+export function toSftLine(r: AcousticRecord & { split: "train" | "test" }): SftLine {
+  return genericToSftLine(asSource(r), SYSTEM_TEXT);
 }
 
 export function formatCorpus(recordsPath: string): { train: SftLine[]; test: SftLine[] } {
@@ -64,8 +41,6 @@ export function formatCorpus(recordsPath: string): { train: SftLine[]; test: Sft
     .split("\n")
     .map((l) => JSON.parse(l) as AcousticRecord & { split: "train" | "test" });
 
-  const train: SftLine[] = [];
-  const test: SftLine[] = [];
   for (const r of records) {
     if (r.scope.song_id === "clair-de-lune") {
       throw new Error("clair-de-lune leaked into acoustic SFT");
@@ -74,9 +49,8 @@ export function formatCorpus(recordsPath: string): { train: SftLine[]; test: Sft
     if (!report.ok) {
       throw new Error(`${r.id} trace invalid: ${report.mismatches.map((m) => m.message).join("; ")}`);
     }
-    const line = toSftLine(r);
-    (r.split === "test" ? test : train).push(line);
   }
+  const { train, test } = formatRecords(records.map(asSource));
   if (train.some((l) => l.song_id === TEST_SONG_ID)) {
     throw new Error("held-out phrase leaked into SFT train");
   }

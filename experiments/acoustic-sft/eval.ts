@@ -14,13 +14,15 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { PERTURBATION_KINDS, type AcousticRecord, type GoldVerdict } from "../../src/dataset/acoustic/schema.js";
+import { PERTURBATION_KINDS, GOLD_VERDICTS, type AcousticRecord, type GoldVerdict } from "../../src/dataset/acoustic/schema.js";
 import { TEST_SONG_ID } from "../../src/dataset/acoustic/phrases.js";
+import {
+  trivialBaselines as genericBaselines,
+  scorePredictions as genericScore,
+  type PredLine as GenericPredLine,
+} from "../../src/dataset/experiment/eval.js";
 
-export interface PredLine {
-  id: string;
-  verdict: string;
-}
+export type PredLine = GenericPredLine;
 
 export interface KindScore {
   kind: string;
@@ -52,59 +54,32 @@ function loadTestRecords(jsonlPath: string): Array<AcousticRecord & { split: "tr
     .filter((r) => r.split === "test");
 }
 
-export function trivialBaselines(records: Array<{ observation: { perturbation: { kind: string } } }>): EvalReport["baselines"] {
-  const counts = new Map<string, number>();
-  for (const r of records) {
-    const k = r.observation.perturbation.kind;
-    counts.set(k, (counts.get(k) ?? 0) + 1);
-  }
-  let majority_class = "";
-  let majorityN = -1;
-  for (const [k, n] of counts) {
-    if (n > majorityN) {
-      majority_class = k;
-      majorityN = n;
-    }
-  }
-  const n = records.length;
-  return {
-    uniform: 1 / PERTURBATION_KINDS.length,
-    majority: n === 0 ? 0 : majorityN / n,
-    majority_class,
-  };
+export function trivialBaselines(records: Array<{ observation: { gold: { verdict: string } } }>): EvalReport["baselines"] {
+  return genericBaselines(
+    records.map((r) => r.observation.gold.verdict),
+    GOLD_VERDICTS,
+  );
 }
 
 export function scorePredictions(
   records: Array<AcousticRecord & { split: "train" | "test" }>,
   preds: PredLine[],
 ): { overall: number; per_kind: KindScore[] } {
-  const byId = new Map(preds.map((p) => [p.id, p.verdict]));
-  const kindHits = new Map<string, { n: number; correct: number }>();
-  let correct = 0;
-  for (const r of records) {
-    const kind = r.observation.perturbation.kind;
-    const gold = r.observation.gold.verdict as GoldVerdict;
-    const got = byId.get(r.id);
-    const hit = got === gold;
-    if (hit) correct++;
-    const slot = kindHits.get(kind) ?? { n: 0, correct: 0 };
-    slot.n++;
-    if (hit) slot.correct++;
-    kindHits.set(kind, slot);
-  }
-  const per_kind: KindScore[] = PERTURBATION_KINDS.map((kind) => {
-    const slot = kindHits.get(kind) ?? { n: 0, correct: 0 };
-    return {
-      kind,
-      n: slot.n,
-      correct: slot.correct,
-      accuracy: slot.n === 0 ? 0 : slot.correct / slot.n,
-    };
-  });
-  return {
-    overall: records.length === 0 ? 0 : correct / records.length,
-    per_kind,
-  };
+  const overall = genericScore(
+    records.map((r) => ({ id: r.id, gold: r.observation.gold.verdict as GoldVerdict })),
+    preds,
+    GOLD_VERDICTS,
+  );
+  const per_kind = genericScore(
+    records.map((r) => ({
+      id: r.id,
+      gold: r.observation.gold.verdict as GoldVerdict,
+      group: r.observation.perturbation.kind,
+    })),
+    preds,
+    PERTURBATION_KINDS,
+  ).per_class;
+  return { overall: overall.overall, per_kind };
 }
 
 export function evaluateAcousticSplit(opts: {
