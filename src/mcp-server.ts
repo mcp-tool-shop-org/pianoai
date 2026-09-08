@@ -1326,10 +1326,14 @@ registerTool(
         // was SENT rather than anything inferred from audio. It is torn down on
         // the same paths the controller is, so a finished song does not leave
         // notes hanging on forever.
+        // The roster is whatever is ACTUALLY playing. play_song drives one
+        // engine chosen by `engine:`, so hardcoding "piano" here reported a
+        // guitar performance as a piano one — a wrong answer delivered
+        // confidently, which is the worst kind this surface can give.
         const ensemble = new Ensemble();
-        ensemble.addInstrument({ id: "piano", label: "Piano" });
+        ensemble.addInstrument({ id: engineId, label: ENGINE_LABELS[engineId] });
         const unsubscribeEnsemble = subscribeEnsemble(ensemble, controller, {
-          instrumentId: "piano",
+          instrumentId: engineId,
         });
         setLiveEnsemble(ensemble);
 
