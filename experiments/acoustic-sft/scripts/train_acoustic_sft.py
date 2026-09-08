@@ -22,11 +22,18 @@ What differs, and why:
     that cannot be answered from the studio rig, which is what these examples
     actually tokenize to.
 
-ON max_seq_len. The full 54-tool catalog is ~45 KB of JSON before a single
-message is added, so the 4096 in lora-config.json cannot be right for
-`--tools full` and has never been validated against a real tokenizer. That is
-why --dry-run reports the distribution instead of the trainer silently
-truncating. Set the config from the measurement, do not guess.
+ON max_seq_len. It was 4096 and had never been put in front of a tokenizer.
+Measured 2026-09-08 against Qwen/Qwen2.5-3B-Instruct: with the full 54-tool
+catalog every one of the 72 examples exceeds 4096, the largest at 13276 tokens;
+with the 5-tool listen subset the largest is 1704. The config now says 16384.
+
+The assistant token count is 11654 either way -- the catalog is pure prompt, so
+the full surface costs 8x the compute for the same learning signal. Keep it
+anyway: the realistic inference condition is the full surface.
+
+--dry-run still reports the distribution rather than trusting that number,
+because the pod's tokenizer is the one that counts. The trainer refuses to train
+on an over-length example rather than truncating it.
 
     python train_acoustic_sft.py --dry-run --tools full
     python train_acoustic_sft.py --seed 13 --out runs/seed13

@@ -23,16 +23,28 @@
   "schedule": "cosine",
   "warmup_steps": 10,
   "effective_batch": 8,
-  "per_device_train_batch_size": 2,
-  "gradient_accumulation_steps": 4,
+  "per_device_train_batch_size": 1,
+  "gradient_accumulation_steps": 8,
   "weight_decay": 0.0,
   "max_grad_norm": 1.0,
-  "max_seq_len": 4096,
+  "max_seq_len": 16384,
   "epochs": 5,
   "packing": false,
   "gradient_checkpointing": true,
   "seed": 13,
   "train_examples": 72,
   "test_examples": 36,
-  "notes": "72 examples. 3B not 7B. No inner-val. Weights must already exist under hf_home; this config never downloads."
+  "notes": "72 examples, 3B not 7B, no inner-val. max_seq_len was 4096 and unvalidated; measured against the real tokenizer on 2026-09-08 and every one of the 72 examples exceeded it, the largest at 13276 tokens. Raised to 16384 -- about 3100 tokens of headroom, roughly a dozen more tools before it binds again. The full 54-tool catalog is the realistic inference condition and costs 8x the tokens of the 5-tool listen subset for the SAME 11654 assistant tokens, because the catalog is pure prompt; that cost is accepted deliberately, since a task made easy by shrinking the menu is what the experiment contract exists to prevent. per_device batch dropped 2 -> 1 with grad_accum 4 -> 8 so effective_batch stays 8: at 13k tokens the activation footprint binds, and 1x8 is the shape the v1 arc proved at this length.",
+  "tool_catalog": "full",
+  "measured": {
+    "tokenizer": "Qwen/Qwen2.5-3B-Instruct",
+    "measured_on": "2026-09-08",
+    "full_catalog_tools": 54,
+    "tokens_min": 13110,
+    "tokens_median": 13252,
+    "tokens_max": 13276,
+    "tokens_per_epoch": 953106,
+    "assistant_tokens": 11654,
+    "listen_subset_tokens_max": 1704
+  }
 }

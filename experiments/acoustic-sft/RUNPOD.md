@@ -58,26 +58,38 @@ the studio rig: what these examples actually tokenize to. It also asserts the
 chat template's prefix property on every example, which is what catches a
 tokenizer whose template does not compose the way the trainer assumes.
 
-## The thing `dry` is really there to tell you
+## max_seq_len, measured
 
-`lora-config.json` says `max_seq_len: 4096`. That number has never been validated
-against a real tokenizer, and the full 54-tool catalog is **47 KB of JSON before
-a single message is added** — comfortably past 4096 tokens on its own. The
-`listen` subset is 5 KB.
+`lora-config.json` used to say `max_seq_len: 4096`, and that number had never
+been put in front of a tokenizer. It is now, against the real
+`Qwen/Qwen2.5-3B-Instruct` tokenizer on 2026-09-08:
 
-So one of two things is true after `dry`, and the trainer will tell you which:
+| tool catalog | min | median | max | tokens/epoch | assistant tokens |
+|---|---|---|---|---|---|
+| full, 54 tools | 13,110 | 13,252 | **13,276** | 953,106 | 11,654 |
+| listen, 5 tools | 1,538 | 1,680 | 1,704 | 119,922 | 11,654 |
 
-- every example fits, and it prints the headroom; or
-- some exceed it, and it prints the largest and refuses to train.
+**All 72 of 72 examples exceeded 4096** on the full catalog, by a factor of
+three. `max_seq_len` is now **16,384** — about 3,100 tokens of headroom, which is
+roughly a dozen more tools before it binds again. The catalog grew from 53 to 54
+this week, so that headroom is not theoretical.
 
-It refuses rather than truncating, because a silently truncated training example
-is a lie told at every step. Raise `max_seq_len` to what `dry` measured, or run
-with `--tools listen` and accept that the model is learning tool selection from a
-five-item menu rather than the fifty-four it faces live.
+Read the last column twice. The assistant token count is **identical** in both
+rows, because the catalog is pure prompt. The full surface costs eight times the
+compute for exactly the same learning signal. That cost is accepted on purpose:
+the realistic inference condition is the full surface, and a task made easy by
+shrinking the menu is the shape the experiment contract exists to prevent.
 
-Prefer raising the limit. The realistic inference condition is the full surface,
-and a task made easy by shrinking the menu is the shape the experiment contract
-exists to prevent.
+`per_device_train_batch_size` dropped from 2 to 1 and `gradient_accumulation_steps`
+rose from 4 to 8, so `effective_batch` is unchanged at 8. At 13k tokens per
+example the activation footprint binds rather than the optimiser, and 1x8 is the
+shape the v1 arc proved at this sequence length.
+
+Run `dry` anyway on a fresh pod. It costs minutes and it re-checks the numbers
+above against whatever tokenizer that pod actually resolves, plus the chat
+template's prefix property on every example. The trainer refuses to train when an
+example exceeds the limit rather than truncating, because a silently truncated
+training example is a lie told at every step.
 
 ## What comes back
 
