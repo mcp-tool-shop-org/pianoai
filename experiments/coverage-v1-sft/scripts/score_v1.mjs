@@ -56,12 +56,14 @@ process.stdout.write("accuracy".padEnd(w) +
 process.stdout.write("blank".padEnd(w) +
   names.map((x) => String(table[x].blank).padStart(14)).join("") + "\n");
 
-// catalog and server are train-only, so they cannot appear above. Said here so
-// a reader does not have to notice the absence.
-process.stdout.write(
-  "\nNote: catalog (3) and server (1) are train-only -- no song_id, split is by " +
-  "song -- so they are trained on and never scored.\n" +
-  "Note: sections and compare have CONSTANT gold (\"0:none\", \"different_key\") " +
-  "in every record, so 100% is the majority-class baseline and they measure " +
-  "nothing. 13 of the 100 held-out records; the effective set is 87.\n",
-);
+// A family whose held-out gold never varies cannot be got wrong, so its score is
+// the majority-class ceiling and means nothing. Computed from the gold file on
+// every run rather than written here, because the hand-written version of this
+// note was stale within a day: it named two such families when there were five.
+const NL = String.fromCharCode(10);
+const constant = families.filter((f) => new Set([...gold.values()].filter((g) => g.family === f).map((g) => g.gold)).size < 2);
+if (constant.length) {
+  process.stdout.write(NL + "WARN: constant held-out gold in " + constant.join(", ") + " -- those rows measure nothing." + NL);
+} else {
+  process.stdout.write(NL + "Every scored family has >= 2 distinct held-out gold values." + NL);
+}

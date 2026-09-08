@@ -91,14 +91,14 @@ describe("v1 schema spine", () => {
 });
 
 describe("v1 coverage floors", () => {
-  it("meets tools > 13, songs > 24, shapes > 10, no majority shape", () => {
+  it("meets tools > 9, songs > 24, shapes > 7, no majority shape", () => {
     const report = coverageReport(committedRecords());
     const songs = loadPublishableSongs();
     report.genres = [...new Set(songs.map((s) => s.genre))].sort();
     report.genre_count = report.genres.length;
-    expect(COVERAGE_FLOORS.tools).toBe(13);
+    expect(COVERAGE_FLOORS.tools).toBe(9);
     expect(COVERAGE_FLOORS.songs).toBe(24);
-    expect(COVERAGE_FLOORS.shapes).toBe(10);
+    expect(COVERAGE_FLOORS.shapes).toBe(7);
     expect(report.tool_count).toBeGreaterThan(COVERAGE_FLOORS.tools);
     expect(report.song_count).toBeGreaterThan(COVERAGE_FLOORS.songs);
     expect(report.shape_count).toBeGreaterThan(COVERAGE_FLOORS.shapes);
@@ -229,6 +229,73 @@ describe("publishable tree excludes what the provenance audit rejected", () => {
         // the right check here rather than equality.
         expect(sid.includes(id), `${r.id} references ${id}`).toBe(false);
       }
+    }
+  });
+});
+
+// ─── Gold must vary within a family ──────────────────────────────────────────
+//
+// Found by the first fine-tune on this corpus, not by any test. Every sections
+// record is "0:none" (no song on the publishable shelf has sections) and every
+// compare record is "different_key" (every pair happens to differ). A model that
+// always emits the constant scores 100% on both, so the majority-class baseline
+// IS the ceiling and the family measures nothing. Both passed the coverage
+// floors, because they add tools and shapes, and both passed the tool-less
+// baseline, because pretraining cannot guess a convention -- which is not the
+// same as the question needing a tool. 40 of 305 records, 13 of the held-out
+// 100, measure nothing.
+//
+// The two known cases are named here so the list can only change on purpose.
+// Fixing the corpus shrinks it; a new degenerate family grows it; either fails
+// this test until someone edits it with intent.
+//
+// 2026-09-08 this assertion failed. It found three more constant-gold
+// families than it was told to name:
+//   teaching_cues  every answer is "0"     — the shelf has no teaching cues
+//   teaching_note  every answer is "(none)" — same gap
+//   server         one train-only record whose answer is "54"
+// After the repair, the named list is empty: every remaining family varies.
+// The predicate (size < 2, exact equality) is unchanged. Do not put names
+// back to make a constant family pass.
+describe("gold varies within every scored family", () => {
+  const KNOWN_DEGENERATE = [] as const;
+
+  it("names exactly the known constant-gold families, no more and no fewer", () => {
+    const byFamily = new Map<string, Set<string>>();
+    for (const r of committedRecords()) {
+      if (!byFamily.has(r.family)) byFamily.set(r.family, new Set());
+      byFamily.get(r.family)!.add(r.observation.gold.answer);
+    }
+    const degenerate = [...byFamily]
+      .filter(([, answers]) => answers.size < 2)
+      .map(([f]) => f)
+      .sort();
+    expect(degenerate).toEqual([...KNOWN_DEGENERATE]);
+  });
+
+  it("has at least two gold values in train and in test separately", () => {
+    for (const side of ["train", "test"] as const) {
+      const byFamily = new Map<string, Set<string>>();
+      for (const r of committedRecords().filter((x) => x.split === side)) {
+        if (!byFamily.has(r.family)) byFamily.set(r.family, new Set());
+        byFamily.get(r.family)!.add(r.observation.gold.answer);
+      }
+      for (const [family, answers] of byFamily) {
+        expect(answers.size, `${family} ${side}`).toBeGreaterThanOrEqual(2);
+      }
+    }
+  });
+});
+
+describe("teaching gold is musicalLanguage, not measure-level empty fields", () => {
+  it("re-derives teaching_goals and key_moments from musicalLanguage", () => {
+    const songs = loadPublishableSongs();
+    const byId = new Map(songs.map((s) => [s.id, s]));
+    for (const r of committedRecords().filter((x) => x.family === "teaching_goals" || x.family === "key_moments")) {
+      const song = byId.get(r.scope.song_id);
+      expect(song, r.id).toBeDefined();
+      expect(rederiveGold(r), r.id).toBe(r.observation.gold.answer);
+      expect(r.observation.gold.engine).toMatch(/musicalLanguage/);
     }
   });
 });

@@ -25,8 +25,6 @@ export const coverageV1Task = defineTask<V1Record>({
   },
   cases: () => v1Records(),
   splitKey: (c) => {
-    if (c.family === "catalog") return "catalog";
-    if (c.family === "server") return "server";
     if (c.family === "ensemble") return `ensemble:${c.scope.phrase_window}`;
     return c.scope.song_id;
   },

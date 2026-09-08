@@ -22,14 +22,11 @@ export const V1_SCHEMA_VERSION = "jam-actions-v1/1.0.0";
 
 export const V1_FAMILIES = [
   "chord",
-  "sections",
   "measures",
   "transpose",
-  "teaching_note",
-  "teaching_cues",
+  "teaching_goals",
+  "key_moments",
   "compare",
-  "catalog",
-  "server",
   "harmony",
   "acoustic",
   "ensemble",
@@ -46,9 +43,9 @@ export const RECORD_ONLY_PATHS = [
 ] as const;
 
 export const COVERAGE_FLOORS = {
-  tools: 13,
+  tools: 9,
   songs: 24,
-  shapes: 10,
+  shapes: 7,
 } as const;
 
 export const V1GoldSchema = z.object({

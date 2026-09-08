@@ -1,0 +1,156 @@
+{
+  "id": "compare:scarborough-fair|simple-gifts",
+  "schema_version": "jam-actions-v1/1.0.0",
+  "family": "compare",
+  "provenance": {
+    "source_url": "library:scarborough-fair",
+    "source_collected_at": "library-scan",
+    "source_type": "transcribed-by-author",
+    "composition_title": "Scarborough Fair",
+    "composer": "Traditional English",
+    "composition_year": 1,
+    "composition_pd_status_us": "public_domain",
+    "composition_pd_status_eu": "public_domain",
+    "arrangement_creator": null,
+    "arrangement_license": null,
+    "arrangement_license_version": null,
+    "arrangement_evidence_url": null,
+    "record_verdict": "public",
+    "verdict_reason": "Publishable shelf: classical, ragtime, or folk. clair-de-lune excluded.",
+    "verifier": "v1-builder",
+    "verified_at": "library-scan",
+    "training_use_permitted": true
+  },
+  "scope": {
+    "song_id": "scarborough-fair|simple-gifts",
+    "phrase_window": "full:23",
+    "instrument": "piano",
+    "key": "D minor",
+    "tempo_bpm": 72,
+    "time_signature": "6/8",
+    "window_role": "standalone"
+  },
+  "observation": {
+    "thresholds": {
+      "min_pitch_classes": 2
+    },
+    "gold": {
+      "family": "compare",
+      "answer": "different_key",
+      "engine": "song.key"
+    }
+  },
+  "annotation_target": {
+    "measure_range": [
+      1,
+      23
+    ],
+    "structure": "A short strophic ballad built on a repeating opening phrase — measures 1 and 2 are an exact repeat of each other, and that same two-measure cell reappears again (in near-identical form) at measure 12, showing the opening idea returning partway through the piece. The right hand rests for the first two measures (a brief instrumental pickup) before the melody proper enters, and the piece trails off to its sparsest measure (23, just 1 onset) at the very close.",
+    "key_moments": [
+      "Measures 1 and 2, both silent in the right hand: a brief instrumental opening before the melody itself enters, giving the singer a clear cue to come in.",
+      "Measures 1 and 2 are also an exact repeat of each other as accompaniment material, and that same two-measure cell returns again at measure 12 — the opening idea reappears almost exactly a third of the way through the piece.",
+      "Measures 8, 14, 16, and 21 are all tied for busiest (11 onsets each) — spread evenly across the piece rather than clustering at one climax, matching this ballad's gentle, undulating character.",
+      "The right hand never exceeds D5, and the left hand stays within a single octave (A2 to A3) — both hands operate within genuinely narrow ranges, appropriate to a simple, drone-like modal accompaniment.",
+      "Measure 23, the final measure, drops to just 1 onset — the ballad simply fades rather than closing on a strong final gesture, consistent with its unresolved Dorian character."
+    ],
+    "teaching_goals": [
+      "Dorian mode recognition: listen for the raised sixth degree against the D minor tonic — the same modal ambiguity documented in this genre's own exemplar, Greensleeves.",
+      "Brief instrumental pickups: practice the two silent right-hand measures at the opening as a real cue for an imaginary singer, not just an empty gap to rush through.",
+      "Even-energy strophic phrasing: with the busiest measures spread evenly (8, 14, 16, 21) rather than building to one climax, practice keeping dynamics gentle and consistent across the whole short form.",
+      "Narrow-range modal accompaniment: with the left hand confined to a single octave, practice a simple drone-like accompaniment pattern rather than a harmonically busy one."
+    ],
+    "style_tips": [
+      "The Dorian raised sixth appears only fleetingly in this arrangement — listen for it at those moments rather than expecting it to color the whole piece, and let it stand rather than 'correcting' it toward a more familiar natural minor sound.",
+      "Play the opening two silent measures with real stillness, as if waiting for a singer to draw breath.",
+      "Keep the 6/8 pulse gentle and rocking rather than driving — this is a spacious pastoral ballad, not a dance tune.",
+      "Let the final measure's single note simply fade rather than adding a closing flourish — the unresolved ending is true to the modal character of the piece."
+    ],
+    "teaching_notes": [
+      {
+        "measure": 1,
+        "note": "none"
+      }
+    ]
+  },
+  "target_trace": {
+    "task_family": "compare",
+    "objective": "Answer using tools. Do not guess from the question text.",
+    "session": [
+      {
+        "turn": 1,
+        "role": "user",
+        "content": "Do \"Scarborough Fair\" and \"Simple Gifts\" share a key signature?"
+      },
+      {
+        "turn": 2,
+        "role": "assistant",
+        "content": "Comparing the two library entries.",
+        "tool_calls": [
+          {
+            "tool": "song_info",
+            "arguments": {
+              "id": "scarborough-fair"
+            }
+          },
+          {
+            "tool": "song_info",
+            "arguments": {
+              "id": "simple-gifts"
+            }
+          },
+          {
+            "tool": "compare_songs",
+            "arguments": {
+              "song_a": "scarborough-fair",
+              "song_b": "simple-gifts"
+            }
+          }
+        ]
+      },
+      {
+        "turn": 3,
+        "role": "tool",
+        "tool": "song_info",
+        "content": {
+          "id": "scarborough-fair",
+          "title": "Scarborough Fair"
+        }
+      },
+      {
+        "turn": 4,
+        "role": "tool",
+        "tool": "song_info",
+        "content": {
+          "id": "simple-gifts",
+          "title": "Simple Gifts"
+        }
+      },
+      {
+        "turn": 5,
+        "role": "tool",
+        "tool": "compare_songs",
+        "content": {
+          "song_a": "scarborough-fair",
+          "song_b": "simple-gifts"
+        }
+      },
+      {
+        "turn": 6,
+        "role": "assistant",
+        "content": "different_key"
+      }
+    ]
+  },
+  "eval_metadata": {
+    "split": "test",
+    "split_strategy": "hold out by song_id",
+    "leakage_check": "passed",
+    "eval_eligibility": [
+      "tool_use",
+      "compare"
+    ],
+    "phrase_continuation_eligible": false,
+    "phrase_continuation_eligible_reason": "standalone tool-use items"
+  },
+  "split": "test"
+}

@@ -1,24 +1,19 @@
 {
   "schema_version": "jam-actions-v1/1.0.0",
-  "n": 305,
+  "n": 268,
   "tools": [
-    "annotation_progress",
     "compare_songs",
     "detect_chord",
     "ensemble_now",
     "list_measures",
-    "list_sections",
     "list_songs",
-    "preview_teaching_cues",
     "score_audio_take",
-    "server_info",
     "song_info",
-    "teaching_note",
     "transcribe_audio",
     "transpose_song",
     "verify_harmony"
   ],
-  "tool_count": 15,
+  "tool_count": 10,
   "songs": [
     "amazing-grace",
     "auld-lang-syne",
@@ -70,39 +65,32 @@
   "key_count": 10,
   "shapes": {
     "transcribe_audio>score_audio_take": 81,
+    "song_info": 47,
     "verify_harmony": 43,
     "song_info>list_measures": 27,
-    "song_info>list_sections": 27,
-    "preview_teaching_cues": 27,
-    "teaching_note": 27,
     "song_info>transpose_song": 27,
     "list_songs>song_info>list_measures>detect_chord": 22,
-    "song_info>song_info>compare_songs": 13,
-    "ensemble_now": 7,
-    "annotation_progress": 3,
-    "server_info": 1
+    "song_info>song_info>compare_songs": 14,
+    "ensemble_now": 7
   },
-  "shape_count": 12,
+  "shape_count": 8,
   "majority_shape": "transcribe_audio>score_audio_take",
-  "majority_shape_share": 0.26557377049180325,
+  "majority_shape_share": 0.30223880597014924,
   "families": {
     "acoustic": 81,
-    "catalog": 3,
     "chord": 22,
-    "compare": 13,
+    "compare": 14,
     "ensemble": 7,
     "harmony": 43,
+    "key_moments": 20,
     "measures": 27,
-    "sections": 27,
-    "server": 1,
-    "teaching_cues": 27,
-    "teaching_note": 27,
+    "teaching_goals": 27,
     "transpose": 27
   },
   "floors": {
-    "tools": 13,
+    "tools": 9,
     "songs": 24,
-    "shapes": 10
+    "shapes": 7
   },
   "floors_met": true,
   "f5_drops": {

@@ -15,7 +15,7 @@ export function coverageReport(records: V1Record[]): CoverageReport {
         for (const tc of turn.tool_calls) tools.add(tc.tool);
       }
     }
-    if (r.family !== "catalog" && r.family !== "compare") songs.add(r.scope.song_id);
+    if (r.family !== "compare") songs.add(r.scope.song_id);
     if (r.family === "compare") {
       for (const id of r.scope.song_id.split("|")) songs.add(id);
     }

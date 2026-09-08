@@ -20,4 +20,5 @@ studio had already audited and closed once. The exclusion is enforced by a test
 now, not by this paragraph. See `datasets/jam-actions-v0/PROVENANCE-NOTE.md`.
 
 Gold is re-derived from library engines (inferChord, detectChord,
-transposeSong, measure counts, section lists). No hand-written labels.
+transposeSong, measure counts, musicalLanguage counts and first keyMoment
+spans, song.key for compare). No hand-written labels.
