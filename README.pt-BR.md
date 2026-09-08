@@ -43,6 +43,39 @@ Cada uma das 120 músicas agora está totalmente anotada — contexto histórico
 
 A partir deste mesmo trabalho, também publicamos **[jam-actions-v0](#training-dataset)** — um conjunto de dados público de 115 rastreamentos de uso de ferramentas MCP em várias etapas sobre piano clássico real. Ele ensina LLMs a realizar *uso de ferramentas fundamentado em música simbólica*, e não apenas geração de texto, e vem com um portão de lançamento de 7 eixos que distingue "transmitir evidências" de "transmitir porque a tarefa é trivial". Consulte [Conjunto de dados de treinamento](#training-dataset) abaixo para obter a história completa.
 
+## Ouvir
+
+Por muito tempo, este servidor podia gerar som, mas nunca analisá-lo. O modelo tocava, uma pessoa
+ouvia e o modelo aceitava a opinião dessa pessoa. Essa lacuna agora foi preenchida.
+
+Aponte-o para um arquivo WAV e ele medirá o que está presente. Não analisando uma imagem e
+adivinhando, mas processando o sinal através das mesmas ferramentas que já usa na partitura:
+
+- **`analyze_audio`** — início, contorno da altura e nível. A altura é retornada como nomes de notas com
+desvios em centésimos, nunca como frequências brutas.
+- **`transcribe_audio`** — a gravação como notas: altura, início, duração e a distância de cada nota em relação à
+altura de referência.
+- **`score_audio_take`** — avalia uma performance em relação a uma música na biblioteca **de ouvido**. Ele
+transcreve a gravação, compara-a com a partitura e informa quais notas foram tocadas corretamente,
+quais foram ligeiramente diferentes e quais foram omitidas. Em seguida, `view_scored_piano_roll` desenha o resultado
+sobre a partitura, exatamente como faz com uma gravação MIDI. É assim que você avalia um
+instrumento real, uma gravação vocal ou qualquer coisa em que não haja MIDI para capturar.
+- **`view_spectrogram`** — visualize o som. Um espectrograma de Q constante com um teclado de piano na borda
+esquerda, para que a altura seja legível rapidamente, e as notas pretendidas da música sejam
+desenhadas sobre ele, quando solicitado.
+
+**O que ele não lhe dirá.** A imagem serve para identificar *onde* algo está errado; cada número
+provém do processamento de sinal, nunca da leitura de uma imagem por um modelo. O transcriptor
+segue uma linha de cada vez, portanto, um acorde ou uma mixagem completa produzirão algo
+confiante, mas incorreto, e ele o indicará. A detecção de início opera em torno de F1 0,88 no
+estado da arte, portanto, uma nota "omitida" pode ser uma que o transcriptor não conseguiu ouvir,
+e não uma que você não tocou — as ferramentas carregam essa ressalva em sua própria saída, em vez
+de escondê-la aqui.
+
+Toda a estrutura é independente: a transformação, o rastreador de altura, o detector de início, o
+decodificador WAV e o codificador PNG estão todos neste repositório e produzem números idênticos
+no Node e no navegador.
+
 ## O Rolo de Piano
 
 O rolo de piano é como a IA vê a música. Ele renderiza qualquer música como SVG — azul para a mão direita, coral para a esquerda, com grades de compasso, dinâmica e limites de compasso:

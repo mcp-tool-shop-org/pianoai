@@ -1,11 +1,11 @@
 ---
 title: MCP tools reference
-description: All 49 MCP tools and 4 prompt templates organized by category — Learn, Play, Practice, Sing, Guitar, Build, and Score.
+description: All 53 MCP tools and 4 prompt templates organized by category — Learn, Play, Practice, Sing, Guitar, Build, Score, and Listen.
 sidebar:
   order: 4
 ---
 
-AI Jam Sessions exposes 49 tools and 4 prompt templates through the Model Context Protocol, organized into seven categories.
+AI Jam Sessions exposes 53 tools and 4 prompt templates through the Model Context Protocol, organized into eight categories.
 
 ## Learn (10 tools)
 
@@ -104,6 +104,19 @@ Tools for evaluating performances and annotation quality.
 |------|-------------|
 | `score_performance` | Score a MIDI play-along against a library song — pitch accuracy, timing, completeness, with graded feedback and practice suggestions |
 | `score_annotation` | Score annotation quality across 5 dimensions — completeness, depth, specificity, teaching value, and musical vocabulary |
+
+## Listen (4 tools)
+
+Tools for measuring recorded audio. Monophonic: they follow one line at a time, so a chord or a
+full mix produces confident nonsense. Every number comes from signal processing, never from a model
+reading a picture. See [Listening](/ai-jam-sessions/handbook/listening/) for the full guide.
+
+| Tool | Description |
+|------|-------------|
+| `analyze_audio` | Measure a WAV recording — onset times, the pitch contour as note names with cents, and level. The survey you run first |
+| `transcribe_audio` | Turn a monophonic recording into notes: pitch, start, duration, and deviation from concert pitch. Notes the tracker could not follow are omitted rather than guessed |
+| `score_audio_take` | Grade a performance against a library song BY EAR, then hand the result to `view_scored_piano_roll`. Matches within 40 ms, stricter than the 50 ms published convention |
+| `view_spectrogram` | See the sound — a constant-Q spectrogram with a piano-keyboard axis, optionally overlaid with the intended notes. Blind by default, so you read the audio before the score |
 
 ## MCP Prompts (4 templates)
 

@@ -1,8 +1,8 @@
 {
   "server_name": "ai-jam-sessions",
   "derived_from": "dist/mcp-server.js via MCP tools/list",
-  "derived_at": "2026-08-19T09:31:05.945Z",
-  "tool_count": 49,
+  "derived_at": "2026-09-08T00:32:06.199Z",
+  "tool_count": 53,
   "tools": [
     {
       "name": "add_section",
@@ -71,11 +71,10 @@
         "type": "object",
         "properties": {
           "songId": {
-            "description": "Source song ID to jam on (e.g. 'autumn-leaves'). Optional if genre is provided.",
-            "type": "string"
+            "type": "string",
+            "description": "Source song ID to jam on (e.g. 'autumn-leaves'). Optional if genre is provided."
           },
           "genre": {
-            "description": "Pick a random song from this genre to jam on (e.g., 'jazz', 'blues'). Used when no songId is provided.",
             "type": "string",
             "enum": [
               "classical",
@@ -90,10 +89,10 @@
               "ragtime",
               "new-age",
               "folk"
-            ]
+            ],
+            "description": "Pick a random song from this genre to jam on (e.g., 'jazz', 'blues'). Used when no songId is provided."
           },
           "style": {
-            "description": "Target genre for reinterpretation (e.g., turn a classical piece into jazz)",
             "type": "string",
             "enum": [
               "classical",
@@ -108,26 +107,52 @@
               "ragtime",
               "new-age",
               "folk"
-            ]
+            ],
+            "description": "Target genre for reinterpretation (e.g., turn a classical piece into jazz)"
           },
           "mood": {
             "description": "Target mood (e.g., 'upbeat', 'melancholic', 'dreamy', 'energetic', 'gentle', 'playful')",
             "type": "string"
           },
           "difficulty": {
-            "description": "Target difficulty level",
             "type": "string",
             "enum": [
               "beginner",
               "intermediate",
               "advanced"
-            ]
+            ],
+            "description": "Target difficulty level"
           },
           "measures": {
             "description": "Measure range to focus on (e.g., '1-8' for just the opening)",
             "type": "string"
           }
         },
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "analyze_audio",
+      "description": "Measure a WAV recording: note onsets, the pitch contour, and level. This is how you HEAR a take rather than reading the MIDI you intended — use it on a rendered performance, a sung take, or any recording you want described in musical terms. Returns onset times in seconds and the pitch contour as note names with cent deviations. Monophonic: on a chord or a full mix the pitch readings will be confidently wrong.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Absolute path to an uncompressed WAV file."
+          },
+          "start_sec": {
+            "description": "Analyse from this time onward. Defaults to the start of the file.",
+            "type": "number"
+          },
+          "end_sec": {
+            "description": "Analyse up to this time. Defaults to the end of the file.",
+            "type": "number"
+          }
+        },
+        "required": [
+          "path"
+        ],
         "$schema": "http://json-schema.org/draft-07/schema#"
       }
     },
@@ -264,7 +289,7 @@
     },
     {
       "name": "compose_panel",
-      "description": "Run a cross-family local-LLM 'best-worst' panel over how the composition engine voices library songs — a directional ranking, not a quality measure (local models judging note-names can't hear the music; that needs a blind human-audio panel). It realizes each song four ways (root-position floor, nearest-tone leader, refined, and the engine = model-spec best-of-n + refine), then several disjoint local judge families rank them blind. A discrimination-floor gate returns UNINTERPRETABLE if the judges can't rank the theory-valid system above the theory-invalid floor; INCONCLUSIVE is a normal outcome. Needs local Ollama (judges default to mistral-small/granite/gemma/aya — none is the generator family); fail-soft. Runs slowly (several minutes) since it generates + judges with 24–31B models.",
+      "description": "Run a cross-family local-LLM 'best-worst' panel over how the composition engine voices library songs — a directional ranking, not a quality measure (local models judging note-names can't hear the music; that needs a blind human-audio panel). It realizes each song four ways (root-position floor, nearest-tone leader, refined, and the engine = model-spec best-of-n + refine), then several disjoint local judge families rank them blind. A discrimination-floor gate returns UNINTERPRETABLE if the judges can't rank the theory-valid system above the theory-invalid floor; INCONCLUSIVE is a normal outcome. Needs local Ollama (judges default to mistral-small/granite/gemma/aya — none is the generator family); fail-soft. Runs slowly (several minutes) since it generates + judges with 24–31B models. It runs for minutes and reports progress (per judge × song) when the client sends a progress token.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -526,7 +551,6 @@
         "type": "object",
         "properties": {
           "genre": {
-            "description": "Filter by genre",
             "type": "string",
             "enum": [
               "classical",
@@ -541,16 +565,17 @@
               "ragtime",
               "new-age",
               "folk"
-            ]
+            ],
+            "description": "Filter by genre"
           },
           "difficulty": {
-            "description": "Filter by difficulty",
             "type": "string",
             "enum": [
               "beginner",
               "intermediate",
               "advanced"
-            ]
+            ],
+            "description": "Filter by difficulty"
           },
           "query": {
             "description": "Search query (matches title, composer, tags, description)",
@@ -730,6 +755,10 @@
           "record": {
             "description": "Record played notes for later scoring (library songs only) — retrieve with score_last_take. Default: false.",
             "type": "boolean"
+          },
+          "lyrics": {
+            "description": "English lyrics to sing as a score-locked lead (vowel on the MIDI beat). Aligns to the right-hand melody of the selected measures. The --engine aah/tract/synth path is not used for the lead when lyrics are set.",
+            "type": "string"
           }
         },
         "required": [
@@ -879,8 +908,8 @@
             "maximum": 90
           },
           "song_id": {
-            "description": "Filter entries to a specific song",
-            "type": "string"
+            "type": "string",
+            "description": "Filter entries to a specific song"
           }
         },
         "$schema": "http://json-schema.org/draft-07/schema#"
@@ -954,8 +983,8 @@
             "description": "Your reflection — what you learned, what you noticed, what to try next. Write naturally, like a musician's notebook."
           },
           "song_id": {
-            "description": "Override which song this entry is about (defaults to the last song you played)",
-            "type": "string"
+            "type": "string",
+            "description": "Override which song this entry is about (defaults to the last song you played)"
           }
         },
         "required": [
@@ -976,6 +1005,32 @@
           }
         },
         "required": [
+          "song_id"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "score_audio_take",
+      "description": "Grade a recorded performance against a song in the library, by ear rather than from MIDI capture. Transcribes the WAV, matches it to the score, and reports which notes landed, which drifted, and which were missed — then leaves the result ready for view_scored_piano_roll so you can SEE the comparison drawn over the score. This is the tool for grading a real instrument, a sung take, or rendered audio, where there is no MIDI to capture. Matches within 40 ms, stricter than the 50 ms convention published work reports.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Absolute path to an uncompressed WAV file of the performance."
+          },
+          "song_id": {
+            "type": "string",
+            "description": "Which song in the library to grade against. Use list_songs to browse."
+          },
+          "bpm": {
+            "description": "Tempo the take was played at, if it differs from the song's own.",
+            "type": "number"
+          }
+        },
+        "required": [
+          "path",
           "song_id"
         ],
         "$schema": "http://json-schema.org/draft-07/schema#"
@@ -1145,7 +1200,6 @@
         "type": "object",
         "properties": {
           "genre": {
-            "description": "Preferred genre",
             "type": "string",
             "enum": [
               "classical",
@@ -1160,16 +1214,17 @@
               "ragtime",
               "new-age",
               "folk"
-            ]
+            ],
+            "description": "Preferred genre"
           },
           "difficulty": {
-            "description": "Desired difficulty",
             "type": "string",
             "enum": [
               "beginner",
               "intermediate",
               "advanced"
-            ]
+            ],
+            "description": "Desired difficulty"
           },
           "maxDuration": {
             "description": "Maximum duration in seconds",
@@ -1199,6 +1254,27 @@
         "required": [
           "id",
           "measure"
+        ],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "transcribe_audio",
+      "description": "Turn a monophonic WAV recording into notes: pitch, start time, duration, and how far each note sits from concert pitch. Use it to find out what was actually played or sung, as opposed to what the score asked for. Feed the result to score_audio_take to grade it against a song. Monophonic only — it follows one line at a time, so a chord or a full mix produces confident nonsense.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Absolute path to an uncompressed WAV file."
+          },
+          "min_confidence": {
+            "description": "Frames below this pitch confidence do not vote on a note. 0 to 1, defaults to 0.5.",
+            "type": "number"
+          }
+        },
+        "required": [
+          "path"
         ],
         "$schema": "http://json-schema.org/draft-07/schema#"
       }
@@ -1477,8 +1553,8 @@
             "description": "Your proposed harmony as a JSON array: [{\"measure\": 1, \"intendedChord\": \"Am7\", \"voicing\": \"A2 C3 E3 G3\"}, ...]. Voicings are note tokens (space or \"+\" separated, optional :duration suffixes). Supported chord suffixes: maj (empty), m, 7, maj7, m7, dim, m7b5, aug, sus4, sus2."
           },
           "songId": {
-            "description": "Verify against this library song's right-hand melody (e.g. 'fur-elise'). Combine with measures to select a range.",
-            "type": "string"
+            "type": "string",
+            "description": "Verify against this library song's right-hand melody (e.g. 'fur-elise'). Combine with measures to select a range."
           },
           "measures": {
             "description": "Measure range within the song, e.g. '1-8'. Only used with songId.",
@@ -1587,6 +1663,48 @@
       "inputSchema": {
         "type": "object",
         "properties": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "view_spectrogram",
+      "description": "SEE a recording as a picture: a constant-Q spectrogram of a WAV file, with a piano keyboard down the left edge so pitch is readable at a glance. Use it to spot what is wrong and where — a smeared attack, a note that drifts, a bar that is muddier than the rest — then measure it with analyze_audio or score_audio_take. Describe what you see BEFORE asking for the overlay: with overlay set to true it draws the song's intended notes on top, and seeing them first makes it easy to agree with what you expected rather than with what is there. The picture localises; it does not measure. Every number belongs to the other tools.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Absolute path to an uncompressed WAV file."
+          },
+          "song_id": {
+            "description": "Song to draw intended notes from. Only used when overlay is true.",
+            "type": "string"
+          },
+          "start_sec": {
+            "description": "Start of the window to draw. Defaults to 0.",
+            "type": "number"
+          },
+          "end_sec": {
+            "description": "End of the window to draw. Defaults to 6 seconds after the start, which is one page.",
+            "type": "number"
+          },
+          "overlay": {
+            "description": "Draw the song's intended notes over the audio. Defaults to false, so you look at the sound first.",
+            "type": "boolean"
+          },
+          "colormap": {
+            "description": "Colour scheme. Defaults to viridis.",
+            "type": "string",
+            "enum": [
+              "viridis",
+              "magma",
+              "grey"
+            ]
+          }
+        },
+        "required": [
+          "path"
+        ],
         "$schema": "http://json-schema.org/draft-07/schema#"
       }
     }

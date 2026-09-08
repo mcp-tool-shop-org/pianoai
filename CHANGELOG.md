@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.0] - 2026-09-07
+
+### Added — the audio inspector: the model can measure sound, not just make it
+
+Until now this server could render audio but never examine it. The model played, a human listened,
+and the model took their word for it. Four new tools close that gap, and they are built on the
+principle the repo already proved with its MIDI inspector: a model cannot reliably eyeball a
+picture, so give it deterministic queries instead.
+
+- `analyze_audio` — onsets, pitch contour and level from a WAV. Pitch in note names with cents,
+  never raw frequencies.
+- `transcribe_audio` — a monophonic recording as notes, with each note's deviation from concert
+  pitch.
+- `score_audio_take` — grade a performance against a library song **by ear**, then hand the result
+  to the existing `view_scored_piano_roll` unchanged. Audio enters the scoring stack rather than
+  sitting beside it.
+- `view_spectrogram` — a constant-Q spectrogram with a piano-keyboard axis, optionally overlaid
+  with the song's intended notes. Blind by default: it shows the sound alone and asks what you see
+  before the overlay is available.
+
+New `src/audio/` layer, dependency-free and identical in Node and the browser: FFT, windows, STFT,
+mel filterbank, decibel scaling, constant-Q with sparse Brown-Puckette kernels, SuperFlux onset
+detection, YIN pitch tracking with the cents gate, monophonic transcription, WAV decoding, PNG
+rendering, and synthetic fixtures.
+
+Also adds `jam-actions-acoustic-v0`, a 108-record corpus of grounded tool use over audio analysis,
+whose labels are verified against what the tools actually measure rather than only against
+themselves. Held out by phrase rather than by record. Not published.
+
+Grounded in `docs/spectrogram-surface-study-2026-09.md`. The load-bearing finding: mel cannot
+show a 50-cent error below 1 kHz, because Slaney mel is linear there at about 67 Hz per step while
+50 cents at middle C is 7.7 Hz. So the constant-Q transform carries pitch and mel carries
+legibility, and no gate ever routes through a picture.
+
+
 ## [2.3.0] - 2026-09-05
 
 ### Added — the score-clock vocal route (SoulX-Singer, local) — the vocal route

@@ -43,6 +43,21 @@ Cada una de las 120 canciones ahora está completamente anotada: contexto histó
 
 A partir del mismo trabajo, también publicamos **[jam-actions-v0](#training-dataset)**: un conjunto de datos público de 115 trazas de uso de herramientas MCP en múltiples turnos sobre piano clásico real. Enseña a los LLM a realizar *un uso práctico de herramientas sobre música simbólica*, no solo generación de texto, y se entrega con una puerta de liberación de 7 ejes que distingue entre "transmitir pruebas" y "pasar porque la tarea es trivial". Consulte [Conjunto de datos de entrenamiento](#training-dataset) a continuación para conocer la historia completa.
 
+## Escuchar
+
+Durante mucho tiempo, este servidor podía generar sonido, pero no podía analizarlo. El modelo reproducía la música, una persona la escuchaba y el modelo se basaba en su opinión. Ahora, esa brecha se ha cerrado.
+
+Si se le proporciona un archivo WAV, mide lo que contiene. No lo hace analizando una imagen y adivinando, sino procesando la señal a través de las mismas herramientas que ya utiliza para analizar la partitura:
+
+- **`analyze_audio`** — detección de los inicios de nota, contorno de la altura y nivel. La altura se devuelve como nombres de notas con desviaciones en centavos, nunca como frecuencias brutas.
+- **`transcribe_audio`** — la grabación se convierte en notas: altura, inicio, duración y la distancia de cada nota con respecto a la altura de referencia.
+- **`score_audio_take`** — evalúa una interpretación en comparación con una canción de la biblioteca **de oído**. Transcribe la grabación, la compara con la partitura e informa qué notas se tocaron correctamente, cuáles se desviaron y cuáles se omitieron. Luego, `view_scored_piano_roll` dibuja el resultado sobre la partitura, exactamente como lo hace con una grabación MIDI. Así es como se evalúa un instrumento real, una interpretación vocal o cualquier cosa en la que no haya MIDI para capturar.
+- **`view_spectrogram`** — visualiza el sonido. Un espectrograma de Q constante con un teclado de piano en el borde izquierdo, de modo que la altura sea fácilmente visible, y las notas de la canción se dibujan sobre él cuando se solicita.
+
+**Lo que no te dirá.** La imagen sirve para identificar *dónde* hay un problema; cada número proviene del procesamiento de la señal, nunca de un modelo que analiza una imagen. El transcriptor sigue una línea a la vez, por lo que un acorde o una mezcla completa producirán un resultado confiable pero incorrecto, y lo indicará. La detección de inicios de nota alcanza aproximadamente 0,88 en el estado actual de la tecnología, por lo que una nota "omitida" puede ser una que el transcriptor no pudo detectar, en lugar de una que no tocaste; las herramientas incluyen esta advertencia en su propia salida, en lugar de ocultarla aquí.
+
+Toda la estructura es independiente: la transformación, el rastreador de altura, el detector de inicios de nota, el decodificador WAV y el codificador PNG se encuentran todos en este repositorio y producen los mismos números en Node y en el navegador.
+
 ## El teclado de piano
 
 El teclado de piano es cómo la IA ve la música. Renderiza cualquier canción como SVG: azul para la mano derecha, coral para la izquierda, con cuadrículas de compás, dinámica y límites de compás:
