@@ -1,8 +1,24 @@
-import { trackPitch, scorePitchWindow } from "../../audio/pitch.js";
-import { detectOnsets } from "../../audio/onsets.js";
-import { buildAllRecords } from "../acoustic/generate-corpus.js";
-import { renderTake } from "../acoustic/builder.js";
-import type { AcousticRecord } from "../acoustic/schema.js";
+// Probe behind docs/findings/v0-label-verification-covers-six-records.md.
+//
+// Runs measured.test.ts's own code path -- the same targetWindow, trackPitch and
+// scorePitchWindow calls -- across all 108 published records instead of the six
+// fixtures the test covers. That is the whole point: it is not a different
+// technique, it is the same technique applied to the corpus.
+//
+//   pnpm exec tsx docs/findings/probe-tracker-error.ts
+//
+// Read-only. Renders audio in memory, prints JSON, touches nothing.
+//
+// Provenance: this file arrived in the working tree during the 2026-09-08
+// session and I committed it in e81d684 without review, inside a commit whose
+// message says "docs". That was sloppy; it is recorded here rather than tidied
+// away. I then read it, checked its method against measured.test.ts, and ran it.
+
+import { trackPitch, scorePitchWindow } from "../../src/audio/pitch.js";
+import { detectOnsets } from "../../src/audio/onsets.js";
+import { buildAllRecords } from "../../src/dataset/acoustic/generate-corpus.js";
+import { renderTake } from "../../src/dataset/acoustic/builder.js";
+import type { AcousticRecord } from "../../src/dataset/acoustic/schema.js";
 
 function targetWindow(rec: AcousticRecord): { midi: number; start: number; end: number } {
   const recipe = rec.observation.render.recipe;
@@ -25,14 +41,18 @@ function percentile(xs: number[], p: number): number {
 function stats(xs: number[]) {
   if (xs.length === 0) return { n: 0 };
   const mean = xs.reduce((a, b) => a + b, 0) / xs.length;
-  const max = Math.max(...xs);
+  const abs = xs.map(Math.abs);
   return {
     n: xs.length,
     mean: +mean.toFixed(3),
     p50: +percentile(xs, 0.5).toFixed(3),
     p90: +percentile(xs, 0.9).toFixed(3),
     p95: +percentile(xs, 0.95).toFixed(3),
-    max: +max.toFixed(3),
+    min: +Math.min(...xs).toFixed(3),
+    max: +Math.max(...xs).toFixed(3),
+    abs_p50: +percentile(abs, 0.5).toFixed(3),
+    abs_p95: +percentile(abs, 0.95).toFixed(3),
+    abs_max: +Math.max(...abs).toFixed(3),
   };
 }
 
@@ -89,7 +109,7 @@ for (const rec of records) {
       for (const o of result.onsets) {
         if (Math.abs(o.time - sounded) < Math.abs(nearest.time - sounded)) nearest = o;
       }
-      onsetAbsErrMs.push(Math.abs((nearest.time - sounded) * 1000));
+      onsetAbsErrMs.push((nearest.time - sounded) * 1000);
     }
   }
 }

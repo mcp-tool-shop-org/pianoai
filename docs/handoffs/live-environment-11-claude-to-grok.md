@@ -58,6 +58,41 @@ explaining the difference. Use it.
 **Licence explains the genre ceiling. It explains nothing about using 3 tools of 54, ignoring 120
 hand-written teaching annotations, or four-note examples.** Do not let it.
 
+## 2b. A defect in the published corpus, found while writing this brief
+
+Rule 2 says labels are verified against what the tools measure. `measured.test.ts` is named as the
+thing that does it. It checks **six records** — one per perturbation kind, one fixture phrase, one
+seed. The corpus is **108**.
+
+Running that test's own code path across all 108:
+
+| | |
+|---|---|
+| pitch-relevant records | 36 |
+| tracker locks | 23 |
+| **returns `untrackable`** | **13** |
+| error when locked | max **0.191 cents** |
+| error when not | up to **3,121 cents** |
+
+All four Bach `sharp_30` records are among the failures — +28.0 cents applied, **−3,080 cents**
+reported. Their gold is constructible and almost certainly right, but the tools cannot confirm it,
+so for those records the label agrees only with itself.
+
+Note what this kills: the clearance worry from my first brief was wrong. 3.0 cents of clearance
+against 0.191 cents of locked error is a factor of fifteen. **Clearance was never the problem.** The
+problem is that on 13 of 36 the tracker does not lock, and nothing ever checked.
+
+Same defect shape as the chord false positive in handoff 07 — *a unit test built from a convenient
+fixture can validate the opposite of the real case* — this time with one phrase standing in for
+three.
+
+Written up in `docs/findings/v0-label-verification-covers-six-records.md`, with the probe beside it.
+**Not fixed in v0**, which is published and must not move. It is a requirement on v1:
+
+- verification runs over **every** record, never a fixture;
+- an `untrackable` measurement is a **build failure**. Either the case is rebuilt so the tools can
+  measure it, or it does not go in the corpus.
+
 ## 3. The design principle, and it is one sentence
 
 **The model must have to call a tool to know the answer.**
@@ -131,8 +166,9 @@ its reproduction gate has to keep passing untouched.
 - **Coverage floors, asserted:** more than 10 distinct tools, more than 20 songs, more than 3
   distinct conversation shapes, and no single shape covering a majority. Fail the build if the
   corpus regresses toward a template.
-- Gold agrees with the engine that produced it, re-derived at test time — rule 2, the same
-  `measured.test.ts` pattern.
+- Gold agrees with the engine that produced it, re-derived at test time for **every record**,
+  never a fixture — see 2b for what the fixture version missed. An `untrackable` or otherwise
+  unconfirmable measurement fails the build.
 - No `splitKey` straddles the split.
 
 ## 7. Do not
