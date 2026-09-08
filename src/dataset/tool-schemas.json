@@ -1,7 +1,7 @@
 {
   "server_name": "ai-jam-sessions",
   "derived_from": "dist/mcp-server.js via MCP tools/list",
-  "derived_at": "2026-09-08T03:28:34.622Z",
+  "derived_at": "2026-09-08T03:45:18.498Z",
   "tool_count": 54,
   "tools": [
     {

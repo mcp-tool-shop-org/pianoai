@@ -28,9 +28,20 @@ export function soloInstrument(engineId: EngineId): SoloIdentity {
   return { id: engineId, label: ENGINE_LABELS[engineId] };
 }
 
+function withTap(
+  spec: InstrumentSpec,
+  source: { createTapOutput?: () => unknown },
+): InstrumentSpec {
+  if (typeof source.createTapOutput === "function") {
+    spec.createTapOutput = source.createTapOutput;
+  }
+  return spec;
+}
+
 /**
  * Roster for this connector. Layered → one entry per child.
  * Plain → the supplied solo identity, exactly one.
+ * Each entry carries that source's tap factory when it has one.
  */
 export function rosterFor(
   connector: VmpkConnector,
@@ -38,7 +49,7 @@ export function rosterFor(
 ): InstrumentSpec[] {
   const kids = connector.children?.();
   if (kids && kids.length > 0) {
-    return kids.map((c) => ({ id: c.id, label: c.label }));
+    return kids.map((c) => withTap({ id: c.id, label: c.label }, c));
   }
-  return [{ id: solo.id, label: solo.label }];
+  return [withTap({ id: solo.id, label: solo.label }, connector)];
 }

@@ -21,10 +21,20 @@
 
 import type { VmpkConnector, MidiStatus, MidiNote } from "./types.js";
 
-/** One named child of a layered engine. */
-export interface LayeredChild {
+/** Names only — what `options.children` accepts. Never a tap factory. */
+export interface LayeredChildName {
   id: string;
   label: string;
+}
+
+/**
+ * What `children()` returns. The factory is bound from the live child
+ * engine, never copied from options, so that child's ensureConnected
+ * still runs. Omit createTapOutput when the child has none — a duet
+ * where one voice can be heard and the other cannot is a real state.
+ */
+export interface LayeredChild extends LayeredChildName {
+  createTapOutput?: () => unknown;
 }
 
 /** Options for the layered engine. */
@@ -34,8 +44,9 @@ export interface LayeredEngineOptions {
   /**
    * Names for `children()`. Must match `engines.length` when provided.
    * Omitted: `{ id: "child-N", label: engines[N].listPorts()[0] }`.
+   * Factories are not accepted here — they are bound from each engine.
    */
-  children?: ReadonlyArray<LayeredChild>;
+  children?: ReadonlyArray<LayeredChildName>;
 }
 
 /**
@@ -126,11 +137,17 @@ export function createLayeredEngine(
     },
 
     children(): ReadonlyArray<LayeredChild> {
-      if (childMeta) return childMeta;
-      return engines.map((e, i) => ({
-        id: `child-${i}`,
-        label: e.listPorts()[0] ?? `child ${i}`,
-      }));
+      return engines.map((e, i) => {
+        const names = childMeta?.[i] ?? {
+          id: `child-${i}`,
+          label: e.listPorts()[0] ?? `child ${i}`,
+        };
+        const entry: LayeredChild = { id: names.id, label: names.label };
+        if (typeof e.createTapOutput === "function") {
+          entry.createTapOutput = () => e.createTapOutput!();
+        }
+        return entry;
+      });
     },
   };
 

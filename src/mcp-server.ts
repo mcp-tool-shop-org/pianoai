@@ -1351,17 +1351,17 @@ registerTool(
         // with no acoustic channel, never a performance that does not play.
         // The ensemble still reports intent, which is the exact channel anyway.
         const tapCtx = getSharedAudioContext();
-        const canTap = typeof connector.createTapOutput === "function" && tapCtx;
 
         for (const entry of roster) {
           let stream: AudioStream | undefined;
-          if (canTap && roster.length === 1) {
-            // Only a solo connector is tappable today. A layered engine names
-            // its children but does not hand them out, so its children can be
-            // NAMED and not HEARD — recorded as a known gap rather than papered
-            // over by tapping the mix, which would defeat the isolation.
+          // Solo and layered are the same loop now. The question is no longer
+          // "is this a solo?" but "does this entry offer a tap?", which is what
+          // makes each half of a duet separately audible rather than merely
+          // named. A layered engine still has no tap of its own: these buses
+          // come from its children, never from the mix.
+          if (tapCtx && entry.createTapOutput) {
             try {
-              const bus = connector.createTapOutput!();
+              const bus = entry.createTapOutput();
               const s = new AudioStream({
                 sampleRate: tapCtx.sampleRate ?? 48000,
                 label: entry.label,

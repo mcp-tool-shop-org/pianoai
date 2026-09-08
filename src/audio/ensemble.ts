@@ -63,6 +63,12 @@ export interface InstrumentSpec {
    * which is still exact for anything this repo drives.
    */
   stream?: AudioStream;
+  /**
+   * Factory for this instrument's tap bus. Present when the engine (or
+   * layered child) offers one. The wiring asks "does this entry offer a
+   * tap?", not "is this a solo?".
+   */
+  createTapOutput?: () => unknown;
 }
 
 /** A note-on as the ensemble receives it. */

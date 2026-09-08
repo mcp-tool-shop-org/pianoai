@@ -319,10 +319,14 @@ export interface VmpkConnector {
 
   /**
    * Optional child roster. Present on a layered engine; absent on a
-   * plain connector. Read-only names, not handles — observers tap each
-   * child, never the mix.
+   * plain connector. Names plus, when that child offers one, a tap
+   * factory — never the child connector itself.
    */
-  children?(): ReadonlyArray<{ id: string; label: string }>;
+  children?(): ReadonlyArray<{
+    id: string;
+    label: string;
+    createTapOutput?: () => unknown;
+  }>;
 }
 
 // ─── Recording Types ────────────────────────────────────────────────────────
