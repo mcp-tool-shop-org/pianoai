@@ -42,7 +42,12 @@ say "Dependencies"
 # torch ships in the image. These do not. Pinned loosely on purpose: the image's
 # torch is the constraint, and pinning transformers hard against an unknown
 # future image is how you get an unsolvable resolve on a billing pod.
-pip install --quiet --no-input "transformers>=4.44" "peft>=0.13" "accelerate>=0.34"
+# --break-system-packages: the RunPod image ships a Debian-managed python3 that
+# refuses system-wide installs under PEP 668. A venv is the usual answer, but
+# torch lives in THAT interpreter and re-resolving a 16 GB CUDA build inside a
+# venv on a billing host is the wrong trade. The pod is disposable; installing
+# beside its torch is the point.
+pip install --quiet --no-input --break-system-packages   "transformers>=4.44" "peft>=0.13" "accelerate>=0.34"
 python3 - <<'PY'
 import importlib.metadata as md
 for p in ("torch", "transformers", "peft", "accelerate"):

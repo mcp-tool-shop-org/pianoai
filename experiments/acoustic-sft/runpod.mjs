@@ -48,13 +48,42 @@ const KEY = process.env.RUNPOD_API_KEY;
 const IMAGE = "runpod/pytorch:1.1.0-cu1290-torch280-ubuntu2404";
 
 // A fallback chain, because there is no catalog to check stock against and
-// capacity moves. All three are RTX PRO 6000 Blackwell, 96 GB. Exact strings,
-// confirmed against the live OpenAPI enum.
+// capacity moves. Exact strings, all present in the live OpenAPI enum at
+// GET /v1/openapi.json (45 ids) — that spec is the only way left to confirm a
+// name, since the gputypes endpoint is retired and answers 400.
+//
+// This used to be three entries that were all RTX PRO 6000 Blackwell. That is
+// one card spelled three ways, not a fallback chain: on 2026-09-08 every entry
+// was out of stock at once and the deploy returned
+// "There are no instances currently available" — which is exactly the case a
+// chain is supposed to survive.
+//
+// So it now widens by generation. The Blackwell 96 GB cards stay first because
+// they are what was asked for; everything after is a real alternative.
+//
+// The job does not need 96 GB. A 3B model in bf16 with LoRA, gradient
+// checkpointing and chunked cross-entropy is roughly 15-25 GB at 16k context,
+// so a 48 GB card is comfortable. The image is CUDA 12.9, which Blackwell
+// (sm_120) requires and every older card here accepts.
 const GPU_CHAIN = [
+  // What was asked for: RTX PRO 6000 Blackwell, 96 GB.
   "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
   "NVIDIA RTX PRO 6000 Blackwell Server Edition",
   "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+  // Still an RTX 6000, previous generation, 48 GB.
+  "NVIDIA RTX 6000 Ada Generation",
+  // 48 GB alternatives.
+  "NVIDIA L40S",
+  "NVIDIA RTX A6000",
+  "NVIDIA L40",
+  // Data-centre parts, dearer but usually in stock.
+  "NVIDIA A100 80GB PCIe",
+  "NVIDIA H100 PCIe",
 ];
+
+// COMMUNITY is the cheap tier and the default here. Set RUNPOD_CLOUD_TYPE=SECURE
+// to try the other pool when community is out of stock everywhere.
+const CLOUD_TYPE = process.env.RUNPOD_CLOUD_TYPE === "SECURE" ? "SECURE" : "COMMUNITY";
 
 const PUBKEY_PATH = join(homedir(), ".ssh", "runpod_rustline.pub");
 const STATE_PATH = join(homedir(), ".ssh", "runpod_acoustic_pod.json");
@@ -121,8 +150,8 @@ async function cmdVerify() {
   console.log(`  ssh public key     ${hasKey ? `found at ${PUBKEY_PATH}` : `MISSING at ${PUBKEY_PATH}`}`);
   need(hasKey, "no public key to inject; the pod would boot with no way in.");
 
-  console.log(`  gpu fallback chain ${GPU_CHAIN.length} RTX PRO 6000 Blackwell variants`);
-  console.log(`  cloud tier         COMMUNITY (explicit — the API default is SECURE and dearer)`);
+  console.log(`  gpu fallback chain ${GPU_CHAIN.length} types, ${GPU_CHAIN[0]} first`);
+  console.log(`  cloud tier         ${CLOUD_TYPE} (explicit — the API default is SECURE and dearer)`);
   console.log(`  volume             pod-local, dies with the pod (never a network volume)`);
   console.log("\nPreflight OK. `node runpod.mjs up` will spend money.");
 }
@@ -146,7 +175,7 @@ async function cmdUp() {
         imageName: IMAGE,
         gpuTypeIds: GPU_CHAIN,     // array = native fallback chain
         gpuCount: 1,
-        cloudType: "COMMUNITY",    // explicit: the default is SECURE
+        cloudType: CLOUD_TYPE,     // explicit: the API default is SECURE
         containerDiskInGb: 60,     // 16 GB image + a 3B model + room
         volumeInGb: 40,            // pod-local; NOT a network volume
         volumeMountPath: "/workspace",
