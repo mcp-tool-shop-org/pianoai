@@ -114,6 +114,8 @@ import { scorePerformance, flattenSongToExpected, type PerformanceResult } from 
 import { Ensemble } from "./audio/ensemble.js";
 import { subscribeEnsemble } from "./audio/bridge.js";
 import { rosterFor, soloInstrument } from "./audio/roster.js";
+import { attachTap } from "./audio/tap.js";
+import { AudioStream } from "./audio/stream.js";
 import { getSharedAudioContext } from "./audio-shared.js";
 import {
   decodeWav,
@@ -1338,14 +1340,54 @@ registerTool(
         const ensemble = new Ensemble();
         const roster = rosterFor(connector, soloInstrument(engineId));
         const unsubscribers: Array<() => void> = [];
+        const tapHandles: Array<{ detach(): void }> = [];
+
+        // The acoustic channel, where the engine offers one. Measured at 9
+        // microseconds per audio callback against a 42.67 ms block, so the cost
+        // of watching is about 0.02% of the quantum and it is on by default.
+        //
+        // Every failure here is swallowed on purpose. A tap is an OBSERVER: if
+        // attaching one throws, the correct outcome is a performance that plays
+        // with no acoustic channel, never a performance that does not play.
+        // The ensemble still reports intent, which is the exact channel anyway.
+        const tapCtx = getSharedAudioContext();
+        const canTap = typeof connector.createTapOutput === "function" && tapCtx;
+
         for (const entry of roster) {
-          ensemble.addInstrument({ id: entry.id, label: entry.label });
+          let stream: AudioStream | undefined;
+          if (canTap && roster.length === 1) {
+            // Only a solo connector is tappable today. A layered engine names
+            // its children but does not hand them out, so its children can be
+            // NAMED and not HEARD — recorded as a known gap rather than papered
+            // over by tapping the mix, which would defeat the isolation.
+            try {
+              const bus = connector.createTapOutput!();
+              const s = new AudioStream({
+                sampleRate: tapCtx.sampleRate ?? 48000,
+                label: entry.label,
+              });
+              tapHandles.push(attachTap({ source: bus as never, stream: s, context: tapCtx }));
+              stream = s;
+            } catch (err) {
+              console.error(
+                `Acoustic tap unavailable for ${entry.label}: ` +
+                `${err instanceof Error ? err.message : String(err)}. ` +
+                `Playing on, reporting intent only.`,
+              );
+            }
+          }
+
+          ensemble.addInstrument({ id: entry.id, label: entry.label, ...(stream ? { stream } : {}) });
           unsubscribers.push(
             subscribeEnsemble(ensemble, controller, { instrumentId: entry.id }),
           );
         }
+
         const unsubscribeEnsemble = () => {
           for (const off of unsubscribers) off();
+          for (const h of tapHandles) {
+            try { h.detach(); } catch { /* teardown is best-effort */ }
+          }
         };
         setLiveEnsemble(ensemble);
 

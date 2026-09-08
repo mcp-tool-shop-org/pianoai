@@ -173,6 +173,31 @@ describe("acoustic channel", () => {
     expect(e.view(0.005).instruments[0]!.disagreement).toBeNull();
   });
 
+  it("does not fire on a chord the monophonic tap cannot resolve", () => {
+    // The regression. A real triad renders audio that YIN correctly refuses to
+    // name, so the earlier check fired on EVERY chord the piano played. Found by
+    // running the whole chain on a real graph; the sine-based test below missed
+    // it because a single sine is monophonic by construction.
+    const e = new Ensemble();
+    const stream = new AudioStream({ sampleRate: SR, label: "piano" });
+    e.addInstrument({ id: "piano", stream });
+    stream.push(new Float64Array(SR)); // audio present, no single resolvable pitch
+
+    for (const n of [60, 64, 67]) e.noteOn("piano", { note: n, velocity: 90, atSec: 0 });
+    expect(e.view(1.0).instruments[0]!.disagreement).toBeNull();
+  });
+
+  it("still fires when a SINGLE held note is inaudible", () => {
+    // Narrowing to one note must not disable the check that earns its keep.
+    const e = new Ensemble();
+    const stream = new AudioStream({ sampleRate: SR, label: "piano" });
+    e.addInstrument({ id: "piano", stream });
+    stream.push(new Float64Array(SR));
+
+    e.noteOn("piano", { note: 60, velocity: 90, atSec: 0 });
+    expect(e.view(1.0).instruments[0]!.disagreement).toMatch(/C4 held .* nothing pitched/);
+  });
+
   it("does not treat a chord as a disagreement", () => {
     // The tap is monophonic. A chord it cannot resolve is its documented
     // limitation, not a finding about the render.

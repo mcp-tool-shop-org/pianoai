@@ -269,13 +269,22 @@ function describeDisagreement(
   const pitched = acoustic.latestPitch?.f0Hz != null;
 
   if (sounding.length > 0 && !pitched) {
+    // A CHORD reading unpitched is the tracker doing its job, not a finding.
+    // YIN is monophonic: on two or more simultaneous notes it correctly refuses
+    // to name a period. Reporting that as a disagreement would fire on every
+    // chord the piano plays, and a check that cries wolf constantly is worse
+    // than no check at all — it teaches the reader to skip the real ones.
+    // Caught by running the whole chain on a real graph; the unit test missed
+    // it because it fed a single sine, which is monophonic by construction.
+    if (sounding.length > 1) return null;
+
     // Only meaningful once the note has been held longer than the tap's own lag;
     // before that, silence in the measurement is expected rather than wrong.
     const oldest = Math.max(...sounding.map((n) => n.heldSec));
     if (oldest > acoustic.pitchLatencySec * 2) {
       return (
-        `${sounding.length} note(s) held for ${oldest.toFixed(2)} s but the tap ` +
-        `measures nothing pitched. The engine may be silent, muted, or failing.`
+        `${sounding[0]!.name} held for ${oldest.toFixed(2)} s but the tap measures ` +
+        `nothing pitched. The engine may be silent, muted, or failing.`
       );
     }
     return null;
