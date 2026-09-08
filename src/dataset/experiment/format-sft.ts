@@ -66,11 +66,14 @@ export function toSftLine(
   };
 }
 
-export function formatRecords(records: SftSource[]): { train: SftLine[]; test: SftLine[] } {
+export function formatRecords(
+  records: SftSource[],
+  systemText: string = DEFAULT_SYSTEM_TEXT,
+): { train: SftLine[]; test: SftLine[] } {
   const train: SftLine[] = [];
   const test: SftLine[] = [];
   for (const r of records) {
-    const line = toSftLine(r);
+    const line = toSftLine(r, systemText);
     (r.split === "test" ? test : train).push(line);
   }
   return { train, test };

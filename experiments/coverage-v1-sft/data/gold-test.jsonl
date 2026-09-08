@@ -1,0 +1,100 @@
+{"id": "acoustic:scarborough-fair:clean", "family": "acoustic", "gold": "match"}
+{"id": "acoustic:scarborough-fair:late_fail", "family": "acoustic", "gold": "timing_fail"}
+{"id": "acoustic:scarborough-fair:sharp_fail", "family": "acoustic", "gold": "pitch_fail"}
+{"id": "acoustic:schumann-traumerei:clean", "family": "acoustic", "gold": "match"}
+{"id": "acoustic:schumann-traumerei:late_fail", "family": "acoustic", "gold": "timing_fail"}
+{"id": "acoustic:schumann-traumerei:sharp_fail", "family": "acoustic", "gold": "pitch_fail"}
+{"id": "acoustic:shenandoah:clean", "family": "acoustic", "gold": "match"}
+{"id": "acoustic:shenandoah:late_fail", "family": "acoustic", "gold": "timing_fail"}
+{"id": "acoustic:shenandoah:sharp_fail", "family": "acoustic", "gold": "pitch_fail"}
+{"id": "acoustic:simple-gifts:clean", "family": "acoustic", "gold": "match"}
+{"id": "acoustic:simple-gifts:late_fail", "family": "acoustic", "gold": "timing_fail"}
+{"id": "acoustic:simple-gifts:sharp_fail", "family": "acoustic", "gold": "pitch_fail"}
+{"id": "acoustic:solace:clean", "family": "acoustic", "gold": "match"}
+{"id": "acoustic:solace:late_fail", "family": "acoustic", "gold": "timing_fail"}
+{"id": "acoustic:solace:sharp_fail", "family": "acoustic", "gold": "pitch_fail"}
+{"id": "acoustic:the-easy-winners:clean", "family": "acoustic", "gold": "match"}
+{"id": "acoustic:the-easy-winners:late_fail", "family": "acoustic", "gold": "timing_fail"}
+{"id": "acoustic:the-easy-winners:sharp_fail", "family": "acoustic", "gold": "pitch_fail"}
+{"id": "acoustic:the-entertainer:clean", "family": "acoustic", "gold": "match"}
+{"id": "acoustic:the-entertainer:late_fail", "family": "acoustic", "gold": "timing_fail"}
+{"id": "acoustic:the-entertainer:sharp_fail", "family": "acoustic", "gold": "pitch_fail"}
+{"id": "acoustic:the-water-is-wide:clean", "family": "acoustic", "gold": "match"}
+{"id": "acoustic:the-water-is-wide:late_fail", "family": "acoustic", "gold": "timing_fail"}
+{"id": "acoustic:the-water-is-wide:sharp_fail", "family": "acoustic", "gold": "pitch_fail"}
+{"id": "acoustic:weeping-willow:clean", "family": "acoustic", "gold": "match"}
+{"id": "acoustic:weeping-willow:late_fail", "family": "acoustic", "gold": "timing_fail"}
+{"id": "acoustic:weeping-willow:sharp_fail", "family": "acoustic", "gold": "pitch_fail"}
+{"id": "chord:scarborough-fair:m1", "family": "chord", "gold": "Dm"}
+{"id": "chord:schumann-traumerei:m2", "family": "chord", "gold": "F"}
+{"id": "chord:simple-gifts:m11", "family": "chord", "gold": "Dm"}
+{"id": "chord:solace:m6", "family": "chord", "gold": "Gaug"}
+{"id": "chord:the-easy-winners:m7", "family": "chord", "gold": "C#"}
+{"id": "chord:the-entertainer:m11", "family": "chord", "gold": "D"}
+{"id": "chord:weeping-willow:m6", "family": "chord", "gold": "G"}
+{"id": "compare:scarborough-fair|schumann-traumerei", "family": "compare", "gold": "different_key"}
+{"id": "compare:shenandoah|simple-gifts", "family": "compare", "gold": "different_key"}
+{"id": "compare:solace|the-easy-winners", "family": "compare", "gold": "different_key"}
+{"id": "compare:the-entertainer|the-water-is-wide", "family": "compare", "gold": "different_key"}
+{"id": "ensemble:who_first:G:piano", "family": "ensemble", "gold": "piano"}
+{"id": "ensemble:who_first:G:synth", "family": "ensemble", "gold": "synth"}
+{"id": "ensemble:wrong_tone:G", "family": "ensemble", "gold": "guitar"}
+{"id": "harmony:scarborough-fair:m1:fail", "family": "harmony", "gold": "rejected"}
+{"id": "harmony:scarborough-fair:m1:pass", "family": "harmony", "gold": "verified"}
+{"id": "harmony:schumann-traumerei:m2:fail", "family": "harmony", "gold": "rejected"}
+{"id": "harmony:schumann-traumerei:m2:pass", "family": "harmony", "gold": "verified"}
+{"id": "harmony:simple-gifts:m11:fail", "family": "harmony", "gold": "rejected"}
+{"id": "harmony:simple-gifts:m11:pass", "family": "harmony", "gold": "verified"}
+{"id": "harmony:solace:m6:fail", "family": "harmony", "gold": "rejected"}
+{"id": "harmony:solace:m6:pass", "family": "harmony", "gold": "verified"}
+{"id": "harmony:the-easy-winners:m7:fail", "family": "harmony", "gold": "rejected"}
+{"id": "harmony:the-easy-winners:m7:pass", "family": "harmony", "gold": "verified"}
+{"id": "harmony:the-entertainer:m11:fail", "family": "harmony", "gold": "rejected"}
+{"id": "harmony:the-entertainer:m11:pass", "family": "harmony", "gold": "verified"}
+{"id": "harmony:weeping-willow:m6:fail", "family": "harmony", "gold": "rejected"}
+{"id": "harmony:weeping-willow:m6:pass", "family": "harmony", "gold": "verified"}
+{"id": "measures:scarborough-fair", "family": "measures", "gold": "23"}
+{"id": "measures:schumann-traumerei", "family": "measures", "gold": "64"}
+{"id": "measures:shenandoah", "family": "measures", "gold": "41"}
+{"id": "measures:simple-gifts", "family": "measures", "gold": "34"}
+{"id": "measures:solace", "family": "measures", "gold": "148"}
+{"id": "measures:the-easy-winners", "family": "measures", "gold": "152"}
+{"id": "measures:the-entertainer", "family": "measures", "gold": "152"}
+{"id": "measures:the-water-is-wide", "family": "measures", "gold": "105"}
+{"id": "measures:weeping-willow", "family": "measures", "gold": "148"}
+{"id": "sections:scarborough-fair", "family": "sections", "gold": "0:none"}
+{"id": "sections:schumann-traumerei", "family": "sections", "gold": "0:none"}
+{"id": "sections:shenandoah", "family": "sections", "gold": "0:none"}
+{"id": "sections:simple-gifts", "family": "sections", "gold": "0:none"}
+{"id": "sections:solace", "family": "sections", "gold": "0:none"}
+{"id": "sections:the-easy-winners", "family": "sections", "gold": "0:none"}
+{"id": "sections:the-entertainer", "family": "sections", "gold": "0:none"}
+{"id": "sections:the-water-is-wide", "family": "sections", "gold": "0:none"}
+{"id": "sections:weeping-willow", "family": "sections", "gold": "0:none"}
+{"id": "teaching_cues:scarborough-fair", "family": "teaching_cues", "gold": "0"}
+{"id": "teaching_cues:schumann-traumerei", "family": "teaching_cues", "gold": "0"}
+{"id": "teaching_cues:shenandoah", "family": "teaching_cues", "gold": "0"}
+{"id": "teaching_cues:simple-gifts", "family": "teaching_cues", "gold": "0"}
+{"id": "teaching_cues:solace", "family": "teaching_cues", "gold": "0"}
+{"id": "teaching_cues:the-easy-winners", "family": "teaching_cues", "gold": "0"}
+{"id": "teaching_cues:the-entertainer", "family": "teaching_cues", "gold": "0"}
+{"id": "teaching_cues:the-water-is-wide", "family": "teaching_cues", "gold": "0"}
+{"id": "teaching_cues:weeping-willow", "family": "teaching_cues", "gold": "0"}
+{"id": "teaching_note:scarborough-fair:m1", "family": "teaching_note", "gold": "(none)"}
+{"id": "teaching_note:schumann-traumerei:m1", "family": "teaching_note", "gold": "(none)"}
+{"id": "teaching_note:shenandoah:m1", "family": "teaching_note", "gold": "(none)"}
+{"id": "teaching_note:simple-gifts:m1", "family": "teaching_note", "gold": "(none)"}
+{"id": "teaching_note:solace:m1", "family": "teaching_note", "gold": "(none)"}
+{"id": "teaching_note:the-easy-winners:m1", "family": "teaching_note", "gold": "(none)"}
+{"id": "teaching_note:the-entertainer:m1", "family": "teaching_note", "gold": "(none)"}
+{"id": "teaching_note:the-water-is-wide:m1", "family": "teaching_note", "gold": "(none)"}
+{"id": "teaching_note:weeping-willow:m1", "family": "teaching_note", "gold": "(none)"}
+{"id": "transpose:scarborough-fair:+2", "family": "transpose", "gold": "E minor"}
+{"id": "transpose:schumann-traumerei:+2", "family": "transpose", "gold": "G major"}
+{"id": "transpose:shenandoah:+2", "family": "transpose", "gold": "F major"}
+{"id": "transpose:simple-gifts:+2", "family": "transpose", "gold": "G major"}
+{"id": "transpose:solace:+2", "family": "transpose", "gold": "A major"}
+{"id": "transpose:the-easy-winners:+2", "family": "transpose", "gold": "Bb major"}
+{"id": "transpose:the-entertainer:+2", "family": "transpose", "gold": "D major"}
+{"id": "transpose:the-water-is-wide:+2", "family": "transpose", "gold": "A major"}
+{"id": "transpose:weeping-willow:+2", "family": "transpose", "gold": "D major"}

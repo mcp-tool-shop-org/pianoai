@@ -1,0 +1,40 @@
+{
+  "base_model": "Qwen/Qwen2.5-3B-Instruct",
+  "hf_home": "E:/AI-Models/hf-cache",
+  "local_files_only": false,
+  "refuse_download": false,
+  "method": "lora",
+  "precision": "bf16",
+  "lora": {
+    "r": 16,
+    "alpha": 32,
+    "dropout": 0.1,
+    "target_modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ]
+  },
+  "lr": 0.00015,
+  "schedule": "cosine",
+  "warmup_steps": 10,
+  "effective_batch": 8,
+  "per_device_train_batch_size": 1,
+  "gradient_accumulation_steps": 8,
+  "weight_decay": 0.0,
+  "max_grad_norm": 1.0,
+  "max_seq_len": 16384,
+  "epochs": 3,
+  "packing": false,
+  "gradient_checkpointing": true,
+  "seed": 13,
+  "train_examples": 205,
+  "test_examples": 100,
+  "tool_catalog": "full",
+  "notes": "jam-actions-v1, 12 families. Inherits the acoustic-sft shape that trained cleanly on an L40S: 1x8 batch, bf16 LoRA r=16, cosine, seed 13. Two deliberate differences. epochs 3 not 5, because v0 saturated at epoch 3 and epochs 4-5 bought nothing -- measured, see experiments/acoustic-sft/RESULTS.md. And max_seq_len stays 16384 pending the dry-run: v1 traces are shorter than v0's but carry the same 54-tool catalog, which alone is ~13k tokens, so the catalog dominates either way. Confirm with --dry-run on the pod before training; the trainer refuses to truncate.",
+  "known_limitation": "catalog (3 records) and server (1) are train-only: they have no song_id, and the split is by song, so 4 of 305 records are trained on and never scored. Excluded from any per-family claim."
+}
