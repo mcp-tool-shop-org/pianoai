@@ -25,6 +25,10 @@ on:
         description: "Git ref to push from"
         required: false
         default: "main"
+      dataset_dir:
+        description: "Which dataset package under datasets/ to push"
+        required: false
+        default: "datasets/jam-actions-v0-public"
 
 concurrency:
   group: push-jam-actions-v0-hf
@@ -74,16 +78,28 @@ jobs:
       - name: Verify dataset package is intact
         run: |
           set -euo pipefail
-          test -f datasets/jam-actions-v0-public/README.md
-          test -f datasets/jam-actions-v0-public/VERSION
-          test -f datasets/jam-actions-v0-public/records.jsonl
-          test -f datasets/jam-actions-v0-public/checksums.sha256
-          VER=$(cat datasets/jam-actions-v0-public/VERSION)
-          echo "Dataset version: $VER"
-          echo "Record count file presence:"
-          test -d datasets/jam-actions-v0-public/records && echo "  records/ ✓"
-          test -d datasets/jam-actions-v0-public/pianoroll && echo "  pianoroll/ ✓"
-          test -d datasets/jam-actions-v0-public/evals && echo "  evals/ ✓"
+          DIR="${{ github.event.inputs.dataset_dir }}"
+          case "$DIR" in
+            datasets/*) : ;;
+            *) echo "ERROR: dataset_dir must be under datasets/ (got: $DIR)"; exit 1 ;;
+          esac
+          test -d "$DIR" || { echo "ERROR: no such dataset package: $DIR"; exit 1; }
+
+          # Every package this workflow will push must carry these four. They are
+          # what makes a drop reproducible and attributable by someone who only
+          # ever sees the HuggingFace copy.
+          test -f "$DIR/README.md"
+          test -f "$DIR/VERSION"
+          test -f "$DIR/records.jsonl"
+          test -f "$DIR/checksums.sha256"
+
+          VER=$(cat "$DIR/VERSION")
+          echo "Pushing $DIR at version $VER"
+          test -d "$DIR/records" && echo "  records/ ✓"
+
+          # Checksums are the whole point of shipping them: verify before upload,
+          # not after, so a corrupted or half-regenerated package never leaves.
+          ( cd "$DIR" && sha256sum -c checksums.sha256 --quiet )             && echo "  checksums verify ✓"
 
       - name: Install huggingface_hub
         run: pip install --quiet huggingface_hub
@@ -94,6 +110,7 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
           HF_REPO_ID: ${{ github.event.inputs.hf_repo_id }}
           HF_COMMIT_MSG: ${{ github.event.inputs.commit_message }}
+          DATASET_DIR: ${{ github.event.inputs.dataset_dir }}
         run: |
           set -euo pipefail
           if [ -z "${HF_TOKEN:-}" ]; then
@@ -118,7 +135,7 @@ jobs:
               print(f"Created HF dataset repo: {repo_id}")
 
           commit = api.upload_folder(
-              folder_path="datasets/jam-actions-v0-public",
+              folder_path=os.environ["DATASET_DIR"],
               repo_id=repo_id,
               repo_type="dataset",
               commit_message=commit_msg,

@@ -29,6 +29,12 @@
 # Earned by Slice 23 audit (Gap #1, #13 — Windows-only reproducibility blocker).
 *.sha256 text eol=lf
 datasets/jam-actions-v0-public/** text eol=lf
+
+# Same pin for the acoustic corpus (v2.4.0). Its checksums are computed against
+# canonical LF content, so without this a Windows clone converts on checkout and
+# every one of the 115 entries fails verification — which is exactly what the new
+# pre-upload checksum gate caught before the first publish.
+datasets/jam-actions-acoustic-v0/** text eol=lf
 songs/library/**/*.json text eol=lf
 *.mid binary
 *.ogg binary
