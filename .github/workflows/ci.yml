@@ -98,6 +98,18 @@ jobs:
 
       - name: Test with coverage
         if: matrix.node-version == 22
+        # This job has ALREADY run the full suite uninstrumented in the step
+        # above, engine verification included. Under V8 block coverage the
+        # dataset's DSP verification -- 81 acoustic records each rendering a
+        # take and running YIN and onset detection -- measured 10x slower
+        # (build 22 s -> ~200 s; the two verification tests 11 s -> 166 s and
+        # 110 s, on the studio rig; worse here). No timeout survives that, and
+        # a 15-minute coverage leg is against the CI-minute rules. So this step
+        # skips the engine block, which still runs on this job's plain Test step
+        # and on the Node 24 job -- twice per push. The flag is named and the
+        # test file says the same thing. See src/dataset/acoustic-v1/v1.test.ts.
+        env:
+          SKIP_DSP_VERIFICATION: "1"
         run: pnpm test:coverage
 
       - name: Upload coverage to Codecov
