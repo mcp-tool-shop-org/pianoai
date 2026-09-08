@@ -2,10 +2,10 @@
 title: "Fine-tuning jam-actions: an honest negative, an underpowered positive, and a powered win"
 thumbnail: https://huggingface.co/spaces/mcp-tool-shop/README/resolve/main/banner.jpg
 authors:
-- user: mikeyfrilot
+- user: <hf-account>
 ---
 
-<!-- PUBLISHED 2026-07-12 as an HF community Article: https://huggingface.co/blog/mikeyfrilot/jam-actions-three-arcs
+<!-- PUBLISHED 2026-07-12 as an HF community Article: https://huggingface.co/blog/<hf-account>/jam-actions-three-arcs
      (org namespace mcp-tool-shop was 403-gated for the free org; published under the personal account per director call).
      HF's /new-blog editor strips this frontmatter and uses the H1 below as the title. -->
 
@@ -51,7 +51,7 @@ So the sentence the dataset may now make, with receipts:
 
 ## See it, hear it, run it
 
-- **⚡ [Live demo](https://huggingface.co/spaces/mikeyfrilot/jam-actions-live)** — pick a phrase (hear it, watch it scroll on a piano roll), then run the prompted baseline and the fine-tune side by side on the same MIDI-inspector task. A **"Surprise me"** button finds a question where the two diverged in the eval — mostly fine-tune rescues, but it will also hand you a case where both models still miss, because that's honest.
+- **⚡ [Live demo](https://huggingface.co/spaces/<hf-account>/jam-actions-live)** — pick a phrase (hear it, watch it scroll on a piano roll), then run the prompted baseline and the fine-tune side by side on the same MIDI-inspector task. A **"Surprise me"** button finds a question where the two diverged in the eval — mostly fine-tune rescues, but it will also hand you a case where both models still miss, because that's honest.
 - **🧭 [Explorer](https://huggingface.co/spaces/mcp-tool-shop/jam-actions-explorer)** — play every phrase, read the tool-use trace the model is trained to produce, browse the eval interactively. Runs entirely in your browser, no inference cost.
 - **📄 [Eval write-up](https://huggingface.co/spaces/mcp-tool-shop/jam-actions-eval)** — the full B-1 report, fixed figures, every receipt.
 - **🤖 [Model](https://huggingface.co/mcp-tool-shop/jam-ft-v1-qwen25)** · **💾 [Dataset](https://huggingface.co/datasets/mcp-tool-shop/jam-actions-v0)** (DOI [10.5281/zenodo.21313954](https://doi.org/10.5281/zenodo.21313954)) · **📚 [Collection](https://huggingface.co/collections/mcp-tool-shop/ai-jam-sessions)**

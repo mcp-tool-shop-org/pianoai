@@ -3,7 +3,7 @@
   "runDate": "2026-07-22T15:36:27.468Z",
   "mode": "responses-file",
   "model": "claude-fable-5",
-  "responsesFile": "C:/Users/mikey/AppData/Local/Temp/claude/E--AI-ai-jam-sessions/5a51949a-c18f-4b66-a6ec-fa09f332d8db/scratchpad/claude-responses.json",
+  "responsesFile": "${SCRATCHPAD}/E--AI-ai-jam-sessions/5a51949a-c18f-4b66-a6ec-fa09f332d8db/scratchpad/claude-responses.json",
   "bar": 0.15,
   "cohort": {
     "source": "sealed-22 (e2-phrase-continuation-results.json, 2026-05-16)",

@@ -55,7 +55,7 @@ for (const it of items) {
   responses.push({ itemId: it.itemId, raw: JSON.stringify(rows) });
 }
 
-const out = "C:/Users/mikey/AppData/Local/Temp/claude/E--AI-ai-jam-sessions/c2684146-d2d5-4189-8786-750d1b15e1d7/scratchpad/claude-er-responses.json";
+const out = "${SCRATCHPAD}/E--AI-ai-jam-sessions/c2684146-d2d5-4189-8786-750d1b15e1d7/scratchpad/claude-er-responses.json";
 writeFileSync(out, JSON.stringify({ label: "claude-fable-5", responses }, null, 2) + "\n");
 console.log("wrote " + responses.length + " responses → " + out);
 // sanity: print a couple voicings
