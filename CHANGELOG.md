@@ -55,6 +55,27 @@ rule cost something to learn: ground truth is constructed rather than written do
 verified against what the tools measure, you split by the unit that leaks, and any result is
 reported beside its baselines and the base model.
 
+### Known limitation — the waveform hash is not portable across JS engines
+
+Each acoustic record carries `wav_sha256`, the hash of the audio its recipe produces, and the
+dataset card says re-rendering from the recipe reproduces the same bytes. On a different JavaScript
+engine, for two of the 108 records, it does not.
+
+The renderer calls `Math.pow` and `Math.sin` once per sample. Neither is required by ECMA-262 to be
+correctly rounded, and V8's results changed between the versions in Node 22 and Node 24: of the
+27,869 distinct `Math.pow(2, x)` arguments this corpus evaluates, **253 (0.91%) return a different
+double**. Almost all of that disappears under 16-bit quantisation, but the `extra` perturbation of
+Für Elise lands on MIDI 63, where the semitone ratio itself differs by one unit in the last place,
+and its two records hash differently.
+
+Found by running the new reproducibility gate on the full CI matrix, which is the first time it had
+executed anywhere but Node 22. Every other field of every record reproduces on any engine, and the
+tests now assert those two claims separately rather than one claim that is only sometimes true.
+
+Making the waveform bit-portable means replacing the transcendentals with a fixed implementation.
+That changes every waveform hash and therefore every record, so it needs a new schema version and a
+republish. Not done here; the corpus is unchanged and the limitation is documented instead.
+
 ### Fixed
 
 - **The acoustic corpus is now reproducible end to end.** Its reproducibility gate covered 109 of

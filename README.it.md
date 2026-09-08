@@ -60,41 +60,51 @@ L'intera interfaccia è indipendente da qualsiasi libreria esterna: la trasforma
 
 ## L'Ensemble dal Vivo
 
-Durante la riproduzione, un sistema di valutazione analizza una registrazione al termine. Questo è il complemento: si chiede cosa stia suonando ogni
-strumento **in questo preciso momento**, durante l'esecuzione.
+Un sistema analizza una registrazione una volta che è terminata. Questo è il resto: chiede cosa sta
+facendo ogni strumento **in questo momento**, durante l'esecuzione.
 
 ```
 ensemble_now()
 ```
 
-Il sistema risponde indicando le note sostenute da ciascuno strumento, la durata di ciascuna nota e l'accordo combinato
-nell'intero ensemble. Durante un duetto, le due voci vengono riportate separatamente, in modo da poter vedere il
-pianoforte che suona una triade mentre il sintetizzatore esegue la melodia sopra.
+Risponde con le note sostenute di ogni strumento, la durata di ciascuna e l'accordo combinato
+nell'intero ensemble. Durante un duetto, le due voci vengono riportate separatamente, in modo da poter
+vedere il pianoforte che suona una triade mentre il sintetizzatore esegue la melodia sopra.
 
 ### Due canali, e quello più economico è anche il più preciso
 
-Questa è la parte che vale la pena comprendere, perché determina quale valore considerare affidabile.
+Questa è la parte che vale la pena capire, perché determina quale valore considerare affidabile.
 
-**Intento: cosa è stato chiesto a ciascun motore di suonare.** Quando il modello è quello che esegue, questa non è
-una stima. Un accordo di pianoforte non è qualcosa da trascrivere; sono tre note che sono state inviate. Le
-note sono esatte, immediate e non soggette a interpretazioni.
+**Intento: cosa è stato chiesto a ciascun motore di suonare.** Quando il modello è quello che esegue,
+questo non è una stima. Un accordo di pianoforte non è qualcosa da trascrivere; sono tre note che sono
+state inviate. Le note sono esatte, immediate e non soggette a interpretazioni.
 
-**Acustico: cosa è stato effettivamente prodotto.** Ogni motore può indirizzare il proprio output a un bus di analisi privato,
-in modo che ogni strumento venga misurato alla fonte, senza separazioni o ambiguità. Questo canale è
-**di verifica, non di scoperta**: è il modo in cui si apprende se una voce si è discostata dalla tempistica, se una registrazione è stata interrotta o se un motore è rimasto in silenzio pur continuando a ricevere note.
+**Acustico: cosa è effettivamente uscito.** Ogni motore può indirizzare il proprio output a un bus di
+analisi privato, in modo che ogni strumento venga misurato alla fonte, senza separazioni o ambiguità.
+Questo canale è **verifica, non scoperta**: è il modo in cui si apprende se una voce si è discostata
+dal tempo, se una registrazione è stata interrotta o se un motore è diventato silenzioso mentre
+continuava a ricevere note.
 
-Quando i due dati non corrispondono, si tratta di un dato relativo al rendering, non di una correzione delle note.
+Quando i due valori non corrispondono, si tratta di un dato relativo al rendering, non di una
+correzione delle note.
 
 ### Costi
 
-L'analisi di uno strumento costa circa **9 microsecondi per ogni callback audio**, rispetto a un blocco di 42,67 ms,
-che corrisponde a circa lo 0,02% del budget audio, misurato con zero campioni persi. Uno strumento senza un sistema di monitoraggio associato non costa nulla.
+L'analisi di uno strumento costa circa **9 microsecondi per ogni callback audio**, rispetto a un blocco
+di 42,67 ms, che corrisponde a circa lo 0,02% del budget audio, misurato con zero campioni persi.
+Uno strumento senza un osservatore collegato non costa nulla.
 
-### Cosa non verrà fornito
+### Cosa non ti dirà
 
-Il canale acustico presenta un ritardo e indica l'entità di tale ritardo: circa 23 ms per l'intonazione e 70 ms per un attacco confermato, perché un attacco non può essere confermato finché l'audio successivo non è stato ricevuto. Gli attacchi vicini a tale limite vengono omessi anziché segnalati e successivamente corretti.
+Il canale acustico presenta un ritardo e indica di quanto: circa 23 ms per l'intonazione e 70 ms per
+un attacco confermato, perché un attacco non può essere confermato finché l'audio successivo non è
+arrivato. Gli attacchi vicini a tale limite vengono omessi anziché segnalati e successivamente
+rimossi.
 
-Il sistema di tracciamento acustico segue una linea alla volta, quindi non identificherà le note di un accordo, e non pretende di farlo. Un accordo che non può risolvere è una sua limitazione nota, piuttosto che una scoperta, e l'ensemble rimane in silenzio al riguardo, invece di dare falsi allarmi ogni volta che il pianoforte suona un accordo.
+Il tracker acustico segue una linea alla volta, quindi non identificherà le note di un accordo, e non
+pretende di farlo. Un accordo che non può risolvere è una sua limitazione nota, piuttosto che una
+scoperta, e l'ensemble rimane in silenzio al riguardo, invece di lanciare falsi allarmi ogni volta che
+il pianoforte suona un accordo.
 
 ## La tastiera virtuale
 
@@ -261,29 +271,56 @@ pnpm exec tsx scripts/check-release-gate.ts /tmp/b.json
 
 ### Il corpus acustico
 
-**jam-actions-acoustic-v0**: il complemento delle tracce di cui sopra, basato sull'**audio** anziché sulla musica simbolica. 108 registrazioni, ciascuna delle quali associa un rendering sintetico deliberatamente perturbato di una frase di pubblico dominio al risultato che gli strumenti di analisi restituiscono effettivamente, in modo che ogni etichetta venga verificata rispetto allo strumento, anziché solo rispetto a se stessa.
+**jam-actions-acoustic-v0**: il corrispettivo delle tracce di cui sopra, basato sull'**audio** anziché
+sulla musica simbolica. 108 registrazioni, ciascuna delle quali associa un rendering sintetico
+deliberatamente perturbato di una frase di pubblico dominio al risultato che gli strumenti di analisi
+restituiscono effettivamente, in modo che ogni etichetta venga verificata rispetto allo strumento,
+anziché solo rispetto a se stessa.
 
 | | |
 |---|---|
 | Record | 108: 3 frasi × 9 tipi di perturbazione × 4 note di destinazione |
-| Dati esclusi | per **frase** (Für Elise), non per registrazione, in modo che una copia perturbata della stessa melodia non possa causare interferenze. |
-| Classi | corrispondenza, errore/avviso di intonazione, errore/superamento della tempistica, nota mancante, nota aggiuntiva, vibrato intonato, silenzio (nessuna valutazione necessaria) |
-| Audio | nessun dato distribuito: ogni registrazione contiene una ricetta deterministica e l'hash SHA-256 della forma d'onda che produce. |
+| Escluso | per **frase** (Für Elise), non per registrazione, in modo che una copia perturbata della stessa
+melodia non possa "trapelare". |
+| Classi | corrispondenza, errore/avviso di intonazione, errore/superamento del tempo, mancante, extra, vibrato
+intonato, silenzio senza elementi da valutare |
+| Audio | nessuno distribuito: ogni registrazione contiene una ricetta deterministica e l'hash della forma d'onda
+che produce |
 | Schema | `jam-actions-acoustic-v0/1.0.0` |
 
-Due delle nove classi sono presenti perché un modello ingenuo risponde in modo sicuro, ma errato: una nota con vibrato il cui risultato corretto è *intonata*, e il silenzio il cui risultato corretto è *nessuna valutazione necessaria*. Ogni soglia da cui dipende il risultato viene copiata nella registrazione, perché entrambe sono state modificate una volta durante la fase di creazione.
+Due delle nove classi sono presenti perché un modello ingenuo risponde in modo sicuro ma errato: una
+nota di vibrato il cui risultato corretto è *intonata* e il silenzio il cui risultato corretto è
+*niente da valutare*. Ogni soglia da cui dipende il risultato viene copiata nella registrazione, perché
+entrambe sono cambiate una volta durante la compilazione.
 
-Il corpus è riproducibile da questo repository. La sua rigenerazione produce tutti i 115 file pubblicati e un file `checksums.sha256` identico, e un test verifica esattamente questo senza scrivere l'albero pubblicato.
+Il corpus è riproducibile da questo repository. La sua rigenerazione produce tutti i 115 file
+pubblicati e un `checksums.sha256` identico, e un test verifica esattamente questo senza scrivere l'albero
+pubblicato.
+
+**Una limitazione, misurata anziché presunta.** Ogni registrazione contiene `wav_sha256`, l'hash della
+forma d'onda prodotta dalla sua ricetta, e il renderer chiama `Math.pow` e `Math.sin` una volta per campione.
+Nessuno dei due deve essere arrotondato correttamente, e i risultati di V8 sono cambiati tra Node 22 e
+Node 24: dei 27.869 argomenti `Math.pow(2, x)` distinti che questo corpus valuta, 253 restituiscono un valore
+double diverso. Quasi tutto questo scompare con la quantizzazione a 16 bit, ma **2 delle 108
+registrazioni** — entrambe la perturbazione `extra` di Für Elise, il cui motivo si trova sull'unica nota in
+cui il rapporto del semitono stesso è diverso — hanno un hash diverso in Node 24. Ogni altro campo
+di ogni registrazione viene riprodotto su qualsiasi motore e il repository testa entrambe le affermazioni
+separatamente. Se si esegue un nuovo rendering e si notano queste due incongruenze, si tratta di
+questo, non di un download corrotto. Rendere la forma d'onda portabile a livello di bit significa
+sostituire le funzioni trascendenti, il che modifica ogni hash e quindi richiede una nuova versione dello
+schema.
 
 ### Crea il tuo
 
-L'infrastruttura su cui funziona il corpus è disponibile per i tuoi esperimenti.
-[`experiments/_template/`](experiments/_template/) è un esempio funzionante che puoi copiare: definisci un
-compito e otterrai la formattazione SFT, il punteggio per classe, baseline banali rispetto all'insieme di risultati dichiarato e un controllo che nessuna unità di test sia divisa tra i set di dati.
+L'impalcatura su cui funziona il corpus è disponibile per i tuoi esperimenti.
+[`experiments/_template/`](experiments/_template/) è un esempio funzionante che puoi copiare: dichiara un compito e
+otterrai la formattazione SFT, il punteggio per classe, baseline banali sull'insieme di risultati
+dichiarato e un controllo che nessuna unità di test sia divisa.
 
-Il [contratto](experiments/_template/README.md) è la parte che vale la pena leggere. La verità di base è
-costruibile anziché scritta a mano, le etichette vengono verificate rispetto a ciò che gli strumenti misurano, si esegue la suddivisione in base all'unità che causa interferenze e si riportano le baseline e il modello di base insieme a qualsiasi risultato.
-Ciascuna di queste regole comporta un costo in termini di apprendimento.
+Il [contratto](experiments/_template/README.md) è la parte che vale la pena leggere. La verità
+fondamentale è costruibile anziché scritta a mano, le etichette vengono verificate rispetto a ciò che
+gli strumenti misurano, si divide in base all'unità che "trapela" e si segnalano le baseline e il
+modello di base insieme a qualsiasi risultato. Ognuna di queste regole ha un costo per essere appresa.
 
 ## Installazione
 
@@ -395,20 +432,23 @@ Richiede **Node.js 22+** (la versione v2.0.0 ha aumentato il requisito minimo co
 
 | Strumento | Cosa fa |
 |------|--------------|
-| `score_performance` | Valuta un accompagnamento MIDI rispetto a una canzone di una libreria: intonazione, tempistica, completezza, con feedback graduato. |
-| `score_annotation` | Valuta la qualità dell'annotazione su 5 dimensioni. |
+| `score_performance` | Valuta un accompagnamento MIDI rispetto a una canzone di una libreria: intonazione, tempo, completezza,
+con feedback graduato |
+| `score_annotation` | Valuta la qualità dell'annotazione su 5 dimensioni |
 
 ### Ascolta
 
-Misura l'audio registrato. Monofonico: segue una linea alla volta, quindi un accordo o un mix completo producono risultati incoerenti. Ogni valore deriva dall'elaborazione del segnale, mai da un modello che legge un'immagine.
+Misura l'audio registrato. Monofonico: segue una linea alla volta, quindi un accordo o un mix completo
+producono risultati insensati. Ogni numero deriva dall'elaborazione del segnale, mai dalla lettura di
+un'immagine da parte di un modello.
 
 | Strumento | Cosa fa |
 |------|--------------|
 | `analyze_audio` | Misura un file WAV: tempi di attacco, la curva dell'intonazione come nomi di note con centesimi e livello. |
-| `transcribe_audio` | Trasforma una registrazione monofonica in note, con la deviazione di ciascuna nota rispetto all'intonazione di riferimento. Le note che il sistema non è stato in grado di seguire vengono omesse anziché ipotizzate. |
-| `score_audio_take` | Valuta un'esecuzione rispetto a una canzone di una libreria **ad orecchio**, quindi consegna il risultato a `view_scored_piano_roll`. |
-| `view_spectrogram` | Visualizza il suono: uno spettrogramma a Q costante sull'asse di una tastiera di pianoforte, eventualmente sovrapposto alle note previste. Per impostazione predefinita, la visualizzazione è oscurata. |
-| `ensemble_now` | Cosa sta suonando ogni strumento **in questo preciso momento**, durante l'esecuzione. Le note derivano da ciò che è stato inviato, quindi sono esatte anziché stimate. |
+| `transcribe_audio` | Trasforma una registrazione monofonica in una sequenza di note, indicando la deviazione di ciascuna nota rispetto all'intonazione di riferimento. Le note che il tracker non è in grado di seguire vengono omesse anziché essere stimate. |
+| `score_audio_take` | Valuta una performance confrontandola con una traccia musicale presente in una libreria, **a orecchio**, e poi passa il risultato a `view_scored_piano_roll`. |
+| `view_spectrogram` | Visualizza il suono: uno spettrogramma a Q costante su un asse che rappresenta la tastiera di un pianoforte, con la possibilità di sovrapporlo alle note previste. Per impostazione predefinita, la visualizzazione è oscurata. |
+| `ensemble_now` | Mostra cosa sta suonando **ogni strumento in questo preciso momento**, durante l'esecuzione. Le note provengono dai dati inviati, quindi sono esatte e non stimate. |
 
 ### Prompt MCP
 
@@ -445,10 +485,10 @@ ai-jam-sessions --version
 ## Stato
 
 **v2.5.0: la versione in cui il modello può osservare la band mentre suona** (vedere [CHANGELOG](CHANGELOG.md)).
-`ensemble_now` registra cosa sta facendo ogni strumento mentre la musica continua: note tenute per ogni strumento, la durata di ciascuna e l’accordo risultante. Funziona su due canali e quello più economico è anche il più preciso: quando questo server esegue l’analisi, sa esattamente cosa ha inviato, quindi un accordo è rappresentato da tre note invece che da un problema di trascrizione, mentre un sensore acustico separato misura ogni strumento **alla fonte** per verificarne l’accuratezza. Il costo misurato è di circa **9 microsecondi per ogni callback audio**; la latenza è dichiarata esplicitamente (circa 23 ms per l’altezza, circa 70 ms per l’inizio); e i limiti sono documentati perché sono elementi su cui si può intervenire: il tracker è monofonico, i livelli sovrapposti vengono analizzati individualmente e mai come un mix, e uno strumento senza sensore non è uno strumento silenzioso.
-Con questa stessa versione, il sistema di gestione del dataset viene trasformato in un contratto a cui chiunque può fare riferimento, con un modello predefinito, in modo che gli utenti possano creare i propri corpora e addestrare i propri adattatori utilizzando gli stessi criteri. Nel corso di questo processo, è stato scoperto che il meccanismo di riproducibilità del corpus acustico copre 109 dei 115 percorsi pubblicati, e tre dei sei percorsi mancanti non sono mai stati generati affatto: rigenerandoli, questi sono stati eliminati. Una rigenerazione completa ora riproduce ogni file e il file manifest del checksum byte per byte. L’ambiente di test attivo è composto da **54 strumenti e 4 modelli di prompt**, con **3.389 test superati su 165 file (1 saltato)**.
+`ensemble_now` segnala cosa sta facendo ogni strumento mentre la musica è in corso: note tenute per strumento, la durata di ciascuna e l'accordo combinato. Funziona su due canali e il canale più economico è quello più preciso: quando questo server esegue l'analisi, sa esattamente cosa ha inviato, quindi un accordo è rappresentato da tre note anziché da un problema di trascrizione, mentre un sensore acustico separato misura ogni strumento **alla fonte** per la verifica. Il costo misurato è di circa **9 microsecondi per ogni callback audio**; la latenza è dichiarata esplicitamente anziché implicita (~23 ms per l'intonazione, ~70 ms per l'inizio confermato); e i limiti sono documentati perché possono essere modificati: il tracker è monofonico, i livelli secondari vengono analizzati individualmente e mai come un mix, e uno strumento senza sensore non è uno strumento silenzioso.
+La stessa versione trasforma il sistema di gestione dei dati in un contratto che chiunque può utilizzare, con un modello di esempio, in modo che gli utenti possano creare i propri corpora e addestrare i propri adattatori utilizzando lo stesso metodo. Nel corso di questo processo, è stato scoperto che il meccanismo di riproducibilità del corpus acustico copre 109 dei suoi 115 percorsi pubblicati, e tre dei sei percorsi mancanti non sono mai stati emessi dal generatore: la rigenerazione li ha eliminati. Una rigenerazione completa riproduce ora ogni file e il manifesto dei checksum byte per byte. L'interfaccia live è composta da **54 strumenti e 4 modelli di prompt**, con **3.389 test superati su 165 file (1 saltato)**.
 
-In precedenza, nella versione v2.4.0: la versione in cui il modello ha acquisito la capacità di “ascoltare”. Quattro strumenti hanno colmato il divario tra la riproduzione dell’audio e la sua analisi: `analyze_audio` per l’inizio, il profilo dell’altezza e il livello; `transcribe_audio` per una registrazione monofonica sotto forma di note; `score_audio_take` per valutare una performance a orecchio e fornire il risultato alla partitura del pianoforte esistente, senza modificarla; e `view_spectrogram` per visualizzare il suono su un asse costante-Q, simile a una tastiera di pianoforte. Tutto questo è un’elaborazione del segnale priva di dipendenze, scritta in questo repository: la sua stessa FFT, finestre, trasformazioni mel e costante-Q, rilevamento dell’inizio e tracciamento dell’altezza, perché un modello non può valutare in modo affidabile un’immagine e le query deterministiche sono più efficaci dell’inferenza per le domande con risposte precise. Questa versione ha anche pubblicato **jam-actions-acoustic-v0**, 108 registrazioni di riferimento che mostrano l’utilizzo degli strumenti sull’audio.
+Nella versione precedente, v2.4.0: la versione in cui il modello ha acquisito la capacità di "ascoltare". Quattro strumenti hanno colmato il divario tra la riproduzione dell'audio e la sua analisi: `analyze_audio` per l'inizio, il profilo dell'intonazione e il livello; `transcribe_audio` per trasformare una registrazione monofonica in una sequenza di note; `score_audio_take` per valutare una performance a orecchio e passare il risultato alla sequenza di note del pianoforte esistente, senza modificarla; e `view_spectrogram` per visualizzare il suono su un asse a Q costante, che rappresenta la tastiera di un pianoforte. Tutto questo è un'elaborazione del segnale priva di dipendenze esterne, scritta in questo repository: la sua FFT, le finestre, le trasformazioni mel e a Q costante, il rilevamento dell'inizio e il tracciamento dell'intonazione, perché un modello non può valutare in modo affidabile un'immagine e le query deterministiche sono più efficaci dell'inferenza per le domande che richiedono risposte precise. Questa versione ha anche pubblicato **jam-actions-acoustic-v0**, 108 registrazioni di riferimento utilizzabili per testare l'uso degli strumenti sull'audio.
 
 **v2.3.0: la versione in cui lo strumento ha imparato a cantare sincronizzato con il tempo** (vedi [CHANGELOG](CHANGELOG.md)). Ora, qualsiasi canzone presente nella libreria può contenere una vera linea melodica cantata che si sincronizza con il pianoforte: un **clock della partitura** deriva l'intonazione, l'attacco e la durata di ogni sillaba dalla MIDI della canzone sulla timeline del lettore; un cantante locale, con licenza Apache 2.0 e basato sulla partitura ([SoulX-Singer](https://github.com/Soul-AILab/SoulX-Singer)), canta da questo clock; e due gate misurano il risultato prima che venga considerato un mix: tempo (ogni vocale entro 40 ms dalla partitura) e intonazione (ogni nota entro 50 centesimi). La registrazione di Amazing Grace inclusa presenta un errore massimo di 6 ms nel tempo e di -2,7 centesimi nell'intonazione globale, con i risultati registrati; la pagina di destinazione la presenta come uno stato onesto, con l'unico difetto rimanente indicato (la giunzione iniziale). Il percorso, le sue impostazioni e la ricerca alla base di ogni scelta (cinque aree di studio, citate) sono presenti nel [manuale](https://mcp-tool-shop-org.github.io/ai-jam-sessions/handbook/vocals/) e in [`docs/`](docs/). L'interfaccia live è invariata, con **49 strumenti e 4 modelli di prompt**, con **3.080 test superati (1 saltato)** più la suite pytest dello strumento vocale. **Stato della pubblicazione:** pubblicato — [`@mcptoolshop/ai-jam-sessions@2.3.0`](https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions) su npm, con tracciabilità della provenienza.
 

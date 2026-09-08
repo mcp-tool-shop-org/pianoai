@@ -91,3 +91,11 @@ The acoustic corpus regenerates from source to all 115 published files with a by
 checksum manifest, and a test asserts it without touching the published tree. If your corpus goes
 anywhere public, hold it to the same bar. A dataset nobody can rebuild is a dataset nobody can
 check.
+
+Hold it honestly, too. That corpus stores a hash of the audio each record's recipe produces, and
+the renderer calls `Math.pow` and `Math.sin` per sample. Neither is required to be correctly
+rounded, and V8 changed between Node 22 and Node 24: 253 of the 27,869 distinct `Math.pow(2, x)`
+arguments return a different double, which is enough to move 2 of 108 waveform hashes. So the
+repository makes two claims instead of one — every other field reproduces on any engine, and the
+full byte match holds on the engine the corpus was built with. If a value in your records comes
+from floating-point audio rather than from integers and strings, expect the same and say so.

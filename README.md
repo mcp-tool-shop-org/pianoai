@@ -306,6 +306,17 @@ The corpus is reproducible from this repository. Regenerating it produces all 11
 and a byte-identical `checksums.sha256`, and a test asserts exactly that without writing the
 published tree.
 
+**One caveat, measured rather than assumed.** Each record carries `wav_sha256`, the hash of the
+waveform its recipe produces, and the renderer calls `Math.pow` and `Math.sin` once per sample.
+Neither is required to be correctly rounded, and V8's results changed between Node 22 and Node 24:
+of the 27,869 distinct `Math.pow(2, x)` arguments this corpus evaluates, 253 return a different
+double. Almost all of that vanishes under 16-bit quantisation, but **2 of the 108 records** — both
+the `extra` perturbation of Für Elise, whose motif sits on the one pitch where the semitone ratio
+itself differs — hash differently on Node 24. Every other field of every record reproduces on any
+engine, and the repository tests both claims separately. If you re-render and see those two
+mismatch, that is this, not a corrupt download. Making the waveform bit-portable means replacing
+the transcendentals, which changes every hash and therefore needs a new schema version.
+
 ### Build your own
 
 The scaffolding that corpus runs on is available for your own experiments.

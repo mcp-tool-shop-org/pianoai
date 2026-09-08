@@ -267,6 +267,8 @@ Dos de las nueve clases están ahí porque un modelo ingenuo las responde con co
 
 El corpus se puede reproducir a partir de este repositorio. Volver a generarlo produce todos los 115 archivos publicados y un `checksums.sha256` idéntico en bytes, y una prueba confirma exactamente eso sin escribir el árbol publicado.
 
+**Una advertencia: se mide en lugar de suponerse.** Cada registro contiene `wav_sha256`, el hash de la forma de onda que produce su receta, y el renderizador llama a `Math.pow` y `Math.sin` una vez por muestra. Ninguno de los dos necesita estar correctamente redondeado, y los resultados de V8 cambiaron entre Node 22 y Node 24: de los 27.869 argumentos `Math.pow(2, x)` distintos que evalúa este corpus, 253 devuelven un valor double diferente. Casi todo eso desaparece con la cuantificación de 16 bits, pero **2 de los 108 registros** —ambos la perturbación `extra` de Für Elise, cuyo motivo se encuentra en la única nota donde la relación de semitono en sí difiere— tienen un hash diferente en Node 24. Todos los demás campos de cada registro se reproducen en cualquier motor, y el repositorio prueba ambas afirmaciones por separado. Si vuelve a renderizar y observa esas dos discrepancias, es esto, y no una descarga corrupta. Hacer que la forma de onda sea portable a nivel de bits significa reemplazar las funciones trascendentes, lo que cambia cada hash y, por lo tanto, requiere una nueva versión del esquema.
+
 ### Crea el tuyo propio
 
 La estructura sobre la que se ejecuta el corpus está disponible para tus propios experimentos.
