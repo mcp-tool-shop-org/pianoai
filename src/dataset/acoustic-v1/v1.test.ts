@@ -246,12 +246,46 @@ describe.runIf(RUN_DSP)("engine verification (skipped under SKIP_DSP_VERIFICATIO
     built = v1Records();
   });
 
-  it("rebuilds the committed corpus exactly", () => {
+  // Numbers are compared with a tolerance; everything else exactly.
+  //
+  // Measured 2026-09-08: rebuilding on Node 24 differs from the committed
+  // corpus on 3 of 305 records, all in one field -- the YIN cents inside the
+  // acoustic tool-result turn -- by 3.8e-13 cents. That is V8's Math.pow and
+  // Math.sin changing in the last place between majors, the same class as
+  // v0's wav_sha256 finding, and thirteen orders of magnitude under the
+  // 5-cent guard band. A byte-exact comparison would fail every engine except
+  // the one that generated the corpus and prove nothing about the generator.
+  // 1e-6 is six orders under the tracker's own 0.179 c p95 and seven above the
+  // observed noise; any real semantic change is far beyond it.
+  const NUMERIC_TOLERANCE = 1e-6;
+  function expectCloseDeep(a: unknown, b: unknown, path: string): void {
+    if (typeof a === "number" && typeof b === "number") {
+      expect(Math.abs(a - b), path).toBeLessThanOrEqual(NUMERIC_TOLERANCE);
+      return;
+    }
+    if (Array.isArray(a) || Array.isArray(b)) {
+      expect(Array.isArray(a) && Array.isArray(b), path).toBe(true);
+      expect((a as unknown[]).length, path).toBe((b as unknown[]).length);
+      (a as unknown[]).forEach((x, i) => expectCloseDeep(x, (b as unknown[])[i], `${path}[${i}]`));
+      return;
+    }
+    if (a && b && typeof a === "object" && typeof b === "object") {
+      const ka = Object.keys(a).sort(), kb = Object.keys(b).sort();
+      expect(ka, path).toEqual(kb);
+      for (const k of ka) expectCloseDeep((a as any)[k], (b as any)[k], `${path}.${k}`);
+      return;
+    }
+    expect(a, path).toBe(b);
+  }
+
+  it("rebuilds the committed corpus, exactly except for last-place float noise", () => {
     const committed = committedRecords();
     expect(built.length).toBe(committed.length);
     const byId = new Map(committed.map((r) => [r.id, r]));
     for (const b of built) {
-      expect(byId.get(b.id), b.id).toEqual(b);
+      const c = byId.get(b.id);
+      expect(c, b.id).toBeDefined();
+      expectCloseDeep(c, b, b.id);
     }
   });
 
