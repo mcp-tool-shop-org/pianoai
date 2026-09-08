@@ -66,7 +66,21 @@ export interface OnsetOptions {
   maxFilterBins?: number;
   /**
    * Peak-picker threshold in units of the peak-normalised novelty curve.
-   * Defaults to 0.07.
+   * Defaults to 0.15.
+   *
+   * RAISED FROM 0.07 AT JUNCTURE 2, on measurement. A 5 Hz / 50-cent vibrato on
+   * a pure tone produced spurious onsets once per vibrato cycle at 0.07, with
+   * novelty strengths of 0.11 to 0.16 against the real onset's 1.00. Widening
+   * the maximum filter barely helped (six false onsets at 3 bins, still three at
+   * 11), because at this filterbank's resolution the excursion already fits
+   * inside a 3-bin filter; the residue is a threshold matter, not a width one.
+   * Sweeping delta put the knee at 0.15, where the false onsets vanish while a
+   * deliberately soft onset (0.15 amplitude following a full-scale one) still
+   * survives, and keeps surviving out to 0.25.
+   *
+   * The tradeoff to know: this threshold is PEAK-NORMALISED, so a clip with one
+   * very loud onset raises the bar for every quieter one in the same clip. Pass
+   * a lower delta explicitly when analysing material with a wide dynamic range.
    */
   delta?: number;
   /** Past window for the moving-maximum test, in seconds. Defaults to 0.03. */
@@ -116,7 +130,7 @@ function resolveOnsetOptions(options: OnsetOptions): Required<OnsetOptions> {
     fmin = 30,
     fmax = Math.min(11025, sampleRate / 2),
     maxFilterBins = 3,
-    delta = 0.07,
+    delta = 0.15,
     preMax = 0.03,
     postMax = 0.03,
     preAvg = 0.10,

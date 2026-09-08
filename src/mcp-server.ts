@@ -72,7 +72,7 @@ import {
   type ChordProgression,
   type StyleName,
 } from "./compose/index.js";
-import { safeParseMeasure, measureToSingableText, type SingAlongMode } from "./note-parser.js";
+import { safeParseMeasure, measureToSingableText, midiToNoteName, type SingAlongMode } from "./note-parser.js";
 import { renderPianoRoll, renderScoredPianoRoll } from "./piano-roll.js";
 import { renderGuitarTab } from "./guitar-tab-roll.js";
 import {
@@ -111,6 +111,16 @@ import { createSingOnMidiHook } from "./teaching/sing-on-midi.js";
 import { createMidiFeedbackHook } from "./teaching/midi-feedback.js";
 import { createLiveMidiFeedbackHook } from "./teaching/live-midi-feedback.js";
 import { scorePerformance, type PerformanceResult } from "./score-performance.js";
+import {
+  decodeWav,
+  detectOnsets,
+  trackPitch,
+  transcribe,
+  toMidiNoteEvents,
+  HOUSE_TOLERANCE_MS,
+  ONSET_DETECTOR_CAVEAT,
+  type DecodedAudio,
+} from "./audio/index.js";
 import { scoreAnnotation, formatAnnotationScore } from "./annotation-scorer.js";
 import { compareSongs, formatComparison } from "./song-compare.js";
 import type { VoiceDirective, AsideDirective } from "./types.js";
@@ -2642,6 +2652,313 @@ registerTool(
       ],
     };
   }
+);
+
+// ─── Tools: the audio inspector ────────────────────────────────────────────
+//
+// The model already queries the SCORE through deterministic tools rather than
+// eyeballing a piano roll. These do the same for SOUND. Every number comes from
+// DSP, never from a model reading a picture, because the evidence says vision
+// models read spectrograms coarsely at best (docs/spectrogram-surface-study-
+// 2026-09.md). Pitch is reported in note names with cents, never in Hz, because
+// language models answer better from scientific pitch notation than from a
+// frequency.
+
+/** Load a WAV from disk for any of the audio tools, with actionable failures. */
+function loadAudioFile(path: string):
+  | { ok: true; audio: DecodedAudio }
+  | { ok: false; result: { content: [{ type: "text"; text: string }]; isError: true } } {
+  if (!existsSync(path)) {
+    return {
+      ok: false,
+      result: {
+        content: [{
+          type: "text",
+          text:
+            `No file at "${path}".\n\n` +
+            `Pass an absolute path to an uncompressed WAV file. If you have an ` +
+            `MP3 or FLAC, convert it first: this server decodes PCM WAV only, ` +
+            `so that it needs no external dependencies.`,
+        }],
+        isError: true,
+      },
+    };
+  }
+  try {
+    return { ok: true, audio: decodeWav(readFileSync(path)) };
+  } catch (err) {
+    return {
+      ok: false,
+      result: {
+        content: [{
+          type: "text",
+          text:
+            `Could not read "${path}" as audio.\n\n` +
+            `${err instanceof Error ? err.message : String(err)}`,
+        }],
+        isError: true,
+      },
+    };
+  }
+}
+
+/** One line describing what a decoded file is, shown at the top of each report. */
+function describeAudio(audio: DecodedAudio, path: string): string {
+  const chans = audio.sourceChannels === 1
+    ? "mono"
+    : `${audio.sourceChannels} channels, averaged to mono`;
+  return (
+    `**${path}**\n` +
+    `${audio.durationSec.toFixed(2)} s · ${audio.sampleRate} Hz · ` +
+    `${audio.bitDepth}-bit · ${chans}`
+  );
+}
+
+registerTool(
+  "analyze_audio",
+  "Measure a WAV recording: note onsets, the pitch contour, and level. This is how you HEAR a take rather than reading the MIDI you intended — use it on a rendered performance, a sung take, or any recording you want described in musical terms. Returns onset times in seconds and the pitch contour as note names with cent deviations. Monophonic: on a chord or a full mix the pitch readings will be confidently wrong.",
+  {
+    path: z.string().describe("Absolute path to an uncompressed WAV file."),
+    start_sec: z.number().optional().describe("Analyse from this time onward. Defaults to the start of the file."),
+    end_sec: z.number().optional().describe("Analyse up to this time. Defaults to the end of the file."),
+  },
+  async ({ path, start_sec, end_sec }: { path: string; start_sec?: number; end_sec?: number }) => {
+    const loaded = loadAudioFile(path);
+    if (!loaded.ok) return loaded.result;
+    const { audio } = loaded;
+
+    const from = Math.max(0, Math.floor((start_sec ?? 0) * audio.sampleRate));
+    const to = Math.min(
+      audio.samples.length,
+      end_sec === undefined ? audio.samples.length : Math.ceil(end_sec * audio.sampleRate),
+    );
+    if (to - from < 2048) {
+      return {
+        content: [{
+          type: "text" as const,
+          text:
+            `That window holds only ${Math.max(0, to - from)} samples, too few to ` +
+            `analyse. Ask for at least 0.05 s of audio.`,
+        }],
+        isError: true as const,
+      };
+    }
+    const window = audio.samples.subarray(from, to);
+    const offset = from / audio.sampleRate;
+
+    const onsetResult = detectOnsets(window, { sampleRate: audio.sampleRate });
+    const track = trackPitch(window, { sampleRate: audio.sampleRate });
+    const voiced = track.frames.filter((f) => f.f0Hz !== null && f.confidence >= 0.5);
+
+    let peak = 0;
+    let sumSquares = 0;
+    for (let i = 0; i < window.length; i++) {
+      const v = window[i]!;
+      const a = Math.abs(v);
+      if (a > peak) peak = a;
+      sumSquares += v * v;
+    }
+    const rms = Math.sqrt(sumSquares / window.length);
+
+    const lines: string[] = [
+      "# Audio analysis",
+      "",
+      describeAudio(audio, path),
+    ];
+    if (start_sec !== undefined || end_sec !== undefined) {
+      lines.push(
+        `Window: ${offset.toFixed(3)} s to ${(to / audio.sampleRate).toFixed(3)} s`,
+      );
+    }
+
+    lines.push(
+      "",
+      "## Level",
+      `Peak ${peak.toFixed(3)}, RMS ${rms.toFixed(4)}` +
+        (peak >= 0.999 ? " — at or past full scale, so this may be clipped." : ""),
+      "",
+      `## Onsets (${onsetResult.onsets.length})`,
+    );
+
+    if (onsetResult.onsets.length === 0) {
+      lines.push(
+        "None detected. A sustained tone with no re-articulation has no attack to find.",
+      );
+    } else {
+      const shown = onsetResult.onsets.slice(0, 40);
+      lines.push(shown.map((o) => `${(o.time + offset).toFixed(3)} s`).join(" · "));
+      if (onsetResult.onsets.length > shown.length) {
+        lines.push(`…and ${onsetResult.onsets.length - shown.length} more.`);
+      }
+    }
+
+    lines.push("", "## Pitch");
+    if (voiced.length === 0) {
+      lines.push(
+        "No pitched content found. The audio may be silent, percussive, noisy, " +
+        "or polyphonic — this tracker follows one voice at a time.",
+      );
+    } else {
+      const midis = voiced.map((f) => f.midi!).sort((a, b) => a - b);
+      const median = midis[Math.floor(midis.length / 2)]!;
+      const lowest = midis[0]!;
+      const highest = midis[midis.length - 1]!;
+      const centsSuffix = (m: number): string => {
+        const c = Math.round((m - Math.round(m)) * 100);
+        return c === 0 ? "" : ` ${c > 0 ? "+" : ""}${c} cents`;
+      };
+      lines.push(
+        `Voiced in ${voiced.length} of ${track.frames.length} frames ` +
+        `(${((voiced.length / track.frames.length) * 100).toFixed(0)}%).`,
+        `Range ${midiToNoteName(Math.round(lowest))} to ` +
+        `${midiToNoteName(Math.round(highest))}, centred on ` +
+        `${midiToNoteName(Math.round(median))}${centsSuffix(median)}.`,
+      );
+    }
+
+    lines.push("", "---", ONSET_DETECTOR_CAVEAT);
+
+    return { content: [{ type: "text" as const, text: lines.join("\n") }] };
+  },
+);
+
+registerTool(
+  "transcribe_audio",
+  "Turn a monophonic WAV recording into notes: pitch, start time, duration, and how far each note sits from concert pitch. Use it to find out what was actually played or sung, as opposed to what the score asked for. Feed the result to score_audio_take to grade it against a song. Monophonic only — it follows one line at a time, so a chord or a full mix produces confident nonsense.",
+  {
+    path: z.string().describe("Absolute path to an uncompressed WAV file."),
+    min_confidence: z.number().optional().describe("Frames below this pitch confidence do not vote on a note. 0 to 1, defaults to 0.5."),
+  },
+  async ({ path, min_confidence }: { path: string; min_confidence?: number }) => {
+    const loaded = loadAudioFile(path);
+    if (!loaded.ok) return loaded.result;
+    const { audio } = loaded;
+
+    const { notes, caveat } = transcribe(audio.samples, {
+      sampleRate: audio.sampleRate,
+      ...(min_confidence === undefined ? {} : { minConfidence: min_confidence }),
+    });
+
+    const lines: string[] = [
+      "# Transcription",
+      "",
+      describeAudio(audio, path),
+      "",
+      `**${notes.length} note${notes.length === 1 ? "" : "s"} recovered.**`,
+    ];
+
+    if (notes.length === 0) {
+      lines.push(
+        "",
+        "Nothing was pitched enough to call a note. That is a finding rather " +
+        "than an error: the file may be silent, percussive, or polyphonic.",
+      );
+    } else {
+      lines.push(
+        "",
+        "| # | note | start | duration | cents off | confidence |",
+        "|---|---|---|---|---|---|",
+      );
+      notes.slice(0, 80).forEach((n, i) => {
+        const cents = n.centsOffset >= 0
+          ? `+${n.centsOffset.toFixed(0)}`
+          : n.centsOffset.toFixed(0);
+        lines.push(
+          `| ${i + 1} | ${midiToNoteName(n.note)} | ${n.time.toFixed(3)} s | ` +
+          `${n.duration.toFixed(3)} s | ${cents} | ${n.confidence.toFixed(2)} |`,
+        );
+      });
+      if (notes.length > 80) {
+        lines.push("", `…and ${notes.length - 80} more notes.`);
+      }
+    }
+
+    lines.push("", "---", caveat);
+    return { content: [{ type: "text" as const, text: lines.join("\n") }] };
+  },
+);
+
+registerTool(
+  "score_audio_take",
+  "Grade a recorded performance against a song in the library, by ear rather than from MIDI capture. Transcribes the WAV, matches it to the score, and reports which notes landed, which drifted, and which were missed — then leaves the result ready for view_scored_piano_roll so you can SEE the comparison drawn over the score. This is the tool for grading a real instrument, a sung take, or rendered audio, where there is no MIDI to capture. Matches within 40 ms, stricter than the 50 ms convention published work reports.",
+  {
+    path: z.string().describe("Absolute path to an uncompressed WAV file of the performance."),
+    song_id: z.string().describe("Which song in the library to grade against. Use list_songs to browse."),
+    bpm: z.number().optional().describe("Tempo the take was played at, if it differs from the song's own."),
+  },
+  async ({ path, song_id, bpm }: { path: string; song_id: string; bpm?: number }) => {
+    const song = getSong(song_id);
+    if (!song) {
+      return {
+        content: [{
+          type: "text" as const,
+          text: `No song called "${song_id}" in the library. Try list_songs to browse.`,
+        }],
+        isError: true as const,
+      };
+    }
+
+    const loaded = loadAudioFile(path);
+    if (!loaded.ok) return loaded.result;
+    const { audio } = loaded;
+
+    const { notes, caveat } = transcribe(audio.samples, { sampleRate: audio.sampleRate });
+    if (notes.length === 0) {
+      return {
+        content: [{
+          type: "text" as const,
+          text:
+            `Nothing pitched enough to grade was found in "${path}".\n\n` +
+            `Scoring it against "${song.title}" would report every note missed, ` +
+            `which would say more about the recording than about the playing. ` +
+            `Run analyze_audio on the file to see what is actually in it.\n\n${caveat}`,
+        }],
+        isError: true as const,
+      };
+    }
+
+    const events = toMidiNoteEvents(notes);
+    // 40 ms, not scorePerformance's own 150 ms default. This repo's timing gate
+    // is the stricter number, and silently inheriting the looser one would look
+    // like a pass that had never actually been tested.
+    const result = scorePerformance(song, events, {
+      toleranceMs: HOUSE_TOLERANCE_MS,
+      ...(bpm === undefined ? {} : { bpm }),
+    });
+    lastScoredTake = { song, result };
+
+    const inferred = notes.filter((n) => n.onsetInferred).length;
+
+    const lines: string[] = [
+      `# Scored by ear: ${result.songTitle}`,
+      "",
+      describeAudio(audio, path),
+      "",
+      `**Overall ${result.metrics.overallScore}/100**`,
+      `- Pitch accuracy: ${result.metrics.pitchAccuracy}%`,
+      `- Timing accuracy: ±${result.metrics.timingAccuracyMs} ms, matched within ${HOUSE_TOLERANCE_MS} ms`,
+      `- Completeness: ${result.metrics.completeness}%`,
+      `- Notes: ${result.details.matched}/${result.details.totalExpected} matched, ` +
+      `${result.metrics.extraNoteCount} extra`,
+      "",
+      `Transcribed ${notes.length} note${notes.length === 1 ? "" : "s"} from the recording` +
+      (inferred > 0
+        ? `, ${inferred} of which had no detectable attack and had its start inferred`
+        : "") +
+      ".",
+      "",
+      "Run view_scored_piano_roll to see this take drawn over the score.",
+      "",
+      "---",
+      "**Read this as an estimate, not a verdict.** Every number above passed " +
+      "through transcription first, so a missed note may be one the transcriber " +
+      "could not hear rather than one you did not play.",
+      "",
+      caveat,
+    ];
+
+    return { content: [{ type: "text" as const, text: lines.join("\n") }] };
+  },
 );
 
 // ─── Tool: view_guitar_tab ─────────────────────────────────────────────────

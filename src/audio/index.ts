@@ -17,6 +17,9 @@
 //   db                  decibel scaling, absolute for analysis, peak for display
 //   cqt                 true constant-Q, sparse Brown–Puckette kernels
 //   onsets              SuperFlux on log-mel (or any TimeFrequencyData)
+//   pitch               YIN plus the cents-against-target gate
+//   wav                 minimal RIFF/WAVE decode, the way audio gets in
+//   transcribe          monophonic notes → MidiNoteEvent[] (lossy at the convert)
 //   fixtures            synthetic generators for tests and later goldens
 //
 // Everything here is pure and synchronous. Nothing reads a file, touches the
@@ -109,6 +112,23 @@ export {
   type PitchTrack,
   type PitchVerdict,
 } from "./pitch.js";
+
+export {
+  transcribe,
+  toMidiNoteEvents,
+  velocityFromRms,
+  MIN_DURATION_SEC,
+  MIN_CONFIDENCE,
+  type TranscribeOptions,
+  type TranscribedNote,
+  type TranscribeResult,
+} from "./transcribe.js";
+
+export {
+  decodeWav,
+  type DecodedAudio,
+  type DecodeWavOptions,
+} from "./wav.js";
 
 export {
   sine,
