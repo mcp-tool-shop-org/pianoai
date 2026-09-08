@@ -87,6 +87,27 @@ export const PhraseNoteSchema = z.object({
 
 export type PhraseNote = z.infer<typeof PhraseNoteSchema>;
 
+/**
+ * Guard bands around the gates, wide enough that YIN (~10 c) and one onset
+ * hop (11.6 ms) cannot walk a label across its threshold.
+ */
+export const DRAW_BANDS = {
+  sharp_fail_cents: { lo: 62, hi: 90 },
+  sharp_warn_cents: { lo: 28, hi: 42 },
+  late_fail_ms: { lo: 60, hi: 120 },
+  late_pass_ms: { lo: 8, hi: 28 },
+  time_jitter_ms: 8,
+  amplitude: { lo: 0.75, hi: 0.95 },
+  silence_duration_sec: { lo: 1.0, hi: 1.3 },
+} as const;
+
+export const NoteJitterSchema = z.object({
+  time_offset_sec: z.number(),
+  amplitude: z.number().positive(),
+});
+
+export type NoteJitter = z.infer<typeof NoteJitterSchema>;
+
 /** Everything needed to re-render the take. No expected outputs stored here. */
 export const AcousticRecipeSchema = z.object({
   engine: z.literal("fixtures-sine-v1"),
@@ -96,6 +117,12 @@ export const AcousticRecipeSchema = z.object({
   notes: z.array(PhraseNoteSchema).min(1),
   kind: z.enum(PERTURBATION_KINDS),
   target_index: z.number().int().min(0),
+  /** Realized cents on the target note; null when the kind is not a pitch shift. */
+  cents_shift: z.number().nullable(),
+  /** Realized delay of the target note in seconds; null when the kind is not a late. */
+  delay_sec: z.number().nullable(),
+  silence_duration_sec: z.number().positive(),
+  note_jitter: z.array(NoteJitterSchema).min(1),
   sample_rate: z.number().positive(),
   pre_roll_sec: z.number().nonnegative(),
   gap_sec: z.number().nonnegative(),
@@ -117,6 +144,10 @@ export type AcousticRender = z.infer<typeof AcousticRenderSchema>;
 export const AcousticPerturbationSchema = z.object({
   kind: z.enum(PERTURBATION_KINDS),
   target_index: z.number().int().min(0),
+  /** Realized cents drawn for this record, or null. */
+  cents: z.number().nullable(),
+  /** Realized delay in milliseconds drawn for this record, or null. */
+  delay_ms: z.number().nullable(),
 });
 
 export type AcousticPerturbation = z.infer<typeof AcousticPerturbationSchema>;

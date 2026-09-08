@@ -3,6 +3,7 @@ export {
   PERTURBATION_KINDS,
   GOLD_VERDICTS,
   DEFAULT_ACOUSTIC_THRESHOLDS,
+  DRAW_BANDS,
   AcousticRecordSchema,
   parseAcousticRecord,
   type PerturbationKind,

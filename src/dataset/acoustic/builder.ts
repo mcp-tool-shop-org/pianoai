@@ -17,12 +17,14 @@ import type { Provenance, TargetTrace, TimedEvent } from "../schema.js";
 import {
   ACOUSTIC_SCHEMA_VERSION,
   DEFAULT_ACOUSTIC_THRESHOLDS,
+  DRAW_BANDS,
   PERTURBATION_KINDS,
   type AcousticGold,
   type AcousticRecipe,
   type AcousticRecord,
   type AcousticThresholds,
   type GoldVerdict,
+  type NoteJitter,
   type PerturbationKind,
   type PhraseNote,
 } from "./schema.js";
@@ -65,9 +67,12 @@ function mulberry32(seed: number): () => number {
   };
 }
 
-function pickTargetIndex(seed: number, n: number): number {
+function drawUnit(rng: () => number, lo: number, hi: number): number {
+  return lo + rng() * (hi - lo);
+}
+
+function pickTargetIndex(rng: () => number, n: number): number {
   if (n < 1) throw new Error("phrase must contain at least one note");
-  const rng = mulberry32(seed);
   return Math.floor(rng() * n);
 }
 
@@ -81,18 +86,6 @@ function midiName(midi: number): string {
   const names = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
   const n = Math.round(midi);
   return `${names[((n % 12) + 12) % 12]}${Math.floor(n / 12) - 1}`;
-}
-
-function concat(...parts: Float64Array[]): Float64Array {
-  let n = 0;
-  for (const p of parts) n += p.length;
-  const out = new Float64Array(n);
-  let o = 0;
-  for (const p of parts) {
-    out.set(p, o);
-    o += p.length;
-  }
-  return out;
 }
 
 function mix(a: Float64Array, b: Float64Array): Float64Array {
@@ -112,40 +105,47 @@ interface PlannedNote {
   duration: number;
   vibrato: boolean;
   cents: number;
+  amplitude: number;
 }
 
-function planNotes(
-  score: PhraseNote[],
-  kind: PerturbationKind,
-  targetIndex: number,
-  preRoll: number,
-  gap: number,
-): { planned: PlannedNote[]; clickTimes: number[]; duration: number } {
+function planNotes(recipe: AcousticRecipe): { planned: PlannedNote[]; clickTimes: number[]; duration: number } {
+  const { notes, kind, target_index, pre_roll_sec, gap_sec, note_jitter } = recipe;
+  const centsShift = recipe.cents_shift ?? 0;
+  const delaySec = recipe.delay_sec ?? 0;
   const planned: PlannedNote[] = [];
-  for (let i = 0; i < score.length; i++) {
-    const src = score[i]!;
-    if (kind === "dropped" && i === targetIndex) continue;
-    let time = preRoll + src.time;
-    let midi = src.midi;
+  for (let i = 0; i < notes.length; i++) {
+    const src = notes[i]!;
+    const jitter = note_jitter[i] ?? { time_offset_sec: 0, amplitude: DEFAULT_NOTE_AMPLITUDE };
+    if (kind === "dropped" && i === target_index) continue;
+    const isTarget = i === target_index;
+    let time = pre_roll_sec + src.time;
+    if (!isTarget) time += jitter.time_offset_sec;
+    if (isTarget) time += delaySec;
     let cents = 0;
     let vibrato = false;
     let duration = src.duration;
-    if (kind === "sharp_60" && i === targetIndex) cents = 60;
-    if (kind === "sharp_30" && i === targetIndex) cents = 30;
-    if (kind === "late_80" && i === targetIndex) time += 0.080;
-    if (kind === "late_25" && i === targetIndex) time += 0.025;
-    if (kind === "vibrato" && i === targetIndex) {
+    if (kind === "sharp_60" && isTarget) cents = centsShift;
+    if (kind === "sharp_30" && isTarget) cents = centsShift;
+    if (kind === "vibrato" && isTarget) {
       vibrato = true;
       duration = Math.max(duration, 0.8);
     }
-    planned.push({ midi, time, duration, vibrato, cents });
-    if (kind === "extra" && i === targetIndex) {
+    planned.push({
+      midi: src.midi,
+      time,
+      duration,
+      vibrato,
+      cents,
+      amplitude: jitter.amplitude,
+    });
+    if (kind === "extra" && isTarget) {
       planned.push({
         midi: Math.min(127, src.midi + 4),
-        time: preRoll + src.time + src.duration + gap / 2,
-        duration: Math.min(0.25, Math.max(0.08, gap * 0.8)),
+        time: pre_roll_sec + src.time + src.duration + gap_sec / 2,
+        duration: Math.min(0.25, Math.max(0.08, gap_sec * 0.8)),
         vibrato: false,
         cents: 0,
+        amplitude: jitter.amplitude,
       });
     }
   }
@@ -155,53 +155,55 @@ function planNotes(
     undefined,
   );
   const duration = kind === "silence"
-    ? preRoll + 1
-    : (last ? last.time + last.duration + 0.1 : preRoll + 1);
+    ? recipe.silence_duration_sec
+    : (last ? last.time + last.duration + 0.1 : pre_roll_sec + 1);
   return { planned, clickTimes, duration };
 }
 
-function goldFor(kind: PerturbationKind, targetIndex: number, thresholds: AcousticThresholds): AcousticGold {
-  const table: Record<PerturbationKind, { verdict: GoldVerdict; cents: number | null; ms: number | null }> = {
-    clean: { verdict: "match", cents: 0, ms: 0 },
-    sharp_60: { verdict: "pitch_fail", cents: 60, ms: null },
-    sharp_30: { verdict: "pitch_warn", cents: 30, ms: null },
-    late_80: { verdict: "timing_fail", cents: null, ms: 80 },
-    late_25: { verdict: "timing_pass", cents: null, ms: 25 },
-    dropped: { verdict: "missed", cents: null, ms: null },
-    extra: { verdict: "extra", cents: null, ms: null },
-    vibrato: { verdict: "in_tune", cents: 0, ms: null },
-    silence: { verdict: "nothing_to_grade", cents: null, ms: null },
+function goldFor(
+  kind: PerturbationKind,
+  targetIndex: number,
+  thresholds: AcousticThresholds,
+  cents: number | null,
+  delayMs: number | null,
+): AcousticGold {
+  const verdicts: Record<PerturbationKind, GoldVerdict> = {
+    clean: "match",
+    sharp_60: "pitch_fail",
+    sharp_30: "pitch_warn",
+    late_80: "timing_fail",
+    late_25: "timing_pass",
+    dropped: "missed",
+    extra: "extra",
+    vibrato: "in_tune",
+    silence: "nothing_to_grade",
   };
-  const row = table[kind];
   return {
-    verdict: row.verdict,
+    verdict: verdicts[kind],
     thresholds,
     target_index: targetIndex,
-    expected_cents: row.cents,
-    expected_timing_ms: row.ms,
+    expected_cents: cents,
+    expected_timing_ms: delayMs,
   };
 }
 
 export function renderTake(recipe: AcousticRecipe): Float64Array {
-  const { notes, kind, target_index, sample_rate, pre_roll_sec, gap_sec, click_amplitude } = recipe;
+  const { kind, sample_rate, click_amplitude } = recipe;
   if (kind === "silence") {
-    return silence(pre_roll_sec + 1, sample_rate);
+    return silence(recipe.silence_duration_sec, sample_rate);
   }
-  const { planned, clickTimes, duration } = planNotes(
-    notes, kind, target_index, pre_roll_sec, gap_sec,
-  );
-  const parts: Float64Array[] = [silence(duration, sample_rate)];
-  const overlay = new Float64Array(parts[0]!.length);
+  const { planned, clickTimes, duration } = planNotes(recipe);
+  const overlay = new Float64Array(Math.round(duration * sample_rate));
   for (const n of planned) {
     const freq = midiToHz(n.midi) * Math.pow(2, n.cents / 1200);
     const tone = n.vibrato
       ? vibratoNote({
         frequency: freq, duration: n.duration, sampleRate: sample_rate,
-        rateHz: 5, depthCents: 50, amplitude: DEFAULT_NOTE_AMPLITUDE,
+        rateHz: 5, depthCents: 50, amplitude: n.amplitude,
       })
       : sine({
         frequency: freq, duration: n.duration, sampleRate: sample_rate,
-        amplitude: DEFAULT_NOTE_AMPLITUDE,
+        amplitude: n.amplitude,
       });
     const start = Math.round(n.time * sample_rate);
     for (let i = 0; i < tone.length && start + i < overlay.length; i++) {
@@ -223,7 +225,44 @@ export function buildRecipe(
   seed: number,
   sampleRate: number = DEFAULT_SAMPLE_RATE,
 ): AcousticRecipe {
-  const target_index = pickTargetIndex(seed, phrase.notes.length);
+  const rng = mulberry32(seed);
+  const target_index = pickTargetIndex(rng, phrase.notes.length);
+
+  let cents_shift: number | null = null;
+  let delay_sec: number | null = null;
+  if (kind === "sharp_60") {
+    cents_shift = drawUnit(rng, DRAW_BANDS.sharp_fail_cents.lo, DRAW_BANDS.sharp_fail_cents.hi);
+  } else if (kind === "sharp_30") {
+    cents_shift = drawUnit(rng, DRAW_BANDS.sharp_warn_cents.lo, DRAW_BANDS.sharp_warn_cents.hi);
+  } else {
+    rng();
+  }
+  if (kind === "late_80") {
+    delay_sec = drawUnit(rng, DRAW_BANDS.late_fail_ms.lo, DRAW_BANDS.late_fail_ms.hi) / 1000;
+  } else if (kind === "late_25") {
+    delay_sec = drawUnit(rng, DRAW_BANDS.late_pass_ms.lo, DRAW_BANDS.late_pass_ms.hi) / 1000;
+  } else {
+    rng();
+  }
+
+  const silence_duration_sec = drawUnit(
+    rng,
+    DRAW_BANDS.silence_duration_sec.lo,
+    DRAW_BANDS.silence_duration_sec.hi,
+  );
+
+  const note_jitter: NoteJitter[] = phrase.notes.map((_, i) => {
+    const time_offset_sec = (rng() * 2 - 1) * (DRAW_BANDS.time_jitter_ms / 1000);
+    const amplitude = drawUnit(rng, DRAW_BANDS.amplitude.lo, DRAW_BANDS.amplitude.hi);
+    if (i === target_index && (kind === "late_80" || kind === "late_25")) {
+      return { time_offset_sec: 0, amplitude };
+    }
+    if (kind === "silence") {
+      return { time_offset_sec: 0, amplitude };
+    }
+    return { time_offset_sec, amplitude };
+  });
+
   return {
     engine: RENDER_ENGINE,
     seed,
@@ -232,6 +271,10 @@ export function buildRecipe(
     notes: phrase.notes,
     kind,
     target_index,
+    cents_shift,
+    delay_sec,
+    silence_duration_sec,
+    note_jitter,
     sample_rate: sampleRate,
     pre_roll_sec: DEFAULT_PRE_ROLL_SEC,
     gap_sec: DEFAULT_GAP_SEC,
@@ -354,7 +397,13 @@ export function buildRecord(phrase: PhraseSpec, options: BuildOptions): Acoustic
   const recipe = buildRecipe(phrase, options.kind, options.seed, sampleRate);
   const samples = renderTake(recipe);
   const wav_sha256 = sha256Samples(samples);
-  const gold = goldFor(options.kind, recipe.target_index, thresholds);
+  const gold = goldFor(
+    options.kind,
+    recipe.target_index,
+    thresholds,
+    recipe.cents_shift,
+    recipe.delay_sec === null ? null : recipe.delay_sec * 1000,
+  );
   const id = `${phrase.song_id}:${phrase.phrase_window.replace(/\s+/g, "")}:${options.kind}:s${options.seed}`;
 
   const record: AcousticRecord = {
@@ -394,6 +443,8 @@ export function buildRecord(phrase: PhraseSpec, options: BuildOptions): Acoustic
       perturbation: {
         kind: options.kind,
         target_index: recipe.target_index,
+        cents: recipe.cents_shift,
+        delay_ms: recipe.delay_sec === null ? null : recipe.delay_sec * 1000,
       },
       thresholds,
       gold,

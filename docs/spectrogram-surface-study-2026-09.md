@@ -241,6 +241,40 @@ attached model including local ones, which is what makes the surface cheap.
    because mel cannot show the 50-cent gate below 1 kHz (17). Override if the surface is meant
    for orientation only, in which case mel-only at 229 bins is sufficient (15).*
 
+## The render A/B, run 2026-09-07 (closes lock item 8)
+
+**Protocol.** Four-note phrases (C4 E4 G4 C5) with one note raised three semitones at an index
+chosen by a seed and written to a file the reader did not open. Rendered in four configurations,
+read by Claude — the actual consumer of this MCP server, which is the seat that matters — and
+scored against the hidden truth afterwards.
+
+**Result: 2 of 2 correct**, on both the constant-Q and the mel render, reading pitch against the
+keyboard strip. Trial 1 was note 2, trial 2 was note 4; both were called before the ground truth
+file was opened.
+
+**What that settles.** The render is fit for its stated purpose: a reader can locate a defect in it
+and say which note is wrong. The keyboard strip is doing the work — pitches were read by measuring
+against the C4 and C5 labels, and without them there would have been nothing to measure against.
+Lock item 8's blocker on shipping the surface is cleared.
+
+**What it explicitly does not settle, and this is the honest part.** It cannot decide viridis
+versus magma. n=2 against a reported effect of 2.5 points is not a measurement, it is a formality,
+and treating it as a decision would be the same over-claiming this arc has already committed twice.
+So **the colormap does not get frozen.** Viridis stays the default on Dixit's evidence rather than
+on this run's, and magma stays exposed. It also does not test 50-cent acuity: three semitones was
+chosen deliberately to test legibility rather than resolution, because a reader who cannot see
+three semitones cannot see anything, and the 50-cent question belongs to the pitch tracker anyway.
+
+**One qualitative finding worth recording.** Mel rendered note SEPARATION visibly better: four
+clean blocks with unambiguous gaps, against the constant-Q's ringing tails and broadband transient
+streaks, which are the 2.63-second C1 kernel's time smearing made visible. That is consistent with
+finding 13: mel is the legibility surface. The constant-Q's advantage is pitch precision, which
+this task did not exercise. Neither displaces the other, and the tier-3 design already carries
+both.
+
+Evidence: [`assets/spectrogram-ab-cqt-viridis.png`](assets/spectrogram-ab-cqt-viridis.png) and
+[`assets/spectrogram-ab-mel-viridis.png`](assets/spectrogram-ab-mel-viridis.png), both trial 2.
+
 ## What this study does not claim
 
 - **One raster, not a raster plus an SVG overlay.** Findings 47-49 suggested keeping the axes

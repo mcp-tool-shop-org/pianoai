@@ -6,7 +6,7 @@
 
 import { describe, it, expect } from "vitest";
 import { validateTrace } from "../trace-validator.js";
-import { PERTURBATION_KINDS, parseAcousticRecord, type PerturbationKind } from "./schema.js";
+import { DRAW_BANDS, PERTURBATION_KINDS, parseAcousticRecord, type PerturbationKind } from "./schema.js";
 import {
   buildKindSet,
   buildRecord,
@@ -73,6 +73,63 @@ describe("reproducibility", () => {
       ),
     );
     expect(indexes.size).toBeGreaterThan(1);
+  });
+
+  it("different seeds produce different hashes for clean and for sharp_60", () => {
+    const phrase = fixturePhrase();
+    const cleanA = buildRecord(phrase, { seed: 1234, kind: "clean" });
+    const cleanB = buildRecord(phrase, { seed: 9999, kind: "clean" });
+    expect(cleanA.observation.render.wav_sha256)
+      .not.toBe(cleanB.observation.render.wav_sha256);
+    const sharpA = buildRecord(phrase, { seed: 1234, kind: "sharp_60" });
+    const sharpB = buildRecord(phrase, { seed: 9999, kind: "sharp_60" });
+    expect(sharpA.observation.render.wav_sha256)
+      .not.toBe(sharpB.observation.render.wav_sha256);
+  });
+
+  it("silence hashes differ only because duration is the seed's honest bit", () => {
+    const phrase = fixturePhrase();
+    const a = buildRecord(phrase, { seed: 1, kind: "silence" });
+    const b = buildRecord(phrase, { seed: 2, kind: "silence" });
+    expect(a.observation.render.recipe.silence_duration_sec)
+      .not.toBe(b.observation.render.recipe.silence_duration_sec);
+    expect(a.observation.render.wav_sha256)
+      .not.toBe(b.observation.render.wav_sha256);
+  });
+});
+
+describe("draws stay inside the estimator-safe bands", () => {
+  it("every generated record's perturbation is on the correct side of its gate", () => {
+    const phrase = fixturePhrase();
+    for (const seed of [1, 2, 3, 4, 5, 7, 8, 12, 14, 15, 1234, 9999]) {
+      for (const kind of PERTURBATION_KINDS) {
+        const rec = buildRecord(phrase, { seed, kind });
+        const p = rec.observation.perturbation;
+        const recipe = rec.observation.render.recipe;
+        if (kind === "sharp_60") {
+          expect(p.cents).toBeGreaterThanOrEqual(DRAW_BANDS.sharp_fail_cents.lo);
+          expect(p.cents).toBeLessThanOrEqual(DRAW_BANDS.sharp_fail_cents.hi);
+          expect(p.cents).toBeGreaterThan(50);
+        }
+        if (kind === "sharp_30") {
+          expect(p.cents).toBeGreaterThanOrEqual(DRAW_BANDS.sharp_warn_cents.lo);
+          expect(p.cents).toBeLessThanOrEqual(DRAW_BANDS.sharp_warn_cents.hi);
+          expect(p.cents).toBeGreaterThan(25);
+          expect(p.cents).toBeLessThanOrEqual(50);
+        }
+        if (kind === "late_80") {
+          expect(p.delay_ms).toBeGreaterThanOrEqual(DRAW_BANDS.late_fail_ms.lo);
+          expect(p.delay_ms).toBeLessThanOrEqual(DRAW_BANDS.late_fail_ms.hi);
+          expect(p.delay_ms).toBeGreaterThan(40);
+        }
+        if (kind === "late_25") {
+          expect(p.delay_ms).toBeGreaterThanOrEqual(DRAW_BANDS.late_pass_ms.lo);
+          expect(p.delay_ms).toBeLessThanOrEqual(DRAW_BANDS.late_pass_ms.hi);
+          expect(p.delay_ms).toBeLessThan(40);
+        }
+        expect(recipe.note_jitter.length).toBe(phrase.notes.length);
+      }
+    }
   });
 });
 
