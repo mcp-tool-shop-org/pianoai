@@ -36,7 +36,37 @@ downloaded from Hugging Face:
 The data is intact. Only the card diverges. But a consumer following the package's own instructions
 sees a checksum failure and has no way to tell that it is cosmetic.
 
-## Not resolved here, and why
+## Resolved 2026-09-08
+
+**Option 1 was taken.** The enriched card is now `datasets/jam-actions-v0-public/README.md` and the
+package is at **0.5.1**, a documentation-only revision of the 0.5.0 record cut. Reverting would have
+deleted the best version of the most public surface to make a manifest pass, which is the wrong
+trade: the Spaces it links are live, and its headline numbers match what the repository already
+reports.
+
+No record, split, eval or piano-roll file changed — verified by git, not by assertion. The checksum
+manifest regenerated over 274 entries, the same count as before, and both the package's own verifier
+and `sha256sum -c` report 274 of 274 OK.
+
+**Citation is unaffected.** 0.5.0 remains the deposited, citable version
+([`10.5281/zenodo.21313954`](https://doi.org/10.5281/zenodo.21313954)). Minting a Zenodo version for
+a card-only change is ceremony; the concept DOI still resolves and the records are identical. The
+next substantive release carries it, and until then the archived card lags the live one, which is
+what a versioned archive is for.
+
+**The mechanism is closed too**, which matters more than the card. `push-jam-actions-v0-hf.yml` now
+fetches the remote card before uploading and halts when it differs, printing the lines the remote has
+that the repository does not. An `allow_card_overwrite` input proceeds anyway. The acoustic corpus
+never needed this, because its card is generated from source.
+
+An earlier version of this note said adopting the card would make the three artifacts disagree in a
+new way. That was wrong and is worth correcting rather than deleting: a versioned archive is supposed
+to lag. Zenodo's 0.5.0 deposit stays internally consistent as a snapshot, the repository and Hugging
+Face both move to 0.5.1 and agree with each other, and the concept DOI keeps resolving. Nothing
+breaks.
+
+## The original options, kept for the record
+
 
 `jam-actions-v0-public` is at v0.5.0 with Zenodo DOI
 [`10.5281/zenodo.21313954`](https://doi.org/10.5281/zenodo.21313954). That deposit is immutable and

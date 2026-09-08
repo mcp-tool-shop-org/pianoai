@@ -35,9 +35,15 @@ configs:
 ---
 # Dataset Card for jam-actions-v0 (public subset)
 
-**Version:** 0.5.0   **Built:** 2026-07-11   **Source tag:** `jam-actions-v0-0.5.0-cut-2026-07-11` (record-content correction release — Bach BWV 846 errata 001 + 002; see `RELEASE_NOTES.md` for the full entry and `evals/v0.5.0-release-gate-assessment.json` + `evals/v0.5.0-execution-verification.json` for the gate verdicts at this state)
+**Version:** 0.5.1 — a documentation-only revision of the 0.5.0 record cut. No record, split or eval artifact changed; the card gained the fine-tuning evaluation banner and the "What's in a record" walkthrough, which had been added on Hugging Face and lived nowhere else.
+
+**Records built:** 2026-07-11   **Source tag:** `jam-actions-v0-0.5.0-cut-2026-07-11` (record-content correction release — Bach BWV 846 errata 001 + 002; see `RELEASE_NOTES.md` for the full entry and `evals/v0.5.0-release-gate-assessment.json` + `evals/v0.5.0-execution-verification.json` for the gate verdicts at this state)
 
 **DOI:** [`10.5281/zenodo.20279918`](https://doi.org/10.5281/zenodo.20279918) — the **concept DOI**, which always resolves to the latest published version on Zenodo. This is the canonical citation handle. This release, v0.5.0, has version DOI [`10.5281/zenodo.21313954`](https://doi.org/10.5281/zenodo.21313954) (published 2026-07-11, record at https://zenodo.org/records/21313954); the prior release v0.4.3 has version DOI [`10.5281/zenodo.20279919`](https://doi.org/10.5281/zenodo.20279919) (published 2026-05-19).
+
+**Cite 0.5.0, not 0.5.1.** The deposited, citable version is 0.5.0; 0.5.1 changes no record and is not separately deposited, so the version DOI above remains the right handle for these records.
+
+📄 **Fine-tuning evaluation —** models trained on this dataset beat a prompted baseline at tool-grounded musical QA (+0.212, 29/36 wins, p < 0.0001). Read the preregistered confirmatory write-up: **[jam-actions-eval](https://huggingface.co/spaces/mcp-tool-shop/jam-actions-eval)**. Or **[explore it interactively](https://huggingface.co/spaces/mcp-tool-shop/jam-actions-explorer)** — play the phrases and browse the results in your browser.
 
 ## Dataset Summary
 
@@ -64,11 +70,78 @@ Top-level files:
 
 Each record has these top-level fields: `id`, `schema_version`, `provenance`, `scope`, `observation`, `annotation_target`, `target_trace`, `eval_metadata`. See the source repo's `src/dataset/schema.ts` for the full Zod schema.
 
+### What's in a record
+
+One line of `records.jsonl` is one phrase-window record. Abbreviated below (Clair de Lune, the held-out test song; `…` marks omitted prose/notes):
+
+```jsonc
+{
+  "id": "clair-de-lune:m001-004:piano:mcp-session:v1",
+  "split": "test",
+  "scope": { "song_id": "clair-de-lune", "phrase_window": "measures 1-4", "key": "Db major",
+             "tempo_bpm": 100, "time_signature": "9/8",
+             "musical_phrase_label": "opening atmosphere — introductory phrase" },
+  "provenance": { "composer": "Claude Debussy", "arrangement_creator": "Bernd Krueger",
+                  "arrangement_license": "CC-BY-SA 3.0", "record_verdict": "public",
+                  "training_use_permitted": true /* + source URL, PD status, verifier, verified_at */ },
+  "observation": {
+    "midi_sidecar": { "ticks_per_beat": 480, "timed_events": [
+      { "t_seconds": 0.3, "dur_seconds": 2.4, "note": 65, "name": "F4",
+        "velocity": 36, "hand": "right", "measure": 1, "beat": 0.5 } /* … one per note … */ ] },
+    "tokens_remi": "…", "tokens_abc": "…", "piano_roll_svg_inline": "<svg…>"
+  },
+  "annotation_target": {
+    "structure": "Opening atmospheric introduction — 9/8 ripple, floating long melody notes",
+    "key_moments": ["m1 opening chord with sustained melody", "…"],
+    "teaching_goals": ["9/8 triplet pulse must feel like three big beats, not nine", "…"],
+    "style_tips": ["…"], "teaching_notes": [{ "measure": 1, "note": "…", "technique": ["…"] }]
+  },
+  "target_trace": {
+    "task_family": "analyze-and-play-phrase",
+    "objective": "Read mm. 1–4 of Clair de Lune, view the piano roll, analyze the phrase, …",
+    "session": [
+      { "turn": 1, "role": "user",      "content": "Show me measures 1–4 of Clair de Lune and describe the opening atmosphere." },
+      { "turn": 2, "role": "assistant", "content": "Let me view the piano roll for mm. 1–4.",
+        "tool_calls": [{ "tool": "view_piano_roll", "arguments": { "songId": "clair-de-lune", "startMeasure": 1, "endMeasure": 4 } }] },
+      { "turn": 3, "role": "tool", "tool": "view_piano_roll",
+        "content": { "svg_returned": true, "measures": 4, "rh_notes": 32, "lh_notes": 0 } }
+      /* … assistant → tool → assistant, ending in a grounded analysis … */
+    ]
+  },
+  "eval_metadata": { "split": "test", "leakage_check": "…", "eval_eligibility": "…" }
+}
+```
+
+- **`scope`** locates the phrase — song, measures, key, tempo, meter, and its role in the piece.
+- **`observation`** is the phrase itself in three synchronized views: a MIDI sidecar (`timed_events`: note, timing, velocity, hand, measure/beat), REMI + ABC token strings, and a rendered piano-roll SVG.
+- **`annotation_target`** is the human teaching layer — structure, key moments, goals, style tips, per-measure technique notes.
+- **`target_trace`** is the supervised signal: a multi-turn MCP session where the assistant *calls the inspector tools* on this phrase and answers from their results. **This is what teaches grounded tool-use, not prose recall** — and it's the surface the fine-tuned [model](https://huggingface.co/mcp-tool-shop/jam-ft-v1-qwen25) learns.
+- **`provenance`** carries the full license + verification chain; **`eval_metadata`** carries the leakage-checked split.
+
+### Load it
+
+The dataset viewer renders every record (nested JSON), and the `datasets` library loads it directly:
+
+```python
+from datasets import load_dataset
+
+ds = load_dataset("mcp-tool-shop/jam-actions-v0", split="train")   # all 115 records; split tag is per-row
+rec = ds[0]
+print(rec["id"], "·", rec["scope"]["musical_phrase_label"])
+print("notes:", len(rec["observation"]["midi_sidecar"]["timed_events"]),
+      "· trace turns:", len(rec["target_trace"]["session"]))
+
+# clair-de-lune is the locked held-out test song — never used for training:
+held_out = ds.filter(lambda r: r["split"] == "test")
+```
+
+(`records.jsonl` carries both train and test records, each tagged with its `split`; `splits.json` pins `clair-de-lune` as the held-out song.)
+
 ## Reproducibility
 
 Earned by Slice 23.5 (audit-driven cleanup): a fresh contributor cloning this repo on any platform (Windows native, macOS, Linux, WSL) should be able to verify the package's integrity and reproduce the canonical Slice 22 RC-gate PASS verdict without operator handholding.
 
-**Package version pinned by this reproducibility section:** `0.5.0` (built 2026-07-11; Bach BWV 846 correction release, errata 001 + 002).
+**Record cut pinned by this reproducibility section:** `0.5.0` (built 2026-07-11; Bach BWV 846 correction release, errata 001 + 002). The steps below reproduce that cut and are unaffected by the 0.5.1 documentation revision.
 
 **Canonical tags:**
 
