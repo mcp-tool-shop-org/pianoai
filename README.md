@@ -341,7 +341,7 @@ Requires **Node.js 22+** (v2.0.0 raised the floor with `node-web-audio-api` 2.0)
 
 ## MCP Tools
 
-49 tools and 4 prompt templates across seven categories:
+54 tools and 4 prompt templates across eight categories:
 
 ### Learn
 
@@ -424,6 +424,27 @@ Requires **Node.js 22+** (v2.0.0 raised the floor with `node-web-audio-api` 2.0)
 | `list_sections` | View structural sections of a song (Intro, Verse, Chorus, etc.) |
 | `add_section` | Add a section marker to a song for structural navigation |
 
+### Score
+
+| Tool | What it does |
+|------|--------------|
+| `score_performance` | Score a MIDI play-along against a library song — pitch, timing, completeness, with graded feedback |
+| `score_annotation` | Score annotation quality across 5 dimensions |
+
+### Listen
+
+Measuring recorded audio. Monophonic: they follow one line at a time, so a chord or a full mix
+produces confident nonsense. Every number comes from signal processing, never from a model reading
+a picture.
+
+| Tool | What it does |
+|------|--------------|
+| `analyze_audio` | Measure a WAV — onset times, the pitch contour as note names with cents, and level |
+| `transcribe_audio` | Turn a monophonic recording into notes, with each note's deviation from concert pitch. Notes the tracker could not follow are omitted rather than guessed |
+| `score_audio_take` | Grade a performance against a library song **by ear**, then hand the result to `view_scored_piano_roll` |
+| `view_spectrogram` | See the sound — a constant-Q spectrogram on a piano-keyboard axis, optionally overlaid with the intended notes. Blind by default |
+| `ensemble_now` | What every instrument is playing **right now**, mid-performance. Notes come from what was sent, so they are exact rather than estimated |
+
 ### MCP Prompts
 
 Four prompt templates for structured teaching workflows:
@@ -458,7 +479,34 @@ ai-jam-sessions --version
 
 ## Status
 
-**v2.3.0 — the release where the instrument learned to sing on the clock** (see [CHANGELOG](CHANGELOG.md)). Any library song can now carry a real sung line that lands on the piano: a **score clock** derives every syllable's pitch, onset and duration from the song's MIDI on the player's own timeline; a local, Apache-2.0, score-conditioned singer ([SoulX-Singer](https://github.com/Soul-AILab/SoulX-Singer)) sings from it; and two gates measure the artifact before anything is called a mix — timing (every vowel within 40 ms of the score) and pitch (every note within 50 cents). The shipped Amazing Grace run measures 6 ms worst timing and −2.7 cents global pitch, with receipts committed; the landing page carries it as an honest state, with the one remaining defect named (the opening splice, handed off). The route, its levers, and the research behind each choice (five study lanes, cited) are in the [handbook](https://mcp-tool-shop-org.github.io/ai-jam-sessions/handbook/vocals/) and [`docs/`](docs/). The live surface is unchanged at **49 tools and 4 prompt templates**, with **3,080 tests passing (1 skipped)** plus the vocal instrument's own pytest suite. **Publication state:** published — [`@mcptoolshop/ai-jam-sessions@2.3.0`](https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions) on npm, provenance-attested.
+**v2.5.0 — the release where the model can watch the band play** (see [CHANGELOG](CHANGELOG.md)).
+`ensemble_now` reports what every instrument is doing while the music is still going: held notes
+per instrument, how long each has been held, and the combined chord. It runs on two channels, and
+the cheap one is the accurate one — when this server performs it knows exactly what it sent, so a
+chord is three note-ons rather than a transcription problem, while a separate acoustic tap measures
+each engine **at the source** for verification. Measured cost is about **9 microseconds per audio
+callback**; latency is stated rather than implied (~23 ms pitch, ~70 ms confirmed onset); and the
+limits are documented because they are actionable — the tracker is monophonic, layered children are
+tapped individually and never as a mix, and an instrument with no tap is not a silent instrument.
+The same release turns the dataset machinery into a contract anyone can declare against, with a
+worked template, so users can build their own corpora and train their own adapters against the same
+discipline. Along the way the acoustic corpus's reproducibility gate was found to cover 109 of its
+115 published paths, and three of the six it missed were never emitted by the generator at all —
+regenerating deleted them. A full regeneration now reproduces every file and the checksum manifest
+byte for byte. The live surface is **54 tools and 4 prompt templates**, with **3,389 tests passing
+across 165 files (1 skipped)**.
+
+Previously in v2.4.0 — the release where the model got ears. Four tools closed the gap between
+rendering audio and examining it: `analyze_audio` for onsets, pitch contour and level;
+`transcribe_audio` for a monophonic recording as notes; `score_audio_take` to grade a performance
+by ear and hand the result to the existing scored piano roll unchanged; and `view_spectrogram` to
+see the sound on a constant-Q, piano-keyboard axis. All of it is dependency-free signal processing
+written in this repo — its own FFT, windows, mel and constant-Q transforms, onset detection and
+pitch tracking — because a model cannot reliably eyeball a picture and deterministic queries beat
+inference for questions with exact answers. That release also published
+**jam-actions-acoustic-v0**, 108 constructible-gold records of tool use over audio.
+
+Previously in v2.3.0 — the release where the instrument learned to sing on the clock (see [CHANGELOG](CHANGELOG.md)). Any library song can now carry a real sung line that lands on the piano: a **score clock** derives every syllable's pitch, onset and duration from the song's MIDI on the player's own timeline; a local, Apache-2.0, score-conditioned singer ([SoulX-Singer](https://github.com/Soul-AILab/SoulX-Singer)) sings from it; and two gates measure the artifact before anything is called a mix — timing (every vowel within 40 ms of the score) and pitch (every note within 50 cents). The shipped Amazing Grace run measures 6 ms worst timing and −2.7 cents global pitch, with receipts committed; the landing page carries it as an honest state, with the one remaining defect named (the opening splice, handed off). The route, its levers, and the research behind each choice (five study lanes, cited) are in the [handbook](https://mcp-tool-shop-org.github.io/ai-jam-sessions/handbook/vocals/) and [`docs/`](docs/). The live surface is unchanged at **49 tools and 4 prompt templates**, with **3,080 tests passing (1 skipped)** plus the vocal instrument's own pytest suite. **Publication state:** published — [`@mcptoolshop/ai-jam-sessions@2.3.0`](https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions) on npm, provenance-attested.
 
 Previously in v2.2.0 — the release where the instrument got real ears and a listening room. The cockpit's default piano is now a **sampled Concert Grand** — a pruned Salamander pack that loads on your first gesture and falls back to the tuned oscillator synth until it's ready — and the server picks the sample engine automatically whenever a full pack is installed. On top of it sits the **Composition Panel**: a blind, loudness-matched A/B listening room where a human ranks the composition engine's voicings against theory-valid and theory-invalid anchors (Bradley-Terry with bootstrap CIs, a MUSHRA-style discrimination floor, PROVISIONAL and UNINTERPRETABLE as first-class outcomes), beside a local-models panel that runs the same ranking with cross-family LLM judges and a Compare view (Kendall τ) that asks whether the cheap proxy tracks the human truth.
 

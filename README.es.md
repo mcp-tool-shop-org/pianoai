@@ -33,30 +33,60 @@ Un piano y una guitarra que la IA aprende a tocar. No es un sintetizador, ni una
 
 Un LLM puede leer y escribir texto, pero no puede experimentar la música como lo hacemos nosotros. No tiene oídos, ni dedos, ni memoria muscular. AI Jam Sessions cierra esa brecha al darle al modelo sentidos que realmente puede utilizar:
 
-- **Lectura:** Partituras MIDI reales con anotaciones musicales detalladas. No son aproximaciones escritas a mano, sino que están analizadas, interpretadas y explicadas.
-- **Audición:** Seis motores de audio (piano oscilador, piano de muestras, muestras vocales, tracto vocal físico, sintetizador vocal aditivo, guitarra modelada físicamente) que se reproducen a través de sus altavoces, de modo que las personas en la sala se convierten en los "oídos" de la IA.
-- **Visualización:** Un piano roll que renderiza lo que se tocó como SVG, un formato que el modelo puede leer y verificar. Un editor interactivo de tablaturas de guitarra. Un panel de control con un teclado visual, un editor de notas de doble modo y un laboratorio de afinación.
+- **Lectura:** Partituras MIDI reales con anotaciones musicales detalladas. No son aproximaciones escritas a mano, sino que se analizan, se interpretan y se explican.
+- **Audición:** Seis motores de audio (piano oscilador, piano de muestras, muestras vocales, tracto vocal físico, sintetizador vocal aditivo, guitarra modelada físicamente) que se reproducen a través de sus altavoces, de modo que las personas en la sala se convierten en los "oídos" de la IA. Y ahora el modelo tiene sus propios oídos, y en doble medida: puede medir una grabación después de los hechos (ver [Audición](#audición)) y puede observar a la banda **mientras la música sigue sonando** (ver [El conjunto en vivo](#el-conjunto-en-vivo)).
+- **Visualización:** Un piano roll que muestra lo que se tocó como SVG, y que el modelo puede leer y verificar. Un editor interactivo de tablaturas de guitarra. Un panel de control del navegador con un teclado visual, un editor de notas de doble modo y un laboratorio de afinación.
 - **Memorización:** Un diario de práctica que se mantiene a lo largo de las sesiones, de modo que el aprendizaje se acumula con el tiempo.
-- **Canto:** Síntesis del tracto vocal con 20 preajustes de voz, desde soprano operística hasta coro electrónico. Modo de canto con solfeo, contorno y narración silábica. Y una línea vocal real sincronizada con el reloj del piano: una partitura que condiciona al cantante, impulsada por el MIDI de la canción, con una restricción de tiempo (40 ms) y tono (50 centavos) antes de que la escuche; consulte [Sing](#sing).
+- **Canto:** Síntesis del tracto vocal con 20 preajustes de voz, desde soprano de ópera hasta coro electrónico. Modo de canto con solfeo, contorno y narración silábica. Y una melodía vocal real en el reloj del piano: una partitura que condiciona al cantante y que se basa en el MIDI de la canción, con una limitación en el tiempo (40 ms) y en el tono (50 centésimos) antes de que la escuche (ver [Canto](#canto)).
 
 Cada una de las 120 canciones ahora está completamente anotada: contexto histórico, análisis estructural barra por barra, momentos clave, objetivos de enseñanza y consejos para la interpretación, en los 12 géneros. Una versión anterior de este archivo README decía que las canciones originales estaban "esperando a que la IA absorbiera los patrones, tocara la música y escribiera sus propias anotaciones". Eso es exactamente lo que sucedió: las anotaciones fueron escritas por la IA basándose en un análisis determinista canción por canción (acordes, estructura de repetición, límites de sección, tonalidades verificadas), con una rúbrica de calidad como guía y una verificación adversarial de cada afirmación (números de compás, ventanas de acordes y recuentos estructurales, todo verificado en relación con el MIDI real antes de que se publicara nada).
 
 A partir del mismo trabajo, también publicamos **[jam-actions-v0](#training-dataset)**: un conjunto de datos público de 115 trazas de uso de herramientas MCP en múltiples turnos sobre piano clásico real. Enseña a los LLM a realizar *un uso práctico de herramientas sobre música simbólica*, no solo generación de texto, y se entrega con una puerta de liberación de 7 ejes que distingue entre "transmitir pruebas" y "pasar porque la tarea es trivial". Consulte [Conjunto de datos de entrenamiento](#training-dataset) a continuación para conocer la historia completa.
 
-## Escuchar
+## Audición
 
-Durante mucho tiempo, este servidor podía generar sonido, pero no podía analizarlo. El modelo reproducía la música, una persona la escuchaba y el modelo se basaba en su opinión. Ahora, esa brecha se ha cerrado.
+Durante mucho tiempo, este servidor podía producir sonido, pero nunca analizarlo. El modelo tocaba, una persona escuchaba y el modelo aceptaba su opinión. Esa brecha ahora se ha cerrado.
 
-Si se le proporciona un archivo WAV, mide lo que contiene. No lo hace analizando una imagen y adivinando, sino procesando la señal a través de las mismas herramientas que ya utiliza para analizar la partitura:
+Si se le proporciona un archivo WAV, mide lo que hay en él. No mirando una imagen y adivinando, sino ejecutando la señal a través del mismo tipo de herramientas que ya utiliza en la partitura:
 
-- **`analyze_audio`** — detección de los inicios de nota, contorno de la altura y nivel. La altura se devuelve como nombres de notas con desviaciones en centavos, nunca como frecuencias brutas.
-- **`transcribe_audio`** — la grabación se convierte en notas: altura, inicio, duración y la distancia de cada nota con respecto a la altura de referencia.
-- **`score_audio_take`** — evalúa una interpretación en comparación con una canción de la biblioteca **de oído**. Transcribe la grabación, la compara con la partitura e informa qué notas se tocaron correctamente, cuáles se desviaron y cuáles se omitieron. Luego, `view_scored_piano_roll` dibuja el resultado sobre la partitura, exactamente como lo hace con una grabación MIDI. Así es como se evalúa un instrumento real, una interpretación vocal o cualquier cosa en la que no haya MIDI para capturar.
-- **`view_spectrogram`** — visualiza el sonido. Un espectrograma de Q constante con un teclado de piano en el borde izquierdo, de modo que la altura sea fácilmente visible, y las notas de la canción se dibujan sobre él cuando se solicita.
+- **`analyze_audio`:** inicios, el contorno del tono y el nivel. El tono se devuelve como nombres de notas con desviaciones en centésimos, nunca como frecuencias brutas.
+- **`transcribe_audio`:** la grabación como notas: tono, inicio, duración y la distancia de cada nota al tono de referencia.
+- **`score_audio_take`:** califica una interpretación en comparación con una canción de la biblioteca **de oído**. Transcribe la grabación, la compara con la partitura e informa qué notas se tocaron correctamente, cuáles se desviaron y cuáles se omitieron. Luego, `view_scored_piano_roll` dibuja el resultado sobre la partitura, exactamente como lo hace con una grabación MIDI. Así es como se califica un instrumento real, una interpretación cantada o cualquier cosa en la que no haya MIDI para grabar.
+- **`view_spectrogram`:** vea el sonido. Un espectrograma de Q constante con un teclado de piano en el borde izquierdo, de modo que el tono sea legible de un vistazo, y las notas previstas de la canción se dibujen sobre él a petición.
 
-**Lo que no te dirá.** La imagen sirve para identificar *dónde* hay un problema; cada número proviene del procesamiento de la señal, nunca de un modelo que analiza una imagen. El transcriptor sigue una línea a la vez, por lo que un acorde o una mezcla completa producirán un resultado confiable pero incorrecto, y lo indicará. La detección de inicios de nota alcanza aproximadamente 0,88 en el estado actual de la tecnología, por lo que una nota "omitida" puede ser una que el transcriptor no pudo detectar, en lugar de una que no tocaste; las herramientas incluyen esta advertencia en su propia salida, en lugar de ocultarla aquí.
+**Lo que no le dirá.** La imagen sirve para encontrar *dónde* hay un problema; cada número proviene del procesamiento de la señal, nunca de un modelo que lee una imagen. El transcriptor sigue una línea a la vez, por lo que un acorde o una mezcla completa producirán algo seguro pero incorrecto, y lo indicará. La detección de inicios tiene una precisión de alrededor del 88 % en el estado actual de la técnica, por lo que una nota "omitida" puede ser una que el transcriptor no pudo escuchar, en lugar de una que usted no tocó; las herramientas incluyen esta advertencia en su propia salida en lugar de ocultarla aquí.
 
-Toda la estructura es independiente: la transformación, el rastreador de altura, el detector de inicios de nota, el decodificador WAV y el codificador PNG se encuentran todos en este repositorio y producen los mismos números en Node y en el navegador.
+Toda la superficie es independiente: la transformación, el rastreador de tono, el detector de inicios, el decodificador WAV y el codificador PNG están todos en este repositorio, y producen los mismos números en Node y en el navegador.
+
+## El conjunto en vivo
+
+La audición califica una grabación una vez que ha terminado. Esta es la otra mitad: preguntar qué está haciendo cada instrumento **en este momento**, a mitad de la interpretación.
+
+```
+ensemble_now()
+```
+
+Responde con las notas sostenidas de cada instrumento, el tiempo que cada una se ha mantenido y el acorde combinado en todo el conjunto. Durante un dúo, las dos voces se informan por separado, para que pueda ver cómo el piano sostiene una tríada mientras el sintetizador lleva la melodía sobre ella.
+
+### Dos canales, y el más barato es el más preciso
+
+Esta es la parte que vale la pena entender, porque decide qué número confiar.
+
+**Intención: lo que se le indicó a cada motor que tocara.** Cuando el modelo es el que interpreta, esto no es una estimación. Un acorde de piano no es algo que se deba transcribir; son tres notas que se enviaron. Las notas son exactas, libres e inmediatas.
+
+**Acústico: lo que realmente salió.** Cada motor puede dirigir su salida a un bus de análisis privado, de modo que cada instrumento se mida en la fuente sin separación ni ambigüedad. Este canal es **verificación, no descubrimiento**: es cómo aprende que una voz se desvió del reloj, que una grabación se cortó o que un motor se silenció mientras seguía recibiendo notas.
+
+Cuando los dos no coinciden, eso es un hecho sobre la renderización, no una corrección de las notas.
+
+### Lo que cuesta
+
+Observar un instrumento cuesta aproximadamente **9 microsegundos por llamada de retorno de audio**, en comparación con un bloque de 42,67 ms, lo que representa aproximadamente el 0,02 % del presupuesto de audio, medido con cero muestras descartadas. Un instrumento sin un observador adjunto no cuesta nada.
+
+### Lo que no le dirá
+
+El canal acústico tiene un retraso y indica cuánto: aproximadamente 23 ms para el tono y 70 ms para un inicio confirmado, porque un inicio no se puede confirmar hasta que haya llegado el audio posterior. Los inicios cerca de ese límite se retienen en lugar de informarse y luego retractarse.
+
+El rastreador acústico sigue una línea a la vez, por lo que no nombrará las notas de un acorde, y no pretende hacerlo. Un acorde que no puede resolver es su limitación conocida, en lugar de un descubrimiento, y el conjunto se mantiene en silencio al respecto en lugar de dar falsas alarmas en cada acorde que toca el piano.
 
 ## El teclado de piano
 
@@ -221,6 +251,29 @@ pnpm exec tsx scripts/check-release-gate.ts /tmp/b.json
 
 > Los arreglos MIDI son obra de Bernd Krueger (piano-midi.de), con licencia CC-BY-SA-3.0-DE. Las anotaciones, trazas y artefactos de evaluación son del equipo AI Jam Sessions, que se publican bajo la misma licencia para preservar la cadena de "compartir y modificar". **Límite de licencia:** la licencia MIT del repositorio cubre el código; todo lo que esté debajo de `datasets/` tiene licencia CC-BY-SA-3.0-DE. El corpus de trabajo en `datasets/jam-actions-v0/` también contiene dos obras (Satie Gymnopédie No. 1, Debussy Arabesque No. 1) que están *excluidas* del conjunto publicado porque no se pudo verificar la procedencia de su arreglo; consulte [`datasets/jam-actions-v0/PROVENANCE-NOTE.md`](datasets/jam-actions-v0/PROVENANCE-NOTE.md).
 
+### El corpus acústico
+
+**jam-actions-acoustic-v0**: la contraparte de las trazas anteriores, aplicada al **audio** en lugar de a la música simbólica. 108 registros, cada uno de los cuales empareja una representación sintética deliberadamente alterada de una frase de dominio público con el veredicto que las herramientas de análisis realmente devuelven, de modo que se verifica cada etiqueta en relación con el instrumento y no solo consigo misma.
+
+| | |
+|---|---|
+| Registros | 108: 3 frases × 9 tipos de perturbación × 4 notas objetivo |
+| Reservado | por **frase** (Für Elise), no por registro, por lo que una copia alterada de la misma melodía no puede filtrarse. |
+| Clases | coincidencia, error/advertencia de tono, error/acierto de tiempo, nota omitida, nota adicional, vibrato afinado, silencio sin nada que calificar |
+| Audio | ninguno distribuido: cada registro contiene una receta determinista y el SHA-256 de la forma de onda que produce |
+| Esquema | `jam-actions-acoustic-v0/1.0.0` |
+
+Dos de las nueve clases están ahí porque un modelo ingenuo las responde con confianza y de forma incorrecta: una nota de vibrato cuyo veredicto correcto es *afinado*, y silencio cuyo veredicto correcto es *nada que calificar*. Cada umbral del que depende el veredicto se copia en el registro, porque ambos se modificaron una vez durante la compilación.
+
+El corpus se puede reproducir a partir de este repositorio. Volver a generarlo produce todos los 115 archivos publicados y un `checksums.sha256` idéntico en bytes, y una prueba confirma exactamente eso sin escribir el árbol publicado.
+
+### Crea el tuyo propio
+
+La estructura sobre la que se ejecuta el corpus está disponible para tus propios experimentos.
+`experiments/_template/` (experiments/_template/) es un ejemplo funcional que puedes copiar: declara una tarea y obtendrás el formato SFT, la puntuación por clase, líneas de base triviales sobre el conjunto de veredictos declarado y una verificación de que ninguna unidad reservada se superponga con la división.
+
+El [contrato](experiments/_template/README.md) es la parte que vale la pena leer. La verdad fundamental es construible en lugar de escrita a mano, las etiquetas se verifican en función de lo que miden las herramientas, divides por la unidad que se filtra y comunicas las líneas de base y el modelo base junto con cualquier resultado. Cada una de esas reglas tiene un costo de aprendizaje.
+
 ## Instalación
 
 ```bash
@@ -327,6 +380,25 @@ Requiere **Node.js 22+** (v2.0.0 elevó el mínimo con `node-web-audio-api` 2.0)
 | `list_sections` | Ver las secciones estructurales de una canción (Introducción, Estrofa, Coro, etc.) |
 | `add_section` | Agregar un marcador de sección a una canción para la navegación estructural |
 
+### Puntuación
+
+| Herramienta | Qué hace |
+|------|--------------|
+| `score_performance` | Puntúa una interpretación MIDI junto con una canción de la biblioteca: tono, tiempo, integridad, con retroalimentación graduada |
+| `score_annotation` | Puntúa la calidad de la anotación en 5 dimensiones |
+
+### Escucha
+
+Mide el audio grabado. Monofónico: siguen una línea a la vez, por lo que un acorde o una mezcla completa producen tonterías. Cada número proviene del procesamiento de señales, nunca de un modelo que lee una imagen.
+
+| Herramienta | Qué hace |
+|------|--------------|
+| `analyze_audio` | Mide un archivo WAV: tiempos de inicio, el contorno del tono como nombres de notas con céntimos y nivel |
+| `transcribe_audio` | Convierte una grabación monofónica en notas, con la desviación de cada nota del tono de afinación. Las notas que el rastreador no pudo seguir se omiten en lugar de adivinarse |
+| `score_audio_take` | Califica una interpretación junto con una canción de la biblioteca **de oído**, y luego entrega el resultado a `view_scored_piano_roll` |
+| `view_spectrogram` | Ve el sonido: un espectrograma de Q constante en un eje de teclado de piano, opcionalmente superpuesto con las notas previstas. Por defecto, está oculto. |
+| `ensemble_now` | Qué está tocando **cada instrumento en este momento**, a mitad de la interpretación. Las notas provienen de lo que se envió, por lo que son exactas en lugar de estimadas |
+
 ### Indicaciones MCP
 
 Cuatro plantillas de indicaciones para flujos de trabajo de enseñanza estructurados:
@@ -360,6 +432,12 @@ ai-jam-sessions --version
 ```
 
 ## Estado
+
+**v2.5.0: la versión en la que el modelo puede ver a la banda tocar** (consulta [CHANGELOG](CHANGELOG.md)).
+`ensemble_now` informa de lo que está haciendo cada instrumento mientras la música sigue sonando: notas sostenidas por instrumento, cuánto tiempo se han sostenido y el acorde combinado. Se ejecuta en dos canales, y el más barato es el más preciso: cuando este servidor lo ejecuta, sabe exactamente lo que envió, por lo que un acorde son tres notas en lugar de un problema de transcripción, mientras que una toma acústica separada mide cada motor **en la fuente** para su verificación. El costo medido es de aproximadamente **9 microsegundos por llamada de retorno de audio**: la latencia se indica en lugar de implicarse (~23 ms de tono, ~70 ms de inicio confirmado); y los límites se documentan porque se pueden aplicar: el rastreador es monofónico, los elementos secundarios se miden individualmente y nunca como una mezcla, y un instrumento sin toma no es un instrumento silencioso.
+La misma versión convierte la maquinaria del conjunto de datos en un contrato que cualquiera puede declarar, con una plantilla funcional, para que los usuarios puedan crear sus propios corpus y entrenar sus propios adaptadores utilizando la misma disciplina. En el camino, se descubrió que la puerta de reproducibilidad del corpus acústico cubre 109 de sus 115 rutas publicadas, y tres de las seis que faltaban nunca fueron emitidas por el generador: volver a generarlas las eliminó. Una regeneración completa ahora reproduce cada archivo y el manifiesto de suma de comprobación byte por byte. La superficie activa es de **54 herramientas y 4 plantillas de indicaciones**, con **3.389 pruebas superadas en 165 archivos (1 omitida)**.
+
+Anteriormente, en la v2.4.0: la versión en la que el modelo adquirió oídos. Cuatro herramientas cerraron la brecha entre la renderización de audio y su examen: `analyze_audio` para inicios, contorno de tono y nivel; `transcribe_audio` para una grabación monofónica como notas; `score_audio_take` para calificar una interpretación de oído y entregar el resultado al piano roll existente sin cambios; y `view_spectrogram` para ver el sonido en un eje de Q constante, teclado de piano. Todo ello es procesamiento de señales sin dependencias, escrito en este repositorio: su propia FFT, ventanas, transformaciones mel y de Q constante, detección de inicio y seguimiento de tono, porque un modelo no puede examinar de forma fiable una imagen y las consultas deterministas superan a la inferencia para las preguntas con respuestas exactas. Esa versión también publicó **jam-actions-acoustic-v0**, 108 registros de oro construibles del uso de herramientas sobre audio.
 
 **v2.3.0: la versión en la que el instrumento aprendió a cantar sincronizado con el reloj** (consulte [CHANGELOG](CHANGELOG.md)). Ahora, cualquier canción de la biblioteca puede llevar una línea vocal real que se sincronice con el piano: un **reloj de partitura** deriva el tono, el inicio y la duración de cada sílaba del MIDI de la canción en la línea de tiempo del reproductor; un cantante local, Apache-2.0, condicionado por la partitura ([SoulX-Singer](https://github.com/Soul-AILab/SoulX-Singer)) canta a partir de él; y dos compuertas miden el resultado antes de que se considere una mezcla: tiempo (cada vocal dentro de los 40 ms de la partitura) y tono (cada nota dentro de los 50 centavos). La ejecución de Amazing Grace incluida mide un máximo de 6 ms de desfase de tiempo y -2,7 centavos de tono global, con comprobantes registrados; la página de inicio la presenta como un estado honesto, con el único defecto restante identificado (el empalme de apertura). La ruta, sus controles y la investigación detrás de cada elección (cinco líneas de estudio, citadas) se encuentran en el [manual](https://mcp-tool-shop-org.github.io/ai-jam-sessions/handbook/vocals/) y [`docs/`](docs/). La interfaz en vivo no ha cambiado y sigue teniendo **49 herramientas y 4 plantillas de indicación**, con **3080 pruebas superadas (1 omitida)**, además de su propia suite de pruebas pytest para el instrumento vocal. **Estado de publicación:** publicado: [`@mcptoolshop/ai-jam-sessions@2.3.0`](https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions) en npm, con trazabilidad verificada.
 

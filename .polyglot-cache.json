@@ -11067,6 +11067,1280 @@
       "timestamp": 1788831837368,
       "source": "The whole surface is dependency-free: the transform, the pitch tracker, the onset detector, the\r\nWAV decoder and the PNG encoder are all in this repo, and they produce identical numbers in Node\r\nand in the browser.\r",
       "targetLang": "pt"
+    },
+    "3f858676b1e7fbf7": {
+      "translation": "- **阅读**——带有深入音乐注释的真实 MIDI 乐谱。不是手写的近似版本——而是经过解析、分析和解释的版本。\n- **聆听**——六个音频引擎（振荡器钢琴、采样钢琴、人声采样、物理人声声道、加法人声合成器、物理建模吉他），通过扬声器播放，使房间里的人成为人工智能的“耳朵”。现在，该模型也有了自己的“耳朵”，而且是双重的：它可以事后测量录音（参见[聆听](#聆听）），并且可以在**音乐仍在播放时**观察乐队（参见[现场合奏](#现场合奏））。\n- **观看**——一个钢琴卷帘，它将播放的内容渲染为 SVG，模型可以读取并验证。一个交互式吉他谱编辑器。一个带有视觉键盘、双模式音符编辑器和调音实验室的浏览器控制面板。\n- **记忆**——一个练习日志，可以跨会话保存，因此学习效果会随着时间的推移而累积。\n- **演唱**——带有 20 种人声预设的人声声道合成，从歌剧女高音到电子合唱。带有音阶、轮廓和音节叙述的合唱模式。以及在钢琴时钟上进行真实的演唱：一种基于歌曲 MIDI 驱动的、在时序（40 毫秒）和音高（50 分）上进行门控的、在您听到之前进行评分的歌手（参见[演唱](#演唱））。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "- **Reading** — real MIDI sheet music with deep musical annotations. Not hand-written approximations — parsed, analyzed, and explained.\n- **Hearing** — six audio engines (oscillator piano, sample piano, vocal samples, physical vocal tract, additive vocal synth, physically-modeled guitar) that play through your speakers, so the humans in the room become the AI's ears. And now the model has ears of its own, twice over: it can measure a recording after the fact (see [Listening](#listening)) and it can watch the band **while the music is still going** (see [The Live Ensemble](#the-live-ensemble)).\n- **Seeing** — a piano roll that renders what was played as SVG the model can read back and verify. An interactive guitar tablature editor. A browser cockpit with a visual keyboard, dual-mode note editor, and tuning lab.\n- **Remembering** — a practice journal that persists across sessions, so learning compounds over time.\n- **Singing** — vocal tract synthesis with 20 voice presets, from operatic soprano to electronic choir. Sing-along mode with solfege, contour, and syllable narration. And a real sung lead on the piano's clock: a score-conditioned singer driven by the song's MIDI, gated on timing (40 ms) and pitch (50 cents) before you hear it — see [Sing](#sing).",
+      "targetLang": "zh"
+    },
+    "437b2ed4f6e31646": {
+      "translation": "聆听",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "Listening",
+      "targetLang": "zh"
+    },
+    "a58fcbfa0a1a4d6b": {
+      "translation": "在很长一段时间里，这个服务器可以发出声音，但无法对其进行分析。模型播放，人类聆听，模型接受他们的判断。现在，这个差距已经弥合。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "For a long time this server could make sound but never examine it. The model played, a human\nlistened, and the model took their word for it. That gap is now closed.",
+      "targetLang": "zh"
+    },
+    "dec10e3c3082a21f": {
+      "translation": "将其指向一个 WAV 文件，它会测量其中的内容。不是通过查看图像并进行猜测——而是通过将信号传递到它已经用于乐谱的相同类型的工具：",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "Point it at a WAV and it measures what is there. Not by looking at a picture and guessing —\nby running the signal through the same kind of tools it already uses on the score:",
+      "targetLang": "zh"
+    },
+    "b5452c48bbf143da": {
+      "translation": "- **⟦0⟧**——起音、音高轮廓和音量。音高以音符名称返回，并带有半音偏差，而不是原始频率。\n- **⟦1⟧**——将录音转换为音符：音高、起始时间、持续时间和每个音符与标准音高的距离。\n- **⟦2⟧**——通过“耳朵”对库中的歌曲进行性能评估。它转录录音，将其与乐谱匹配，并报告哪些音符播放正确，哪些音符偏离，以及哪些音符遗漏。然后，⟦3⟧将结果绘制在乐谱上，就像它对捕获的 MIDI 录音一样。这就是评估真实乐器、演唱录音或任何没有 MIDI 录音的材料的方式。\n- **⟦4⟧**——查看声音。一个恒定 Q 值的频谱图，左侧边缘带有钢琴键盘，因此可以一目了然地读取音高，并且可以根据要求在上面绘制歌曲的预期音符。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "- **⟦0⟧** — onsets, the pitch contour, and level. Pitch comes back as note names with\n  cent deviations, never as raw frequencies.\n- **⟦1⟧** — the recording as notes: pitch, start, duration, and how far each note\n  sits from concert pitch.\n- **⟦2⟧** — grade a performance against a song in the library **by ear**. It\n  transcribes the recording, matches it to the score, and reports which notes landed, which\n  drifted, and which were missed. Then ⟦3⟧ draws the result over the score,\n  exactly as it does for a captured MIDI take. This is how you grade a real instrument, a sung\n  take, or anything where there is no MIDI to capture.\n- **⟦4⟧** — see the sound. A constant-Q spectrogram with a piano keyboard down the\n  left edge, so pitch is readable at a glance, and the song's intended notes drawn over it on\n  request.",
+      "targetLang": "zh"
+    },
+    "222cb5c8c8f18e19": {
+      "translation": "**它不会告诉您什么。**图像用于查找*哪里*出了问题；每个数字都来自信号处理，而不是来自模型读取图像。转录器一次处理一行，因此和弦或完整的混音会产生一个确定的错误结果，并且会明确指出。在最先进的技术中，起音检测的准确率约为 F1 0.88，因此“遗漏”的音符可能只是转录器无法听到的音符，而不是您没有播放的音符——这些工具会在其自身的输出中包含这一警告，而不是将其隐藏在这里。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "**What it will not tell you.** The picture is for finding *where* something is wrong; every number\ncomes from signal processing, never from a model reading an image. The transcriber follows one\nline at a time, so a chord or a full mix will produce something confident and wrong, and it says\nso. Onset detection runs around F1 0.88 at the state of the art, so a \"missed\" note may be one the\ntranscriber could not hear rather than one you did not play — the tools carry that caveat in their\nown output rather than burying it here.",
+      "targetLang": "zh"
+    },
+    "c16161df93fd73c5": {
+      "translation": "整个表面都是无依赖的：转换、音高跟踪器、起音检测器、WAV 解码器和 PNG 编码器都位于此存储库中，并且它们在 Node 和浏览器中产生相同的数字。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "The whole surface is dependency-free: the transform, the pitch tracker, the onset detector, the\nWAV decoder and the PNG encoder are all in this repo, and they produce identical numbers in Node\nand in the browser.",
+      "targetLang": "zh"
+    },
+    "31faa08bad6f3972": {
+      "translation": "现场合奏",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "The Live Ensemble",
+      "targetLang": "zh"
+    },
+    "3e2b835ad0f962f6": {
+      "translation": "聆听是在录音完成后对其进行评估。这是另一部分：询问每种乐器**现在**正在做什么，即在演奏过程中。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "Listening grades a recording once it has finished. This is the other half: asking what every\ninstrument is doing **right now**, mid-performance.",
+      "targetLang": "zh"
+    },
+    "4e151a00a83cfbfa": {
+      "translation": "它会回答每种乐器保持的音符、每个音符保持了多长时间，以及整个合奏中组合成的和弦。在二重奏中，两个声音会分别报告，因此您可以看到钢琴保持一个三和弦，而合成器在其上方演奏旋律。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "It answers with each instrument's held notes, how long each has been held, and the combined chord\nacross the whole ensemble. During a duet the two voices are reported separately, so you can see the\npiano holding a triad while the synth carries the melody over it.",
+      "targetLang": "zh"
+    },
+    "886b90782c99a2d2": {
+      "translation": "两个通道，而且廉价的那个是准确的那个",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "Two channels, and the cheap one is the accurate one",
+      "targetLang": "zh"
+    },
+    "8d25b1a089794ccb": {
+      "translation": "这是值得理解的部分，因为它决定了要信任哪个数字。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "This is the part worth understanding, because it decides which number to trust.",
+      "targetLang": "zh"
+    },
+    "df3fa3e6b35e7b9c": {
+      "translation": "**意图——每个引擎被告知要播放的内容。**当模型是演奏者时，这不是一个估计值。钢琴和弦不是要进行转录的东西；而是发送的三组音符。这些音符是准确的、直接的和即时的。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "**Intent — what each engine was told to play.** When the model is the one performing, this is not\nan estimate. A piano chord is not something to transcribe; it is three note-ons that were sent. The\nnotes are exact, free, and immediate.",
+      "targetLang": "zh"
+    },
+    "d8bbeb8828f46a5d": {
+      "translation": "**声学——实际发出的声音。**每个引擎可以将它的输出发送到私有分析总线，因此每种乐器都在源头进行测量，没有任何分离和歧义。这个通道是**验证，而不是发现**：它是了解人声偏离时钟、录音被截断或引擎在仍然发送音符时停止播放的方式。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "**Acoustic — what actually came out.** Each engine can fan its output into a private analysis bus,\nso every instrument is measured at the source with no separation and no ambiguity. This channel is\n**verification, not discovery**: it is how you learn that a voice drifted off the clock, a take\nclipped, or an engine went silent while still being sent notes.",
+      "targetLang": "zh"
+    },
+    "420e436b75df5825": {
+      "translation": "当两者不一致时，这只是关于渲染的事实，而不是对音符的更正。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "When the two disagree, that is a fact about the render, not a correction to the notes.",
+      "targetLang": "zh"
+    },
+    "9f6feeb65c52ceff": {
+      "translation": "它需要多少资源",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "What it costs",
+      "targetLang": "zh"
+    },
+    "b8537f3440ba7b9f": {
+      "translation": "观察一种乐器大约需要**9 微秒的音频回调时间**，对应于 42.67 毫秒的音频块，这大约是音频预算的 0.02%，并且在零丢弃样本的情况下进行测量。没有附加观察器的乐器根本不需要任何资源。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "Watching an instrument costs about **9 microseconds per audio callback** against a 42.67 ms block,\nwhich is roughly 0.02% of the audio budget, measured with zero dropped samples. An instrument with\nno observer attached costs nothing at all.",
+      "targetLang": "zh"
+    },
+    "9a20bf5e83a5a22c": {
+      "translation": "它不会告诉您什么",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "What it will not tell you",
+      "targetLang": "zh"
+    },
+    "4fa607bcd948cf66": {
+      "translation": "声学通道存在延迟，并且会说明延迟了多少：大约 23 毫秒用于音高，70 毫秒用于确认的起音，因为在接收到其后的音频之前，无法确认起音。接近该边缘的起音会被保留而不是报告，然后稍后被撤回。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "The acoustic channel lags, and says by how much: about 23 ms for pitch, and 70 ms for a confirmed\nonset, because an onset cannot be confirmed until the audio after it has arrived. Onsets near that\nedge are withheld rather than reported and later retracted.",
+      "targetLang": "zh"
+    },
+    "2470ca06325ff035": {
+      "translation": "声学跟踪器一次处理一行，因此它不会命名和弦中的音符——并且它不会假装这样做。它无法解析的和弦是其已知的局限性，而不是一个发现，并且合奏会对此保持沉默，而不是在钢琴演奏的每个和弦时都发出警告。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "The acoustic tracker follows one line at a time, so it will not name the notes of a chord — and it\ndoes not pretend to. A chord it cannot resolve is its known limitation rather than a finding, and\nthe ensemble stays quiet about it instead of crying wolf on every chord the piano plays.",
+      "targetLang": "zh"
+    },
+    "435b67b2443db94f": {
+      "translation": "声学语料库",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "The acoustic corpus",
+      "targetLang": "zh"
+    },
+    "0ccc3c18a98a2a23": {
+      "translation": "**jam-actions-acoustic-v0**——这是上述轨迹的对应版本，处理的是**音频**而非符号音乐。包含 108 条记录，每条记录都将一个经过故意扰动的公共领域乐句的合成渲染与分析工具实际返回的判断结果配对，因此，每个标签都针对乐器进行检查，而不仅仅是针对其自身进行检查。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "**jam-actions-acoustic-v0** — the counterpart to the traces above, over **audio** rather than\nsymbolic music. 108 records, each pairing a deliberately perturbed synthetic rendering of a\npublic-domain phrase with the verdict the analysis tools actually return, so every label is checked\nagainst the instrument rather than only against itself.",
+      "targetLang": "zh"
+    },
+    "eccdbc14fa64797c": {
+      "translation": "108 — 3 个乐句 × 9 种扰动类型 × 4 个目标音符",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "108 — 3 phrases × 9 perturbation kinds × 4 target notes",
+      "targetLang": "zh"
+    },
+    "683989b34274705e": {
+      "translation": "保留",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "Held out",
+      "targetLang": "zh"
+    },
+    "fe53c8b0c95c7dc7": {
+      "translation": "按**乐句**（《致爱丽丝》）划分，而不是按记录划分，因此，相同旋律的扰动版本不会泄露。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "by **phrase** (Für Elise), not by record, so a perturbed twin of the same melody cannot leak",
+      "targetLang": "zh"
+    },
+    "8313ecc668526b6f": {
+      "translation": "类别",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "Classes",
+      "targetLang": "zh"
+    },
+    "b905277fcf3185fc": {
+      "translation": "匹配、音高错误/警告、时序错误/通过、遗漏、额外、音准颤音、无评级静音",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "match, pitch fail/warn, timing fail/pass, missed, extra, in-tune vibrato, nothing-to-grade silence",
+      "targetLang": "zh"
+    },
+    "1a97d8a3086fb7f6": {
+      "translation": "音频",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "Audio",
+      "targetLang": "zh"
+    },
+    "503b60fa3ff7224b": {
+      "translation": "没有分发——每条记录都包含一个确定性的配方和它产生的波形的 SHA-256 校验值。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "none distributed — each record carries a deterministic recipe and the SHA-256 of the waveform it produces",
+      "targetLang": "zh"
+    },
+    "d300d8a837eba949": {
+      "translation": "这九个类别中有两个是存在的，因为一个简单的模型会自信且错误地回答它们：一个音准颤音，其正确的判断结果是*音准*，以及一段静音，其正确的判断结果是*无需评级*。所有判断结果所依赖的阈值都复制到记录中，因为它们在构建过程中都发生过一次变化。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "Two of the nine classes are there because a naive model answers them confidently and wrongly: a\nvibrato note whose correct verdict is *in tune*, and silence whose correct verdict is *nothing to\ngrade*. Every threshold the verdict depends on is copied into the record, because both of them\nmoved once during the build.",
+      "targetLang": "zh"
+    },
+    "ddf24ef24aea82c6": {
+      "translation": "该语料库可以从这个仓库中重现。重新生成它会生成所有 115 个已发布的文件和一个字节完全相同的 ⟦0⟧，并且一个测试会精确地验证这一点，而无需写入已发布的树。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "The corpus is reproducible from this repository. Regenerating it produces all 115 published files\nand a byte-identical ⟦0⟧, and a test asserts exactly that without writing the\npublished tree.",
+      "targetLang": "zh"
+    },
+    "acb2a3951f68a7e7": {
+      "translation": "构建你自己的",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "Build your own",
+      "targetLang": "zh"
+    },
+    "a35a49245028d0b1": {
+      "translation": "语料库运行的基础框架可供你进行自己的实验。\n[⟦0⟧](experiments/_template/) 是一个可用的示例，你可以复制它：声明一个任务，你将获得 SFT 格式、按类别评分、基于你声明的判断结果集的简单基准，以及一个检查，以确保没有保留单元跨越分割。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "The scaffolding that corpus runs on is available for your own experiments.\n[⟦0⟧](experiments/_template/) is a working example you can copy: declare a\ntask, and you get SFT formatting, per-class scoring, trivial baselines over your declared verdict\nset, and a check that no holdout unit straddles the split.",
+      "targetLang": "zh"
+    },
+    "73d1ed6b5c7dd404": {
+      "translation": "[协议](experiments/_template/README.md) 是值得阅读的部分。真实数据是可构建的，而不是手动编写的，标签会根据工具的测量结果进行验证，你按泄露单元进行分割，并报告基准和基础模型以及任何结果。\n这些规则中的每一条都需要付出一定的学习成本。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "The [contract](experiments/_template/README.md) is the part worth reading. Ground truth is\nconstructible rather than hand-written, labels are verified against what the tools measure, you\nsplit by the unit that leaks, and you report the baselines and the base model beside any result.\nEach of those rules cost something to learn.",
+      "targetLang": "zh"
+    },
+    "be9af0fab3dd4fa5": {
+      "translation": "评分",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "Score",
+      "targetLang": "zh"
+    },
+    "395ead5c7e73d2a4": {
+      "translation": "对 MIDI 伴奏与库歌曲进行评分——音高、时序、完整性，并提供分级反馈。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "Score a MIDI play-along against a library song — pitch, timing, completeness, with graded feedback",
+      "targetLang": "zh"
+    },
+    "52b26cda19ad0b59": {
+      "translation": "对 5 个维度的注释质量进行评分。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "Score annotation quality across 5 dimensions",
+      "targetLang": "zh"
+    },
+    "90bd38bd7f7970bc": {
+      "translation": "收听",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "Listen",
+      "targetLang": "zh"
+    },
+    "c2975e146af72a56": {
+      "translation": "测量录制的音频。单声道：它们一次跟随一条线，因此，和弦或完整的混音会产生令人信服的无意义结果。每个数字都来自信号处理，而不是来自模型读取图像。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "Measuring recorded audio. Monophonic: they follow one line at a time, so a chord or a full mix\nproduces confident nonsense. Every number comes from signal processing, never from a model reading\na picture.",
+      "targetLang": "zh"
+    },
+    "c12bd499d25f9d09": {
+      "translation": "测量一个 WAV 文件——起始时间、音高轮廓（以音符名称和半音为单位）和音量。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "Measure a WAV — onset times, the pitch contour as note names with cents, and level",
+      "targetLang": "zh"
+    },
+    "0fb9f0954c8c676f": {
+      "translation": "将一个单声道录音转换为音符，并记录每个音符与标准音高的偏差。省略跟踪器无法跟随的音符，而不是猜测。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "Turn a monophonic recording into notes, with each note's deviation from concert pitch. Notes the tracker could not follow are omitted rather than guessed",
+      "targetLang": "zh"
+    },
+    "9cbceef925bfbe0b": {
+      "translation": "通过**听觉**对表演与库歌曲进行评分，然后将结果传递给 ⟦0⟧。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "Grade a performance against a library song **by ear**, then hand the result to ⟦0⟧",
+      "targetLang": "zh"
+    },
+    "7466d50179313662": {
+      "translation": "查看声音——在钢琴键盘轴上显示一个恒定 Q 值的声谱图，可以选择叠加预期的音符。默认情况下，会隐藏声音。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "See the sound — a constant-Q spectrogram on a piano-keyboard axis, optionally overlaid with the intended notes. Blind by default",
+      "targetLang": "zh"
+    },
+    "1a74447b6dc585b5": {
+      "translation": "每个乐器**现在正在演奏什么**，在演奏过程中。音符来自已发送的内容，因此它们是精确的，而不是估计的。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "What every instrument is playing **right now**, mid-performance. Notes come from what was sent, so they are exact rather than estimated",
+      "targetLang": "zh"
+    },
+    "00ee5ba453da43e3": {
+      "translation": "**v2.5.0——模型可以观看乐队演奏的版本（参见 [CHANGELOG](CHANGELOG.md)）。**\n⟦0⟧ 报告每个乐器在音乐播放时正在做什么：每个乐器保持的音符、每个音符保持了多长时间以及组合的和弦。它运行在两个通道上，并且廉价的通道是准确的通道——当此服务器执行时，它确切地知道它发送了什么，因此，一个和弦是三个音符，而不是转录问题，而一个单独的声学传感器会测量每个引擎**在源头**进行验证。测量的成本约为**每个音频回调 9 微秒**；延迟是明确说明的，而不是暗示的（~23 毫秒音高，~70 毫秒确认的起始时间）；并且限制已记录，因为它们是可以操作的——跟踪器是单声道的，分层子项是单独跟踪的，而不是作为混合进行跟踪，并且没有传感器的乐器不是静音乐器。\n在同一个版本中，数据集机制被转换为一个协议，任何人都可以对其进行声明，并提供了一个可用的模板，因此用户可以构建自己的语料库，并针对相同的标准训练自己的适配器。在此过程中，发现声学语料库的可重现性门控覆盖了其 115 个已发布路径中的 109 个，并且它遗漏的六个路径中的三个根本没有由生成器发出——重新生成会删除它们。现在，完全重新生成可以重现每个文件和校验和清单中的每个字节。实时界面包含**54 个工具和 4 个提示模板**，并且**165 个文件中有 3,389 个测试通过（1 个跳过）**。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "**v2.5.0 — the release where the model can watch the band play** (see [CHANGELOG](CHANGELOG.md)).\n⟦0⟧ reports what every instrument is doing while the music is still going: held notes\nper instrument, how long each has been held, and the combined chord. It runs on two channels, and\nthe cheap one is the accurate one — when this server performs it knows exactly what it sent, so a\nchord is three note-ons rather than a transcription problem, while a separate acoustic tap measures\neach engine **at the source** for verification. Measured cost is about **9 microseconds per audio\ncallback**; latency is stated rather than implied (~23 ms pitch, ~70 ms confirmed onset); and the\nlimits are documented because they are actionable — the tracker is monophonic, layered children are\ntapped individually and never as a mix, and an instrument with no tap is not a silent instrument.\nThe same release turns the dataset machinery into a contract anyone can declare against, with a\nworked template, so users can build their own corpora and train their own adapters against the same\ndiscipline. Along the way the acoustic corpus's reproducibility gate was found to cover 109 of its\n115 published paths, and three of the six it missed were never emitted by the generator at all —\nregenerating deleted them. A full regeneration now reproduces every file and the checksum manifest\nbyte for byte. The live surface is **54 tools and 4 prompt templates**, with **3,389 tests passing\nacross 165 files (1 skipped)**.",
+      "targetLang": "zh"
+    },
+    "c295a897582335ae": {
+      "translation": "之前在 v2.4.0 中——模型获得了“耳朵”的版本。四个工具弥合了音频渲染和音频检查之间的差距：⟦0⟧ 用于起始时间、音高轮廓和音量；\n⟦1⟧ 用于将单声道录音转换为音符；⟦2⟧ 用于通过听觉对表演进行评分，并将结果传递给现有的已评分钢琴卷帘，而无需更改；以及 ⟦3⟧ 用于在恒定 Q 值、钢琴键盘轴上查看声音。所有这些都是无依赖性的信号处理，用这个仓库中的代码编写——它自己的 FFT、窗口、梅尔和恒定 Q 变换、起始时间检测和音高跟踪——因为模型不能可靠地通过眼睛来观察图像，并且确定性查询比推理更适合于具有精确答案的问题。该版本还发布了\n**jam-actions-acoustic-v0**，108 条可构建的黄金记录，用于对音频进行工具使用。",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "Previously in v2.4.0 — the release where the model got ears. Four tools closed the gap between\nrendering audio and examining it: ⟦0⟧ for onsets, pitch contour and level;\n⟦1⟧ for a monophonic recording as notes; ⟦2⟧ to grade a performance\nby ear and hand the result to the existing scored piano roll unchanged; and ⟦3⟧ to\nsee the sound on a constant-Q, piano-keyboard axis. All of it is dependency-free signal processing\nwritten in this repo — its own FFT, windows, mel and constant-Q transforms, onset detection and\npitch tracking — because a model cannot reliably eyeball a picture and deterministic queries beat\ninference for questions with exact answers. That release also published\n**jam-actions-acoustic-v0**, 108 constructible-gold records of tool use over audio.",
+      "targetLang": "zh"
+    },
+    "5dd137870bec672a": {
+      "translation": "MIT",
+      "model": "translategemma:27b",
+      "timestamp": 1788841320157,
+      "source": "MIT",
+      "targetLang": "zh"
+    },
+    "0c90a4b5300abcc1": {
+      "translation": "- **Lectura:** Partituras MIDI reales con anotaciones musicales detalladas. No son aproximaciones escritas a mano, sino que se analizan, se interpretan y se explican.\n- **Audición:** Seis motores de audio (piano oscilador, piano de muestras, muestras vocales, tracto vocal físico, sintetizador vocal aditivo, guitarra modelada físicamente) que se reproducen a través de sus altavoces, de modo que las personas en la sala se convierten en los \"oídos\" de la IA. Y ahora el modelo tiene sus propios oídos, y en doble medida: puede medir una grabación después de los hechos (ver [Audición](#audición)) y puede observar a la banda **mientras la música sigue sonando** (ver [El conjunto en vivo](#el-conjunto-en-vivo)).\n- **Visualización:** Un piano roll que muestra lo que se tocó como SVG, y que el modelo puede leer y verificar. Un editor interactivo de tablaturas de guitarra. Un panel de control del navegador con un teclado visual, un editor de notas de doble modo y un laboratorio de afinación.\n- **Memorización:** Un diario de práctica que se mantiene a lo largo de las sesiones, de modo que el aprendizaje se acumula con el tiempo.\n- **Canto:** Síntesis del tracto vocal con 20 preajustes de voz, desde soprano de ópera hasta coro electrónico. Modo de canto con solfeo, contorno y narración silábica. Y una melodía vocal real en el reloj del piano: una partitura que condiciona al cantante y que se basa en el MIDI de la canción, con una limitación en el tiempo (40 ms) y en el tono (50 centésimos) antes de que la escuche (ver [Canto](#canto)).",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "- **Reading** — real MIDI sheet music with deep musical annotations. Not hand-written approximations — parsed, analyzed, and explained.\n- **Hearing** — six audio engines (oscillator piano, sample piano, vocal samples, physical vocal tract, additive vocal synth, physically-modeled guitar) that play through your speakers, so the humans in the room become the AI's ears. And now the model has ears of its own, twice over: it can measure a recording after the fact (see [Listening](#listening)) and it can watch the band **while the music is still going** (see [The Live Ensemble](#the-live-ensemble)).\n- **Seeing** — a piano roll that renders what was played as SVG the model can read back and verify. An interactive guitar tablature editor. A browser cockpit with a visual keyboard, dual-mode note editor, and tuning lab.\n- **Remembering** — a practice journal that persists across sessions, so learning compounds over time.\n- **Singing** — vocal tract synthesis with 20 voice presets, from operatic soprano to electronic choir. Sing-along mode with solfege, contour, and syllable narration. And a real sung lead on the piano's clock: a score-conditioned singer driven by the song's MIDI, gated on timing (40 ms) and pitch (50 cents) before you hear it — see [Sing](#sing).",
+      "targetLang": "es"
+    },
+    "2b92737fabfe6ad4": {
+      "translation": "Audición",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "Listening",
+      "targetLang": "es"
+    },
+    "e3af3a413087b092": {
+      "translation": "Durante mucho tiempo, este servidor podía producir sonido, pero nunca analizarlo. El modelo tocaba, una persona escuchaba y el modelo aceptaba su opinión. Esa brecha ahora se ha cerrado.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "For a long time this server could make sound but never examine it. The model played, a human\nlistened, and the model took their word for it. That gap is now closed.",
+      "targetLang": "es"
+    },
+    "5db7e5820bb633ac": {
+      "translation": "Si se le proporciona un archivo WAV, mide lo que hay en él. No mirando una imagen y adivinando, sino ejecutando la señal a través del mismo tipo de herramientas que ya utiliza en la partitura:",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "Point it at a WAV and it measures what is there. Not by looking at a picture and guessing —\nby running the signal through the same kind of tools it already uses on the score:",
+      "targetLang": "es"
+    },
+    "eaf7431b666a1592": {
+      "translation": "- **⟦0⟧:** inicios, el contorno del tono y el nivel. El tono se devuelve como nombres de notas con desviaciones en centésimos, nunca como frecuencias brutas.\n- **⟦1⟧:** la grabación como notas: tono, inicio, duración y la distancia de cada nota al tono de referencia.\n- **⟦2⟧:** califica una interpretación en comparación con una canción de la biblioteca **de oído**. Transcribe la grabación, la compara con la partitura e informa qué notas se tocaron correctamente, cuáles se desviaron y cuáles se omitieron. Luego, ⟦3⟧ dibuja el resultado sobre la partitura, exactamente como lo hace con una grabación MIDI. Así es como se califica un instrumento real, una interpretación cantada o cualquier cosa en la que no haya MIDI para grabar.\n- **⟦4⟧:** vea el sonido. Un espectrograma de Q constante con un teclado de piano en el borde izquierdo, de modo que el tono sea legible de un vistazo, y las notas previstas de la canción se dibujen sobre él a petición.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "- **⟦0⟧** — onsets, the pitch contour, and level. Pitch comes back as note names with\n  cent deviations, never as raw frequencies.\n- **⟦1⟧** — the recording as notes: pitch, start, duration, and how far each note\n  sits from concert pitch.\n- **⟦2⟧** — grade a performance against a song in the library **by ear**. It\n  transcribes the recording, matches it to the score, and reports which notes landed, which\n  drifted, and which were missed. Then ⟦3⟧ draws the result over the score,\n  exactly as it does for a captured MIDI take. This is how you grade a real instrument, a sung\n  take, or anything where there is no MIDI to capture.\n- **⟦4⟧** — see the sound. A constant-Q spectrogram with a piano keyboard down the\n  left edge, so pitch is readable at a glance, and the song's intended notes drawn over it on\n  request.",
+      "targetLang": "es"
+    },
+    "d8228a1a54c2c18b": {
+      "translation": "**Lo que no le dirá.** La imagen sirve para encontrar *dónde* hay un problema; cada número proviene del procesamiento de la señal, nunca de un modelo que lee una imagen. El transcriptor sigue una línea a la vez, por lo que un acorde o una mezcla completa producirán algo seguro pero incorrecto, y lo indicará. La detección de inicios tiene una precisión de alrededor del 88 % en el estado actual de la técnica, por lo que una nota \"omitida\" puede ser una que el transcriptor no pudo escuchar, en lugar de una que usted no tocó; las herramientas incluyen esta advertencia en su propia salida en lugar de ocultarla aquí.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "**What it will not tell you.** The picture is for finding *where* something is wrong; every number\ncomes from signal processing, never from a model reading an image. The transcriber follows one\nline at a time, so a chord or a full mix will produce something confident and wrong, and it says\nso. Onset detection runs around F1 0.88 at the state of the art, so a \"missed\" note may be one the\ntranscriber could not hear rather than one you did not play — the tools carry that caveat in their\nown output rather than burying it here.",
+      "targetLang": "es"
+    },
+    "933da8b67eb5ac06": {
+      "translation": "Toda la superficie es independiente: la transformación, el rastreador de tono, el detector de inicios, el decodificador WAV y el codificador PNG están todos en este repositorio, y producen los mismos números en Node y en el navegador.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "The whole surface is dependency-free: the transform, the pitch tracker, the onset detector, the\nWAV decoder and the PNG encoder are all in this repo, and they produce identical numbers in Node\nand in the browser.",
+      "targetLang": "es"
+    },
+    "8492b093fbdc9df3": {
+      "translation": "El conjunto en vivo",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "The Live Ensemble",
+      "targetLang": "es"
+    },
+    "6d7040b6d3a0d361": {
+      "translation": "La audición califica una grabación una vez que ha terminado. Esta es la otra mitad: preguntar qué está haciendo cada instrumento **en este momento**, a mitad de la interpretación.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "Listening grades a recording once it has finished. This is the other half: asking what every\ninstrument is doing **right now**, mid-performance.",
+      "targetLang": "es"
+    },
+    "e715ef85e4c45ee3": {
+      "translation": "Responde con las notas sostenidas de cada instrumento, el tiempo que cada una se ha mantenido y el acorde combinado en todo el conjunto. Durante un dúo, las dos voces se informan por separado, para que pueda ver cómo el piano sostiene una tríada mientras el sintetizador lleva la melodía sobre ella.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "It answers with each instrument's held notes, how long each has been held, and the combined chord\nacross the whole ensemble. During a duet the two voices are reported separately, so you can see the\npiano holding a triad while the synth carries the melody over it.",
+      "targetLang": "es"
+    },
+    "23f1126d03b9a454": {
+      "translation": "Dos canales, y el más barato es el más preciso.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "Two channels, and the cheap one is the accurate one",
+      "targetLang": "es"
+    },
+    "684b3f5c2f0c7eab": {
+      "translation": "Esta es la parte que vale la pena entender, porque decide qué número confiar.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "This is the part worth understanding, because it decides which number to trust.",
+      "targetLang": "es"
+    },
+    "af1107c3f5a9ad37": {
+      "translation": "**Intención: lo que se le indicó a cada motor que tocara.** Cuando el modelo es el que interpreta, esto no es una estimación. Un acorde de piano no es algo que se deba transcribir; son tres notas que se enviaron. Las notas son exactas, libres e inmediatas.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "**Intent — what each engine was told to play.** When the model is the one performing, this is not\nan estimate. A piano chord is not something to transcribe; it is three note-ons that were sent. The\nnotes are exact, free, and immediate.",
+      "targetLang": "es"
+    },
+    "ae4954b3f97144b1": {
+      "translation": "**Acústico: lo que realmente salió.** Cada motor puede dirigir su salida a un bus de análisis privado, de modo que cada instrumento se mida en la fuente sin separación ni ambigüedad. Este canal es **verificación, no descubrimiento**: es cómo aprende que una voz se desvió del reloj, que una grabación se cortó o que un motor se silenció mientras seguía recibiendo notas.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "**Acoustic — what actually came out.** Each engine can fan its output into a private analysis bus,\nso every instrument is measured at the source with no separation and no ambiguity. This channel is\n**verification, not discovery**: it is how you learn that a voice drifted off the clock, a take\nclipped, or an engine went silent while still being sent notes.",
+      "targetLang": "es"
+    },
+    "3788b97f7162598c": {
+      "translation": "Cuando los dos no coinciden, eso es un hecho sobre la renderización, no una corrección de las notas.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "When the two disagree, that is a fact about the render, not a correction to the notes.",
+      "targetLang": "es"
+    },
+    "e403c9eee895f1ba": {
+      "translation": "Lo que cuesta",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "What it costs",
+      "targetLang": "es"
+    },
+    "2809282cbd51c45c": {
+      "translation": "Observar un instrumento cuesta aproximadamente **9 microsegundos por llamada de retorno de audio**, en comparación con un bloque de 42,67 ms, lo que representa aproximadamente el 0,02 % del presupuesto de audio, medido con cero muestras descartadas. Un instrumento sin un observador adjunto no cuesta nada.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "Watching an instrument costs about **9 microseconds per audio callback** against a 42.67 ms block,\nwhich is roughly 0.02% of the audio budget, measured with zero dropped samples. An instrument with\nno observer attached costs nothing at all.",
+      "targetLang": "es"
+    },
+    "873732adc24fa702": {
+      "translation": "Lo que no le dirá",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "What it will not tell you",
+      "targetLang": "es"
+    },
+    "be7d6ef4d4f95c08": {
+      "translation": "El canal acústico tiene un retraso y indica cuánto: aproximadamente 23 ms para el tono y 70 ms para un inicio confirmado, porque un inicio no se puede confirmar hasta que haya llegado el audio posterior. Los inicios cerca de ese límite se retienen en lugar de informarse y luego retractarse.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "The acoustic channel lags, and says by how much: about 23 ms for pitch, and 70 ms for a confirmed\nonset, because an onset cannot be confirmed until the audio after it has arrived. Onsets near that\nedge are withheld rather than reported and later retracted.",
+      "targetLang": "es"
+    },
+    "6467a7466180c119": {
+      "translation": "El rastreador acústico sigue una línea a la vez, por lo que no nombrará las notas de un acorde, y no pretende hacerlo. Un acorde que no puede resolver es su limitación conocida, en lugar de un descubrimiento, y el conjunto se mantiene en silencio al respecto en lugar de dar falsas alarmas en cada acorde que toca el piano.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "The acoustic tracker follows one line at a time, so it will not name the notes of a chord — and it\ndoes not pretend to. A chord it cannot resolve is its known limitation rather than a finding, and\nthe ensemble stays quiet about it instead of crying wolf on every chord the piano plays.",
+      "targetLang": "es"
+    },
+    "f3f7e799733d448a": {
+      "translation": "El corpus acústico",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "The acoustic corpus",
+      "targetLang": "es"
+    },
+    "6bbf19d2e9603259": {
+      "translation": "**jam-actions-acoustic-v0**: la contraparte de las trazas anteriores, aplicada al **audio** en lugar de a la música simbólica. 108 registros, cada uno de los cuales empareja una representación sintética deliberadamente alterada de una frase de dominio público con el veredicto que las herramientas de análisis realmente devuelven, de modo que se verifica cada etiqueta en relación con el instrumento y no solo consigo misma.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "**jam-actions-acoustic-v0** — the counterpart to the traces above, over **audio** rather than\nsymbolic music. 108 records, each pairing a deliberately perturbed synthetic rendering of a\npublic-domain phrase with the verdict the analysis tools actually return, so every label is checked\nagainst the instrument rather than only against itself.",
+      "targetLang": "es"
+    },
+    "4e1c026a6d879d9a": {
+      "translation": "108: 3 frases × 9 tipos de perturbación × 4 notas objetivo",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "108 — 3 phrases × 9 perturbation kinds × 4 target notes",
+      "targetLang": "es"
+    },
+    "c97c56403836fe14": {
+      "translation": "Reservado",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "Held out",
+      "targetLang": "es"
+    },
+    "ed5d49c88efada2f": {
+      "translation": "por **frase** (Für Elise), no por registro, por lo que una copia alterada de la misma melodía no puede filtrarse.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "by **phrase** (Für Elise), not by record, so a perturbed twin of the same melody cannot leak",
+      "targetLang": "es"
+    },
+    "1cb6ee74ccc73811": {
+      "translation": "Clases",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "Classes",
+      "targetLang": "es"
+    },
+    "dd0be90465a4a2fa": {
+      "translation": "coincidencia, error/advertencia de tono, error/acierto de tiempo, nota omitida, nota adicional, vibrato afinado, silencio sin nada que calificar",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "match, pitch fail/warn, timing fail/pass, missed, extra, in-tune vibrato, nothing-to-grade silence",
+      "targetLang": "es"
+    },
+    "c134ad5c79bfcf35": {
+      "translation": "Audio",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "Audio",
+      "targetLang": "es"
+    },
+    "6818ba4a4d78209e": {
+      "translation": "ninguno distribuido: cada registro contiene una receta determinista y el SHA-256 de la forma de onda que produce",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "none distributed — each record carries a deterministic recipe and the SHA-256 of the waveform it produces",
+      "targetLang": "es"
+    },
+    "8b2e348df53ca17d": {
+      "translation": "Dos de las nueve clases están ahí porque un modelo ingenuo las responde con confianza y de forma incorrecta: una nota de vibrato cuyo veredicto correcto es *afinado*, y silencio cuyo veredicto correcto es *nada que calificar*. Cada umbral del que depende el veredicto se copia en el registro, porque ambos se modificaron una vez durante la compilación.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "Two of the nine classes are there because a naive model answers them confidently and wrongly: a\nvibrato note whose correct verdict is *in tune*, and silence whose correct verdict is *nothing to\ngrade*. Every threshold the verdict depends on is copied into the record, because both of them\nmoved once during the build.",
+      "targetLang": "es"
+    },
+    "86342955e103f85d": {
+      "translation": "El corpus se puede reproducir a partir de este repositorio. Volver a generarlo produce todos los 115 archivos publicados y un ⟦0⟧ idéntico en bytes, y una prueba confirma exactamente eso sin escribir el árbol publicado.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "The corpus is reproducible from this repository. Regenerating it produces all 115 published files\nand a byte-identical ⟦0⟧, and a test asserts exactly that without writing the\npublished tree.",
+      "targetLang": "es"
+    },
+    "f34916c77d2b3716": {
+      "translation": "Crea el tuyo propio",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "Build your own",
+      "targetLang": "es"
+    },
+    "a83f1425512bace7": {
+      "translation": "La estructura sobre la que se ejecuta el corpus está disponible para tus propios experimentos.\n⟦0⟧ (experiments/_template/) es un ejemplo funcional que puedes copiar: declara una tarea y obtendrás el formato SFT, la puntuación por clase, líneas de base triviales sobre el conjunto de veredictos declarado y una verificación de que ninguna unidad reservada se superponga con la división.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "The scaffolding that corpus runs on is available for your own experiments.\n[⟦0⟧](experiments/_template/) is a working example you can copy: declare a\ntask, and you get SFT formatting, per-class scoring, trivial baselines over your declared verdict\nset, and a check that no holdout unit straddles the split.",
+      "targetLang": "es"
+    },
+    "847eb29e5114f9da": {
+      "translation": "El [contrato](experiments/_template/README.md) es la parte que vale la pena leer. La verdad fundamental es construible en lugar de escrita a mano, las etiquetas se verifican en función de lo que miden las herramientas, divides por la unidad que se filtra y comunicas las líneas de base y el modelo base junto con cualquier resultado. Cada una de esas reglas tiene un costo de aprendizaje.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "The [contract](experiments/_template/README.md) is the part worth reading. Ground truth is\nconstructible rather than hand-written, labels are verified against what the tools measure, you\nsplit by the unit that leaks, and you report the baselines and the base model beside any result.\nEach of those rules cost something to learn.",
+      "targetLang": "es"
+    },
+    "78e60f676b8fa6f6": {
+      "translation": "Puntuación",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "Score",
+      "targetLang": "es"
+    },
+    "d9d1a47688693068": {
+      "translation": "Puntúa una interpretación MIDI junto con una canción de la biblioteca: tono, tiempo, integridad, con retroalimentación graduada",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "Score a MIDI play-along against a library song — pitch, timing, completeness, with graded feedback",
+      "targetLang": "es"
+    },
+    "faaac02314bc8d94": {
+      "translation": "Puntúa la calidad de la anotación en 5 dimensiones",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "Score annotation quality across 5 dimensions",
+      "targetLang": "es"
+    },
+    "13cc055a49f14780": {
+      "translation": "Escucha",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "Listen",
+      "targetLang": "es"
+    },
+    "d4c86c61d8da6b84": {
+      "translation": "Mide el audio grabado. Monofónico: siguen una línea a la vez, por lo que un acorde o una mezcla completa producen tonterías. Cada número proviene del procesamiento de señales, nunca de un modelo que lee una imagen.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "Measuring recorded audio. Monophonic: they follow one line at a time, so a chord or a full mix\nproduces confident nonsense. Every number comes from signal processing, never from a model reading\na picture.",
+      "targetLang": "es"
+    },
+    "9b0b3b55631a6870": {
+      "translation": "Mide un archivo WAV: tiempos de inicio, el contorno del tono como nombres de notas con céntimos y nivel",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "Measure a WAV — onset times, the pitch contour as note names with cents, and level",
+      "targetLang": "es"
+    },
+    "d959f10b101d2e50": {
+      "translation": "Convierte una grabación monofónica en notas, con la desviación de cada nota del tono de afinación. Las notas que el rastreador no pudo seguir se omiten en lugar de adivinarse",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "Turn a monophonic recording into notes, with each note's deviation from concert pitch. Notes the tracker could not follow are omitted rather than guessed",
+      "targetLang": "es"
+    },
+    "e3cd4de30434777d": {
+      "translation": "Califica una interpretación junto con una canción de la biblioteca **de oído**, y luego entrega el resultado a ⟦0⟧",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "Grade a performance against a library song **by ear**, then hand the result to ⟦0⟧",
+      "targetLang": "es"
+    },
+    "55d6fdd2e4d347ba": {
+      "translation": "Ve el sonido: un espectrograma de Q constante en un eje de teclado de piano, opcionalmente superpuesto con las notas previstas. Por defecto, está oculto.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "See the sound — a constant-Q spectrogram on a piano-keyboard axis, optionally overlaid with the intended notes. Blind by default",
+      "targetLang": "es"
+    },
+    "9a4009fcd5faffde": {
+      "translation": "Qué está tocando **cada instrumento en este momento**, a mitad de la interpretación. Las notas provienen de lo que se envió, por lo que son exactas en lugar de estimadas",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "What every instrument is playing **right now**, mid-performance. Notes come from what was sent, so they are exact rather than estimated",
+      "targetLang": "es"
+    },
+    "5955ff0f8a6352e6": {
+      "translation": "**v2.5.0: la versión en la que el modelo puede ver a la banda tocar** (consulta [CHANGELOG](CHANGELOG.md)).\n⟦0⟧ informa de lo que está haciendo cada instrumento mientras la música sigue sonando: notas sostenidas por instrumento, cuánto tiempo se han sostenido y el acorde combinado. Se ejecuta en dos canales, y el más barato es el más preciso: cuando este servidor lo ejecuta, sabe exactamente lo que envió, por lo que un acorde son tres notas en lugar de un problema de transcripción, mientras que una toma acústica separada mide cada motor **en la fuente** para su verificación. El costo medido es de aproximadamente **9 microsegundos por llamada de retorno de audio**: la latencia se indica en lugar de implicarse (~23 ms de tono, ~70 ms de inicio confirmado); y los límites se documentan porque se pueden aplicar: el rastreador es monofónico, los elementos secundarios se miden individualmente y nunca como una mezcla, y un instrumento sin toma no es un instrumento silencioso.\nLa misma versión convierte la maquinaria del conjunto de datos en un contrato que cualquiera puede declarar, con una plantilla funcional, para que los usuarios puedan crear sus propios corpus y entrenar sus propios adaptadores utilizando la misma disciplina. En el camino, se descubrió que la puerta de reproducibilidad del corpus acústico cubre 109 de sus 115 rutas publicadas, y tres de las seis que faltaban nunca fueron emitidas por el generador: volver a generarlas las eliminó. Una regeneración completa ahora reproduce cada archivo y el manifiesto de suma de comprobación byte por byte. La superficie activa es de **54 herramientas y 4 plantillas de indicaciones**, con **3.389 pruebas superadas en 165 archivos (1 omitida)**.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "**v2.5.0 — the release where the model can watch the band play** (see [CHANGELOG](CHANGELOG.md)).\n⟦0⟧ reports what every instrument is doing while the music is still going: held notes\nper instrument, how long each has been held, and the combined chord. It runs on two channels, and\nthe cheap one is the accurate one — when this server performs it knows exactly what it sent, so a\nchord is three note-ons rather than a transcription problem, while a separate acoustic tap measures\neach engine **at the source** for verification. Measured cost is about **9 microseconds per audio\ncallback**; latency is stated rather than implied (~23 ms pitch, ~70 ms confirmed onset); and the\nlimits are documented because they are actionable — the tracker is monophonic, layered children are\ntapped individually and never as a mix, and an instrument with no tap is not a silent instrument.\nThe same release turns the dataset machinery into a contract anyone can declare against, with a\nworked template, so users can build their own corpora and train their own adapters against the same\ndiscipline. Along the way the acoustic corpus's reproducibility gate was found to cover 109 of its\n115 published paths, and three of the six it missed were never emitted by the generator at all —\nregenerating deleted them. A full regeneration now reproduces every file and the checksum manifest\nbyte for byte. The live surface is **54 tools and 4 prompt templates**, with **3,389 tests passing\nacross 165 files (1 skipped)**.",
+      "targetLang": "es"
+    },
+    "dc67cca4ddacb4cd": {
+      "translation": "Anteriormente, en la v2.4.0: la versión en la que el modelo adquirió oídos. Cuatro herramientas cerraron la brecha entre la renderización de audio y su examen: ⟦0⟧ para inicios, contorno de tono y nivel; ⟦1⟧ para una grabación monofónica como notas; ⟦2⟧ para calificar una interpretación de oído y entregar el resultado al piano roll existente sin cambios; y ⟦3⟧ para ver el sonido en un eje de Q constante, teclado de piano. Todo ello es procesamiento de señales sin dependencias, escrito en este repositorio: su propia FFT, ventanas, transformaciones mel y de Q constante, detección de inicio y seguimiento de tono, porque un modelo no puede examinar de forma fiable una imagen y las consultas deterministas superan a la inferencia para las preguntas con respuestas exactas. Esa versión también publicó **jam-actions-acoustic-v0**, 108 registros de oro construibles del uso de herramientas sobre audio.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "Previously in v2.4.0 — the release where the model got ears. Four tools closed the gap between\nrendering audio and examining it: ⟦0⟧ for onsets, pitch contour and level;\n⟦1⟧ for a monophonic recording as notes; ⟦2⟧ to grade a performance\nby ear and hand the result to the existing scored piano roll unchanged; and ⟦3⟧ to\nsee the sound on a constant-Q, piano-keyboard axis. All of it is dependency-free signal processing\nwritten in this repo — its own FFT, windows, mel and constant-Q transforms, onset detection and\npitch tracking — because a model cannot reliably eyeball a picture and deterministic queries beat\ninference for questions with exact answers. That release also published\n**jam-actions-acoustic-v0**, 108 constructible-gold records of tool use over audio.",
+      "targetLang": "es"
+    },
+    "f836b80d57b0b876": {
+      "translation": "MIT",
+      "model": "translategemma:27b",
+      "timestamp": 1788841406948,
+      "source": "MIT",
+      "targetLang": "es"
+    },
+    "6eccfd2219b48632": {
+      "translation": "- **पढ़ना** - गहन संगीत संबंधी टिप्पणियों के साथ वास्तविक MIDI शीट संगीत। हाथ से लिखी गई अनुमानित प्रतियां नहीं - पार्स की गई, विश्लेषण की गई और समझाई गई।\n- **सुनना** - छह ऑडियो इंजन (ऑसिलेटर पियानो, सैंपल पियानो, वोकल सैंपल, फिजिकल वोकल ट्रैक्ट, एडिटिव वोकल सिंथ, भौतिक रूप से मॉडलिंग किया गया गिटार) जो आपके स्पीकर के माध्यम से बजते हैं, ताकि कमरे में मौजूद लोग AI के कान बन जाएं। और अब मॉडल के अपने कान हैं, दोगुने: यह किसी रिकॉर्डिंग को बाद में माप सकता है (देखें [सुनना](#listening)) और यह बैंड को **तब तक देख सकता है जब तक संगीत बज रहा है** (देखें [लाइव समूह](#the-live-ensemble))।\n- **देखना** - एक पियानो रोल जो बजाए गए संगीत को SVG के रूप में प्रस्तुत करता है, जिसे मॉडल वापस पढ़ और सत्यापित कर सकता है। एक इंटरैक्टिव गिटार टैबलेचर संपादक। एक ब्राउज़र कॉकपिट जिसमें एक दृश्य कीबोर्ड, दोहरे मोड नोट संपादक और ट्यूनिंग लैब है।\n- **याद रखना** - एक अभ्यास जर्नल जो सत्रों में बना रहता है, ताकि समय के साथ सीखने में वृद्धि हो।\n- **गाना** - 20 वोइस प्रीसेट के साथ वोकल ट्रैक्ट संश्लेषण, ओपेरा सोप्रानो से लेकर इलेक्ट्रॉनिक कोरस तक। सोल्फेज, कंटूर और शब्दांश कथन के साथ एक साथ गाने का मोड। और पियानो के टाइमर पर एक वास्तविक गाया हुआ लीड: एक स्कोर-कंडीशन किया गया गायक जो गीत के MIDI द्वारा संचालित होता है, समय (40 मिसे) और पिच (50 सेंट) पर गेट किया जाता है इससे पहले कि आप इसे सुनें - देखें [गाना](#sing)।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "- **Reading** — real MIDI sheet music with deep musical annotations. Not hand-written approximations — parsed, analyzed, and explained.\n- **Hearing** — six audio engines (oscillator piano, sample piano, vocal samples, physical vocal tract, additive vocal synth, physically-modeled guitar) that play through your speakers, so the humans in the room become the AI's ears. And now the model has ears of its own, twice over: it can measure a recording after the fact (see [Listening](#listening)) and it can watch the band **while the music is still going** (see [The Live Ensemble](#the-live-ensemble)).\n- **Seeing** — a piano roll that renders what was played as SVG the model can read back and verify. An interactive guitar tablature editor. A browser cockpit with a visual keyboard, dual-mode note editor, and tuning lab.\n- **Remembering** — a practice journal that persists across sessions, so learning compounds over time.\n- **Singing** — vocal tract synthesis with 20 voice presets, from operatic soprano to electronic choir. Sing-along mode with solfege, contour, and syllable narration. And a real sung lead on the piano's clock: a score-conditioned singer driven by the song's MIDI, gated on timing (40 ms) and pitch (50 cents) before you hear it — see [Sing](#sing).",
+      "targetLang": "hi"
+    },
+    "ca6fa8e3d6dd6587": {
+      "translation": "सुनना",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "Listening",
+      "targetLang": "hi"
+    },
+    "964e13d1465b28fb": {
+      "translation": "लंबे समय तक यह सर्वर ध्वनि उत्पन्न कर सकता था लेकिन कभी भी इसका विश्लेषण नहीं कर सकता था। मॉडल बजाता था, एक इंसान सुनता था, और मॉडल उनकी बात मानता था। अब वह अंतर दूर हो गया है।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "For a long time this server could make sound but never examine it. The model played, a human\nlistened, and the model took their word for it. That gap is now closed.",
+      "targetLang": "hi"
+    },
+    "8d69542f5d925e8f": {
+      "translation": "इसे एक WAV फ़ाइल पर इंगित करें और यह मापता है कि उसमें क्या है। किसी तस्वीर को देखकर और अनुमान लगाकर नहीं - बल्कि सिग्नल को उसी प्रकार के उपकरणों के माध्यम से चलाकर जिनका उपयोग यह पहले से ही स्कोर पर करता है:",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "Point it at a WAV and it measures what is there. Not by looking at a picture and guessing —\nby running the signal through the same kind of tools it already uses on the score:",
+      "targetLang": "hi"
+    },
+    "1f15bd14987fc2b5": {
+      "translation": "- **⟦0⟧** - ऑनसेट, पिच कंटूर और स्तर। पिच नोट नामों के रूप में वापस आती है जिसमें सेंट विचलन होते हैं, कभी भी कच्चे आवृत्तियों के रूप में नहीं।\n- **⟦1⟧** - रिकॉर्डिंग को नोट्स के रूप में: पिच, प्रारंभ, अवधि और प्रत्येक नोट लाइब्रेरी में गीत के अनुरूप कितनी दूर है।\n- **⟦2⟧** - **कान से** लाइब्रेरी में एक गीत के विरुद्ध प्रदर्शन का मूल्यांकन करें। यह रिकॉर्डिंग को ट्रांसक्राइब करता है, इसे स्कोर से मिलाता है, और रिपोर्ट करता है कि कौन से नोट बज गए, कौन से भटक गए, और कौन से छूट गए। फिर ⟦3⟧ परिणाम को स्कोर पर खींचता है, ठीक उसी तरह जैसे यह कैप्चर किए गए MIDI टेक के लिए करता है। यह तरीका है जिससे आप किसी वास्तविक वाद्य यंत्र, गाए गए टेक या किसी भी चीज़ का मूल्यांकन करते हैं जहाँ कैप्चर करने के लिए कोई MIDI नहीं है।\n- **⟦4⟧** - ध्वनि देखें। एक निरंतर-Q स्पेक्ट्रोग्राम जिसमें बाईं ओर एक पियानो कीबोर्ड है, ताकि पिच को एक नज़र में पढ़ा जा सके, और गीत के इच्छित नोट्स अनुरोध पर उस पर खींचे जाएं।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "- **⟦0⟧** — onsets, the pitch contour, and level. Pitch comes back as note names with\n  cent deviations, never as raw frequencies.\n- **⟦1⟧** — the recording as notes: pitch, start, duration, and how far each note\n  sits from concert pitch.\n- **⟦2⟧** — grade a performance against a song in the library **by ear**. It\n  transcribes the recording, matches it to the score, and reports which notes landed, which\n  drifted, and which were missed. Then ⟦3⟧ draws the result over the score,\n  exactly as it does for a captured MIDI take. This is how you grade a real instrument, a sung\n  take, or anything where there is no MIDI to capture.\n- **⟦4⟧** — see the sound. A constant-Q spectrogram with a piano keyboard down the\n  left edge, so pitch is readable at a glance, and the song's intended notes drawn over it on\n  request.",
+      "targetLang": "hi"
+    },
+    "ad7d3cc6e8999f28": {
+      "translation": "**यह आपको क्या नहीं बताएगा।** तस्वीर यह पता लगाने के लिए है कि *कहाँ* कुछ गलत है; प्रत्येक संख्या सिग्नल प्रोसेसिंग से आती है, कभी भी किसी मॉडल से नहीं जो किसी छवि को पढ़ता है। ट्रांसक्राइबर एक समय में एक पंक्ति का अनुसरण करता है, इसलिए एक कॉर्ड या एक पूर्ण मिश्रण कुछ आत्मविश्वासपूर्ण और गलत उत्पन्न करेगा, और यह ऐसा ही कहता है। ऑनसेट डिटेक्शन F1 0.88 के आसपास चलता है, जो कि अत्याधुनिक है, इसलिए एक \"छूटा हुआ\" नोट वह हो सकता है जिसे ट्रांसक्राइबर सुन नहीं पाया, न कि वह जिसे आपने नहीं बजाया - उपकरण उस चेतावनी को अपने आउटपुट में रखते हैं, न कि इसे यहाँ छिपाते हैं।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "**What it will not tell you.** The picture is for finding *where* something is wrong; every number\ncomes from signal processing, never from a model reading an image. The transcriber follows one\nline at a time, so a chord or a full mix will produce something confident and wrong, and it says\nso. Onset detection runs around F1 0.88 at the state of the art, so a \"missed\" note may be one the\ntranscriber could not hear rather than one you did not play — the tools carry that caveat in their\nown output rather than burying it here.",
+      "targetLang": "hi"
+    },
+    "5a4005b8da288190": {
+      "translation": "संपूर्ण सतह निर्भरता-मुक्त है: ट्रांसफ़ॉर्म, पिच ट्रैकर, ऑनसेट डिटेक्टर, WAV डिकोडर और PNG एनकोडर सभी इस रिपॉजिटरी में हैं, और वे नोड और ब्राउज़र दोनों में समान संख्याएँ उत्पन्न करते हैं।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "The whole surface is dependency-free: the transform, the pitch tracker, the onset detector, the\nWAV decoder and the PNG encoder are all in this repo, and they produce identical numbers in Node\nand in the browser.",
+      "targetLang": "hi"
+    },
+    "551875443b3b2331": {
+      "translation": "लाइव समूह",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "The Live Ensemble",
+      "targetLang": "hi"
+    },
+    "329c100b8f9d2852": {
+      "translation": "सुनना एक रिकॉर्डिंग को तब ग्रेड करता है जब वह समाप्त हो जाती है। यह दूसरा भाग है: यह पूछना कि प्रत्येक वाद्य यंत्र **अभी** क्या कर रहा है, प्रदर्शन के बीच में।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "Listening grades a recording once it has finished. This is the other half: asking what every\ninstrument is doing **right now**, mid-performance.",
+      "targetLang": "hi"
+    },
+    "60880c1d3f2b4f78": {
+      "translation": "यह प्रत्येक वाद्य यंत्र के बजाए गए नोट्स, प्रत्येक को कितने समय तक बजाया गया, और पूरे समूह में संयुक्त कॉर्ड के साथ उत्तर देता है। एक युगल के दौरान, दोनों आवाजों को अलग-अलग रिपोर्ट किया जाता है, ताकि आप यह देख सकें कि पियानो एक त्रिक बजा रहा है जबकि सिंथ उस पर धुन बजा रहा है।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "It answers with each instrument's held notes, how long each has been held, and the combined chord\nacross the whole ensemble. During a duet the two voices are reported separately, so you can see the\npiano holding a triad while the synth carries the melody over it.",
+      "targetLang": "hi"
+    },
+    "e6b3921313661f69": {
+      "translation": "दो चैनल हैं, और सस्ता वाला सटीक वाला है",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "Two channels, and the cheap one is the accurate one",
+      "targetLang": "hi"
+    },
+    "b10d0920bbd08955": {
+      "translation": "यह वह भाग है जिसे समझना महत्वपूर्ण है, क्योंकि यह तय करता है कि किस संख्या पर भरोसा करना है।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "This is the part worth understanding, because it decides which number to trust.",
+      "targetLang": "hi"
+    },
+    "46f45fe68fd7ceab": {
+      "translation": "**इरादा - प्रत्येक इंजन को क्या बजाने के लिए कहा गया था।** जब मॉडल ही प्रदर्शन कर रहा होता है, तो यह कोई अनुमान नहीं है। एक पियानो कॉर्ड ट्रांसक्राइब करने के लिए कुछ नहीं है; यह तीन नोट-ऑन हैं जो भेजे गए थे। नोट्स सटीक, स्वतंत्र और तत्काल हैं।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "**Intent — what each engine was told to play.** When the model is the one performing, this is not\nan estimate. A piano chord is not something to transcribe; it is three note-ons that were sent. The\nnotes are exact, free, and immediate.",
+      "targetLang": "hi"
+    },
+    "d00275da66124b64": {
+      "translation": "**ध्वनिक - वास्तव में क्या निकला।** प्रत्येक इंजन अपने आउटपुट को एक निजी विश्लेषण बस में भेज सकता है, ताकि प्रत्येक वाद्य यंत्र को स्रोत पर बिना किसी पृथक्करण और अस्पष्टता के मापा जा सके। यह चैनल **सत्यापन, खोज नहीं** है: यह कैसे आप सीखते हैं कि एक आवाज समय से भटक गई, एक टेक कट गया, या एक इंजन अभी भी नोट्स भेजे जाने पर शांत हो गया।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "**Acoustic — what actually came out.** Each engine can fan its output into a private analysis bus,\nso every instrument is measured at the source with no separation and no ambiguity. This channel is\n**verification, not discovery**: it is how you learn that a voice drifted off the clock, a take\nclipped, or an engine went silent while still being sent notes.",
+      "targetLang": "hi"
+    },
+    "039163b00422b259": {
+      "translation": "जब दोनों असहमत होते हैं, तो यह रेंडर के बारे में एक तथ्य है, न कि नोट्स में सुधार।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "When the two disagree, that is a fact about the render, not a correction to the notes.",
+      "targetLang": "hi"
+    },
+    "4c93d9035caa57da": {
+      "translation": "इसकी क्या कीमत है",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "What it costs",
+      "targetLang": "hi"
+    },
+    "f1d99bf45542dd56": {
+      "translation": "किसी वाद्य यंत्र को देखने में लगभग **42.67 मिलीसेकंड के ब्लॉक के विरुद्ध प्रति ऑडियो कॉलबैक 9 माइक्रोसेकंड** लगते हैं, जो लगभग ऑडियो बजट का 0.02% है, जिसे शून्य छोड़े गए नमूनों के साथ मापा जाता है। किसी ऐसे वाद्य यंत्र में जिसमें कोई पर्यवेक्षक संलग्न नहीं है, कुछ भी खर्च नहीं होता है।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "Watching an instrument costs about **9 microseconds per audio callback** against a 42.67 ms block,\nwhich is roughly 0.02% of the audio budget, measured with zero dropped samples. An instrument with\nno observer attached costs nothing at all.",
+      "targetLang": "hi"
+    },
+    "f999d789c6bd75e4": {
+      "translation": "यह आपको क्या नहीं बताएगा",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "What it will not tell you",
+      "targetLang": "hi"
+    },
+    "0c1ade66fd2920ad": {
+      "translation": "ध्वनिक चैनल में देरी होती है, और यह बताता है कि कितनी: लगभग 23 मिलीसेकंड पिच के लिए, और 70 मिलीसेकंड एक पुष्टि किए गए ऑनसेट के लिए, क्योंकि जब तक उसके बाद का ऑडियो नहीं आ जाता, तब तक ऑनसेट की पुष्टि नहीं की जा सकती है। उस किनारे के पास के ऑनसेट को रिपोर्ट करने के बजाय रोक दिया जाता है और बाद में वापस ले लिया जाता है।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "The acoustic channel lags, and says by how much: about 23 ms for pitch, and 70 ms for a confirmed\nonset, because an onset cannot be confirmed until the audio after it has arrived. Onsets near that\nedge are withheld rather than reported and later retracted.",
+      "targetLang": "hi"
+    },
+    "d817915b23da7a04": {
+      "translation": "ध्वनिक ट्रैकर एक समय में एक पंक्ति का अनुसरण करता है, इसलिए यह किसी कॉर्ड के नोट्स को नहीं बताएगा - और यह ऐसा होने का दिखावा नहीं करता है। एक कॉर्ड जिसे यह हल नहीं कर सकता, इसकी ज्ञात सीमा है, न कि कोई खोज, और समूह इसके बारे में चुप रहता है बजाय इसके कि पियानो द्वारा बजाए जाने वाले प्रत्येक कॉर्ड पर चिल्लाए।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "The acoustic tracker follows one line at a time, so it will not name the notes of a chord — and it\ndoes not pretend to. A chord it cannot resolve is its known limitation rather than a finding, and\nthe ensemble stays quiet about it instead of crying wolf on every chord the piano plays.",
+      "targetLang": "hi"
+    },
+    "8b13cbddd40c4b5c": {
+      "translation": "ध्वनिक कॉर्पस",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "The acoustic corpus",
+      "targetLang": "hi"
+    },
+    "ff5a39550d9bd6d0": {
+      "translation": "**जाम-एक्शन-अकॉस्टिक-v0** — ऊपर दिए गए डेटा के विपरीत, यह ऑडियो पर आधारित है, प्रतीकात्मक संगीत पर नहीं। 108 रिकॉर्ड, जिनमें से प्रत्येक एक सार्वजनिक डोमेन वाक्यांश के जानबूझकर बदले गए सिंथेटिक संस्करण को उस विश्लेषण उपकरण द्वारा दिए गए परिणाम के साथ जोड़ता है, ताकि प्रत्येक लेबल को उपकरण के आधार पर जांचा जा सके, न कि केवल स्वयं के आधार पर।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "**jam-actions-acoustic-v0** — the counterpart to the traces above, over **audio** rather than\nsymbolic music. 108 records, each pairing a deliberately perturbed synthetic rendering of a\npublic-domain phrase with the verdict the analysis tools actually return, so every label is checked\nagainst the instrument rather than only against itself.",
+      "targetLang": "hi"
+    },
+    "fe201d51d25ef106": {
+      "translation": "108 — 3 वाक्यांश × 9 प्रकार के बदलाव × 4 लक्ष्य नोट्स",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "108 — 3 phrases × 9 perturbation kinds × 4 target notes",
+      "targetLang": "hi"
+    },
+    "1034a6886ba5a062": {
+      "translation": "अलग रखा गया",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "Held out",
+      "targetLang": "hi"
+    },
+    "3b3c91adc0b5f511": {
+      "translation": "वाक्यांश के आधार पर (फ्यूर एलिस), रिकॉर्ड के आधार पर नहीं, इसलिए एक ही धुन का बदला हुआ संस्करण लीक नहीं हो सकता।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "by **phrase** (Für Elise), not by record, so a perturbed twin of the same melody cannot leak",
+      "targetLang": "hi"
+    },
+    "f644089a1efce8c8": {
+      "translation": "वर्ग",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "Classes",
+      "targetLang": "hi"
+    },
+    "8c8096d89db8f51d": {
+      "translation": "मिलान, पिच विफल/चेतावनी, समय विफल/पास, छूटा हुआ, अतिरिक्त, सही वाइब्रेटो, ग्रेड देने के लिए कुछ भी नहीं, शांत",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "match, pitch fail/warn, timing fail/pass, missed, extra, in-tune vibrato, nothing-to-grade silence",
+      "targetLang": "hi"
+    },
+    "43352ddd3bf07a43": {
+      "translation": "ऑडियो",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "Audio",
+      "targetLang": "hi"
+    },
+    "281f066825fe80f0": {
+      "translation": "कोई भी वितरित नहीं — प्रत्येक रिकॉर्ड में एक निश्चित विधि होती है और यह उस वेवफॉर्म का SHA-256 है जो यह उत्पन्न करता है।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "none distributed — each record carries a deterministic recipe and the SHA-256 of the waveform it produces",
+      "targetLang": "hi"
+    },
+    "c025156d1daa873a": {
+      "translation": "नौ वर्गों में से दो इसलिए हैं क्योंकि एक सरल मॉडल उन्हें आत्मविश्वास से और गलत तरीके से उत्तर देता है: एक वाइब्रेटो नोट जिसका सही परिणाम *सही धुन* है, और शांत, जिसका सही परिणाम *ग्रेड देने के लिए कुछ भी नहीं* है। हर वह सीमा जिस पर परिणाम निर्भर करता है, उसे रिकॉर्ड में कॉपी किया जाता है, क्योंकि दोनों निर्माण के दौरान एक बार बदल गए थे।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "Two of the nine classes are there because a naive model answers them confidently and wrongly: a\nvibrato note whose correct verdict is *in tune*, and silence whose correct verdict is *nothing to\ngrade*. Every threshold the verdict depends on is copied into the record, because both of them\nmoved once during the build.",
+      "targetLang": "hi"
+    },
+    "92e8f45333f15fe0": {
+      "translation": "इस रिपॉजिटरी से डेटा को पुन: उत्पन्न किया जा सकता है। इसे पुन: उत्पन्न करने से सभी 115 प्रकाशित फाइलें और एक बाइट-समान ⟦0⟧ उत्पन्न होते हैं, और एक परीक्षण यह सुनिश्चित करता है कि प्रकाशित ट्री को लिखे बिना।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "The corpus is reproducible from this repository. Regenerating it produces all 115 published files\nand a byte-identical ⟦0⟧, and a test asserts exactly that without writing the\npublished tree.",
+      "targetLang": "hi"
+    },
+    "3672fa92dc347ca7": {
+      "translation": "अपना खुद का बनाएं",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "Build your own",
+      "targetLang": "hi"
+    },
+    "c99f72def16a6e0e": {
+      "translation": "वह ढांचा जिस पर डेटा चलता है, वह आपके अपने प्रयोगों के लिए उपलब्ध है। [⟦0⟧](experiments/_template/) एक कार्यशील उदाहरण है जिसे आप कॉपी कर सकते हैं: एक कार्य घोषित करें, और आपको SFT स्वरूपण, प्रति-वर्ग स्कोरिंग, आपके घोषित परिणाम सेट पर सरल आधारभूत रेखाएं और एक जांच मिलती है कि कोई भी अलग रखा गया इकाई विभाजन को पार नहीं करती है।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "The scaffolding that corpus runs on is available for your own experiments.\n[⟦0⟧](experiments/_template/) is a working example you can copy: declare a\ntask, and you get SFT formatting, per-class scoring, trivial baselines over your declared verdict\nset, and a check that no holdout unit straddles the split.",
+      "targetLang": "hi"
+    },
+    "86ca88fdc6abfcc2": {
+      "translation": "[अनुबंध](experiments/_template/README.md) वह हिस्सा है जिसे पढ़ने लायक है। वास्तविक डेटा को हाथ से लिखने के बजाय बनाया जा सकता है, लेबल को उपकरणों द्वारा मापे गए डेटा के आधार पर सत्यापित किया जाता है, आप उस इकाई के आधार पर विभाजित करते हैं जो लीक होती है, और आप आधारभूत रेखाओं और आधार मॉडल को किसी भी परिणाम के साथ रिपोर्ट करते हैं। इन नियमों में से प्रत्येक को सीखने में कुछ लागत आती है।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "The [contract](experiments/_template/README.md) is the part worth reading. Ground truth is\nconstructible rather than hand-written, labels are verified against what the tools measure, you\nsplit by the unit that leaks, and you report the baselines and the base model beside any result.\nEach of those rules cost something to learn.",
+      "targetLang": "hi"
+    },
+    "95ea25e9aa26ac65": {
+      "translation": "स्कोर",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "Score",
+      "targetLang": "hi"
+    },
+    "b1dad625fe0505b9": {
+      "translation": "एक लाइब्रेरी गीत के साथ MIDI प्ले-अलॉन्ग को स्कोर करें — पिच, समय, पूर्णता, वर्गीकृत प्रतिक्रिया के साथ।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "Score a MIDI play-along against a library song — pitch, timing, completeness, with graded feedback",
+      "targetLang": "hi"
+    },
+    "e34a37952bc95419": {
+      "translation": "5 आयामों में एनोटेशन गुणवत्ता को स्कोर करें",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "Score annotation quality across 5 dimensions",
+      "targetLang": "hi"
+    },
+    "b04b5f4099ce9145": {
+      "translation": "सुनें",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "Listen",
+      "targetLang": "hi"
+    },
+    "c0ef188c25ffcb05": {
+      "translation": "रिकॉर्ड किए गए ऑडियो को मापें। मोनोफोनिक: वे एक समय में एक पंक्ति का पालन करते हैं, इसलिए एक राग या एक पूर्ण मिश्रण आत्मविश्वास से गलत परिणाम देता है। प्रत्येक संख्या सिग्नल प्रोसेसिंग से आती है, कभी भी किसी मॉडल से नहीं जो एक तस्वीर पढ़ता है।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "Measuring recorded audio. Monophonic: they follow one line at a time, so a chord or a full mix\nproduces confident nonsense. Every number comes from signal processing, never from a model reading\na picture.",
+      "targetLang": "hi"
+    },
+    "9f313ea196b49b25": {
+      "translation": "एक WAV को मापें — शुरुआत का समय, पिच कंटूर को नोट नामों के साथ सेंट में, और स्तर।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "Measure a WAV — onset times, the pitch contour as note names with cents, and level",
+      "targetLang": "hi"
+    },
+    "b0ff697d06492afb": {
+      "translation": "एक मोनोफोनिक रिकॉर्डिंग को नोट्स में बदलें, प्रत्येक नोट के कॉन्सर्ट पिच से विचलन के साथ। उन नोट्स को छोड़ दिया जाता है जिन्हें ट्रैकर ट्रैक नहीं कर सका, अनुमान नहीं लगाया जाता।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "Turn a monophonic recording into notes, with each note's deviation from concert pitch. Notes the tracker could not follow are omitted rather than guessed",
+      "targetLang": "hi"
+    },
+    "983c1776f3a37726": {
+      "translation": "एक लाइब्रेरी गीत के आधार पर एक प्रदर्शन को **कान से** ग्रेड करें, फिर परिणाम को ⟦0⟧ को सौंप दें।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "Grade a performance against a library song **by ear**, then hand the result to ⟦0⟧",
+      "targetLang": "hi"
+    },
+    "1f353bc4cdfe9eab": {
+      "translation": "ध्वनि देखें — एक पियानो-कीबोर्ड अक्ष पर एक निरंतर-Q स्पेक्ट्रोग्राम, वैकल्पिक रूप से इच्छित नोट्स के साथ ओवरले किया गया। डिफ़ॉल्ट रूप से अंधा।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "See the sound — a constant-Q spectrogram on a piano-keyboard axis, optionally overlaid with the intended notes. Blind by default",
+      "targetLang": "hi"
+    },
+    "6e8175a9a9e3560a": {
+      "translation": "प्रत्येक उपकरण **अभी** क्या बजा रहा है, प्रदर्शन के बीच में। नोट्स उस डेटा से आते हैं जो भेजा गया था, इसलिए वे अनुमानित होने के बजाय सटीक हैं।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "What every instrument is playing **right now**, mid-performance. Notes come from what was sent, so they are exact rather than estimated",
+      "targetLang": "hi"
+    },
+    "08c95cb25e9957d7": {
+      "translation": "**v2.5.0 — वह संस्करण जिसमें मॉडल बैंड को बजाते हुए देख सकता है** (देखें [CHANGELOG](CHANGELOG.md))। ⟦0⟧ रिपोर्ट करता है कि संगीत बजते समय प्रत्येक उपकरण क्या कर रहा है: प्रति उपकरण रखे गए नोट्स, प्रत्येक को कितने समय तक रखा गया, और संयुक्त राग। यह दो चैनलों पर चलता है, और सस्ता वाला सटीक है — जब यह सर्वर प्रदर्शन करता है तो यह जानता है कि उसने वास्तव में क्या भेजा, इसलिए एक राग तीन नोट-ऑन होते हैं, न कि एक ट्रांसक्रिप्शन समस्या, जबकि एक अलग ध्वनिक टैप प्रत्येक इंजन को **स्रोत पर** सत्यापन के लिए मापता है। मापी गई लागत लगभग **9 माइक्रोसेकंड प्रति ऑडियो कॉलबैक** है; विलंबता बताई गई है, निहित नहीं (~23 एमएस पिच, ~70 एमएस पुष्टि की गई शुरुआत); और सीमाओं का दस्तावेजीकरण किया गया है क्योंकि वे कार्रवाई योग्य हैं — ट्रैकर मोनोफोनिक है, परतों में बच्चों को अलग-अलग टैप किया जाता है और कभी भी मिश्रण के रूप में नहीं, और बिना टैप वाले उपकरण शांत उपकरण नहीं हैं।\nउसी संस्करण में डेटासेट मशीनरी को एक अनुबंध में बदल दिया गया है जिसके खिलाफ कोई भी घोषित कर सकता है, जिसमें एक कार्यशील टेम्पलेट है, ताकि उपयोगकर्ता अपने स्वयं के डेटासेट बना सकें और उसी अनुशासन के खिलाफ अपने स्वयं के एडेप्टर को प्रशिक्षित कर सकें। इस प्रक्रिया में, ध्वनिक डेटासेट की पुनरुत्पादकता गेट को इसके 115 प्रकाशित पथों में से 109 को कवर करने के लिए पाया गया, और जिन छह में से तीन को याद किया गया था, उन्हें जनरेटर द्वारा बिल्कुल भी उत्सर्जित नहीं किया गया था — पुन: उत्पन्न करने पर वे हटा दिए गए। अब पूर्ण पुनरुत्पादन प्रत्येक फ़ाइल और बाइट-दर-बाइट चेकसम मेनिफेस्ट को पुन: उत्पन्न करता है। लाइव सतह **54 उपकरण और 4 प्रॉम्प्ट टेम्पलेट** हैं, जिनमें **165 फ़ाइलों में से 3,389 परीक्षण पास हुए (1 छोड़ दिया गया)**।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "**v2.5.0 — the release where the model can watch the band play** (see [CHANGELOG](CHANGELOG.md)).\n⟦0⟧ reports what every instrument is doing while the music is still going: held notes\nper instrument, how long each has been held, and the combined chord. It runs on two channels, and\nthe cheap one is the accurate one — when this server performs it knows exactly what it sent, so a\nchord is three note-ons rather than a transcription problem, while a separate acoustic tap measures\neach engine **at the source** for verification. Measured cost is about **9 microseconds per audio\ncallback**; latency is stated rather than implied (~23 ms pitch, ~70 ms confirmed onset); and the\nlimits are documented because they are actionable — the tracker is monophonic, layered children are\ntapped individually and never as a mix, and an instrument with no tap is not a silent instrument.\nThe same release turns the dataset machinery into a contract anyone can declare against, with a\nworked template, so users can build their own corpora and train their own adapters against the same\ndiscipline. Along the way the acoustic corpus's reproducibility gate was found to cover 109 of its\n115 published paths, and three of the six it missed were never emitted by the generator at all —\nregenerating deleted them. A full regeneration now reproduces every file and the checksum manifest\nbyte for byte. The live surface is **54 tools and 4 prompt templates**, with **3,389 tests passing\nacross 165 files (1 skipped)**.",
+      "targetLang": "hi"
+    },
+    "545f48a056a88549": {
+      "translation": "पहले संस्करण v2.4.0 में — वह संस्करण जिसमें मॉडल को कान मिले। चार उपकरणों ने ऑडियो को प्रस्तुत करने और उसकी जांच करने के बीच के अंतर को कम किया: ⟦0⟧ शुरुआत, पिच कंटूर और स्तर के लिए; ⟦1⟧ एक मोनोफोनिक रिकॉर्डिंग को नोट्स के रूप में; ⟦2⟧ कान से प्रदर्शन को ग्रेड करने और परिणाम को मौजूदा स्कोर किए गए पियानो रोल को अपरिवर्तित रूप से सौंपने के लिए; और ⟦3⟧ निरंतर-Q, पियानो-कीबोर्ड अक्ष पर ध्वनि देखने के लिए। यह सब निर्भरता-मुक्त सिग्नल प्रोसेसिंग है जो इस रिपॉजिटरी में लिखी गई है — इसका अपना FFT, विंडो, मेल और निरंतर-Q ट्रांसफॉर्म, शुरुआत का पता लगाना और पिच ट्रैकिंग — क्योंकि एक मॉडल विश्वसनीय रूप से एक तस्वीर को नहीं देख सकता है और नियतात्मक प्रश्न सटीक उत्तरों वाले प्रश्नों के लिए अनुमान से बेहतर हैं। उस संस्करण में **जाम-एक्शन-अकॉस्टिक-v0**, 108 निर्मित-स्वर्ण रिकॉर्ड भी प्रकाशित किए गए, जो ऑडियो पर उपकरण के उपयोग को दर्शाते हैं।",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "Previously in v2.4.0 — the release where the model got ears. Four tools closed the gap between\nrendering audio and examining it: ⟦0⟧ for onsets, pitch contour and level;\n⟦1⟧ for a monophonic recording as notes; ⟦2⟧ to grade a performance\nby ear and hand the result to the existing scored piano roll unchanged; and ⟦3⟧ to\nsee the sound on a constant-Q, piano-keyboard axis. All of it is dependency-free signal processing\nwritten in this repo — its own FFT, windows, mel and constant-Q transforms, onset detection and\npitch tracking — because a model cannot reliably eyeball a picture and deterministic queries beat\ninference for questions with exact answers. That release also published\n**jam-actions-acoustic-v0**, 108 constructible-gold records of tool use over audio.",
+      "targetLang": "hi"
+    },
+    "16b3ad7e4f8444cd": {
+      "translation": "MIT",
+      "model": "translategemma:27b",
+      "timestamp": 1788841498006,
+      "source": "MIT",
+      "targetLang": "hi"
+    },
+    "153f4ebcc7756403": {
+      "translation": "- **Leitura** — partituras MIDI reais com anotações musicais detalhadas. Não são aproximações manuscritas — são analisadas, interpretadas e explicadas.\n- **Audição** — seis motores de áudio (piano oscilador, piano de amostra, amostras vocais, trato vocal físico, sintetizador vocal aditivo, guitarra modelada fisicamente) que reproduzem o som através dos seus alto-falantes, transformando os ouvintes em ouvidos da IA. E agora o modelo tem os seus próprios ouvidos, em dobro: pode medir uma gravação após o fato (veja [Ouvir](#ouvir)) e pode observar a banda **enquanto a música ainda está a tocar** (veja [O Conjunto ao Vivo](#o-conjunto-ao-vivo)).\n- **Visualização** — um piano roll que renderiza o que foi tocado como SVG, permitindo que o modelo o releia e verifique. Um editor interativo de tablaturas de guitarra. Um painel de controle com um teclado visual, editor de notas de modo duplo e laboratório de afinação.\n- **Memorização** — um diário de prática que persiste entre as sessões, para que o aprendizado se acumule com o tempo.\n- **Canto** — síntese do trato vocal com 20 predefinições de voz, desde soprano operístico até coral eletrônico. Modo de acompanhamento com solfejo, contorno e narração de sílabas. E uma linha melódica cantada real no ritmo do piano: um cantor condicionado pela partitura, impulsionado pelo MIDI da música, com limitação de tempo (40 ms) e afinação (50 centavos) antes que você a ouça — veja [Cantar](#cantar).",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "- **Reading** — real MIDI sheet music with deep musical annotations. Not hand-written approximations — parsed, analyzed, and explained.\n- **Hearing** — six audio engines (oscillator piano, sample piano, vocal samples, physical vocal tract, additive vocal synth, physically-modeled guitar) that play through your speakers, so the humans in the room become the AI's ears. And now the model has ears of its own, twice over: it can measure a recording after the fact (see [Listening](#listening)) and it can watch the band **while the music is still going** (see [The Live Ensemble](#the-live-ensemble)).\n- **Seeing** — a piano roll that renders what was played as SVG the model can read back and verify. An interactive guitar tablature editor. A browser cockpit with a visual keyboard, dual-mode note editor, and tuning lab.\n- **Remembering** — a practice journal that persists across sessions, so learning compounds over time.\n- **Singing** — vocal tract synthesis with 20 voice presets, from operatic soprano to electronic choir. Sing-along mode with solfege, contour, and syllable narration. And a real sung lead on the piano's clock: a score-conditioned singer driven by the song's MIDI, gated on timing (40 ms) and pitch (50 cents) before you hear it — see [Sing](#sing).",
+      "targetLang": "pt"
+    },
+    "54be187ea5ae5807": {
+      "translation": "O Conjunto ao Vivo",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "The Live Ensemble",
+      "targetLang": "pt"
+    },
+    "7b9c30ca138907b9": {
+      "translation": "A avaliação da audição analisa uma gravação após o seu término. Esta é a outra metade: perguntar o que cada\ninstrumento está a fazer **neste exato momento**, durante a apresentação.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "Listening grades a recording once it has finished. This is the other half: asking what every\ninstrument is doing **right now**, mid-performance.",
+      "targetLang": "pt"
+    },
+    "a78f62e2b731e54c": {
+      "translation": "Ele responde com as notas sustentadas de cada instrumento, o tempo que cada uma foi sustentada e o acorde combinado\nem todo o conjunto. Durante um dueto, as duas vozes são relatadas separadamente, para que você possa ver o\npiano a tocar uma tríade enquanto o sintetizador executa a melodia sobre ela.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "It answers with each instrument's held notes, how long each has been held, and the combined chord\nacross the whole ensemble. During a duet the two voices are reported separately, so you can see the\npiano holding a triad while the synth carries the melody over it.",
+      "targetLang": "pt"
+    },
+    "3467666dd961e6bc": {
+      "translation": "Dois canais, e o mais barato é o mais preciso",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "Two channels, and the cheap one is the accurate one",
+      "targetLang": "pt"
+    },
+    "03ae1cb86569461f": {
+      "translation": "Esta é a parte que vale a pena entender, porque ela decide em qual número confiar.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "This is the part worth understanding, because it decides which number to trust.",
+      "targetLang": "pt"
+    },
+    "5592d4d1a9437e3b": {
+      "translation": "**Intenção — o que foi instruído a cada motor para tocar.** Quando o modelo é o que está a executar, esta não é\numa estimativa. Um acorde de piano não é algo para ser transcrito; são três notas que foram enviadas. As\nnotas são exatas, livres e imediatas.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "**Intent — what each engine was told to play.** When the model is the one performing, this is not\nan estimate. A piano chord is not something to transcribe; it is three note-ons that were sent. The\nnotes are exact, free, and immediate.",
+      "targetLang": "pt"
+    },
+    "6440311e1486a54b": {
+      "translation": "**Acústico — o que realmente saiu.** Cada motor pode direcionar a sua saída para um barramento de análise privado,\npara que cada instrumento seja medido na fonte, sem separação e sem ambiguidade. Este canal é\n**verificação, não descoberta**: é como você aprende que uma voz se desviou do ritmo, uma gravação foi\ninterrompida ou um motor ficou em silêncio enquanto ainda estava a receber notas.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "**Acoustic — what actually came out.** Each engine can fan its output into a private analysis bus,\nso every instrument is measured at the source with no separation and no ambiguity. This channel is\n**verification, not discovery**: it is how you learn that a voice drifted off the clock, a take\nclipped, or an engine went silent while still being sent notes.",
+      "targetLang": "pt"
+    },
+    "3b930d5d862ede07": {
+      "translation": "Quando os dois discordam, isso é um fato sobre a renderização, não uma correção das notas.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "When the two disagree, that is a fact about the render, not a correction to the notes.",
+      "targetLang": "pt"
+    },
+    "a3f4d5993d031c58": {
+      "translation": "O que custa",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "What it costs",
+      "targetLang": "pt"
+    },
+    "f21c7037c190c251": {
+      "translation": "Observar um instrumento custa cerca de **9 microssegundos por chamada de retorno de áudio**, em relação a um bloco de 42,67 ms,\no que representa aproximadamente 0,02% do orçamento de áudio, medido com zero amostras descartadas. Um instrumento sem um observador anexado não custa nada.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "Watching an instrument costs about **9 microseconds per audio callback** against a 42.67 ms block,\nwhich is roughly 0.02% of the audio budget, measured with zero dropped samples. An instrument with\nno observer attached costs nothing at all.",
+      "targetLang": "pt"
+    },
+    "a7b99a3d7db5292a": {
+      "translation": "O que não será informado",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "What it will not tell you",
+      "targetLang": "pt"
+    },
+    "066459aec794e6bc": {
+      "translation": "O canal acústico tem um atraso e indica o quanto: cerca de 23 ms para a afinação e 70 ms para um início confirmado, porque um início não pode ser confirmado até que o áudio posterior tenha chegado. Os inícios próximos a essa\nborda são retidos em vez de relatados e posteriormente retirados.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "The acoustic channel lags, and says by how much: about 23 ms for pitch, and 70 ms for a confirmed\nonset, because an onset cannot be confirmed until the audio after it has arrived. Onsets near that\nedge are withheld rather than reported and later retracted.",
+      "targetLang": "pt"
+    },
+    "28d2342d41a3ab52": {
+      "translation": "O rastreador acústico segue uma linha de cada vez, portanto, não nomeará as notas de um acorde — e não finge fazê-lo. Um acorde que ele não consegue resolver é sua limitação conhecida, em vez de uma descoberta, e o conjunto permanece em silêncio sobre isso, em vez de dar um alarme falso em cada acorde que o piano toca.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "The acoustic tracker follows one line at a time, so it will not name the notes of a chord — and it\ndoes not pretend to. A chord it cannot resolve is its known limitation rather than a finding, and\nthe ensemble stays quiet about it instead of crying wolf on every chord the piano plays.",
+      "targetLang": "pt"
+    },
+    "2747baddb1392387": {
+      "translation": "O corpus acústico",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "The acoustic corpus",
+      "targetLang": "pt"
+    },
+    "5549b1e5b1498ab5": {
+      "translation": "**jam-actions-acoustic-v0** — o equivalente aos rastreamentos acima, em **áudio** em vez de\nmúsica simbólica. 108 registros, cada um emparelhando uma renderização sintética deliberadamente perturbada de uma\nfrase de domínio público com o veredicto que as ferramentas de análise realmente retornam, para que cada rótulo seja verificado\nem relação ao instrumento, e não apenas em relação a si mesmo.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "**jam-actions-acoustic-v0** — the counterpart to the traces above, over **audio** rather than\nsymbolic music. 108 records, each pairing a deliberately perturbed synthetic rendering of a\npublic-domain phrase with the verdict the analysis tools actually return, so every label is checked\nagainst the instrument rather than only against itself.",
+      "targetLang": "pt"
+    },
+    "54d3a4362e0c65f2": {
+      "translation": "108 — 3 frases × 9 tipos de perturbação × 4 notas de destino",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "108 — 3 phrases × 9 perturbation kinds × 4 target notes",
+      "targetLang": "pt"
+    },
+    "cf933fe28a2cdc9c": {
+      "translation": "Mantido",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "Held out",
+      "targetLang": "pt"
+    },
+    "5a26c1ec65fa33ce": {
+      "translation": "por **frase** (Für Elise), não por registro, para que uma cópia perturbada da mesma melodia não possa vazar",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "by **phrase** (Für Elise), not by record, so a perturbed twin of the same melody cannot leak",
+      "targetLang": "pt"
+    },
+    "7d84daf9e09d34a9": {
+      "translation": "Classes",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "Classes",
+      "targetLang": "pt"
+    },
+    "adabc623ed863cb6": {
+      "translation": "correspondência, falha/alerta de afinação, falha/aprovação de tempo, ausente, extra, vibrato afinado, silêncio sem nada para avaliar",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "match, pitch fail/warn, timing fail/pass, missed, extra, in-tune vibrato, nothing-to-grade silence",
+      "targetLang": "pt"
+    },
+    "9345040139895803": {
+      "translation": "Áudio",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "Audio",
+      "targetLang": "pt"
+    },
+    "e9164a09df1c4cb5": {
+      "translation": "nenhum distribuído — cada registro carrega uma receita determinística e o SHA-256 da forma de onda que ele produz",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "none distributed — each record carries a deterministic recipe and the SHA-256 of the waveform it produces",
+      "targetLang": "pt"
+    },
+    "2857ffb633a7707c": {
+      "translation": "Duas das nove classes estão lá porque um modelo ingênuo as responde com confiança e incorretamente: uma\nnota de vibrato cujo veredicto correto é *afinado* e silêncio cujo veredicto correto é *nada para avaliar*. Cada limite do qual o veredicto depende é copiado para o registro, porque ambos mudaram uma vez durante a construção.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "Two of the nine classes are there because a naive model answers them confidently and wrongly: a\nvibrato note whose correct verdict is *in tune*, and silence whose correct verdict is *nothing to\ngrade*. Every threshold the verdict depends on is copied into the record, because both of them\nmoved once during the build.",
+      "targetLang": "pt"
+    },
+    "692af1a2cc75453e": {
+      "translation": "O corpus é reproduzível a partir deste repositório. Regenerá-lo produz todos os 115 arquivos publicados\ne um ⟦0⟧ idêntico em bytes, e um teste afirma exatamente isso sem gravar a\nárvore publicada.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "The corpus is reproducible from this repository. Regenerating it produces all 115 published files\nand a byte-identical ⟦0⟧, and a test asserts exactly that without writing the\npublished tree.",
+      "targetLang": "pt"
+    },
+    "668acd21d1d2cac4": {
+      "translation": "Crie o seu próprio",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "Build your own",
+      "targetLang": "pt"
+    },
+    "9406c668c9486abf": {
+      "translation": "A estrutura na qual o corpus é executado está disponível para seus próprios experimentos.\n[⟦0⟧](experiments/_template/) é um exemplo funcional que você pode copiar: declare uma\ntarefa e você obterá formatação SFT, pontuação por classe, linhas de base triviais sobre o conjunto de veredictos declarado e uma verificação de que nenhuma unidade de exclusão se sobrepõe à divisão.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "The scaffolding that corpus runs on is available for your own experiments.\n[⟦0⟧](experiments/_template/) is a working example you can copy: declare a\ntask, and you get SFT formatting, per-class scoring, trivial baselines over your declared verdict\nset, and a check that no holdout unit straddles the split.",
+      "targetLang": "pt"
+    },
+    "1332f1f80d839b12": {
+      "translation": "O [contrato](experiments/_template/README.md) é a parte que vale a pena ler. A verdade fundamental é\nconstruível em vez de escrita à mão, os rótulos são verificados em relação ao que as ferramentas medem, você\ndivide pela unidade que vaza e relata as linhas de base e o modelo base ao lado de qualquer resultado. Cada uma dessas regras tem um custo para aprender.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "The [contract](experiments/_template/README.md) is the part worth reading. Ground truth is\nconstructible rather than hand-written, labels are verified against what the tools measure, you\nsplit by the unit that leaks, and you report the baselines and the base model beside any result.\nEach of those rules cost something to learn.",
+      "targetLang": "pt"
+    },
+    "c52828573fdc15bf": {
+      "translation": "Pontuação",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "Score",
+      "targetLang": "pt"
+    },
+    "10007765f8b57a1c": {
+      "translation": "Avalie uma execução MIDI de acompanhamento em relação a uma música da biblioteca — afinação, tempo, completude, com feedback graduado",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "Score a MIDI play-along against a library song — pitch, timing, completeness, with graded feedback",
+      "targetLang": "pt"
+    },
+    "67a09f8a08122ff2": {
+      "translation": "Avalie a qualidade da anotação em 5 dimensões",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "Score annotation quality across 5 dimensions",
+      "targetLang": "pt"
+    },
+    "846d1a606f252c6e": {
+      "translation": "Ouvir",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "Listen",
+      "targetLang": "pt"
+    },
+    "1ea911753ba4f072": {
+      "translation": "Medindo o áudio gravado. Monofônico: ele segue uma linha de cada vez, então um acorde ou uma mixagem completa\nproduz um ruído incoerente. Cada número vem do processamento do sinal, nunca de um modelo que\nanalisa uma imagem.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "Measuring recorded audio. Monophonic: they follow one line at a time, so a chord or a full mix\nproduces confident nonsense. Every number comes from signal processing, never from a model reading\na picture.",
+      "targetLang": "pt"
+    },
+    "09df95faef83927d": {
+      "translation": "Meça um arquivo WAV — tempos de início, o contorno da altura como nomes de notas com cents e nível.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "Measure a WAV — onset times, the pitch contour as note names with cents, and level",
+      "targetLang": "pt"
+    },
+    "f9910805650c7a41": {
+      "translation": "Converta uma gravação monofônica em notas, com o desvio de cada nota em relação à altura padrão. As notas que o rastreador não conseguiu identificar são omitidas, em vez de serem adivinhadas.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "Turn a monophonic recording into notes, with each note's deviation from concert pitch. Notes the tracker could not follow are omitted rather than guessed",
+      "targetLang": "pt"
+    },
+    "b27610a896c945a0": {
+      "translation": "Avalie uma performance em relação a uma música da biblioteca **de ouvido**, e então entregue o resultado para ⟦0⟧.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "Grade a performance against a library song **by ear**, then hand the result to ⟦0⟧",
+      "targetLang": "pt"
+    },
+    "cb7c459781d1ed3a": {
+      "translation": "Visualize o som — um espectrograma de Q constante em um eixo de teclado de piano, opcionalmente sobreposto com as notas pretendidas. Oculto por padrão.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "See the sound — a constant-Q spectrogram on a piano-keyboard axis, optionally overlaid with the intended notes. Blind by default",
+      "targetLang": "pt"
+    },
+    "991f96caf8b30480": {
+      "translation": "O que cada instrumento está tocando **neste momento**, durante a performance. As notas vêm do que foi enviado, então são exatas, em vez de estimadas.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "What every instrument is playing **right now**, mid-performance. Notes come from what was sent, so they are exact rather than estimated",
+      "targetLang": "pt"
+    },
+    "5541cacbcac415ed": {
+      "translation": "**v2.5.0 — a versão em que o modelo pode assistir à banda tocar** (veja [CHANGELOG](CHANGELOG.md)).\n⟦0⟧ relata o que cada instrumento está fazendo enquanto a música ainda está sendo tocada: notas sustentadas\npor instrumento, por quanto tempo cada uma foi sustentada e o acorde combinado. Ele é executado em dois canais, e\no mais barato é o mais preciso — quando este servidor executa, ele sabe exatamente o que enviou, então um\nacorde é três notas em vez de um problema de transcrição, enquanto uma medição acústica separada mede\ncada instrumento **na fonte** para verificação. O custo medido é de cerca de **9 microssegundos por chamada de áudio**; a latência é declarada, em vez de implícita (~23 ms de altura, ~70 ms de início confirmado); e os\nlimites são documentados porque são acionáveis — o rastreador é monofônico, os elementos sobrepostos são\nmedidos individualmente e nunca como uma mixagem, e um instrumento sem medição não é um instrumento silencioso.\nA mesma versão transforma a máquina de conjunto de dados em um contrato que qualquer pessoa pode declarar, com um\nmodelo trabalhado, para que os usuários possam construir seus próprios conjuntos de dados e treinar seus próprios adaptadores com base na mesma\ndisciplina. Ao longo do caminho, descobriu-se que o mecanismo de reprodutibilidade do conjunto de dados acústico cobre 109 de seus\n115 caminhos publicados, e três dos seis que não foram cobertos nunca foram emitidos pelo gerador —\na regeneração os excluiu. Uma regeneração completa agora reproduz cada arquivo e o manifesto de checksum byte a byte. A interface ativa é **54 ferramentas e 4 modelos de prompt**, com **3.389 testes aprovados em 165 arquivos (1 ignorado)**.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "**v2.5.0 — the release where the model can watch the band play** (see [CHANGELOG](CHANGELOG.md)).\n⟦0⟧ reports what every instrument is doing while the music is still going: held notes\nper instrument, how long each has been held, and the combined chord. It runs on two channels, and\nthe cheap one is the accurate one — when this server performs it knows exactly what it sent, so a\nchord is three note-ons rather than a transcription problem, while a separate acoustic tap measures\neach engine **at the source** for verification. Measured cost is about **9 microseconds per audio\ncallback**; latency is stated rather than implied (~23 ms pitch, ~70 ms confirmed onset); and the\nlimits are documented because they are actionable — the tracker is monophonic, layered children are\ntapped individually and never as a mix, and an instrument with no tap is not a silent instrument.\nThe same release turns the dataset machinery into a contract anyone can declare against, with a\nworked template, so users can build their own corpora and train their own adapters against the same\ndiscipline. Along the way the acoustic corpus's reproducibility gate was found to cover 109 of its\n115 published paths, and three of the six it missed were never emitted by the generator at all —\nregenerating deleted them. A full regeneration now reproduces every file and the checksum manifest\nbyte for byte. The live surface is **54 tools and 4 prompt templates**, with **3,389 tests passing\nacross 165 files (1 skipped)**.",
+      "targetLang": "pt"
+    },
+    "4cd1fad2871c3086": {
+      "translation": "Anteriormente, na v2.4.0 — a versão em que o modelo ganhou \"ouvidos\". Quatro ferramentas preencheram a lacuna entre\na renderização de áudio e a sua análise: ⟦0⟧ para inícios, contorno da altura e nível;\n⟦1⟧ para uma gravação monofônica como notas; ⟦2⟧ para avaliar uma performance\nde ouvido e entregar o resultado para o piano roll existente, sem alterações; e ⟦3⟧ para\nvisualizar o som em um eixo de Q constante, teclado de piano. Tudo isso é processamento de sinal livre de dependências\nescrito neste repositório — seu próprio FFT, janelas, transformadas mel e de Q constante, detecção de início e\nrastreamento de altura — porque um modelo não pode analisar de forma confiável uma imagem e consultas determinísticas superam a inferência para perguntas com respostas exatas. Essa versão também publicou\n**jam-actions-acoustic-v0**, 108 registros de uso de ferramentas construtíveis sobre áudio.",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "Previously in v2.4.0 — the release where the model got ears. Four tools closed the gap between\nrendering audio and examining it: ⟦0⟧ for onsets, pitch contour and level;\n⟦1⟧ for a monophonic recording as notes; ⟦2⟧ to grade a performance\nby ear and hand the result to the existing scored piano roll unchanged; and ⟦3⟧ to\nsee the sound on a constant-Q, piano-keyboard axis. All of it is dependency-free signal processing\nwritten in this repo — its own FFT, windows, mel and constant-Q transforms, onset detection and\npitch tracking — because a model cannot reliably eyeball a picture and deterministic queries beat\ninference for questions with exact answers. That release also published\n**jam-actions-acoustic-v0**, 108 constructible-gold records of tool use over audio.",
+      "targetLang": "pt"
+    },
+    "d9db84ed25f7cd57": {
+      "translation": "MIT",
+      "model": "translategemma:27b",
+      "timestamp": 1788841541706,
+      "source": "MIT",
+      "targetLang": "pt"
     }
   }
 }

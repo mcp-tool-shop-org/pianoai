@@ -34,10 +34,10 @@ Um piano e uma guitarra que a IA aprende a tocar. Não é um sintetizador, nem u
 Um LLM pode ler e escrever texto, mas não consegue vivenciar a música da maneira como nós fazemos. Sem ouvidos, sem dedos, sem memória muscular. O AI Jam Sessions preenche essa lacuna, fornecendo ao modelo sentidos que ele realmente pode usar:
 
 - **Leitura** — partituras MIDI reais com anotações musicais detalhadas. Não são aproximações manuscritas — são analisadas, interpretadas e explicadas.
-- **Audição** — seis motores de áudio (piano oscilador, piano de amostra, amostras vocais, trato vocal físico, sintetizador vocal aditivo, guitarra modelada fisicamente) que reproduzem o som através dos seus alto-falantes, transformando os ouvintes em ouvidos da IA.
-- **Visualização** — um piano roll que renderiza o que foi tocado como SVG, permitindo que o modelo o leia e verifique. Um editor interativo de tablaturas de guitarra. Um painel de controle com um teclado visual, editor de notas de modo duplo e laboratório de afinação.
+- **Audição** — seis motores de áudio (piano oscilador, piano de amostra, amostras vocais, trato vocal físico, sintetizador vocal aditivo, guitarra modelada fisicamente) que reproduzem o som através dos seus alto-falantes, transformando os ouvintes em ouvidos da IA. E agora o modelo tem os seus próprios ouvidos, em dobro: pode medir uma gravação após o fato (veja [Ouvir](#ouvir)) e pode observar a banda **enquanto a música ainda está a tocar** (veja [O Conjunto ao Vivo](#o-conjunto-ao-vivo)).
+- **Visualização** — um piano roll que renderiza o que foi tocado como SVG, permitindo que o modelo o releia e verifique. Um editor interativo de tablaturas de guitarra. Um painel de controle com um teclado visual, editor de notas de modo duplo e laboratório de afinação.
 - **Memorização** — um diário de prática que persiste entre as sessões, para que o aprendizado se acumule com o tempo.
-- **Canto** — síntese do trato vocal com 20 predefinições de voz, desde soprano lírico até coral eletrônico. Modo de acompanhamento com solfejo, contorno e narração de sílabas. E uma linha vocal real no ritmo do piano: uma partitura que condiciona o cantor, impulsionada pelo MIDI da música, com limiares de tempo (40 ms) e afinação (50 cents) antes que você a ouça — veja [Sing](#sing).
+- **Canto** — síntese do trato vocal com 20 predefinições de voz, desde soprano operístico até coral eletrônico. Modo de acompanhamento com solfejo, contorno e narração de sílabas. E uma linha melódica cantada real no ritmo do piano: um cantor condicionado pela partitura, impulsionado pelo MIDI da música, com limitação de tempo (40 ms) e afinação (50 centavos) antes que você a ouça — veja [Cantar](#cantar).
 
 Cada uma das 120 músicas agora está totalmente anotada — contexto histórico, análise estrutural barra a barra, momentos-chave, objetivos de ensino e dicas de desempenho, em todos os 12 gêneros. Uma versão anterior deste arquivo README dizia que as músicas originais estavam "aguardando que a IA absorvesse os padrões, tocasse a música e escrevesse suas próprias anotações". É exatamente isso que aconteceu: as anotações foram escritas pela IA com base em uma análise determinística por música (acordes, estrutura de repetição, limites de seção, tonalidades verificadas), sujeitas a um critério de qualidade e verificadas adversariamente, afirmação por afirmação — números das barras, intervalos de acordes e contagens estruturais, tudo verificado em relação ao MIDI real antes que qualquer coisa fosse lançada.
 
@@ -75,6 +75,46 @@ de escondê-la aqui.
 Toda a estrutura é independente: a transformação, o rastreador de altura, o detector de início, o
 decodificador WAV e o codificador PNG estão todos neste repositório e produzem números idênticos
 no Node e no navegador.
+
+## O Conjunto ao Vivo
+
+A avaliação da audição analisa uma gravação após o seu término. Esta é a outra metade: perguntar o que cada
+instrumento está a fazer **neste exato momento**, durante a apresentação.
+
+```
+ensemble_now()
+```
+
+Ele responde com as notas sustentadas de cada instrumento, o tempo que cada uma foi sustentada e o acorde combinado
+em todo o conjunto. Durante um dueto, as duas vozes são relatadas separadamente, para que você possa ver o
+piano a tocar uma tríade enquanto o sintetizador executa a melodia sobre ela.
+
+### Dois canais, e o mais barato é o mais preciso
+
+Esta é a parte que vale a pena entender, porque ela decide em qual número confiar.
+
+**Intenção — o que foi instruído a cada motor para tocar.** Quando o modelo é o que está a executar, esta não é
+uma estimativa. Um acorde de piano não é algo para ser transcrito; são três notas que foram enviadas. As
+notas são exatas, livres e imediatas.
+
+**Acústico — o que realmente saiu.** Cada motor pode direcionar a sua saída para um barramento de análise privado,
+para que cada instrumento seja medido na fonte, sem separação e sem ambiguidade. Este canal é
+**verificação, não descoberta**: é como você aprende que uma voz se desviou do ritmo, uma gravação foi
+interrompida ou um motor ficou em silêncio enquanto ainda estava a receber notas.
+
+Quando os dois discordam, isso é um fato sobre a renderização, não uma correção das notas.
+
+### O que custa
+
+Observar um instrumento custa cerca de **9 microssegundos por chamada de retorno de áudio**, em relação a um bloco de 42,67 ms,
+o que representa aproximadamente 0,02% do orçamento de áudio, medido com zero amostras descartadas. Um instrumento sem um observador anexado não custa nada.
+
+### O que não será informado
+
+O canal acústico tem um atraso e indica o quanto: cerca de 23 ms para a afinação e 70 ms para um início confirmado, porque um início não pode ser confirmado até que o áudio posterior tenha chegado. Os inícios próximos a essa
+borda são retidos em vez de relatados e posteriormente retirados.
+
+O rastreador acústico segue uma linha de cada vez, portanto, não nomeará as notas de um acorde — e não finge fazê-lo. Um acorde que ele não consegue resolver é sua limitação conhecida, em vez de uma descoberta, e o conjunto permanece em silêncio sobre isso, em vez de dar um alarme falso em cada acorde que o piano toca.
 
 ## O Rolo de Piano
 
@@ -239,6 +279,38 @@ pnpm exec tsx scripts/check-release-gate.ts /tmp/b.json
 
 > Os arranjos MIDI são de Bernd Krueger (piano-midi.de), licenciados sob CC-BY-SA-3.0-DE. As anotações, trilhas e artefatos de avaliação são da equipe AI Jam Sessions, lançados sob a mesma licença para que a cadeia de compartilhamento seja preservada de ponta a ponta. **Limite de licença:** a licença MIT do repositório cobre o código; tudo em `datasets/` é CC-BY-SA-3.0-DE. O corpus de trabalho em `datasets/jam-actions-v0/` contém adicionalmente duas obras (Satie Gymnopédie No. 1, Debussy Arabesque No. 1) que são *excluídas* do subconjunto publicado porque a proveniência de seus arranjos não pôde ser verificada — veja [`datasets/jam-actions-v0/PROVENANCE-NOTE.md`](datasets/jam-actions-v0/PROVENANCE-NOTE.md).
 
+### O corpus acústico
+
+**jam-actions-acoustic-v0** — o equivalente aos rastreamentos acima, em **áudio** em vez de
+música simbólica. 108 registros, cada um emparelhando uma renderização sintética deliberadamente perturbada de uma
+frase de domínio público com o veredicto que as ferramentas de análise realmente retornam, para que cada rótulo seja verificado
+em relação ao instrumento, e não apenas em relação a si mesmo.
+
+| | |
+|---|---|
+| Registros | 108 — 3 frases × 9 tipos de perturbação × 4 notas de destino |
+| Mantido | por **frase** (Für Elise), não por registro, para que uma cópia perturbada da mesma melodia não possa vazar |
+| Classes | correspondência, falha/alerta de afinação, falha/aprovação de tempo, ausente, extra, vibrato afinado, silêncio sem nada para avaliar |
+| Áudio | nenhum distribuído — cada registro carrega uma receita determinística e o SHA-256 da forma de onda que ele produz |
+| Esquema | `jam-actions-acoustic-v0/1.0.0` |
+
+Duas das nove classes estão lá porque um modelo ingênuo as responde com confiança e incorretamente: uma
+nota de vibrato cujo veredicto correto é *afinado* e silêncio cujo veredicto correto é *nada para avaliar*. Cada limite do qual o veredicto depende é copiado para o registro, porque ambos mudaram uma vez durante a construção.
+
+O corpus é reproduzível a partir deste repositório. Regenerá-lo produz todos os 115 arquivos publicados
+e um `checksums.sha256` idêntico em bytes, e um teste afirma exatamente isso sem gravar a
+árvore publicada.
+
+### Crie o seu próprio
+
+A estrutura na qual o corpus é executado está disponível para seus próprios experimentos.
+[`experiments/_template/`](experiments/_template/) é um exemplo funcional que você pode copiar: declare uma
+tarefa e você obterá formatação SFT, pontuação por classe, linhas de base triviais sobre o conjunto de veredictos declarado e uma verificação de que nenhuma unidade de exclusão se sobrepõe à divisão.
+
+O [contrato](experiments/_template/README.md) é a parte que vale a pena ler. A verdade fundamental é
+construível em vez de escrita à mão, os rótulos são verificados em relação ao que as ferramentas medem, você
+divide pela unidade que vaza e relata as linhas de base e o modelo base ao lado de qualquer resultado. Cada uma dessas regras tem um custo para aprender.
+
 ## Instalar
 
 ```bash
@@ -345,6 +417,27 @@ Requer **Node.js 22+** (v2.0.0 aumentou o limite com `node-web-audio-api` 2.0). 
 | `list_sections` | Visualizar as seções estruturais de uma música (Introdução, Verso, Refrão, etc.) |
 | `add_section` | Adicionar um marcador de seção a uma música para navegação estrutural |
 
+### Pontuação
+
+| Ferramenta | O que ela faz |
+|------|--------------|
+| `score_performance` | Avalie uma execução MIDI de acompanhamento em relação a uma música da biblioteca — afinação, tempo, completude, com feedback graduado |
+| `score_annotation` | Avalie a qualidade da anotação em 5 dimensões |
+
+### Ouvir
+
+Medindo o áudio gravado. Monofônico: ele segue uma linha de cada vez, então um acorde ou uma mixagem completa
+produz um ruído incoerente. Cada número vem do processamento do sinal, nunca de um modelo que
+analisa uma imagem.
+
+| Ferramenta | O que ela faz |
+|------|--------------|
+| `analyze_audio` | Meça um arquivo WAV — tempos de início, o contorno da altura como nomes de notas com cents e nível. |
+| `transcribe_audio` | Converta uma gravação monofônica em notas, com o desvio de cada nota em relação à altura padrão. As notas que o rastreador não conseguiu identificar são omitidas, em vez de serem adivinhadas. |
+| `score_audio_take` | Avalie uma performance em relação a uma música da biblioteca **de ouvido**, e então entregue o resultado para `view_scored_piano_roll`. |
+| `view_spectrogram` | Visualize o som — um espectrograma de Q constante em um eixo de teclado de piano, opcionalmente sobreposto com as notas pretendidas. Oculto por padrão. |
+| `ensemble_now` | O que cada instrumento está tocando **neste momento**, durante a performance. As notas vêm do que foi enviado, então são exatas, em vez de estimadas. |
+
 ### Prompts do MCP
 
 Quatro modelos de prompt para fluxos de trabalho de ensino estruturados:
@@ -378,6 +471,29 @@ ai-jam-sessions --version
 ```
 
 ## Status
+
+**v2.5.0 — a versão em que o modelo pode assistir à banda tocar** (veja [CHANGELOG](CHANGELOG.md)).
+`ensemble_now` relata o que cada instrumento está fazendo enquanto a música ainda está sendo tocada: notas sustentadas
+por instrumento, por quanto tempo cada uma foi sustentada e o acorde combinado. Ele é executado em dois canais, e
+o mais barato é o mais preciso — quando este servidor executa, ele sabe exatamente o que enviou, então um
+acorde é três notas em vez de um problema de transcrição, enquanto uma medição acústica separada mede
+cada instrumento **na fonte** para verificação. O custo medido é de cerca de **9 microssegundos por chamada de áudio**; a latência é declarada, em vez de implícita (~23 ms de altura, ~70 ms de início confirmado); e os
+limites são documentados porque são acionáveis — o rastreador é monofônico, os elementos sobrepostos são
+medidos individualmente e nunca como uma mixagem, e um instrumento sem medição não é um instrumento silencioso.
+A mesma versão transforma a máquina de conjunto de dados em um contrato que qualquer pessoa pode declarar, com um
+modelo trabalhado, para que os usuários possam construir seus próprios conjuntos de dados e treinar seus próprios adaptadores com base na mesma
+disciplina. Ao longo do caminho, descobriu-se que o mecanismo de reprodutibilidade do conjunto de dados acústico cobre 109 de seus
+115 caminhos publicados, e três dos seis que não foram cobertos nunca foram emitidos pelo gerador —
+a regeneração os excluiu. Uma regeneração completa agora reproduz cada arquivo e o manifesto de checksum byte a byte. A interface ativa é **54 ferramentas e 4 modelos de prompt**, com **3.389 testes aprovados em 165 arquivos (1 ignorado)**.
+
+Anteriormente, na v2.4.0 — a versão em que o modelo ganhou "ouvidos". Quatro ferramentas preencheram a lacuna entre
+a renderização de áudio e a sua análise: `analyze_audio` para inícios, contorno da altura e nível;
+`transcribe_audio` para uma gravação monofônica como notas; `score_audio_take` para avaliar uma performance
+de ouvido e entregar o resultado para o piano roll existente, sem alterações; e `view_spectrogram` para
+visualizar o som em um eixo de Q constante, teclado de piano. Tudo isso é processamento de sinal livre de dependências
+escrito neste repositório — seu próprio FFT, janelas, transformadas mel e de Q constante, detecção de início e
+rastreamento de altura — porque um modelo não pode analisar de forma confiável uma imagem e consultas determinísticas superam a inferência para perguntas com respostas exatas. Essa versão também publicou
+**jam-actions-acoustic-v0**, 108 registros de uso de ferramentas construtíveis sobre áudio.
 
 **v2.3.0 — a versão em que o instrumento aprendeu a cantar no ritmo** (veja [CHANGELOG](CHANGELOG.md)). Agora, qualquer música da biblioteca pode conter uma linha vocal real que se encaixa no piano: um **relógio de partitura** deriva o tom, o início e a duração de cada sílaba do MIDI da música na linha do tempo do reprodutor; um cantor local, Apache-2.0, condicionado pela partitura ([SoulX-Singer](https://github.com/Soul-AILab/SoulX-Singer)) canta a partir dele; e dois limitadores medem o resultado antes que algo seja considerado uma mixagem — tempo (cada vogal dentro de 40 ms da partitura) e afinação (cada nota dentro de 50 cents). A execução de Amazing Grace incluída mede 6 ms no pior tempo e -2,7 cents na afinação global, com comprovantes registrados; a página inicial a apresenta como um estado honesto, com o único defeito restante nomeado (a emenda de abertura, repassada). A rota, seus controles e a pesquisa por trás de cada escolha (cinco linhas de estudo, citadas) estão no [manual](https://mcp-tool-shop-org.github.io/ai-jam-sessions/handbook/vocals/) e [`docs/`](docs/). A interface ao vivo permanece inalterada em **49 ferramentas e 4 modelos de prompt**, com **3.080 testes aprovados (1 ignorado)**, além do próprio conjunto de testes pytest do instrumento vocal. **Estado de publicação:** publicado — [`@mcptoolshop/ai-jam-sessions@2.3.0`](https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions) no npm, com rastreabilidade comprovada.
 

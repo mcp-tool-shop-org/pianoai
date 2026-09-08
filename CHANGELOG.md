@@ -7,6 +7,74 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.5.0] - 2026-09-08
+
+### Added — the live ensemble: watching the band while the music plays
+
+v2.4.0 gave the model ears for finished recordings. This release lets it watch a performance while
+it is still going, and adds one more tool to do it.
+
+- `ensemble_now` — every instrument's held notes, how long each has been held, and the combined
+  chord across the ensemble. In a duet the voices are reported separately, so a piano holding a
+  triad and a synth carrying a line above it are two entries rather than one blur.
+
+**Two channels, and the cheap one is the accurate one.** When this server performs, it knows
+exactly what it sent to each engine, because it sent it. A chord is not a transcription problem;
+it is three note-ons. That channel has no model in it, no inference, no confidence score, and no
+latency worth naming. The obvious design would have pointed a polyphonic transcriber at the audio
+to answer a question we already had the answer to — slower, less accurate, and several hundred
+megabytes heavier.
+
+Beside it runs an acoustic channel for **verification, not discovery**: each engine fans its output
+into a private analysis bus, so every instrument is measured at the source with no source
+separation and no ambiguity about which sound belongs to which. It is how you learn that a take
+clipped, a sung line drifted off the clock, or an engine went silent while still being sent notes.
+When the two channels disagree, that is a fact about the render and never a correction to the note
+list.
+
+Measured cost is about **9 microseconds per audio callback** against a 42.67 ms block, with zero
+dropped samples. An instrument with no observer costs nothing, and an observer cannot break a
+performance: the tap fans out of the engine's output and never sits between it and your speakers.
+
+Latency is stated rather than implied — roughly 23 ms for pitch, 70 ms for a confirmed onset.
+Onsets closer to the present than that are withheld rather than reported and later retracted.
+
+Limits, documented because they are actionable: the acoustic tracker follows one line at a time and
+will not name the notes of a chord; a layered engine's children are tapped individually and never
+as a mix; and an instrument with no tap is not a silent instrument.
+
+### Added — build your own datasets
+
+The machinery behind this repo's datasets is now a declarable contract rather than one hand-built
+experiment. Declare a task — a closed verdict set, the thresholds the answer depends on, the cases,
+and the unit you hold out by — and you get SFT formatting, per-class scoring, trivial baselines over
+your declared set, and a check that no holdout unit straddles the split.
+
+`experiments/_template/` is a worked example that runs, and its README carries the contract each
+rule cost something to learn: ground truth is constructed rather than written down, labels are
+verified against what the tools measure, you split by the unit that leaks, and any result is
+reported beside its baselines and the base model.
+
+### Fixed
+
+- **The acoustic corpus is now reproducible end to end.** Its reproducibility gate covered 109 of
+  115 published paths, and three of the six it missed were never emitted by the generator at all —
+  regenerating the corpus deleted `VERSION`, `CITATION.cff` and `LICENSE-DATASET.md` and produced a
+  112-entry manifest where 115 are published. A full regeneration now reproduces every file and the
+  checksum manifest byte for byte.
+- The checksum manifest is written in the published breadth-first path order. A flat sort put
+  `splits.json` after all 108 record files and silently produced a different manifest for identical
+  content.
+- The acoustic evaluation counted perturbation kinds while grading against gold verdicts, and
+  reported a majority-class baseline naming a label no model could emit. The numbers were correct;
+  the label was not. Baselines now compute over the declared class set.
+- The published-schema registry knew 2 of the 12 schema versions published under `datasets/`, so it
+  reported having checked collisions it had never heard of. All twelve are registered and a test
+  derives the set from disk.
+- A false disagreement fired on every chord, because the monophonic pitch tracker correctly refuses
+  to name a period in a triad. Narrowed to a single held note.
+- `play_song` reported the wrong instrument in the roster when driving a non-piano engine.
+
 ## [2.4.0] - 2026-09-07
 
 ### Added — the audio inspector: the model can measure sound, not just make it
