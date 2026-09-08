@@ -31,7 +31,9 @@ under one consistent copyleft term rather than a mixture a redistributor has to 
 ## A note on the audio
 
 **No audio files are distributed.** Each record stores a deterministic recipe and the SHA-256 of
-the waveform it produces, and re-rendering from that recipe reproduces the same bytes. The audio is
+the waveform it produces. Re-rendering from that recipe reproduces the same bytes on the engine the
+corpus was generated with; the hash is not portable across JavaScript engines, and the dataset card
+says exactly where and why. The audio is
 original synthetic tone generation, not a recording and not a rendering of Bernd Krueger's MIDI
 performances. The upstream arrangements contributed the pitch and rhythm of the reduced phrases,
 which is why layer 2 applies at all.

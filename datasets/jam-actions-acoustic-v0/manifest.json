@@ -1,7 +1,7 @@
 {
   "dataset_name": "jam-actions-acoustic-v0",
   "schema_version": "jam-actions-acoustic-v0/1.0.0",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "built_at": "reproducible",
   "license": "CC-BY-SA-3.0-DE",
   "record_count": 108,

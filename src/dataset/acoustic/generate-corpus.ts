@@ -60,8 +60,8 @@ export function buildAllRecords(seeds: number[] = targetIndexSeeds()): Array<Aco
 function datasetCard(): string {
   return `# Dataset Card for jam-actions-acoustic-v0
 
-**Version:** 1.0.0
-**Not published.** This tree is a local, operator-gated corpus. It has no DOI.
+**Version:** ${DATASET_VERSION}
+Published at [mcp-tool-shop/jam-actions-acoustic-v0](https://huggingface.co/datasets/mcp-tool-shop/jam-actions-acoustic-v0). No DOI.
 
 ## Summary
 
@@ -97,19 +97,35 @@ Held out **by phrase**, not by record. Random record holdout would leak: the sam
 - \`records/\` — the same records as individual JSON files
 - \`splits.json\` — phrase-locked split
 - \`manifest.json\`
-- \`checksums.sha256\`
+- \`VERSION\`
+- \`CITATION.cff\`
+- \`LICENSE-DATASET.md\`
+- \`checksums.sha256\` — every other file, sorted breadth-first by path
 - This card
 
-No WAV files. Takes re-render from \`observation.render.recipe\` and must match \`wav_sha256\`.
+Every one of those is generated from the source repository, so the whole tree rebuilds from code.
+
+## Re-rendering the audio
+
+No WAV files ship. Each take re-renders deterministically from \`observation.render.recipe\`, and \`wav_sha256\` is the hash of the waveform it produces.
+
+**That hash is engine-dependent, and you should know before you check it.** The renderer calls \`Math.pow\` and \`Math.sin\` once per sample, and ECMA-262 does not require either to be correctly rounded. V8's results changed between Node 22 and Node 24: of the 27,869 distinct \`Math.pow(2, x)\` arguments this corpus evaluates, 253 (0.91%) return a different double. Nearly all of that disappears under 16-bit quantisation, but **2 of the 108 records do not survive it** — both the \`extra\` perturbation of Für Elise, whose motif sits on MIDI 63, the one pitch where the semitone ratio itself differs by a unit in the last place.
+
+So:
+
+- **Every other field of every record reproduces on any engine.** Verify the download against \`checksums.sha256\` and it matches everywhere.
+- **\`wav_sha256\` matches on Node 22**, the engine this corpus was generated on. On Node 24 expect those two records to differ. That is this, not a corrupt download.
+
+Making the waveform bit-portable means replacing the transcendentals, which changes every hash and therefore every record. It would need a new \`schema_version\`, so it has not been done.
 
 ## License
 
-Traces and synthetic audio: CC-BY-SA-3.0-DE. Underlying compositions: public domain.
+Traces and synthetic audio: CC-BY-SA-3.0-DE. Underlying compositions: public domain. See \`LICENSE-DATASET.md\` for the three layers and what each obliges.
 `;
 }
 
 /** The published dataset version. Kept beside the card that quotes it. */
-export const DATASET_VERSION = "1.0.0";
+export const DATASET_VERSION = "1.0.1";
 
 function licenseDoc(): string {
   return readFileSync(
