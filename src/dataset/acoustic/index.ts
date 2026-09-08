@@ -44,6 +44,13 @@ export {
 } from "./generate-corpus.js";
 
 export {
+  acousticTask,
+  acousticCases,
+  acousticIndexSeeds,
+  type AcousticCase,
+} from "./task.js";
+
+export {
   NO_ENRICHMENT_SPLIT_DECLARATION,
   toReleaseGateInput,
   evaluateAcousticReleaseGate,

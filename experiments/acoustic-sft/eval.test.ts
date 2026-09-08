@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { evaluateAcousticSplit, type PredLine } from "./eval.js";
 import { buildAllRecords } from "../../src/dataset/acoustic/generate-corpus.js";
+import { GOLD_VERDICTS, PERTURBATION_KINDS } from "../../src/dataset/acoustic/schema.js";
 import { writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
@@ -31,6 +32,11 @@ describe("evaluateAcousticSplit", () => {
     expect(withLora.base_model_overall).toBeNull();
     expect(withLora.note).toMatch(/unfalsifiable/i);
     expect(withLora.per_kind.every((k) => k.n === 4)).toBe(true);
+    expect(withLora.per_kind.map((k) => k.kind)).toEqual([...PERTURBATION_KINDS]);
+    expect(withLora.baselines.uniform).toBeCloseTo(1 / 9, 10);
+    expect(withLora.baselines.majority).toBeCloseTo(4 / 36, 10);
+    expect(GOLD_VERDICTS).toContain(withLora.baselines.majority_class);
+    expect(PERTURBATION_KINDS).not.toContain(withLora.baselines.majority_class);
 
     const withBoth = evaluateAcousticSplit({
       recordsPath: path,
