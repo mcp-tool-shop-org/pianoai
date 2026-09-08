@@ -77,6 +77,19 @@ def main() -> None:
     ap.add_argument("--adapter", default=None, help="LoRA dir; omit for the base model")
     ap.add_argument("--out", required=True)
     ap.add_argument("--max-new-tokens", type=int, default=48)
+    ap.add_argument(
+        "--terse",
+        action="store_true",
+        help=(
+            "append a final instruction to answer with the bare value. THE FAIR "
+            "BASE CONDITION. Without it the base model continues the "
+            "conversation in prose -- 'The left hand is playing a Dm (D minor) "
+            "chord' where gold is 'Dm' -- and scores 0 on knowledge it plainly "
+            "has. A fine-tune compared against that overstates its gain by the "
+            "entire formatting difference. The system prompt already asks for "
+            "the value alone; mid-conversation, the base model does not obey it."
+        ),
+    )
     args = ap.parse_args()
 
     import torch
@@ -123,6 +136,15 @@ def main() -> None:
                 idx for idx, m in enumerate(tmpl) if m["role"] == "assistant"
             )
             prompt_msgs = tmpl[:last_assistant]
+            if args.terse:
+                prompt_msgs = list(prompt_msgs) + [{
+                    "role": "system",
+                    "content": (
+                        "Reply with the answer value alone. No sentence, no "
+                        "explanation, no markdown, no units, no restating the "
+                        "question."
+                    ),
+                }]
             text = tokenizer.apply_chat_template(
                 prompt_msgs, tokenize=False, add_generation_prompt=True, tools=tools
             )
