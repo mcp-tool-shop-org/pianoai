@@ -30,6 +30,9 @@ export const V1_FAMILIES = [
   "compare",
   "catalog",
   "server",
+  "harmony",
+  "acoustic",
+  "ensemble",
 ] as const;
 export type V1Family = (typeof V1_FAMILIES)[number];
 
@@ -43,9 +46,9 @@ export const RECORD_ONLY_PATHS = [
 ] as const;
 
 export const COVERAGE_FLOORS = {
-  tools: 10,
-  songs: 20,
-  shapes: 3,
+  tools: 13,
+  songs: 24,
+  shapes: 10,
 } as const;
 
 export const V1GoldSchema = z.object({
@@ -65,7 +68,7 @@ export const V1RecordSchema = z.object({
   observation: z.object({
     thresholds: z.record(z.string(), z.number()),
     gold: V1GoldSchema,
-  }),
+  }).passthrough(),
   annotation_target: AnnotationTargetSchema,
   target_trace: TargetTraceSchema,
   eval_metadata: EvalMetadataSchema,

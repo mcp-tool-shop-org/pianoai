@@ -4,12 +4,22 @@
 // measurement is a build failure: that case is omitted, not labelled
 // from the recipe.
 
-import { parseNoteToMidi } from "../../note-parser.js";
+import { parseNoteToMidi, midiToNoteName } from "../../note-parser.js";
 import { inferChord } from "../../songs/jam.js";
 import { detectChord } from "../../chord-detect.js";
 import { transposeSong } from "../../songs/transpose.js";
 import { compareSongs } from "../../song-compare.js";
+import { verifyHarmony, type ReharmonizedMeasure } from "../../maker/verify-harmony.js";
+import { Ensemble } from "../../audio/ensemble.js";
 import { validateTrace } from "../trace-validator.js";
+import {
+  F5_KINDS,
+  F5_THRESHOLDS,
+  resetF5DropStats,
+  tryBuildF5,
+  rederiveF5Gold,
+  f5DropStats,
+} from "./f5-acoustic.js";
 import type { SongEntry } from "../../songs/types.js";
 import type { Provenance, Turn } from "../schema.js";
 import type { V1Family, V1Record } from "./schema.js";
@@ -17,6 +27,8 @@ import { V1_SCHEMA_VERSION } from "./schema.js";
 import { catalogReadyCount, loadPublishableSongs, PUBLISHABLE_GENRES } from "./library.js";
 import type { Genre } from "../../songs/types.js";
 import { loadToolSchemaCatalog } from "../trace-validator.js";
+
+export { f5DropStats } from "./f5-acoustic.js";
 
 export function leftHandToMidi(leftHand: string): number[] {
   const out: number[] = [];
@@ -88,6 +100,7 @@ function baseRecord(
   split: "train" | "test",
   gold: V1Record["observation"]["gold"],
   session: Turn[],
+  extra?: { thresholds?: Record<string, number>; observation?: Record<string, unknown>; phrase_window?: string },
 ): V1Record {
   const rec: V1Record = {
     id,
@@ -96,7 +109,7 @@ function baseRecord(
     provenance: provenanceFor(song),
     scope: {
       song_id: song.id,
-      phrase_window: `full:${song.measures.length}`,
+      phrase_window: extra?.phrase_window ?? `full:${song.measures.length}`,
       instrument: "piano",
       key: song.key,
       tempo_bpm: song.tempo,
@@ -104,8 +117,9 @@ function baseRecord(
       window_role: "standalone",
     },
     observation: {
-      thresholds: { min_pitch_classes: 2 },
+      thresholds: extra?.thresholds ?? { min_pitch_classes: 2 },
       gold,
+      ...extra?.observation,
     },
     annotation_target: annotation(song),
     target_trace: {
@@ -330,6 +344,211 @@ export function buildServerInfoRecord(): V1Record {
   }, session);
 }
 
+export function buildHarmonyRecords(song: SongEntry, split: "train" | "test"): V1Record[] {
+  const hit = agreeingChordMeasure(song);
+  if (!hit) return [];
+  const measure = hit.measure;
+  const intended = hit.chord;
+  const validVoicing = hit.midi.map((m) => midiToNoteName(m)).join(" ");
+  const invalidVoicing = hit.midi.map((m) => midiToNoteName(m + 1)).join(" ");
+  const melody = [{ number: measure, rightHand: hit.midi.map((m) => `${midiToNoteName(m + 12)}:q`).join(" ") }];
+  const out: V1Record[] = [];
+  for (const [tag, voicing] of [["pass", validVoicing], ["fail", invalidVoicing]] as const) {
+    const reharmonization: ReharmonizedMeasure[] = [
+      { measure, intendedChord: intended, voicing },
+    ];
+    const verdict = verifyHarmony(melody, reharmonization, { key: song.key });
+    const answer = verdict.verified ? "verified" : "rejected";
+    if (tag === "pass" && answer !== "verified") continue;
+    if (tag === "fail" && answer !== "rejected") continue;
+    const payload = JSON.stringify(reharmonization);
+    const session: Turn[] = [
+      { turn: 1, role: "user", content: `Proposed reharmonization of measure ${measure} of "${song.title}": ${payload}\nDoes it clear the harmony verifier?` },
+      {
+        turn: 2, role: "assistant",
+        content: "Running the deterministic harmony verifier.",
+        tool_calls: [{
+          tool: "verify_harmony",
+          arguments: { songId: song.id, measures: `${measure}-${measure}`, reharmonization: payload, key: song.key },
+        }],
+      },
+      { turn: 3, role: "tool", tool: "verify_harmony", content: { reharmonization: payload } },
+      { turn: 4, role: "assistant", content: answer },
+    ];
+    out.push(baseRecord(song, "harmony", `harmony:${song.id}:m${measure}:${tag}`, split, {
+      family: "harmony", answer, engine: "verifyHarmony",
+    }, session, {
+      observation: { harmony: { melody, reharmonization, key: song.key } },
+    }));
+  }
+  return out;
+}
+
+export function buildAcousticRecord(song: SongEntry, split: "train" | "test"): V1Record[] {
+  const out: V1Record[] = [];
+  for (const kind of F5_KINDS) {
+    const kept = tryBuildF5(song, kind);
+    if (!kept) continue;
+    const session: Turn[] = [
+      { turn: 1, role: "user", content: `Grade this take of "${song.title}".` },
+      {
+        turn: 2, role: "assistant",
+        content: "Transcribing, then scoring with raw measurements.",
+        tool_calls: [
+          { tool: "transcribe_audio", arguments: { path: `/acoustic-v1/${song.id}-${kind}.wav` } },
+          { tool: "score_audio_take", arguments: { path: `/acoustic-v1/${song.id}-${kind}.wav`, song_id: song.id } },
+        ],
+      },
+      { turn: 3, role: "tool", tool: "transcribe_audio", content: { note_count: kept.notes.length } },
+      { turn: 4, role: "tool", tool: "score_audio_take", content: {
+        f0_hz: kept.measured_cents == null ? null : 440,
+        cents_from_target: kept.measured_cents,
+        onset_ms: kept.measured_onset_ms,
+      } },
+      { turn: 5, role: "assistant", content: kept.gold },
+    ];
+    out.push(baseRecord(song, "acoustic", `acoustic:${song.id}:${kind}`, split, {
+      family: "acoustic", answer: kept.gold, engine: "YIN+SuperFlux",
+    }, session, {
+      thresholds: F5_THRESHOLDS,
+      observation: {
+        acoustic: {
+          kind: kept.kind,
+          notes: kept.notes,
+          cents_shift: kept.cents_shift,
+          delay_sec: kept.delay_sec,
+          target_index: kept.target_index,
+        },
+      },
+    }));
+  }
+  return out;
+}
+
+export function buildEnsembleRecords(): V1Record[] {
+  const song = catalogSong();
+  const cases: Array<{
+    id: string;
+    kind: "who_first" | "wrong_tone" | "drifted";
+    chord: number[];
+    firstId: string;
+    secondId: string;
+    firstStop: number;
+    secondStop: number;
+    pianoNotes: number[];
+    otherId: string;
+    otherNotes: number[];
+    gold: string;
+    splitKey: string;
+  }> = [];
+
+  for (const [name, chord] of [["C", [60, 64, 67]], ["G", [67, 71, 74]]] as const) {
+    for (const first of ["piano", "synth"] as const) {
+      const second = first === "piano" ? "synth" : "piano";
+      cases.push({
+        id: `ensemble:who_first:${name}:${first}`,
+        kind: "who_first",
+        chord: [...chord],
+        firstId: first,
+        secondId: second,
+        firstStop: 0.4,
+        secondStop: 0.9,
+        pianoNotes: [...chord],
+        otherId: "synth",
+        otherNotes: [...chord],
+        gold: first,
+        splitKey: name,
+      });
+    }
+    const wrong = name === "C" ? [60, 64, 68] : [67, 71, 75];
+    cases.push({
+      id: `ensemble:wrong_tone:${name}`,
+      kind: "wrong_tone",
+      chord: [...chord],
+      firstId: "piano",
+      secondId: "guitar",
+      firstStop: 1.2,
+      secondStop: 1.2,
+      pianoNotes: [...chord],
+      otherId: "guitar",
+      otherNotes: wrong,
+      gold: "guitar",
+      splitKey: name,
+    });
+  }
+  cases.push({
+    id: "ensemble:drifted:C",
+    kind: "drifted",
+    chord: [60],
+    firstId: "piano",
+    secondId: "voice",
+    firstStop: 1.2,
+    secondStop: 1.2,
+    pianoNotes: [60],
+    otherId: "voice",
+    otherNotes: [61],
+    gold: "voice",
+    splitKey: "C",
+  });
+
+  return cases.map((c) => {
+    const ens = new Ensemble();
+    ens.addInstrument({ id: "piano", label: "piano" });
+    ens.addInstrument({ id: c.otherId, label: c.otherId });
+    for (const n of c.pianoNotes) ens.noteOn("piano", { note: n, velocity: 90, atSec: 0 });
+    for (const n of c.otherNotes) ens.noteOn(c.otherId, { note: n, velocity: 90, atSec: 0 });
+    if (c.kind === "who_first") {
+      ens.allNotesOff(c.firstId, c.firstStop);
+      ens.allNotesOff(c.secondId, c.secondStop);
+    }
+    const view = ens.view(1.3);
+    const slim = {
+      atSec: view.atSec,
+      instruments: view.instruments.map((i) => ({
+        id: i.id,
+        sounding: i.sounding.map((n) => ({ note: n.note, startedSec: n.startedSec, heldSec: n.heldSec })),
+        recentlyReleased: i.recentlyReleased.map((n) => ({
+          note: n.note, startedSec: n.startedSec, heldSec: n.heldSec,
+        })),
+      })),
+    };
+    const user =
+      c.kind === "who_first"
+        ? "Two instruments just finished a chord. Who stopped first?"
+        : c.kind === "wrong_tone"
+          ? "Two instruments are holding a triad. Which one is playing the wrong chord tone?"
+          : "Two instruments should be in unison. Which one drifted?";
+    const session: Turn[] = [
+      { turn: 1, role: "user", content: user },
+      {
+        turn: 2, role: "assistant",
+        content: "Reading the live ensemble.",
+        tool_calls: [{ tool: "ensemble_now", arguments: {} }],
+      },
+      { turn: 3, role: "tool", tool: "ensemble_now", content: slim },
+      { turn: 4, role: "assistant", content: c.gold },
+    ];
+    const rec = baseRecord(song, "ensemble", c.id, c.splitKey === "G" ? "test" : "train", {
+      family: "ensemble", answer: c.gold, engine: "Ensemble.view",
+    }, session, {
+      phrase_window: c.splitKey,
+      observation: {
+        ensemble: {
+          kind: c.kind,
+          pianoNotes: c.pianoNotes,
+          otherId: c.otherId,
+          otherNotes: c.otherNotes,
+          firstId: c.firstId,
+          secondId: c.secondId,
+          firstStop: c.firstStop,
+          secondStop: c.secondStop,
+        },
+      },
+    });
+    return rec;
+  });
+}
+
 export function assignSplit(songId: string, testIds: Set<string>): "train" | "test" {
   return testIds.has(songId) ? "test" : "train";
 }
@@ -341,6 +560,7 @@ export function testSongIds(songs: SongEntry[]): Set<string> {
 }
 
 export function buildAllRecords(): V1Record[] {
+  resetF5DropStats();
   const songs = loadPublishableSongs();
   if (songs.length < 20) {
     throw new Error(`publishable shelf has ${songs.length} songs, need >= 20`);
@@ -356,7 +576,10 @@ export function buildAllRecords(): V1Record[] {
     records.push(buildTransposeRecord(song, split));
     records.push(buildTeachingNoteRecord(song, split));
     records.push(buildTeachingCuesRecord(song, split));
+    records.push(...buildHarmonyRecords(song, split));
+    records.push(...buildAcousticRecord(song, split));
   }
+  records.push(...buildEnsembleRecords());
   const trainSongs = songs.filter((s) => !testIds.has(s.id));
   const heldSongs = songs.filter((s) => testIds.has(s.id));
   for (let i = 0; i + 1 < trainSongs.length; i += 2) {
@@ -420,6 +643,54 @@ export function rederiveGold(rec: V1Record): string {
   }
   if (family === "teaching_cues") {
     return String(song.measures.filter((m) => m.teachingNote || m.fingering || m.dynamics).length);
+  }
+  if (family === "harmony") {
+    const h = rec.observation.harmony as { melody: { number: number; rightHand: string }[]; reharmonization: ReharmonizedMeasure[]; key: string };
+    return verifyHarmony(h.melody, h.reharmonization, { key: h.key }).verified ? "verified" : "rejected";
+  }
+  if (family === "acoustic") {
+    const a = rec.observation.acoustic as { kind: "clean" | "sharp_fail" | "late_fail"; notes: { midi: number; name: string; time: number; duration: number }[] };
+    const gold = rederiveF5Gold(a.kind, a.notes);
+    if (gold == null) throw new Error(`F5 untrackable on rederive ${rec.id}`);
+    return gold;
+  }
+  if (family === "ensemble") {
+    const e = rec.observation.ensemble as {
+      kind: string;
+      pianoNotes: number[];
+      otherId: string;
+      otherNotes: number[];
+      firstId: string;
+      secondId: string;
+      firstStop: number;
+      secondStop: number;
+    };
+    const ens = new Ensemble();
+    ens.addInstrument({ id: "piano" });
+    ens.addInstrument({ id: e.otherId });
+    for (const n of e.pianoNotes) ens.noteOn("piano", { note: n, velocity: 90, atSec: 0 });
+    for (const n of e.otherNotes) ens.noteOn(e.otherId, { note: n, velocity: 90, atSec: 0 });
+    if (e.kind === "who_first") {
+      ens.allNotesOff(e.firstId, e.firstStop);
+      ens.allNotesOff(e.secondId, e.secondStop);
+    }
+    const view = ens.view(1.3);
+    if (e.kind === "who_first") {
+      let best: { id: string; t: number } | null = null;
+      for (const inst of view.instruments) {
+        for (const n of inst.recentlyReleased) {
+          const t = n.startedSec + n.heldSec;
+          if (!best || t < best.t) best = { id: inst.id, t };
+        }
+      }
+      return best?.id ?? "";
+    }
+    if (e.kind === "wrong_tone") {
+      const piano = new Set(e.pianoNotes);
+      const other = e.otherNotes.filter((n) => !piano.has(n));
+      return other.length ? e.otherId : "piano";
+    }
+    return e.otherNotes[0] !== e.pianoNotes[0] ? e.otherId : "piano";
   }
   throw new Error(`unknown family ${family}`);
 }

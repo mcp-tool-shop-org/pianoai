@@ -1,0 +1,142 @@
+{
+  "id": "harmony:mozart-k545-mvt1:m69:fail",
+  "schema_version": "jam-actions-v1/1.0.0",
+  "family": "harmony",
+  "provenance": {
+    "source_url": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
+    "source_collected_at": "library-scan",
+    "source_type": "transcribed-by-author",
+    "composition_title": "Piano Sonata No. 16 in C Major, K. 545, I. Allegro",
+    "composer": "Wolfgang Amadeus Mozart",
+    "composition_year": 1,
+    "composition_pd_status_us": "public_domain",
+    "composition_pd_status_eu": "public_domain",
+    "arrangement_creator": null,
+    "arrangement_license": "CC-BY-SA",
+    "arrangement_license_version": null,
+    "arrangement_evidence_url": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
+    "record_verdict": "public",
+    "verdict_reason": "Publishable shelf: classical, ragtime, or folk. clair-de-lune excluded.",
+    "verifier": "v1-builder",
+    "verified_at": "library-scan",
+    "training_use_permitted": true
+  },
+  "scope": {
+    "song_id": "mozart-k545-mvt1",
+    "phrase_window": "full:146",
+    "instrument": "piano",
+    "key": "C major",
+    "tempo_bpm": 137,
+    "time_signature": "4/4",
+    "window_role": "standalone"
+  },
+  "observation": {
+    "thresholds": {
+      "min_pitch_classes": 2
+    },
+    "gold": {
+      "family": "harmony",
+      "answer": "rejected",
+      "engine": "verifyHarmony"
+    },
+    "harmony": {
+      "melody": [
+        {
+          "number": 69,
+          "rightHand": "D4:q C4:q G4:q A#4:q"
+        }
+      ],
+      "reharmonization": [
+        {
+          "measure": 69,
+          "intendedChord": "Csus2",
+          "voicing": "D#3 C#3 G#3 B3"
+        }
+      ],
+      "key": "C major"
+    }
+  },
+  "annotation_target": {
+    "measure_range": [
+      1,
+      146
+    ],
+    "structure": "Sixteen structural regions from the section-lens pass, evenly spaced (mostly 6-14 measures each) in keeping with a piece built from clear, balanced phrases. The exposition spans measures 1-28 and repeats verbatim at measures 29-56 — a 292-interval right-hand span and a 71-interval left-hand span both confirmed as exact, untransposed matches. The development and recapitulation together span measures 57-101 and repeat verbatim at measures 102-146 (a 158-interval left-hand span and a massive 547-interval right-hand span, both exact matches) — together the two repeated halves account for the great majority of the piece's total length. Inside the recapitulation block, the famous scalar right-hand passagework (measures 63-68, restating at 108-113) alternates with the Alberti-bass left hand, and the busiest measures in the piece — 98 and 143, each 40 combined onsets, mirroring each other exactly across the two halves — mark the technical peak both times it occurs.",
+    "key_moments": [
+      "The exposition (measures 1-28) is byte-identical to its repeat at measures 29-56 in both hands, and the development-recapitulation block (measures 57-101) is likewise byte-identical to measures 102-146 — this teaches sonata form's most basic structural lesson directly from the data: both large halves really were meant to be played twice.",
+      "G major (the dominant) is cited more often than C major (the tonic) across the whole piece — 16 windows to 12 — which demonstrates how a Classical-era exposition spends much of its time establishing and confirming the dominant key before a Classical era recapitulation restores the tonic.",
+      "Measures 98 and 143 are the two busiest in the piece, each carrying exactly 40 combined onsets, and each sits at the same position within its own repeated half — proof that Mozart placed the technical peak at a matching structural point both times, not by accident.",
+      "The scalar right-hand passagework at measures 63-68 (which restates identically at measures 108-113) demonstrates even scale technique across an octave and more — a foundational skill this famously pedagogical sonata was written to teach."
+    ],
+    "teaching_goals": [
+      "Learn the exposition (measures 1-28) once and recognize that its repeat at measures 29-56 is genuinely note-for-note — this halves the real learning work despite the score's length.",
+      "Practice the scalar passagework at measures 63-68 (and its identical return at measures 108-113) hands separately first, since even scale technique under the Alberti bass is the core skill this movement teaches.",
+      "Listen for the shift in emphasis from G major (the dominant, 16 windows) toward C major (the tonic, 12 windows) across the piece, and develop the ear to recognize when a Classical-era piece is confirming its home key versus its dominant.",
+      "Build stamina for the densest measures (98 and 143, 40 onsets each) by practicing them slowly first — recognizing that both are the technical peak of their respective repeated half helps target practice time efficiently."
+    ],
+    "style_tips": [
+      "Keep the Alberti bass light and perfectly even under the right hand — listen for the left hand disappearing into the texture while the melody stays in front.",
+      "Use clean, minimal pedal — Classical-era articulation depends on clarity; listen for each note in the scalar passagework at measures 63-68 (and its twin at 108-113) speaking distinctly.",
+      "Play the dominant-leaning material (the G major windows) with a touch more forward energy than the tonic-grounded passages — listen for the harmonic pull toward G resolving satisfyingly when C major returns.",
+      "Shape phrases with an elegant, vocal quality even in fast passagework — listen for the densest measures (98 and 143) staying musical and shaped rather than turning into pure technical display."
+    ],
+    "teaching_notes": [
+      {
+        "measure": 1,
+        "note": "none"
+      }
+    ]
+  },
+  "target_trace": {
+    "task_family": "harmony",
+    "objective": "Answer using tools. Do not guess from the question text.",
+    "session": [
+      {
+        "turn": 1,
+        "role": "user",
+        "content": "Proposed reharmonization of measure 69 of \"Piano Sonata No. 16 in C Major, K. 545, I. Allegro\": [{\"measure\":69,\"intendedChord\":\"Csus2\",\"voicing\":\"D#3 C#3 G#3 B3\"}]\nDoes it clear the harmony verifier?"
+      },
+      {
+        "turn": 2,
+        "role": "assistant",
+        "content": "Running the deterministic harmony verifier.",
+        "tool_calls": [
+          {
+            "tool": "verify_harmony",
+            "arguments": {
+              "songId": "mozart-k545-mvt1",
+              "measures": "69-69",
+              "reharmonization": "[{\"measure\":69,\"intendedChord\":\"Csus2\",\"voicing\":\"D#3 C#3 G#3 B3\"}]",
+              "key": "C major"
+            }
+          }
+        ]
+      },
+      {
+        "turn": 3,
+        "role": "tool",
+        "tool": "verify_harmony",
+        "content": {
+          "reharmonization": "[{\"measure\":69,\"intendedChord\":\"Csus2\",\"voicing\":\"D#3 C#3 G#3 B3\"}]"
+        }
+      },
+      {
+        "turn": 4,
+        "role": "assistant",
+        "content": "rejected"
+      }
+    ]
+  },
+  "eval_metadata": {
+    "split": "train",
+    "split_strategy": "hold out by song_id",
+    "leakage_check": "passed",
+    "eval_eligibility": [
+      "tool_use",
+      "harmony"
+    ],
+    "phrase_continuation_eligible": false,
+    "phrase_continuation_eligible_reason": "standalone tool-use items"
+  },
+  "split": "train"
+}

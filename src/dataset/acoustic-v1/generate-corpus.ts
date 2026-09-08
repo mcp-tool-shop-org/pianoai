@@ -14,6 +14,7 @@ import { v1Records } from "./task.js";
 import { coverageReport, assertCoverageFloors } from "./coverage.js";
 import { loadPublishableSongs } from "./library.js";
 import { V1_SCHEMA_VERSION } from "./schema.js";
+import { f5DropStats } from "./f5-acoustic.js";
 
 function sha256(content: string | Buffer): string {
   return createHash("sha256").update(content).digest("hex");
@@ -49,7 +50,10 @@ export function writeV1Corpus(outDir?: string): { n: number; outDir: string } {
       "utf8",
     );
   }
-  writeFileSync(join(dest, "coverage.json"), JSON.stringify(report, null, 2) + "\n", "utf8");
+  writeFileSync(join(dest, "coverage.json"), JSON.stringify({
+    ...report,
+    f5_drops: { ...f5DropStats },
+  }, null, 2) + "\n", "utf8");
 
   const train = records.filter((r) => r.split === "train").map((r) => r.id);
   const test = records.filter((r) => r.split === "test").map((r) => r.id);

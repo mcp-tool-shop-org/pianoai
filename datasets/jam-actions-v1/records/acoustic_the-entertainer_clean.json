@@ -1,0 +1,207 @@
+{
+  "id": "acoustic:the-entertainer:clean",
+  "schema_version": "jam-actions-v1/1.0.0",
+  "family": "acoustic",
+  "provenance": {
+    "source_url": "library:the-entertainer",
+    "source_collected_at": "library-scan",
+    "source_type": "transcribed-by-author",
+    "composition_title": "The Entertainer",
+    "composer": "Scott Joplin",
+    "composition_year": 1,
+    "composition_pd_status_us": "public_domain",
+    "composition_pd_status_eu": "public_domain",
+    "arrangement_creator": null,
+    "arrangement_license": null,
+    "arrangement_license_version": null,
+    "arrangement_evidence_url": null,
+    "record_verdict": "public",
+    "verdict_reason": "Publishable shelf: classical, ragtime, or folk. clair-de-lune excluded.",
+    "verifier": "v1-builder",
+    "verified_at": "library-scan",
+    "training_use_permitted": true
+  },
+  "scope": {
+    "song_id": "the-entertainer",
+    "phrase_window": "full:152",
+    "instrument": "piano",
+    "key": "C major",
+    "tempo_bpm": 72,
+    "time_signature": "2/4",
+    "window_role": "standalone"
+  },
+  "observation": {
+    "thresholds": {
+      "timing_ms": 40,
+      "pitch_fail_cents": 50,
+      "pitch_warn_cents": 25,
+      "yin_locked_p95_cents": 0.179,
+      "pitch_clearance_cents": 5,
+      "pitch_clearance_multiple": 27.93,
+      "onset_p95_ms": 28.025,
+      "onset_clearance_ms": 38,
+      "onset_clearance_multiple": 1.36
+    },
+    "gold": {
+      "family": "acoustic",
+      "answer": "match",
+      "engine": "YIN+SuperFlux"
+    },
+    "acoustic": {
+      "kind": "clean",
+      "notes": [
+        {
+          "midi": 74,
+          "name": "D5",
+          "time": 0,
+          "duration": 0.45
+        },
+        {
+          "midi": 86,
+          "name": "D6",
+          "time": 0.6,
+          "duration": 0.45
+        },
+        {
+          "midi": 76,
+          "name": "E5",
+          "time": 1.2,
+          "duration": 0.45
+        },
+        {
+          "midi": 88,
+          "name": "E6",
+          "time": 1.7999999999999998,
+          "duration": 0.45
+        },
+        {
+          "midi": 72,
+          "name": "C5",
+          "time": 2.4,
+          "duration": 0.45
+        },
+        {
+          "midi": 84,
+          "name": "C6",
+          "time": 3,
+          "duration": 0.45
+        },
+        {
+          "midi": 69,
+          "name": "A4",
+          "time": 3.6,
+          "duration": 0.45
+        },
+        {
+          "midi": 81,
+          "name": "A5",
+          "time": 4.2,
+          "duration": 0.45
+        }
+      ],
+      "cents_shift": 0,
+      "delay_sec": 0,
+      "target_index": 0
+    }
+  },
+  "annotation_target": {
+    "measure_range": [
+      1,
+      152
+    ],
+    "structure": "Multi-strain march form: Introduction (4 bars) → AA (first strain, C major, 16 bars repeated) → BB (second strain, C major, 16 bars repeated) → A (first strain return, no repeat) → Transition (4 bars modulating to F major) → CC (third strain, F major, 16 bars repeated) → DD (fourth strain, F major, 16 bars repeated). Each strain is a self-contained 16-bar melodic unit with its own character. The modulation to F major (the subdominant) at the C strain follows march convention and provides the lift of a new key after the ear has settled into C. The D strain often serves as the emotional climax — the final, most energetic statement before the piece ends without returning to the opening.",
+    "key_moments": [
+      "The iconic 4-bar introduction and pickup notes into the A strain: the most recognized piano intro in ragtime — a chromatic ascending figure that sets up the syncopated main theme. These few notes tell the listener immediately 'this is ragtime' and demonstrate how a short intro can establish an entire genre identity.",
+      "The A strain's syncopated melody: the right hand consistently anticipates the beat, landing on the 'and' (the eighth note between beats) while the left hand's oom-pah anchors beats 1-2-3-4 without deviation. This is the purest distillation of ragtime rhythm and the first skill to master.",
+      "The B strain contrast: a more lyrical, flowing melody with longer note values, providing relief from the A strain's perky syncopation. This teaches that contrast between strains is structural — each section should have a distinctly different character, like movements of a suite.",
+      "The modulation to F major at the C strain: the key shifts up a fourth, brightening the entire piece. In march form, this modulation traditionally signals the 'trio' — the lyrical heart of the piece. The fresh tonality after 48 bars of C major re-energizes the listener's ear.",
+      "The D strain climax: the final strain is typically the most rhythmically active and exciting, bringing the piece to a decisive, unambiguous ending. In ragtime, unlike pop music, there is no return to the opening theme — the piece is a one-way journey through contrasting territories."
+    ],
+    "teaching_goals": [
+      "Ragtime left-hand pattern (oom-pah): bass note (root or fifth) on beats 1 and 3, chord (triad in close position) on beats 2 and 4. The left hand must be absolutely metronomic — it is the drum kit, the metronome, and the bass player all at once. Any unevenness destroys the groove.",
+      "Right-hand syncopation against a steady pulse: placing melodic notes on the 'and' of beats while the left hand plays ON the beats. This deliberate conflict is what makes ragtime 'ragged' — the hands are in rhythmic tension, and that tension creates energy.",
+      "Multi-strain form navigation (AABBACCDD): understanding how a piece can progress through multiple distinct sections without a traditional verse-chorus structure. Each strain's repeat allows the listener to absorb it; the no-repeat A return provides a brief anchor before the modulation.",
+      "Tempo discipline: playing at Joplin's intended moderate tempo (around 100 BPM, NOT faster) teaches that groove and clarity are more musical than speed. Fast ragtime loses the syncopation — the notes blur into evenness and the magic vanishes.",
+      "Clean, crisp articulation without sustain pedal: ragtime should be played with almost no sustain pedal — each note has a clear beginning and end. This dry, percussive texture comes from ragtime's origins on upright pianos in saloons, where sustain would create mud."
+    ],
+    "style_tips": [
+      "DO NOT play this fast. This is not a suggestion — it is the composer's explicit written instruction. Joplin's rags should be played at a moderate, stately tempo (around 92-104 BPM). Fast ragtime loses the groove and becomes a technical exercise instead of music.",
+      "The left hand is the boss. If your left hand isn't perfectly steady and even, nothing else matters. Practice the oom-pah pattern alone until it's as automatic as walking — then add the right hand on top.",
+      "Right-hand syncopation should feel playful and cheeky, not anxious or frantic. The notes are placed between beats because they're *choosing* to be there, like a dancer who deliberately steps on the offbeat but is in complete control.",
+      "Each strain has its own personality: the A strain is perky and bright, the B strain is smoother and more lyrical, the C strain (in the new key) is expansive, and the D strain is assertive. Bring out these character differences through touch and dynamics.",
+      "No pedal. Or almost none. Ragtime's clarity depends on dry, separated notes. If a note should sustain, hold it with your finger, not the pedal. The sound should be crisp, like a tap dancer on a wooden floor. Save the sustain pedal for Debussy."
+    ],
+    "teaching_notes": [
+      {
+        "measure": 1,
+        "note": "none"
+      }
+    ]
+  },
+  "target_trace": {
+    "task_family": "acoustic",
+    "objective": "Answer using tools. Do not guess from the question text.",
+    "session": [
+      {
+        "turn": 1,
+        "role": "user",
+        "content": "Grade this take of \"The Entertainer\"."
+      },
+      {
+        "turn": 2,
+        "role": "assistant",
+        "content": "Transcribing, then scoring with raw measurements.",
+        "tool_calls": [
+          {
+            "tool": "transcribe_audio",
+            "arguments": {
+              "path": "/acoustic-v1/the-entertainer-clean.wav"
+            }
+          },
+          {
+            "tool": "score_audio_take",
+            "arguments": {
+              "path": "/acoustic-v1/the-entertainer-clean.wav",
+              "song_id": "the-entertainer"
+            }
+          }
+        ]
+      },
+      {
+        "turn": 3,
+        "role": "tool",
+        "tool": "transcribe_audio",
+        "content": {
+          "note_count": 8
+        }
+      },
+      {
+        "turn": 4,
+        "role": "tool",
+        "tool": "score_audio_take",
+        "content": {
+          "f0_hz": 440,
+          "cents_from_target": 0.15252127782635094,
+          "onset_ms": null
+        }
+      },
+      {
+        "turn": 5,
+        "role": "assistant",
+        "content": "match"
+      }
+    ]
+  },
+  "eval_metadata": {
+    "split": "test",
+    "split_strategy": "hold out by song_id",
+    "leakage_check": "passed",
+    "eval_eligibility": [
+      "tool_use",
+      "acoustic"
+    ],
+    "phrase_continuation_eligible": false,
+    "phrase_continuation_eligible_reason": "standalone tool-use items"
+  },
+  "split": "test"
+}

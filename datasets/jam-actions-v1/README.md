@@ -4,8 +4,8 @@ Schema `jam-actions-v1/1.0.0`. Public card is written elsewhere.
 
 ## Size
 
-n=174. Split by song, not by record. Test n=56, so one
-record is 1.79 percentage points
+n=305. Split by song, not by record. Test n=100, so one
+record is 1.00 percentage points
 (v0 test n=36 was 2.8 pp, and the whole LoRA gain sat inside one record).
 Phrases/songs buy that power; we did not add more perturbations per song.
 

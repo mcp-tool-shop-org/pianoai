@@ -1,7 +1,9 @@
 import { describe, it, expect, vi } from "vitest";
 import { defineTask, publishedOwner, assertNoStraddle } from "../experiment/index.js";
 import { v1Records, coverageV1Task } from "./task.js";
-import { rederiveGold, toolSequenceOf } from "./builder.js";
+import { rederiveGold, toolSequenceOf, f5DropStats } from "./builder.js";
+import { F5_PITCH_CLEARANCE_MULTIPLE, F5_ONSET_CLEARANCE_MULTIPLE, F5_THRESHOLDS } from "./f5-acoustic.js";
+import { MEASURED_YIN_LOCKED_P95_CENTS, MEASURED_ONSET_ABS_P95_MS } from "./tracker-error.js";
 import { coverageReport, assertCoverageFloors } from "./coverage.js";
 import { loadPublishableSongs } from "./library.js";
 import { COVERAGE_FLOORS, PROMPT_VISIBLE_PATHS, RECORD_ONLY_PATHS, V1_SCHEMA_VERSION } from "./schema.js";
@@ -47,6 +49,9 @@ describe("v1 coverage floors", () => {
     expect(report.tool_count).toBeGreaterThan(COVERAGE_FLOORS.tools);
     expect(report.song_count).toBeGreaterThan(COVERAGE_FLOORS.songs);
     expect(report.shape_count).toBeGreaterThan(COVERAGE_FLOORS.shapes);
+    expect(COVERAGE_FLOORS.tools).toBe(13);
+    expect(COVERAGE_FLOORS.songs).toBe(24);
+    expect(COVERAGE_FLOORS.shapes).toBe(10);
     expect(report.majority_shape_share).toBeLessThanOrEqual(0.5);
     expect(() => assertCoverageFloors(report)).not.toThrow();
   });
@@ -93,6 +98,55 @@ describe("shapes are counted from traces", () => {
     const records = v1Records();
     const shapes = new Set(records.map(toolSequenceOf));
     expect(shapes.size).toBeGreaterThan(3);
+  });
+});
+
+describe("F1 harmony", () => {
+  it("re-derives the gate and populates both classes", () => {
+    const rows = v1Records().filter((r) => r.family === "harmony");
+    const pass = rows.filter((r) => r.observation.gold.answer === "verified");
+    const fail = rows.filter((r) => r.observation.gold.answer === "rejected");
+    expect(pass.length).toBeGreaterThan(3);
+    expect(fail.length).toBeGreaterThan(3);
+    for (const r of rows) expect(rederiveGold(r)).toBe(r.observation.gold.answer);
+  });
+});
+
+describe("F5 acoustic", () => {
+  it("drops untrackable takes rather than labelling them from the recipe", () => {
+    expect(f5DropStats.attempted).toBeGreaterThan(0);
+    expect(f5DropStats.droppedUntrackable + f5DropStats.droppedClearance + f5DropStats.droppedShortPhrase)
+      .toBeGreaterThanOrEqual(0);
+  });
+
+  it("keeps no untrackable record and clears the stated multiple", () => {
+    const rows = v1Records().filter((r) => r.family === "acoustic");
+    expect(rows.length).toBeGreaterThan(0);
+    expect(F5_THRESHOLDS.pitch_clearance_multiple).toBeCloseTo(F5_PITCH_CLEARANCE_MULTIPLE, 1);
+    expect(F5_THRESHOLDS.onset_clearance_multiple).toBeCloseTo(F5_ONSET_CLEARANCE_MULTIPLE, 1);
+    expect(F5_THRESHOLDS.pitch_clearance_cents).toBeGreaterThan(
+      MEASURED_YIN_LOCKED_P95_CENTS * (F5_THRESHOLDS.pitch_clearance_multiple as number) * 0.99,
+    );
+    expect(F5_THRESHOLDS.onset_clearance_ms).toBeGreaterThan(
+      MEASURED_ONSET_ABS_P95_MS * (F5_THRESHOLDS.onset_clearance_multiple as number) * 0.99,
+    );
+    for (const r of rows) {
+      expect(rederiveGold(r), r.id).toBe(r.observation.gold.answer);
+      const visible = JSON.stringify(r.target_trace);
+      expect(visible).not.toMatch(/pitch_fail_cents|timing_ms/);
+    }
+  });
+});
+
+describe("F6 ensemble", () => {
+  it("serialises no createTapOutput and no live-graph types", () => {
+    const rows = v1Records().filter((r) => r.family === "ensemble");
+    expect(rows.length).toBeGreaterThan(0);
+    for (const r of rows) {
+      const blob = JSON.stringify(r);
+      expect(blob).not.toMatch(/createTapOutput|AudioContext|ScriptProcessor|GainNode|tapBus/);
+      expect(rederiveGold(r)).toBe(r.observation.gold.answer);
+    }
   });
 });
 

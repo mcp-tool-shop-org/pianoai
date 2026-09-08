@@ -1,0 +1,205 @@
+{
+  "id": "acoustic:danny-boy:sharp_fail",
+  "schema_version": "jam-actions-v1/1.0.0",
+  "family": "acoustic",
+  "provenance": {
+    "source_url": "library:danny-boy",
+    "source_collected_at": "library-scan",
+    "source_type": "transcribed-by-author",
+    "composition_title": "Danny Boy",
+    "composer": "Traditional Irish",
+    "composition_year": 1,
+    "composition_pd_status_us": "public_domain",
+    "composition_pd_status_eu": "public_domain",
+    "arrangement_creator": null,
+    "arrangement_license": null,
+    "arrangement_license_version": null,
+    "arrangement_evidence_url": null,
+    "record_verdict": "public",
+    "verdict_reason": "Publishable shelf: classical, ragtime, or folk. clair-de-lune excluded.",
+    "verifier": "v1-builder",
+    "verified_at": "library-scan",
+    "training_use_permitted": true
+  },
+  "scope": {
+    "song_id": "danny-boy",
+    "phrase_window": "full:110",
+    "instrument": "piano",
+    "key": "Eb major",
+    "tempo_bpm": 120,
+    "time_signature": "4/4",
+    "window_role": "standalone"
+  },
+  "observation": {
+    "thresholds": {
+      "timing_ms": 40,
+      "pitch_fail_cents": 50,
+      "pitch_warn_cents": 25,
+      "yin_locked_p95_cents": 0.179,
+      "pitch_clearance_cents": 5,
+      "pitch_clearance_multiple": 27.93,
+      "onset_p95_ms": 28.025,
+      "onset_clearance_ms": 38,
+      "onset_clearance_multiple": 1.36
+    },
+    "gold": {
+      "family": "acoustic",
+      "answer": "pitch_fail",
+      "engine": "YIN+SuperFlux"
+    },
+    "acoustic": {
+      "kind": "sharp_fail",
+      "notes": [
+        {
+          "midi": 62,
+          "name": "D4",
+          "time": 0,
+          "duration": 0.45
+        },
+        {
+          "midi": 60,
+          "name": "C4",
+          "time": 0.6,
+          "duration": 0.45
+        },
+        {
+          "midi": 63,
+          "name": "D#4",
+          "time": 1.2,
+          "duration": 0.45
+        },
+        {
+          "midi": 65,
+          "name": "F4",
+          "time": 1.7999999999999998,
+          "duration": 0.45
+        },
+        {
+          "midi": 67,
+          "name": "G4",
+          "time": 2.4,
+          "duration": 0.45
+        },
+        {
+          "midi": 62,
+          "name": "D4",
+          "time": 3,
+          "duration": 0.45
+        },
+        {
+          "midi": 63,
+          "name": "D#4",
+          "time": 3.6,
+          "duration": 0.45
+        },
+        {
+          "midi": 65,
+          "name": "F4",
+          "time": 4.2,
+          "duration": 0.45
+        }
+      ],
+      "cents_shift": 55,
+      "delay_sec": 0,
+      "target_index": 0
+    }
+  },
+  "annotation_target": {
+    "measure_range": [
+      1,
+      110
+    ],
+    "structure": "A long, gradually building arc rather than a repeating verse structure — only one small near-identical pair was found (measures 3 and 43), meaning this piece is much closer to through-composed than strophic, with almost no literal repetition anywhere in its 110 measures. Both hands open in near-silence (measure 1 is completely silent), stay sparse and spacious through the middle, and then build steadily toward a genuine climax in the final ten measures (100-109), where density and register both peak together before the piece closes quietly on measure 110.",
+    "key_moments": [
+      "Measure 1 opens in complete silence — the melody has to establish itself entirely on its own before anything else joins.",
+      "Measures 100 through 107 contain the piece's busiest material (13-16 onsets each) — the arrangement's climax arrives in the final tenth of the piece, not before.",
+      "The arrangement's highest note anywhere, D7, lands at measure 109 — one measure from the very end. This is the arrangement's own registral ceiling, likely an instrumental flourish rather than a literal vocal line, since D7 sits well above a singable range.",
+      "Measure 110, the final measure, drops to just a single onset — after the climb to measure 109's peak, the piece closes on a single quiet gesture rather than a full chord.",
+      "Outside of the measures 3/43 pairing, no other measure repeats anywhere in 110 bars — treat this piece as continuously developing material, closer to a through-composed art song than a repeated folk strain."
+    ],
+    "teaching_goals": [
+      "Long-breath phrasing: with real space between notes throughout (roughly 11.5 notes per measure), practice sustaining a musical line across wide gaps rather than filling every beat.",
+      "Delayed climax across a long form: the true peak doesn't arrive until measures 100-109 of 110 — build the patience to hold back through nearly the entire piece.",
+      "Upper-register control at the extreme: reaching D7 near the very end requires secure, unstrained high-register technique exactly when fatigue is most likely to show.",
+      "Distinguishing through-composed from strophic form: with almost no repeated measures, recognize that this piece rewards continuous attention rather than pattern-recognition shortcuts."
+    ],
+    "style_tips": [
+      "Let the opening silence and the sparse early measures breathe — this is a piece about restraint before release, not continuous sound.",
+      "Save everything for measures 100-109 — with the true climax landing that close to the very end, any earlier peak will undercut the arrangement's own arc.",
+      "Treat the D7 near the close as an instrumental cry rather than a literal vocal note — let it ring rather than trying to make it sound sung.",
+      "Close on measure 110's single quiet gesture with real tenderness — after the climb to D7, the ending should feel like release, not another effort."
+    ],
+    "teaching_notes": [
+      {
+        "measure": 1,
+        "note": "none"
+      }
+    ]
+  },
+  "target_trace": {
+    "task_family": "acoustic",
+    "objective": "Answer using tools. Do not guess from the question text.",
+    "session": [
+      {
+        "turn": 1,
+        "role": "user",
+        "content": "Grade this take of \"Danny Boy\"."
+      },
+      {
+        "turn": 2,
+        "role": "assistant",
+        "content": "Transcribing, then scoring with raw measurements.",
+        "tool_calls": [
+          {
+            "tool": "transcribe_audio",
+            "arguments": {
+              "path": "/acoustic-v1/danny-boy-sharp_fail.wav"
+            }
+          },
+          {
+            "tool": "score_audio_take",
+            "arguments": {
+              "path": "/acoustic-v1/danny-boy-sharp_fail.wav",
+              "song_id": "danny-boy"
+            }
+          }
+        ]
+      },
+      {
+        "turn": 3,
+        "role": "tool",
+        "tool": "transcribe_audio",
+        "content": {
+          "note_count": 8
+        }
+      },
+      {
+        "turn": 4,
+        "role": "tool",
+        "tool": "score_audio_take",
+        "content": {
+          "f0_hz": 440,
+          "cents_from_target": 55.0133006649505,
+          "onset_ms": null
+        }
+      },
+      {
+        "turn": 5,
+        "role": "assistant",
+        "content": "pitch_fail"
+      }
+    ]
+  },
+  "eval_metadata": {
+    "split": "train",
+    "split_strategy": "hold out by song_id",
+    "leakage_check": "passed",
+    "eval_eligibility": [
+      "tool_use",
+      "acoustic"
+    ],
+    "phrase_continuation_eligible": false,
+    "phrase_continuation_eligible_reason": "standalone tool-use items"
+  },
+  "split": "train"
+}

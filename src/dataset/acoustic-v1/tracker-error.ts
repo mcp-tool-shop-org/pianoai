@@ -43,7 +43,22 @@ export const V1_PITCH_CLEARANCE_CENTS = 5;
  * and the observed max (37 ms), so a worst-case early detection cannot
  * walk a fail across the 40 ms gate.
  */
+// 38 ms of clearance beyond the 40 ms gate, so a late_fail take is rendered at
+// 78 ms. That was justified as 1.36x the 28 ms abs-p95 onset error measured on
+// v0, and 1.36x a p95 would be thin if the error were really that spread out.
+//
+// Measured on the takes this construction actually keeps, it is not. All 27
+// late_fail records measure 59.9 ms — min, median, p95 and max identical, zero
+// variance. The detector is systematically ~18 ms early here and nothing else,
+// so the real margin is 59.9 against a 40 ms gate: 19.9 ms clear of a constant,
+// known bias rather than 1.36 sigma of noise.
+//
+// Safer than the stated reason, but the stated reason came from a different
+// construction. Recorded so the next person sizing this band uses the number
+// that governs it.
 export const V1_ONSET_CLEARANCE_MS = 38;
+/** Measured onset deviation on every kept late_fail take. Zero variance. */
+export const MEASURED_F5_LATE_ONSET_MS = 59.9;
 
 export const V1_PITCH_WARN_CENTS = 25;
 export const V1_PITCH_FAIL_CENTS = 50;

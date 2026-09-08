@@ -1,0 +1,143 @@
+{
+  "id": "harmony:danny-boy:m31:fail",
+  "schema_version": "jam-actions-v1/1.0.0",
+  "family": "harmony",
+  "provenance": {
+    "source_url": "library:danny-boy",
+    "source_collected_at": "library-scan",
+    "source_type": "transcribed-by-author",
+    "composition_title": "Danny Boy",
+    "composer": "Traditional Irish",
+    "composition_year": 1,
+    "composition_pd_status_us": "public_domain",
+    "composition_pd_status_eu": "public_domain",
+    "arrangement_creator": null,
+    "arrangement_license": null,
+    "arrangement_license_version": null,
+    "arrangement_evidence_url": null,
+    "record_verdict": "public",
+    "verdict_reason": "Publishable shelf: classical, ragtime, or folk. clair-de-lune excluded.",
+    "verifier": "v1-builder",
+    "verified_at": "library-scan",
+    "training_use_permitted": true
+  },
+  "scope": {
+    "song_id": "danny-boy",
+    "phrase_window": "full:110",
+    "instrument": "piano",
+    "key": "Eb major",
+    "tempo_bpm": 120,
+    "time_signature": "4/4",
+    "window_role": "standalone"
+  },
+  "observation": {
+    "thresholds": {
+      "min_pitch_classes": 2
+    },
+    "gold": {
+      "family": "harmony",
+      "answer": "rejected",
+      "engine": "verifyHarmony"
+    },
+    "harmony": {
+      "melody": [
+        {
+          "number": 31,
+          "rightHand": "E3:q E4:q G#4:q B3:q G#4:q B4:q"
+        }
+      ],
+      "reharmonization": [
+        {
+          "measure": 31,
+          "intendedChord": "E",
+          "voicing": "F2 F3 A3 C3 A3 C4"
+        }
+      ],
+      "key": "Eb major"
+    }
+  },
+  "annotation_target": {
+    "measure_range": [
+      1,
+      110
+    ],
+    "structure": "A long, gradually building arc rather than a repeating verse structure — only one small near-identical pair was found (measures 3 and 43), meaning this piece is much closer to through-composed than strophic, with almost no literal repetition anywhere in its 110 measures. Both hands open in near-silence (measure 1 is completely silent), stay sparse and spacious through the middle, and then build steadily toward a genuine climax in the final ten measures (100-109), where density and register both peak together before the piece closes quietly on measure 110.",
+    "key_moments": [
+      "Measure 1 opens in complete silence — the melody has to establish itself entirely on its own before anything else joins.",
+      "Measures 100 through 107 contain the piece's busiest material (13-16 onsets each) — the arrangement's climax arrives in the final tenth of the piece, not before.",
+      "The arrangement's highest note anywhere, D7, lands at measure 109 — one measure from the very end. This is the arrangement's own registral ceiling, likely an instrumental flourish rather than a literal vocal line, since D7 sits well above a singable range.",
+      "Measure 110, the final measure, drops to just a single onset — after the climb to measure 109's peak, the piece closes on a single quiet gesture rather than a full chord.",
+      "Outside of the measures 3/43 pairing, no other measure repeats anywhere in 110 bars — treat this piece as continuously developing material, closer to a through-composed art song than a repeated folk strain."
+    ],
+    "teaching_goals": [
+      "Long-breath phrasing: with real space between notes throughout (roughly 11.5 notes per measure), practice sustaining a musical line across wide gaps rather than filling every beat.",
+      "Delayed climax across a long form: the true peak doesn't arrive until measures 100-109 of 110 — build the patience to hold back through nearly the entire piece.",
+      "Upper-register control at the extreme: reaching D7 near the very end requires secure, unstrained high-register technique exactly when fatigue is most likely to show.",
+      "Distinguishing through-composed from strophic form: with almost no repeated measures, recognize that this piece rewards continuous attention rather than pattern-recognition shortcuts."
+    ],
+    "style_tips": [
+      "Let the opening silence and the sparse early measures breathe — this is a piece about restraint before release, not continuous sound.",
+      "Save everything for measures 100-109 — with the true climax landing that close to the very end, any earlier peak will undercut the arrangement's own arc.",
+      "Treat the D7 near the close as an instrumental cry rather than a literal vocal note — let it ring rather than trying to make it sound sung.",
+      "Close on measure 110's single quiet gesture with real tenderness — after the climb to D7, the ending should feel like release, not another effort."
+    ],
+    "teaching_notes": [
+      {
+        "measure": 1,
+        "note": "none"
+      }
+    ]
+  },
+  "target_trace": {
+    "task_family": "harmony",
+    "objective": "Answer using tools. Do not guess from the question text.",
+    "session": [
+      {
+        "turn": 1,
+        "role": "user",
+        "content": "Proposed reharmonization of measure 31 of \"Danny Boy\": [{\"measure\":31,\"intendedChord\":\"E\",\"voicing\":\"F2 F3 A3 C3 A3 C4\"}]\nDoes it clear the harmony verifier?"
+      },
+      {
+        "turn": 2,
+        "role": "assistant",
+        "content": "Running the deterministic harmony verifier.",
+        "tool_calls": [
+          {
+            "tool": "verify_harmony",
+            "arguments": {
+              "songId": "danny-boy",
+              "measures": "31-31",
+              "reharmonization": "[{\"measure\":31,\"intendedChord\":\"E\",\"voicing\":\"F2 F3 A3 C3 A3 C4\"}]",
+              "key": "Eb major"
+            }
+          }
+        ]
+      },
+      {
+        "turn": 3,
+        "role": "tool",
+        "tool": "verify_harmony",
+        "content": {
+          "reharmonization": "[{\"measure\":31,\"intendedChord\":\"E\",\"voicing\":\"F2 F3 A3 C3 A3 C4\"}]"
+        }
+      },
+      {
+        "turn": 4,
+        "role": "assistant",
+        "content": "rejected"
+      }
+    ]
+  },
+  "eval_metadata": {
+    "split": "train",
+    "split_strategy": "hold out by song_id",
+    "leakage_check": "passed",
+    "eval_eligibility": [
+      "tool_use",
+      "harmony"
+    ],
+    "phrase_continuation_eligible": false,
+    "phrase_continuation_eligible_reason": "standalone tool-use items"
+  },
+  "split": "train"
+}
