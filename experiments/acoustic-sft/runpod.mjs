@@ -28,13 +28,17 @@
 // Usage:
 //   node runpod.mjs verify                 # read-only preflight, spends nothing
 //   node runpod.mjs up                     # deploy + poll to SSH-ready
+//   node runpod.mjs sync                   # push data + scripts to the pod
+//   node runpod.mjs fetch                  # pull the trained adapters back
 //   node runpod.mjs list                   # what is running (and billing)
 //   node runpod.mjs down <podId|--all>     # the compensator
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { readFileSync, existsSync, writeFileSync } from "node:fs";
+import { readFileSync, existsSync, writeFileSync, mkdirSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { homedir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const BASE = "https://rest.runpod.io/v1";
 const KEY = process.env.RUNPOD_API_KEY;
@@ -239,10 +243,87 @@ async function cmdDown(arg) {
   console.log(n ? `\nWARNING: ${n} pod(s) STILL BILLING.` : "\nNothing is billing.");
 }
 
+// ─── sync / fetch ────────────────────────────────────────────────────────────
+//
+// The pod is billing while you assemble the run by hand, so assembling it by
+// hand is the wrong shape. These two read the endpoint the deploy already wrote
+// and move exactly the files the bootstrap expects, nothing else.
+//
+// Deliberately NOT the whole repo: the pod needs 72 training examples, a tool
+// catalog, a config and two scripts. Rsyncing a repo with node_modules and a
+// 115-file dataset onto a billing host is minutes of transfer for nothing.
+
+const WORK = "/workspace/acoustic-sft";
+
+function endpoint() {
+  need(existsSync(STATE_PATH), `no pod state at ${STATE_PATH}. Run \`up\` first.`);
+  const s = JSON.parse(readFileSync(STATE_PATH, "utf8"));
+  need(s.publicIp && s.sshPort, "pod state has no SSH endpoint yet — the deploy did not reach SSH-ready.");
+  return s;
+}
+
+function sh(cmd, args) {
+  const r = spawnSync(cmd, args, { stdio: "inherit" });
+  if (r.error) throw new Error(`${cmd} failed to start: ${r.error.message}`);
+  if (r.status !== 0) throw new Error(`${cmd} exited ${r.status}`);
+}
+
+/** The files the pod actually needs, as [localPath, remoteRelativePath]. */
+function payload() {
+  const exp = dirname(fileURLToPath(import.meta.url));
+  const repo = join(exp, "..", "..");
+  return [
+    [join(exp, "data", "sft-train.jsonl"), "data/sft-train.jsonl"],
+    [join(exp, "data", "sft-test.jsonl"), "data/sft-test.jsonl"],
+    [join(exp, "lora-config.json"), "lora-config.json"],
+    [join(exp, "scripts", "train_acoustic_sft.py"), "scripts/train_acoustic_sft.py"],
+    [join(exp, "scripts", "pod-bootstrap.sh"), "scripts/pod-bootstrap.sh"],
+    [join(repo, "src", "dataset", "tool-schemas.json"), "tool-schemas.json"],
+  ];
+}
+
+async function cmdSync() {
+  const { publicIp, sshPort } = endpoint();
+  const key = PUBKEY_PATH.replace(/\.pub$/, "");
+  const files = payload();
+
+  for (const [local] of files) {
+    need(existsSync(local), `missing locally: ${local}`);
+  }
+
+  const sshArgs = ["-p", String(sshPort), "-i", key, "-o", "StrictHostKeyChecking=accept-new"];
+  console.log(`Syncing ${files.length} files to ${publicIp}:${WORK}`);
+  sh("ssh", [...sshArgs, `root@${publicIp}`, `mkdir -p ${WORK}/data ${WORK}/scripts ${WORK}/runs`]);
+
+  for (const [local, remote] of files) {
+    sh("scp", ["-P", String(sshPort), "-i", key, "-o", "StrictHostKeyChecking=accept-new",
+      local, `root@${publicIp}:${WORK}/${remote}`]);
+    console.log(`  ${remote}`);
+  }
+
+  console.log(`\nOn the pod, cheapest check first:`);
+  console.log(`  ssh root@${publicIp} -p ${sshPort} -i ${key}`);
+  console.log(`  bash ${WORK}/scripts/pod-bootstrap.sh dry`);
+}
+
+async function cmdFetch() {
+  const { publicIp, sshPort } = endpoint();
+  const key = PUBKEY_PATH.replace(/\.pub$/, "");
+  const exp = dirname(fileURLToPath(import.meta.url));
+  const dest = join(exp, "runs");
+  mkdirSync(dest, { recursive: true });
+
+  console.log(`Pulling ${WORK}/runs -> ${dest}`);
+  sh("scp", ["-r", "-P", String(sshPort), "-i", key, "-o", "StrictHostKeyChecking=accept-new",
+    `root@${publicIp}:${WORK}/runs/.`, dest]);
+  console.log(`\nAdapters are local. The pod is STILL BILLING — tear it down now:`);
+  console.log(`  node runpod.mjs down --all`);
+}
+
 const [cmd, arg] = process.argv.slice(2);
-const table = { verify: cmdVerify, up: cmdUp, list: cmdList, down: () => cmdDown(arg) };
+const table = { verify: cmdVerify, up: cmdUp, sync: cmdSync, fetch: cmdFetch, list: cmdList, down: () => cmdDown(arg) };
 if (!table[cmd]) {
-  console.log("usage: node runpod.mjs <verify|up|list|down <podId|--all>>");
+  console.log("usage: node runpod.mjs <verify|up|sync|fetch|list|down <podId|--all>>");
   process.exit(1);
 }
 table[cmd]().catch((err) => {
