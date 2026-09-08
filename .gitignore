@@ -44,5 +44,9 @@ __pycache__/
 # versions, GPU). What DOES get committed from a run is run-config.json and the
 # prediction JSONLs: kilobytes, and the only part anyone needs to check a claim.
 # Publish adapters to a Hugging Face model repo, the way jam-ft-v1 was.
-experiments/**/runs/*/epoch*/
-experiments/**/runs/*/hf-out/
+# Any depth under runs/: the second v1 run landed at runs/v20/seed13/epoch3/,
+# one level deeper than the first, and the single-star pattern would have let
+# 376 MB of adapters into a commit. Checked with git add -n before staging;
+# that check is why this line exists.
+experiments/**/runs/**/epoch*/
+experiments/**/runs/**/hf-out/
