@@ -6,6 +6,12 @@ import { buildAllRecords, targetIndexSeeds } from "./generate-corpus.js";
 import { toSftLine } from "../../../experiments/acoustic-sft/format-sft.js";
 import { trivialBaselines } from "../../../experiments/acoustic-sft/eval.js";
 
+// Each of these builds the whole 108-record corpus, which renders audio and runs the
+// real analysis code. 1407 ms on the rig; CI coverage on the slower matrix cell
+// overran vitest's 5 s default in the sibling eval test. Same budget here rather
+// than waiting for the same flake.
+const BUILD_BUDGET_MS = 30_000;
+
 describe("4-note reductions", () => {
   it("loads three distinct library phrases and never clair-de-lune", () => {
     expect(PHRASE_SPECS).toHaveLength(3);
@@ -52,7 +58,7 @@ describe("108-record phrase split", () => {
       expect(n.filter((r) => r.observation.perturbation.kind === "silence")).toHaveLength(4);
     }
     expect(PERTURBATION_KINDS).toHaveLength(9);
-  });
+  }, BUILD_BUDGET_MS);
 });
 
 describe("SFT formatter holdout", () => {
@@ -62,7 +68,7 @@ describe("SFT formatter holdout", () => {
     expect(train).toHaveLength(72);
     expect(train.every((l) => l.song_id !== TEST_SONG_ID)).toBe(true);
     expect(train.every((l) => l.messages[0]?.role === "system")).toBe(true);
-  });
+  }, BUILD_BUDGET_MS);
 });
 
 describe("eval baselines", () => {
@@ -71,5 +77,5 @@ describe("eval baselines", () => {
     const b = trivialBaselines(records);
     expect(b.uniform).toBeCloseTo(1 / 9, 10);
     expect(b.majority).toBeCloseTo(1 / 9, 10);
-  });
+  }, BUILD_BUDGET_MS);
 });
