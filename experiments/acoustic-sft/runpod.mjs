@@ -306,6 +306,7 @@ function payload() {
     [join(exp, "data", "sft-test.jsonl"), "data/sft-test.jsonl"],
     [join(exp, "lora-config.json"), "lora-config.json"],
     [join(exp, "scripts", "train_acoustic_sft.py"), "scripts/train_acoustic_sft.py"],
+    [join(exp, "scripts", "predict_acoustic.py"), "scripts/predict_acoustic.py"],
     [join(exp, "scripts", "pod-bootstrap.sh"), "scripts/pod-bootstrap.sh"],
     [join(repo, "src", "dataset", "tool-schemas.json"), "tool-schemas.json"],
   ];
