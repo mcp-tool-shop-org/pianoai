@@ -23,10 +23,14 @@
 //   render              spectrogram → PNG bytes (tier 3, orientation only)
 //   fixtures            synthetic generators for tests and later goldens
 //   stream              incremental ring-buffer analyser (live path; reuses offline)
+//   ensemble            live intent + acoustic view, per instrument
+//   tap                 ScriptProcessor fan-out from a dedicated tap bus
+//   bridge              PlaybackController events → Ensemble (audio clock)
 //
-// Everything here is pure and synchronous. Nothing reads a file, touches the
-// network, or depends on Web Audio, so the same code runs in Node and in the
-// cockpit and produces identical numbers in both.
+// The inspector stack (fft through fixtures) is pure and synchronous: no
+// files, no network, no Web Audio. stream and ensemble stay pure DSP.
+// tap and bridge are the live-graph layer — they take a node and a
+// controller; they never create an AudioContext.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export { Fft, isPowerOfTwo, fftFrequencies } from "./fft.js";
@@ -183,3 +187,16 @@ export {
   type InstrumentView,
   type EnsembleView,
 } from "./ensemble.js";
+
+export {
+  attachTap,
+  TAP_BUFFER_SIZE,
+  type AttachTapOptions,
+  type TapHandle,
+} from "./tap.js";
+
+export {
+  subscribeEnsemble,
+  audioClockSeconds,
+  type BridgeOptions,
+} from "./bridge.js";

@@ -308,6 +308,13 @@ export interface VmpkConnector {
 
   /** Play a single MidiNote (note-on, wait, note-off). */
   playNote(note: MidiNote): Promise<void>;
+
+  /**
+   * Optional dedicated tap bus. Observers connect here, never to the engine
+   * master, so a tap cannot silence the instrument. Absent on connectors
+   * that have no audio graph.
+   */
+  createTapOutput?(): unknown;
 }
 
 // ─── Recording Types ────────────────────────────────────────────────────────

@@ -111,6 +111,9 @@ import { createSingOnMidiHook } from "./teaching/sing-on-midi.js";
 import { createMidiFeedbackHook } from "./teaching/midi-feedback.js";
 import { createLiveMidiFeedbackHook } from "./teaching/live-midi-feedback.js";
 import { scorePerformance, flattenSongToExpected, type PerformanceResult } from "./score-performance.js";
+import { Ensemble } from "./audio/ensemble.js";
+import { subscribeEnsemble } from "./audio/bridge.js";
+import { getSharedAudioContext } from "./audio-shared.js";
 import {
   decodeWav,
   detectOnsets,
@@ -1318,9 +1321,25 @@ registerTool(
         const controller = new PlaybackController(connector, parsed);
         activeController = controller;
 
+        // Stand up the live ensemble for this performance. The bridge reads the
+        // controller's own note events, so what `ensemble_now` reports is what
+        // was SENT rather than anything inferred from audio. It is torn down on
+        // the same paths the controller is, so a finished song does not leave
+        // notes hanging on forever.
+        const ensemble = new Ensemble();
+        ensemble.addInstrument({ id: "piano", label: "Piano" });
+        const unsubscribeEnsemble = subscribeEnsemble(ensemble, controller, {
+          instrumentId: "piano",
+        });
+        setLiveEnsemble(ensemble);
+
         const midiPlayStart = Date.now();
         const playPromise = controller.play({ speed: speed ?? 1.0, teachingHook });
         playPromise
+          .finally(() => {
+            unsubscribeEnsemble();
+            setLiveEnsemble(null);
+          })
           .then(() => {
             const elapsed = Math.round((Date.now() - midiPlayStart) / 1000);
             lastCompletedSession = {
@@ -3092,6 +3111,108 @@ registerTool(
         },
       ],
     };
+  },
+);
+
+// ─── Tool: the live ensemble ───────────────────────────────────────────────
+//
+// What every instrument is doing WHILE it plays, as opposed to grading a file
+// afterwards. Two channels, and the tool text is explicit about which is which
+// because a reader who confuses them will trust the wrong number: the notes are
+// what we SENT (exact), any acoustic reading beside them is what came OUT
+// (measured, and lagging).
+
+/** The live ensemble, populated by the playback bridge. Null until a song plays. */
+let liveEnsemble: Ensemble | null = null;
+
+/** Clock for the ensemble view. Audio clock when a context exists. */
+function ensembleNowSec(): number {
+  const ctx = getSharedAudioContext();
+  return ctx && typeof ctx.currentTime === "number"
+    ? ctx.currentTime
+    : Date.now() / 1000;
+}
+
+/** Called by the playback path when a song starts, so the tool has something to read. */
+export function setLiveEnsemble(e: Ensemble | null): void {
+  liveEnsemble = e;
+}
+
+registerTool(
+  "ensemble_now",
+  "Ask what every instrument is playing RIGHT NOW, mid-performance — which notes each one is holding, how long it has held them, and the combined chord across the whole ensemble. This is the live counterpart to score_audio_take, which grades a finished recording: use this one while the music is still going. The notes come from the events sent to each engine, so for anything this server plays they are exact rather than estimated, and a chord is reported as the chord it is rather than guessed from audio. Where an instrument has an acoustic tap attached, its measured signal is reported alongside as verification, which is how you catch a voice drifting off pitch or an engine that has gone silent while still being sent notes.",
+  {},
+  async () => {
+    if (!liveEnsemble) {
+      return {
+        content: [{
+          type: "text" as const,
+          text:
+            "Nothing is playing, so there is no ensemble to look at.\n\n" +
+            "Start a song with `play_song` and ask again while it runs. To grade " +
+            "a recording that has already finished, use `score_audio_take` instead.",
+        }],
+      };
+    }
+
+    const view = liveEnsemble.view(ensembleNowSec());
+
+    const lines: string[] = ["# The ensemble, right now", ""];
+
+    if (view.chord.length === 0) {
+      lines.push("**Silence.** No instrument is holding a note.");
+    } else {
+      lines.push(
+        `**Sounding together:** ${view.chordNames.join(" ")}` +
+        (view.chord.length > 1 ? `  (${view.chord.length} notes)` : ""),
+      );
+    }
+
+    for (const inst of view.instruments) {
+      lines.push("", `## ${inst.label}`);
+
+      if (inst.sounding.length === 0) {
+        const recent = inst.recentlyReleased[0];
+        lines.push(
+          recent
+            ? `Nothing held. Last released ${recent.name}, held ${recent.heldSec.toFixed(2)} s.`
+            : `Nothing held.` + (inst.noteOnCount === 0 ? " Nothing has been sent to it yet." : ""),
+        );
+      } else {
+        lines.push(`Holding ${inst.sounding.length}:`);
+        for (const n of inst.sounding) {
+          lines.push(
+            `- **${n.name}** velocity ${n.velocity}, held ${n.heldSec.toFixed(2)} s`,
+          );
+        }
+      }
+
+      if (inst.acoustic) {
+        const a = inst.acoustic;
+        const heard = a.latestPitch?.f0Hz != null && a.latestPitch.midi != null
+          ? `${midiToNoteName(Math.round(a.latestPitch.midi))}`
+          : "nothing pitched";
+        lines.push(
+          `Tap: measures ${heard}, ${a.onsetLatencySec.toFixed(3)} s behind the moment.`,
+        );
+        if (inst.disagreement) {
+          lines.push(`**Worth a look:** ${inst.disagreement}`);
+        }
+      }
+    }
+
+    lines.push(
+      "",
+      "---",
+      "The notes above are what each engine was told to play, so for anything this " +
+      "server performs they are exact, not inferred. A tap reading beside them is a " +
+      "measurement of what actually came out and it lags by the amount shown; when " +
+      "the two disagree that is a fact about the render, not a correction to the notes.",
+    );
+
+    if (view.caveat) lines.push("", view.caveat);
+
+    return { content: [{ type: "text" as const, text: lines.join("\n") }] };
   },
 );
 
