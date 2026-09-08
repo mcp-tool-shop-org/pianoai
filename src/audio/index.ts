@@ -22,6 +22,7 @@
 //   transcribe          monophonic notes → MidiNoteEvent[] (lossy at the convert)
 //   render              spectrogram → PNG bytes (tier 3, orientation only)
 //   fixtures            synthetic generators for tests and later goldens
+//   stream              incremental ring-buffer analyser (live path; reuses offline)
 //
 // Everything here is pure and synchronous. Nothing reads a file, touches the
 // network, or depends on Web Audio, so the same code runs in Node and in the
@@ -149,6 +150,18 @@ export {
 } from "./render.js";
 
 export {
+  AudioStream,
+  DEFAULT_HOP_LENGTH,
+  DEFAULT_WINDOW_SEC,
+  DEFAULT_N_FFT,
+  DEFAULT_POST_AVG_SEC,
+  EDGE_POLICY_WITHHOLD,
+  type StreamOptions,
+  type StreamSnapshot,
+  type EdgePolicy,
+} from "./stream.js";
+
+export {
   sine,
   harmonicStack,
   clickTrain,
@@ -160,3 +173,13 @@ export {
   type ChirpOptions,
   type VibratoNoteOptions,
 } from "./fixtures.js";
+
+export {
+  Ensemble,
+  RELEASE_LOOKBACK_SEC,
+  type InstrumentSpec,
+  type NoteOnInput,
+  type SoundingNote,
+  type InstrumentView,
+  type EnsembleView,
+} from "./ensemble.js";
