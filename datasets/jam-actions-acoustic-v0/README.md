@@ -1,6 +1,43 @@
+---
+license: cc-by-sa-3.0
+language:
+  - en
+language_creators:
+  - expert-generated
+  - machine-generated
+annotations_creators:
+  - machine-generated
+multilinguality:
+  - monolingual
+source_datasets:
+  - original
+pretty_name: "AI Jam Sessions — Acoustic Tool-Use Traces v0"
+pretty_description: "108 constructible-gold records of grounded MCP tool use over monophonic AUDIO analysis — the counterpart to jam-actions-v0's symbolic traces. Each record pairs a deliberately perturbed synthetic rendering of a public-domain phrase with the verdict the analysis tools actually return, so every label is checked against the instrument rather than only against itself. Held out by phrase. Released under CC-BY-SA-3.0-DE."
+size_categories:
+  - n<1K
+task_categories:
+  - text-generation
+  - audio-classification
+  - other
+tags:
+  - music
+  - audio
+  - audio-analysis
+  - mcp
+  - tool-use
+  - pitch-detection
+  - onset-detection
+  - piano
+  - classical
+configs:
+  - config_name: default
+    data_files:
+      - split: train
+        path: records.jsonl
+---
 # Dataset Card for jam-actions-acoustic-v0
 
-**Version:** 1.0.1
+**Version:** 1.0.2
 Published at [mcp-tool-shop/jam-actions-acoustic-v0](https://huggingface.co/datasets/mcp-tool-shop/jam-actions-acoustic-v0). No DOI.
 
 ## Summary
