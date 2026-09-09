@@ -12,14 +12,18 @@
 //   pnpm exec tsx experiments/coverage-v1-sft/format-sft.ts
 
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { formatRecords, type SftSource } from "../../src/dataset/experiment/format-sft.js";
 import type { V1Record } from "../../src/dataset/acoustic-v1/schema.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const CORPUS = join(HERE, "..", "..", "datasets", "jam-actions-v1", "records.jsonl");
-const OUT = join(HERE, "data");
+// V1_RECORDS / V1_OUT let a scratch corpus (e.g. the bare-label variant) be formatted
+// without touching data/. Defaults are the committed corpus and data/.
+const CORPUS = process.env.V1_RECORDS
+  ? resolve(process.env.V1_RECORDS)
+  : join(HERE, "..", "..", "datasets", "jam-actions-v1", "records.jsonl");
+const OUT = process.env.V1_OUT ? resolve(process.env.V1_OUT) : join(HERE, "data");
 
 const SYSTEM_TEXT =
   "You are operating AI Jam Sessions, a music education platform. Use the tools " +
