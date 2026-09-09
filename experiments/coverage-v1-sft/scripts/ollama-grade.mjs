@@ -17,7 +17,9 @@
 //
 // Writes {id, family, answer, raw} jsonl, scored by score_v1.mjs.
 
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { mkdtempSync, readFileSync, writeFileSync, mkdirSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -37,9 +39,24 @@ const LISTEN_TOOLS = new Set([
 function usage(msg) {
   if (msg) process.stderr.write(msg + "\n");
   process.stderr.write(
-    "usage: node ollama-grade.mjs <sft-test.jsonl> <model> --out <preds.jsonl> [--host URL] [--tools full|listen] [--tools-file path] [--num-predict N]\n",
+    "usage: node ollama-grade.mjs <sft-test.jsonl> <model> --out <preds.jsonl> [--host URL] [--tools full|listen] [--tools-file path] [--num-predict N] [--options k=v ...] [--raw] [--python path] [--hf-model id]\n",
   );
   process.exit(1);
+}
+
+function parseOptionsFlag(raw, dest) {
+  for (const part of String(raw).split(",")) {
+    const p = part.trim();
+    if (!p) continue;
+    const eq = p.indexOf("=");
+    if (eq < 1) usage(`--options expected k=v (got ${JSON.stringify(p)})`);
+    const k = p.slice(0, eq);
+    const v = p.slice(eq + 1);
+    if (v === "true") dest[k] = true;
+    else if (v === "false") dest[k] = false;
+    else if (v !== "" && Number.isFinite(Number(v))) dest[k] = Number(v);
+    else dest[k] = v;
+  }
 }
 
 function parseArgs(argv) {
@@ -51,6 +68,10 @@ function parseArgs(argv) {
     tools: "full",
     toolsFile: DEFAULT_TOOLS,
     numPredict: 128,
+    extraOptions: {},
+    raw: false,
+    python: process.env.OLLAMA_GRADE_PYTHON || join(EXP, ".venv-gguf", "Scripts", "python.exe"),
+    hfModel: "Qwen/Qwen2.5-7B-Instruct",
   };
   const rest = [];
   for (let i = 0; i < argv.length; i++) {
@@ -60,6 +81,10 @@ function parseArgs(argv) {
     else if (a === "--tools") out.tools = argv[++i];
     else if (a === "--tools-file") out.toolsFile = argv[++i];
     else if (a === "--num-predict") out.numPredict = Number(argv[++i]);
+    else if (a === "--options") parseOptionsFlag(argv[++i], out.extraOptions);
+    else if (a === "--raw") out.raw = true;
+    else if (a === "--python") out.python = argv[++i];
+    else if (a === "--hf-model") out.hfModel = argv[++i];
     else if (a.startsWith("-")) usage(`unknown flag ${a}`);
     else rest.push(a);
   }
@@ -73,7 +98,7 @@ function parseArgs(argv) {
 }
 
 /** Port of train_v1_sft.py load_tools. */
-function loadTools(toolsPath, subset) {
+export function loadTools(toolsPath, subset) {
   const catalog = JSON.parse(readFileSync(toolsPath, "utf8"));
   let tools = catalog.tools;
   if (subset === "listen") {
@@ -92,7 +117,7 @@ function loadTools(toolsPath, subset) {
 }
 
 /** Port of train_v1_sft.py to_template_messages. */
-function toTemplateMessages(messages) {
+export function toTemplateMessages(messages) {
   const out = [];
   for (const m of messages) {
     if (m.role === "assistant" && m.tool_calls) {
@@ -114,7 +139,7 @@ function toTemplateMessages(messages) {
 }
 
 /** Map template messages onto Ollama /api/chat JSON. */
-function toOllamaMessages(tmpl) {
+export function toOllamaMessages(tmpl) {
   return tmpl.map((m) => {
     if (m.role === "assistant" && m.tool_calls) {
       return {
@@ -152,17 +177,46 @@ function extractAnswer(text) {
   return line;
 }
 
-async function chat(host, body) {
-  const res = await fetch(`${host}/api/chat`, {
+async function postJson(host, path, body) {
+  const res = await fetch(`${host}${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
   const raw = await res.text();
   if (!res.ok) {
-    throw new Error(`POST ${host}/api/chat HTTP ${res.status}: ${raw.slice(0, 400)}`);
+    throw new Error(`POST ${host}${path} HTTP ${res.status}: ${raw.slice(0, 400)}`);
   }
   return JSON.parse(raw);
+}
+
+function decodeOptions(args) {
+  return { temperature: 0, num_predict: args.numPredict, ...args.extraOptions };
+}
+
+function renderHfPrompts(args, ids) {
+  const dir = mkdtempSync(join(tmpdir(), "ollama-grade-hf-"));
+  const out = join(dir, "prompts.jsonl");
+  const pyArgs = [
+    join(HERE, "render_hf_prompt.py"),
+    "--data", resolve(args.data),
+    "--tools-file", resolve(args.toolsFile),
+    "--tools", args.tools,
+    "--model", args.hfModel,
+    "--out", out,
+  ];
+  for (const id of ids) {
+    pyArgs.push("--id", id);
+  }
+  process.stderr.write(`[ollama-grade] HF-rendering ${ids.length} prompts via ${args.python}\n`);
+  execFileSync(args.python, pyArgs, { stdio: ["ignore", "inherit", "inherit"] });
+  const map = new Map();
+  for (const line of readFileSync(out, "utf8").split(/\n/).filter((l) => l.trim())) {
+    const rec = JSON.parse(line);
+    map.set(rec.id, rec);
+  }
+  rmSync(dir, { recursive: true, force: true });
+  return map;
 }
 
 function nsToS(ns) {
@@ -178,9 +232,12 @@ async function main() {
     .filter((l) => l.trim())
     .map((l) => JSON.parse(l));
 
+  const options = decodeOptions(args);
   process.stderr.write(
-    `[ollama-grade] model=${args.model} n=${lines.length} tools=${args.tools} (${tools.length}) host=${args.host} num_predict=${args.numPredict}\n`,
+    `[ollama-grade] model=${args.model} n=${lines.length} tools=${args.tools} (${tools.length}) host=${args.host} raw=${args.raw} options=${JSON.stringify(options)}\n`,
   );
+
+  const hfById = args.raw ? renderHfPrompts(args, lines.map((l) => l.id)) : null;
 
   mkdirSync(dirname(resolve(args.out)), { recursive: true });
   const outLines = [];
@@ -192,21 +249,36 @@ async function main() {
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    const tmpl = toTemplateMessages(line.messages);
-    let lastAssistant = -1;
-    for (let idx = 0; idx < tmpl.length; idx++) {
-      if (tmpl[idx].role === "assistant") lastAssistant = idx;
+    let result;
+    let content;
+    if (args.raw) {
+      const rec = hfById.get(line.id);
+      if (!rec) throw new Error(`${line.id}: missing HF render`);
+      result = await postJson(args.host, "/api/generate", {
+        model: args.model,
+        prompt: rec.prompt,
+        raw: true,
+        stream: false,
+        options,
+      });
+      content = result.response ?? "";
+    } else {
+      const tmpl = toTemplateMessages(line.messages);
+      let lastAssistant = -1;
+      for (let idx = 0; idx < tmpl.length; idx++) {
+        if (tmpl[idx].role === "assistant") lastAssistant = idx;
+      }
+      if (lastAssistant < 0) throw new Error(`${line.id}: no assistant turn`);
+      const promptMsgs = toOllamaMessages(tmpl.slice(0, lastAssistant));
+      result = await postJson(args.host, "/api/chat", {
+        model: args.model,
+        messages: promptMsgs,
+        tools,
+        stream: false,
+        options,
+      });
+      content = result.message?.content ?? "";
     }
-    if (lastAssistant < 0) throw new Error(`${line.id}: no assistant turn`);
-    const promptMsgs = toOllamaMessages(tmpl.slice(0, lastAssistant));
-    const result = await chat(args.host, {
-      model: args.model,
-      messages: promptMsgs,
-      tools,
-      stream: false,
-      options: { temperature: 0, num_predict: args.numPredict },
-    });
-    const content = result.message?.content ?? "";
     const rec = {
       id: line.id,
       family: line.kind,
@@ -233,7 +305,10 @@ async function main() {
   );
 }
 
-main().catch((err) => {
-  process.stderr.write(String(err?.stack || err) + "\n");
-  process.exit(1);
-});
+const isMain = process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1]);
+if (isMain) {
+  main().catch((err) => {
+    process.stderr.write(String(err?.stack || err) + "\n");
+    process.exit(1);
+  });
+}
