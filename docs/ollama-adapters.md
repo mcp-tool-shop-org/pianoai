@@ -120,10 +120,15 @@ So, as of this measurement:
 - Run the 7B over `qwen2.5:7b-instruct-q8_0`, and send it prompts rendered with the Hugging Face
   template (`ollama-grade.mjs --raw`, or your own client doing the same through `/api/generate`
   with `raw: true`). Plain `/api/chat` through the library template is not the published adapter.
-- The proper fix is a `TEMPLATE` in the Modelfile that renders tools as JSON, keeps `tool_calls`
-  beside content, and groups tool results the way the training template does, so that `/api/chat`
-  works unchanged. That is the next chunk; when it lands and measures 24/24, this page changes to
-  the Modelfile and the raw path becomes the fallback.
+- A Modelfile `TEMPLATE` was tried (`experiments/coverage-v1-sft/ollama/Modelfile.qwen25-grader`).
+  It closes the control-flow defects: tools rendered through `json`, `tool_calls` kept beside
+  content, grouped tool results byte-identical to the training render. It cannot close the
+  catalogue's serialisation: Go's `json` is compact with sorted keys and Ollama's tool objects drop
+  `$schema`, `minLength` and `maxLength`, while the training render is Python `json.dumps` with
+  spaces and insertion order. The model notices: `/api/chat` with that template and greedy pins
+  scores 22/24 near the gate and 16/17, 37/40 held out against the raw path's 24/24, 17/17, 38/40
+  (measured twice, by two people). So the raw path stays the documented one, and the template is
+  in the repo as the closest `/api/chat` gets on Ollama 0.33.
 - The bf16 numbers are reproducible with the PEFT runtime the experiment used
   (`experiments/coverage-v1-sft/scripts/predict_v1.py`) on a GPU with room for the base in bf16.
 
