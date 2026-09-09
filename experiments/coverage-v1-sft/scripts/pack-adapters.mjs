@@ -22,9 +22,10 @@ const ROOT = resolve(HERE, "..");
 const REPO = resolve(ROOT, "..", "..");
 
 const ADAPTERS = [
-  // Only the adapter the card publishes: the 7B trained on the released eleven-song corpus.
+  // Only the adapters the card publishes: the 7B at two seeds, trained on the released eleven-song corpus.
   // The 3B seeds and every adapter from the 27-song working corpus stay on disk, unpublished.
   { dir: "7b-s13", epoch: join(ROOT, "runs", "r40", "A7b", "epoch3"), receipt: join(ROOT, "runs", "r40", "run-config-A7b.json") },
+  { dir: "7b-s42", epoch: join(ROOT, "runs", "r48", "A7bs42", "epoch3"), receipt: join(ROOT, "runs", "r48", "run-config-A7bs42.json") },
 ];
 
 const CARD = join(REPO, "docs", "hf-cards", "jam-actions-v1-adapters.md");
