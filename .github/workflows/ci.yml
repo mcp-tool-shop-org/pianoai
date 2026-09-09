@@ -1,9 +1,10 @@
 # --- Measured CI cost (dogfood-swarm SKILL item 8) --------------------------
-# 11 billable min per push across 6 jobs (7.5 min actual wall time),
-# measured 2026-09-07 from run 34122798410. Most expensive jobs:
-#     4 min  ci (22)  (3.3 min wall)
-#     2 min  ci (24)  (1.8 min wall)
-#     2 min  Modern pnpm cold-start (pnpm 10, Node 22)  (1.7 min wall)
+# 33 billable min per push across 7 jobs (10.2 min actual wall time),
+# measured 2026-09-09 from run 34380057331. Most expensive jobs:
+#    11 min  ci (22)  (10.2 min wall)
+#     9 min  ci (24)  (8.4 min wall)
+#     9 min  Modern pnpm cold-start (pnpm 10, Node 22)  (8.6 min wall)
+#     1 min  Docker image (library + journal volume)  (33 s wall)
 # GitHub bills per JOB, rounded UP to the minute, x2 Windows / x10 macOS, so
 # billable minutes exceed wall time — many short jobs cost more than one long
 # one. This number is measured, never estimated; re-measure after any change:
@@ -165,7 +166,8 @@ jobs:
   # src/**, and this file. Builds the image (no push). Asserts the shipped
   # library is 14 loaded / 94 unfetched, then proves a journal entry written
   # with AI_JAM_HOME on a named volume is readable from a second container.
-  # No network fetch. Measured minutes: first green run of this job (handoff 53).
+  # No network fetch. Measured 2026-09-09 from run 34380057331:
+  #     1 min  Docker image (library + journal volume)  (33 s wall)
   docker-image:
     name: Docker image (library + journal volume)
     timeout-minutes: 20
