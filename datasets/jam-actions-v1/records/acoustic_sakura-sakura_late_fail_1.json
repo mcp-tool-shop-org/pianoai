@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": 12.388679245283019,
+      "cents_shift": -12.388679245283019,
       "delay_sec": 0.1429811320754717,
       "target_index": 0,
-      "measured_f0_hz": 295.78035594155335,
-      "measured_cents": 12.427259467912837,
+      "measured_f0_hz": 291.57616457032054,
+      "measured_cents": -12.356882028383989,
       "measured_onset_ms": 129.5691609977324,
       "draw": 1
     }
@@ -157,13 +157,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-b16de2.wav"
+              "path": "/acoustic-v1/take-f5f8b4.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-b16de2.wav",
+              "path": "/acoustic-v1/take-f5f8b4.wav",
               "song_id": "sakura-sakura"
             }
           }
@@ -182,15 +182,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 295.8,
-          "cents_from_target": 12.4,
+          "f0_hz": 291.6,
+          "cents_from_target": -12.4,
           "onset_ms": 129.6
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents 12.4 inside a 50-cent gate, onset 129.6 ms against a 40-ms gate: timing_fail"
+        "content": "cents -12.4 inside a 50-cent gate, onset 129.6 ms against a 40-ms gate: timing_fail"
       }
     ]
   },

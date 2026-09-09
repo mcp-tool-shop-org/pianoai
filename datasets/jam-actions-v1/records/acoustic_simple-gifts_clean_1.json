@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": 23.80264150943396,
+      "cents_shift": -23.80264150943396,
       "delay_sec": 0.001981132075471698,
       "target_index": 0,
-      "measured_f0_hz": 265.2513600365255,
-      "measured_cents": 23.827949533554005,
+      "measured_f0_hz": 258.05731809131254,
+      "measured_cents": -23.774376038736506,
       "measured_onset_ms": -9.750566893424018,
       "draw": 1
     }
@@ -157,13 +157,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-86d916.wav"
+              "path": "/acoustic-v1/take-22df13.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-86d916.wav",
+              "path": "/acoustic-v1/take-22df13.wav",
               "song_id": "simple-gifts"
             }
           }
@@ -182,15 +182,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 265.3,
-          "cents_from_target": 23.8,
+          "f0_hz": 258.1,
+          "cents_from_target": -23.8,
           "onset_ms": -9.8
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents 23.8 inside a 50-cent gate, onset -9.8 ms inside 40: match"
+        "content": "cents -23.8 inside a 50-cent gate, onset -9.8 ms inside 40: match"
       }
     ]
   },

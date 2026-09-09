@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": 31.14018867924528,
+      "cents_shift": -31.14018867924528,
       "delay_sec": 0.12132075471698113,
       "target_index": 0,
-      "measured_f0_hz": 598.0327955330905,
-      "measured_cents": 31.265294591942485,
+      "measured_f0_hz": 576.8800540580694,
+      "measured_cents": -31.07856974612919,
       "measured_onset_ms": 106.34920634920636,
       "draw": 1
     }
@@ -159,13 +159,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-5bbb95.wav"
+              "path": "/acoustic-v1/take-649081.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-5bbb95.wav",
+              "path": "/acoustic-v1/take-649081.wav",
               "song_id": "the-entertainer"
             }
           }
@@ -184,15 +184,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 598,
-          "cents_from_target": 31.3,
+          "f0_hz": 576.9,
+          "cents_from_target": -31.1,
           "onset_ms": 106.3
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents 31.3 inside a 50-cent gate, onset 106.3 ms against a 40-ms gate: timing_fail"
+        "content": "cents -31.1 inside a 50-cent gate, onset 106.3 ms against a 40-ms gate: timing_fail"
       }
     ]
   },

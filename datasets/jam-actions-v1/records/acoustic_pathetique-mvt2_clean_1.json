@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": 28.694339622641508,
+      "cents_shift": -28.694339622641508,
       "delay_sec": 0.017830188679245282,
       "target_index": 0,
-      "measured_f0_hz": 266.0021748169998,
-      "measured_cents": 28.721420890064778,
+      "measured_f0_hz": 257.3275467195476,
+      "measured_cents": -28.67714279602633,
       "measured_onset_ms": 1.859410430839037,
       "draw": 1
     }
@@ -156,13 +156,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-4b0e6f.wav"
+              "path": "/acoustic-v1/take-b89377.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-4b0e6f.wav",
+              "path": "/acoustic-v1/take-b89377.wav",
               "song_id": "pathetique-mvt2"
             }
           }
@@ -181,15 +181,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 266,
-          "cents_from_target": 28.7,
+          "f0_hz": 257.3,
+          "cents_from_target": -28.7,
           "onset_ms": 1.9
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents 28.7 inside a 50-cent gate, onset 1.9 ms inside 40: match"
+        "content": "cents -28.7 inside a 50-cent gate, onset 1.9 ms inside 40: match"
       }
     ]
   },

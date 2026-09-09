@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": 1.79,
+      "cents_shift": -1.79,
       "delay_sec": 0.02179245283018868,
       "target_index": 0,
-      "measured_f0_hz": 293.9751432534672,
-      "measured_cents": 1.8287811618248662,
+      "measured_f0_hz": 293.36588193831193,
+      "measured_cents": -1.762911795623511,
       "measured_onset_ms": 1.859410430839037,
       "draw": 1
     }
@@ -157,13 +157,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-c113f9.wav"
+              "path": "/acoustic-v1/take-41f6e9.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-c113f9.wav",
+              "path": "/acoustic-v1/take-41f6e9.wav",
               "song_id": "the-water-is-wide"
             }
           }
@@ -182,15 +182,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 294,
-          "cents_from_target": 1.8,
+          "f0_hz": 293.4,
+          "cents_from_target": -1.8,
           "onset_ms": 1.9
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents 1.8 inside a 50-cent gate, onset 1.9 ms inside 40: match"
+        "content": "cents -1.8 inside a 50-cent gate, onset 1.9 ms inside 40: match"
       }
     ]
   },

@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": 45,
+      "cents_shift": -45,
       "delay_sec": 0.1259622641509434,
       "target_index": 0,
-      "measured_f0_hz": 506.9231574374717,
-      "measured_cents": 45.1162568468022,
+      "measured_f0_hz": 481.22852348689395,
+      "measured_cents": -44.9376403421869,
       "measured_onset_ms": 106.34920634920636,
       "draw": 1
     }
@@ -156,13 +156,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-46bd07.wav"
+              "path": "/acoustic-v1/take-8f0997.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-46bd07.wav",
+              "path": "/acoustic-v1/take-8f0997.wav",
               "song_id": "chopin-prelude-e-minor"
             }
           }
@@ -181,15 +181,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 506.9,
-          "cents_from_target": 45.1,
+          "f0_hz": 481.2,
+          "cents_from_target": -44.9,
           "onset_ms": 106.3
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents 45.1 inside a 50-cent gate, onset 106.3 ms against a 40-ms gate: timing_fail"
+        "content": "cents -44.9 inside a 50-cent gate, onset 106.3 ms against a 40-ms gate: timing_fail"
       }
     ]
   },

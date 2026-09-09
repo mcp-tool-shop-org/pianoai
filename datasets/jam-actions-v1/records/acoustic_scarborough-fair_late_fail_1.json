@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": 22.987358490566038,
+      "cents_shift": -22.987358490566038,
       "delay_sec": 0.11049056603773584,
       "target_index": 0,
-      "measured_f0_hz": 297.5963016612702,
-      "measured_cents": 23.023688686427228,
+      "measured_f0_hz": 289.7969609539878,
+      "measured_cents": -22.953269655510848,
       "measured_onset_ms": 94.7392290249433,
       "draw": 1
     }
@@ -157,13 +157,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-821c54.wav"
+              "path": "/acoustic-v1/take-87eeb8.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-821c54.wav",
+              "path": "/acoustic-v1/take-87eeb8.wav",
               "song_id": "scarborough-fair"
             }
           }
@@ -182,15 +182,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 297.6,
-          "cents_from_target": 23,
+          "f0_hz": 289.8,
+          "cents_from_target": -23,
           "onset_ms": 94.7
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents 23.0 inside a 50-cent gate, onset 94.7 ms against a 40-ms gate: timing_fail"
+        "content": "cents -23.0 inside a 50-cent gate, onset 94.7 ms against a 40-ms gate: timing_fail"
       }
     ]
   },

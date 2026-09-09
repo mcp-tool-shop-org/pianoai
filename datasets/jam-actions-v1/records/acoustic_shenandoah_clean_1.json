@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": 12.388679245283019,
+      "cents_shift": -12.388679245283019,
       "delay_sec": 0.034339622641509436,
       "target_index": 0,
-      "measured_f0_hz": 313.3675454800496,
-      "measured_cents": 12.422697931862244,
+      "measured_f0_hz": 308.91481459110656,
+      "measured_cents": -12.353356764539585,
       "measured_onset_ms": 13.469387755102035,
       "draw": 1
     }
@@ -157,13 +157,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-0bd8b1.wav"
+              "path": "/acoustic-v1/take-f5ba2e.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-0bd8b1.wav",
+              "path": "/acoustic-v1/take-f5ba2e.wav",
               "song_id": "shenandoah"
             }
           }
@@ -182,15 +182,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 313.4,
-          "cents_from_target": 12.4,
+          "f0_hz": 308.9,
+          "cents_from_target": -12.4,
           "onset_ms": 13.5
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents 12.4 inside a 50-cent gate, onset 13.5 ms inside 40: match"
+        "content": "cents -12.4 inside a 50-cent gate, onset 13.5 ms inside 40: match"
       }
     ]
   },

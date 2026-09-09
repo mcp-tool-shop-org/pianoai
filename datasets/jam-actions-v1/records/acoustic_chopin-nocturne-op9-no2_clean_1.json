@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": 18.09566037735849,
+      "cents_shift": -18.09566037735849,
       "delay_sec": 0.003962264150943396,
       "target_index": 0,
-      "measured_f0_hz": 471.07645142696254,
-      "measured_cents": 18.149229659981014,
+      "measured_f0_hz": 461.32924703441984,
+      "measured_cents": -18.048118550442794,
       "measured_onset_ms": -9.750566893424018,
       "draw": 1
     }
@@ -156,13 +156,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-ce47f7.wav"
+              "path": "/acoustic-v1/take-94acf5.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-ce47f7.wav",
+              "path": "/acoustic-v1/take-94acf5.wav",
               "song_id": "chopin-nocturne-op9-no2"
             }
           }
@@ -181,15 +181,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 471.1,
-          "cents_from_target": 18.1,
+          "f0_hz": 461.3,
+          "cents_from_target": -18,
           "onset_ms": -9.8
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents 18.1 inside a 50-cent gate, onset -9.8 ms inside 40: match"
+        "content": "cents -18.0 inside a 50-cent gate, onset -9.8 ms inside 40: match"
       }
     ]
   },

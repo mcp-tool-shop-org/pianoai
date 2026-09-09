@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": 2.6052830188679246,
+      "cents_shift": -2.6052830188679246,
       "delay_sec": 0.10584905660377358,
       "target_index": 0,
-      "measured_f0_hz": 294.11356956344025,
-      "measured_cents": 2.643788626906126,
+      "measured_f0_hz": 293.2266530659581,
+      "measured_cents": -2.5847353087943397,
       "measured_onset_ms": 94.7392290249433,
       "draw": 1
     }
@@ -157,13 +157,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-721182.wav"
+              "path": "/acoustic-v1/take-20c2a5.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-721182.wav",
+              "path": "/acoustic-v1/take-20c2a5.wav",
               "song_id": "danny-boy"
             }
           }
@@ -182,15 +182,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 294.1,
-          "cents_from_target": 2.6,
+          "f0_hz": 293.2,
+          "cents_from_target": -2.6,
           "onset_ms": 94.7
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents 2.6 inside a 50-cent gate, onset 94.7 ms against a 40-ms gate: timing_fail"
+        "content": "cents -2.6 inside a 50-cent gate, onset 94.7 ms against a 40-ms gate: timing_fail"
       }
     ]
   },

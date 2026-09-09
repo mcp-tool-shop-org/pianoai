@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": 14.834528301886792,
+      "cents_shift": -14.834528301886792,
       "delay_sec": 0.019150943396226413,
       "target_index": 0,
-      "measured_f0_hz": 263.88159725249767,
-      "measured_cents": 14.864662573849778,
+      "measured_f0_hz": 259.39784081858727,
+      "measured_cents": -14.804463416200308,
       "measured_onset_ms": 1.859410430839037,
       "draw": 1
     }
@@ -157,13 +157,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-d0d1a3.wav"
+              "path": "/acoustic-v1/take-eead6a.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-d0d1a3.wav",
+              "path": "/acoustic-v1/take-eead6a.wav",
               "song_id": "auld-lang-syne"
             }
           }
@@ -182,15 +182,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 263.9,
-          "cents_from_target": 14.9,
+          "f0_hz": 259.4,
+          "cents_from_target": -14.8,
           "onset_ms": 1.9
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents 14.9 inside a 50-cent gate, onset 1.9 ms inside 40: match"
+        "content": "cents -14.8 inside a 50-cent gate, onset 1.9 ms inside 40: match"
       }
     ]
   },

@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": 24.617924528301884,
+      "cents_shift": -24.617924528301884,
       "delay_sec": 0.02311320754716981,
       "target_index": 0,
-      "measured_f0_hz": 265.3768585890263,
-      "measured_cents": 24.64685574179054,
+      "measured_f0_hz": 257.93596670441957,
+      "measured_cents": -24.588679879326367,
       "measured_onset_ms": 1.859410430839037,
       "draw": 1
     }
@@ -157,13 +157,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-c4d694.wav"
+              "path": "/acoustic-v1/take-39c6c5.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-c4d694.wav",
+              "path": "/acoustic-v1/take-39c6c5.wav",
               "song_id": "house-of-the-rising-sun"
             }
           }
@@ -182,15 +182,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 265.4,
-          "cents_from_target": 24.6,
+          "f0_hz": 257.9,
+          "cents_from_target": -24.6,
           "onset_ms": 1.9
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents 24.6 inside a 50-cent gate, onset 1.9 ms inside 40: match"
+        "content": "cents -24.6 inside a 50-cent gate, onset 1.9 ms inside 40: match"
       }
     ]
   },

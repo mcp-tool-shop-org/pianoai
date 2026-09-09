@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": 20.541509433962265,
+      "cents_shift": -20.541509433962265,
       "delay_sec": 0.10739622641509433,
       "target_index": 0,
-      "measured_f0_hz": 264.7504530636893,
-      "measured_cents": 20.55555519998086,
+      "measured_f0_hz": 258.5416416426017,
+      "measured_cents": -20.52823063864299,
       "measured_onset_ms": 94.7392290249433,
       "draw": 1
     }
@@ -156,13 +156,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-15b6a8.wav"
+              "path": "/acoustic-v1/take-cbdc13.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-15b6a8.wav",
+              "path": "/acoustic-v1/take-cbdc13.wav",
               "song_id": "schumann-traumerei"
             }
           }
@@ -181,15 +181,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 264.8,
-          "cents_from_target": 20.6,
+          "f0_hz": 258.5,
+          "cents_from_target": -20.5,
           "onset_ms": 94.7
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents 20.6 inside a 50-cent gate, onset 94.7 ms against a 40-ms gate: timing_fail"
+        "content": "cents -20.5 inside a 50-cent gate, onset 94.7 ms against a 40-ms gate: timing_fail"
       }
     ]
   },
