@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": 32.65428571428571,
-      "delay_sec": 0.003333333333333333,
+      "cents_shift": 35.9560465116279,
+      "delay_sec": 0.0065116279069767444,
       "target_index": 0,
-      "measured_f0_hz": 533.2423160075533,
-      "measured_cents": 32.745297371389725,
+      "measured_f0_hz": 534.2470256648928,
+      "measured_cents": 36.004136619556974,
       "measured_onset_ms": -9.750566893424018,
       "draw": 0
     }
@@ -156,13 +156,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-85c0ec.wav"
+              "path": "/acoustic-v1/take-eb9d83.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-85c0ec.wav",
+              "path": "/acoustic-v1/take-eb9d83.wav",
               "song_id": "elite-syncopations"
             }
           }
@@ -181,15 +181,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 533.2,
-          "cents_from_target": 32.7,
+          "f0_hz": 534.2,
+          "cents_from_target": 36,
           "onset_ms": -9.8
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents 32.7: |32.7| − 50 = −17.3, inside; onset -9.8: |9.8| − 40 = −30.2, inside: match"
+        "content": "cents 36.0: |36.0| − 50 = −14.0, inside; onset -9.8: |9.8| − 40 = −30.2, inside: match"
       }
     ]
   },

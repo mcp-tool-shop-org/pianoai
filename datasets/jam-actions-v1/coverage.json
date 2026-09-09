@@ -1,6 +1,6 @@
 {
   "schema_version": "jam-actions-v1/1.0.0",
-  "n": 146,
+  "n": 213,
   "tools": [
     "compare_songs",
     "detect_chord",
@@ -44,7 +44,7 @@
   ],
   "key_count": 7,
   "shapes": {
-    "transcribe_audio>score_audio_take": 65,
+    "transcribe_audio>score_audio_take": 132,
     "verify_harmony": 19,
     "song_info": 19,
     "song_info>list_measures": 11,
@@ -55,9 +55,9 @@
   },
   "shape_count": 8,
   "majority_shape": "transcribe_audio>score_audio_take",
-  "majority_shape_share": 0.4452054794520548,
+  "majority_shape_share": 0.6197183098591549,
   "families": {
-    "acoustic": 65,
+    "acoustic": 132,
     "chord": 10,
     "compare": 4,
     "ensemble": 7,
@@ -72,11 +72,11 @@
     "songs": 10,
     "shapes": 7
   },
-  "floors_met": true,
+  "floors_met": false,
   "f5_drops": {
-    "attempted": 66,
+    "attempted": 132,
     "droppedUntrackable": 0,
-    "droppedClearance": 1,
+    "droppedClearance": 0,
     "droppedShortPhrase": 0
   }
 }

@@ -1,8 +1,8 @@
 {
   "dataset_name": "jam-actions-v1",
   "schema_version": "jam-actions-v1/1.0.0",
-  "version": "1.0.0",
-  "record_count": 146,
+  "version": "1.1.0",
+  "record_count": 213,
   "coverage": {
     "tools": 10,
     "songs": 11,

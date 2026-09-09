@@ -21,10 +21,16 @@ import { fileURLToPath } from "node:url";
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = join(HERE, "..", "..", "..");
 
-export const V1_PUBLIC_VERSION = "1.0.0";
+export const V1_PUBLIC_VERSION = "1.1.0";
+/** Probe package version is independent; it does not use F5_DRAWS. */
+const PROBE_PUBLIC_VERSION = "1.0.0";
 export const ZENODO_CONCEPT_DOI = "10.5281/zenodo.20279918";
 
 export type PublicKind = "v1" | "probe";
+
+function packageVersion(kind: PublicKind): string {
+  return kind === "probe" ? PROBE_PUBLIC_VERSION : V1_PUBLIC_VERSION;
+}
 
 export function sha256(content: string | Buffer): string {
   return createHash("sha256").update(content).digest("hex");
@@ -94,16 +100,24 @@ function citationCff(kind: PublicKind): string {
   const title = probe
     ? "jam-actions-v1-probe — evaluation-only near-gate acoustic takes"
     : "jam-actions-v1 — AI Jam Sessions tool-use traces (shown-work targets)";
-  const abstract = probe
-    ? "72 acoustic takes on jam-actions-v1's nine held-out songs, each measured within 10 ms or 5 cents of a grading gate, both signs of both quantities. Never split, never trained on. Schema jam-actions-v1-probe/1.0.0."
-    : "371 multi-turn MCP tool-use traces over 27 public-domain piano pieces, nine task families, split by song. Every assistant turn shows the comparison that decides its answer. Schema jam-actions-v1/1.0.0.";
+  let abstract: string;
+  if (probe) {
+    abstract =
+      "72 acoustic takes on jam-actions-v1's nine held-out songs, each measured within 10 ms or 5 cents of a grading gate, both signs of both quantities. Never split, never trained on. Schema jam-actions-v1-probe/1.0.0.";
+  } else {
+    const manifest = JSON.parse(
+      readFileSync(join(spec(kind).workingDir, "manifest.json"), "utf8"),
+    ) as { record_count: number; coverage: { songs: number } };
+    abstract =
+      `${manifest.record_count} multi-turn MCP tool-use traces over ${manifest.coverage.songs} public-domain piano pieces whose arrangements carry a verified licence, nine task families, split by song. Every assistant turn shows the comparison that decides its answer. Schema jam-actions-v1/1.0.0.`;
+  }
   return `cff-version: 1.2.0
 title: "${title}"
 message: "If you use this dataset, please cite it as below."
 type: dataset
 authors:
   - name: "mcp-tool-shop-org"
-version: "${V1_PUBLIC_VERSION}"
+version: "${packageVersion(kind)}"
 date-released: "2026-09-09"
 license: "CC-BY-SA-3.0-DE"
 doi: "${ZENODO_CONCEPT_DOI}"
@@ -132,7 +146,7 @@ function zenodoMetadata(kind: PublicKind, prettyDescription: string): Record<str
     : "jam-actions-v1 — AI Jam Sessions tool-use traces (shown-work targets)";
   const description = `<p>${prettyDescription}</p>`;
   return {
-    $schema_note: `Zenodo deposition metadata payload for the jam-actions-v1${probe ? "-probe" : ""} 1.0.0 new-version deposit under concept DOI ${ZENODO_CONCEPT_DOI}. Conforms to the Zenodo legacy REST API deposition schema at https://developers.zenodo.org/#representation. DOI is intentionally absent — Zenodo mints the new version DOI on publish. No auth tokens, no account IDs, no credentials.`,
+    $schema_note: `Zenodo deposition metadata payload for the jam-actions-v1${probe ? "-probe" : ""} ${packageVersion(kind)} new-version deposit under concept DOI ${ZENODO_CONCEPT_DOI}. Conforms to the Zenodo legacy REST API deposition schema at https://developers.zenodo.org/#representation. DOI is intentionally absent — Zenodo mints the new version DOI on publish. No auth tokens, no account IDs, no credentials.`,
     metadata: {
       title,
       upload_type: "dataset",
@@ -160,7 +174,7 @@ function zenodoMetadata(kind: PublicKind, prettyDescription: string): Record<str
       license: "CC-BY-SA-3.0",
       access_right: "open",
       language: "eng",
-      version: V1_PUBLIC_VERSION,
+      version: packageVersion(kind),
       related_identifiers: [
         {
           identifier: "https://github.com/mcp-tool-shop-org/ai-jam-sessions",
@@ -236,7 +250,7 @@ export function publicFiles(kind: PublicKind): Map<string, string> {
   const pretty = prettyDescriptionFromCard(card, s.cardPath);
   const files = copyTreeFiles(s.workingDir, s.skipFromWorking);
   files.set("README.md", card);
-  files.set("VERSION", `${V1_PUBLIC_VERSION}\n`);
+  files.set("VERSION", `${packageVersion(kind)}\n`);
   files.set("LICENSE-DATASET.md", readLicenseOrHalt(s.licensePath));
   files.set("CITATION.cff", citationCff(kind));
   files.set("zenodo-metadata.json", JSON.stringify(zenodoMetadata(kind, pretty), null, 2) + "\n");

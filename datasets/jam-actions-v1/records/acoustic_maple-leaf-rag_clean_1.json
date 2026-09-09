@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": -3.8476190476190477,
-      "delay_sec": 0.021666666666666667,
+      "cents_shift": -3.7997674418604652,
+      "delay_sec": 0.017906976744186048,
       "target_index": 0,
-      "measured_f0_hz": 414.3914531963918,
-      "measured_cents": -3.8111311205733616,
+      "measured_f0_hz": 414.40307959223054,
+      "measured_cents": -3.7625593418056202,
       "measured_onset_ms": 1.859410430839037,
       "draw": 1
     }
@@ -156,13 +156,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-03f6e5.wav"
+              "path": "/acoustic-v1/take-f2af36.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-03f6e5.wav",
+              "path": "/acoustic-v1/take-f2af36.wav",
               "song_id": "maple-leaf-rag"
             }
           }

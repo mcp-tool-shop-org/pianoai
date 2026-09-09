@@ -99,12 +99,12 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": 78.33333333333333,
-      "delay_sec": 0.0016666666666666666,
+      "cents_shift": 81.86046511627907,
+      "delay_sec": 0.0008139534883720931,
       "target_index": 0,
-      "measured_f0_hz": 273.7404552309426,
-      "measured_cents": 78.36616562327292,
-      "measured_onset_ms": -9.750566893424018,
+      "measured_f0_hz": 274.2979909237936,
+      "measured_cents": 81.88863786877235,
+      "measured_onset_ms": -21.36054421768707,
       "draw": 0
     }
   },
@@ -156,13 +156,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-6dcc9b.wav"
+              "path": "/acoustic-v1/take-a9d140.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-6dcc9b.wav",
+              "path": "/acoustic-v1/take-a9d140.wav",
               "song_id": "bach-prelude-c-major-bwv846"
             }
           }
@@ -181,15 +181,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 273.7,
-          "cents_from_target": 78.4,
-          "onset_ms": -9.8
+          "f0_hz": 274.3,
+          "cents_from_target": 81.9,
+          "onset_ms": -21.4
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents 78.4: |78.4| − 50 = 28.4, against the gate; onset -9.8: |9.8| − 40 = −30.2, inside: pitch_fail"
+        "content": "cents 81.9: |81.9| − 50 = 31.9, against the gate; onset -21.4: |21.4| − 40 = −18.6, inside: pitch_fail"
       }
     ]
   },

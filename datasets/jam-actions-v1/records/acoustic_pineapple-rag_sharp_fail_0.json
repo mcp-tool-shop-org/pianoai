@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": 86.66666666666667,
-      "delay_sec": 0.03,
+      "cents_shift": 86.74418604651163,
+      "delay_sec": 0.03174418604651163,
       "target_index": 0,
-      "measured_f0_hz": 412.1365997051936,
-      "measured_cents": 86.74287654947679,
+      "measured_f0_hz": 412.1550346060485,
+      "measured_cents": 86.82031304580426,
       "measured_onset_ms": 13.469387755102035,
       "draw": 0
     }
@@ -156,13 +156,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-ae5d3c.wav"
+              "path": "/acoustic-v1/take-001eb8.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-ae5d3c.wav",
+              "path": "/acoustic-v1/take-001eb8.wav",
               "song_id": "pineapple-rag"
             }
           }
@@ -181,15 +181,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 412.1,
-          "cents_from_target": 86.7,
+          "f0_hz": 412.2,
+          "cents_from_target": 86.8,
           "onset_ms": 13.5
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents 86.7: |86.7| − 50 = 36.7, against the gate; onset 13.5: |13.5| − 40 = −26.5, inside: pitch_fail"
+        "content": "cents 86.8: |86.8| − 50 = 36.8, against the gate; onset 13.5: |13.5| − 40 = −26.5, inside: pitch_fail"
       }
     ]
   },

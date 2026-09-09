@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": -81.66666666666666,
-      "delay_sec": 0.026666666666666665,
+      "cents_shift": -83.48837209302326,
+      "delay_sec": 0.02767441860465116,
       "target_index": 0,
-      "measured_f0_hz": 628.9409997399807,
-      "measured_cents": -81.49460551001297,
+      "measured_f0_hz": 628.274976634108,
+      "measured_cents": -83.32888380091242,
       "measured_onset_ms": 13.469387755102035,
       "draw": 1
     }
@@ -159,13 +159,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-7195ff.wav"
+              "path": "/acoustic-v1/take-658cb1.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-7195ff.wav",
+              "path": "/acoustic-v1/take-658cb1.wav",
               "song_id": "fur-elise"
             }
           }
@@ -184,15 +184,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 628.9,
-          "cents_from_target": -81.5,
+          "f0_hz": 628.3,
+          "cents_from_target": -83.3,
           "onset_ms": 13.5
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents -81.5: |81.5| − 50 = 31.5, against the gate; onset 13.5: |13.5| − 40 = −26.5, inside: pitch_fail"
+        "content": "cents -83.3: |83.3| − 50 = 33.3, against the gate; onset 13.5: |13.5| − 40 = −26.5, inside: pitch_fail"
       }
     ]
   },

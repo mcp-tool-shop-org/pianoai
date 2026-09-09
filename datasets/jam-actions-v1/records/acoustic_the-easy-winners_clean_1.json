@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": -42.94238095238095,
-      "delay_sec": 0.0016666666666666666,
+      "cents_shift": -43.99511627906976,
+      "delay_sec": 0.004069767441860465,
       "target_index": 0,
-      "measured_f0_hz": 303.50991452614016,
-      "measured_cents": -42.91185490108061,
+      "measured_f0_hz": 303.3240309041447,
+      "measured_cents": -43.972468164563736,
       "measured_onset_ms": -9.750566893424018,
       "draw": 1
     }
@@ -156,13 +156,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-d957ad.wav"
+              "path": "/acoustic-v1/take-ef3fca.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-d957ad.wav",
+              "path": "/acoustic-v1/take-ef3fca.wav",
               "song_id": "the-easy-winners"
             }
           }
@@ -181,15 +181,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 303.5,
-          "cents_from_target": -42.9,
+          "f0_hz": 303.3,
+          "cents_from_target": -44,
           "onset_ms": -9.8
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents -42.9: |42.9| − 50 = −7.1, inside; onset -9.8: |9.8| − 40 = −30.2, inside: match"
+        "content": "cents -44.0: |44.0| − 50 = −6.0, inside; onset -9.8: |9.8| − 40 = −30.2, inside: match"
       }
     ]
   },

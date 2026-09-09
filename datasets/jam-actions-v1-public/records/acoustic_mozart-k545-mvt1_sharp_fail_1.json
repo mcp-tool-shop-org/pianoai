@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": -88.33333333333333,
-      "delay_sec": 0.03166666666666667,
+      "cents_shift": -89.18604651162791,
+      "delay_sec": 0.03255813953488372,
       "target_index": 0,
-      "measured_f0_hz": 248.6136948653623,
-      "measured_cents": -88.3173053165771,
+      "measured_f0_hz": 248.49027073207932,
+      "measured_cents": -89.17698892883736,
       "measured_onset_ms": 13.469387755102035,
       "draw": 1
     }
@@ -156,13 +156,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-72f73b.wav"
+              "path": "/acoustic-v1/take-59a238.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-72f73b.wav",
+              "path": "/acoustic-v1/take-59a238.wav",
               "song_id": "mozart-k545-mvt1"
             }
           }
@@ -181,15 +181,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 248.6,
-          "cents_from_target": -88.3,
+          "f0_hz": 248.5,
+          "cents_from_target": -89.2,
           "onset_ms": 13.5
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents -88.3: |88.3| − 50 = 38.3, against the gate; onset 13.5: |13.5| − 40 = −26.5, inside: pitch_fail"
+        "content": "cents -89.2: |89.2| − 50 = 39.2, against the gate; onset 13.5: |13.5| − 40 = −26.5, inside: pitch_fail"
       }
     ]
   },

@@ -1,0 +1,208 @@
+{
+  "id": "acoustic:peacherine-rag:sharp_fail:3",
+  "schema_version": "jam-actions-v1/1.0.0",
+  "family": "acoustic",
+  "provenance": {
+    "source_url": "https://www.mutopiaproject.org/ftp/JoplinS/peacherine/peacherine.mid",
+    "source_collected_at": "2026-09-09",
+    "source_type": "downloaded-arrangement",
+    "composition_title": "Peacherine Rag",
+    "composer": "Scott Joplin",
+    "composition_year": 1,
+    "composition_pd_status_us": "public_domain",
+    "composition_pd_status_eu": "public_domain",
+    "arrangement_creator": "Antonio Palamà (Mutopia typesetter, LilyPond)",
+    "arrangement_license": "Public-Domain",
+    "arrangement_license_version": null,
+    "arrangement_evidence_url": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=335",
+    "record_verdict": "public",
+    "verdict_reason": "Allowlisted 2026-09-09; Public-Domain",
+    "verifier": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=335; midi meta events (sha256 5185a564754c…)",
+    "verified_at": "2026-09-09",
+    "training_use_permitted": true
+  },
+  "scope": {
+    "song_id": "peacherine-rag",
+    "phrase_window": "full:89",
+    "instrument": "piano",
+    "key": "Eb major",
+    "tempo_bpm": 80,
+    "time_signature": "2/4",
+    "window_role": "standalone"
+  },
+  "observation": {
+    "thresholds": {
+      "timing_ms": 40,
+      "pitch_fail_cents": 50,
+      "pitch_warn_cents": 25,
+      "yin_locked_p95_cents": 0.179,
+      "pitch_clearance_cents": 5,
+      "pitch_clearance_multiple": 27.93,
+      "onset_p95_ms": 28.025,
+      "onset_clearance_ms": 38,
+      "onset_clearance_multiple": 1.36
+    },
+    "gold": {
+      "family": "acoustic",
+      "answer": "pitch_fail",
+      "engine": "YIN+SuperFlux"
+    },
+    "acoustic": {
+      "kind": "sharp_fail",
+      "notes": [
+        {
+          "midi": 75,
+          "name": "D#5",
+          "time": 0,
+          "duration": 0.45
+        },
+        {
+          "midi": 77,
+          "name": "F5",
+          "time": 1.2,
+          "duration": 0.45
+        },
+        {
+          "midi": 79,
+          "name": "G5",
+          "time": 2.4,
+          "duration": 0.45
+        },
+        {
+          "midi": 77,
+          "name": "F5",
+          "time": 3.5999999999999996,
+          "duration": 0.45
+        },
+        {
+          "midi": 70,
+          "name": "A#4",
+          "time": 4.8,
+          "duration": 0.45
+        },
+        {
+          "midi": 77,
+          "name": "F5",
+          "time": 6,
+          "duration": 0.45
+        },
+        {
+          "midi": 79,
+          "name": "G5",
+          "time": 7.2,
+          "duration": 0.45
+        },
+        {
+          "midi": 80,
+          "name": "G#5",
+          "time": 8.4,
+          "duration": 0.45
+        }
+      ],
+      "cents_shift": -80.23255813953489,
+      "delay_sec": 0.021162790697674416,
+      "target_index": 0,
+      "measured_f0_hz": 594.121103717382,
+      "measured_cents": -80.09578616857908,
+      "measured_onset_ms": 1.859410430839037,
+      "draw": 3
+    }
+  },
+  "annotation_target": {
+    "measure_range": [
+      1,
+      89
+    ],
+    "structure": "The A strain (measures 1-21) establishes the Eb-Ab-Bb7 progression; within it, a 2-measure cell at measures 5-6 repeats identically at measures 13-14 (measure 7, by contrast, matches measure 41 rather than continuing that local repeat). A contrasting section (measures 22-54) leans on F7-Bb7-Eb turnarounds, and a closing block (measures 55-89) introduces the piece's one confirmed transposed pattern: a 12-interval left-hand figure (measures 22-25, 26-29) recurs transposed down two semitones at measures 59-62.",
+    "key_moments": [
+      "The key field here has a corrected history: this transcription originally carried a C major label, but content indicates Eb major at a strong 0.228 margin, and the field has been corrected to Eb major. Every chord name in this annotation follows that Eb reading.",
+      "Measures 59-62 restate a left-hand figure first heard at measures 22-25 and 26-29, transposed down two semitones — the pattern pass's transposition-aware layer catching a variation that simple pitch-matching would miss entirely.",
+      "Measure 72, the sparsest bar (4 onsets), coincides with the left hand's lowest note in the piece (Ab1) — a brief excursion to the bottom of the keyboard framed by otherwise thin texture.",
+      "The busiest measures (12 onsets) are measures 3, 55, 59, 60, and 63 — clustered in the piece's second half, meaning Peacherine Rag builds rhythmic density across the form rather than front-loading it."
+    ],
+    "teaching_goals": [
+      "Practice checking a piece's actual harmonic content against its key label rather than assuming the label is correct — this piece is its own case study: detection favored Eb major at a strong 0.228 margin over the C major label the transcription originally carried, and the key field has since been corrected to Eb major.",
+      "Learn the Eb-Ab-Bb7 (I-IV-V7) vamp that governs most of the piece — once secure, the F7 secondary-dominant turnarounds in the second half are a small addition on top of it.",
+      "Practice recognizing a transposed repeat by ear: the left-hand figure at measures 22-25 returns down a whole step at measures 59-62. Train your ear to hear the same shape at a different pitch level.",
+      "Build density gradually across the form — the busiest measures cluster in the second half (55-63), so pace your energy to arrive there rather than peaking early."
+    ],
+    "style_tips": [
+      "Listen for Bb7 resolving to Eb, not to C — hearing the harmony in the corrected Eb major key (rather than the C major label this transcription originally carried) will actually make it easier to predict, not harder.",
+      "Play the transposed left-hand echo at measures 59-62 with the same touch and weight as its first appearance at measures 22-25 — a transposed repeat should still feel like the same gesture, just shifted.",
+      "Keep the moderate 80 BPM pulse steady through the sparse measure 72 — a brief thin texture is a place to lighten touch, not to slow down.",
+      "Try building volume gradually from measure 55 to measure 63, the piece's busiest stretch — let the rhythmic density itself carry the sense of arrival rather than adding an artificial accent."
+    ],
+    "teaching_notes": [
+      {
+        "measure": 1,
+        "note": "none"
+      }
+    ]
+  },
+  "target_trace": {
+    "task_family": "acoustic",
+    "objective": "Answer using tools. Do not guess from the question text.",
+    "session": [
+      {
+        "turn": 1,
+        "role": "user",
+        "content": "Grade this take of \"Peacherine Rag\". Answer with exactly one of: match, pitch_fail, timing_fail."
+      },
+      {
+        "turn": 2,
+        "role": "assistant",
+        "content": "Transcribing, then scoring with raw measurements.",
+        "tool_calls": [
+          {
+            "tool": "transcribe_audio",
+            "arguments": {
+              "path": "/acoustic-v1/take-93a762.wav"
+            }
+          },
+          {
+            "tool": "score_audio_take",
+            "arguments": {
+              "path": "/acoustic-v1/take-93a762.wav",
+              "song_id": "peacherine-rag"
+            }
+          }
+        ]
+      },
+      {
+        "turn": 3,
+        "role": "tool",
+        "tool": "transcribe_audio",
+        "content": {
+          "note_count": 8
+        }
+      },
+      {
+        "turn": 4,
+        "role": "tool",
+        "tool": "score_audio_take",
+        "content": {
+          "f0_hz": 594.1,
+          "cents_from_target": -80.1,
+          "onset_ms": 1.9
+        }
+      },
+      {
+        "turn": 5,
+        "role": "assistant",
+        "content": "cents -80.1: |80.1| − 50 = 30.1, against the gate; onset 1.9: |1.9| − 40 = −38.1, inside: pitch_fail"
+      }
+    ]
+  },
+  "eval_metadata": {
+    "split": "train",
+    "split_strategy": "hold out by song_id",
+    "leakage_check": "passed",
+    "eval_eligibility": [
+      "tool_use",
+      "acoustic"
+    ],
+    "phrase_continuation_eligible": false,
+    "phrase_continuation_eligible_reason": "standalone tool-use items"
+  },
+  "split": "train"
+}

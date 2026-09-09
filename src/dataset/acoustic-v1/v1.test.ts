@@ -597,7 +597,7 @@ describe("F5 acoustic — gate-only magnitudes (chunk 20)", () => {
     };
   }
 
-  it("has two draws per class per song except counted clearance drops", () => {
+  it("has F5_DRAWS draws per class per song except counted clearance drops", () => {
     const songs = loadPublishableSongs();
     const rows = committedRecords().filter((r) => r.family === "acoustic");
     const testN = testSongIds(songs).size;
@@ -862,10 +862,10 @@ describe("V1_F5_DRAWS override (chunk 48)", () => {
     }
   }
 
-  it("defaults to 2 and accepts a positive integer", () => {
-    expect(F5_DRAWS).toBe(2);
-    expect(withDraws(undefined, () => resolveF5Draws())).toBe(2);
-    expect(withDraws("4", () => resolveF5Draws())).toBe(4);
+  it("defaults to 4 and accepts a positive integer", () => {
+    expect(F5_DRAWS).toBe(4);
+    expect(withDraws(undefined, () => resolveF5Draws())).toBe(4);
+    expect(withDraws("2", () => resolveF5Draws())).toBe(2);
   });
 
   it("throws with the value in the message when V1_F5_DRAWS is not a positive integer", () => {
@@ -875,12 +875,12 @@ describe("V1_F5_DRAWS override (chunk 48)", () => {
     expect(() => withDraws("2.5", () => resolveF5Draws())).toThrow(/got "2.5"/);
   });
 
-  it("refuses to write a non-2-draw corpus into the released v1 directories", () => {
-    withDraws("4", () => {
-      expect(() => writeV1Corpus(join(CORPUS))).toThrow(/frozen at 2 draws/);
+  it("refuses to write a non-default-draw corpus into the released v1 directories", () => {
+    withDraws("2", () => {
+      expect(() => writeV1Corpus(join(CORPUS))).toThrow(/frozen at 4 draws since 1.1.0/);
       expect(() =>
         writeV1Corpus(join(dirname(CORPUS), "jam-actions-v1-probe")),
-      ).toThrow(/frozen at 2 draws/);
+      ).toThrow(/frozen at 4 draws since 1.1.0/);
     });
   });
 });
@@ -956,28 +956,28 @@ describe.runIf(RUN_DSP)("engine verification (skipped under SKIP_DSP_VERIFICATIO
     }
   });
 
-  it("V1_F5_DRAWS=4 yields exactly twice the acoustic records of the default for the same inputs, and the non-acoustic records are byte-identical", () => {
-    const attempted2 = f5DropStats.attempted;
-    const dropped2 =
+  it("V1_F5_DRAWS=2 yields half the acoustic records of the default for the same inputs, and the non-acoustic records are byte-identical", () => {
+    const attempted4 = f5DropStats.attempted;
+    const dropped4 =
       f5DropStats.droppedUntrackable + f5DropStats.droppedClearance + f5DropStats.droppedShortPhrase;
     const prev = process.env.V1_F5_DRAWS;
-    process.env.V1_F5_DRAWS = "4";
+    process.env.V1_F5_DRAWS = "2";
     try {
-      const four = buildAllRecords();
-      const ac2 = built.filter((r) => r.family === "acoustic");
-      const ac4 = four.filter((r) => r.family === "acoustic");
-      const dropped4 =
+      const two = buildAllRecords();
+      const ac4 = built.filter((r) => r.family === "acoustic");
+      const ac2 = two.filter((r) => r.family === "acoustic");
+      const dropped2 =
         f5DropStats.droppedUntrackable + f5DropStats.droppedClearance + f5DropStats.droppedShortPhrase;
       // Slots: 11 songs × 3 kinds × draws. Kept = attempted − clearance drops.
-      // rank01's domain grows with the draw count, so a 2-draw clearance drop
-      // need not recur at 4 draws; the slot count is still exactly 2×.
-      expect(f5DropStats.attempted).toBe(attempted2 * 2);
-      expect(ac2.length + dropped2).toBe(attempted2);
-      expect(ac4.length + dropped4).toBe(f5DropStats.attempted);
+      // rank01's domain shrinks with the draw count, so a 4-draw clearance
+      // drop need not match a 2-draw drop; the slot count is still exactly ½.
+      expect(attempted4).toBe(f5DropStats.attempted * 2);
+      expect(ac4.length + dropped4).toBe(attempted4);
+      expect(ac2.length + dropped2).toBe(f5DropStats.attempted);
       expect(ac4.length + dropped4).toBe((ac2.length + dropped2) * 2);
-      const other2 = built.filter((r) => r.family !== "acoustic").map((r) => JSON.stringify(r));
-      const other4 = four.filter((r) => r.family !== "acoustic").map((r) => JSON.stringify(r));
-      expect(other4).toEqual(other2);
+      const other4 = built.filter((r) => r.family !== "acoustic").map((r) => JSON.stringify(r));
+      const other2 = two.filter((r) => r.family !== "acoustic").map((r) => JSON.stringify(r));
+      expect(other2).toEqual(other4);
     } finally {
       if (prev === undefined) delete process.env.V1_F5_DRAWS;
       else process.env.V1_F5_DRAWS = prev;

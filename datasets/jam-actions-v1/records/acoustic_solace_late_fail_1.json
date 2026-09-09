@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": -24.423809523809524,
-      "delay_sec": 0.13657142857142857,
+      "cents_shift": -24.902325581395345,
+      "delay_sec": 0.13711627906976745,
       "target_index": 0,
-      "measured_f0_hz": 257.9649472205139,
-      "measured_cents": -24.394177195106977,
+      "measured_f0_hz": 257.89361108602094,
+      "measured_cents": -24.87298885292141,
       "measured_onset_ms": 117.95918367346941,
       "draw": 1
     }
@@ -156,13 +156,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-197faf.wav"
+              "path": "/acoustic-v1/take-4c60f4.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-197faf.wav",
+              "path": "/acoustic-v1/take-4c60f4.wav",
               "song_id": "solace"
             }
           }
@@ -181,15 +181,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 258,
-          "cents_from_target": -24.4,
+          "f0_hz": 257.9,
+          "cents_from_target": -24.9,
           "onset_ms": 118
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents -24.4: |24.4| − 50 = −25.6, inside; onset 118.0: |118.0| − 40 = 78.0, against the gate: timing_fail"
+        "content": "cents -24.9: |24.9| − 50 = −25.1, inside; onset 118.0: |118.0| − 40 = 78.0, against the gate: timing_fail"
       }
     ]
   },

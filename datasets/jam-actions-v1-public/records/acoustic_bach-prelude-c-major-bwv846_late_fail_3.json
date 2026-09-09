@@ -1,0 +1,208 @@
+{
+  "id": "acoustic:bach-prelude-c-major-bwv846:late_fail:3",
+  "schema_version": "jam-actions-v1/1.0.0",
+  "family": "acoustic",
+  "provenance": {
+    "source_url": "http://piano-midi.de/midis/bach/bach_846.mid",
+    "source_collected_at": "2026-09-09",
+    "source_type": "downloaded-arrangement",
+    "composition_title": "Prelude in C Major, BWV 846 (Well-Tempered Clavier)",
+    "composer": "Johann Sebastian Bach",
+    "composition_year": 1,
+    "composition_pd_status_us": "public_domain",
+    "composition_pd_status_eu": "public_domain",
+    "arrangement_creator": "Bernd Krueger (piano-midi.de, 1996, edition 2004-09-25)",
+    "arrangement_license": "CC-BY-SA-3.0-DE",
+    "arrangement_license_version": "3.0-DE",
+    "arrangement_evidence_url": "http://piano-midi.de/copy.htm",
+    "record_verdict": "public",
+    "verdict_reason": "Allowlisted 2026-09-09; CC-BY-SA-3.0-DE",
+    "verifier": "http://piano-midi.de/copy.htm; midi meta events (sha256 107f2b6a298f…)",
+    "verified_at": "2026-09-09",
+    "training_use_permitted": true
+  },
+  "scope": {
+    "song_id": "bach-prelude-c-major-bwv846",
+    "phrase_window": "full:62",
+    "instrument": "piano",
+    "key": "C major",
+    "tempo_bpm": 74,
+    "time_signature": "4/4",
+    "window_role": "standalone"
+  },
+  "observation": {
+    "thresholds": {
+      "timing_ms": 40,
+      "pitch_fail_cents": 50,
+      "pitch_warn_cents": 25,
+      "yin_locked_p95_cents": 0.179,
+      "pitch_clearance_cents": 5,
+      "pitch_clearance_multiple": 27.93,
+      "onset_p95_ms": 28.025,
+      "onset_clearance_ms": 38,
+      "onset_clearance_multiple": 1.36
+    },
+    "gold": {
+      "family": "acoustic",
+      "answer": "timing_fail",
+      "engine": "YIN+SuperFlux"
+    },
+    "acoustic": {
+      "kind": "late_fail",
+      "notes": [
+        {
+          "midi": 60,
+          "name": "C4",
+          "time": 0,
+          "duration": 0.45
+        },
+        {
+          "midi": 64,
+          "name": "E4",
+          "time": 1.2,
+          "duration": 0.45
+        },
+        {
+          "midi": 67,
+          "name": "G4",
+          "time": 2.4,
+          "duration": 0.45
+        },
+        {
+          "midi": 72,
+          "name": "C5",
+          "time": 3.5999999999999996,
+          "duration": 0.45
+        },
+        {
+          "midi": 76,
+          "name": "E5",
+          "time": 4.8,
+          "duration": 0.45
+        },
+        {
+          "midi": 67,
+          "name": "G4",
+          "time": 6,
+          "duration": 0.45
+        },
+        {
+          "midi": 72,
+          "name": "C5",
+          "time": 7.2,
+          "duration": 0.45
+        },
+        {
+          "midi": 76,
+          "name": "E5",
+          "time": 8.4,
+          "duration": 0.45
+        }
+      ],
+      "cents_shift": -2.7948837209302324,
+      "delay_sec": 0.12186046511627907,
+      "target_index": 0,
+      "measured_f0_hz": 261.2076486554058,
+      "measured_cents": -2.767657679767578,
+      "measured_onset_ms": 106.34920634920636,
+      "draw": 3
+    }
+  },
+  "annotation_target": {
+    "measure_range": [
+      1,
+      62
+    ],
+    "structure": "Seven structural regions from the section-lens novelty pass, with the sharpest boundary of the whole piece opening at measure 32 (novelty 6.571) — right where measure 35's near-silence sits. The other boundaries fall at measures 8, 14, 24, 45, and 56, each a natural practice unit alongside the opening measures 1-7. The opening right-hand figure (measures 1-2, 17 intervals) is byte-identical to its restatement at measures 4-5, and measure 1 alone shares its pitch-class content with measures 4 and 19 too. A 12-note right-hand figure recurs three times without transposition at measures 17-18, 26-27, and 30-31 — strong evidence, independently confirmed by the raw repeat detector, which finds measures 18, 27, and 31 byte-identical to each other. A 6-note left-hand figure recurs four times, transposed at three of its four appearances (measures 40-41 untransposed, 45-46 shifted down 5 semitones, 55-56 up 2, and 59 alone), and a separate 10-note left-hand figure returns three times at measures 46-47, 50-51, and 59-60 (the last transposed up 5 semitones).",
+    "key_moments": [
+      "Measures 17-18, 26-27, and 30-31 all share one 12-note right-hand figure with no transposition anywhere — strong pattern evidence that teaches how a single arpeggiated cell can anchor three separate passages without the ear noticing the repetition, because the left hand keeps changing underneath it.",
+      "Measure 35's sudden drop to 2 combined onsets, right at the section-lens's biggest boundary (novelty 6.571 opening measure 32), demonstrates that in a texture this continuous, a single held chord functions as a structural landmark — the piece's one true breath before its busiest measures arrive.",
+      "The implied chord windows at measures 7, 10, and 11 (G major, then D7, then G major again) show the harmony leaning toward the dominant before measure 15 resolves back to C major — a compact model of tonic-to-dominant-and-back motion inside a single arpeggiated phrase.",
+      "The busiest measures in the piece — 53, 60, 47, and 55, each 25 or more combined onsets — sit in the last third of the piece, a skill-building target for endurance: the hands must sustain the same even sixteenth-note motion at the piece's densest point that they used at its sparsest."
+    ],
+    "teaching_goals": [
+      "Practice the 12-note right-hand figure at measures 17-18, 26-27, and 30-31 as one recognized shape — learning it once and recognizing its three appearances saves real practice time.",
+      "Listen for the implied dominant motion at measures 7-11 (G major to D7 back to G major) before resolving to C major at measure 15, and learn to hear that pull toward the dominant even though the analysis only hedges it as implied.",
+      "Build even sixteenth-note technique across the busiest measures (53, 60, 47, 55) at a slow tempo first — 25-plus onsets per measure demands finger evenness, not speed, as the first goal.",
+      "Recognize measure 35's near-total silence as a phrase marker, not a mistake in the score — understanding rests as structural punctuation is a core skill for reading any continuous arpeggiated texture."
+    ],
+    "style_tips": [
+      "Keep every note the same weight through the 12-note right-hand figure at measures 17-18, 26-27, and 30-31 — listen for the figure sounding identical each time despite the changing harmony under it.",
+      "Use the sustain pedal to blend each broken chord into a single sonority, but change it with every new harmony — listen for the implied G major and D7 windows around measures 7-11 staying clean rather than smearing into each other.",
+      "Let measure 35's two onsets ring fully before moving on — listen for the silence itself as part of the phrase, not a gap to rush through.",
+      "Approach the busiest measures (53, 60, 47, 55) with a relaxed wrist and minimal rubato — Baroque keyboard tradition favors a steady, unhurried pulse here; listen for the sixteenth notes staying perfectly even even as the texture thickens."
+    ],
+    "teaching_notes": [
+      {
+        "measure": 1,
+        "note": "none"
+      }
+    ]
+  },
+  "target_trace": {
+    "task_family": "acoustic",
+    "objective": "Answer using tools. Do not guess from the question text.",
+    "session": [
+      {
+        "turn": 1,
+        "role": "user",
+        "content": "Grade this take of \"Prelude in C Major, BWV 846 (Well-Tempered Clavier)\". Answer with exactly one of: match, pitch_fail, timing_fail."
+      },
+      {
+        "turn": 2,
+        "role": "assistant",
+        "content": "Transcribing, then scoring with raw measurements.",
+        "tool_calls": [
+          {
+            "tool": "transcribe_audio",
+            "arguments": {
+              "path": "/acoustic-v1/take-730001.wav"
+            }
+          },
+          {
+            "tool": "score_audio_take",
+            "arguments": {
+              "path": "/acoustic-v1/take-730001.wav",
+              "song_id": "bach-prelude-c-major-bwv846"
+            }
+          }
+        ]
+      },
+      {
+        "turn": 3,
+        "role": "tool",
+        "tool": "transcribe_audio",
+        "content": {
+          "note_count": 8
+        }
+      },
+      {
+        "turn": 4,
+        "role": "tool",
+        "tool": "score_audio_take",
+        "content": {
+          "f0_hz": 261.2,
+          "cents_from_target": -2.8,
+          "onset_ms": 106.3
+        }
+      },
+      {
+        "turn": 5,
+        "role": "assistant",
+        "content": "cents -2.8: |2.8| − 50 = −47.2, inside; onset 106.3: |106.3| − 40 = 66.3, against the gate: timing_fail"
+      }
+    ]
+  },
+  "eval_metadata": {
+    "split": "train",
+    "split_strategy": "hold out by song_id",
+    "leakage_check": "passed",
+    "eval_eligibility": [
+      "tool_use",
+      "acoustic"
+    ],
+    "phrase_continuation_eligible": false,
+    "phrase_continuation_eligible_reason": "standalone tool-use items"
+  },
+  "split": "train"
+}

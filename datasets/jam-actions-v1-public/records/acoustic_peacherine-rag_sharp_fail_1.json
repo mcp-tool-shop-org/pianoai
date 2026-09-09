@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": -80,
-      "delay_sec": 0.015,
+      "cents_shift": -82.67441860465117,
+      "delay_sec": 0.017093023255813952,
       "target_index": 0,
-      "measured_f0_hz": 594.2016254049367,
-      "measured_cents": -79.86116659269106,
+      "measured_f0_hz": 593.2738692229559,
+      "measured_cents": -82.56633975291834,
       "measured_onset_ms": 1.859410430839037,
       "draw": 1
     }
@@ -156,13 +156,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-0b4cbd.wav"
+              "path": "/acoustic-v1/take-46b7e6.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-0b4cbd.wav",
+              "path": "/acoustic-v1/take-46b7e6.wav",
               "song_id": "peacherine-rag"
             }
           }
@@ -181,15 +181,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 594.2,
-          "cents_from_target": -79.9,
+          "f0_hz": 593.3,
+          "cents_from_target": -82.6,
           "onset_ms": 1.9
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents -79.9: |79.9| − 50 = 29.9, against the gate; onset 1.9: |1.9| − 40 = −38.1, inside: pitch_fail"
+        "content": "cents -82.6: |82.6| − 50 = 32.6, against the gate; onset 1.9: |1.9| − 40 = −38.1, inside: pitch_fail"
       }
     ]
   },

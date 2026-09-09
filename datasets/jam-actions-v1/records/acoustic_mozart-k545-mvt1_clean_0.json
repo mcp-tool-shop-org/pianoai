@@ -100,10 +100,10 @@
         }
       ],
       "cents_shift": 45,
-      "delay_sec": 0.005,
+      "delay_sec": 0.007325581395348838,
       "target_index": 0,
-      "measured_f0_hz": 268.51937330216845,
-      "measured_cents": 45.02718800618095,
+      "measured_f0_hz": 268.5194422975943,
+      "measured_cents": 45.027632842671714,
       "measured_onset_ms": -9.750566893424018,
       "draw": 0
     }
@@ -156,13 +156,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-8290fb.wav"
+              "path": "/acoustic-v1/take-a78225.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-8290fb.wav",
+              "path": "/acoustic-v1/take-a78225.wav",
               "song_id": "mozart-k545-mvt1"
             }
           }

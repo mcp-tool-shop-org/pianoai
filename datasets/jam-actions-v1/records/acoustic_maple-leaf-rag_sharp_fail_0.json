@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": 61.666666666666664,
-      "delay_sec": 0.006666666666666666,
+      "cents_shift": 63.13953488372093,
+      "delay_sec": 0.005697674418604652,
       "target_index": 0,
-      "measured_f0_hz": 430.37147664084745,
-      "measured_cents": 61.69472926975737,
+      "measured_f0_hz": 430.74259259441953,
+      "measured_cents": 63.186955764963585,
       "measured_onset_ms": -9.750566893424018,
       "draw": 0
     }
@@ -156,13 +156,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-13a8ec.wav"
+              "path": "/acoustic-v1/take-b4506f.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-13a8ec.wav",
+              "path": "/acoustic-v1/take-b4506f.wav",
               "song_id": "maple-leaf-rag"
             }
           }
@@ -181,15 +181,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 430.4,
-          "cents_from_target": 61.7,
+          "f0_hz": 430.7,
+          "cents_from_target": 63.2,
           "onset_ms": -9.8
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents 61.7: |61.7| − 50 = 11.7, against the gate; onset -9.8: |9.8| − 40 = −30.2, inside: pitch_fail"
+        "content": "cents 63.2: |63.2| − 50 = 13.2, against the gate; onset -9.8: |9.8| − 40 = −30.2, inside: pitch_fail"
       }
     ]
   },

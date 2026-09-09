@@ -100,10 +100,10 @@
         }
       ],
       "cents_shift": -45,
-      "delay_sec": 0.15609523809523806,
+      "delay_sec": 0.15427906976744185,
       "target_index": 0,
-      "measured_f0_hz": 303.14636677136434,
-      "measured_cents": -44.986790400058624,
+      "measured_f0_hz": 303.14637861948154,
+      "measured_cents": -44.98672273682497,
       "measured_onset_ms": 141.17913832199548,
       "draw": 1
     }
@@ -156,13 +156,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-74beb5.wav"
+              "path": "/acoustic-v1/take-2c40dc.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-74beb5.wav",
+              "path": "/acoustic-v1/take-2c40dc.wav",
               "song_id": "the-easy-winners"
             }
           }

@@ -1,9 +1,9 @@
 {
-  "$schema_note": "Zenodo deposition metadata payload for the jam-actions-v1 1.0.0 new-version deposit under concept DOI 10.5281/zenodo.20279918. Conforms to the Zenodo legacy REST API deposition schema at https://developers.zenodo.org/#representation. DOI is intentionally absent — Zenodo mints the new version DOI on publish. No auth tokens, no account IDs, no credentials.",
+  "$schema_note": "Zenodo deposition metadata payload for the jam-actions-v1 1.1.0 new-version deposit under concept DOI 10.5281/zenodo.20279918. Conforms to the Zenodo legacy REST API deposition schema at https://developers.zenodo.org/#representation. DOI is intentionally absent — Zenodo mints the new version DOI on publish. No auth tokens, no account IDs, no credentials.",
   "metadata": {
     "title": "jam-actions-v1 — AI Jam Sessions tool-use traces (shown-work targets)",
     "upload_type": "dataset",
-    "description": "<p>146 multi-turn MCP tool-use traces over 11 public-domain piano pieces whose arrangements carry a verified licence, nine task families, split by song. Every assistant turn shows the comparison that decides its answer. Built under a seven-rule experiment contract; rebuilt nine times as each training run — and finally a provenance audit — exposed what the previous version let through. CC-BY-SA-3.0-DE.</p>",
+    "description": "<p>213 multi-turn MCP tool-use traces over 11 public-domain piano pieces whose arrangements carry a verified licence, nine task families, split by song; 1.1.0 draws four acoustic takes per song and class instead of two, which is what lets a 3B lock the gate comparison. Every assistant turn shows the comparison that decides its answer. Built under a seven-rule experiment contract; rebuilt nine times as each training run — and finally a provenance audit — exposed what the previous version let through. CC-BY-SA-3.0-DE.</p>",
     "creators": [
       {
         "name": "mcp-tool-shop-org",
@@ -27,7 +27,7 @@
     "license": "CC-BY-SA-3.0",
     "access_right": "open",
     "language": "eng",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "related_identifiers": [
       {
         "identifier": "https://github.com/mcp-tool-shop-org/ai-jam-sessions",

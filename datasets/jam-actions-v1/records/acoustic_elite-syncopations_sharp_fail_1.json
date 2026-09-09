@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": -63.33333333333333,
-      "delay_sec": 0.033333333333333326,
+      "cents_shift": -64.76744186046511,
+      "delay_sec": 0.03337209302325581,
       "target_index": 0,
-      "measured_f0_hz": 504.4710898812621,
-      "measured_cents": -63.27831564096496,
+      "measured_f0_hz": 504.04652937168106,
+      "measured_cents": -64.73592756457215,
       "measured_onset_ms": 13.469387755102035,
       "draw": 1
     }
@@ -156,13 +156,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-9dc477.wav"
+              "path": "/acoustic-v1/take-ae7c07.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-9dc477.wav",
+              "path": "/acoustic-v1/take-ae7c07.wav",
               "song_id": "elite-syncopations"
             }
           }
@@ -181,15 +181,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 504.5,
-          "cents_from_target": -63.3,
+          "f0_hz": 504,
+          "cents_from_target": -64.7,
           "onset_ms": 13.5
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents -63.3: |63.3| − 50 = 13.3, against the gate; onset 13.5: |13.5| − 40 = −26.5, inside: pitch_fail"
+        "content": "cents -64.7: |64.7| − 50 = 14.7, against the gate; onset 13.5: |13.5| − 40 = −26.5, inside: pitch_fail"
       }
     ]
   },

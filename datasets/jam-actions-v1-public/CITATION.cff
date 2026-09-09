@@ -4,7 +4,7 @@ message: "If you use this dataset, please cite it as below."
 type: dataset
 authors:
   - name: "mcp-tool-shop-org"
-version: "1.0.0"
+version: "1.1.0"
 date-released: "2026-09-09"
 license: "CC-BY-SA-3.0-DE"
 doi: "10.5281/zenodo.20279918"
@@ -15,7 +15,7 @@ identifiers:
 url: "https://doi.org/10.5281/zenodo.20279918"
 repository-code: "https://github.com/mcp-tool-shop-org/ai-jam-sessions"
 abstract: >-
-  371 multi-turn MCP tool-use traces over 27 public-domain piano pieces, nine task families, split by song. Every assistant turn shows the comparison that decides its answer. Schema jam-actions-v1/1.0.0.
+  213 multi-turn MCP tool-use traces over 11 public-domain piano pieces whose arrangements carry a verified licence, nine task families, split by song. Every assistant turn shows the comparison that decides its answer. Schema jam-actions-v1/1.0.0.
 keywords:
   - music
   - midi

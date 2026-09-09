@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": -30.596666666666664,
-      "delay_sec": 0.11704761904761904,
+      "cents_shift": -31.936511627906977,
+      "delay_sec": 0.11804651162790697,
       "target_index": 0,
-      "measured_f0_hz": 577.0642550874608,
-      "measured_cents": -30.525865262663615,
+      "measured_f0_hz": 576.6094381378016,
+      "measured_cents": -31.89088664567472,
       "measured_onset_ms": 106.34920634920636,
       "draw": 1
     }
@@ -159,13 +159,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-26011e.wav"
+              "path": "/acoustic-v1/take-29a8c1.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-26011e.wav",
+              "path": "/acoustic-v1/take-29a8c1.wav",
               "song_id": "the-entertainer"
             }
           }
@@ -184,15 +184,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 577.1,
-          "cents_from_target": -30.5,
+          "f0_hz": 576.6,
+          "cents_from_target": -31.9,
           "onset_ms": 106.3
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents -30.5: |30.5| − 50 = −19.5, inside; onset 106.3: |106.3| − 40 = 66.3, against the gate: timing_fail"
+        "content": "cents -31.9: |31.9| − 50 = −18.1, inside; onset 106.3: |106.3| − 40 = 66.3, against the gate: timing_fail"
       }
     ]
   },

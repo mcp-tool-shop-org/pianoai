@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": 16.19333333333333,
-      "delay_sec": 0.13266666666666665,
+      "cents_shift": 19.877906976744185,
+      "delay_sec": 0.1352093023255814,
       "target_index": 0,
-      "measured_f0_hz": 888.3759121150949,
-      "measured_cents": 16.400102021071433,
+      "measured_f0_hz": 890.2256616335007,
+      "measured_cents": 20.001077698065075,
       "measured_onset_ms": 117.95918367346941,
       "draw": 0
     }
@@ -156,13 +156,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-16b3f0.wav"
+              "path": "/acoustic-v1/take-3c1b4e.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-16b3f0.wav",
+              "path": "/acoustic-v1/take-3c1b4e.wav",
               "song_id": "bethena"
             }
           }
@@ -181,15 +181,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 888.4,
-          "cents_from_target": 16.4,
+          "f0_hz": 890.2,
+          "cents_from_target": 20,
           "onset_ms": 118
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents 16.4: |16.4| − 50 = −33.6, inside; onset 118.0: |118.0| − 40 = 78.0, against the gate: timing_fail"
+        "content": "cents 20.0: |20.0| − 50 = −30.0, inside; onset 118.0: |118.0| − 40 = 78.0, against the gate: timing_fail"
       }
     ]
   },
