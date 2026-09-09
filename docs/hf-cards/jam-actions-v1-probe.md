@@ -20,6 +20,7 @@ configs:
       - split: test
         path: records.jsonl
 ---
+<!-- DRAFT against the 27-song corpus. Superseded by docs/findings/v1-provenance-audit.md (2026-09-09): the publishable set is 15 songs. Rewritten before any publish; do not upload this text. -->
 
 # jam-actions-v1-probe
 
