@@ -115,7 +115,8 @@
         "tool": "song_info",
         "content": {
           "id": "the-entertainer",
-          "title": "The Entertainer"
+          "title": "The Entertainer",
+          "key": "C major"
         }
       },
       {
@@ -124,7 +125,8 @@
         "tool": "song_info",
         "content": {
           "id": "weeping-willow",
-          "title": "Weeping Willow"
+          "title": "Weeping Willow",
+          "key": "C major"
         }
       },
       {
@@ -132,14 +134,14 @@
         "role": "tool",
         "tool": "compare_songs",
         "content": {
-          "song_a": "the-entertainer",
-          "song_b": "weeping-willow"
+          "key_a": "C major",
+          "key_b": "C major"
         }
       },
       {
         "turn": 6,
         "role": "assistant",
-        "content": "same_key"
+        "content": "C major, C major: same: same_key"
       }
     ]
   },

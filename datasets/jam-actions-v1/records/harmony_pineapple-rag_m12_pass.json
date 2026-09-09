@@ -32,7 +32,7 @@
   },
   "observation": {
     "thresholds": {
-      "min_pitch_classes": 2
+      "max_chromatic_ratio": 0.2
     },
     "gold": {
       "family": "harmony",
@@ -117,13 +117,16 @@
         "role": "tool",
         "tool": "verify_harmony",
         "content": {
-          "reharmonization": "[{\"measure\":12,\"intendedChord\":\"F\",\"voicing\":\"F2 F3 C3 A2 F2\"}]"
+          "intended": "F",
+          "detected": "F",
+          "chromatic": 0,
+          "scored": 5
         }
       },
       {
         "turn": 4,
         "role": "assistant",
-        "content": "verified"
+        "content": "intended F, detected F: same; chromatic 0/5 = 0.000 − 0.2 = −0.200, inside: verified"
       }
     ]
   },

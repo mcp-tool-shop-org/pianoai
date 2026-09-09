@@ -112,7 +112,8 @@
         "tool": "song_info",
         "content": {
           "id": "schumann-traumerei",
-          "title": "Traumerei (Dreaming) from Kinderszenen"
+          "title": "Traumerei (Dreaming) from Kinderszenen",
+          "key": "F major"
         }
       },
       {
@@ -121,7 +122,8 @@
         "tool": "song_info",
         "content": {
           "id": "simple-gifts",
-          "title": "Simple Gifts"
+          "title": "Simple Gifts",
+          "key": "F major"
         }
       },
       {
@@ -129,14 +131,14 @@
         "role": "tool",
         "tool": "compare_songs",
         "content": {
-          "song_a": "schumann-traumerei",
-          "song_b": "simple-gifts"
+          "key_a": "F major",
+          "key_b": "F major"
         }
       },
       {
         "turn": 6,
         "role": "assistant",
-        "content": "same_key"
+        "content": "F major, F major: same: same_key"
       }
     ]
   },

@@ -112,7 +112,8 @@
         "tool": "song_info",
         "content": {
           "id": "solace",
-          "title": "Solace"
+          "title": "Solace",
+          "key": "G major"
         }
       },
       {
@@ -121,7 +122,8 @@
         "tool": "song_info",
         "content": {
           "id": "the-water-is-wide",
-          "title": "The Water Is Wide"
+          "title": "The Water Is Wide",
+          "key": "G major"
         }
       },
       {
@@ -129,14 +131,14 @@
         "role": "tool",
         "tool": "compare_songs",
         "content": {
-          "song_a": "solace",
-          "song_b": "the-water-is-wide"
+          "key_a": "G major",
+          "key_b": "G major"
         }
       },
       {
         "turn": 6,
         "role": "assistant",
-        "content": "same_key"
+        "content": "G major, G major: same: same_key"
       }
     ]
   },

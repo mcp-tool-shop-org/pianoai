@@ -113,7 +113,8 @@
         "tool": "song_info",
         "content": {
           "id": "amazing-grace",
-          "title": "Amazing Grace"
+          "title": "Amazing Grace",
+          "key": "Eb major"
         }
       },
       {
@@ -122,7 +123,8 @@
         "tool": "song_info",
         "content": {
           "id": "bethena",
-          "title": "Bethena"
+          "title": "Bethena",
+          "key": "Bb major"
         }
       },
       {
@@ -130,14 +132,14 @@
         "role": "tool",
         "tool": "compare_songs",
         "content": {
-          "song_a": "amazing-grace",
-          "song_b": "bethena"
+          "key_a": "Eb major",
+          "key_b": "Bb major"
         }
       },
       {
         "turn": 6,
         "role": "assistant",
-        "content": "different_key"
+        "content": "Eb major, Bb major: different: different_key"
       }
     ]
   },

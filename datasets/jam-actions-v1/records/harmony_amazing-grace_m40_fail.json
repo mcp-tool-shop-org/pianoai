@@ -32,7 +32,7 @@
   },
   "observation": {
     "thresholds": {
-      "min_pitch_classes": 2
+      "max_chromatic_ratio": 0.2
     },
     "gold": {
       "family": "harmony",
@@ -118,13 +118,16 @@
         "role": "tool",
         "tool": "verify_harmony",
         "content": {
-          "reharmonization": "[{\"measure\":40,\"intendedChord\":\"Bsus2\",\"voicing\":\"C2 C#2 A2 C3 C3 C3 A2 A2 G3 C4 A2 D2 A2 G3 C4 G2 A2\"}]"
+          "intended": "Bsus2",
+          "detected": "Csus2",
+          "chromatic": 0,
+          "scored": 17
         }
       },
       {
         "turn": 4,
         "role": "assistant",
-        "content": "rejected"
+        "content": "intended Bsus2, detected Csus2: different; chromatic 0/17 = 0.000 − 0.2 = −0.200, inside: rejected"
       }
     ]
   },

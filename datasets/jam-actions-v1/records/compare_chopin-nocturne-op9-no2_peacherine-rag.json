@@ -1,0 +1,157 @@
+{
+  "id": "compare:chopin-nocturne-op9-no2|peacherine-rag",
+  "schema_version": "jam-actions-v1/1.0.0",
+  "family": "compare",
+  "provenance": {
+    "source_url": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
+    "source_collected_at": "library-scan",
+    "source_type": "transcribed-by-author",
+    "composition_title": "Nocturne in Eb Major, Op. 9 No. 2",
+    "composer": "Frederic Chopin",
+    "composition_year": 1,
+    "composition_pd_status_us": "public_domain",
+    "composition_pd_status_eu": "public_domain",
+    "arrangement_creator": null,
+    "arrangement_license": "CC-BY-SA",
+    "arrangement_license_version": null,
+    "arrangement_evidence_url": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
+    "record_verdict": "public",
+    "verdict_reason": "Publishable shelf: classical, ragtime, or folk. clair-de-lune excluded.",
+    "verifier": "v1-builder",
+    "verified_at": "library-scan",
+    "training_use_permitted": true
+  },
+  "scope": {
+    "song_id": "chopin-nocturne-op9-no2|peacherine-rag",
+    "phrase_window": "full:123",
+    "instrument": "piano",
+    "key": "Eb major",
+    "tempo_bpm": 120,
+    "time_signature": "4/4",
+    "window_role": "standalone"
+  },
+  "observation": {
+    "thresholds": {
+      "min_pitch_classes": 2
+    },
+    "gold": {
+      "family": "compare",
+      "answer": "same_key",
+      "engine": "song.key"
+    }
+  },
+  "annotation_target": {
+    "measure_range": [
+      1,
+      123
+    ],
+    "structure": "Twelve structural regions from the section-lens pass, the two sharpest boundaries opening at measure 62 (novelty 7.558) and measure 116 (6.092) — the approach to the cadenza and the final closing gesture. The same 31-note left-hand waltz figure anchors four regions of the piece (measures 5-14, 18-28, 45-55, 72-83, strong pattern evidence, compression ratio 3.543), and an even larger 88-note left-hand span covers nearly half the piece across just two occurrences (measures 20-47 and 47-75). Above that steady foundation, the right hand's ornamentation keeps changing — the piece never repeats the same melodic figure as literally as the bass repeats its waltz pattern, which is exactly how progressive variation over a fixed accompaniment works. The free cadenza at measure 112 (28 onsets, right hand only) sits inside the longest left-hand silence in the piece (measures 110-114, 5 measures), and the piece closes with two fully silent measures (122-123) after the sparsest passage in its final ten bars.",
+    "key_moments": [
+      "The left-hand waltz figure at measures 5-14 restates without transposition three more times — at measures 18-28, 45-55, and 72-83 — which teaches the core nocturne technique: a fixed, steady accompaniment frees the right hand to grow more ornamented with every return, rather than the harmony itself changing.",
+      "Measure 112's 28 onsets, every single one in the right hand while the left hand sits silent, demonstrates a written-out free cadenza — the analysis's densest measure in the entire piece is also its most soloistic, a skill that separates florid rubato playing from strict-tempo playing.",
+      "The chord windows confirm Eb major's own diatonic family under the tool's sharp spelling — D# (the tonic) as the single most-cited label, G# (the IV) not far behind, and A#7 (the dominant seventh) appearing near the cadenza — showing tonic-subdominant-dominant motion holding the piece together even through heavy ornamentation.",
+      "The piece closes on total silence at measures 122-123, the endpoint of a section that opens with the sharpest novelty boundary outside the cadenza (measure 116, novelty 6.092) — a model for how a nocturne can end by simply stopping rather than through a loud final cadence."
+    ],
+    "teaching_goals": [
+      "Learn the 31-note left-hand waltz figure once (measures 5-14) and practice recognizing its three later returns (18-28, 45-55, 72-83) as the same shape wearing different right-hand ornamentation.",
+      "Practice the measure 112 cadenza as its own unit, completely free of the left hand's steady pulse — build the freedom to stretch time when no accompaniment is anchoring the beat.",
+      "Recognize the implied D#-G#-A#7 harmonic family (the tonic, subdominant, and dominant seventh under sharp spelling) by ear, and listen for how it keeps returning under increasingly ornamented melodic lines.",
+      "Develop control over the transition into total silence at measures 122-123 — practice letting a phrase fully decay rather than cutting it off, since the piece's ending is an absence of sound, not a final chord."
+    ],
+    "style_tips": [
+      "Keep the left-hand waltz figure absolutely steady through all four of its appearances (measures 5-14, 18-28, 45-55, 72-83) — listen for it staying identical in rhythm even as the right hand above it grows more ornamented each time.",
+      "Use rubato freely in the right hand, especially through the measure 112 cadenza where the left hand rests entirely — listen for the phrase breathing like a singer taking a free, unmeasured breath.",
+      "Pedal generously through the ornamented returns, but lift and change with every new harmony implied by the D#-G#-A#7 family — listen for the bass notes staying clear under the florid right hand rather than blurring together.",
+      "Let the final two silent measures (122-123) actually happen — don't fill them with sound or rush to a bow; listen for the room going quiet after the sparsest closing bars."
+    ],
+    "teaching_notes": [
+      {
+        "measure": 1,
+        "note": "none"
+      }
+    ]
+  },
+  "target_trace": {
+    "task_family": "compare",
+    "objective": "Answer using tools. Do not guess from the question text.",
+    "session": [
+      {
+        "turn": 1,
+        "role": "user",
+        "content": "Do \"Nocturne in Eb Major, Op. 9 No. 2\" and \"Peacherine Rag\" share a key signature? Answer with exactly one of: same_key, different_key."
+      },
+      {
+        "turn": 2,
+        "role": "assistant",
+        "content": "Comparing the two library entries.",
+        "tool_calls": [
+          {
+            "tool": "song_info",
+            "arguments": {
+              "id": "chopin-nocturne-op9-no2"
+            }
+          },
+          {
+            "tool": "song_info",
+            "arguments": {
+              "id": "peacherine-rag"
+            }
+          },
+          {
+            "tool": "compare_songs",
+            "arguments": {
+              "song_a": "chopin-nocturne-op9-no2",
+              "song_b": "peacherine-rag"
+            }
+          }
+        ]
+      },
+      {
+        "turn": 3,
+        "role": "tool",
+        "tool": "song_info",
+        "content": {
+          "id": "chopin-nocturne-op9-no2",
+          "title": "Nocturne in Eb Major, Op. 9 No. 2",
+          "key": "Eb major"
+        }
+      },
+      {
+        "turn": 4,
+        "role": "tool",
+        "tool": "song_info",
+        "content": {
+          "id": "peacherine-rag",
+          "title": "Peacherine Rag",
+          "key": "Eb major"
+        }
+      },
+      {
+        "turn": 5,
+        "role": "tool",
+        "tool": "compare_songs",
+        "content": {
+          "key_a": "Eb major",
+          "key_b": "Eb major"
+        }
+      },
+      {
+        "turn": 6,
+        "role": "assistant",
+        "content": "Eb major, Eb major: same: same_key"
+      }
+    ]
+  },
+  "eval_metadata": {
+    "split": "train",
+    "split_strategy": "hold out by song_id",
+    "leakage_check": "passed",
+    "eval_eligibility": [
+      "tool_use",
+      "compare"
+    ],
+    "phrase_continuation_eligible": false,
+    "phrase_continuation_eligible_reason": "standalone tool-use items"
+  },
+  "split": "train"
+}

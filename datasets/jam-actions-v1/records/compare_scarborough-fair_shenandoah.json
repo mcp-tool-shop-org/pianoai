@@ -113,7 +113,8 @@
         "tool": "song_info",
         "content": {
           "id": "scarborough-fair",
-          "title": "Scarborough Fair"
+          "title": "Scarborough Fair",
+          "key": "D minor"
         }
       },
       {
@@ -122,7 +123,8 @@
         "tool": "song_info",
         "content": {
           "id": "shenandoah",
-          "title": "Shenandoah"
+          "title": "Shenandoah",
+          "key": "Eb major"
         }
       },
       {
@@ -130,14 +132,14 @@
         "role": "tool",
         "tool": "compare_songs",
         "content": {
-          "song_a": "scarborough-fair",
-          "song_b": "shenandoah"
+          "key_a": "D minor",
+          "key_b": "Eb major"
         }
       },
       {
         "turn": 6,
         "role": "assistant",
-        "content": "different_key"
+        "content": "D minor, Eb major: different: different_key"
       }
     ]
   },

@@ -113,7 +113,8 @@
         "tool": "song_info",
         "content": {
           "id": "scarborough-fair",
-          "title": "Scarborough Fair"
+          "title": "Scarborough Fair",
+          "key": "D minor"
         }
       },
       {
@@ -122,7 +123,8 @@
         "tool": "song_info",
         "content": {
           "id": "simple-gifts",
-          "title": "Simple Gifts"
+          "title": "Simple Gifts",
+          "key": "F major"
         }
       },
       {
@@ -130,14 +132,14 @@
         "role": "tool",
         "tool": "compare_songs",
         "content": {
-          "song_a": "scarborough-fair",
-          "song_b": "simple-gifts"
+          "key_a": "D minor",
+          "key_b": "F major"
         }
       },
       {
         "turn": 6,
         "role": "assistant",
-        "content": "different_key"
+        "content": "D minor, F major: different: different_key"
       }
     ]
   },

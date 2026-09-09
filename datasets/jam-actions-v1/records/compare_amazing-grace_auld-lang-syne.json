@@ -113,7 +113,8 @@
         "tool": "song_info",
         "content": {
           "id": "amazing-grace",
-          "title": "Amazing Grace"
+          "title": "Amazing Grace",
+          "key": "Eb major"
         }
       },
       {
@@ -122,7 +123,8 @@
         "tool": "song_info",
         "content": {
           "id": "auld-lang-syne",
-          "title": "Auld Lang Syne"
+          "title": "Auld Lang Syne",
+          "key": "F major"
         }
       },
       {
@@ -130,14 +132,14 @@
         "role": "tool",
         "tool": "compare_songs",
         "content": {
-          "song_a": "amazing-grace",
-          "song_b": "auld-lang-syne"
+          "key_a": "Eb major",
+          "key_b": "F major"
         }
       },
       {
         "turn": 6,
         "role": "assistant",
-        "content": "different_key"
+        "content": "Eb major, F major: different: different_key"
       }
     ]
   },

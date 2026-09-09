@@ -8,7 +8,11 @@ import { parseNoteToMidi, midiToNoteName } from "../../note-parser.js";
 import { inferChord } from "../../songs/jam.js";
 import { detectChord } from "../../chord-detect.js";
 import { transposeSong } from "../../songs/transpose.js";
-import { verifyHarmony, type ReharmonizedMeasure } from "../../maker/verify-harmony.js";
+import { verifyHarmony, DEFAULT_MAX_CHROMATIC_RATIO, type ReharmonizedMeasure } from "../../maker/verify-harmony.js";
+import {
+  compareAssistantContent,
+  harmonyAssistantContent,
+} from "./shown-work.js";
 import { Ensemble } from "../../audio/ensemble.js";
 import { validateTrace } from "../trace-validator.js";
 import {
@@ -31,6 +35,19 @@ import { V1_SCHEMA_VERSION } from "./schema.js";
 import { loadPublishableSongs } from "./library.js";
 
 export { f5DropStats, acousticAssistantContent, acousticComparisonLine, parseAcousticAssistant, round1 } from "./f5-acoustic.js";
+export {
+  compareAssistantContent,
+  compareAssistantLine,
+  harmonyAssistantContent,
+  harmonyAssistantLine,
+  parseCompareAssistant,
+  parseHarmonyAssistant,
+  chromaticRatioOf,
+  compareGoldFromPrinted,
+  consonanceInside,
+  fidelitySame,
+  harmonyGoldFromPrinted,
+} from "./shown-work.js";
 
 export const USER_TURN_FORMAT: Record<V1Family, { instruction: string; pattern: RegExp }> = {
   chord: { instruction: "Answer with the chord symbol alone.", pattern: /Answer with the chord symbol alone\./ },
@@ -65,7 +82,7 @@ function roundToolNumbers(x: unknown): unknown {
 }
 
 export interface V1BuildOpts {
-  /** Bare acoustic assistant label. */
+  /** Bare last-assistant label for acoustic, harmony, and compare. */
   acousticBareLabel?: boolean;
   /** Plain comparison line (chunk 22). Default is the arithmetic target (chunk 32). */
   acousticPlainComparison?: boolean;
@@ -365,14 +382,24 @@ function pairsInGroup(
 }
 
 export function pickComparePairs(songs: SongEntry[], testIds: Set<string>) {
+  const train = songs.filter((s) => !testIds.has(s.id));
+  const test = songs.filter((s) => testIds.has(s.id));
+  const nTrain = sameKeyPairCount(train);
+  const nTest = sameKeyPairCount(test);
   return [
-    ...pairsInGroup(songs.filter((s) => !testIds.has(s.id)), "train", 4, 4),
-    ...pairsInGroup(songs.filter((s) => testIds.has(s.id)), "test", 3, 3),
+    ...pairsInGroup(train, "train", nTrain, nTrain),
+    ...pairsInGroup(test, "test", nTest, nTest),
   ];
 }
 
-export function buildCompareRecord(a: SongEntry, b: SongEntry, split: "train" | "test"): V1Record {
+export function buildCompareRecord(
+  a: SongEntry,
+  b: SongEntry,
+  split: "train" | "test",
+  opts: V1BuildOpts = {},
+): V1Record {
   const answer = a.key === b.key ? "same_key" : "different_key";
+  const bare = Boolean(opts.acousticBareLabel);
   const session: Turn[] = [
     { turn: 1, role: "user", content: ask("compare", `Do "${a.title}" and "${b.title}" share a key signature?`) },
     {
@@ -384,10 +411,10 @@ export function buildCompareRecord(a: SongEntry, b: SongEntry, split: "train" | 
         { tool: "compare_songs", arguments: { song_a: a.id, song_b: b.id } },
       ],
     },
-    { turn: 3, role: "tool", tool: "song_info", content: { id: a.id, title: a.title } },
-    { turn: 4, role: "tool", tool: "song_info", content: { id: b.id, title: b.title } },
-    { turn: 5, role: "tool", tool: "compare_songs", content: { song_a: a.id, song_b: b.id } },
-    { turn: 6, role: "assistant", content: answer },
+    { turn: 3, role: "tool", tool: "song_info", content: { id: a.id, title: a.title, key: a.key } },
+    { turn: 4, role: "tool", tool: "song_info", content: { id: b.id, title: b.title, key: b.key } },
+    { turn: 5, role: "tool", tool: "compare_songs", content: { key_a: a.key, key_b: b.key } },
+    { turn: 6, role: "assistant", content: compareAssistantContent(a.key, b.key, answer, bare) },
   ];
   const rec = baseRecord(a, "compare", `compare:${[a.id, b.id].sort().join("|")}`, split, {
     family: "compare", answer, engine: "song.key",
@@ -396,7 +423,11 @@ export function buildCompareRecord(a: SongEntry, b: SongEntry, split: "train" | 
   return rec;
 }
 
-export function buildHarmonyRecords(song: SongEntry, split: "train" | "test"): V1Record[] {
+export function buildHarmonyRecords(
+  song: SongEntry,
+  split: "train" | "test",
+  opts: V1BuildOpts = {},
+): V1Record[] {
   const hit = agreeingChordMeasure(song);
   if (!hit) return [];
   const measure = hit.measure;
@@ -405,6 +436,7 @@ export function buildHarmonyRecords(song: SongEntry, split: "train" | "test"): V
   const invalidVoicing = hit.midi.map((m) => midiToNoteName(m + 1)).join(" ");
   const melody = [{ number: measure, rightHand: hit.midi.map((m) => `${midiToNoteName(m + 12)}:q`).join(" ") }];
   const out: V1Record[] = [];
+  const bare = Boolean(opts.acousticBareLabel);
   for (const [tag, voicing] of [["pass", validVoicing], ["fail", invalidVoicing]] as const) {
     const reharmonization: ReharmonizedMeasure[] = [
       { measure, intendedChord: intended, voicing },
@@ -413,6 +445,9 @@ export function buildHarmonyRecords(song: SongEntry, split: "train" | "test"): V
     const answer = verdict.verified ? "verified" : "rejected";
     if (tag === "pass" && answer !== "verified") continue;
     if (tag === "fail" && answer !== "rejected") continue;
+    const fid = verdict.chordFidelity.perMeasure[0]!;
+    const chromatic = verdict.consonance.chromatic;
+    const scored = verdict.consonance.chordTones + verdict.consonance.tensions + verdict.consonance.chromatic;
     const payload = JSON.stringify(reharmonization);
     const session: Turn[] = [
       { turn: 1, role: "user", content: ask("harmony", `Proposed reharmonization of measure ${measure} of "${song.title}": ${payload}\nDoes it clear the harmony verifier?`) },
@@ -424,12 +459,18 @@ export function buildHarmonyRecords(song: SongEntry, split: "train" | "test"): V
           arguments: { songId: song.id, measures: `${measure}-${measure}`, reharmonization: payload, key: song.key },
         }],
       },
-      { turn: 3, role: "tool", tool: "verify_harmony", content: { reharmonization: payload } },
-      { turn: 4, role: "assistant", content: answer },
+      { turn: 3, role: "tool", tool: "verify_harmony", content: {
+        intended: fid.intended,
+        detected: fid.detected,
+        chromatic,
+        scored,
+      } },
+      { turn: 4, role: "assistant", content: harmonyAssistantContent(fid.intended, fid.detected, chromatic, scored, answer, bare) },
     ];
     out.push(baseRecord(song, "harmony", `harmony:${song.id}:m${measure}:${tag}`, split, {
       family: "harmony", answer, engine: "verifyHarmony",
     }, session, {
+      thresholds: { max_chromatic_ratio: DEFAULT_MAX_CHROMATIC_RATIO },
       observation: { harmony: { melody, reharmonization, key: song.key } },
     }));
   }
@@ -667,12 +708,12 @@ export function buildAllRecords(opts: V1BuildOpts = {}): V1Record[] {
     records.push(buildTeachingGoalsRecord(song, split));
     const km = buildKeyMomentsRecord(song, split);
     if (km) records.push(km);
-    records.push(...buildHarmonyRecords(song, split));
+    records.push(...buildHarmonyRecords(song, split, opts));
     records.push(...buildAcousticRecord(song, split, opts));
   }
   records.push(...buildEnsembleRecords());
   for (const p of pickComparePairs(songs, testIds)) {
-    records.push(buildCompareRecord(p.a, p.b, p.split));
+    records.push(buildCompareRecord(p.a, p.b, p.split, opts));
   }
   const takePaths = new Set<string>();
   for (const r of records) {

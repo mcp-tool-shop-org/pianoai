@@ -4,7 +4,25 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineTask, publishedOwner, assertNoStraddle } from "../experiment/index.js";
 import { v1Records, coverageV1Task } from "./task.js";
-import { rederiveGold, toolSequenceOf, f5DropStats, USER_TURN_FORMAT, userTurnNamesClosedSet } from "./builder.js";
+import {
+  rederiveGold,
+  toolSequenceOf,
+  f5DropStats,
+  USER_TURN_FORMAT,
+  userTurnNamesClosedSet,
+  sameKeyPairCount,
+  testSongIds,
+  acousticAssistantContent,
+  compareAssistantContent,
+  harmonyAssistantContent,
+  parseCompareAssistant,
+  parseHarmonyAssistant,
+  chromaticRatioOf,
+  compareGoldFromPrinted,
+  consonanceInside,
+  fidelitySame,
+  harmonyGoldFromPrinted,
+} from "./builder.js";
 import {
   F5_KINDS,
   F5_PITCH_CLEARANCE_MULTIPLE,
@@ -24,8 +42,8 @@ import {
   rederiveF5Measurements,
   parseAcousticAssistant,
   round1,
-  acousticAssistantContent,
 } from "./f5-acoustic.js";
+import { DEFAULT_MAX_CHROMATIC_RATIO } from "../../maker/verify-harmony.js";
 import {
   MEASURED_YIN_LOCKED_P95_CENTS,
   MEASURED_ONSET_ABS_P95_MS,
@@ -268,24 +286,50 @@ function leafDiff(a: unknown, b: unknown, path: string, out: string[]): void {
 }
 
 describe("acoustic flag variants differ only in the last assistant turn", () => {
-  it("bare and plain-comparison each differ in 162 acoustic assistant leaves", () => {
+  it("plain-comparison differs in 162 acoustic assistant leaves", () => {
     const committed = committedRecords();
     const acousticN = committed.filter((r) => r.family === "acoustic").length;
     expect(acousticN).toBe(162);
-    for (const target of ["bare", "comparison"] as const) {
-      const diffs: string[] = [];
-      for (const r of committed) {
-        if (r.family !== "acoustic") continue;
-        const t = scoreTakeContent(r);
-        const next = acousticAssistantContent(t.cents_from_target as number, t.onset_ms as number, r.observation.gold.answer, target);
-        const copy = structuredClone(r);
-        const last = [...copy.target_trace.session].reverse().find((x) => x.role === "assistant") as { content: string };
-        last.content = next;
-        leafDiff(r, copy, r.id, diffs);
-      }
-      expect(diffs.length, target).toBe(acousticN);
-      expect(diffs.every((d) => d.endsWith(".content")), target).toBe(true);
+    const diffs: string[] = [];
+    for (const r of committed) {
+      if (r.family !== "acoustic") continue;
+      const t = scoreTakeContent(r);
+      const next = acousticAssistantContent(t.cents_from_target as number, t.onset_ms as number, r.observation.gold.answer, "comparison");
+      const copy = structuredClone(r);
+      const last = [...copy.target_trace.session].reverse().find((x) => x.role === "assistant") as { content: string };
+      last.content = next;
+      leafDiff(r, copy, r.id, diffs);
     }
+    expect(diffs.length).toBe(acousticN);
+    expect(diffs.every((d) => d.endsWith(".content"))).toBe(true);
+  });
+
+  it("bare-label differs only in the last assistant leaf of acoustic, harmony, and compare", () => {
+    const committed = committedRecords();
+    const n = committed.filter((r) => r.family === "acoustic" || r.family === "harmony" || r.family === "compare").length;
+    expect(n).toBeGreaterThan(162);
+    const diffs: string[] = [];
+    for (const r of committed) {
+      let next: string | null = null;
+      if (r.family === "acoustic") {
+        const t = scoreTakeContent(r);
+        next = acousticAssistantContent(t.cents_from_target as number, t.onset_ms as number, r.observation.gold.answer, "bare");
+      } else if (r.family === "harmony") {
+        const t = harmonyToolContent(r);
+        next = harmonyAssistantContent(t.intended, t.detected, t.chromatic, t.scored, r.observation.gold.answer, true);
+      } else if (r.family === "compare") {
+        const t = compareToolContent(r);
+        next = compareAssistantContent(t.key_a, t.key_b, r.observation.gold.answer, true);
+      } else {
+        continue;
+      }
+      const copy = structuredClone(r);
+      const last = [...copy.target_trace.session].reverse().find((x) => x.role === "assistant") as { content: string };
+      last.content = next;
+      leafDiff(r, copy, r.id, diffs);
+    }
+    expect(diffs.length).toBe(n);
+    expect(diffs.every((d) => d.endsWith(".content"))).toBe(true);
   });
 });
 
@@ -319,6 +363,23 @@ describe("shapes are counted from traces", () => {
   });
 });
 
+function lastAssistant(r: V1Record): string {
+  const last = [...r.target_trace.session].reverse().find((t) => t.role === "assistant");
+  return (last as { content: string }).content;
+}
+
+function harmonyToolContent(r: V1Record): { intended: string; detected: string; chromatic: number; scored: number } {
+  const turn = r.target_trace.session.find((t) => t.role === "tool" && t.tool === "verify_harmony");
+  expect(turn, r.id).toBeDefined();
+  return (turn as { content: { intended: string; detected: string; chromatic: number; scored: number } }).content;
+}
+
+function compareToolContent(r: V1Record): { key_a: string; key_b: string } {
+  const turn = r.target_trace.session.find((t) => t.role === "tool" && t.tool === "compare_songs");
+  expect(turn, r.id).toBeDefined();
+  return (turn as { content: { key_a: string; key_b: string } }).content;
+}
+
 describe("F1 harmony", () => {
   it("re-derives the gate and populates both classes", () => {
     const rows = committedRecords().filter((r) => r.family === "harmony");
@@ -327,6 +388,115 @@ describe("F1 harmony", () => {
     expect(pass.length).toBeGreaterThan(3);
     expect(fail.length).toBeGreaterThan(3);
     for (const r of rows) expect(rederiveGold(r), r.id).toBe(r.observation.gold.answer);
+  });
+
+  it("renders the shown-work line with fidelity and the chromatic subtraction", () => {
+    const line = harmonyAssistantContent("C", "C", 0, 4, "verified");
+    expect(line).toBe(
+      "intended C, detected C: same; chromatic 0/4 = 0.000 \u2212 0.2 = \u22120.200, inside: verified",
+    );
+    const parsed = parseHarmonyAssistant(line);
+    expect(parsed).toEqual({
+      intended: "C",
+      detected: "C",
+      fidWord: "same",
+      chromatic: 0,
+      scored: 4,
+      ratio: 0,
+      delta: -0.2,
+      consWord: "inside",
+      label: "verified",
+    });
+  });
+
+  it("parses as quantities then comparison then label; quantities equal the tool; label equals gold and the predicates", () => {
+    const rows = committedRecords().filter((r) => r.family === "harmony");
+    expect(rows.length).toBeGreaterThan(0);
+    for (const r of rows) {
+      const t = harmonyToolContent(r);
+      const parsed = parseHarmonyAssistant(lastAssistant(r));
+      expect(parsed, `${r.id} ${lastAssistant(r)}`).not.toBeNull();
+      expect(parsed!.intended, r.id).toBe(t.intended);
+      expect(parsed!.detected, r.id).toBe(t.detected);
+      expect(parsed!.chromatic, r.id).toBe(t.chromatic);
+      expect(parsed!.scored, r.id).toBe(t.scored);
+      expect(parsed!.ratio, r.id).toBe(Math.round(chromaticRatioOf(t.chromatic, t.scored) * 1000) / 1000);
+      expect(parsed!.delta, r.id).toBe(Math.round((parsed!.ratio - DEFAULT_MAX_CHROMATIC_RATIO) * 1000) / 1000);
+      expect(parsed!.fidWord, r.id).toBe(fidelitySame(parsed!.intended, parsed!.detected) ? "same" : "different");
+      expect(parsed!.consWord, r.id).toBe(consonanceInside(parsed!.chromatic, parsed!.scored) ? "inside" : "against");
+      const gold = harmonyGoldFromPrinted(parsed!.intended, parsed!.detected, parsed!.chromatic, parsed!.scored);
+      expect(parsed!.label, r.id).toBe(gold);
+      expect(parsed!.label, r.id).toBe(r.observation.gold.answer);
+    }
+  });
+
+  it("tool turns carry measurements only — no gate, no comparison word, no class word", () => {
+    for (const r of committedRecords().filter((x) => x.family === "harmony")) {
+      const tools = r.target_trace.session.filter((t) => t.role === "tool");
+      for (const t of tools) {
+        const blob = JSON.stringify(t.content);
+        expect(blob, r.id).not.toMatch(/verified|rejected|maxChromatic|0\.2|"same"|"different"/);
+      }
+    }
+  });
+});
+
+describe("compare shown work (chunk 34 C1)", () => {
+  it("renders both keys, the comparison, and the label", () => {
+    const line = compareAssistantContent("Eb major", "F major", "different_key");
+    expect(line).toBe("Eb major, F major: different: different_key");
+    expect(parseCompareAssistant(line)).toEqual({
+      keyA: "Eb major",
+      keyB: "F major",
+      word: "different",
+      label: "different_key",
+    });
+    expect(compareAssistantContent("Eb major", "Eb major", "same_key")).toBe(
+      "Eb major, Eb major: same: same_key",
+    );
+  });
+
+  it("parses as quantities then comparison then label; keys equal the tool; label equals gold and the predicate", () => {
+    const rows = committedRecords().filter((r) => r.family === "compare");
+    expect(rows.length).toBeGreaterThan(0);
+    for (const r of rows) {
+      const t = compareToolContent(r);
+      const parsed = parseCompareAssistant(lastAssistant(r));
+      expect(parsed, `${r.id} ${lastAssistant(r)}`).not.toBeNull();
+      expect(parsed!.keyA, r.id).toBe(t.key_a);
+      expect(parsed!.keyB, r.id).toBe(t.key_b);
+      expect(parsed!.word, r.id).toBe(t.key_a === t.key_b ? "same" : "different");
+      expect(parsed!.label, r.id).toBe(compareGoldFromPrinted(parsed!.keyA, parsed!.keyB));
+      expect(parsed!.label, r.id).toBe(r.observation.gold.answer);
+      const infos = r.target_trace.session.filter((x) => x.role === "tool" && x.tool === "song_info");
+      expect(infos).toHaveLength(2);
+      expect((infos[0] as { content: { key: string } }).content.key, r.id).toBe(t.key_a);
+      expect((infos[1] as { content: { key: string } }).content.key, r.id).toBe(t.key_b);
+    }
+  });
+
+  it("takes every same-key pair the split allows, matched with an equal number of different-key pairs", () => {
+    const songs = loadPublishableSongs();
+    const testIds = testSongIds(songs);
+    const train = songs.filter((s) => !testIds.has(s.id));
+    const test = songs.filter((s) => testIds.has(s.id));
+    const rows = committedRecords().filter((r) => r.family === "compare");
+    const trainRows = rows.filter((r) => r.split === "train");
+    const testRows = rows.filter((r) => r.split === "test");
+    expect(trainRows.filter((r) => r.observation.gold.answer === "same_key").length).toBe(sameKeyPairCount(train));
+    expect(trainRows.filter((r) => r.observation.gold.answer === "different_key").length).toBe(sameKeyPairCount(train));
+    expect(testRows.filter((r) => r.observation.gold.answer === "same_key").length).toBe(sameKeyPairCount(test));
+    expect(testRows.filter((r) => r.observation.gold.answer === "different_key").length).toBe(sameKeyPairCount(test));
+  });
+
+  it("tool turns carry the keys only — no comparison word, no class word", () => {
+    for (const r of committedRecords().filter((x) => x.family === "compare")) {
+      const tools = r.target_trace.session.filter((t) => t.role === "tool");
+      for (const t of tools) {
+        const blob = JSON.stringify(t.content);
+        expect(blob, r.id).not.toMatch(/same_key|different_key|"same"|"different"/);
+      }
+    }
   });
 });
 

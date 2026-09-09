@@ -1,0 +1,158 @@
+{
+  "id": "compare:house-of-the-rising-sun|sakura-sakura",
+  "schema_version": "jam-actions-v1/1.0.0",
+  "family": "compare",
+  "provenance": {
+    "source_url": "library:house-of-the-rising-sun",
+    "source_collected_at": "library-scan",
+    "source_type": "transcribed-by-author",
+    "composition_title": "House of the Rising Sun",
+    "composer": "Traditional",
+    "composition_year": 1,
+    "composition_pd_status_us": "public_domain",
+    "composition_pd_status_eu": "public_domain",
+    "arrangement_creator": null,
+    "arrangement_license": null,
+    "arrangement_license_version": null,
+    "arrangement_evidence_url": null,
+    "record_verdict": "public",
+    "verdict_reason": "Publishable shelf: classical, ragtime, or folk. clair-de-lune excluded.",
+    "verifier": "v1-builder",
+    "verified_at": "library-scan",
+    "training_use_permitted": true
+  },
+  "scope": {
+    "song_id": "house-of-the-rising-sun|sakura-sakura",
+    "phrase_window": "full:54",
+    "instrument": "piano",
+    "key": "A minor",
+    "tempo_bpm": 75,
+    "time_signature": "4/4",
+    "window_role": "standalone"
+  },
+  "observation": {
+    "thresholds": {
+      "min_pitch_classes": 2
+    },
+    "gold": {
+      "family": "compare",
+      "answer": "same_key",
+      "engine": "song.key"
+    }
+  },
+  "annotation_target": {
+    "measure_range": [
+      1,
+      54
+    ],
+    "structure": "A continuously arpeggiated texture built on a repeating chord-progression cycle rather than distinct phrases — the note data shows measures 1, 17, and 41 as exact repeats of each other (a roughly 16-24 measure cycle), and measures 2, 6, 14, 22, 38, and 46 forming an even larger repeat group, confirming the same descending arpeggio figure returns again and again as the harmonic cycle repeats for each verse. Density stays remarkably even for nearly the whole piece — measures like 35, 3, and 8 (23-26 onsets) sit not far below the busiest (32, 33, 4, 12, 20, all around 30) — before the true sparsest measures, 53 and 54 (4 and 2 onsets), thin out dramatically right at the close.",
+    "key_moments": [
+      "Measures 1, 17, and 41 are exact repeats of each other — the same arpeggio figure opening each pass through the harmonic cycle, roughly 16-24 measures apart.",
+      "Measures 2, 6, 14, 22, 38, and 46 form an even larger repeat group — six separate measures sharing identical content, the clearest evidence that this piece is built from one continuously cycling arpeggio pattern.",
+      "The piece's true sparsest measures are its last two — 53 and 54, dropping to just 4 and 2 onsets right after measure 52 sat at a typical 26 — a dramatic thinning that shows the arpeggio finally letting go at the close, not stopping mid-stride.",
+      "The right hand reaches its highest note, F7, at measure 2 — very early in the piece, meaning the registral ceiling is established almost immediately rather than being saved for a later climax.",
+      "Measures 32 and 33, the busiest pair in the piece (32 onsets each), sit roughly two-thirds of the way through — a gentle intensification rather than a dramatic spike, consistent with the piece's overall evenness."
+    ],
+    "teaching_goals": [
+      "Continuous arpeggio technique: with the arpeggio staying dense for 52 of the piece's 54 measures, practice the hand endurance and evenness to sustain that rolling pattern without tension creeping in — and practice releasing it too, letting the final two measures actually thin out instead of forcing the density to the last bar.",
+      "Descending minor-key harmonic cycle: internalize the Am-C-D-F-Am-E-Am progression this piece is built on, since the same arpeggio figure simply restates it verse after verse.",
+      "Playing evenly at a consistently high density: unlike pieces with dramatic dynamic peaks, this one asks for controlled, unwavering intensity through the body of the piece — practice the discipline to let that intensity go in the final two measures rather than holding on to it.",
+      "Early register establishment: the highest note arrives at measure 2, not near a late climax — practice comfortably reaching that top register right from the start."
+    ],
+    "style_tips": [
+      "Keep the arpeggio rolling and continuous — any gap or hesitation breaks the hypnotic, cyclical quality that defines this song.",
+      "Resist adding dynamic swells the data doesn't support through the body of the piece — density stays remarkably even there, so let the harmonic movement, not volume, carry the emotional weight — then try letting the final two measures genuinely decay rather than forcing that same density all the way to the last note.",
+      "Play the A minor tonality with a haunted, unresolved quality — the famous descending bassline never quite lets the harmony settle.",
+      "Since the same arpeggio figure recurs at least a dozen times, use those repeats as an opportunity for subtle variation in touch or voicing rather than playing every pass identically."
+    ],
+    "teaching_notes": [
+      {
+        "measure": 1,
+        "note": "none"
+      }
+    ]
+  },
+  "target_trace": {
+    "task_family": "compare",
+    "objective": "Answer using tools. Do not guess from the question text.",
+    "session": [
+      {
+        "turn": 1,
+        "role": "user",
+        "content": "Do \"House of the Rising Sun\" and \"Sakura Sakura\" share a key signature? Answer with exactly one of: same_key, different_key."
+      },
+      {
+        "turn": 2,
+        "role": "assistant",
+        "content": "Comparing the two library entries.",
+        "tool_calls": [
+          {
+            "tool": "song_info",
+            "arguments": {
+              "id": "house-of-the-rising-sun"
+            }
+          },
+          {
+            "tool": "song_info",
+            "arguments": {
+              "id": "sakura-sakura"
+            }
+          },
+          {
+            "tool": "compare_songs",
+            "arguments": {
+              "song_a": "house-of-the-rising-sun",
+              "song_b": "sakura-sakura"
+            }
+          }
+        ]
+      },
+      {
+        "turn": 3,
+        "role": "tool",
+        "tool": "song_info",
+        "content": {
+          "id": "house-of-the-rising-sun",
+          "title": "House of the Rising Sun",
+          "key": "A minor"
+        }
+      },
+      {
+        "turn": 4,
+        "role": "tool",
+        "tool": "song_info",
+        "content": {
+          "id": "sakura-sakura",
+          "title": "Sakura Sakura",
+          "key": "A minor"
+        }
+      },
+      {
+        "turn": 5,
+        "role": "tool",
+        "tool": "compare_songs",
+        "content": {
+          "key_a": "A minor",
+          "key_b": "A minor"
+        }
+      },
+      {
+        "turn": 6,
+        "role": "assistant",
+        "content": "A minor, A minor: same: same_key"
+      }
+    ]
+  },
+  "eval_metadata": {
+    "split": "train",
+    "split_strategy": "hold out by song_id",
+    "leakage_check": "passed",
+    "eval_eligibility": [
+      "tool_use",
+      "compare"
+    ],
+    "phrase_continuation_eligible": false,
+    "phrase_continuation_eligible_reason": "standalone tool-use items"
+  },
+  "split": "train"
+}

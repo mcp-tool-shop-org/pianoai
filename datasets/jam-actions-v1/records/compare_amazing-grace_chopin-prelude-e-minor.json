@@ -113,7 +113,8 @@
         "tool": "song_info",
         "content": {
           "id": "amazing-grace",
-          "title": "Amazing Grace"
+          "title": "Amazing Grace",
+          "key": "Eb major"
         }
       },
       {
@@ -122,7 +123,8 @@
         "tool": "song_info",
         "content": {
           "id": "chopin-prelude-e-minor",
-          "title": "Prelude in E Minor, Op. 28 No. 4"
+          "title": "Prelude in E Minor, Op. 28 No. 4",
+          "key": "E minor"
         }
       },
       {
@@ -130,14 +132,14 @@
         "role": "tool",
         "tool": "compare_songs",
         "content": {
-          "song_a": "amazing-grace",
-          "song_b": "chopin-prelude-e-minor"
+          "key_a": "Eb major",
+          "key_b": "E minor"
         }
       },
       {
         "turn": 6,
         "role": "assistant",
-        "content": "different_key"
+        "content": "Eb major, E minor: different: different_key"
       }
     ]
   },

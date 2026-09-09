@@ -32,7 +32,7 @@
   },
   "observation": {
     "thresholds": {
-      "min_pitch_classes": 2
+      "max_chromatic_ratio": 0.2
     },
     "gold": {
       "family": "harmony",
@@ -118,13 +118,16 @@
         "role": "tool",
         "tool": "verify_harmony",
         "content": {
-          "reharmonization": "[{\"measure\":12,\"intendedChord\":\"Cdim\",\"voicing\":\"C2 F2 F#2 D#3 F3 F#2 D2 F2 F#2 D#3 C3 C2 F2 F#2\"}]"
+          "intended": "Cdim",
+          "detected": "Cdim",
+          "chromatic": 0,
+          "scored": 14
         }
       },
       {
         "turn": 4,
         "role": "assistant",
-        "content": "verified"
+        "content": "intended Cdim, detected Cdim: same; chromatic 0/14 = 0.000 − 0.2 = −0.200, inside: verified"
       }
     ]
   },

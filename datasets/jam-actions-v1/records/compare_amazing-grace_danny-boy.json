@@ -113,7 +113,8 @@
         "tool": "song_info",
         "content": {
           "id": "amazing-grace",
-          "title": "Amazing Grace"
+          "title": "Amazing Grace",
+          "key": "Eb major"
         }
       },
       {
@@ -122,7 +123,8 @@
         "tool": "song_info",
         "content": {
           "id": "danny-boy",
-          "title": "Danny Boy"
+          "title": "Danny Boy",
+          "key": "Eb major"
         }
       },
       {
@@ -130,14 +132,14 @@
         "role": "tool",
         "tool": "compare_songs",
         "content": {
-          "song_a": "amazing-grace",
-          "song_b": "danny-boy"
+          "key_a": "Eb major",
+          "key_b": "Eb major"
         }
       },
       {
         "turn": 6,
         "role": "assistant",
-        "content": "same_key"
+        "content": "Eb major, Eb major: same: same_key"
       }
     ]
   },

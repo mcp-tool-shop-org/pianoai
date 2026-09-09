@@ -32,7 +32,7 @@
   },
   "observation": {
     "thresholds": {
-      "min_pitch_classes": 2
+      "max_chromatic_ratio": 0.2
     },
     "gold": {
       "family": "harmony",
@@ -117,13 +117,16 @@
         "role": "tool",
         "tool": "verify_harmony",
         "content": {
-          "reharmonization": "[{\"measure\":9,\"intendedChord\":\"G\",\"voicing\":\"G#2 C4 D#3 G#3 D#3 G#3\"}]"
+          "intended": "G",
+          "detected": "Ab",
+          "chromatic": 0,
+          "scored": 6
         }
       },
       {
         "turn": 4,
         "role": "assistant",
-        "content": "rejected"
+        "content": "intended G, detected Ab: different; chromatic 0/6 = 0.000 − 0.2 = −0.200, inside: rejected"
       }
     ]
   },

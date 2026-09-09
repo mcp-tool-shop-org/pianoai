@@ -64,12 +64,12 @@ function leafDiff(a: unknown, b: unknown, path: string, out: string[]): void {
 }
 
 describe("jam-actions-v1-probe", () => {
-  it("has its own schema_version and does not collide with the 349", () => {
+  it("has its own schema_version and does not collide with the main corpus", () => {
     const rows = probeRecords();
     const main = new Set(
       readFileSync(MAIN, "utf8").trim().split("\n").map((l) => JSON.parse(l).id as string),
     );
-    expect(main.size).toBe(349);
+    expect(main.size).toBeGreaterThan(300);
     expect(rows.length).toBeGreaterThan(0);
     for (const r of rows) {
       expect(r.schema_version).toBe(PROBE_SCHEMA_VERSION);

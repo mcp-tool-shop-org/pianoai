@@ -1,0 +1,157 @@
+{
+  "id": "compare:bach-prelude-c-major-bwv846|mozart-k545-mvt1",
+  "schema_version": "jam-actions-v1/1.0.0",
+  "family": "compare",
+  "provenance": {
+    "source_url": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
+    "source_collected_at": "library-scan",
+    "source_type": "transcribed-by-author",
+    "composition_title": "Prelude in C Major, BWV 846 (Well-Tempered Clavier)",
+    "composer": "Johann Sebastian Bach",
+    "composition_year": 1,
+    "composition_pd_status_us": "public_domain",
+    "composition_pd_status_eu": "public_domain",
+    "arrangement_creator": null,
+    "arrangement_license": "CC-BY-SA",
+    "arrangement_license_version": null,
+    "arrangement_evidence_url": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
+    "record_verdict": "public",
+    "verdict_reason": "Publishable shelf: classical, ragtime, or folk. clair-de-lune excluded.",
+    "verifier": "v1-builder",
+    "verified_at": "library-scan",
+    "training_use_permitted": true
+  },
+  "scope": {
+    "song_id": "bach-prelude-c-major-bwv846|mozart-k545-mvt1",
+    "phrase_window": "full:62",
+    "instrument": "piano",
+    "key": "C major",
+    "tempo_bpm": 74,
+    "time_signature": "4/4",
+    "window_role": "standalone"
+  },
+  "observation": {
+    "thresholds": {
+      "min_pitch_classes": 2
+    },
+    "gold": {
+      "family": "compare",
+      "answer": "same_key",
+      "engine": "song.key"
+    }
+  },
+  "annotation_target": {
+    "measure_range": [
+      1,
+      62
+    ],
+    "structure": "Seven structural regions from the section-lens novelty pass, with the sharpest boundary of the whole piece opening at measure 32 (novelty 6.571) — right where measure 35's near-silence sits. The other boundaries fall at measures 8, 14, 24, 45, and 56, each a natural practice unit alongside the opening measures 1-7. The opening right-hand figure (measures 1-2, 17 intervals) is byte-identical to its restatement at measures 4-5, and measure 1 alone shares its pitch-class content with measures 4 and 19 too. A 12-note right-hand figure recurs three times without transposition at measures 17-18, 26-27, and 30-31 — strong evidence, independently confirmed by the raw repeat detector, which finds measures 18, 27, and 31 byte-identical to each other. A 6-note left-hand figure recurs four times, transposed at three of its four appearances (measures 40-41 untransposed, 45-46 shifted down 5 semitones, 55-56 up 2, and 59 alone), and a separate 10-note left-hand figure returns three times at measures 46-47, 50-51, and 59-60 (the last transposed up 5 semitones).",
+    "key_moments": [
+      "Measures 17-18, 26-27, and 30-31 all share one 12-note right-hand figure with no transposition anywhere — strong pattern evidence that teaches how a single arpeggiated cell can anchor three separate passages without the ear noticing the repetition, because the left hand keeps changing underneath it.",
+      "Measure 35's sudden drop to 2 combined onsets, right at the section-lens's biggest boundary (novelty 6.571 opening measure 32), demonstrates that in a texture this continuous, a single held chord functions as a structural landmark — the piece's one true breath before its busiest measures arrive.",
+      "The implied chord windows at measures 7, 10, and 11 (G major, then D7, then G major again) show the harmony leaning toward the dominant before measure 15 resolves back to C major — a compact model of tonic-to-dominant-and-back motion inside a single arpeggiated phrase.",
+      "The busiest measures in the piece — 53, 60, 47, and 55, each 25 or more combined onsets — sit in the last third of the piece, a skill-building target for endurance: the hands must sustain the same even sixteenth-note motion at the piece's densest point that they used at its sparsest."
+    ],
+    "teaching_goals": [
+      "Practice the 12-note right-hand figure at measures 17-18, 26-27, and 30-31 as one recognized shape — learning it once and recognizing its three appearances saves real practice time.",
+      "Listen for the implied dominant motion at measures 7-11 (G major to D7 back to G major) before resolving to C major at measure 15, and learn to hear that pull toward the dominant even though the analysis only hedges it as implied.",
+      "Build even sixteenth-note technique across the busiest measures (53, 60, 47, 55) at a slow tempo first — 25-plus onsets per measure demands finger evenness, not speed, as the first goal.",
+      "Recognize measure 35's near-total silence as a phrase marker, not a mistake in the score — understanding rests as structural punctuation is a core skill for reading any continuous arpeggiated texture."
+    ],
+    "style_tips": [
+      "Keep every note the same weight through the 12-note right-hand figure at measures 17-18, 26-27, and 30-31 — listen for the figure sounding identical each time despite the changing harmony under it.",
+      "Use the sustain pedal to blend each broken chord into a single sonority, but change it with every new harmony — listen for the implied G major and D7 windows around measures 7-11 staying clean rather than smearing into each other.",
+      "Let measure 35's two onsets ring fully before moving on — listen for the silence itself as part of the phrase, not a gap to rush through.",
+      "Approach the busiest measures (53, 60, 47, 55) with a relaxed wrist and minimal rubato — Baroque keyboard tradition favors a steady, unhurried pulse here; listen for the sixteenth notes staying perfectly even even as the texture thickens."
+    ],
+    "teaching_notes": [
+      {
+        "measure": 1,
+        "note": "none"
+      }
+    ]
+  },
+  "target_trace": {
+    "task_family": "compare",
+    "objective": "Answer using tools. Do not guess from the question text.",
+    "session": [
+      {
+        "turn": 1,
+        "role": "user",
+        "content": "Do \"Prelude in C Major, BWV 846 (Well-Tempered Clavier)\" and \"Piano Sonata No. 16 in C Major, K. 545, I. Allegro\" share a key signature? Answer with exactly one of: same_key, different_key."
+      },
+      {
+        "turn": 2,
+        "role": "assistant",
+        "content": "Comparing the two library entries.",
+        "tool_calls": [
+          {
+            "tool": "song_info",
+            "arguments": {
+              "id": "bach-prelude-c-major-bwv846"
+            }
+          },
+          {
+            "tool": "song_info",
+            "arguments": {
+              "id": "mozart-k545-mvt1"
+            }
+          },
+          {
+            "tool": "compare_songs",
+            "arguments": {
+              "song_a": "bach-prelude-c-major-bwv846",
+              "song_b": "mozart-k545-mvt1"
+            }
+          }
+        ]
+      },
+      {
+        "turn": 3,
+        "role": "tool",
+        "tool": "song_info",
+        "content": {
+          "id": "bach-prelude-c-major-bwv846",
+          "title": "Prelude in C Major, BWV 846 (Well-Tempered Clavier)",
+          "key": "C major"
+        }
+      },
+      {
+        "turn": 4,
+        "role": "tool",
+        "tool": "song_info",
+        "content": {
+          "id": "mozart-k545-mvt1",
+          "title": "Piano Sonata No. 16 in C Major, K. 545, I. Allegro",
+          "key": "C major"
+        }
+      },
+      {
+        "turn": 5,
+        "role": "tool",
+        "tool": "compare_songs",
+        "content": {
+          "key_a": "C major",
+          "key_b": "C major"
+        }
+      },
+      {
+        "turn": 6,
+        "role": "assistant",
+        "content": "C major, C major: same: same_key"
+      }
+    ]
+  },
+  "eval_metadata": {
+    "split": "train",
+    "split_strategy": "hold out by song_id",
+    "leakage_check": "passed",
+    "eval_eligibility": [
+      "tool_use",
+      "compare"
+    ],
+    "phrase_continuation_eligible": false,
+    "phrase_continuation_eligible_reason": "standalone tool-use items"
+  },
+  "split": "train"
+}

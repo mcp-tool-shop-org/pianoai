@@ -32,7 +32,7 @@
   },
   "observation": {
     "thresholds": {
-      "min_pitch_classes": 2
+      "max_chromatic_ratio": 0.2
     },
     "gold": {
       "family": "harmony",
@@ -117,13 +117,16 @@
         "role": "tool",
         "tool": "verify_harmony",
         "content": {
-          "reharmonization": "[{\"measure\":43,\"intendedChord\":\"Bsus4\",\"voicing\":\"E3 F#3 B2 E3 B3 B2 E3 B3\"}]"
+          "intended": "Bsus4",
+          "detected": "Bsus4",
+          "chromatic": 0,
+          "scored": 8
         }
       },
       {
         "turn": 4,
         "role": "assistant",
-        "content": "verified"
+        "content": "intended Bsus4, detected Bsus4: same; chromatic 0/8 = 0.000 − 0.2 = −0.200, inside: verified"
       }
     ]
   },
