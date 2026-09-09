@@ -13,7 +13,7 @@ multilinguality:
 source_datasets:
   - original
 pretty_name: "AI Jam Sessions — Tool-Use Traces v1 (shown-work targets)"
-pretty_description: "146 multi-turn MCP tool-use traces over 11 public-domain piano pieces whose arrangements carry a verified licence, nine task families, split by song. Every assistant turn shows the comparison that decides its answer. Built under a seven-rule experiment contract; rebuilt nine times as each training run — and finally a provenance audit — exposed what the previous version let through. CC-BY-SA-3.0-DE."
+pretty_description: "213 multi-turn MCP tool-use traces over 11 public-domain piano pieces whose arrangements carry a verified licence, nine task families, split by song; 1.1.0 draws four acoustic takes per song and class instead of two, which is what lets a 3B lock the gate comparison. Every assistant turn shows the comparison that decides its answer. Built under a seven-rule experiment contract; rebuilt nine times as each training run — and finally a provenance audit — exposed what the previous version let through. CC-BY-SA-3.0-DE."
 size_categories:
   - n<1K
 task_categories:
@@ -38,7 +38,7 @@ configs:
 
 # jam-actions-v1
 
-**Schema:** `jam-actions-v1/1.0.0` · **Records:** 146 (106 train / 40 test, split by song) ·
+**Schema:** `jam-actions-v1/1.0.0` · **Version:** 1.1.0 · **Records:** 213 (154 train / 59 test, split by song) ·
 **Songs:** 11 · **Families:** 9 · **Licence:** CC-BY-SA-3.0-DE ·
 **Source repo:** [mcp-tool-shop-org/ai-jam-sessions](https://github.com/mcp-tool-shop-org/ai-jam-sessions)
 
@@ -55,7 +55,7 @@ assistant turn. Nine families:
 
 | family | n | the question | the final turn |
 |---|---|---|---|
-| acoustic | 65 | grade a recorded take: `match`, `pitch_fail`, `timing_fail` | `cents 66.9: \|66.9\| − 50 = 16.9, against the gate; onset −9.8: \|9.8\| − 40 = −30.2, inside: pitch_fail` |
+| acoustic | 132 | grade a recorded take: `match`, `pitch_fail`, `timing_fail` | `cents 66.9: \|66.9\| − 50 = 16.9, against the gate; onset −9.8: \|9.8\| − 40 = −30.2, inside: pitch_fail` |
 | harmony | 19 | does a proposed reharmonisation clear the verifier | `intended Bsus2, detected Csus2: different; chromatic 0/17 = 0.000 − 0.2 = −0.200, inside: rejected` |
 | measures | 11 | how many measures | the number |
 | transpose | 11 | the key after transposing by an interval | the key |
@@ -116,9 +116,10 @@ target looks the way it does, but that corpus is not this dataset.
 | 349, sign uninformative | comparison in words | 20/54 | 38/54 | pitch 2/18; a near-gate probe then showed the onset word followed the sign of the onset, never its size |
 | 349 | **digits of the subtraction** | 20/54 | **54/54** | probe 70/72 (seed 13), 72/72 (seed 42); 7B 54/54 and 72/72 |
 | 371, harmony/compare show theirs | digits | 23/54 | **54/54** | 116/117 overall; probe 72/72; the base alone got harmony 13/14 and compare 6/6 once the tool returned the deciding quantities |
-| **146, eleven verified songs — this release** | digits | 3B 5/17 · 7B 7/17 | **3B 14/17, 12/17 (two seeds) · 7B 16/17** | 24-take probe: 3B 11/24 and 13/24 — at ~45 training takes the 3B no longer locks the arithmetic or the vocabulary; **7B 24/24**, every band 6/6, arithmetic exact on 22 of 24 |
+| **146, eleven verified songs — 1.0.0** | digits | 3B 5/17 · 7B 7/17 | **3B 14/17, 12/17 (two seeds) · 7B 16/17, 17/17 (two seeds)** | 24-take probe: 3B 11/24 and 13/24 — at 48 training takes the 3B no longer locks the arithmetic or the vocabulary; **7B 24/24 at both seeds**, every band 6/6, arithmetic exact on 21–22 of 24 |
+| **213, the same eleven songs, four draws — 1.1.0, this release** | digits | 3B 13/36 | **3B 36/36, 36/36 (two seeds)**; on the 1.0.0 held-out takes 17/17, 17/17 | probe **23/24 and 24/24**; arithmetic exact on every held-out line at seed 42; no invented gate word. The limit was takes per song, not the number of songs |
 
-On the released corpus the size of the training set is the limit for the smaller model: the 3B learns the format and copies the numbers but does not lock the comparison, at either seed; the 7B does, near the gate, on songs it never saw. Three targets, one recipe, identical loss curves: a bare label trained a class prior, a worded
+On 1.0.0 the size of the training set was the limit for the smaller model: the 3B learned the format and copied the numbers but did not lock the comparison, at either seed; the 7B did, near the gate, on songs it never saw. 1.1.0 doubles the acoustic draws from the same eleven songs — 96 training takes instead of 48, every non-acoustic record identical — and the 3B locks it at two seeds. Three targets, one recipe, identical loss curves: a bare label trained a class prior, a worded
 comparison trained sign-reading, and the digits trained the comparison. The corpus never changed
 what the model was shown. It changed what the model was asked to write.
 
@@ -129,11 +130,11 @@ Full results, receipts and raw completions for every run are in the source repo 
 
 | file | what |
 |---|---|
-| `records.jsonl` | the 146 records, one per line |
+| `records.jsonl` | the 213 records, one per line |
 | `records/` | the same records, one file each |
 | `splits.json` | train/test ids; split by song (held out: solace, the-easy-winners, the-entertainer) |
 | `manifest.json`, `coverage.json` | counts, tools, songs, shapes, floors — build artefacts, not claims |
-| `checksums.sha256` | 156 entries, breadth-first, LF-pinned; verify with `sha256sum -c` |
+| `checksums.sha256` | one entry per file, breadth-first, LF-pinned; verify with `sha256sum -c` |
 | `PROVENANCE-NOTE.md` | which songs are excluded and why |
 | `LICENSE-DATASET.md`, `CITATION.cff` | licence chain and citation |
 
@@ -173,7 +174,21 @@ three layers. Code in the source repo is MIT.
 
 ## Citation
 
-See `CITATION.cff`. This release is Zenodo record [`10.5281/zenodo.22675239`](https://doi.org/10.5281/zenodo.22675239)
-(jam-actions-v1 1.0.0), a version under the jam-actions concept DOI `10.5281/zenodo.20279918`. Cite the
-version DOI when you mean this dataset exactly; the concept DOI resolves to whatever the line's latest
-version is.
+See `CITATION.cff`. This release, jam-actions-v1 1.1.0, is a version under the jam-actions concept DOI
+`10.5281/zenodo.20279918`; its version DOI is minted on publication and written here in the same
+release step. 1.0.0 remains citable as [`10.5281/zenodo.22675239`](https://doi.org/10.5281/zenodo.22675239).
+Cite the version DOI when you mean this dataset exactly; the concept DOI resolves to whatever the
+line's latest version is.
+
+## What changed in 1.1.0
+
+- Four acoustic takes per (song, class) instead of two: 132 acoustic records (96 train / 36 test)
+  instead of 65 (48 / 17). The 65 ids of 1.0.0 reappear with the same class and gold and freshly
+  drawn values; every non-acoustic record is byte-identical to 1.0.0, in the same order.
+- The coverage report's majority-shape floor (no family above 50% of records) is **not met**: the
+  acoustic family is 62% of 1.1.0. The floor was written for a balanced corpus and is left where it
+  is; this release records the miss in `coverage.json` rather than moving the gate, because the
+  imbalance is the experiment (see the results table).
+- `CITATION.cff` describes this dataset. The 1.0.0 file's abstract carried the previous working
+  corpus's numbers (371 records, 27 pieces); the record itself, its card and its checksums were
+  correct.
