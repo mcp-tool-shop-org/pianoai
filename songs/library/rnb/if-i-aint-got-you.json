@@ -34,5 +34,44 @@
       "Play the silent opening measure with real stillness before the piano enters — listen for the first chord landing with full weight precisely because nothing preceded it.",
       "Listen to a reference recording and let the vocal phrasing guide your rubato — this tradition transmits feel through records as much as notation, and the dense written chords here are the harmonic bed, not the whole performance."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/4993.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "Don Carroll (sequenced by, Houston, Texas)",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about; midi meta events (sha256 442614950c08…)",
+    "midi_sha256": "442614950c08487b49cd394b3e773030b1bb6174556ed200b2a23a23cb266365",
+    "midi_title_events": [
+      "VERSE",
+      "CHORUS",
+      "FLUTE VERSE",
+      "PIANO",
+      "ACC.GUITAR",
+      "EL.GUITAR",
+      "BRASS",
+      "BASS",
+      "FLUTE",
+      "STRINGS",
+      "OBOE",
+      "DRUMS",
+      "Don Carroll",
+      "Houston, Texas",
+      "donniec@ix.netcom.com"
+    ],
+    "midi_credit_events": [
+      "sequenced by:"
+    ],
+    "credited_parties": [
+      {
+        "name": "Don Carroll",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "no-title-in-file"
   }
 }

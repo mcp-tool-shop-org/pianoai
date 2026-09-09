@@ -33,5 +33,24 @@
       "Treat the D7 near the close as an instrumental cry rather than a literal vocal note — let it ring rather than trying to make it sound sung.",
       "Close on measure 110's single quiet gesture with real tenderness — after the climb to D7, the ending should feel like release, not another effort."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/37684.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "54ab822401747885e5a2191ed10b4584fa8ee90cb65f9d428185b61f6937050b",
+    "midi_title_events": [
+      "A.PIANO 1",
+      "GS/RESET"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

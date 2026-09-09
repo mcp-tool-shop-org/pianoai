@@ -1,0 +1,100 @@
+{"id": "acoustic:scarborough-fair:clean", "family": "acoustic", "answer": "{\"f0_hz\":440.0355332552723}", "raw": "{\"f0_hz\":440.0355332552723}"}
+{"id": "acoustic:scarborough-fair:late_fail", "family": "acoustic", "answer": "{\"metrics\":{\"accuracy\":0.0,\"missed_notes\":8,\"extra_notes\":0},\"diagnostic\":\"No pitch detected for any note\",\"assessment\":\"The transcription failed to accurately capture any of the notes in the recording. All notes", "raw": "{\"metrics\":{\"accuracy\":0.0,\"missed_notes\":8,\"extra_notes\":0},\"diagnostic\":\"No pitch detected for any note\",\"assessment\":\"The transcription failed to accurately capture any of the notes in the recording. All notes"}
+{"id": "acoustic:scarborough-fair:sharp_fail", "family": "acoustic", "answer": "{\"f0_hz\":440.555}", "raw": "{\"f0_hz\":440.555}"}
+{"id": "acoustic:schumann-traumerei:clean", "family": "acoustic", "answer": "{\"f0_hz\":440,\"cents_from_target\":0.01262549909873069,\"onset_ms\":null}", "raw": "{\"f0_hz\":440,\"cents_from_target\":0.01262549909873069,\"onset_ms\":null}"}
+{"id": "acoustic:schumann-traumerei:late_fail", "family": "acoustic", "answer": "{\"metrics\":{\"accuracy\":0.0,\"timing_error\":0.0,\"missed_notes\":0,\"extra_notes\":0},\"diagnostic\":\"No pitch detected for the first note, likely due to low signal strength or noise.\"}", "raw": "{\"metrics\":{\"accuracy\":0.0,\"timing_error\":0.0,\"missed_notes\":0,\"extra_notes\":0},\"diagnostic\":\"No pitch detected for the first note, likely due to low signal strength or noise.\"}"}
+{"id": "acoustic:schumann-traumerei:sharp_fail", "family": "acoustic", "answer": "{\"f0_hz\":440,\"cents_from_target\":55.02511455157677}", "raw": "{\"f0_hz\":440,\"cents_from_target\":55.02511455157677}"}
+{"id": "acoustic:shenandoah:clean", "family": "acoustic", "answer": "{\"f0_hz\":440,\"cents_from_target\":0.03437884193258129,\"onset_ms\":null}", "raw": "{\"f0_hz\":440,\"cents_from_target\":0.03437884193258129,\"onset_ms\":null}"}
+{"id": "acoustic:shenandoah:late_fail", "family": "acoustic", "answer": "{\"f0_hz\":null,\"cents_from_target\":null,\"onset_ms\":59.9092970521542}", "raw": "{\"f0_hz\":null,\"cents_from_target\":null,\"onset_ms\":59.9092970521542}"}
+{"id": "acoustic:shenandoah:sharp_fail", "family": "acoustic", "answer": "{\"f0_hz\":440,\"cents_from_target\":55.03331486408949}", "raw": "{\"f0_hz\":440,\"cents_from_target\":55.03331486408949}"}
+{"id": "acoustic:simple-gifts:clean", "family": "acoustic", "answer": "0.01262549909873069", "raw": "0.01262549909873069"}
+{"id": "acoustic:simple-gifts:late_fail", "family": "acoustic", "answer": "{\"metrics\":{\"accuracy\":0.0,\"missed_notes\":8,\"extra_notes\":0},\"diagnostic\":\"No pitch detected for any note\",\"assessment\":\"The transcription failed to accurately capture any of the notes in the recording. All notes", "raw": "{\"metrics\":{\"accuracy\":0.0,\"missed_notes\":8,\"extra_notes\":0},\"diagnostic\":\"No pitch detected for any note\",\"assessment\":\"The transcription failed to accurately capture any of the notes in the recording. All notes"}
+{"id": "acoustic:simple-gifts:sharp_fail", "family": "acoustic", "answer": "0.9599999999999999", "raw": "0.9599999999999999"}
+{"id": "acoustic:solace:clean", "family": "acoustic", "answer": "{\"f0_hz\":440,\"cents_from_target\":0.01262549909873069,\"onset_ms\":null}", "raw": "{\"f0_hz\":440,\"cents_from_target\":0.01262549909873069,\"onset_ms\":null}"}
+{"id": "acoustic:solace:late_fail", "family": "acoustic", "answer": "{\"metrics\":{\"accuracy\":0.0,\"timing_accuracy\":0.0,\"missed_notes\":0,\"extra_notes\":0},\"diagnostic\":\"No pitch detected for any note\",\"assessment\":\"The transcription failed to accurately capture any of the", "raw": "{\"metrics\":{\"accuracy\":0.0,\"timing_accuracy\":0.0,\"missed_notes\":0,\"extra_notes\":0},\"diagnostic\":\"No pitch detected for any note\",\"assessment\":\"The transcription failed to accurately capture any of the"}
+{"id": "acoustic:solace:sharp_fail", "family": "acoustic", "answer": "0.955", "raw": "0.955"}
+{"id": "acoustic:the-easy-winners:clean", "family": "acoustic", "answer": "0.03437884193258129", "raw": "0.03437884193258129"}
+{"id": "acoustic:the-easy-winners:late_fail", "family": "acoustic", "answer": "{\"f0_hz\":null,\"cents_from_target\":null,\"onset_ms\":59.9092970521542}", "raw": "{\"f0_hz\":null,\"cents_from_target\":null,\"onset_ms\":59.9092970521542}"}
+{"id": "acoustic:the-easy-winners:sharp_fail", "family": "acoustic", "answer": "0.955", "raw": "0.955"}
+{"id": "acoustic:the-entertainer:clean", "family": "acoustic", "answer": "0.15252127782635094", "raw": "0.15252127782635094"}
+{"id": "acoustic:the-entertainer:late_fail", "family": "acoustic", "answer": "{\"metrics\":{\"accuracy\":0.925,\"missed_notes\":0.075,\"extra_notes\":0.0},\"diagnostic\":\"All notes hit, but one is slightly off pitch.\"}", "raw": "{\"metrics\":{\"accuracy\":0.925,\"missed_notes\":0.075,\"extra_notes\":0.0},\"diagnostic\":\"All notes hit, but one is slightly off pitch.\"}"}
+{"id": "acoustic:the-entertainer:sharp_fail", "family": "acoustic", "answer": "{\"f0_hz\":440,\"cents_from_target\":55.12618888020026}", "raw": "{\"f0_hz\":440,\"cents_from_target\":55.12618888020026}"}
+{"id": "acoustic:the-water-is-wide:clean", "family": "acoustic", "answer": "{\"f0_hz\":440,\"cents_from_target\":0.035533255272308266,\"onset_ms\":null}", "raw": "{\"f0_hz\":440,\"cents_from_target\":0.035533255272308266,\"onset_ms\":null}"}
+{"id": "acoustic:the-water-is-wide:late_fail", "family": "acoustic", "answer": "{\"metrics\":{\"accuracy\":0.925,\"missed_notes\":0.075,\"extra_notes\":0.0},\"diagnostic\":\"All notes are within 40ms of the intended timing, but there are some", "raw": "{\"metrics\":{\"accuracy\":0.925,\"missed_notes\":0.075,\"extra_notes\":0.0},\"diagnostic\":\"All notes are within 40ms of the intended timing, but there are some"}
+{"id": "acoustic:the-water-is-wide:sharp_fail", "family": "acoustic", "answer": "0.959", "raw": "0.959"}
+{"id": "acoustic:weeping-willow:clean", "family": "acoustic", "answer": "{\"f0_hz\":440,\"cents_from_target\":0.035533255272308266,\"onset_ms\":null}", "raw": "{\"f0_hz\":440,\"cents_from_target\":0.035533255272308266,\"onset_ms\":null}"}
+{"id": "acoustic:weeping-willow:late_fail", "family": "acoustic", "answer": "{\"f0_hz\":null,\"cents_from_target\":null,\"onset_ms\":59.9092970521542}", "raw": "{\"f0_hz\":null,\"cents_from_target\":null,\"onset_ms\":59.9092970521542}"}
+{"id": "acoustic:weeping-willow:sharp_fail", "family": "acoustic", "answer": "0.959", "raw": "0.959"}
+{"id": "chord:scarborough-fair:m1", "family": "chord", "answer": "Dm", "raw": "Dm"}
+{"id": "chord:schumann-traumerei:m2", "family": "chord", "answer": "F", "raw": "F"}
+{"id": "chord:simple-gifts:m11", "family": "chord", "answer": "Dm", "raw": "Dm"}
+{"id": "chord:solace:m6", "family": "chord", "answer": "Gaug", "raw": "Gaug"}
+{"id": "chord:the-easy-winners:m7", "family": "chord", "answer": "C#", "raw": "C#"}
+{"id": "chord:the-entertainer:m11", "family": "chord", "answer": "D", "raw": "D"}
+{"id": "chord:weeping-willow:m6", "family": "chord", "answer": "G", "raw": "G"}
+{"id": "compare:scarborough-fair|schumann-traumerei", "family": "compare", "answer": "C_major", "raw": "C_major"}
+{"id": "compare:shenandoah|simple-gifts", "family": "compare", "answer": "C_major", "raw": "C_major"}
+{"id": "compare:solace|the-easy-winners", "family": "compare", "answer": "C_major", "raw": "C_major"}
+{"id": "compare:the-entertainer|the-water-is-wide", "family": "compare", "answer": "C_major", "raw": "C_major"}
+{"id": "ensemble:who_first:G:piano", "family": "ensemble", "answer": "\"synth\"", "raw": "\"synth\""}
+{"id": "ensemble:who_first:G:synth", "family": "ensemble", "answer": "\"synth\"", "raw": "\"synth\""}
+{"id": "ensemble:wrong_tone:G", "family": "ensemble", "answer": "guitar", "raw": "guitar"}
+{"id": "harmony:scarborough-fair:m1:fail", "family": "harmony", "answer": "\u2705", "raw": "\u2705"}
+{"id": "harmony:scarborough-fair:m1:pass", "family": "harmony", "answer": "\u2705", "raw": "\u2705"}
+{"id": "harmony:schumann-traumerei:m2:fail", "family": "harmony", "answer": "\u2705", "raw": "\u2705"}
+{"id": "harmony:schumann-traumerei:m2:pass", "family": "harmony", "answer": "\u2705", "raw": "\u2705"}
+{"id": "harmony:simple-gifts:m11:fail", "family": "harmony", "answer": "\u2705", "raw": "\u2705"}
+{"id": "harmony:simple-gifts:m11:pass", "family": "harmony", "answer": "\u2705", "raw": "\u2705"}
+{"id": "harmony:solace:m6:fail", "family": "harmony", "answer": "\u2705", "raw": "\u2705"}
+{"id": "harmony:solace:m6:pass", "family": "harmony", "answer": "\u2705", "raw": "\u2705"}
+{"id": "harmony:the-easy-winners:m7:fail", "family": "harmony", "answer": "\u2705", "raw": "\u2705"}
+{"id": "harmony:the-easy-winners:m7:pass", "family": "harmony", "answer": "\u2705", "raw": "\u2705"}
+{"id": "harmony:the-entertainer:m11:fail", "family": "harmony", "answer": "\u2705", "raw": "\u2705"}
+{"id": "harmony:the-entertainer:m11:pass", "family": "harmony", "answer": "\u2705", "raw": "\u2705"}
+{"id": "harmony:weeping-willow:m6:fail", "family": "harmony", "answer": "\u2705", "raw": "\u2705"}
+{"id": "harmony:weeping-willow:m6:pass", "family": "harmony", "answer": "\u2705", "raw": "\u2705"}
+{"id": "measures:scarborough-fair", "family": "measures", "answer": "23", "raw": "23"}
+{"id": "measures:schumann-traumerei", "family": "measures", "answer": "64", "raw": "64"}
+{"id": "measures:shenandoah", "family": "measures", "answer": "41", "raw": "41"}
+{"id": "measures:simple-gifts", "family": "measures", "answer": "34", "raw": "34"}
+{"id": "measures:solace", "family": "measures", "answer": "148", "raw": "148"}
+{"id": "measures:the-easy-winners", "family": "measures", "answer": "152", "raw": "152"}
+{"id": "measures:the-entertainer", "family": "measures", "answer": "152", "raw": "152"}
+{"id": "measures:the-water-is-wide", "family": "measures", "answer": "105", "raw": "105"}
+{"id": "measures:weeping-willow", "family": "measures", "answer": "148", "raw": "148"}
+{"id": "sections:scarborough-fair", "family": "sections", "answer": "0", "raw": "0"}
+{"id": "sections:schumann-traumerei", "family": "sections", "answer": "0", "raw": "0"}
+{"id": "sections:shenandoah", "family": "sections", "answer": "0", "raw": "0"}
+{"id": "sections:simple-gifts", "family": "sections", "answer": "0", "raw": "0"}
+{"id": "sections:solace", "family": "sections", "answer": "0", "raw": "0"}
+{"id": "sections:the-easy-winners", "family": "sections", "answer": "0", "raw": "0"}
+{"id": "sections:the-entertainer", "family": "sections", "answer": "0", "raw": "0"}
+{"id": "sections:the-water-is-wide", "family": "sections", "answer": "0", "raw": "0"}
+{"id": "sections:weeping-willow", "family": "sections", "answer": "0", "raw": "0"}
+{"id": "teaching_cues:scarborough-fair", "family": "teaching_cues", "answer": "0", "raw": "0"}
+{"id": "teaching_cues:schumann-traumerei", "family": "teaching_cues", "answer": "0", "raw": "0"}
+{"id": "teaching_cues:shenandoah", "family": "teaching_cues", "answer": "0", "raw": "0"}
+{"id": "teaching_cues:simple-gifts", "family": "teaching_cues", "answer": "0", "raw": "0"}
+{"id": "teaching_cues:solace", "family": "teaching_cues", "answer": "0", "raw": "0"}
+{"id": "teaching_cues:the-easy-winners", "family": "teaching_cues", "answer": "0", "raw": "0"}
+{"id": "teaching_cues:the-entertainer", "family": "teaching_cues", "answer": "0", "raw": "0"}
+{"id": "teaching_cues:the-water-is-wide", "family": "teaching_cues", "answer": "0", "raw": "0"}
+{"id": "teaching_cues:weeping-willow", "family": "teaching_cues", "answer": "0", "raw": "0"}
+{"id": "teaching_note:scarborough-fair:m1", "family": "teaching_note", "answer": "(none)", "raw": "(none)"}
+{"id": "teaching_note:schumann-traumerei:m1", "family": "teaching_note", "answer": "(none)", "raw": "(none)"}
+{"id": "teaching_note:shenandoah:m1", "family": "teaching_note", "answer": "(none)", "raw": "(none)"}
+{"id": "teaching_note:simple-gifts:m1", "family": "teaching_note", "answer": "(none)", "raw": "(none)"}
+{"id": "teaching_note:solace:m1", "family": "teaching_note", "answer": "(none)", "raw": "(none)"}
+{"id": "teaching_note:the-easy-winners:m1", "family": "teaching_note", "answer": "(none)", "raw": "(none)"}
+{"id": "teaching_note:the-entertainer:m1", "family": "teaching_note", "answer": "(none)", "raw": "(none)"}
+{"id": "teaching_note:the-water-is-wide:m1", "family": "teaching_note", "answer": "(none)", "raw": "(none)"}
+{"id": "teaching_note:weeping-willow:m1", "family": "teaching_note", "answer": "(none)", "raw": "(none)"}
+{"id": "transpose:scarborough-fair:+2", "family": "transpose", "answer": "E minor", "raw": "E minor"}
+{"id": "transpose:schumann-traumerei:+2", "family": "transpose", "answer": "G major", "raw": "G major"}
+{"id": "transpose:shenandoah:+2", "family": "transpose", "answer": "F major", "raw": "F major"}
+{"id": "transpose:simple-gifts:+2", "family": "transpose", "answer": "G major", "raw": "G major"}
+{"id": "transpose:solace:+2", "family": "transpose", "answer": "A major", "raw": "A major"}
+{"id": "transpose:the-easy-winners:+2", "family": "transpose", "answer": "Bb major", "raw": "Bb major"}
+{"id": "transpose:the-entertainer:+2", "family": "transpose", "answer": "D major", "raw": "D major"}
+{"id": "transpose:the-water-is-wide:+2", "family": "transpose", "answer": "A major", "raw": "A major"}
+{"id": "transpose:weeping-willow:+2", "family": "transpose", "answer": "D major", "raw": "D major"}

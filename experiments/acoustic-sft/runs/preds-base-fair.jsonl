@@ -1,0 +1,36 @@
+{"id": "fur-elise:mm.1-8RH4-notereduction:clean:s1", "verdict": "match", "raw": "match"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:clean:s12", "verdict": "match", "raw": "match"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:clean:s4", "verdict": "match", "raw": "match"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:clean:s7", "verdict": "match", "raw": "match"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:dropped:s1", "verdict": "missed", "raw": "missed"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:dropped:s12", "verdict": "missed", "raw": "missed"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:dropped:s4", "verdict": "missed", "raw": "missed"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:dropped:s7", "verdict": "missed", "raw": "missed"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:extra:s1", "verdict": "extra", "raw": "extra"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:extra:s12", "verdict": "extra", "raw": "extra"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:extra:s4", "verdict": "extra", "raw": "extra"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:extra:s7", "verdict": "missed", "raw": "missed"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:late_25:s1", "verdict": "timing_pass", "raw": "timing_pass"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:late_25:s12", "verdict": "timing_pass", "raw": "timing_pass"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:late_25:s4", "verdict": "timing_pass", "raw": "timing_pass"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:late_25:s7", "verdict": "timing_pass", "raw": "timing_pass"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:late_80:s1", "verdict": "timing_fail", "raw": "timing_fail"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:late_80:s12", "verdict": "timing_fail", "raw": "timing_fail"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:late_80:s4", "verdict": "timing_fail", "raw": "timing_fail"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:late_80:s7", "verdict": "timing_fail", "raw": "timing_fail"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:sharp_30:s1", "verdict": "pitch_warn", "raw": "pitch_warn"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:sharp_30:s12", "verdict": "pitch_warn", "raw": "pitch_warn"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:sharp_30:s4", "verdict": "pitch_warn", "raw": "pitch_warn"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:sharp_30:s7", "verdict": "pitch_warn", "raw": "pitch_warn"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:sharp_60:s1", "verdict": "pitch_fail", "raw": "pitch_fail"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:sharp_60:s12", "verdict": "pitch_fail", "raw": "pitch_fail"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:sharp_60:s4", "verdict": "pitch_fail", "raw": "pitch_fail"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:sharp_60:s7", "verdict": "pitch_fail", "raw": "pitch_fail"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:silence:s1", "verdict": "nothing_to_grade", "raw": "nothing_to_grade\n\nThe recording is silent, so there is nothing to grade."}
+{"id": "fur-elise:mm.1-8RH4-notereduction:silence:s12", "verdict": "nothing_to_grade", "raw": "nothing_to_grade\n\nThe recording is silent, so there is nothing to grade."}
+{"id": "fur-elise:mm.1-8RH4-notereduction:silence:s4", "verdict": "nothing_to_grade", "raw": "nothing_to_grade\n\nThe recording is silent, so there is nothing to grade."}
+{"id": "fur-elise:mm.1-8RH4-notereduction:silence:s7", "verdict": "nothing_to_grade", "raw": "nothing_to_grade\n\nThe recording is silent, so there is nothing to grade."}
+{"id": "fur-elise:mm.1-8RH4-notereduction:vibrato:s1", "verdict": "in_tune", "raw": "in_tune"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:vibrato:s12", "verdict": "in_tune", "raw": "in_tune"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:vibrato:s4", "verdict": "in_tune", "raw": "in_tune"}
+{"id": "fur-elise:mm.1-8RH4-notereduction:vibrato:s7", "verdict": "in_tune", "raw": "in_tune"}

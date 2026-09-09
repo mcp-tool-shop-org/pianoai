@@ -1,0 +1,11 @@
+# Internal swarm / design paper trail (P9-003).
+# npm 10: a package.json `files` allow-list disables .npmignore, so the same
+# globs are also negated in package.json `files`. This file documents the
+# exclusion set and would apply if `files` were ever removed.
+docs/dogfood-swarm-*.md
+docs/*-kickoff.md
+docs/*dispatch*.md
+docs/dogfood-swarm-study-grounding.md
+docs/compose-panel-app-design-prompt.md
+docs/assets/
+docs/.nojekyll

@@ -12,14 +12,41 @@
 //   await layered.connect();       // connects all children
 //   layered.noteOn(60, 100);       // both engines fire
 //   await layered.disconnect();    // disconnects all children
+//
+// There is no createTapOutput on the layered connector. Tapping the mix
+// would collapse N instruments into one signal and throw away the
+// isolation this arc is built on. You tap children. The mix is the
+// thing we are deliberately not analysing.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { VmpkConnector, MidiStatus, MidiNote } from "./types.js";
+
+/** Names only — what `options.children` accepts. Never a tap factory. */
+export interface LayeredChildName {
+  id: string;
+  label: string;
+}
+
+/**
+ * What `children()` returns. The factory is bound from the live child
+ * engine, never copied from options, so that child's ensureConnected
+ * still runs. Omit createTapOutput when the child has none — a duet
+ * where one voice can be heard and the other cannot is a real state.
+ */
+export interface LayeredChild extends LayeredChildName {
+  createTapOutput?: () => unknown;
+}
 
 /** Options for the layered engine. */
 export interface LayeredEngineOptions {
   /** Optional label shown in status / port listing. Default: "Layered". */
   label?: string;
+  /**
+   * Names for `children()`. Must match `engines.length` when provided.
+   * Omitted: `{ id: "child-N", label: engines[N].listPorts()[0] }`.
+   * Factories are not accepted here — they are bound from each engine.
+   */
+  children?: ReadonlyArray<LayeredChildName>;
 }
 
 /**
@@ -35,8 +62,16 @@ export function createLayeredEngine(
   if (engines.length === 0) {
     throw new Error("createLayeredEngine requires at least one engine");
   }
+  if (options?.children && options.children.length !== engines.length) {
+    throw new Error(
+      `createLayeredEngine children metadata length (${options.children.length}) must match engines (${engines.length})`,
+    );
+  }
 
   const label = options?.label ?? "Layered";
+  const childMeta = options?.children
+    ? options.children.map((c) => ({ id: c.id, label: c.label }))
+    : null;
 
   const connector: VmpkConnector = {
     async connect(): Promise<void> {
@@ -99,6 +134,20 @@ export function createLayeredEngine(
           console.error(`Layered engine child ${i} playNote error: ${msg}`);
         }
       }
+    },
+
+    children(): ReadonlyArray<LayeredChild> {
+      return engines.map((e, i) => {
+        const names = childMeta?.[i] ?? {
+          id: `child-${i}`,
+          label: e.listPorts()[0] ?? `child ${i}`,
+        };
+        const entry: LayeredChild = { id: names.id, label: names.label };
+        if (typeof e.createTapOutput === "function") {
+          entry.createTapOutput = () => e.createTapOutput!();
+        }
+        return entry;
+      });
     },
   };
 

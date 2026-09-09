@@ -32,5 +32,30 @@
       "Listen for the E major color in the labeled windows without committing to it as a confirmed key change — let your ear stay open to the harmony's genuine ambiguity rather than resolving it prematurely.",
       "Try building endurance specifically for this piece's extreme note density — with individual measures running into the 60s for onset count, physical stamina is as much a technical requirement here as accuracy."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/38413.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "9094ce5867dd78cb9e63f9530d0d533104cd6ef7791ad5158e71892bc730fdfb",
+    "midi_title_events": [
+      "STEEL GTR",
+      "FRETLESS",
+      "MELODY",
+      "NYLON GTR",
+      "HARPSICHRD",
+      "FLUTE",
+      "DRUMS",
+      "GS/RESET"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

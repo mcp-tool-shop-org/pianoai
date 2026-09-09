@@ -1,0 +1,39 @@
+{
+  "base_model": "Qwen/Qwen2.5-7B-Instruct",
+  "hf_home": "E:/AI-Models/hf-cache",
+  "local_files_only": false,
+  "refuse_download": false,
+  "method": "lora",
+  "precision": "bf16",
+  "lora": {
+    "r": 16,
+    "alpha": 32,
+    "dropout": 0.1,
+    "target_modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ]
+  },
+  "lr": 0.00015,
+  "schedule": "cosine",
+  "warmup_steps": 10,
+  "effective_batch": 8,
+  "per_device_train_batch_size": 1,
+  "gradient_accumulation_steps": 8,
+  "weight_decay": 0.0,
+  "max_grad_norm": 1.0,
+  "max_seq_len": 16384,
+  "epochs": 3,
+  "packing": false,
+  "gradient_checkpointing": true,
+  "seed": 13,
+  "train_examples": 232,
+  "test_examples": 117,
+  "tool_catalog": "full",
+  "notes": "Qwen2.5-7B-Instruct at exactly the 3B recipe (lora-config.json): same LoRA r16/alpha32, lr 1.5e-4 cosine, 1x8, 3 epochs, max_seq_len 16384, seed 13, on the arithmetic-target corpus (chunk 32, 349 records 232/117). The only change is the base model, so the difference against the 3B run on the same corpus is the model lever alone."
+}

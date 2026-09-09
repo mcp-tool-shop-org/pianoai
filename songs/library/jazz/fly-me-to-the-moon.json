@@ -32,5 +32,73 @@
       "Feel the swing at this piece's brisk-but-relaxed 120 BPM as a moderate lilt — not the exaggerated long-short of a slow ballad, and not the near-even eighths of a very fast tune, but genuinely in between.",
       "Try giving measure 55's density peak real dynamic weight, since it arrives more than two-thirds of the way through the piece — save your biggest sound for there rather than the earlier, comparably busy measures."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/58514.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "GaryW0001 (transcribed and sequenced for GM, per the file) after Sammy Nestico's arrangement; the file marks '©1995 Blue Max Distribution'",
+    "arrangement_license": "all-rights-reserved",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about; midi meta events (sha256 28af8634b7b9…)",
+    "midi_sha256": "28af8634b7b9033a53c1048469dccf0889c403492b563957a25f64d51b0a4a3a",
+    "midi_title_events": [
+      "[Bart Howard] Fly me to the moon",
+      "Fly Me To The Moon",
+      "\"Fly Me To The Moon\"",
+      "GaryW0001 (@AOL.com)",
+      "Music & Lyrics by Bart Howard",
+      "-<>-<>-<>-<>-",
+      "\"Fly Me To",
+      "The Moon\"",
+      "for GMIDI by",
+      "GaryW0001",
+      "Composed by",
+      "Bart Howard",
+      "Tempo = 120",
+      "Comments??",
+      "Jazz Kit",
+      "Jazz Bass",
+      "Piano",
+      "Jazz Guitar",
+      "Vibes",
+      "Alto Sax 1",
+      "Alto Sax 2",
+      "Tenor Sax 1",
+      "Tenor Sax 2",
+      "Bari Sax",
+      "Trumpet 1",
+      "Trumpet 2",
+      "Trumpet 3",
+      "Trumpet 4",
+      "Trombone 1",
+      "Trombone 2",
+      "Trombone 3",
+      "Trombone 4"
+    ],
+    "midi_credit_events": [
+      "Sequenced for GMIDI by",
+      "Arranged by Sammy Nestico",
+      "©1995 Blue Max Distribution",
+      "Transcribed",
+      "& Sequenced"
+    ],
+    "credited_parties": [
+      {
+        "name": "GaryW0001",
+        "evidence": "midi-meta"
+      },
+      {
+        "name": "Sammy Nestico",
+        "evidence": "midi-meta"
+      },
+      {
+        "name": "Blue Max Distribution",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "matches"
   }
 }

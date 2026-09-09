@@ -32,5 +32,27 @@
       "Listen for B major functioning two different ways in this piece — sometimes pulling toward E major like a dominant, sometimes sitting as a modal color against the C# minor tonic — and let your ear decide how to voice it in the moment.",
       "Try tracking the left hand's transposed repeats by feel: once a shape is under your fingers, moving it to a new pitch should feel like sliding the same hand shape, not learning a new one from scratch."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/76975.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "8d18007da89af06a8a8226772c704566ab2c7d182a24a366ecd1b7a0336aa3c9",
+    "midi_title_events": [
+      "PIANO1",
+      "SLOWSTRINS",
+      "PANFLUIT",
+      "SWEEPPAD",
+      "CS-Dsply"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

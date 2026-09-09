@@ -32,5 +32,40 @@
       "Keep the 6-note riff identical at all sixteen appearances — listen for it as a signpost the listener can set their watch by, never louder, never rushed.",
       "Let the ending settle instead of finishing big: the byte-identical vamp (measures 92-93 at 96-97) and the flat final novelty ask for a fade of attention — listen for the alternating implied E and A colors rocking to rest at measure 99."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/17038.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "2916290d6c9371eade21c311bfe49f6510552bacbfb3aebffbbbf22d23618652",
+    "midi_title_events": [
+      "Clsd Hat",
+      "Hi Conga",
+      "Lo Conga",
+      "Cabasa",
+      "Triangle",
+      "Bass Gtr",
+      "Guitar 1",
+      "Guitar 2",
+      "String 1",
+      "Solo Str",
+      "Grp Vox",
+      "Lead Vox",
+      "PGM Chng",
+      "Sys Ex",
+      "* ENGL",
+      "* Stand by me",
+      "* Ben E. King"
+    ],
+    "midi_credit_events": [],
+    "midi_lyric_head": "when the night has come and the land is dark and the moon is the only light we'll see no I won't be afraid no I won't be afraid just as long as you stand stand ",
+    "credited_parties": [],
+    "title_verdict": "matches"
   }
 }

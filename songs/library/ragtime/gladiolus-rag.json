@@ -31,5 +31,86 @@
       "Try the opening pickup (measure 1) as a quiet upbeat gesture, almost a breath before the downbeat of measure 2 — a single-onset measure should not be played at full weight.",
       "Feel the C#-A#m7 cell that repeats through measures 91-119 as a settled, recurring landmark — once your ear locks onto it, the piece's back half becomes much easier to navigate."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://www.ragtimemusic.com/midifile/gladiols.mid",
+    "source_site": "www.ragtimemusic.com",
+    "arrangement_creator": "Colin D. MacDonald (sequence, 1994; performance copyright 1998), edited by Greenfield Bowie (1998)",
+    "arrangement_license": "all-rights-reserved",
+    "terms_url": "https://www.ragtimemusic.com/",
+    "terms_quote": "Copyright 1994-2001 by Colin D. MacDonald All rights reserved. [in the file: All rights reserved. This file is for personal use only. Rights granted to disseminate in original unaltered form.]",
+    "verified_at": "2026-09-09",
+    "verifier": "https://www.ragtimemusic.com/; midi meta events (sha256 a7ac883ac05b…)",
+    "midi_sha256": "a7ac883ac05bab49f1d1478ed633fa585c5b9ac5a9108382655127322ad88d09",
+    "midi_title_events": [
+      "Gladious Rag",
+      "Composer: Scott Joplin",
+      "Source Document: Scott Joplin Collected Piano Works Page: 157",
+      "Run Time: 4:13",
+      "Structure: AA BB A CC DD",
+      "Changes Made: None",
+      "All rights reserved. This file is for personal use only.",
+      "Rights granted to disseminate in original unaltered form.",
+      "Similiar sequences available at: http://www.ragtimemusic.com",
+      "Contact:",
+      "E-mail: colinmac@ragtimemusic.com",
+      "Colin D. MacDonald",
+      "4420 Rustic Road",
+      "Carmichael, CA 95608",
+      "USA",
+      "A Strain",
+      "A Strain - Repeat",
+      "B Strain",
+      "B Strain - Repeat",
+      "A Strain - Second Repeat",
+      "C Strain",
+      "C Strain - Repeat",
+      "D Strain",
+      "D Strain - Repeat",
+      "RH-1",
+      "Colin D. MacDonald All Rights Reserved",
+      "Gladiolus Rag (1907)",
+      "LH-1",
+      "Gladiolus Rag",
+      "1907",
+      "Source Document: Scott Joplin Collected Piano Works",
+      "Page: 157",
+      "Duration: 4:13",
+      "Structure: AA BB AA CC DD",
+      "All rights reserved.",
+      "This file is for personal use only.",
+      "Rights granted to disseminate for",
+      "education in original",
+      "unaltered form",
+      "Contact- E-mail: colinmac@ragtimemusic.com"
+    ],
+    "midi_credit_events": [
+      "Copyright © 1907 Jos. W. Stern & Co.",
+      "Sequence Performance Copyright 1998 By Colin D. MacDonald",
+      "Sequenced By Colin D. MacDonald, 1994",
+      "Edited By: Greenfield Bowie 1998",
+      "Copyright Logo",
+      "Sequence Performance Copyright 1998 By",
+      "Composed By: Scott Joplin",
+      "Copyright By: Jos. W. Stern & Co., New York",
+      "Sequence By: Colin D. MacDonald 1994"
+    ],
+    "credited_parties": [
+      {
+        "name": "Colin D. MacDonald",
+        "evidence": "midi-meta"
+      },
+      {
+        "name": "Greenfield Bowie",
+        "evidence": "midi-meta"
+      },
+      {
+        "name": "Jos. W. Stern & Co.",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "matches",
+    "notes": "The 1907 'Jos. W. Stern & Co.' copyright event is the original publisher of Joplin's composition, which is public domain; the sequence itself is MacDonald's and reserved."
   }
 }

@@ -32,5 +32,37 @@
       "Ride the measures 69-79 wave in one gesture — let the 60-onset bar at measure 73 be the crest of a swell that began at measure 63, and listen for the C#7 at measure 70 ringing over it rather than spiking out.",
       "Imitate a reference recording by ear for the vocal melody's placement — the smoothness this style is named for lives in microtiming the quantized grid cannot notate."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/68400.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "69e1e6ca5047036d1513ad8ac782b81d6016b882e8bb407d9c1c14c6d7718f63",
+    "midi_title_events": [
+      "A.PIANO 3",
+      "SYN BASS 1",
+      "METAL PAD",
+      "MELODY",
+      "SYN STR 1",
+      "FANTASIA",
+      "SAW WAVE",
+      "ALTO SAX",
+      "TENOR SAX",
+      "DRUMS",
+      "BARITONSAX",
+      "+CHORUS GT",
+      "SPACEVOICE",
+      "+FUNK GTR",
+      "GS/RESET"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

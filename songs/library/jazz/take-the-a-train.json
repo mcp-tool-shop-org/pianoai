@@ -32,5 +32,30 @@
       "Listen for the 8-measure cycle in the piece's final quarter (measures 110-134) as a repeating unit you can anticipate — once you feel where each 8-measure block starts, the whole passage becomes far more predictable to play.",
       "Try voicing the C augmented color at the very opening (measures 5-6 and 13-14) with real commitment to its unsettled character — it's this tune's signature harmonic gesture, not a passing accident."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/37148.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "MdB Software (copyright event, 1994)",
+    "arrangement_license": "all-rights-reserved",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about; midi meta events (sha256 671429e123d0…)",
+    "midi_sha256": "671429e123d040480520a1926e41c6732c4505dc13623624fa642f3b792e81be",
+    "midi_title_events": [
+      "Take the a train"
+    ],
+    "midi_credit_events": [
+      "(C)1994 by MdB Software"
+    ],
+    "credited_parties": [
+      {
+        "name": "MdB Software",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "matches"
   }
 }

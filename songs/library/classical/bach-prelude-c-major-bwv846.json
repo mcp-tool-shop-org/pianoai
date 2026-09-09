@@ -35,5 +35,54 @@
       "Let measure 35's two onsets ring fully before moving on — listen for the silence itself as part of the phrase, not a gap to rush through.",
       "Approach the busiest measures (53, 60, 47, 55) with a relaxed wrist and minimal rubato — Baroque keyboard tradition favors a steady, unhurried pulse here; listen for the sixteenth notes staying perfectly even even as the texture thickens."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "http://piano-midi.de/midis/bach/bach_846.mid",
+    "source_site": "piano-midi.de",
+    "arrangement_creator": "Bernd Krueger (piano-midi.de, 1996, edition 2004-09-25)",
+    "arrangement_license": "CC-BY-SA-3.0-DE",
+    "terms_url": "http://piano-midi.de/copy.htm",
+    "terms_quote": "The MIDI, audio(MP3, OGG) and video files of Bernd Krueger are licensed under the cc-by-sa Germany License. [links http://creativecommons.org/licenses/by-sa/3.0/de/deed.en] This means, that you can use and adapt the files, as long as you attribute to the copyright holder Name: Bernd Krueger Source: http://www.piano-midi.de",
+    "verified_at": "2026-09-09",
+    "verifier": "http://piano-midi.de/copy.htm; midi meta events (sha256 107f2b6a298f…)",
+    "midi_sha256": "107f2b6a298f283f8d26d4e8359669e7780f7ea64011b7844f2ed066d874a37e",
+    "midi_title_events": [
+      "Das wohltemperierte Klavier I - Praeludium und Fuge 1 in C-Dur BWV 846",
+      "Johann Sebastian Bach",
+      "Fertiggestellt am 29.10.97",
+      "Pan's auf Standard am 18.1.98",
+      "Normierung: 23.12.2002",
+      "Update am 25.9.2004",
+      "Dauer: 3:46 Minuten",
+      "Prelude",
+      "Fugue",
+      "Fine",
+      "Piano right",
+      "bdca426d104a26ac9dcb070447587523",
+      "Piano left",
+      "Fuga 1",
+      "Fuga 2",
+      "Fuga 3",
+      "Fuga 4",
+      "Bach: Prelude & Fugue in C major, BWV 846",
+      "http://www.piano-midi.de",
+      "Edition: 25.9.2004"
+    ],
+    "midi_credit_events": [
+      "Copyright © 1996 Bernd Krueger.",
+      "Copyright 2004 by Bernd Krüger."
+    ],
+    "credited_parties": [
+      {
+        "name": "Bernd Krueger",
+        "evidence": "midi-meta"
+      },
+      {
+        "name": "Bernd Krüger",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "matches"
   }
 }

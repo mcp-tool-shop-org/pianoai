@@ -29,6 +29,7 @@ import { mkdtempSync, rmSync, existsSync, symlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { parsePlaySessionFlags, parsePracticeArgs } from "./cli.js";
+import { JamError } from "./errors.js";
 
 const CLI_PATH = fileURLToPath(new URL("./cli.ts", import.meta.url));
 const REPO_ROOT = dirname(dirname(CLI_PATH)); // .../src/cli.ts -> .../src -> repo root
@@ -76,6 +77,13 @@ describe("parsePlaySessionFlags", () => {
     expect(() => parsePlaySessionFlags(["--count-in", "-1"])).toThrow(/count-in/i);
   });
 
+  it("lists --lyrics on help", () => {
+    const { status, stdout } = runCli(["help"]);
+    expect(status).toBe(0);
+    expect(stdout).toMatch(/--lyrics/);
+    expect(stdout).toMatch(/generate-song/);
+  }, 20000); // spawns the CLI; under CI coverage instrumentation it took 5.3 s against the 5 s default (main run 33966889379)
+
   it("throws a descriptive Error for a non-numeric --count-in", () => {
     expect(() => parsePlaySessionFlags(["--count-in", "abc"])).toThrow(/count-in/i);
   });
@@ -98,6 +106,17 @@ describe("parsePracticeArgs", () => {
 
   it("throws when --measures is missing", () => {
     expect(() => parsePracticeArgs(["fur-elise"])).toThrow(/--measures/);
+  });
+
+  it("missing --measures is a JamError INPUT_INVALID_ARGS (P9-006)", () => {
+    try {
+      parsePracticeArgs(["fur-elise"]);
+      expect.unreachable();
+    } catch (err) {
+      expect(err).toBeInstanceOf(JamError);
+      expect((err as JamError).code).toBe("INPUT_INVALID_ARGS");
+      expect((err as JamError).hint).toMatch(/5-8/);
+    }
   });
 
   it("parses a start-end measure range", () => {
@@ -162,29 +181,45 @@ describe("parsePracticeArgs", () => {
 
 describe("cli.ts — dispatch (spawned subprocess)", () => {
   it(
-    "`practice` with no song id prints usage to stderr and exits 1",
+    "`practice` with no song id prints JamError grammar to stderr and exits 1",
     () => {
       const { status, stderr } = runCli(["practice"]);
       expect(status).toBe(1);
       expect(stderr).toMatch(/usage/i);
+      expect(stderr).toMatch(/\[INPUT_INVALID_ARGS\]/);
+      expect(stderr).toMatch(/^Hint:/m);
     },
     20000,
   );
 
   it(
-    "`practice <unknown-song> --measures 1-2` exits 1 with a 'not found' message (proves dispatch reaches song lookup)",
+    "`practice fur-elise` without --measures prints JamError INPUT_INVALID_ARGS + Hint",
+    () => {
+      const { status, stderr } = runCli(["practice", "fur-elise"]);
+      expect(status).toBe(1);
+      expect(stderr).toMatch(/--measures/);
+      expect(stderr).toMatch(/\[INPUT_INVALID_ARGS\]/);
+      expect(stderr).toMatch(/^Hint:/m);
+    },
+    20000,
+  );
+
+  it(
+    "`practice <unknown-song> --measures 1-2` exits 1 with JamError INPUT_INVALID_SONG + Hint",
     () => {
       const { status, stderr } = runCli(["practice", "not-a-real-song-xyz", "--measures", "1-2"]);
       expect(status).toBe(1);
       expect(stderr).toMatch(/not found/i);
+      expect(stderr).toMatch(/\[INPUT_INVALID_SONG\]/);
+      expect(stderr).toMatch(/^Hint:/m);
     },
     20000,
   );
 
   it(
-    "`practice fallin --measures 1-999999` exits 1 with an 'exceeds' message (proves dispatch reaches resolvePracticeLoopConfig, before any audio connect)",
+    "`practice bach-prelude-c-major-bwv846 --measures 1-999999` exits 1 with an 'exceeds' message (proves dispatch reaches resolvePracticeLoopConfig, before any audio connect)",
     () => {
-      const { status, stderr } = runCli(["practice", "fallin", "--measures", "1-999999"]);
+      const { status, stderr } = runCli(["practice", "bach-prelude-c-major-bwv846", "--measures", "1-999999"]);
       expect(status).toBe(1);
       expect(stderr).toMatch(/exceeds/i);
     },
@@ -194,7 +229,7 @@ describe("cli.ts — dispatch (spawned subprocess)", () => {
   it(
     "`play <song> --count-in -1` exits 1 with an 'Invalid --count-in' message (proves the new flags are parsed before any audio connect)",
     () => {
-      const { status, stderr } = runCli(["play", "fallin", "--count-in", "-1"]);
+      const { status, stderr } = runCli(["play", "bach-prelude-c-major-bwv846", "--count-in", "-1"]);
       expect(status).toBe(1);
       expect(stderr).toMatch(/count-in/i);
     },
@@ -207,6 +242,16 @@ describe("cli.ts — dispatch (spawned subprocess)", () => {
       const { status, stdout } = runCli(["help"]);
       expect(status).toBe(0);
       expect(stdout).toMatch(/practice/);
+    },
+    20000,
+  );
+
+  it(
+    "`help` lists the `library` command (P9-005)",
+    () => {
+      const { status, stdout } = runCli(["help"]);
+      expect(status).toBe(0);
+      expect(stdout).toMatch(/library\s+Show library progress/);
     },
     20000,
   );
@@ -235,9 +280,9 @@ describe("cli.ts — dispatch (spawned subprocess)", () => {
   );
 
   it(
-    "`sing fallin --mode not-a-mode` exits 1 with an 'Invalid mode' message (proves VALID_SING_MODES is wired, before any audio connect)",
+    "`sing bach-prelude-c-major-bwv846 --mode not-a-mode` exits 1 with an 'Invalid mode' message (proves VALID_SING_MODES is wired, before any audio connect)",
     () => {
-      const { status, stderr } = runCli(["sing", "fallin", "--mode", "not-a-mode"]);
+      const { status, stderr } = runCli(["sing", "bach-prelude-c-major-bwv846", "--mode", "not-a-mode"]);
       expect(status).toBe(1);
       expect(stderr).toMatch(/invalid mode/i);
     },
@@ -245,9 +290,9 @@ describe("cli.ts — dispatch (spawned subprocess)", () => {
   );
 
   it(
-    "`play fallin --engine not-an-engine` exits 1 with an 'Unknown engine' message (proves VALID_ENGINES is wired, before any audio connect)",
+    "`play bach-prelude-c-major-bwv846 --engine not-an-engine` exits 1 with an 'Unknown engine' message (proves VALID_ENGINES is wired, before any audio connect)",
     () => {
-      const { status, stderr } = runCli(["play", "fallin", "--engine", "not-an-engine"]);
+      const { status, stderr } = runCli(["play", "bach-prelude-c-major-bwv846", "--engine", "not-an-engine"]);
       expect(status).toBe(1);
       expect(stderr).toMatch(/unknown engine/i);
     },
@@ -255,11 +300,23 @@ describe("cli.ts — dispatch (spawned subprocess)", () => {
   );
 
   it(
-    "`play <unknown-song>` exits 1 with a 'not found' message (proves dispatch reaches song lookup, before any audio connect)",
+    "`play bach-prelude-c-major-bwv846 --engine sample` without a sample pack exits 1 with an install hint (before audio connect)",
+    () => {
+      const { status, stderr } = runCli(["play", "bach-prelude-c-major-bwv846", "--engine", "sample"]);
+      expect(status).toBe(1);
+      expect(stderr).toMatch(/sampled piano is not installed/i);
+    },
+    20000,
+  );
+
+  it(
+    "`play <unknown-song>` exits 1 with JamError INPUT_INVALID_SONG + Hint",
     () => {
       const { status, stderr } = runCli(["play", "not-a-real-song-xyz"]);
       expect(status).toBe(1);
       expect(stderr).toMatch(/not found/i);
+      expect(stderr).toMatch(/\[INPUT_INVALID_SONG\]/);
+      expect(stderr).toMatch(/^Hint:/m);
     },
     20000,
   );

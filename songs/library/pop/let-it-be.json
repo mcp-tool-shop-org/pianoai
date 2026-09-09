@@ -32,5 +32,29 @@
       "Feel measures 40-45 as a genuine but gentle intensification, not a dramatic climax — the increase in onset density should read as conviction, not volume for its own sake.",
       "Try letting the opening and closing measures (1 and 72) breathe as real silence — the matching stillness at both ends is part of what gives this piece its hymn-like, meditative frame."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/100821.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "41af82c72141e3437e5a1e95ef39481673c1eca2fd09f699f258a3f209f95847",
+    "midi_title_events": [
+      "* ENGL",
+      "*** Let It Be ***",
+      "* LET IT BE",
+      "by The Beatles",
+      "* The Beatles",
+      "GS Reset - SYX"
+    ],
+    "midi_credit_events": [],
+    "midi_lyric_head": "When I find myself in times of trouble, Mother Mary comes to me speaking words of wisdom, let it be. And in my hour of darkness she is standing right in front o",
+    "credited_parties": [],
+    "title_verdict": "matches"
   }
 }

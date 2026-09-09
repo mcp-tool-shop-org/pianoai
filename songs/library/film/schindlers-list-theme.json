@@ -32,5 +32,47 @@
       "Listen for the transposed return of the measure 18-19 figure at measures 36-37, a fifth higher — recognize it as the same idea revisited from a new vantage point, and let your touch acknowledge that relationship.",
       "Try closing the final measure into true silence, matching the stillness of the opening — measure 52 is a complete rest in both hands, the same gesture the piece began with."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/102996.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "b06f704e9330d59400defee12c59534b7d8f502eb80c49b3a45829a47a95f750",
+    "midi_title_events": [
+      "DRUMS",
+      "-<>-<>-<>-<>-",
+      "Alto Flut",
+      "Alto Flute",
+      "English H",
+      "English Horn",
+      "Bb Clarin",
+      "Bb Clarinet",
+      "Bassoon",
+      "French Ho",
+      "French Horn",
+      "Vibes",
+      "Harp",
+      "Celesta",
+      "Solo Viol",
+      "Solo Violin",
+      "Violin I",
+      "Violin II",
+      "Viola",
+      "Cello",
+      "Contrabas",
+      "Contrabass",
+      "Pizzicato",
+      "Pizzicato Bass",
+      "CS-Dsply"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

@@ -21,6 +21,9 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { VERSION } from "./version.js";
 import { shouldSuperviseStdio, runStdioSupervisor, openRpcOutputStream } from "./stdio-supervisor.js";
 import { z } from "zod";
+import { zDifficulty, zGenre, zMeasure, zMidiNotes, zSongId } from "./mcp-schema.js";
+import { mcpStructuredError } from "./mcp-error.js";
+import { panelProgressNotification } from "./compose/panel-progress.js";
 import {
   getAllSongs,
   getSong,
@@ -69,7 +72,7 @@ import {
   type ChordProgression,
   type StyleName,
 } from "./compose/index.js";
-import { safeParseMeasure, measureToSingableText, type SingAlongMode } from "./note-parser.js";
+import { safeParseMeasure, measureToSingableText, midiToNoteName, type SingAlongMode } from "./note-parser.js";
 import { renderPianoRoll, renderScoredPianoRoll } from "./piano-roll.js";
 import { renderGuitarTab } from "./guitar-tab-roll.js";
 import {
@@ -77,7 +80,11 @@ import {
   type EngineId, type ParseWarning, type PlaybackMode, type SyncMode, type VmpkConnector, type Recording,
 } from "./types.js";
 import { createAudioEngine } from "./audio-engine.js";
+import { createSampleEngine } from "./sample-engine.js";
+import { preferredPianoEngineId, resolvePianoSamplesDir } from "./sample-paths.js";
 import { createVocalEngine } from "./vocal-engine.js";
+import { accompanimentEngineForLyrics, prepareScoreLocked } from "./vocal/prepare.js";
+import type { ScoreSinger } from "./vocal/score-singer.js";
 import { createTractEngine, TRACT_VOICE_IDS, type TractVoiceId } from "./vocal-tract-engine.js";
 import { createGuitarEngine } from "./guitar-engine.js";
 import {
@@ -103,7 +110,27 @@ import { PlaybackController } from "./playback/controls.js";
 import { createSingOnMidiHook } from "./teaching/sing-on-midi.js";
 import { createMidiFeedbackHook } from "./teaching/midi-feedback.js";
 import { createLiveMidiFeedbackHook } from "./teaching/live-midi-feedback.js";
-import { scorePerformance, type PerformanceResult } from "./score-performance.js";
+import { scorePerformance, flattenSongToExpected, type PerformanceResult } from "./score-performance.js";
+import { Ensemble } from "./audio/ensemble.js";
+import { subscribeEnsemble } from "./audio/bridge.js";
+import { rosterFor, soloInstrument } from "./audio/roster.js";
+import { attachTap } from "./audio/tap.js";
+import { AudioStream } from "./audio/stream.js";
+import { getSharedAudioContext } from "./audio-shared.js";
+import {
+  decodeWav,
+  detectOnsets,
+  trackPitch,
+  transcribe,
+  toMidiNoteEvents,
+  cqt,
+  renderSpectrogram,
+  C1_HZ,
+  HOUSE_TOLERANCE_MS,
+  ONSET_DETECTOR_CAVEAT,
+  type DecodedAudio,
+} from "./audio/index.js";
+import { deflateSync } from "node:zlib";
 import { scoreAnnotation, formatAnnotationScore } from "./annotation-scorer.js";
 import { compareSongs, formatComparison } from "./song-compare.js";
 import type { VoiceDirective, AsideDirective } from "./types.js";
@@ -117,6 +144,7 @@ import {
   rankWorstMeasures,
 } from "./practice-loop.js";
 import { JamError } from "./errors.js";
+import { userSongsDir, serverStatePath, stateHome } from "./state-home.js";
 import { readFile } from "node:fs/promises";
 import { existsSync, readFileSync, writeFileSync, realpathSync, mkdirSync } from "node:fs";
 import {
@@ -293,7 +321,7 @@ const registerTool = (name: string, description: string, schema: object, cb: (..
 server.prompt(
   "annotate_song",
   "Walk through annotating a raw song with musical language — description, structure, key moments, teaching goals, and style tips. Use this prompt to guide the annotation process for unannotated songs.",
-  { song_id: z.string().describe("Song ID to annotate") },
+  { song_id: zSongId("Song ID to annotate") },
   ({ song_id }) => {
     const song = getSong(song_id);
     const songInfo = song
@@ -328,7 +356,7 @@ server.prompt(
 server.prompt(
   "practice_plan",
   "Create a practice plan for a song — warm-up, section-by-section work, speed progression, and goals. Great for structuring a focused practice session.",
-  { song_id: z.string().describe("Song ID to plan practice for") },
+  { song_id: zSongId("Song ID to plan practice for") },
   ({ song_id }) => {
     const song = getSong(song_id);
     const songInfo = song
@@ -403,7 +431,7 @@ server.prompt(
   "maker_loop",
   "Create a verified reinterpretation of a song — the full maker loop: jam brief → propose a reharmonization → verify_harmony gates it → save, play, and see it. Every generation is verified by the platform's deterministic music tools before it ships.",
   {
-    song_id: z.string().describe("Source song ID to reinterpret (e.g. 'fur-elise')"),
+    song_id: zSongId("Source song ID to reinterpret (e.g. 'fur-elise')"),
     style: z.string().optional().describe("Target genre (e.g. 'jazz', 'blues', 'latin')"),
   },
   ({ song_id, style }) => {
@@ -458,8 +486,8 @@ registerTool(
   "list_songs",
   "Browse and search the piano song library. Filter by genre, difficulty, composer, or search query.",
   {
-    genre: z.enum(GENRES as unknown as [string, ...string[]]).optional().describe("Filter by genre"),
-    difficulty: z.enum(DIFFICULTIES as unknown as [string, ...string[]]).optional().describe("Filter by difficulty"),
+    genre: zGenre("Filter by genre").optional(),
+    difficulty: zDifficulty("Filter by difficulty").optional(),
     query: z.string().optional().describe("Search query (matches title, composer, tags, description)"),
     composer: z.string().optional().describe("Filter by composer (case-insensitive substring match)"),
   },
@@ -489,7 +517,7 @@ registerTool(
   "song_info",
   "Get detailed information about a specific song — musical language, teaching goals, key moments, structure.",
   {
-    id: z.string().describe("Song ID (kebab-case, e.g. 'moonlight-sonata-mvt1')"),
+    id: zSongId("Song ID (kebab-case, e.g. 'moonlight-sonata-mvt1')"),
   },
   async ({ id }) => {
     const song = getSong(id);
@@ -578,8 +606,8 @@ registerTool(
   "teaching_note",
   "Get the teaching note, fingering, and dynamics for a specific measure in a song.",
   {
-    id: z.string().describe("Song ID"),
-    measure: z.number().int().min(1).describe("Measure number (1-based)"),
+    id: zSongId("Song ID"),
+    measure: zMeasure("Measure number (1-based)"),
   },
   async ({ id, measure }) => {
     const song = getSong(id);
@@ -620,8 +648,8 @@ registerTool(
   "suggest_song",
   "Get a song recommendation based on genre preference and/or difficulty level.",
   {
-    genre: z.enum(GENRES as unknown as [string, ...string[]]).optional().describe("Preferred genre"),
-    difficulty: z.enum(DIFFICULTIES as unknown as [string, ...string[]]).optional().describe("Desired difficulty"),
+    genre: zGenre("Preferred genre").optional(),
+    difficulty: zDifficulty("Desired difficulty").optional(),
     maxDuration: z.number().optional().describe("Maximum duration in seconds"),
   },
   async (params) => {
@@ -662,7 +690,7 @@ registerTool(
   "list_measures",
   "Get an overview of all measures in a song, showing right hand, left hand, and any teaching notes.",
   {
-    id: z.string().describe("Song ID"),
+    id: zSongId("Song ID"),
     startMeasure: z.number().int().min(1).optional().describe("Start measure (1-based, default: 1)"),
     endMeasure: z.number().int().min(1).optional().describe("End measure (1-based, default: last)"),
   },
@@ -724,7 +752,7 @@ registerTool(
   "preview_teaching_cues",
   "Preview all teaching cues for a song — teaching notes, dynamics markings, and fingering suggestions per measure. Use this to see what guidance is available before playing.",
   {
-    id: z.string().describe("Song ID"),
+    id: zSongId("Song ID"),
     types: z.array(z.enum(["teaching", "dynamics", "fingering"])).optional()
       .describe("Filter by cue type (default: all). Options: teaching, dynamics, fingering"),
   },
@@ -799,7 +827,7 @@ registerTool(
   "practice_setup",
   "Get a recommended practice configuration for a song — speed, mode, voice settings, and CLI command. Tailored to the song's difficulty and teaching goals.",
   {
-    id: z.string().describe("Song ID"),
+    id: zSongId("Song ID"),
     playerLevel: z.enum(["beginner", "intermediate", "advanced"]).optional()
       .describe("Player's skill level (overrides song-based suggestion)"),
   },
@@ -879,7 +907,7 @@ registerTool(
   "sing_along",
   "Get singable text (note names, solfege, contour, or syllables) for a range of measures. Optionally enable piano accompaniment for synchronized singing + playback.",
   {
-    id: z.string().describe("Song ID"),
+    id: zSongId("Song ID"),
     startMeasure: z.number().int().min(1).optional().describe("Start measure (1-based, default: 1)"),
     endMeasure: z.number().int().min(1).optional().describe("End measure (1-based, default: last)"),
     mode: z.enum(["note-names", "solfege", "contour", "syllables"]).optional()
@@ -969,6 +997,7 @@ let activeSession: SessionController | null = null;
 let activeMidiEngine: MidiPlaybackEngine | null = null;
 let activeController: PlaybackController | null = null;
 let activeConnector: VmpkConnector | null = null;
+let activeScoreSinger: ScoreSinger | null = null;
 let activeVoiceId: string = "grand";
 let activeNotes: Set<number> = new Set();
 let activePracticeLoop: PracticeLoop | null = null;
@@ -1100,6 +1129,14 @@ async function stopActive(): Promise<void> {
   }
   activeController = null;
 
+  if (activeScoreSinger) {
+    try {
+      await activeScoreSinger.stop();
+    } catch (err) {
+      console.error(`Score-singer stop error: ${err instanceof Error ? err.message : String(err)}`);
+    }
+    activeScoreSinger = null;
+  }
   if (activeConnector) {
     try {
       await activeConnector.disconnect();
@@ -1115,9 +1152,9 @@ async function stopActive(): Promise<void> {
 
 registerTool(
   "play_song",
-  "Play a song through the built-in audio engine. Supports piano (default) and vocal engines. Accepts a library song ID or a path to a .mid file. Returns immediately with session info while playback runs in the background.",
+  "Play a song through the built-in audio engine. Default is sampled piano when Accurate-Salamander is installed, otherwise the oscillator piano. Accepts a library song ID or a path to a .mid file. Returns immediately with session info while playback runs in the background.",
   {
-    id: z.string().describe("Song ID (e.g. 'autumn-leaves', 'let-it-be') OR path to a .mid file"),
+    id: zSongId("Song ID (e.g. 'autumn-leaves', 'let-it-be') OR path to a .mid file"),
     speed: z.number().min(0.1).max(4).optional().describe("Speed multiplier (0.5 = half speed, 1.0 = normal, 2.0 = double)"),
     tempo: z.number().int().min(10).max(400).optional().describe("Override tempo in BPM (10-400). Omit to use the song's original tempo"),
     mode: z.enum(["full", "measure", "hands", "loop"]).optional().describe("Playback mode: 'full' (default), 'measure' (one at a time), 'hands' (separate then together), 'loop'"),
@@ -1127,15 +1164,16 @@ registerTool(
     withTeaching: z.boolean().optional().describe("Enable live teaching feedback (encouragement, dynamics tips, difficulty warnings). Default: false"),
     singMode: z.enum(["note-names", "solfege", "contour", "syllables"]).optional().describe("Sing-along mode when withSinging is true. Default: note-names"),
     keyboard: z.enum(VOICE_IDS as unknown as [string, ...string[]]).optional().describe("Piano voice/keyboard: grand (default), upright, electric, honkytonk, musicbox, bright. Each has a different character suited to different genres."),
-    engine: z.enum(ENGINE_IDS as unknown as [string, ...string[]]).optional().describe("Sound engine: 'piano' (default) plays piano, 'vocal' plays sustained vowel tones, 'tract' uses Pink Trombone vocal tract synthesis, 'guitar' plays physically-modeled guitar."),
+    engine: z.enum(ENGINE_IDS as unknown as [string, ...string[]]).optional().describe("Sound engine: omitted picks sampled piano when Accurate-Salamander is installed, else oscillator piano. 'sample' is the Concert Grand pack; 'piano' is the oscillator fallback; 'vocal' / 'tract' / 'guitar' as before."),
     tractVoice: z.enum(TRACT_VOICE_IDS as unknown as [string, ...string[]]).optional().describe("Voice preset for tract engine: soprano (default), alto, tenor, bass. Only used when engine='tract'."),
     guitarVoice: z.enum(GUITAR_VOICE_IDS as unknown as [string, ...string[]]).optional().describe("Guitar voice preset: classical-nylon, steel-dreadnought (default), electric-clean, electric-jazz. Only used when engine='guitar'."),
     syncMode: z.enum(["before", "concurrent"]).optional().describe("Voice sync timing when singing: 'before' (hear voice first, then play together) or 'concurrent' (simultaneous). Default: 'before' when singing only, 'concurrent' with teaching."),
     metronome: z.boolean().optional().describe("Enable the metronome click track (library songs only). Default: false."),
     countIn: z.number().int().min(0).max(8).optional().describe("Count-in length in bars before playback starts (library songs only). Only takes effect when metronome is true. Default: 1 bar when metronome is true and this is omitted, 0 otherwise."),
     record: z.boolean().optional().describe("Record played notes for later scoring (library songs only) — retrieve with score_last_take. Default: false."),
+    lyrics: z.string().optional().describe("English lyrics to sing as a score-locked lead (vowel on the MIDI beat). Aligns to the right-hand melody of the selected measures. The --engine aah/tract/synth path is not used for the lead when lyrics are set."),
   },
-  async ({ id, speed, tempo, mode, startMeasure, endMeasure, withSinging, withTeaching, singMode, keyboard, engine, tractVoice, guitarVoice, syncMode: syncModeParam, metronome, countIn, record }) => withStateLock(async () => {
+  async ({ id, speed, tempo, mode, startMeasure, endMeasure, withSinging, withTeaching, singMode, keyboard, engine, tractVoice, guitarVoice, syncMode: syncModeParam, metronome, countIn, record, lyrics }) => withStateLock(async () => {
     // Stop whatever is currently playing
     await stopActive();
 
@@ -1189,13 +1227,28 @@ registerTool(
     const voiceId = (keyboard ?? "grand") as PianoVoiceId;
     activeVoiceId = voiceId;
     activeNotes.clear();
-    const connector = engine === "tract"
+    const requestedEngine = (engine ?? preferredPianoEngineId()) as EngineId;
+    const engineId = (lyrics
+      ? accompanimentEngineForLyrics(requestedEngine)
+      : requestedEngine) as EngineId;
+    if (engineId === "sample") {
+      const samplesDir = resolvePianoSamplesDir();
+      if (!samplesDir) {
+        return {
+          content: [{ type: "text", text: "Sampled piano is not installed. Set AI_JAM_SAMPLES_DIR to an Accurate-Salamander directory, or use engine: \"piano\" for the oscillator fallback." }],
+          isError: true,
+        };
+      }
+    }
+    const connector = engineId === "tract"
       ? createTractEngine({ voice: (tractVoice ?? "soprano") as TractVoiceId })
-      : engine === "vocal"
+      : engineId === "vocal"
         ? createVocalEngine()
-        : engine === "guitar"
+        : engineId === "guitar"
           ? createGuitarEngine({ voice: (guitarVoice ?? "steel-dreadnought") as GuitarVoiceId })
-          : createAudioEngine(voiceId);
+          : engineId === "sample"
+            ? createSampleEngine({ samplesDir: resolvePianoSamplesDir()! })
+            : createAudioEngine(voiceId);
     // Native stdout hardening: on a host without a running JACK server /
     // libjack.so.0, node-web-audio-api's cpal layer prints a backend-probe
     // failure ("Failed to open client because of error:
@@ -1212,7 +1265,7 @@ registerTool(
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       return {
-        content: [{ type: "text", text: `Couldn't start the ${ENGINE_LABELS[(engine ?? "piano") as EngineId]} engine: ${msg}` }],
+        content: [{ type: "text", text: `Couldn't start the ${ENGINE_LABELS[engineId]} engine: ${msg}` }],
         isError: true,
       };
     }
@@ -1272,9 +1325,80 @@ registerTool(
         const controller = new PlaybackController(connector, parsed);
         activeController = controller;
 
+        // Stand up the live ensemble for this performance. The bridge reads the
+        // controller's own note events, so what `ensemble_now` reports is what
+        // was SENT rather than anything inferred from audio. It is torn down on
+        // the same paths the controller is, so a finished song does not leave
+        // notes hanging on forever.
+        // The roster is whatever is ACTUALLY playing, derived from the
+        // connector rather than assumed by the caller. Assuming is what made an
+        // earlier version report a guitar performance as a piano one.
+        //
+        // On this path the connector is a single engine, so the roster is one
+        // row. A layered connector answers with one row per child, and every
+        // child is subscribed, because layering sends every note to every child
+        // and the view should say so per instrument rather than collapse them.
+        const ensemble = new Ensemble();
+        const roster = rosterFor(connector, soloInstrument(engineId));
+        const unsubscribers: Array<() => void> = [];
+        const tapHandles: Array<{ detach(): void }> = [];
+
+        // The acoustic channel, where the engine offers one. Measured at 9
+        // microseconds per audio callback against a 42.67 ms block, so the cost
+        // of watching is about 0.02% of the quantum and it is on by default.
+        //
+        // Every failure here is swallowed on purpose. A tap is an OBSERVER: if
+        // attaching one throws, the correct outcome is a performance that plays
+        // with no acoustic channel, never a performance that does not play.
+        // The ensemble still reports intent, which is the exact channel anyway.
+        const tapCtx = getSharedAudioContext();
+
+        for (const entry of roster) {
+          let stream: AudioStream | undefined;
+          // Solo and layered are the same loop now. The question is no longer
+          // "is this a solo?" but "does this entry offer a tap?", which is what
+          // makes each half of a duet separately audible rather than merely
+          // named. A layered engine still has no tap of its own: these buses
+          // come from its children, never from the mix.
+          if (tapCtx && entry.createTapOutput) {
+            try {
+              const bus = entry.createTapOutput();
+              const s = new AudioStream({
+                sampleRate: tapCtx.sampleRate ?? 48000,
+                label: entry.label,
+              });
+              tapHandles.push(attachTap({ source: bus as never, stream: s, context: tapCtx }));
+              stream = s;
+            } catch (err) {
+              console.error(
+                `Acoustic tap unavailable for ${entry.label}: ` +
+                `${err instanceof Error ? err.message : String(err)}. ` +
+                `Playing on, reporting intent only.`,
+              );
+            }
+          }
+
+          ensemble.addInstrument({ id: entry.id, label: entry.label, ...(stream ? { stream } : {}) });
+          unsubscribers.push(
+            subscribeEnsemble(ensemble, controller, { instrumentId: entry.id }),
+          );
+        }
+
+        const unsubscribeEnsemble = () => {
+          for (const off of unsubscribers) off();
+          for (const h of tapHandles) {
+            try { h.detach(); } catch { /* teardown is best-effort */ }
+          }
+        };
+        setLiveEnsemble(ensemble);
+
         const midiPlayStart = Date.now();
         const playPromise = controller.play({ speed: speed ?? 1.0, teachingHook });
         playPromise
+          .finally(() => {
+            unsubscribeEnsemble();
+            setLiveEnsemble(null);
+          })
           .then(() => {
             const elapsed = Math.round((Date.now() - midiPlayStart) / 1000);
             lastCompletedSession = {
@@ -1435,17 +1559,42 @@ registerTool(
 
     const syncMode: SyncMode = syncModeParam ?? ((withSinging && !withTeaching) ? "before" : "concurrent");
     const session = createSession(song, connector, {
-      mode: playbackMode,
+      mode: lyrics && loopRange ? "loop" : playbackMode,
       syncMode,
       speed,
       tempo,
       loopRange,
+      loopOnce: Boolean(lyrics && loopRange),
       teachingHook,
       metronome,
       countIn,
       record,
     });
     activeSession = session;
+
+    if (lyrics && lyrics.trim().length > 0) {
+      try {
+        const prepared = await prepareScoreLocked(song, {
+          lyrics,
+          startMeasure,
+          endMeasure,
+          tempo,
+          speed,
+        });
+        if (prepared) {
+          await prepared.singer.connect();
+          prepared.singer.start();
+          activeScoreSinger = prepared.singer;
+        }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        await stopActive();
+        return {
+          content: [{ type: "text", text: `Couldn't start the sung lead: ${msg}` }],
+          isError: true,
+        };
+      }
+    }
 
     // Play in background
     lastPlaybackError = null;
@@ -1487,6 +1636,10 @@ registerTool(
         // (finished, errored, or stopped/superseded elsewhere) — a no-op
         // when `record` wasn't enabled (see captureLastRecording()).
         captureLastRecording(session);
+        if (activeScoreSinger) {
+          activeScoreSinger.stop().catch((e) => console.error(`Score-singer stop error: ${e instanceof Error ? e.message : String(e)}`));
+          activeScoreSinger = null;
+        }
         connector.disconnect().catch((e) => console.error(`Disconnect error: ${e instanceof Error ? e.message : String(e)}`));
         if (activeSession === session) activeSession = null;
         if (activeConnector === connector) activeConnector = null;
@@ -1511,6 +1664,9 @@ registerTool(
     if (loopRange) {
       const loopMeasureCount = loopRange[1] - loopRange[0] + 1;
       lines.push(`- **Loop range:** measures ${loopRange[0]}–${loopRange[1]} (${loopMeasureCount} measures)`);
+    }
+    if (lyrics && lyrics.trim().length > 0) {
+      lines.push(`- **Sung lead:** score-locked lyrics (${lyrics.trim().split(/\s+/).length} words) on the right-hand melody`);
     }
     if (metronome) {
       lines.push(`- **Metronome:** on${session.session.countInBars ? ` (${session.session.countInBars}-bar count-in)` : ""}`);
@@ -1572,7 +1728,7 @@ registerTool(
   "practice_loop",
   "Start a practice loop: drills a measure range at reduced tempo, ramping toward full speed one step at a time — but only after a CLEAN pass (accurate + complete), never on a fixed schedule. Metronome + a count-in are on by default, every pass is recorded and scored. Returns immediately with the first pass's micro-goal while it runs in the background — poll with practice_status, stop with stop_playback.",
   {
-    id: z.string().describe("Song ID from the library (e.g. 'fur-elise')"),
+    id: zSongId("Song ID from the library (e.g. 'fur-elise')"),
     startMeasure: z.number().int().min(1).describe("First measure of the drilled range (1-based)"),
     endMeasure: z.number().int().min(1).describe("Last measure of the drilled range (1-based, inclusive)"),
     speedStartPct: z.number().min(1).max(400).optional().describe("Starting speed, percent of the song's tempo. Default: 70"),
@@ -1601,7 +1757,10 @@ registerTool(
       };
     }
 
-    const connector = createAudioEngine("grand");
+    const samplesDir = resolvePianoSamplesDir();
+    const connector = samplesDir
+      ? createSampleEngine({ samplesDir })
+      : createAudioEngine("grand");
     activeVoiceId = "grand";
     try {
       await connector.connect();
@@ -1919,16 +2078,12 @@ registerTool(
   "ai_jam_sessions",
   "Start a jam session — get a 'jam brief' with chord progression, melody outline, structure, and style hints. Provide a songId for a specific song, or just a genre to jam on a random pick. Use the brief to create your own interpretation, then save with add_song and play with play_song.",
   {
-    songId: z.string().optional()
-      .describe("Source song ID to jam on (e.g. 'autumn-leaves'). Optional if genre is provided."),
-    genre: z.enum(GENRES as unknown as [string, ...string[]]).optional()
-      .describe("Pick a random song from this genre to jam on (e.g., 'jazz', 'blues'). Used when no songId is provided."),
-    style: z.enum(GENRES as unknown as [string, ...string[]]).optional()
-      .describe("Target genre for reinterpretation (e.g., turn a classical piece into jazz)"),
+    songId: zSongId("Source song ID to jam on (e.g. 'autumn-leaves'). Optional if genre is provided.").optional(),
+    genre: zGenre("Pick a random song from this genre to jam on (e.g., 'jazz', 'blues'). Used when no songId is provided.").optional(),
+    style: zGenre("Target genre for reinterpretation (e.g., turn a classical piece into jazz)").optional(),
     mood: z.string().optional()
       .describe("Target mood (e.g., 'upbeat', 'melancholic', 'dreamy', 'energetic', 'gentle', 'playful')"),
-    difficulty: z.enum(DIFFICULTIES as unknown as [string, ...string[]]).optional()
-      .describe("Target difficulty level"),
+    difficulty: zDifficulty("Target difficulty level").optional(),
     measures: z.string().optional()
       .describe("Measure range to focus on (e.g., '1-8' for just the opening)"),
   },
@@ -1983,9 +2138,7 @@ registerTool(
       'Voicings are note tokens (space or "+" separated, optional :duration suffixes). ' +
       "Supported chord suffixes: maj (empty), m, 7, maj7, m7, dim, m7b5, aug, sus4, sus2.",
     ),
-    songId: z.string().optional().describe(
-      "Verify against this library song's right-hand melody (e.g. 'fur-elise'). Combine with measures to select a range.",
-    ),
+    songId: zSongId("Verify against this library song's right-hand melody (e.g. 'fur-elise'). Combine with measures to select a range.").optional(),
     measures: z.string().optional().describe(
       "Measure range within the song, e.g. '1-8'. Only used with songId.",
     ),
@@ -2019,14 +2172,12 @@ registerTool(
         return { measure: rec.measure, intendedChord: rec.intendedChord, voicing: rec.voicing };
       });
     } catch (err) {
-      return {
-        content: [{
-          type: "text",
-          text: `Couldn't parse reharmonization: ${err instanceof Error ? err.message : String(err)}\n` +
-            `Expected: [{"measure": 1, "intendedChord": "Am7", "voicing": "A2 C3 E3 G3"}, ...]`,
-        }],
-        isError: true,
-      };
+      const detail = err instanceof Error ? err.message : String(err);
+      return mcpStructuredError(
+        "bad_reharmonization",
+        `Couldn't parse reharmonization: ${detail}`,
+        'Pass a JSON array: [{"measure": 1, "intendedChord": "Am7", "voicing": "A2 C3 E3 G3"}, ...]',
+      );
     }
 
     // Resolve the melody: library song or inline
@@ -2035,10 +2186,11 @@ registerTool(
     if (songId) {
       const song = getSong(songId);
       if (!song) {
-        return {
-          content: [{ type: "text", text: `No song called "${songId}" in the library. Try list_songs to browse.` }],
-          isError: true,
-        };
+        return mcpStructuredError(
+          "song_not_found",
+          `No song called "${songId}" in the library.`,
+          "Browse with list_songs, then pass an exact song id.",
+        );
       }
       let songMeasures = song.measures;
       if (measures) {
@@ -2046,10 +2198,11 @@ registerTool(
           const [start, end] = parseMeasureRange(measures, song.measures.length);
           songMeasures = song.measures.slice(start, end + 1);
         } catch (err) {
-          return {
-            content: [{ type: "text", text: err instanceof Error ? err.message : String(err) }],
-            isError: true,
-          };
+          return mcpStructuredError(
+            "bad_measure_range",
+            err instanceof Error ? err.message : String(err),
+            'Use "N" or "start-end", e.g. "1-8".',
+          );
         }
       }
       melodyMeasures = songMeasures.map((m) => ({ number: m.number, rightHand: m.rightHand }));
@@ -2066,20 +2219,19 @@ registerTool(
           return { number: rec.number, rightHand: rec.rightHand };
         });
       } catch (err) {
-        return {
-          content: [{
-            type: "text",
-            text: `Couldn't parse melody: ${err instanceof Error ? err.message : String(err)}\n` +
-              `Expected: [{"number": 1, "rightHand": "E5:e D#5:e"}, ...]`,
-          }],
-          isError: true,
-        };
+        const detail = err instanceof Error ? err.message : String(err);
+        return mcpStructuredError(
+          "bad_melody",
+          `Couldn't parse melody: ${detail}`,
+          'Pass a JSON array: [{"number": 1, "rightHand": "E5:e D#5:e"}, ...]',
+        );
       }
     } else {
-      return {
-        content: [{ type: "text", text: "I need either a songId (with optional measures range) or an inline melody to verify against." }],
-        isError: true,
-      };
+      return mcpStructuredError(
+        "missing_input",
+        "I need either a songId (with optional measures range) or an inline melody to verify against.",
+        "Pass songId from list_songs, or an inline melody JSON array.",
+      );
     }
 
     const verdict = verifyHarmony(melodyMeasures, reharm, { key: effectiveKey, maxChromaticRatio });
@@ -2105,7 +2257,7 @@ registerTool(
   "auto_reharmonize",
   "Reharmonize a section of a library song with the local inference maker. The Phase-C loop: a local model proposes chord symbols, a deterministic voicer renders each voicing (chord fidelity guaranteed), and verify_harmony admits or rejects — resampling best-of-n until a reharmonization passes. Returns the verified per-measure {measure, intendedChord, voicing} plus telemetry (samplesUsed, passedAtSample, verified). By default the model emits an ABC lead sheet ('abc' format), which is far more reliable than a JSON chord array (measured on the frozen E-R set: ABC 0% empty output vs JSON 50%). Needs a local Ollama model (default qwen2.5:7b); if Ollama is not running it returns a structured error instead of failing, and every OTHER tool in this server is unaffected. May take up to ~a minute at the default best-of-16 budget.",
   {
-    songId: z.string().describe("Library song to reharmonize (e.g. 'fur-elise'). Browse with list_songs."),
+    songId: zSongId("Library song to reharmonize (e.g. 'fur-elise'). Browse with list_songs."),
     measures: z.string().optional().describe("Measure range (1-based), e.g. '1-8'. Default: measures 1-8."),
     style: z.string().optional().describe("Optional target style hint woven into the brief, e.g. 'jazz', 'bossa nova'."),
     maxSamples: z.number().int().min(1).max(64).optional().describe("Best-of-n budget (default 16, the measured knee). Higher = more coverage, more time."),
@@ -2185,7 +2337,7 @@ registerTool(
 
 registerTool(
   "compose_panel",
-  "Run a cross-family local-LLM 'best-worst' panel over how the composition engine voices library songs — a $0 DIRECTIONAL smoke-screen, NOT a quality measure (local models judging note-names can't make a quality claim; that needs a blind human-audio panel). It realizes each song four ways (root-position floor, nearest-tone leader, refined, and the engine = model-spec best-of-n + refine), then several disjoint local judge families rank them blind. A discrimination-floor gate returns UNINTERPRETABLE if the judges can't rank the theory-valid system above the theory-invalid floor; INCONCLUSIVE is a normal outcome. Needs local Ollama (judges default to mistral-small/granite/gemma/aya — none is the generator family); fail-soft, zero API cost. Runs slowly (several minutes) since it generates + judges with 24–31B models.",
+  "Run a cross-family local-LLM 'best-worst' panel over how the composition engine voices library songs — a directional ranking, not a quality measure (local models judging note-names can't hear the music; that needs a blind human-audio panel). It realizes each song four ways (root-position floor, nearest-tone leader, refined, and the engine = model-spec best-of-n + refine), then several disjoint local judge families rank them blind. A discrimination-floor gate returns UNINTERPRETABLE if the judges can't rank the theory-valid system above the theory-invalid floor; INCONCLUSIVE is a normal outcome. Needs local Ollama (judges default to mistral-small/granite/gemma/aya — none is the generator family); fail-soft. Runs slowly (several minutes) since it generates + judges with 24–31B models. It runs for minutes and reports progress (per judge × song) when the client sends a progress token.",
   {
     songs: z.string().optional().describe("Comma-separated library song ids (e.g. 'let-it-be,all-of-me'). Default: a genre-diverse set of 10. Browse with list_songs."),
     measures: z.string().optional().describe("Measure range (1-based), e.g. '1-8'. Default: measures 1-8."),
@@ -2194,11 +2346,9 @@ registerTool(
     judges: z.string().optional().describe("Comma-separated judge families as 'model:family' (e.g. 'mistral-small:24b:mistral'). Default four disjoint local families, none of them qwen (the generator)."),
     genModel: z.string().optional().describe("Local Ollama model the engine generates with (default 'qwen2.5:7b')."),
   },
-  async ({ songs, measures, style, n, judges, genModel }) => {
-    const structuredError = (code: string, message: string, hint: string) => ({
-      content: [{ type: "text" as const, text: `❌ ${message}\n\n` + JSON.stringify({ error: { code, message, hint } }, null, 2) }],
-      isError: true,
-    });
+  async ({ songs, measures, style, n, judges, genModel }, extra) => {
+    const structuredError = mcpStructuredError;
+    const progressToken = extra?._meta?.progressToken;
 
     const voices = 4;
     const STYLE_PRESETS = ["common-practice", "lead-sheet", "film-ambient"] as const;
@@ -2264,7 +2414,22 @@ registerTool(
 
     let result;
     try {
-      result = await runComposePanelTool({ progressions, systems, judges: reachableJudges, style: styleName, anchors: { floor: "floor", valid: "refined", engine: "engine" } });
+      result = await runComposePanelTool({
+        progressions,
+        systems,
+        judges: reachableJudges,
+        style: styleName,
+        anchors: { floor: "floor", valid: "refined", engine: "engine" },
+        onVoteStep: progressToken === undefined
+          ? undefined
+          : async (info) => {
+            try {
+              await extra.sendNotification(panelProgressNotification(progressToken, info));
+            } catch {
+              // Progress is best-effort — a dropped client must not fail the panel.
+            }
+          },
+      });
     } catch (err) {
       return structuredError("panel_failed", "The panel errored while running.", err instanceof Error ? err.message : String(err));
     }
@@ -2370,10 +2535,10 @@ registerTool(
   "Import a MIDI file as a song. Provide the file path and metadata. The MIDI is parsed into measures with right/left hand separation, converted to a SongEntry JSON, and saved to ~/.ai-jam-sessions/songs/. User songs persist across server restarts and package updates.",
   {
     midi_path: z.string().describe("Path to .mid file"),
-    id: z.string().describe("Song ID (kebab-case, e.g. 'fur-elise')"),
+    id: zSongId("Song ID (kebab-case, e.g. 'fur-elise')"),
     title: z.string().describe("Song title"),
-    genre: z.enum(GENRES as unknown as [string, ...string[]]).describe("Genre"),
-    difficulty: z.enum(DIFFICULTIES as unknown as [string, ...string[]]).describe("Difficulty"),
+    genre: zGenre("Genre"),
+    difficulty: zDifficulty("Difficulty"),
     key: z.string().describe("Key signature (e.g. 'C major', 'A minor')"),
     composer: z.string().optional().describe("Composer or artist"),
     description: z.string().optional().describe("1-3 sentence description of the piece"),
@@ -2478,7 +2643,7 @@ registerTool(
   "detect_chord",
   "Detect the chord name from a set of currently-sounding MIDI note numbers (0-127). Useful for identifying what chord is being held during live playback. Returns the chord name (e.g. 'C', 'Gm7', 'F#/A#') and the note names involved.",
   {
-    notes: z.array(z.number().int().min(0).max(127)).min(1).max(64).describe("MIDI note numbers currently sounding, e.g. [60, 64, 67] for a C major triad"),
+    notes: zMidiNotes(),
   },
   async ({ notes }) => {
     const names = midiNotesToNames(notes);
@@ -2500,7 +2665,7 @@ registerTool(
   "view_piano_roll",
   "Render a piano roll visualization of a song as SVG. Returns an image showing note positions over time. Color modes: 'hand' (blue RH / coral LH, default) or 'pitch-class' (chromatic rainbow — each pitch class gets its own color, making harmonic patterns visible).",
   {
-    songId: z.string().describe("Song ID from the library (e.g. 'fur-elise')"),
+    songId: zSongId("Song ID from the library (e.g. 'fur-elise')"),
     startMeasure: z.number().int().min(1).optional().describe("First measure to render (1-based). Default: 1"),
     endMeasure: z.number().int().min(1).optional().describe("Last measure to render (1-based). Default: last measure"),
     color_mode: z.enum(["hand", "pitch-class"]).optional().describe("Note coloring: 'hand' (RH/LH, default) or 'pitch-class' (chromatic rainbow)"),
@@ -2571,13 +2736,556 @@ registerTool(
   }
 );
 
+// ─── Tools: the audio inspector ────────────────────────────────────────────
+//
+// The model already queries the SCORE through deterministic tools rather than
+// eyeballing a piano roll. These do the same for SOUND. Every number comes from
+// DSP, never from a model reading a picture, because the evidence says vision
+// models read spectrograms coarsely at best (docs/spectrogram-surface-study-
+// 2026-09.md). Pitch is reported in note names with cents, never in Hz, because
+// language models answer better from scientific pitch notation than from a
+// frequency.
+
+/** Load a WAV from disk for any of the audio tools, with actionable failures. */
+function loadAudioFile(path: string):
+  | { ok: true; audio: DecodedAudio }
+  | { ok: false; result: { content: [{ type: "text"; text: string }]; isError: true } } {
+  if (!existsSync(path)) {
+    return {
+      ok: false,
+      result: {
+        content: [{
+          type: "text",
+          text:
+            `No file at "${path}".\n\n` +
+            `Pass an absolute path to an uncompressed WAV file. If you have an ` +
+            `MP3 or FLAC, convert it first: this server decodes PCM WAV only, ` +
+            `so that it needs no external dependencies.`,
+        }],
+        isError: true,
+      },
+    };
+  }
+  try {
+    return { ok: true, audio: decodeWav(readFileSync(path)) };
+  } catch (err) {
+    return {
+      ok: false,
+      result: {
+        content: [{
+          type: "text",
+          text:
+            `Could not read "${path}" as audio.\n\n` +
+            `${err instanceof Error ? err.message : String(err)}`,
+        }],
+        isError: true,
+      },
+    };
+  }
+}
+
+/** One line describing what a decoded file is, shown at the top of each report. */
+function describeAudio(audio: DecodedAudio, path: string): string {
+  const chans = audio.sourceChannels === 1
+    ? "mono"
+    : `${audio.sourceChannels} channels, averaged to mono`;
+  return (
+    `**${path}**\n` +
+    `${audio.durationSec.toFixed(2)} s · ${audio.sampleRate} Hz · ` +
+    `${audio.bitDepth}-bit · ${chans}`
+  );
+}
+
+registerTool(
+  "analyze_audio",
+  "Measure a WAV recording: note onsets, the pitch contour, and level. This is how you HEAR a take rather than reading the MIDI you intended — use it on a rendered performance, a sung take, or any recording you want described in musical terms. Returns onset times in seconds and the pitch contour as note names with cent deviations. Monophonic: on a chord or a full mix the pitch readings will be confidently wrong.",
+  {
+    path: z.string().describe("Absolute path to an uncompressed WAV file."),
+    start_sec: z.number().optional().describe("Analyse from this time onward. Defaults to the start of the file."),
+    end_sec: z.number().optional().describe("Analyse up to this time. Defaults to the end of the file."),
+  },
+  async ({ path, start_sec, end_sec }: { path: string; start_sec?: number; end_sec?: number }) => {
+    const loaded = loadAudioFile(path);
+    if (!loaded.ok) return loaded.result;
+    const { audio } = loaded;
+
+    const from = Math.max(0, Math.floor((start_sec ?? 0) * audio.sampleRate));
+    const to = Math.min(
+      audio.samples.length,
+      end_sec === undefined ? audio.samples.length : Math.ceil(end_sec * audio.sampleRate),
+    );
+    if (to - from < 2048) {
+      return {
+        content: [{
+          type: "text" as const,
+          text:
+            `That window holds only ${Math.max(0, to - from)} samples, too few to ` +
+            `analyse. Ask for at least 0.05 s of audio.`,
+        }],
+        isError: true as const,
+      };
+    }
+    const window = audio.samples.subarray(from, to);
+    const offset = from / audio.sampleRate;
+
+    const onsetResult = detectOnsets(window, { sampleRate: audio.sampleRate });
+    const track = trackPitch(window, { sampleRate: audio.sampleRate });
+    const voiced = track.frames.filter((f) => f.f0Hz !== null && f.confidence >= 0.5);
+
+    let peak = 0;
+    let sumSquares = 0;
+    for (let i = 0; i < window.length; i++) {
+      const v = window[i]!;
+      const a = Math.abs(v);
+      if (a > peak) peak = a;
+      sumSquares += v * v;
+    }
+    const rms = Math.sqrt(sumSquares / window.length);
+
+    const lines: string[] = [
+      "# Audio analysis",
+      "",
+      describeAudio(audio, path),
+    ];
+    if (start_sec !== undefined || end_sec !== undefined) {
+      lines.push(
+        `Window: ${offset.toFixed(3)} s to ${(to / audio.sampleRate).toFixed(3)} s`,
+      );
+    }
+
+    lines.push(
+      "",
+      "## Level",
+      `Peak ${peak.toFixed(3)}, RMS ${rms.toFixed(4)}` +
+        (peak >= 0.999 ? " — at or past full scale, so this may be clipped." : ""),
+      "",
+      `## Onsets (${onsetResult.onsets.length})`,
+    );
+
+    if (onsetResult.onsets.length === 0) {
+      lines.push(
+        "None detected. A sustained tone with no re-articulation has no attack to find.",
+      );
+    } else {
+      const shown = onsetResult.onsets.slice(0, 40);
+      lines.push(shown.map((o) => `${(o.time + offset).toFixed(3)} s`).join(" · "));
+      if (onsetResult.onsets.length > shown.length) {
+        lines.push(`…and ${onsetResult.onsets.length - shown.length} more.`);
+      }
+    }
+
+    lines.push("", "## Pitch");
+    if (voiced.length === 0) {
+      lines.push(
+        "No pitched content found. The audio may be silent, percussive, noisy, " +
+        "or polyphonic — this tracker follows one voice at a time.",
+      );
+    } else {
+      const midis = voiced.map((f) => f.midi!).sort((a, b) => a - b);
+      const median = midis[Math.floor(midis.length / 2)]!;
+      const lowest = midis[0]!;
+      const highest = midis[midis.length - 1]!;
+      const centsSuffix = (m: number): string => {
+        const c = Math.round((m - Math.round(m)) * 100);
+        return c === 0 ? "" : ` ${c > 0 ? "+" : ""}${c} cents`;
+      };
+      lines.push(
+        `Voiced in ${voiced.length} of ${track.frames.length} frames ` +
+        `(${((voiced.length / track.frames.length) * 100).toFixed(0)}%).`,
+        `Range ${midiToNoteName(Math.round(lowest))} to ` +
+        `${midiToNoteName(Math.round(highest))}, centred on ` +
+        `${midiToNoteName(Math.round(median))}${centsSuffix(median)}.`,
+      );
+    }
+
+    lines.push("", "---", ONSET_DETECTOR_CAVEAT);
+
+    return { content: [{ type: "text" as const, text: lines.join("\n") }] };
+  },
+);
+
+registerTool(
+  "transcribe_audio",
+  "Turn a monophonic WAV recording into notes: pitch, start time, duration, and how far each note sits from concert pitch. Use it to find out what was actually played or sung, as opposed to what the score asked for. Feed the result to score_audio_take to grade it against a song. Monophonic only — it follows one line at a time, so a chord or a full mix produces confident nonsense.",
+  {
+    path: z.string().describe("Absolute path to an uncompressed WAV file."),
+    min_confidence: z.number().optional().describe("Frames below this pitch confidence do not vote on a note. 0 to 1, defaults to 0.5."),
+  },
+  async ({ path, min_confidence }: { path: string; min_confidence?: number }) => {
+    const loaded = loadAudioFile(path);
+    if (!loaded.ok) return loaded.result;
+    const { audio } = loaded;
+
+    const { notes, caveat } = transcribe(audio.samples, {
+      sampleRate: audio.sampleRate,
+      ...(min_confidence === undefined ? {} : { minConfidence: min_confidence }),
+    });
+
+    const lines: string[] = [
+      "# Transcription",
+      "",
+      describeAudio(audio, path),
+      "",
+      `**${notes.length} note${notes.length === 1 ? "" : "s"} recovered.**`,
+    ];
+
+    if (notes.length === 0) {
+      lines.push(
+        "",
+        "Nothing was pitched enough to call a note. That is a finding rather " +
+        "than an error: the file may be silent, percussive, or polyphonic.",
+      );
+    } else {
+      lines.push(
+        "",
+        "| # | note | start | duration | cents off | confidence |",
+        "|---|---|---|---|---|---|",
+      );
+      notes.slice(0, 80).forEach((n, i) => {
+        const cents = n.centsOffset >= 0
+          ? `+${n.centsOffset.toFixed(0)}`
+          : n.centsOffset.toFixed(0);
+        lines.push(
+          `| ${i + 1} | ${midiToNoteName(n.note)} | ${n.time.toFixed(3)} s | ` +
+          `${n.duration.toFixed(3)} s | ${cents} | ${n.confidence.toFixed(2)} |`,
+        );
+      });
+      if (notes.length > 80) {
+        lines.push("", `…and ${notes.length - 80} more notes.`);
+      }
+    }
+
+    lines.push("", "---", caveat);
+    return { content: [{ type: "text" as const, text: lines.join("\n") }] };
+  },
+);
+
+registerTool(
+  "score_audio_take",
+  "Grade a recorded performance against a song in the library, by ear rather than from MIDI capture. Transcribes the WAV, matches it to the score, and reports which notes landed, which drifted, and which were missed — then leaves the result ready for view_scored_piano_roll so you can SEE the comparison drawn over the score. This is the tool for grading a real instrument, a sung take, or rendered audio, where there is no MIDI to capture. Matches within 40 ms, stricter than the 50 ms convention published work reports.",
+  {
+    path: z.string().describe("Absolute path to an uncompressed WAV file of the performance."),
+    song_id: z.string().describe("Which song in the library to grade against. Use list_songs to browse."),
+    bpm: z.number().optional().describe("Tempo the take was played at, if it differs from the song's own."),
+  },
+  async ({ path, song_id, bpm }: { path: string; song_id: string; bpm?: number }) => {
+    const song = getSong(song_id);
+    if (!song) {
+      return {
+        content: [{
+          type: "text" as const,
+          text: `No song called "${song_id}" in the library. Try list_songs to browse.`,
+        }],
+        isError: true as const,
+      };
+    }
+
+    const loaded = loadAudioFile(path);
+    if (!loaded.ok) return loaded.result;
+    const { audio } = loaded;
+
+    const { notes, caveat } = transcribe(audio.samples, { sampleRate: audio.sampleRate });
+    if (notes.length === 0) {
+      return {
+        content: [{
+          type: "text" as const,
+          text:
+            `Nothing pitched enough to grade was found in "${path}".\n\n` +
+            `Scoring it against "${song.title}" would report every note missed, ` +
+            `which would say more about the recording than about the playing. ` +
+            `Run analyze_audio on the file to see what is actually in it.\n\n${caveat}`,
+        }],
+        isError: true as const,
+      };
+    }
+
+    const events = toMidiNoteEvents(notes);
+    // 40 ms, not scorePerformance's own 150 ms default. This repo's timing gate
+    // is the stricter number, and silently inheriting the looser one would look
+    // like a pass that had never actually been tested. toleranceMs is both the
+    // matching window and the cap on the "correct" verdict window
+    // (computeVerdictWindows clamps its 50 ms mir_eval floor to the gate), so
+    // the effective rule here is the binary two-sided ±40 ms gate: a
+    // correct-pitch note inside it is "correct", outside it is "missed".
+    const result = scorePerformance(song, events, {
+      toleranceMs: HOUSE_TOLERANCE_MS,
+      ...(bpm === undefined ? {} : { bpm }),
+    });
+    lastScoredTake = { song, result };
+
+    const inferred = notes.filter((n) => n.onsetInferred).length;
+
+    const lines: string[] = [
+      `# Scored by ear: ${result.songTitle}`,
+      "",
+      describeAudio(audio, path),
+      "",
+      `**Overall ${result.metrics.overallScore}/100**`,
+      `- Pitch accuracy: ${result.metrics.pitchAccuracy}%`,
+      `- Timing accuracy: ±${result.metrics.timingAccuracyMs} ms, matched within ${HOUSE_TOLERANCE_MS} ms`,
+      `- Completeness: ${result.metrics.completeness}%`,
+      `- Notes: ${result.details.matched}/${result.details.totalExpected} matched, ` +
+      `${result.metrics.extraNoteCount} extra`,
+      "",
+      `Transcribed ${notes.length} note${notes.length === 1 ? "" : "s"} from the recording` +
+      (inferred > 0
+        ? `, ${inferred} of which had no detectable attack and had its start inferred`
+        : "") +
+      ".",
+      "",
+      "Run view_scored_piano_roll to see this take drawn over the score.",
+      "",
+      "---",
+      "**Read this as an estimate, not a verdict.** Every number above passed " +
+      "through transcription first, so a missed note may be one the transcriber " +
+      "could not hear rather than one you did not play.",
+      "",
+      caveat,
+    ];
+
+    return { content: [{ type: "text" as const, text: lines.join("\n") }] };
+  },
+);
+
+registerTool(
+  "view_spectrogram",
+  "SEE a recording as a picture: a constant-Q spectrogram of a WAV file, with a piano keyboard down the left edge so pitch is readable at a glance. Use it to spot what is wrong and where — a smeared attack, a note that drifts, a bar that is muddier than the rest — then measure it with analyze_audio or score_audio_take. Describe what you see BEFORE asking for the overlay: with overlay set to true it draws the song's intended notes on top, and seeing them first makes it easy to agree with what you expected rather than with what is there. The picture localises; it does not measure. Every number belongs to the other tools.",
+  {
+    path: z.string().describe("Absolute path to an uncompressed WAV file."),
+    song_id: z.string().optional().describe("Song to draw intended notes from. Only used when overlay is true."),
+    start_sec: z.number().optional().describe("Start of the window to draw. Defaults to 0."),
+    end_sec: z.number().optional().describe("End of the window to draw. Defaults to 6 seconds after the start, which is one page."),
+    overlay: z.boolean().optional().describe("Draw the song's intended notes over the audio. Defaults to false, so you look at the sound first."),
+    colormap: z.enum(["viridis", "magma", "grey"]).optional().describe("Colour scheme. Defaults to viridis."),
+  },
+  async (
+    { path, song_id, start_sec, end_sec, overlay, colormap }:
+    { path: string; song_id?: string; start_sec?: number; end_sec?: number; overlay?: boolean; colormap?: "viridis" | "magma" | "grey" },
+  ) => {
+    const loaded = loadAudioFile(path);
+    if (!loaded.ok) return loaded.result;
+    const { audio } = loaded;
+
+    const from = Math.max(0, start_sec ?? 0);
+    // One page is 6 seconds. Longer than that and a 40 ms event is under 2 px
+    // wide at the fixed render width, which is below what a vision model can
+    // resolve at all.
+    const to = Math.min(audio.durationSec, end_sec ?? from + 6);
+    if (!(to > from)) {
+      return {
+        content: [{
+          type: "text" as const,
+          text: `The window from ${from} s to ${to} s is empty. The file is ${audio.durationSec.toFixed(2)} s long.`,
+        }],
+        isError: true as const,
+      };
+    }
+
+    const window = audio.samples.subarray(
+      Math.floor(from * audio.sampleRate),
+      Math.ceil(to * audio.sampleRate),
+    );
+
+    const cqtOptions = {
+      sampleRate: audio.sampleRate,
+      fmin: C1_HZ,
+      binsPerOctave: 60,
+      octaves: 7,
+      hopLength: 512,
+    };
+    const spec = cqt(window, cqtOptions);
+
+    let overlayNotes: { midi: number; time: number; duration: number; hand?: "left" | "right" }[] = [];
+    let overlayNote = "";
+    if (overlay) {
+      if (!song_id) {
+        return {
+          content: [{
+            type: "text" as const,
+            text: "overlay needs a song_id to know which notes to draw. Pass one, or leave overlay off to look at the audio alone.",
+          }],
+          isError: true as const,
+        };
+      }
+      const song = getSong(song_id);
+      if (!song) {
+        return {
+          content: [{
+            type: "text" as const,
+            text: `No song called "${song_id}" in the library. Try list_songs to browse.`,
+          }],
+          isError: true as const,
+        };
+      }
+      overlayNotes = flattenSongToExpected(song)
+        .filter((n) => n.time + n.duration >= from && n.time <= to)
+        .map((n) => ({
+          midi: n.note,
+          time: n.time - from,
+          duration: n.duration,
+          hand: n.hand,
+        }));
+      overlayNote =
+        `\nIntended notes from **${song.title}** are drawn as hollow outlines, ` +
+        `offset just above the sound they describe so the two never overlap: ` +
+        `blue right hand, coral left.`;
+    }
+
+    const { png, sidecar } = renderSpectrogram(spec, spec.frequencies, {
+      ...(colormap ? { colormap } : {}),
+      overlay: overlayNotes,
+      // Node has zlib in its standard library, so the server pays none of the
+      // portability cost that keeps the renderer's own default uncompressed.
+      // Measured on a full-size page: 1.23 MB stored becomes about 55 KB here.
+      compress: (raw: Uint8Array) => new Uint8Array(deflateSync(Buffer.from(raw))),
+    });
+
+    const { tmpdir } = await import("node:os");
+    const { join } = await import("node:path");
+    const tempPath = join(tmpdir(), `spectrogram-${Date.now()}.png`);
+    try {
+      writeFileSync(tempPath, png);
+    } catch (err) {
+      return fsErrorResult(err, `write the spectrogram for "${path}"`);
+    }
+
+    const text =
+      `# Spectrogram\n\n` +
+      `${describeAudio(audio, path)}\n` +
+      `Showing ${from.toFixed(2)} s to ${to.toFixed(2)} s, ` +
+      `constant-Q at ${sidecar.colormap === "grey" ? "grey" : sidecar.colormap}, ` +
+      `${cqtOptions.binsPerOctave} bins per octave (20 cents), C1 upward.\n` +
+      `Written to: ${tempPath}${overlayNote}\n\n` +
+      (overlay
+        ? `You are seeing the intended notes as well as the sound.`
+        : `This is the SOUND ONLY — no score is drawn on it. Say what you see ` +
+          `before asking for the overlay.`) +
+      `\n\nRead the picture for WHERE something is wrong. For what it is worth ` +
+      `in cents or milliseconds, use analyze_audio or score_audio_take: a ` +
+      `spectrogram is not a measuring instrument and neither is a model reading one.`;
+
+    return {
+      content: [
+        { type: "text" as const, text },
+        {
+          type: "image" as const,
+          data: Buffer.from(png).toString("base64"),
+          mimeType: "image/png",
+        },
+      ],
+    };
+  },
+);
+
+// ─── Tool: the live ensemble ───────────────────────────────────────────────
+//
+// What every instrument is doing WHILE it plays, as opposed to grading a file
+// afterwards. Two channels, and the tool text is explicit about which is which
+// because a reader who confuses them will trust the wrong number: the notes are
+// what we SENT (exact), any acoustic reading beside them is what came OUT
+// (measured, and lagging).
+
+/** The live ensemble, populated by the playback bridge. Null until a song plays. */
+let liveEnsemble: Ensemble | null = null;
+
+/** Clock for the ensemble view. Audio clock when a context exists. */
+function ensembleNowSec(): number {
+  const ctx = getSharedAudioContext();
+  return ctx && typeof ctx.currentTime === "number"
+    ? ctx.currentTime
+    : Date.now() / 1000;
+}
+
+/** Called by the playback path when a song starts, so the tool has something to read. */
+export function setLiveEnsemble(e: Ensemble | null): void {
+  liveEnsemble = e;
+}
+
+registerTool(
+  "ensemble_now",
+  "Ask what every instrument is playing RIGHT NOW, mid-performance — which notes each one is holding, how long it has held them, and the combined chord across the whole ensemble. This is the live counterpart to score_audio_take, which grades a finished recording: use this one while the music is still going. The notes come from the events sent to each engine, so for anything this server plays they are exact rather than estimated, and a chord is reported as the chord it is rather than guessed from audio. Where an instrument has an acoustic tap attached, its measured signal is reported alongside as verification, which is how you catch a voice drifting off pitch or an engine that has gone silent while still being sent notes.",
+  {},
+  async () => {
+    if (!liveEnsemble) {
+      return {
+        content: [{
+          type: "text" as const,
+          text:
+            "Nothing is playing, so there is no ensemble to look at.\n\n" +
+            "Start a song with `play_song` and ask again while it runs. To grade " +
+            "a recording that has already finished, use `score_audio_take` instead.",
+        }],
+      };
+    }
+
+    const view = liveEnsemble.view(ensembleNowSec());
+
+    const lines: string[] = ["# The ensemble, right now", ""];
+
+    if (view.chord.length === 0) {
+      lines.push("**Silence.** No instrument is holding a note.");
+    } else {
+      lines.push(
+        `**Sounding together:** ${view.chordNames.join(" ")}` +
+        (view.chord.length > 1 ? `  (${view.chord.length} notes)` : ""),
+      );
+    }
+
+    for (const inst of view.instruments) {
+      lines.push("", `## ${inst.label}`);
+
+      if (inst.sounding.length === 0) {
+        const recent = inst.recentlyReleased[0];
+        lines.push(
+          recent
+            ? `Nothing held. Last released ${recent.name}, held ${recent.heldSec.toFixed(2)} s.`
+            : `Nothing held.` + (inst.noteOnCount === 0 ? " Nothing has been sent to it yet." : ""),
+        );
+      } else {
+        lines.push(`Holding ${inst.sounding.length}:`);
+        for (const n of inst.sounding) {
+          lines.push(
+            `- **${n.name}** velocity ${n.velocity}, held ${n.heldSec.toFixed(2)} s`,
+          );
+        }
+      }
+
+      if (inst.acoustic) {
+        const a = inst.acoustic;
+        const heard = a.latestPitch?.f0Hz != null && a.latestPitch.midi != null
+          ? `${midiToNoteName(Math.round(a.latestPitch.midi))}`
+          : "nothing pitched";
+        lines.push(
+          `Tap: measures ${heard}, ${a.onsetLatencySec.toFixed(3)} s behind the moment.`,
+        );
+        if (inst.disagreement) {
+          lines.push(`**Worth a look:** ${inst.disagreement}`);
+        }
+      }
+    }
+
+    lines.push(
+      "",
+      "---",
+      "The notes above are what each engine was told to play, so for anything this " +
+      "server performs they are exact, not inferred. A tap reading beside them is a " +
+      "measurement of what actually came out and it lags by the amount shown; when " +
+      "the two disagree that is a fact about the render, not a correction to the notes.",
+    );
+
+    if (view.caveat) lines.push("", view.caveat);
+
+    return { content: [{ type: "text" as const, text: lines.join("\n") }] };
+  },
+);
+
 // ─── Tool: view_guitar_tab ─────────────────────────────────────────────────
 
 registerTool(
   "view_guitar_tab",
   "Render an interactive guitar tablature editor for a song as a self-contained HTML page. Open the output file in a browser for real-time playback cursor, click-to-add notes, drag editing, string/fret reassignment, and JSON export. Supports configurable guitar tunings.",
   {
-    songId: z.string().describe("Song ID from the library (e.g. 'autumn-leaves')"),
+    songId: zSongId("Song ID from the library (e.g. 'autumn-leaves')"),
     startMeasure: z.number().int().min(1).optional().describe("First measure to render (1-based). Default: 1"),
     endMeasure: z.number().int().min(1).optional().describe("Last measure to render (1-based). Default: last measure"),
     tuning: z.string().optional().describe("Guitar tuning: standard (default), drop-d, open-g, open-d, dadgad, open-e, half-step-down, full-step-down"),
@@ -3094,7 +3802,7 @@ registerTool(
   "Save a practice journal entry. Combines your reflections with auto-captured session data (what you just played, speed, measures, duration). The journal persists across sessions — next time, use read_practice_journal to pick up where you left off.",
   {
     note: z.string().describe("Your reflection — what you learned, what you noticed, what to try next. Write naturally, like a musician's notebook."),
-    song_id: z.string().optional().describe("Override which song this entry is about (defaults to the last song you played)"),
+    song_id: zSongId("Override which song this entry is about (defaults to the last song you played)").optional(),
   },
   async ({ note, song_id }) => {
     // Resolve session: use override song_id or fall back to last played
@@ -3148,7 +3856,7 @@ registerTool(
   "Read your practice journal — reflections, observations, and session history from previous sessions. Use this at the start of a session to remember what you learned before, or to review notes on a specific song.",
   {
     days: z.number().int().min(1).max(90).optional().describe("How many days back to read (default: 7)"),
-    song_id: z.string().optional().describe("Filter entries to a specific song"),
+    song_id: zSongId("Filter entries to a specific song").optional(),
   },
   async ({ days, song_id }) => {
     const journal = readJournal(days ?? 7, song_id);
@@ -3178,7 +3886,7 @@ registerTool(
   "annotate_song",
   "Annotate a raw song with musical language and promote it to 'ready' status. This is how you do your homework — study the exemplar in the genre, then write your own annotation for a raw song. Once annotated, the song becomes playable immediately.",
   {
-    song_id: z.string().describe("The song ID to annotate (must be a raw or annotated song in the library)"),
+    song_id: zSongId("The song ID to annotate (must be a raw or annotated song in the library)"),
     description: z.string().describe("1-3 sentence musical description of the piece"),
     structure: z.string().describe("Form/structure description (e.g. 'AABA 32-bar form', '12-bar blues')"),
     key_moments: z.array(z.string()).min(1).max(5).describe("Notable musical moments (1-5 items)"),
@@ -3257,7 +3965,7 @@ registerTool(
   "score_performance",
   "Score a MIDI performance against a song from the library. Compares note-by-note: pitch accuracy, timing, missed notes, and extra notes. Returns a structured assessment with metrics and practice suggestions. Use this after recording yourself playing a song to see how you did.",
   {
-    song_id: z.string().describe("Song ID to compare against (e.g. 'fur-elise')"),
+    song_id: zSongId("Song ID to compare against (e.g. 'fur-elise')"),
     midi_path: z.string().describe("Path to the recorded performance .mid file"),
     tolerance_ms: z.number().min(10).max(500).optional()
       .describe("Timing tolerance in ms (default 150). Lower = stricter grading."),
@@ -3408,7 +4116,7 @@ registerTool(
   "score_annotation",
   "Score the quality of a song's annotation (musicalLanguage) against exemplar standards. Evaluates completeness, depth, specificity, teaching value, and musical vocabulary. Use this after annotating a raw song to check your work before moving on.",
   {
-    song_id: z.string().describe("Song ID to evaluate (must have musicalLanguage)"),
+    song_id: zSongId("Song ID to evaluate (must have musicalLanguage)"),
   },
   async ({ song_id }) => {
     const song = getSong(song_id);
@@ -3493,8 +4201,8 @@ registerTool(
   "compare_songs",
   "Compare two songs to find shared harmonic, structural, and rhythmic patterns. Surfaces cross-genre connections and teaching opportunities. Use this to understand how different pieces relate musically.",
   {
-    song_a: z.string().describe("First song ID (e.g. 'fur-elise')"),
-    song_b: z.string().describe("Second song ID (e.g. 'autumn-leaves')"),
+    song_a: zSongId("First song ID (e.g. 'fur-elise')"),
+    song_b: zSongId("Second song ID (e.g. 'autumn-leaves')"),
   },
   async ({ song_a, song_b }) => {
     const a = getSong(song_a);
@@ -3525,7 +4233,7 @@ registerTool(
   "list_sections",
   "List the structural sections of a song (Intro, Verse, Chorus, etc.). Sections help with navigation, practice planning, and understanding song form.",
   {
-    id: z.string().describe("Song ID"),
+    id: zSongId("Song ID"),
   },
   async ({ id }) => {
     const song = getSong(id);
@@ -3574,7 +4282,7 @@ registerTool(
   "add_section",
   "Add a structural section marker to a song. Sections label parts like Intro, Verse, Chorus, Bridge, Coda — useful for teaching, navigation, and practice planning.",
   {
-    id: z.string().describe("Song ID"),
+    id: zSongId("Song ID"),
     name: z.string().min(1).max(50).describe("Section label (e.g., 'Intro', 'Verse 1', 'Chorus', 'Bridge')"),
     startMeasure: z.number().int().min(1).describe("First measure of this section (1-based)"),
     endMeasure: z.number().int().min(1).describe("Last measure of this section (1-based)"),
@@ -3653,7 +4361,7 @@ registerTool(
   "transpose_song",
   "Transpose a song to a different key. Shifts all notes by the specified number of semitones and registers the transposed version as a new song. Useful for matching student range or practicing in different keys.",
   {
-    id: z.string().describe("Song ID to transpose"),
+    id: zSongId("Song ID to transpose"),
     semitones: z.number().int().min(-12).max(12).describe("Semitones to shift: positive = up, negative = down (e.g., 2 = up a whole step, -3 = down a minor third)"),
   },
   async ({ id, semitones }) => {
@@ -3817,15 +4525,12 @@ registerTool(
 // ─── Helpers ─────────────────────────────────────────────────────────────
 
 function getUserSongsDir(): string {
-  const home = process.env.HOME ?? process.env.USERPROFILE ?? ".";
-  return pathJoin(home, ".ai-jam-sessions", "songs");
+  return userSongsDir();
 }
 
-const STATE_FILE = pathJoin(
-  process.env.HOME ?? process.env.USERPROFILE ?? ".",
-  ".ai-jam-sessions",
-  "server-state.json"
-);
+function getServerStateFile(): string {
+  return serverStatePath();
+}
 
 // Bump this if SessionSnapshot's shape changes in a way that would make an
 // older persisted server-state.json misleading (not just missing fields).
@@ -3855,40 +4560,42 @@ function isValidSessionSnapshot(x: unknown): x is SessionSnapshot {
 
 function persistSessionState(): void {
   if (!lastCompletedSession) return;
+  const file = getServerStateFile();
   try {
-    mkdirSync(pathJoin(process.env.HOME ?? process.env.USERPROFILE ?? ".", ".ai-jam-sessions"), { recursive: true });
-    writeFileSync(STATE_FILE, JSON.stringify({ schemaVersion: SERVER_STATE_SCHEMA_VERSION, lastCompletedSession }, null, 2));
+    mkdirSync(stateHome(), { recursive: true });
+    writeFileSync(file, JSON.stringify({ schemaVersion: SERVER_STATE_SCHEMA_VERSION, lastCompletedSession }, null, 2));
   } catch (err) {
     // This used to be a bare require("node:fs") in an ESM module — silently
     // threw ReferenceError on every call and was swallowed here, so session
     // state never actually persisted (F-43b426ba). Log so a regression like
     // that is visible instead of silent.
-    console.error(`WARNING: failed to persist session state to ${STATE_FILE}: ${err instanceof Error ? err.message : String(err)}`);
+    console.error(`WARNING: failed to persist session state to ${file}: ${err instanceof Error ? err.message : String(err)}`);
   }
 }
 
 function loadSessionState(): void {
+  const file = getServerStateFile();
   try {
-    if (!existsSync(STATE_FILE)) return;
-    const data = JSON.parse(readFileSync(STATE_FILE, "utf8"));
+    if (!existsSync(file)) return;
+    const data = JSON.parse(readFileSync(file, "utf8"));
 
     if (typeof data !== "object" || data === null) {
-      console.error(`WARNING: ignoring ${STATE_FILE} — not a JSON object.`);
+      console.error(`WARNING: ignoring ${file} — not a JSON object.`);
       return;
     }
     if (data.schemaVersion !== SERVER_STATE_SCHEMA_VERSION) {
-      console.error(`WARNING: ignoring ${STATE_FILE} — schema version ${JSON.stringify(data.schemaVersion)} != ${SERVER_STATE_SCHEMA_VERSION} (old or corrupt file).`);
+      console.error(`WARNING: ignoring ${file} — schema version ${JSON.stringify(data.schemaVersion)} != ${SERVER_STATE_SCHEMA_VERSION} (old or corrupt file).`);
       return;
     }
     if (data.lastCompletedSession !== undefined) {
       if (isValidSessionSnapshot(data.lastCompletedSession)) {
         lastCompletedSession = data.lastCompletedSession;
       } else {
-        console.error(`WARNING: ignoring lastCompletedSession in ${STATE_FILE} — doesn't match the expected shape.`);
+        console.error(`WARNING: ignoring lastCompletedSession in ${file} — doesn't match the expected shape.`);
       }
     }
   } catch (err) {
-    console.error(`WARNING: failed to load session state from ${STATE_FILE}: ${err instanceof Error ? err.message : String(err)}`);
+    console.error(`WARNING: failed to load session state from ${file}: ${err instanceof Error ? err.message : String(err)}`);
   }
 }
 

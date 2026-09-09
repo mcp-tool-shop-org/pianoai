@@ -182,8 +182,7 @@ describe("appendJournalEntry", () => {
   const fixedDate = new Date(2026, 3, 1);
 
   it("creates journal directory if missing", () => {
-    mockExistsSync.mockReturnValueOnce(false); // dir doesn't exist
-    mockExistsSync.mockReturnValueOnce(false); // file doesn't exist
+    mockExistsSync.mockReturnValue(false);
 
     appendJournalEntry("test entry\n", fixedDate);
 
@@ -194,8 +193,10 @@ describe("appendJournalEntry", () => {
   });
 
   it("adds day header for new file", () => {
-    mockExistsSync.mockReturnValueOnce(true); // dir exists
-    mockExistsSync.mockReturnValueOnce(false); // file doesn't exist
+    mockExistsSync.mockImplementation((path: unknown) => {
+      if (typeof path === "string" && path.endsWith(".md")) return false;
+      return true;
+    });
 
     appendJournalEntry("test entry\n", fixedDate);
 
@@ -206,8 +207,7 @@ describe("appendJournalEntry", () => {
   });
 
   it("skips header for existing file", () => {
-    mockExistsSync.mockReturnValueOnce(true); // dir exists
-    mockExistsSync.mockReturnValueOnce(true); // file exists
+    mockExistsSync.mockReturnValue(true);
 
     appendJournalEntry("test entry\n", fixedDate);
 

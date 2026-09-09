@@ -32,5 +32,31 @@
       "Feel measure 27's density (58 onsets) as a real technical event, not a smudge to get through — slow, deliberate practice here pays off more than anywhere else in the piece.",
       "Try letting the final measure (83, just 4 onsets) actually taper — after a consistently dense arrangement, this is the one clear release point, and it should sound like one."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/89401.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "3edc0b9f8359cdfb02256108dc8cacef6821302dc8d8070bbacebc16b126175c",
+    "midi_title_events": [
+      "A.PIANO 1",
+      "FRETLESS",
+      "STEEL GTR",
+      "MELODY",
+      "CHOIR AAHS",
+      "SYNBRASS 1",
+      "DRUMS",
+      "SWEEP PAD",
+      "GS/RESET"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

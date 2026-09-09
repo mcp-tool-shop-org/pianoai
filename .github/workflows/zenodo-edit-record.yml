@@ -1,0 +1,237 @@
+name: Zenodo edit record metadata
+
+# Edits the metadata of an already PUBLISHED Zenodo record and republishes it.
+# Manual trigger only; never runs on push or schedule. Uses the same ZEN_TOKEN
+# secret as publish-jam-actions-v0.yml, injected only into the steps that call
+# Zenodo. Never echoed, never written to files, never logged.
+#
+# Why it exists (2026-09-09): record 22675251 (jam-actions-v1-probe) was minted
+# as a new version under the jam-actions concept record because an empty
+# workflow_dispatch input is replaced by its default. Detaching it from the
+# concept is Zenodo support's job; saying what the record is (an evaluation
+# companion, cited by its own DOI) is ours, and that is a metadata edit.
+#
+# Inputs:
+#   record_id             published Zenodo record id; default 22675251
+#   edit_file             repo path of a JSON object whose keys replace the same
+#                         keys of the live metadata (allowed: title, description,
+#                         notes, keywords, related_identifiers, references, version);
+#                         default docs/zenodo/22675251-metadata-edit.json
+#   mode                  preview (default): GET the record, print the merged payload,
+#                         write nothing | edit-and-publish: edit -> PUT -> publish
+#   confirm_irreversible  type exactly "yes-edit-record" for edit-and-publish
+#   ref                   git ref to read edit_file from; default main
+#
+# A published record's metadata edit does not mint a DOI and does not create a
+# version; it changes what the existing record says.
+#
+# --- Compensators -------------------------------------------------------------
+# Draft left in edit state (PUT or publish failed)
+#   Undo:  the job itself runs POST /api/deposit/depositions/{id}/actions/discard
+#          on failure; if that also fails, discard from the Zenodo web UI or
+#          re-run the same call. The published record is untouched by a discard.
+#   Owner: mcp-tool-shop
+# Published metadata edit (wrong title/description went live)
+#   Undo:  the job uploads the pre-edit metadata as artifact
+#          zenodo-record-<id>-before; point edit_file at a file holding those
+#          fields and run this workflow again.
+#   Owner: mcp-tool-shop
+#
+# --- Standards compliance -----------------------------------------------------
+# PIN_PER_STEP 2: pinned action SHAs; jq/curl from ubuntu-latest, versions printed.
+# ANDON_AUTHORITY 2: each Zenodo call checks its HTTP code and halts; nothing
+#   downstream runs after a failed PUT (discard runs instead).
+# NAMED_COMPENSATORS 2: table above; discard is executed by the job itself.
+# DECOMPOSE_BY_SECRETS 2: what changes (the edit file) lives in the repo; the
+#   mechanism (this file) does not change per record.
+# UNCERTAINTY_GATED_HUMANS 2: preview mode shows the exact payload before any
+#   write; the write needs the typed confirmation.
+# EXTERNAL_VERIFIER 1: the final GET /api/records/{id} check is the same job
+#   reading back what it wrote. Remediation: the advisor verifies the record
+#   from the rig after each run (owner: advisor session).
+
+on:
+  workflow_dispatch:
+    inputs:
+      record_id:
+        description: "Published Zenodo record id"
+        required: true
+        default: "22675251"
+      edit_file:
+        description: "Repo path of the JSON object with the fields to replace"
+        required: true
+        default: "docs/zenodo/22675251-metadata-edit.json"
+      mode:
+        description: "preview (no write) or edit-and-publish"
+        required: true
+        type: choice
+        default: "preview"
+        options:
+          - "preview"
+          - "edit-and-publish"
+      confirm_irreversible:
+        description: 'Type exactly "yes-edit-record" to edit and republish. Any other value aborts.'
+        required: false
+        default: "no"
+      ref:
+        description: "Git ref to read edit_file from"
+        required: false
+        default: "main"
+
+concurrency:
+  group: zenodo-edit-record
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  edit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      RECORD_ID: ${{ github.event.inputs.record_id }}
+      EDIT_FILE: ${{ github.event.inputs.edit_file }}
+      MODE: ${{ github.event.inputs.mode }}
+
+    steps:
+      - name: Validate inputs (irreversible-action gate)
+        env:
+          CONFIRM: ${{ github.event.inputs.confirm_irreversible }}
+        run: |
+          set -euo pipefail
+          echo "record: $RECORD_ID  mode: $MODE  edit_file: $EDIT_FILE"
+          echo "Confirm token: <redacted>"
+          case "$RECORD_ID" in
+            ''|*[!0-9]*) echo "ERROR: record_id must be digits"; exit 1 ;;
+          esac
+          case "$EDIT_FILE" in
+            docs/zenodo/*.json) ;;
+            *) echo "ERROR: edit_file must be under docs/zenodo/ and end in .json"; exit 1 ;;
+          esac
+          case "$MODE" in
+            preview)
+              echo "-> Will GET the record and print the merged payload. No write."
+              ;;
+            edit-and-publish)
+              if [ "$CONFIRM" != "yes-edit-record" ]; then
+                echo "ERROR: mode=edit-and-publish requires confirm_irreversible=yes-edit-record"
+                exit 1
+              fi
+              echo "-> Will put the record in edit state, replace the listed fields, and republish."
+              ;;
+            *) echo "ERROR: unknown mode"; exit 1 ;;
+          esac
+
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ github.event.inputs.ref }}
+          persist-credentials: false
+
+      - name: Validate the edit file
+        run: |
+          set -euo pipefail
+          jq --version; curl --version | head -1
+          test -f "$EDIT_FILE" || { echo "ERROR: $EDIT_FILE not found"; exit 1; }
+          jq -e 'type == "object"' "$EDIT_FILE" > /dev/null || { echo "ERROR: edit file is not a JSON object"; exit 1; }
+          # keys that may be replaced; "$comment" is documentation and is dropped
+          BAD=$(jq -r 'del(.["$comment"]) | keys[] | select(. as $k | ["title","description","notes","keywords","related_identifiers","references","version"] | index($k) | not)' "$EDIT_FILE")
+          if [ -n "$BAD" ]; then echo "ERROR: keys not allowed in an edit: $BAD"; exit 1; fi
+          jq -e '(.title // "") | type == "string" and length > 0' "$EDIT_FILE" > /dev/null || { echo "ERROR: title must be a non-empty string"; exit 1; }
+          jq 'del(.["$comment"])' "$EDIT_FILE" > edit.json
+          echo "fields to replace:"; jq 'keys' edit.json
+          echo "new title: $(jq -r .title edit.json)"
+
+      - name: Fetch the published record (public API, no token)
+        run: |
+          set -euo pipefail
+          CODE=$(curl -sS -o before-public.json -w '%{http_code}' --retry 3 --retry-delay 5 \
+            "https://zenodo.org/api/records/$RECORD_ID")
+          test "$CODE" = "200" || { echo "ERROR: GET /api/records/$RECORD_ID -> HTTP $CODE"; cat before-public.json; exit 1; }
+          echo "current title: $(jq -r .metadata.title before-public.json)"
+          echo "current DOI:   $(jq -r .doi before-public.json)"
+          echo "concept DOI:   $(jq -r '.conceptdoi // "none"' before-public.json)"
+
+      - name: Fetch the deposition metadata (token)
+        env:
+          ZEN_TOKEN: ${{ secrets.ZEN_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${ZEN_TOKEN:-}" ]; then echo "ERROR: ZEN_TOKEN secret is not set"; exit 1; fi
+          CODE=$(curl -sS -o before.json -w '%{http_code}' \
+            -H "Authorization: Bearer $ZEN_TOKEN" \
+            "https://zenodo.org/api/deposit/depositions/$RECORD_ID")
+          test "$CODE" = "200" || { echo "ERROR: GET deposition $RECORD_ID -> HTTP $CODE"; cat before.json; exit 1; }
+          echo "deposition state: $(jq -r .state before.json)  submitted: $(jq -r .submitted before.json)"
+          # the payload: every published field kept, the edit's keys replacing theirs;
+          # doi/prereserve_doi belong to the record and are not resubmitted
+          jq -n --slurpfile cur before.json --slurpfile ed edit.json \
+            '{metadata: (($cur[0].metadata + $ed[0]) | del(.doi, .prereserve_doi))}' > payload.json
+          echo "payload keys:"; jq '.metadata | keys' payload.json
+          echo "payload title: $(jq -r .metadata.title payload.json)"
+          echo "description length: $(jq -r '.metadata.description | length' payload.json) chars"
+          echo "changed fields vs published:"
+          jq -r --slurpfile ed edit.json '
+            . as $cur | $ed[0] | keys[] | . as $k
+            | if ($cur.metadata[$k] == $ed[0][$k]) then "  \($k): unchanged" else "  \($k): CHANGED" end' before.json
+
+      - name: Upload the pre-edit metadata (compensator)
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: zenodo-record-${{ github.event.inputs.record_id }}-before
+          path: |
+            before.json
+            payload.json
+          retention-days: 90
+
+      - name: Preview stops here
+        if: env.MODE == 'preview'
+        run: |
+          echo "mode=preview: nothing written. Re-run with mode=edit-and-publish and the confirmation to apply."
+
+      - name: Edit, replace metadata, publish
+        if: env.MODE == 'edit-and-publish'
+        env:
+          ZEN_TOKEN: ${{ secrets.ZEN_TOKEN }}
+        run: |
+          set -euo pipefail
+          BASE="https://zenodo.org/api/deposit/depositions/$RECORD_ID"
+          discard() {
+            echo "discarding the edit draft so the published record stays as it was"
+            curl -sS -o discard.json -w 'discard -> HTTP %{http_code}\n' -X POST \
+              -H "Authorization: Bearer $ZEN_TOKEN" "$BASE/actions/discard" || true
+          }
+          STATE=$(jq -r .state before.json)
+          if [ "$STATE" = "done" ]; then
+            CODE=$(curl -sS -o edit.out.json -w '%{http_code}' -X POST \
+              -H "Authorization: Bearer $ZEN_TOKEN" "$BASE/actions/edit")
+            case "$CODE" in 200|201) echo "edit -> HTTP $CODE (state: $(jq -r .state edit.out.json))" ;;
+              *) echo "ERROR: actions/edit -> HTTP $CODE"; cat edit.out.json; exit 1 ;; esac
+          else
+            echo "deposition already in state '$STATE'; skipping actions/edit"
+          fi
+          CODE=$(curl -sS -o put.out.json -w '%{http_code}' -X PUT \
+            -H "Authorization: Bearer $ZEN_TOKEN" -H "Content-Type: application/json" \
+            --data-binary @payload.json "$BASE")
+          case "$CODE" in 200) echo "PUT metadata -> HTTP 200 (title now: $(jq -r .metadata.title put.out.json))" ;;
+            *) echo "ERROR: PUT metadata -> HTTP $CODE"; cat put.out.json; discard; exit 1 ;; esac
+          CODE=$(curl -sS -o publish.out.json -w '%{http_code}' -X POST \
+            -H "Authorization: Bearer $ZEN_TOKEN" "$BASE/actions/publish")
+          case "$CODE" in 200|202) echo "publish -> HTTP $CODE  state: $(jq -r .state publish.out.json)  doi: $(jq -r .doi publish.out.json)" ;;
+            *) echo "ERROR: actions/publish -> HTTP $CODE"; cat publish.out.json; discard; exit 1 ;; esac
+
+      - name: Verify the live record
+        if: env.MODE == 'edit-and-publish'
+        run: |
+          set -euo pipefail
+          sleep 10
+          CODE=$(curl -sS -o after.json -w '%{http_code}' --retry 3 --retry-delay 10 \
+            "https://zenodo.org/api/records/$RECORD_ID")
+          test "$CODE" = "200" || { echo "ERROR: GET /api/records/$RECORD_ID after publish -> HTTP $CODE"; exit 1; }
+          WANT=$(jq -r .title edit.json); GOT=$(jq -r .metadata.title after.json)
+          echo "live title: $GOT"
+          test "$GOT" = "$WANT" || { echo "ERROR: live title does not match the edit"; exit 1; }
+          echo "live DOI:   $(jq -r .doi after.json) (unchanged: $(jq -r .doi before-public.json))"
+          test "$(jq -r .doi after.json)" = "$(jq -r .doi before-public.json)" || { echo "ERROR: DOI changed"; exit 1; }
+          echo "OK: record $RECORD_ID republished with the edited metadata"

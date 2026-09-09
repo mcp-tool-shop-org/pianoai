@@ -26,11 +26,13 @@ Six tunable keyboard voices, each adjustable per-parameter (brightness, decay, h
 
 ### Sample Piano
 
-Salamander Grand Piano with 480 samples, 16 velocity layers, and all 88 keys. Real recorded samples for the most authentic sound.
+Salamander Grand Piano — real recorded samples for the most authentic sound. **The default engine whenever a pack is installed**: put the full [Salamander download](https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html) at `samples/AccurateSalamander` (or point `AI_JAM_SAMPLES_DIR` at it) and `play_song` and the CLI pick it automatically; pass `--engine piano` to force the oscillator. The npm package itself stays sample-free.
 
-*Programmatic API only for now: the samples are not shipped with the package (you supply the Salamander download), and the engine is not yet wired into the CLI or MCP engine lists.*
+The browser cockpit needs no setup at all — it ships its own pruned 8 MB pack (90 OGGs, three velocity layers) that loads on your first interaction. Samples by Alexander Holm, CC-BY 3.0.
 
 ## Vocal engines
+
+> Looking for a **sung line on the piano's clock** — real lyrics, real pitches, gated on timing and pitch? That is the [Vocals](/ai-jam-sessions/handbook/vocals/) route (a local score-conditioned singer), not one of the live engines below.
 
 ### Vocal (Sample)
 

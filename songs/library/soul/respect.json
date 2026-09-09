@@ -32,5 +32,32 @@
       "Drive the outro loop (measures 58-73) with cumulative energy — same notes three times, so the growth must come from touch; listen for each pass landing a shade more emphatic than the last.",
       "Imitate a reference recording by ear for the vocal-style accents — the tradition's call-and-response weighting lives on the records, and this grid is only its floor plan."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/7522.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "bd6cf87193c810efbbfef8836e1175cf9e584e7b48b74d1720a2f1349128892d",
+    "midi_title_events": [
+      "Fingered Bs.",
+      "Piano 2",
+      "Organ 2",
+      "Overdrive Gt",
+      "Clean Gt.",
+      "Tenor Sax",
+      "Baritone Sax",
+      "Drums",
+      "Brass 1",
+      "Voice Oohs"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

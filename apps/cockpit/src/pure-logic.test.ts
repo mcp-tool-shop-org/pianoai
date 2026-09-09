@@ -57,6 +57,7 @@ import {
   isAudioContextBlocked, AUDIO_BLOCKED_MESSAGE,
   midiUnavailableStatus, MIDI_UNAVAILABLE_MESSAGE,
 } from "./platform-status.js";
+import { velocityLowpassHz, PIANO_COMPRESSOR } from "./piano-timbre.js";
 
 // F-B1-001 (state persistence, Stage C) — the gap flagged in the note above
 // (persistence code now lives in persistence.ts, a DOM-free module mirroring
@@ -549,5 +550,13 @@ describe("platform-status — audio / MIDI (F-9c275158 / F-f61250eb)", () => {
   it("MIDI status is the unavailable line when the API is missing, null when present", () => {
     expect(midiUnavailableStatus(false)).toBe(MIDI_UNAVAILABLE_MESSAGE);
     expect(midiUnavailableStatus(true)).toBeNull();
+  });
+});
+
+describe("piano-timbre fallback (velocity lowpass + compressor)", () => {
+  it("soft playing is darker than forte, and never opens to 18 kHz", () => {
+    expect(velocityLowpassHz(60, 0.2)).toBeLessThan(velocityLowpassHz(60, 1));
+    expect(velocityLowpassHz(60, 1)).toBeLessThanOrEqual(7200);
+    expect(PIANO_COMPRESSOR.ratio).toBeLessThan(6);
   });
 });

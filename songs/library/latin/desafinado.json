@@ -32,5 +32,27 @@
       "Keep the dynamics conversational — the ceiling is 29 onsets at measure 99, so save your fullest voicing for that neighborhood and thin out toward the 2-onset close at measure 144.",
       "Try marking the section boundaries at measures 32, 100, and 120 with a slight breath — listen for the texture change at each, then re-enter without breaking the tempo."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/39006.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "97e77566291a9c5294a20928e2862163e27421214d1616042a0e712a082c2fd9",
+    "midi_title_events": [
+      "lead",
+      "bass",
+      "guitar",
+      "drums",
+      "DATA"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

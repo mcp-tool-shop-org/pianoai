@@ -32,5 +32,23 @@
       "Voice the melody's entry at measure 6 as sunrise, not interruption — the 12.344 seam is the file's biggest event; listen for the right hand arriving inside the bass's established time.",
       "Imitate a reference recording by ear for the melody's phrasing and the little turn figures — this tradition's sweetness is in timing the grid cannot carry, and the records are its true notation."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://www.midiworld.com/download/947",
+    "source_site": "www.midiworld.com",
+    "arrangement_creator": "unknown — the file names no creator and midiworld attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://www.midiworld.com/faq/",
+    "terms_quote": "Due to copyright issues we can not publish any pop/rock/game music or commercial MIDI / MP3 files. [footer: Copyright © 1995-2024 MIDIWORLD All rights reserved] (No licence is granted for the contributed files.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://www.midiworld.com/faq/",
+    "midi_sha256": "aab7a18150e2dfdaba216bb86510322456f0187411eed826e06b39a17702ac2a",
+    "midi_title_events": [
+      "My Girl"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "matches"
   }
 }

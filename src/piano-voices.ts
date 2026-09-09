@@ -146,10 +146,10 @@ const GRAND: PianoVoiceConfig = {
   description: "Rich and resonant. Deep sustain, wide dynamic range, complex overtones. The classic concert sound.",
   suggestedFor: ["classical", "jazz", "film", "ballads"],
 
-  maxPartials: 12,
-  partialRolloff: 0.9,          // aggressive rolloff — fundamental dominates, warm tone
-  partialDecayRate: 0.10,       // upper partials die fast — only fundamental sustains
-  partialsPerRegister: [4, 6, 8, 10],   // fewer partials everywhere — pure, warm sound
+  maxPartials: 8,
+  partialRolloff: 1.15,         // steeper rolloff — fundamental dominates, less buzz
+  partialDecayRate: 0.18,       // upper partials die fast — only fundamental sustains
+  partialsPerRegister: [3, 5, 6, 8],   // fewer partials everywhere — less harsh highs
 
   inharmonicity: [
     0.00015,  // octave 0 (A0 area) — bass strings, moderate stiffness
@@ -163,11 +163,11 @@ const GRAND: PianoVoiceConfig = {
     0.000004, // octave 8
   ],
 
-  attackRange: [0.002, 0.010],  // wide range: ff snappy, pp soft bloom
-  decayBase: 6,                 // long treble sustain (real grand = 5-8s in treble)
-  decayRange: 18,               // bass rings very long (real grand = 15-20s+ in bass)
-  decayPartialExponent: 0.55,   // upper partials sustain nearly as long as fundamental (rich tail)
-  releaseTime: 0.18,            // slow felt dampers — notes don't choke off instantly
+  attackRange: [0.003, 0.014],  // slightly softer hammer
+  decayBase: 3.2,               // shorter treble ring — less metallic hang
+  decayRange: 11,               // bass still longer than treble
+  decayPartialExponent: 0.9,    // upper partials die well before the fundamental
+  releaseTime: 0.14,            // felt dampers, not a choke
 
   hammerNoiseDuration: 30,      // short, refined bloom
   hammerNoiseAmount: 0.18,      // present but warm — felt on steel, not a thump
@@ -178,8 +178,8 @@ const GRAND: PianoVoiceConfig = {
   voiceGain: 0.30,              // strong presence
   masterGain: 0.85,
 
-  brightnessBase: 0.45,         // very heavy gating — almost no upper partials unless ff
-  brightnessSlope: 0.18,        // only the hardest hits bring out any brightness
+  brightnessBase: 0.7,          // strong gating — mf stays warm
+  brightnessSlope: 0.28,        // only the hardest hits bring out remaining brightness
 };
 
 /**
@@ -476,7 +476,7 @@ export const TUNING_PARAMS: TuningParam[] = [
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync, renameSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
-import { homedir } from "node:os";
+import { pianoVoicesDir } from "./state-home.js";
 
 /** Partial overrides the user has saved for a voice. Keyed by friendly param name. */
 export type UserTuning = Record<string, number>;
@@ -489,7 +489,7 @@ function sanitizePersistedVoiceId(voiceId: string): string {
 }
 
 function tuningDir(): string {
-  const dir = join(homedir(), ".ai-jam-sessions", "voices");
+  const dir = pianoVoicesDir();
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
   return dir;
 }

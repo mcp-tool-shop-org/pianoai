@@ -33,5 +33,58 @@
       "Enter confidently after the one-measure opening silence — this melody doesn't ease in, it arrives.",
       "Keep the tempo unhurried at 88 BPM and resist any urge to add rhythmic drive; this is a nostalgic, longing song, not a work shanty meant to set a rowing pace."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/11895.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "Benjamin Robert Tubb (sequence, 2000, pdmusic.org) of Denes Agay's 1975 piano arrangement",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about; midi meta events (sha256 e0665ddc2329…)",
+    "midi_sha256": "e0665ddc2329345a4a35c0b32cd2f7afa490e356db0715116bb04225a548d003",
+    "midi_title_events": [
+      "Shenandoah",
+      "American Riverboat Chantey",
+      "for General MIDI playback",
+      "Setup",
+      "Verse 1/Slowly and freely",
+      "Verse 2",
+      "Verse 3",
+      "Verse 4",
+      "Soprano",
+      "Alto",
+      "Tenor",
+      "Bass",
+      "Piano (hi)",
+      "Piano (lo)",
+      "Acoustic Bass",
+      "GM Drums",
+      "\"Shenandoah\"",
+      "Piano Arrangement",
+      "by Denes Agay (1975)",
+      "by Benjamin Robert Tubb",
+      "brtubb@writeme.com",
+      "http://pdmusic.org"
+    ],
+    "midi_credit_events": [
+      "This Arrangement Copyright ©2000 by Benjamin Robert Tubb",
+      "Piano arrangement by Denes Agay (1975)",
+      "Sequenced on 31 January 2000"
+    ],
+    "credited_parties": [
+      {
+        "name": "Benjamin Robert Tubb",
+        "evidence": "midi-meta"
+      },
+      {
+        "name": "Denes Agay",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "matches",
+    "notes": "The file claims 'This Arrangement Copyright ©2000 by Benjamin Robert Tubb'; the terms of pdmusic.org were not verified, so the licence stays unknown."
   }
 }

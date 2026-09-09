@@ -1,0 +1,12 @@
+{
+  "job": "31059f31-dfbc-423c-842e-a40cd7cc650a",
+  "key": "3792fa925a0d45b86de2f5cfa796b0b7244ff21e947b2702da0fb417512e574f.flac",
+  "subfolder": "jam/vocal-clock",
+  "path": "tmp/vocal-clock/takes/3792fa925a0d45b86de2f5cfa796b0b7244ff21e947b2702da0fb417512e574f.flac",
+  "frames": 1680000,
+  "sample_rate": 48000,
+  "seconds": 35.0,
+  "sha256": "b116102b52eb054328df5bf7e2cf399f9369edf4f771fd23aa63535fd0976247",
+  "plan": "tmp/vocal-clock/takes/plan-merged2.json",
+  "graph_nodes": 86
+}

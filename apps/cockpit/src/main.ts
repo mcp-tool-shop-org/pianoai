@@ -73,6 +73,15 @@ import {
 import {
   shouldPreviewPitchChange, previewSuppressed, PITCH_PREVIEW_MS, type PreviewGate,
 } from "./preview.js";
+import {
+  createSalamanderSampler, SAMPLES_LOADING_MESSAGE, SAMPLES_UNAVAILABLE_MESSAGE,
+  type SalamanderSampler,
+} from "./salamander-sampler.js";
+import { samplerHandlesVoice } from "./salamander-logic.js";
+import {
+  bindPanel, enterPanelMode, leavePanelMode, handlePanelKey,
+  rememberScoreMode, getLastScoreMode,
+} from "./panel.js";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -94,6 +103,7 @@ import {
 interface ScoreSnapshot {
   version: 1 | 2;
   mode: "instrument" | "vocal";
+  // Panel is a UI mode only — score snapshots never persist it.
   bpm: number;
   voice: string;
   vocalVoice?: string;
@@ -126,19 +136,19 @@ const MAX_IMPORT_NOTES = 5000;
 const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const IS_BLACK = [false, true, false, true, false, false, true, false, true, false, true, false];
 const PC_COLORS = [
-  "#79c0ff", "#4c8ed9", "#7ee787", "#3fb950", "#ffa657", "#ff7b72",
-  "#d2a8ff", "#9b72cf", "#f778ba", "#da3633", "#f0e68c", "#d29922",
+  "var(--pc-0)", "var(--pc-1)", "var(--pc-2)", "var(--pc-3)", "var(--pc-4)", "var(--pc-5)",
+  "var(--pc-6)", "var(--pc-7)", "var(--pc-8)", "var(--pc-9)", "var(--pc-10)", "var(--pc-11)",
 ];
 
 function noteName(midi: number) { return NOTE_NAMES[midi % 12] + (Math.floor(midi / 12) - 1); }
 
 // Vowel → color mapping (vocal mode notes)
 const VOWEL_COLORS: Record<VowelId, string> = {
-  a: "#ff7b72", // open-red
-  e: "#7ee787", // front-green
-  i: "#79c0ff", // close-blue
-  o: "#ffa657", // back-orange
-  u: "#d2a8ff", // round-purple
+  a: "var(--vowel-a)",
+  e: "var(--vowel-e)",
+  i: "var(--vowel-i)",
+  o: "var(--vowel-o)",
+  u: "var(--vowel-u)",
 };
 const VOWEL_LABELS: Record<VowelId, string> = { a: "/a/", e: "/e/", i: "/i/", o: "/o/", u: "/u/" };
 
@@ -167,9 +177,10 @@ const PAUSE_ICON_SVG = '<svg class="icon" width="14" height="14" viewBox="0 0 16
 // panel's working copy of custom cents.
 
 let synth: Synth;
+const sampler: SalamanderSampler = createSalamanderSampler();
 let vocalSynth: VocalSynth;
 let transport: Transport;
-let mode: "instrument" | "vocal" = "instrument";
+let mode: "instrument" | "vocal" | "panel" = "instrument";
 let looping = false;
 let bpm = DEFAULT_BPM;
 const heldKeys = new Set<string>();
@@ -405,7 +416,7 @@ function saveStateNow() {
     voice: ($("sel-vocal-voice") as HTMLSelectElement).value,
     tuning: ($("sel-tuning") as HTMLSelectElement).value,
     refPitch: synth.getRefPitch(),
-    mode,
+    mode: mode === "panel" ? getLastScoreMode() : mode,
     // Persist the actual cent offsets, not just the "custom" label — a
     // reload otherwise re-labels the badge "Custom" but plays 12-TET
     // (F-A1-004).
@@ -702,8 +713,24 @@ function ensureAudioUnlocked(): Promise<void> {
     }
     resumeOrReport(synth.getContext());
     resumeOrReport(vocalSynth.getContext());
+    void beginSampleLoad();
   })();
   return audioUnlockPromise;
+}
+
+async function beginSampleLoad(): Promise<void> {
+  const ctx = synth.getContext();
+  const tap = synth.getOutputNode();
+  if (!ctx || !tap) return;
+  if (sampler.state() !== "idle") return;
+  setScoreStatus(SAMPLES_LOADING_MESSAGE, "ok");
+  const next = await sampler.load(ctx, tap);
+  if (next === "ready") {
+    setScoreStatus("", "ok");
+    clearScoreStatus();
+  } else {
+    setScoreStatus(SAMPLES_UNAVAILABLE_MESSAGE, "error");
+  }
 }
 
 function bindAutoplayUnlock() {
@@ -795,6 +822,7 @@ function populateSelectors() {
   // ── Mode toggle ──
   $("mode-instrument").addEventListener("click", () => setMode("instrument"));
   $("mode-vocal").addEventListener("click", () => setMode("vocal"));
+  $("mode-panel").addEventListener("click", () => setMode("panel"));
 
   const ts = $("sel-tuning") as HTMLSelectElement;
   for (const id of TUNING_IDS) {
@@ -830,18 +858,24 @@ function populateSelectors() {
 
 // ─── Mode Switching ──────────────────────────────────────────────────────────
 
-function setMode(m: "instrument" | "vocal") {
+function setMode(m: "instrument" | "vocal" | "panel") {
   if (m === mode) return;
   panic();
+  if (mode === "instrument" || mode === "vocal") rememberScoreMode(mode);
+  if (mode === "panel" && m !== "panel") leavePanelMode();
   mode = m;
   document.body.classList.toggle("vocal-mode", m === "vocal");
   $("mode-instrument").classList.toggle("active", m === "instrument");
   $("mode-vocal").classList.toggle("active", m === "vocal");
   $("mode-instrument").setAttribute("aria-pressed", String(m === "instrument"));
   $("mode-vocal").setAttribute("aria-pressed", String(m === "vocal"));
-  rerenderAllNotes();
-  updateInspector();
-  updateTelemetry();
+  if (m === "panel") enterPanelMode();
+  else {
+    leavePanelMode();
+    rerenderAllNotes();
+    updateInspector();
+    updateTelemetry();
+  }
   onStateChanged();
 }
 
@@ -852,14 +886,23 @@ function getCurrentBreathiness(): number {
 
 /** Route noteOn to active engine */
 function activeNoteOn(midi: number, velocity: number, time?: number) {
-  if (mode === "vocal") vocalSynth.noteOn(midi, velocity, time);
-  else synth.noteOn(midi, velocity, time);
+  if (mode === "vocal") {
+    vocalSynth.noteOn(midi, velocity, time);
+    return;
+  }
+  const voiceId = ($("sel-voice") as HTMLSelectElement).value;
+  if (samplerHandlesVoice(voiceId) && sampler.isReady() && sampler.noteOn(midi, velocity, time)) return;
+  synth.noteOn(midi, velocity, time);
 }
 
 /** Route noteOff to active engine */
 function activeNoteOff(midi: number, time?: number) {
-  if (mode === "vocal") vocalSynth.noteOff(midi, time);
-  else synth.noteOff(midi, time);
+  if (mode === "vocal") {
+    vocalSynth.noteOff(midi, time);
+    return;
+  }
+  if (sampler.isReady()) sampler.noteOff(midi, time);
+  synth.noteOff(midi, time);
 }
 
 /** Current playback/recording context for preview.ts's gating decisions
@@ -889,6 +932,7 @@ function previewPitch(midi: number, velocity: number): void {
  *  transport's pause()/stop() (which must NOT touch held-key state, since
  *  those are live-play concerns independent of score playback). */
 function silenceEngines() {
+  sampler.allNotesOff();
   synth.allNotesOff();
   vocalSynth.allNotesOff();
 }
@@ -2392,6 +2436,9 @@ function bindOnScreenKeyPointer(key: HTMLElement, midi: number): void {
 }
 
 function buildKeyboard() {
+  // VIS-010 close-as-designed: painted keys stay pointer-only. QWERTY
+  // (event.code map) and MIDI are the named keyboard paths; a tabindex on
+  // every key would trap tab-order inside two octaves. No focus ring here.
   const kb = $("keyboard");
 
   // White keys
@@ -2434,9 +2481,6 @@ function buildKeyboard() {
       sc.className = "kb-shortcut";
       sc.textContent = QWERTY_LABELS[m];
       sc.style.bottom = "8px";
-      // #666 (~2.1:1 on key-black incl. the shared .kb-shortcut opacity) failed
-      // WCAG AA; #8c8c8c is solid (no opacity) at ~5.1:1 (F-B1-007).
-      sc.style.color = "#8c8c8c";
       key.appendChild(sc);
     }
 
@@ -2469,6 +2513,10 @@ function buildKeyboard() {
     // repeat bail below (unlike the old ordering) since it must apply
     // identically to both a first keydown and a held-key repeat.
     if (isTypingTarget(e)) return;
+    if (mode === "panel") {
+      if (handlePanelKey(e)) e.preventDefault();
+      return;
+    }
 
     // Undo/redo (Wave C1) — carved out of the Ctrl/Cmd-bail below so
     // Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y (+ Cmd on mac, via metaKey) reach the
@@ -2666,6 +2714,7 @@ function buildKeyboard() {
   });
 
   window.addEventListener("keyup", (e) => {
+    if (mode === "panel") return;
     // Lens-J findings 2/3 — the tool-hold release check runs BEFORE the
     // isTypingTarget bail, and checks e.code (physical KeyA — see the
     // matching keydown branch's own rationale above), not e.key: releasing
@@ -3768,11 +3817,12 @@ function clearTuningStatus() {
  *  "before" and "after" snapshot of exactly the same shape and hand both
  *  to applySettings() below. */
 function captureSettings(): ImportSettings {
+  const scoreMode = mode === "panel" ? getLastScoreMode() : mode;
   return {
-    mode,
+    mode: scoreMode,
     bpm,
-    voice: ($(mode === "vocal" ? "sel-vocal-voice" : "sel-voice") as HTMLSelectElement).value,
-    ...(mode === "vocal" ? { vocalVoice: ($("sel-vocal-voice") as HTMLSelectElement).value } : {}),
+    voice: ($(scoreMode === "vocal" ? "sel-vocal-voice" : "sel-voice") as HTMLSelectElement).value,
+    ...(scoreMode === "vocal" ? { vocalVoice: ($("sel-vocal-voice") as HTMLSelectElement).value } : {}),
     tuning: ($("sel-tuning") as HTMLSelectElement).value,
     refPitch: parseInt(($("ref-pitch") as HTMLInputElement).value),
   };
@@ -4122,11 +4172,12 @@ declare global {
       play: () => void;
       stop: () => void;
       panic: () => void;
-      setMode: (m: "instrument" | "vocal") => void;
+      setMode: (m: "instrument" | "vocal" | "panel") => void;
       getScore: () => Note[];
       addNote: (n: NoteInit) => void;
       undo: () => void;
       redo: () => void;
+      samplerState: () => string;
     };
   }
 }
@@ -4136,6 +4187,18 @@ declare global {
 async function boot() {
   await init();
   bindScoreControls();
+  bindPanel({
+    getSynth: () => synth,
+    getSamplerPack: () => sampler.getPack(),
+    samplerReady: () => sampler.isReady(),
+    ensureAudio: async () => {
+      await ensureAudioUnlocked();
+      const ctx = synth.getContext();
+      if (!ctx) throw new Error("audio context unavailable");
+      return ctx;
+    },
+    voiceId: () => ($("sel-voice") as HTMLSelectElement).value as VoiceId,
+  });
 
   // Expose LLM-facing API
   window.__cockpit = {
@@ -4146,6 +4209,7 @@ async function boot() {
     panic,
     setMode,
     getScore: () => [...state.getScore()],
+    samplerState: () => sampler.state(),
     addNote: (n) => {
       // Same untrusted-input validation as importScore — addNote is an
       // equally-reachable LLM-facing path that used to copy midi/velocity/

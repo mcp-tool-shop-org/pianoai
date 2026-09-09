@@ -113,7 +113,10 @@ export interface TimingIssue {
  * Status derivation (see `computeVerdictWindows`):
  *   - "correct": matched, correct pitch, |offsetMs| <= greenMs
  *   - "timing":  matched, correct pitch, |offsetMs| >  greenMs (still "timing"
- *                even past orangeMs — matched is matched, it never demotes to "missed")
+ *                even past orangeMs — matched is matched, it never demotes to "missed").
+ *                Unreachable when the caller's toleranceMs is at or under the
+ *                50 ms floor (the 40 ms house gate): greenMs is capped at the
+ *                gate, so every matched correct-pitch note is "correct".
  *   - "missed":  unmatched, OR matched to the wrong pitch (finding 33:
  *                "red = miss/wrong pitch" — a wrong-pitch near-match still counts
  *                as `matched` for the existing `matches`/`pitchAccuracy`/`completeness`
@@ -301,10 +304,23 @@ export function secondsToMeasureBeat(
 /**
  * Verdict timing windows, scaled as percent-of-beat with floors/caps
  * (findings 32, 33 — Friberg & Sundberg timing JND ≈2.5% of IOI for
- * 240-1000ms IOIs; MIR onset-correctness standard ~50ms):
+ * 240-1000ms IOIs; MIR onset-correctness standard ~50ms), capped by the
+ * caller's gate:
  *
- *   greenMs  = max(50, 0.025 * beatDurationMs)  — "correct" window
- *   orangeMs = min(150, toleranceMs)            — informational upper band
+ *   greenMs  = min(toleranceMs, max(50, 0.025 * beatDurationMs))  — "correct" window
+ *   orangeMs = min(150, toleranceMs)                               — informational upper band
+ *
+ * `toleranceMs` is the caller's timing gate — it is also the matching window
+ * in `scorePerformance`, so no matched note can sit outside it. The 50 ms
+ * floor and the 2.5%-of-beat scaling may widen the "correct" window up to
+ * that gate but never past it: with the repo's house gate
+ * (`HOUSE_TOLERANCE_MS` = 40, stricter than mir_eval's 50) the effective
+ * correct window is exactly ±40 ms at every tempo, and the bands collapse
+ * into the binary two-sided rule — a matched, correct-pitch note is
+ * "correct", anything further out was never matched and reads "missed", so
+ * "timing" is unreachable. The 50 ms floor only shows once the gate is
+ * looser than it (e.g. the 150 ms default), where it keeps the scorer from
+ * demanding sub-JND precision.
  *
  * `orangeMs` does not gate `NoteVerdict.status` on its own — any matched,
  * correct-pitch note past `greenMs` is "timing" whether or not it's within
@@ -316,7 +332,7 @@ export function computeVerdictWindows(
   toleranceMs: number,
 ): { greenMs: number; orangeMs: number } {
   const beatDurationMs = durationToMs(1, bpm);
-  const greenMs = Math.max(50, 0.025 * beatDurationMs);
+  const greenMs = Math.min(toleranceMs, Math.max(50, 0.025 * beatDurationMs));
   const orangeMs = Math.min(150, toleranceMs);
   return { greenMs, orangeMs };
 }
@@ -489,7 +505,12 @@ export function scorePerformance(
       };
     }
     const offsetMs = match.timingErrorMs;
-    const status: NoteVerdict["status"] = Math.abs(offsetMs) <= greenMs ? "correct" : "timing";
+    // Compared in seconds, with the same expression the matcher used for
+    // its `timeDiff > toleranceSec` test, so when greenMs === toleranceMs
+    // (the house gate) "matched" and "correct" are the same test by
+    // construction rather than by the ×1000 rounding of `offsetMs`.
+    const status: NoteVerdict["status"] =
+      Math.abs(match.played.time - exp.time) <= greenMs / 1000 ? "correct" : "timing";
     return {
       measure: exp.measure,
       notation: exp.notation,

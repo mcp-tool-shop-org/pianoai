@@ -32,5 +32,33 @@
       "Feel the climb toward measures 98-132 as continuous, not sudden — the density increase is real and sustained, and the build should be audible well before the loudest measures actually arrive.",
       "Try practicing the final silence (measures 152-156) as its own event, separate from the climax before it — a great ending needs its quiet to be as intentional as its loud."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/68032.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "Uwe Trempelmann (karaoked by, per the file)",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about; midi meta events (sha256 3e3ed5705b39…)",
+    "midi_sha256": "3e3ed5705b393410b8a1bb9554e7aaa82244efb5e48850ab18e65d9ddd69acbc",
+    "midi_title_events": [
+      "* ENGL",
+      "* STAIRWAY TO HEAVEN",
+      "* LED ZEPPELIN"
+    ],
+    "midi_credit_events": [
+      "* karaoked by Uwe Trempelmann"
+    ],
+    "midi_lyric_head": "There's a Lady who's sure all that glitters is gold And she's buying a stairway to heaven And when she gets there she knows if the stores are all closed With a ",
+    "credited_parties": [
+      {
+        "name": "Uwe Trempelmann",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "matches"
   }
 }

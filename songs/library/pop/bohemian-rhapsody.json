@@ -32,5 +32,35 @@
       "Feel each of the section lens's major structural pivots as a genuine change of scene, not a continuation — matching the character shift makes the transitions land the way the source material intends.",
       "Try pacing your energy so measures 100-148, the piece's densest zone, gets your fullest technical commitment — arriving there under-prepared will show more than anywhere else in the piece."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/87216.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "5e468ed7b8f4f31b87fca059e60617b8089960a1b7dad1d406c1982320bd961a",
+    "midi_title_events": [
+      "Lead Vox",
+      "Lead Vox 2",
+      "Piano",
+      "Bass",
+      "Strings",
+      "Choir",
+      "Brass",
+      "Horn",
+      "Lead Guitr",
+      "Lead GtEko",
+      "Orc Hit",
+      "Drums",
+      "Timpani"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

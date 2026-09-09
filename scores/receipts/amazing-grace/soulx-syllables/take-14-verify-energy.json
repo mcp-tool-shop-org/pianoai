@@ -1,0 +1,218 @@
+{
+  "verdict": "FAIL",
+  "checks": {
+    "onset_abs_ms": {
+      "pass": false,
+      "gate_ms": 40.0,
+      "worst_ms": 171.57
+    },
+    "order": {
+      "pass": false,
+      "reason": "no transcript of the placed stem"
+    },
+    "one_voice": {
+      "pass": false,
+      "reason": "no transcript of the placed stem"
+    },
+    "fits_timeline": {
+      "pass": false,
+      "reason": "no transcript of the placed stem"
+    },
+    "length_match": {
+      "pass": true,
+      "vocal_frames": 1680000,
+      "bed_frames": 1680000,
+      "clock_frames": 1680000
+    }
+  },
+  "table": [
+    {
+      "id": "v00",
+      "lyric": "A",
+      "t_score": 2.1333333333333333,
+      "method": "rise",
+      "t_vowel": 2.0168516322477035,
+      "peak": 0.07652449408923262,
+      "reason": "ok",
+      "dip_db": 24.4,
+      "err_ms": -116.48,
+      "pass": false
+    },
+    {
+      "id": "v01",
+      "lyric": "ma",
+      "t_score": 3.2,
+      "method": "rise",
+      "t_vowel": 3.2270898146221394,
+      "peak": 0.12631070410356315,
+      "reason": "ok",
+      "dip_db": 8.4,
+      "err_ms": 27.09,
+      "pass": true
+    },
+    {
+      "id": "v02",
+      "lyric": "zing",
+      "t_score": 6.4,
+      "method": "rise",
+      "t_vowel": 6.497982625864273,
+      "peak": 0.1737221916104468,
+      "reason": "ok",
+      "dip_db": 42.3,
+      "err_ms": 97.98,
+      "pass": false
+    },
+    {
+      "id": "v03",
+      "lyric": "grace",
+      "t_score": 7.0,
+      "method": "rise",
+      "t_vowel": 7.045583333828763,
+      "peak": 0.2293599557364954,
+      "reason": "ok",
+      "dip_db": 28.8,
+      "err_ms": 45.58,
+      "pass": false
+    },
+    {
+      "id": "v04",
+      "lyric": "how",
+      "t_score": 8.6,
+      "method": "rise",
+      "t_vowel": 8.603870959536245,
+      "peak": 0.1920668676871356,
+      "reason": "ok",
+      "dip_db": 36.3,
+      "err_ms": 3.87,
+      "pass": true
+    },
+    {
+      "id": "v05",
+      "lyric": "sweet",
+      "t_score": 10.2,
+      "method": "rise",
+      "t_vowel": 10.371566104635967,
+      "peak": 0.059954270796358684,
+      "reason": "ok",
+      "dip_db": 31.5,
+      "err_ms": 171.57,
+      "pass": false
+    },
+    {
+      "id": "v06",
+      "lyric": "the",
+      "t_score": 13.4,
+      "method": "rise",
+      "t_vowel": 13.421946541272558,
+      "peak": 0.09556131121778269,
+      "reason": "ok",
+      "dip_db": 65.3,
+      "err_ms": 21.95,
+      "pass": true
+    },
+    {
+      "id": "v07",
+      "lyric": "sound",
+      "t_score": 14.2,
+      "method": "rise",
+      "t_vowel": 14.256635699154819,
+      "peak": 0.07229810912777657,
+      "reason": "ok",
+      "dip_db": 38.0,
+      "err_ms": 56.64,
+      "pass": false
+    },
+    {
+      "id": "v08",
+      "lyric": "that",
+      "t_score": 17.4,
+      "method": "rise",
+      "t_vowel": 17.45858970956289,
+      "peak": 0.09568198300531022,
+      "reason": "ok",
+      "dip_db": 50.7,
+      "err_ms": 58.59,
+      "pass": false
+    },
+    {
+      "id": "v09",
+      "lyric": "saved",
+      "t_score": 18.2,
+      "method": "rise",
+      "t_vowel": 18.361226070845976,
+      "peak": 0.20504483344120758,
+      "reason": "ok",
+      "dip_db": 46.2,
+      "err_ms": 161.23,
+      "pass": false
+    },
+    {
+      "id": "v10",
+      "lyric": "a",
+      "t_score": 19.8,
+      "method": "rise",
+      "t_vowel": 19.788593766903038,
+      "peak": 0.24590398350391982,
+      "reason": "ok",
+      "dip_db": 20.7,
+      "err_ms": -11.41,
+      "pass": true
+    },
+    {
+      "id": "v11",
+      "lyric": "wretch",
+      "t_score": 21.4,
+      "method": "rise",
+      "t_vowel": 21.37852825422097,
+      "peak": 0.2448803671733445,
+      "reason": "ok",
+      "dip_db": 6.3,
+      "err_ms": -21.47,
+      "pass": true
+    },
+    {
+      "id": "v12",
+      "lyric": "like",
+      "t_score": 23.0,
+      "method": "rise",
+      "t_vowel": 23.005289995119227,
+      "peak": 0.26570211808356436,
+      "reason": "ok",
+      "dip_db": 17.0,
+      "err_ms": 5.29,
+      "pass": true
+    },
+    {
+      "id": "v13",
+      "lyric": "me",
+      "t_score": 24.6,
+      "method": "rise",
+      "t_vowel": 24.610551056766983,
+      "peak": 0.19964166231137276,
+      "reason": "ok",
+      "dip_db": 63.7,
+      "err_ms": 10.55,
+      "pass": true
+    }
+  ],
+  "artifacts": {
+    "clock": "scores/amazing-grace.score-clock.v1.json",
+    "vocal": "tmp/vocal-clock/soulx/syl-14/take-48k.wav",
+    "vocal_sha256": "57cda57e968c2043211834a9200a7b6eacd75c3c74b4708da196ba17501bcb3a",
+    "bed": "tmp/vocal-clock/piano-bed.wav",
+    "bed_sha256": "a72bb2698a3a5753ebd2b634c5305e108db147e04909a55b667ccccee42a9c98",
+    "words": null,
+    "plan": null
+  },
+  "detector": {
+    "band_hz": [
+      400.0,
+      3000.0
+    ],
+    "rise_fraction": 0.5,
+    "env_win_s": 0.008,
+    "env_hop_s": 0.0005,
+    "slope_min_db": 3.0,
+    "principle": "vowel onset = sung tone start (Sundberg 2007); the same detector and per-event method date the source take and the placed artifact"
+  }
+}

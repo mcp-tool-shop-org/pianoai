@@ -32,5 +32,38 @@
       "Feel measure 125 as the true emotional peak, then let measures 127-130 go genuinely quiet immediately after — the release is as important as the build, and the data shows it happening fast.",
       "Try letting the final measure (168) dissolve into real silence rather than a sudden stop — this piece's whole character is spare and unhurried, and the ending should match."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/3934.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "MidiComp (copyright event)",
+    "arrangement_license": "all-rights-reserved",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about; midi meta events (sha256 3472d7ff5b54…)",
+    "midi_sha256": "3472d7ff5b54a00200e09454debef73b971f1852af2c34a94d53c0ae6a765304",
+    "midi_title_events": [
+      "Someone Like You",
+      "Adelle",
+      "MidiComp",
+      "Verse",
+      "Bridge",
+      "Chorus",
+      "Verse2",
+      "Bridge2",
+      "Nothing compares..."
+    ],
+    "midi_credit_events": [
+      "MidiComp"
+    ],
+    "credited_parties": [
+      {
+        "name": "MidiComp",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "matches"
   }
 }

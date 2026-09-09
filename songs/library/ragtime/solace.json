@@ -32,5 +32,38 @@
       "Feel the shift into the dense middle section (measures 37-57) as a genuine emotional swell, not just a rhythmic thickening — let the extra onsets translate into more sound, not just more notes.",
       "Try listening for whether your own ear hears C major or G major more strongly in the middle section — the harness itself found this ambiguous (0.28 fit), and forming your own opinion by ear is exactly what this piece rewards."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://www.mutopiaproject.org/ftp/JoplinS/solace/solace.mid",
+    "source_site": "www.mutopiaproject.org",
+    "arrangement_creator": "Magnus Lewis-Smith (Mutopia typesetter, LilyPond)",
+    "arrangement_license": "Public-Domain",
+    "terms_url": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=482",
+    "terms_quote": "Copyright: Public Domain (piece page); Public Domain: The contributor of this music has dedicated their contribution into the public domain. You can do what you like with this music - print it out, sell it, change it, distribute it, record it, and perform it, etc.",
+    "verified_at": "2026-09-09",
+    "verifier": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=482; midi meta events (sha256 21ef2b529c4c…)",
+    "midi_sha256": "21ef2b529c4cb2bf095cdeda1deed7642f31dfb08b853d6022b0269346367f67",
+    "midi_title_events": [
+      "control track",
+      "GNU LilyPond 2.19.15",
+      "rh:",
+      "honky-tonk",
+      "lh:"
+    ],
+    "midi_credit_events": [
+      "creator:"
+    ],
+    "credited_parties": [
+      {
+        "name": "GNU LilyPond",
+        "evidence": "midi-meta"
+      },
+      {
+        "name": "Magnus Lewis-Smith",
+        "evidence": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=482"
+      }
+    ],
+    "title_verdict": "no-title-in-file"
   }
 }

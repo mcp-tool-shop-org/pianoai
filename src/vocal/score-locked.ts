@@ -1,0 +1,84 @@
+// Build a VocalScore (notes + phonemes + lyrics) from a library song.
+
+import type { SongEntry } from "../songs/types.js";
+import { alignLyricsToNotes } from "./align-lyrics.js";
+import { applyPhraseVibrato, extractMelodyNotes, type MelodyNoteOptions } from "./melody-notes.js";
+import { getVocalTune, realizeVocalTune } from "./tunes.js";
+import type { LyricG2P, ScoreNote, ScorePhoneme } from "./types.js";
+
+export interface BuildScoreOptions extends MelodyNoteOptions {
+  lyrics: string;
+  language?: string;
+  vibrato?: boolean;
+  g2p: LyricG2P;
+}
+
+export interface BuiltVocalScore {
+  bpm: number;
+  notes: ScoreNote[];
+  lyrics: { text: string; language: string };
+  phonemes: ScorePhoneme[];
+  warnings: string[];
+  startMeasure: number;
+  endMeasure: number;
+}
+
+export function buildScoreLockedVocals(
+  song: SongEntry,
+  options: BuildScoreOptions,
+): BuiltVocalScore {
+  const tune = getVocalTune(song.id);
+  const lyrics = options.lyrics.trim().length > 0 ? options.lyrics : (tune?.lyrics ?? "");
+  const extracted = extractMelodyNotes(song, options);
+  const realized = tune
+    ? realizeVocalTune(song, tune, options)
+    : {
+        notes: extracted.notes,
+        lyrics,
+        warnings: extracted.warnings,
+        effectiveBpm: extracted.effectiveBpm,
+      };
+  const rawNotes = realized.notes;
+  const notes = options.vibrato === true ? applyPhraseVibrato(rawNotes) : rawNotes;
+  const aligned = alignLyricsToNotes(lyrics, notes, options.g2p, {
+    // One nucleus per sung note. Diphthong splits turn a hymn into gabble.
+    diphthongSplitSec: 99,
+  });
+  const phonemes = coverFrontVowels(notes, aligned.events);
+  return {
+    bpm: realized.effectiveBpm,
+    notes,
+    lyrics: { text: lyrics, language: options.language ?? "en-US" },
+    phonemes,
+    warnings: [...extracted.warnings, ...realized.warnings, ...aligned.warnings],
+    startMeasure: extracted.startMeasure,
+    endMeasure: extracted.endMeasure,
+  };
+}
+
+const FRONT_VOWELS = new Set(["IY", "IH", "IX", "EY", "EH"]);
+
+/** When F0 is near or above a front-vowel F1, retarget the timbre to AH
+ *  (singer's covering). Additive Kokoro envelopes cannot raise F1. */
+function coverFrontVowels(notes: ScoreNote[], events: ScorePhoneme[]): ScorePhoneme[] {
+  return events.map((e) => {
+    if (e.kind !== "vowel") return e;
+    const note = notes.find(
+      (n) => e.tSec >= n.startSec - 1e-4 && e.tSec < n.startSec + n.durationSec + 1e-4,
+    );
+    if (!note || note.midi < 64) return e;
+    if (FRONT_VOWELS.has(e.phoneme) || e.timbreHint === "EE") {
+      return { ...e, timbreHint: "AH" };
+    }
+    return e;
+  });
+}
+
+/** Duration of the score in seconds (last note end). */
+export function scoreDurationSec(score: { notes: ScoreNote[] }): number {
+  let end = 0;
+  for (const n of score.notes) {
+    end = Math.max(end, n.startSec + n.durationSec);
+  }
+  return end;
+}

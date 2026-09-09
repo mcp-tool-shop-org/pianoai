@@ -32,5 +32,21 @@
       "Shape the final page as a slow exhale: feel the measure-124 surge crest and then let measures 126-127 genuinely empty — keep the pedal's decay honest instead of manufacturing a firm ending the file does not write.",
       "Imitate a reference recording by ear for the melody's phrasing — the long unbroken form lives in the singing, and the records carry a rubato the notation's even grid cannot."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/91653.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "1a35832317de3035bf79cae42a2ac3989f701bf4a296a70c5f16c5e87e6d7009",
+    "midi_title_events": [],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

@@ -35,5 +35,52 @@
       "Half-pedal through the implied C#-D#m-F# harmonic areas to blur the edges between chords without losing the underlying diatonic shape — listen for the color changing smoothly rather than in sharp cuts.",
       "Think in terms of light and shadow rather than clear articulation — this is not about clarity of individual notes; listen for the overall sonority breathing at the climax and receding again through the silence that follows."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "http://piano-midi.de/midis/debussy/DEB_CLAI.mid",
+    "source_site": "piano-midi.de",
+    "arrangement_creator": "Bernd Krueger (piano-midi.de, 1998, edition 2011-08-20)",
+    "arrangement_license": "CC-BY-SA-3.0-DE",
+    "terms_url": "http://piano-midi.de/copy.htm",
+    "terms_quote": "The MIDI, audio(MP3, OGG) and video files of Bernd Krueger are licensed under the cc-by-sa Germany License. [links http://creativecommons.org/licenses/by-sa/3.0/de/deed.en] This means, that you can use and adapt the files, as long as you attribute to the copyright holder Name: Bernd Krueger Source: http://www.piano-midi.de",
+    "verified_at": "2026-09-09",
+    "verifier": "http://piano-midi.de/copy.htm; midi meta events (sha256 4dee23c00aed…)",
+    "midi_sha256": "4dee23c00aed6742905a65f374f231d7a827010400146be7577b1df808a927d0",
+    "midi_title_events": [
+      "Suite bergamasque",
+      "Clair de Lune",
+      "Claude Debussy",
+      "Andante tres expressif",
+      "Fertiggestellt am 6.8.98",
+      "Korrekturen am 20.8.98",
+      "Beide Tracks auf Kanal 1 am 9.11.98",
+      "Update am 21.4.99",
+      "Normierung: 23.12.2002",
+      "Update am 20.8.2011",
+      "Dauer: 4:07 Minuten",
+      "Tempo rubato",
+      "En animant",
+      "Calmato",
+      "Tempo I",
+      "Fine",
+      "Piano right",
+      "bdca426d104a26ac9dcb070447587523",
+      "Piano left",
+      "Debussy: \"Clair de lune\" from Suite bergamasque",
+      "http://www.piano-midi.de",
+      "Edition: 2011-08-20"
+    ],
+    "midi_credit_events": [
+      "Copyright © 1998 von Bernd Krüger. http://www.piano-midi.de",
+      "Copyright © 1998 by Bernd Krüger"
+    ],
+    "credited_parties": [
+      {
+        "name": "Bernd Krüger",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "matches"
   }
 }

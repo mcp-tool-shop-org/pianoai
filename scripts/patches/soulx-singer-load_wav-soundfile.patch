@@ -1,0 +1,22 @@
+diff --git a/soulxsinger/utils/audio_utils.py b/soulxsinger/utils/audio_utils.py
+index bca06ac..6d0154f 100644
+--- a/soulxsinger/utils/audio_utils.py
++++ b/soulxsinger/utils/audio_utils.py
+@@ -12,7 +12,16 @@ def load_wav(wav_path: str, sample_rate: int):
+     Returns:
+         torch.Tensor: Waveform tensor with shape (1, T).
+     """
+-    waveform, sr = torchaudio.load(wav_path)
++    # ai-jam-sessions local patch (2026-09-05): torchaudio >= 2.9 routes load()
++    # through torchcodec, which needs FFmpeg shared libs on Windows. soundfile
++    # reads wav/flac/mp3 directly; the resample below is unchanged.
++    try:
++        waveform, sr = torchaudio.load(wav_path)
++    except (ImportError, RuntimeError):
++        import soundfile as _sf
++        import numpy as _np
++        data, sr = _sf.read(wav_path, always_2d=True, dtype="float32")
++        waveform = torch.from_numpy(_np.ascontiguousarray(data.T))
+         
+     if sr != sample_rate:
+         waveform = torchaudio.functional.resample(waveform, sr, sample_rate)

@@ -1,0 +1,88 @@
+{
+  "id": "kiss-the-rain",
+  "title": "Kiss the Rain",
+  "genre": "new-age",
+  "difficulty": "beginner",
+  "key": "G major",
+  "tags": [
+    "new-age",
+    "yiruma",
+    "peaceful"
+  ],
+  "composer": "Yiruma",
+  "status": "ready",
+  "musicalLanguage": {
+    "description": "Yiruma's Kiss the Rain runs 96 measures at 130 BPM, and its key field was corrected to G major to match the content. The Db major label this transcription originally carried is strongly contradicted by the content (fits at -0.594), while the harness's best content-based guess, G major, stays just below the loud-mismatch threshold on its whole-song margin alone (0.127) — but the actual chord windows settle the question: C major, E minor, G major, C major seventh, and D major, the most-cited labels among the 28% of windows considered that clear the gate, are exactly the IV, vi, I, IVmaj7, and V of G major, a clean diatonic set. There is no written rest anywhere in these 96 measures. Structurally the piece is built largely from two enormous repeating blocks: a 161-note right-hand passage covers 49.2% of all right-hand events across measures 41-64 and 65-88, while a 178-note left-hand passage covers 41.8% of left-hand events across measures 10-30 and 30-50. On top of those large blocks, a shorter cell recurs 8-9 times in both hands together (for example measures 1-3, 5-7, 9-11, 25-27, and 29-31), each hand's version compressing at an identical 6.545 ratio.",
+    "structure": "A brief 4-measure opening leads into a long developmental span (measures 5-32) built from the 8-9-times-recurring short cell shared by both hands. From measure 41, the piece settles into its two largest structural blocks: the right hand's 161-note passage spans measures 41-64 and repeats measure-for-measure at measures 65-88 (49.2% of all right-hand events), overlapping with the left hand's own 178-note repeating passage across measures 10-30 and 30-50. The section lens's sharpest pivots — measure 81 (novelty 3.268) and measure 57 (2.877) — sit inside this large repeating structure, marking real internal turns even while the pattern pass shows the broader material recurring.",
+    "keyMoments": [
+      "The most-cited chord labels — C major (12 windows), E minor (5), G major (4), C major seventh (3), and D major (3) — are exactly the IV, vi, I, IVmaj7, and V of G major, a clean diatonic set that contradicts the Db major label this transcription originally carried (the key field has since been corrected to G major) even though the whole-song key-detection margin alone (0.127) falls just under the harness's loud-mismatch threshold.",
+      "A 161-note right-hand passage covers 49.2% of all right-hand events in the piece, appearing complete at measures 41-64 and again at measures 65-88 — nearly half the right hand's total material lives inside this one repeated block.",
+      "A short cell recurs 8 times in the left hand and 9 times in the right hand, largely at the same starting measures in both (for example measures 1-3, 5-7, 9-11, 25-27, and 29-31), each hand's version compressing at an identical 6.545 ratio — this is the piece's true recurring building block, more frequent than either of the two large blocks.",
+      "There is no written rest anywhere in the piece's 96 measures — every measure sounds in both hands, so any sense of breathing space has to come from touch and pedaling rather than from silence."
+    ],
+    "teachingGoals": [
+      "Learn to hear C major, E minor, G major, and D major as this piece's true diatonic core (the IV, vi, I, and V of G major), rather than trying to relate the harmony back to the Db major label this transcription originally carried.",
+      "Master the 161-note right-hand passage that covers nearly half of all right-hand material — since it appears complete at both measures 41-64 and 65-88, learning it once handles a huge share of the piece.",
+      "Practice the short 8-9-times-recurring cell shared by both hands as the piece's real building block, recognizing it at each of its many appearances rather than relearning it as new material each time.",
+      "Build genuine stamina for continuous playing — with no written rest across 96 measures, practice sustaining consistent touch and pedaling from start to finish rather than relying on built-in recovery points."
+    ],
+    "styleTips": [
+      "Pedal for resonance in the absence of written rests — since the piece never actually stops, the pedal has to create every sense of phrase-breath the performer wants the listener to feel.",
+      "Play the repeated 8-9-times cell with small, deliberate variations in touch across its many appearances — a shape this frequent risks sounding mechanical if played completely identically every time.",
+      "Listen for the diatonic C-Em-G-D cycle as the real harmonic home of the piece, and let your ear settle into G major rather than reaching for the Db major label this transcription originally carried.",
+      "Try building the piece's two large repeating blocks with real endurance in mind — since so much of the piece is these two extended blocks, pace yourself across their full length rather than only the shorter opening material."
+    ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/64090.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "Henry Choi and Mike Doyle (Roland MT-32 sequence, per the file)",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about; midi meta events (sha256 af2c1a7f214c…)",
+    "midi_sha256": "af2c1a7f214c1b5564ae889b67390c8c923afa4b46785c2ff09783ecb3b61663",
+    "midi_title_events": [
+      "MT-32 and compatibles by Henry Choi and Mike Doyle of Huntsville, AL.",
+      "kick drum",
+      "elec. snare",
+      "closed hi hat",
+      "bass",
+      "synth bass",
+      "rythmn",
+      "lead (strings)",
+      "dbld lead",
+      "accent",
+      "====================",
+      "Depeche Mode's",
+      "\"Just Can't Get",
+      "for the MT-32 &",
+      "compatibles by",
+      "Henry Choi &",
+      "Mike Doyle",
+      "Huntsville, AL"
+    ],
+    "midi_credit_events": [
+      "Depeche Mode's \"Just Can't get Enough\" sequenced for the Roland",
+      "Enough\" sequenced"
+    ],
+    "credited_parties": [
+      {
+        "name": "Henry Choi",
+        "evidence": "midi-meta"
+      },
+      {
+        "name": "Mike Doyle",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "contradicts",
+    "quarantine": {
+      "at": "2026-09-09",
+      "actual_piece": "Just Can't Get Enough (Depeche Mode) — the file's text events name it twice",
+      "reason": "the file's own meta events name a different piece"
+    }
+  }
+}

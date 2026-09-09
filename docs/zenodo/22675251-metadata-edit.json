@@ -1,0 +1,20 @@
+{
+  "$comment": "Metadata edit for Zenodo record 22675251 (jam-actions-v1-probe 1.0.0). Applied by .github/workflows/zenodo-edit-record.yml; keys here replace the same keys on the live record, every other field is kept as published. The record was minted as a new version under the jam-actions concept record (an empty workflow_dispatch input is replaced by its default), so its title, description and notes now say what it is: an evaluation companion, cited by its own version DOI.",
+  "title": "jam-actions-v1-probe — evaluation companion to jam-actions-v1 (near-gate acoustic takes; not a version of the corpus)",
+  "description": "<p>24 acoustic takes on jam-actions-v1's three held-out songs, each measured within 10 ms or 5 cents of a grading gate, both signs of both quantities. Never split, never trained on. Distinguishes a model that compares a measurement to a gate from one that reads a sign.</p><p><strong>This record is an evaluation companion to jam-actions-v1 (<a href=\"https://doi.org/10.5281/zenodo.22675239\">10.5281/zenodo.22675239</a>), not a version of the training corpus.</strong> It was deposited as a version under the jam-actions concept record; the concept DOI should not be read as pointing at this set. Cite this record by its own DOI, 10.5281/zenodo.22675251.</p><p>Rules: never merge these records into a training set; never split them. If you train on the companion corpus and report on this set, say which seed and report every seed. Hugging Face mirror: <a href=\"https://huggingface.co/datasets/mcp-tool-shop/jam-actions-v1-probe\">mcp-tool-shop/jam-actions-v1-probe</a>. Source and results: <a href=\"https://github.com/mcp-tool-shop-org/ai-jam-sessions\">mcp-tool-shop-org/ai-jam-sessions</a>.</p>",
+  "notes": "Evaluation-only companion to jam-actions-v1 (10.5281/zenodo.22675239); not a version of the training corpus. Cite this record's own DOI, 10.5281/zenodo.22675251, not the jam-actions concept DOI. Never merge into a training set. Never split.",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/mcp-tool-shop-org/ai-jam-sessions",
+      "relation": "isSupplementTo",
+      "scheme": "url",
+      "resource_type": "software"
+    },
+    {
+      "identifier": "https://doi.org/10.5281/zenodo.22675239",
+      "relation": "isSupplementTo",
+      "scheme": "doi",
+      "resource_type": "dataset"
+    }
+  ]
+}

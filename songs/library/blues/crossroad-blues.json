@@ -33,5 +33,31 @@
       "Let the opening silence in the right hand actually register as an introduction — the bass pattern needs a measure or two to establish itself before the melody has anything to sit on top of.",
       "Don't over-simplify this to a plain bright-major sound — chord-window analysis surfaces a lot of diminished and augmented color (Cdim covers 22% of measures, and Daug and D7 both appear too), consistent with the chromatic passing tones a rolling, fingerpicked Delta bass line naturally produces. Keep the tone open and rolling rather than brooding, but let that chromatic edge come through rather than smoothing it into plain triads."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/87408.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "IFNI MIDI MUSIC (www.ifni.com)",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "d0fdfcbbd0e195966cf7a5dd932fc20968120ad8c6ec2d386f0978a4a43343af",
+    "midi_title_events": [
+      "Crossroads Blues",
+      "Robert Johnson",
+      "www.ifni.com",
+      "IFNI MIDI MUSIC"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [
+      {
+        "name": "IFNI MIDI MUSIC",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "matches"
   }
 }

@@ -1,0 +1,124 @@
+{
+  "id": "key_moments:solace",
+  "schema_version": "jam-actions-v1/1.0.0",
+  "family": "key_moments",
+  "provenance": {
+    "source_url": "https://www.mutopiaproject.org/ftp/JoplinS/solace/solace.mid",
+    "source_collected_at": "2026-09-09",
+    "source_type": "downloaded-arrangement",
+    "composition_title": "Solace",
+    "composer": "Scott Joplin",
+    "composition_year": 1,
+    "composition_pd_status_us": "public_domain",
+    "composition_pd_status_eu": "public_domain",
+    "arrangement_creator": "Magnus Lewis-Smith (Mutopia typesetter, LilyPond)",
+    "arrangement_license": "Public-Domain",
+    "arrangement_license_version": null,
+    "arrangement_evidence_url": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=482",
+    "record_verdict": "public",
+    "verdict_reason": "Allowlisted 2026-09-09; Public-Domain",
+    "verifier": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=482; midi meta events (sha256 21ef2b529c4c…)",
+    "verified_at": "2026-09-09",
+    "training_use_permitted": true
+  },
+  "scope": {
+    "song_id": "solace",
+    "phrase_window": "full:148",
+    "instrument": "piano",
+    "key": "G major",
+    "tempo_bpm": 72,
+    "time_signature": "2/4",
+    "window_role": "standalone"
+  },
+  "observation": {
+    "thresholds": {
+      "min_pitch_classes": 2
+    },
+    "gold": {
+      "family": "key_moments",
+      "answer": "1-2",
+      "engine": "musicalLanguage.keyMoments[0] span"
+    }
+  },
+  "annotation_target": {
+    "measure_range": [
+      1,
+      148
+    ],
+    "structure": "A gentle, left-hand-tacet opening (measures 1-2) leads into the main strain (measures 4-32), which the pattern pass tracks as a strong, highly repetitive right-hand figure recurring six times (measures 4-8, 12-16, 20-24, 28-32, 68-72, 76-80). A contrasting middle section (measures 36-83) is the piece's busiest, with four measures (37, 41, 53, 57) reaching 16 onsets each. A closing section (measures 84-148) settles into a sparser, Am/F-centered close.",
+    "key_moments": [
+      "Measures 1-2 open with the left hand tacet — a bare-melody entrance that sets Solace's more intimate, art-song character apart from its livelier 2/4 stride from the very first bar.",
+      "Measures 37, 41, 53, and 57 each carry 16 onsets, the densest bars in the piece — a real contrast against Solace's otherwise sparse texture, where measures 18, 34, and 82 thin to just 3 onsets apiece.",
+      "The chord windows here (Dm-C-F-Am-G7) read comfortably in C/F major territory, not a strong G major cadence — a reminder that a stated key and a piece's confirmed harmonic center are two different, separately checkable things.",
+      "The same right-hand figure recurs six times (measures 4-8, 12-16, 20-24, 28-32, 68-72, 76-80), graded strong with a 5.05 compression ratio — a tightly repetitive backbone underneath the piece's overall languid character."
+    ],
+    "teaching_goals": [
+      "Learn to play a rag slowly and still keep it rhythmically alive — Solace's 72 BPM tempo removes speed as a source of energy entirely, so the syncopation itself has to carry the momentum.",
+      "Practice a bare left-hand-tacet opening (measures 1-2) with real control over touch and voicing — with no bass support, every imperfection in the right hand's tone is exposed.",
+      "Recognize when a stated key is only a loose fit for the actual harmony (statedKeyFit 0.28 here) and let the chord windows, not the key signature, guide your reading of a passage.",
+      "Build dynamic contrast between the piece's sparse outer sections and its dense middle (measures 37-57, 16 onsets per bar) — match Solace's own written contrast in density with an audible contrast in volume."
+    ],
+    "style_tips": [
+      "Listen for the habanera-adjacent lilt in the rhythm rather than a straight 2/4 stride feel — Solace asks for a gentler, more rubato-friendly pulse than its rag siblings.",
+      "Play the bare opening (measures 1-2) with the sustain pedal used sparingly and deliberately — with no left hand yet sounding, pedal blur is far more audible than in a fuller texture.",
+      "Feel the shift into the dense middle section (measures 37-57) as a genuine emotional swell, not just a rhythmic thickening — let the extra onsets translate into more sound, not just more notes.",
+      "Try listening for whether your own ear hears C major or G major more strongly in the middle section — the harness itself found this ambiguous (0.28 fit), and forming your own opinion by ear is exactly what this piece rewards."
+    ],
+    "teaching_notes": [
+      {
+        "measure": 1,
+        "note": "none"
+      }
+    ]
+  },
+  "target_trace": {
+    "task_family": "key_moments",
+    "objective": "Answer using tools. Do not guess from the question text.",
+    "session": [
+      {
+        "turn": 1,
+        "role": "user",
+        "content": "Which measure range does the first key moment of \"Solace\" name? Answer with a measure number or range."
+      },
+      {
+        "turn": 2,
+        "role": "assistant",
+        "content": "Reading keyMoments from song_info.",
+        "tool_calls": [
+          {
+            "tool": "song_info",
+            "arguments": {
+              "id": "solace"
+            }
+          }
+        ]
+      },
+      {
+        "turn": 3,
+        "role": "tool",
+        "tool": "song_info",
+        "content": {
+          "id": "solace",
+          "first_keyMoment": "Measures 1-2 open with the left hand tacet — a bare-melody entrance that sets Solace's more intimate, art-song character apart from its livelier 2/4 stride from the very first bar."
+        }
+      },
+      {
+        "turn": 4,
+        "role": "assistant",
+        "content": "1-2"
+      }
+    ]
+  },
+  "eval_metadata": {
+    "split": "test",
+    "split_strategy": "hold out by song_id",
+    "leakage_check": "passed",
+    "eval_eligibility": [
+      "tool_use",
+      "key_moments"
+    ],
+    "phrase_continuation_eligible": false,
+    "phrase_continuation_eligible_reason": "standalone tool-use items"
+  },
+  "split": "test"
+}

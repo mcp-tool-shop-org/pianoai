@@ -33,6 +33,9 @@
 import type { VmpkConnector, MidiStatus, MidiNote } from "./types.js";
 import { getMergedVoice, type PianoVoiceId, type PianoVoiceConfig } from "./piano-voices.js";
 import { JamError } from "./errors.js";
+import { getSharedAudioContext, setSharedAudioContext } from "./audio-shared.js";
+import { PIANO_COMPRESSOR, velocityLowpassHz } from "./piano-timbre.js";
+import { createTapBus } from "./audio/tap-bus.js";
 
 // ─── Lazy Import ────────────────────────────────────────────────────────────
 // Don't load the native binary until the engine is actually used.
@@ -167,14 +170,23 @@ interface Voice {
  * the codebase uses a connector (sessions, CLI, MCP server).
  *
  * @param voiceId — Piano voice preset. Default: "grand" (Concert Grand).
+ * @param options.audioContext — adopt this (Offline)AudioContext instead of
+ *   creating a live one; used by scripts/render-piano-bed.mjs to bounce the
+ *   piano deterministically.
  */
-export function createAudioEngine(voiceId?: PianoVoiceId): VmpkConnector {
+export function createAudioEngine(
+  voiceId?: PianoVoiceId,
+  options: { audioContext?: any } = {},
+): VmpkConnector {
   const voice = getMergedVoice(voiceId ?? "grand") ?? getMergedVoice("grand")!;
+  const injectedContext = options.audioContext ?? null;
 
   let ctx: any = null;
   let currentStatus: MidiStatus = "disconnected";
   let compressor: any = null;
   let master: any = null;
+  /** Dedicated fan-out for observers. Never sits between master and destination. */
+  let tapBus: any = null;
   // FIFO queue per note (not a single Voice) — see MAX_VOICES_PER_NOTE.
   const activeVoices = new Map<number, Voice[]>();
   const voiceOrder: Voice[] = []; // Global LRU across all voice instances, oldest first
@@ -216,10 +228,15 @@ export function createAudioEngine(voiceId?: PianoVoiceId): VmpkConnector {
     const voiceMaster = ctx.createGain();
     voiceMaster.gain.value = velocity01 * voice.voiceGain;
 
-    // ── Stereo panner ──
+    // ── Stereo panner + velocity lowpass (tames oscillator harshness) ──
     const panner = ctx.createStereoPanner();
     panner.pan.value = noteToPan(note, voice.stereoWidth);
-    voiceMaster.connect(panner);
+    const lowpass = ctx.createBiquadFilter();
+    lowpass.type = "lowpass";
+    lowpass.frequency.value = velocityLowpassHz(note, velocity01);
+    lowpass.Q.value = 0.7;
+    voiceMaster.connect(lowpass);
+    lowpass.connect(panner);
     panner.connect(compressor);
 
     // ── Sine partials with per-partial envelopes ──
@@ -411,22 +428,27 @@ export function createAudioEngine(voiceId?: PianoVoiceId): VmpkConnector {
       currentStatus = "connecting";
 
       try {
-        const AC = await loadAudioContext();
-        ctx = new AC({ latencyHint: "playback" });
+        if (injectedContext) {
+          ctx = injectedContext;
+        } else {
+          const AC = await loadAudioContext();
+          ctx = new AC({ latencyHint: "playback" });
+        }
 
         // Master chain: compressor → gain → speakers
         compressor = ctx.createDynamicsCompressor();
-        compressor.threshold.value = -15;
-        compressor.knee.value = 12;
-        compressor.ratio.value = 6;
-        compressor.attack.value = 0.003;
-        compressor.release.value = 0.2;
+        compressor.threshold.value = PIANO_COMPRESSOR.threshold;
+        compressor.knee.value = PIANO_COMPRESSOR.knee;
+        compressor.ratio.value = PIANO_COMPRESSOR.ratio;
+        compressor.attack.value = PIANO_COMPRESSOR.attack;
+        compressor.release.value = PIANO_COMPRESSOR.release;
 
         master = ctx.createGain();
         master.gain.value = voice.masterGain;
 
         compressor.connect(master);
         master.connect(ctx.destination);
+        setSharedAudioContext(ctx);
 
         // Pre-generate shared noise buffer
         createHammerNoiseBuffer();
@@ -439,6 +461,7 @@ export function createAudioEngine(voiceId?: PianoVoiceId): VmpkConnector {
         ctx = null as any;
         compressor = null as any;
         master = null as any;
+        tapBus = null as any;
         currentStatus = "disconnected";
         throw new JamError({
           code: 'RUNTIME_ENGINE',
@@ -462,6 +485,7 @@ export function createAudioEngine(voiceId?: PianoVoiceId): VmpkConnector {
       voiceOrder.length = 0;
 
       if (ctx) {
+        if (getSharedAudioContext() === ctx) setSharedAudioContext(null);
         try {
           await ctx.close();
         } catch {
@@ -470,6 +494,7 @@ export function createAudioEngine(voiceId?: PianoVoiceId): VmpkConnector {
         ctx = null;
         compressor = null;
         master = null;
+        tapBus = null;
         hammerNoiseBuffer = null;
       }
       currentStatus = "disconnected";
@@ -481,6 +506,17 @@ export function createAudioEngine(voiceId?: PianoVoiceId): VmpkConnector {
 
     listPorts(): string[] {
       return [`Built-in Piano (${voice.name})`];
+    },
+
+    /**
+     * Fan-out bus for observers. Lazily `master.connect(tapBus)`. The
+     * existing master → destination edge is not touched, so a tap cannot
+     * silence the instrument. Callers pass this node to attachTap().
+     */
+    createTapOutput(): unknown {
+      ensureConnected();
+      if (!tapBus) tapBus = createTapBus(ctx, master);
+      return tapBus;
     },
 
     noteOn(note: number, velocity: number, channel?: number): void {

@@ -40,5 +40,26 @@
       "Cap the dynamics around mezzo-forte even at the measure 31-33 climax; the piece lives between pianissimo and mf, and its intensity should come from texture density, not a forced crescendo.",
       "Let measure 47 truly dissolve: play the final onsets as if the music continues somewhere out of earshot — don't place a firm final accent, and let the pedal carry the last sound into silence."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://freemidi.org/getter-15836",
+    "source_site": "freemidi.org",
+    "arrangement_creator": "unknown — the file names no creator and freemidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://freemidi.org/about",
+    "terms_quote": "free midi is about freedom and free midi songs. (User-uploaded; no licence is stated anywhere on the site.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://freemidi.org/about",
+    "midi_sha256": "7b1097a62d0a607da1c5b866adbe97d49bcf742e89858902d17b1e27a454cc81",
+    "midi_title_events": [
+      "River flows in you",
+      "Piano",
+      "Microsoft GS Wavetable Synth",
+      "Track 2"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "matches"
   }
 }

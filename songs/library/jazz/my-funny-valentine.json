@@ -32,5 +32,25 @@
       "Listen for the structural pivot at measure 5 as the true start of the piece's main development, distinct from the brief 4-measure opening that precedes it.",
       "Try landing the closing silence at measures 124-127 with real finality — after the section lens's largest novelty spike in the piece marks measure 123 as the sharpest turn anywhere in the arrangement, let the silence that follows feel earned, not abrupt."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/76966.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "93dbe049561a0dce9ade11291394a15990ee67ca47489eb1b4b60c93c63fe64e",
+    "midi_title_events": [
+      "A.PIANO 1",
+      "JAZZ GTR",
+      "GS/RESET"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

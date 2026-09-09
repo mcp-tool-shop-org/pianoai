@@ -46,8 +46,31 @@ import { defineConfig } from "vitest/config";
 // large new module landing at ~0%). RAISE this floor in a follow-up PR once
 // a real `pnpm test:coverage` run has printed the actual number — the
 // coverage step's own console output ("text" reporter below) has it.
+// ─── Test timeout ──────────────────────────────────────────────────────────
+//
+// Vitest's 5 s default is too tight for this repo, and the failure it produces
+// is the worst kind: intermittent, and it lands on whichever test happens to
+// sit nearest the line rather than on anything actually wrong.
+//
+// The audio layer synthesises and analyses real waveforms in-process — FFTs,
+// constant-Q transforms, onset detection over multi-second buffers — and the
+// dataset layer builds a 108-record corpus by rendering every take. Those run
+// comfortably under 5 s uninstrumented and creep past it under `--coverage`,
+// which is exactly the leg CI runs. `src/audio/stream.test.ts` measured 3.43 s
+// of test time locally under coverage and timed out at 5 s on the runner.
+//
+// Seven test files had already worked around this with their own
+// `vi.setConfig({ testTimeout: 30_000 })`. That is the per-case fix, and it
+// loses: every new heavy test has to remember, and the one that forgets fails
+// in CI rather than locally. The budget belongs here, once. The per-file calls
+// are left in place — they are harmless and they document the intent locally.
+//
+// 30 s is generous per test while still catching a genuine hang; the whole
+// suite runs in ~134 s wall under coverage.
 export default defineConfig({
   test: {
+    testTimeout: 30_000,
+    hookTimeout: 30_000,
     coverage: {
       provider: "v8",
       include: ["src/**/*.ts"],

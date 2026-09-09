@@ -49,6 +49,17 @@ export interface PanelRunOptions {
   seed?: number;
   /** Progress callback (a dot per collected vote, an "x" per dropped) — optional. */
   onProgress?: (mark: string) => void;
+  /** Per judge × song step (P9-004). Optional; existing onProgress dots stay. */
+  onVoteStep?: (info: {
+    songId: string;
+    judgeFamily: string;
+    judgeModel?: string;
+    step: number;
+    total: number;
+    dropped: boolean;
+    /** "start" = realization or a judgment is beginning; "done" = a vote completed. */
+    phase?: "start" | "done";
+  }) => void | Promise<void>;
 }
 
 export interface PanelReport {
@@ -72,14 +83,36 @@ export async function runVoiceLeadingPanel(opts: PanelRunOptions): Promise<Panel
   const { progressions, systems, judges, anchors } = opts;
   const votes: BwsVote[] = [];
   const tupleSystems: string[][] = [];
+  const votesPossible = progressions.length * judges.length;
+  let step = 0;
 
   for (let si = 0; si < progressions.length; si++) {
-    const { progression } = progressions[si];
+    const { id: songId, progression } = progressions[si];
+    // Start events keep progress notifications flowing from the first second
+    // (P9-004): realization and a cold first judgment can each run past the
+    // SDK's 60s default client window if the stream were completion-only.
+    await opts.onVoteStep?.({
+      songId,
+      judgeFamily: "realize",
+      step,
+      total: votesPossible,
+      dropped: false,
+      phase: "start",
+    });
     const real: Record<string, Realization> = {};
     for (const s of systems) real[s.id] = await s.realize(progression);
 
     for (let fi = 0; fi < judges.length; fi++) {
       const judge = judges[fi];
+      await opts.onVoteStep?.({
+        songId,
+        judgeFamily: judge.family,
+        judgeModel: judge.model,
+        step,
+        total: votesPossible,
+        dropped: false,
+        phase: "start",
+      });
       const order = shuffledOrder(systems.length, makeRng(1000 * (si + 1) + 31 * (fi + 1)));
       const orderedIds = order.map((k) => systems[k].id);
       const optionsText = orderedIds.map((id) => renderVoicingText(real[id]));
@@ -89,6 +122,16 @@ export async function runVoiceLeadingPanel(opts: PanelRunOptions): Promise<Panel
         tupleSystems.push(orderedIds);
       }
       opts.onProgress?.(v ? "." : "x");
+      step += 1;
+      await opts.onVoteStep?.({
+        songId,
+        judgeFamily: judge.family,
+        judgeModel: judge.model,
+        step,
+        total: votesPossible,
+        dropped: !v,
+        phase: "done",
+      });
     }
   }
 
@@ -96,7 +139,6 @@ export async function runVoiceLeadingPanel(opts: PanelRunOptions): Promise<Panel
   const agg = aggregatePanel(bareSystems, votes, tupleSystems, { bootstrap: opts.bootstrap ?? 500, seed: opts.seed ?? 42 });
   const result = interpretPanel(agg, anchors, { floorMargin: opts.floorMargin });
 
-  const votesPossible = progressions.length * judges.length;
   const text = renderPanelReport({
     result,
     songIds: progressions.map((p) => p.id),
@@ -148,9 +190,8 @@ export function renderPanelReport(r: {
   lines.push(`⇒ ${r.result.verdict}`);
   lines.push("");
   lines.push(
-    "This is a DIRECTIONAL symbolic smoke-screen, NOT a quality measure. Local LLMs judging note-names " +
-      "cannot make a quality claim (findings 18–20) — that is a blind human-AUDIO BWS panel. It only says " +
-      "whether that (deferred, priced) human panel is worth scheduling.",
+    "This ranking is directional only. Local models judging note-names cannot hear the music — " +
+      "the human-audio panel is the quality claim.",
   );
   return lines.join("\n");
 }

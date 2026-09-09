@@ -33,5 +33,33 @@
       "Try holding back through the opening verses rather than treating every verse at the same volume — a hymn like this earns its measure-25 climax through restraint beforehand.",
       "Think of a hymn sung by a full congregation, not a solo showpiece — keep the tone warm and unforced, more communal than virtuosic."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/5856.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "75c5d8301108ce5f8e6bede983086edfdf7a9f691eb0fdf7cd5013351ecbd286",
+    "midi_title_events": [
+      "TUBULARBEL",
+      "CHURCH ORG",
+      "A.PIANO 1",
+      "STRINGS",
+      "PICK BASS",
+      "STEEL GTR",
+      "HARMONICA",
+      "E.PIANO 1",
+      "TRUMPET",
+      "DRUMS",
+      "GS/RESET"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

@@ -32,5 +32,23 @@
       "Feel the matching silences at measures 1 and 170 as a deliberate frame around the piece's relentless energy — the stillness at both ends makes the constant motion in between feel even more continuous.",
       "Try sustaining the same intensity across all five of the piece's busiest measures (39, 42, 104, 139, 143) rather than saving energy for just one — this arrangement asks for consistency, not a single dramatic peak."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/24955.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "7bae268be9f1157181474c51f71703d60c4d7056f5b706022094d54422dbeeb9",
+    "midi_title_events": [
+      "Coldplay - Clocks"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "matches"
   }
 }

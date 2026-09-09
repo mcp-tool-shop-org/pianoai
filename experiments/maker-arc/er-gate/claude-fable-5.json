@@ -635,5 +635,5 @@
       "summary": "VERIFIED — 8/8 chords confirmed by the chord engine; 65 chord tones, 17 tensions, 4 chromatic (ratio 0.047 ≤ 0.2)"
     }
   ],
-  "responsesFile": "C:/Users/mikey/AppData/Local/Temp/claude/E--AI-ai-jam-sessions/c2684146-d2d5-4189-8786-750d1b15e1d7/scratchpad/claude-er-responses.json"
+  "responsesFile": "${SCRATCHPAD}/E--AI-ai-jam-sessions/c2684146-d2d5-4189-8786-750d1b15e1d7/scratchpad/claude-er-responses.json"
 }

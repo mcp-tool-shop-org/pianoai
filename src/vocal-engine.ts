@@ -25,6 +25,7 @@
 import type { VmpkConnector, MidiStatus, MidiNote } from "./types.js";
 import { loadCarrierBank, pickCarrier, defaultCarrierDir, type CarrierBank } from "./vocal-carriers.js";
 import { JamError } from "./errors.js";
+import { createTapBus } from "./audio/tap-bus.js";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -108,6 +109,8 @@ export function createVocalEngine(options?: VocalEngineOptions): VmpkConnector &
   let currentStatus: MidiStatus = "disconnected";
   let compressor: any = null;
   let master: any = null;
+  /** Dedicated fan-out for observers. Never sits between master and destination. */
+  let tapBus: any = null;
   let bank: CarrierBank | null = null;
   let connectTime = 0;
 
@@ -285,6 +288,7 @@ export function createVocalEngine(options?: VocalEngineOptions): VmpkConnector &
         ctx = null;
         compressor = null;
         master = null;
+        tapBus = null;
       }
       currentStatus = "disconnected";
     },
@@ -295,6 +299,19 @@ export function createVocalEngine(options?: VocalEngineOptions): VmpkConnector &
 
     listPorts(): string[] {
       return ["Vocal Engine (aah)"];
+    },
+
+    /**
+     * Fan-out bus for observers. Lazily `master.connect(tapBus)`. The
+     * existing master → destination edge is not touched, so a tap cannot
+     * silence the instrument. Callers pass this node to attachTap().
+     */
+    createTapOutput(): unknown {
+      if (!ctx || currentStatus !== "connected" || !master) {
+        throw new Error("Vocal engine not connected");
+      }
+      if (!tapBus) tapBus = createTapBus(ctx, master);
+      return tapBus;
     },
 
     noteOn(note: number, velocity: number, _channel?: number): void {

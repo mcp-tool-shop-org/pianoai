@@ -48,6 +48,14 @@ COPY songs/library/ songs/library/
 COPY samples/vocal/ samples/vocal/
 COPY logo.png README.md LICENSE ./
 
+# State volume. AI_JAM_HOME is the state dir itself (not a parent of
+# ~/.ai-jam-sessions). Created and owned by node before USER node so the
+# process can write the journal, server-state, user songs, guitar/piano
+# tunings, and fetched library MIDI.
+RUN mkdir -p /data && chown node:node /data
+ENV AI_JAM_HOME=/data
+VOLUME /data
+
 USER node
 
 # Default: run MCP server (stdio transport)

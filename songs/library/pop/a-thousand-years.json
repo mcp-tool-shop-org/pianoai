@@ -32,5 +32,23 @@
       "Feel free to trust your ear over a firm key label here — the harness's own evidence is genuinely ambiguous (a weak stated fit and a near-miss alternative), so listen for what actually resolves rather than assuming either reading is definitively correct.",
       "Try practicing the 46-measure unit as a single complete idea rather than as 'the first half of a 92-measure piece' — once you can play it once, you have effectively learned the whole arrangement."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/22452.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "e047de32ab97922f6bead32ab7b5cfa0f5e0fd2f9d0f6abab4f56dd5ee894ea7",
+    "midi_title_events": [
+      "Piano"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

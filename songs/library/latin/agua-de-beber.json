@@ -33,5 +33,21 @@
       "Let measure 86 genuinely die away: after 85 measures of motion the file ends on one left-hand note — feel the silence around that final onset as part of the piece, not an early release.",
       "Use the detected section boundaries (new regions open at measures 26, 48, 63, and 80) as breathing points; listen for the texture change at measure 26, the strongest interior pivot the section lens reports (novelty 2.48)."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://midisfree.com/download/jobim-antonio-carlos-agua-de-beber-mid/",
+    "source_site": "midisfree.com",
+    "arrangement_creator": "unknown — the file names no creator and midisfree attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://midisfree.com/terms-and-conditions/",
+    "terms_quote": "we just share what is available on the network. We track and republish what is already available for free on the net as can be found using google and other search engines. If any of your work has been published and you want to request a removal please enter the contact page.",
+    "verified_at": "2026-09-09",
+    "verifier": "https://midisfree.com/terms-and-conditions/",
+    "midi_sha256": "9cee7d144efb7dcccc1c4a6f5bbc0db83fc094c8a1f6a37ba8d52ca57f7e1957",
+    "midi_title_events": [],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

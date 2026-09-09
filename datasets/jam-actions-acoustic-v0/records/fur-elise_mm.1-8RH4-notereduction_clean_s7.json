@@ -1,0 +1,282 @@
+{
+  "id": "fur-elise:mm.1-8RH4-notereduction:clean:s7",
+  "schema_version": "jam-actions-acoustic-v0/1.0.0",
+  "provenance": {
+    "source_url": "http://piano-midi.de/",
+    "source_collected_at": "2026-05-16",
+    "source_type": "transcribed-by-author",
+    "composition_title": "Fur Elise (Bagatelle No. 25 in A minor)",
+    "composer": "Ludwig van Beethoven",
+    "composition_year": 1810,
+    "composition_pd_status_us": "public_domain",
+    "composition_pd_status_eu": "public_domain",
+    "arrangement_creator": "Bernd Krueger",
+    "arrangement_license": "CC-BY-SA",
+    "arrangement_license_version": "3.0",
+    "arrangement_evidence_url": "http://piano-midi.de/beeth.htm",
+    "record_verdict": "public",
+    "verdict_reason": "Fur Elise (Bagatelle No. 25 in A minor). Slice 2.5 URL verification. License confirmed: CC-BY-SA-3.0. Evidence URL: http://piano-midi.de/beeth.htm. Verdict: public — all site-level + per-song verification conditions passed. Acoustic take is a 4-note monophonic right-hand reduction rendered with fixtures-sine-v1, not the arrangement MIDI performance.",
+    "verifier": "auto-rule-engine+slice2.5-url-verifier",
+    "verified_at": "2026-05-17",
+    "training_use_permitted": true
+  },
+  "scope": {
+    "song_id": "fur-elise",
+    "phrase_window": "mm.1-8 RH 4-note reduction",
+    "instrument": "monophonic-reduction",
+    "key": "A minor",
+    "tempo_bpm": 69,
+    "time_signature": "3/8",
+    "window_role": "standalone"
+  },
+  "observation": {
+    "midi_sidecar": {
+      "midi_sha256": "35a94fea97789736e5571fa7fca9d984c6ba1b25b4a78e511ef0197ffd14b235",
+      "ticks_per_beat": 480,
+      "timed_events": [
+        {
+          "t_seconds": 0.3,
+          "t_ticks": 166,
+          "dur_seconds": 0.216826,
+          "dur_ticks": 120,
+          "note": 76,
+          "name": "E5",
+          "velocity": 80,
+          "channel": 0,
+          "hand": "right",
+          "measure": 1,
+          "beat": 0.345
+        },
+        {
+          "t_seconds": 0.5168249999999999,
+          "t_ticks": 285,
+          "dur_seconds": 0.216826,
+          "dur_ticks": 120,
+          "note": 75,
+          "name": "D#5",
+          "velocity": 80,
+          "channel": 0,
+          "hand": "right",
+          "measure": 1,
+          "beat": 0.5943487499999999
+        },
+        {
+          "t_seconds": 0.7336509999999998,
+          "t_ticks": 405,
+          "dur_seconds": 0.216826,
+          "dur_ticks": 120,
+          "note": 76,
+          "name": "E5",
+          "velocity": 80,
+          "channel": 0,
+          "hand": "right",
+          "measure": 1,
+          "beat": 0.8436986499999999
+        },
+        {
+          "t_seconds": 0.9504769999999998,
+          "t_ticks": 525,
+          "dur_seconds": 0.216826,
+          "dur_ticks": 120,
+          "note": 75,
+          "name": "D#5",
+          "velocity": 80,
+          "channel": 0,
+          "hand": "right",
+          "measure": 1,
+          "beat": 1.0930485499999998
+        }
+      ]
+    },
+    "render": {
+      "engine": "fixtures-sine-v1",
+      "seed": 7,
+      "recipe": {
+        "engine": "fixtures-sine-v1",
+        "seed": 7,
+        "song_id": "fur-elise",
+        "phrase_window": "mm.1-8 RH 4-note reduction",
+        "notes": [
+          {
+            "midi": 76,
+            "name": "E5",
+            "time": 0,
+            "duration": 0.216826
+          },
+          {
+            "midi": 75,
+            "name": "D#5",
+            "time": 0.21682499999999993,
+            "duration": 0.216826
+          },
+          {
+            "midi": 76,
+            "name": "E5",
+            "time": 0.4336509999999999,
+            "duration": 0.216826
+          },
+          {
+            "midi": 75,
+            "name": "D#5",
+            "time": 0.6504769999999999,
+            "duration": 0.216826
+          }
+        ],
+        "kind": "clean",
+        "target_index": 0,
+        "cents_shift": null,
+        "delay_sec": null,
+        "silence_duration_sec": 1.2097086117137223,
+        "note_jitter": [
+          {
+            "time_offset_sec": 0.00034312429651618003,
+            "amplitude": 0.8311043376103043
+          },
+          {
+            "time_offset_sec": -0.0005402778796851635,
+            "amplitude": 0.7979850371833891
+          },
+          {
+            "time_offset_sec": 0.000853209663182497,
+            "amplitude": 0.8959644179791212
+          },
+          {
+            "time_offset_sec": -0.003874951023608446,
+            "amplitude": 0.7811896727886051
+          }
+        ],
+        "sample_rate": 44100,
+        "pre_roll_sec": 0.3,
+        "gap_sec": 0.15,
+        "click_amplitude": 1
+      },
+      "wav_sha256": "5fdb35132e43a91a9dbf6605e2a79f77660dce8737d04c69449845eca72db2dd",
+      "sample_rate": 44100
+    },
+    "perturbation": {
+      "kind": "clean",
+      "target_index": 0,
+      "cents": null,
+      "delay_ms": null
+    },
+    "thresholds": {
+      "timing_ms": 40,
+      "pitch_fail_cents": 50,
+      "pitch_warn_cents": 25,
+      "onset_delta": 0.15,
+      "min_duration_sec": 0.05
+    },
+    "gold": {
+      "verdict": "match",
+      "thresholds": {
+        "timing_ms": 40,
+        "pitch_fail_cents": 50,
+        "pitch_warn_cents": 25,
+        "onset_delta": 0.15,
+        "min_duration_sec": 0.05
+      },
+      "target_index": 0,
+      "expected_cents": null,
+      "expected_timing_ms": null
+    }
+  },
+  "annotation_target": {
+    "measure_range": [
+      1,
+      1
+    ],
+    "structure": "monophonic reduction of mm.1-8 RH 4-note reduction",
+    "key_moments": [
+      "perturbation clean"
+    ],
+    "teaching_goals": [
+      "Identify gold verdict match"
+    ],
+    "style_tips": [
+      "timing_ms=40",
+      "pitch_fail_cents=50",
+      "pitch_warn_cents=25",
+      "onset_delta=0.15",
+      "min_duration_sec=0.05"
+    ],
+    "teaching_notes": [
+      {
+        "measure": 1,
+        "note": "clean at score index 0"
+      }
+    ]
+  },
+  "target_trace": {
+    "task_family": "grade-audio-take",
+    "objective": "Grade the take at /acoustic-corpus/fur-elise:mm.1-8RH4-notereduction:clean:s7.wav against fur-elise using the audio inspector, not the picture.",
+    "session": [
+      {
+        "turn": 1,
+        "role": "user",
+        "content": "Grade this recording of fur-elise: /acoustic-corpus/fur-elise:mm.1-8RH4-notereduction:clean:s7.wav"
+      },
+      {
+        "turn": 2,
+        "role": "assistant",
+        "content": "I will transcribe the take and score it against the song at the house gates.",
+        "tool_calls": [
+          {
+            "tool": "transcribe_audio",
+            "arguments": {
+              "path": "/acoustic-corpus/fur-elise:mm.1-8RH4-notereduction:clean:s7.wav"
+            }
+          },
+          {
+            "tool": "score_audio_take",
+            "arguments": {
+              "path": "/acoustic-corpus/fur-elise:mm.1-8RH4-notereduction:clean:s7.wav",
+              "song_id": "fur-elise"
+            }
+          }
+        ]
+      },
+      {
+        "turn": 3,
+        "role": "tool",
+        "tool": "transcribe_audio",
+        "content": {
+          "monophonic": true
+        }
+      },
+      {
+        "turn": 4,
+        "role": "tool",
+        "tool": "score_audio_take",
+        "content": {
+          "verdict": "match",
+          "thresholds": {
+            "timing_ms": 40,
+            "pitch_fail_cents": 50,
+            "pitch_warn_cents": 25,
+            "onset_delta": 0.15,
+            "min_duration_sec": 0.05
+          },
+          "expected_cents": null,
+          "expected_timing_ms": null
+        }
+      },
+      {
+        "turn": 5,
+        "role": "assistant",
+        "content": "Gold verdict: match. Gates on this record: timing_ms=40, pitch_fail_cents=50, pitch_warn_cents=25. "
+      }
+    ]
+  },
+  "eval_metadata": {
+    "split": "train",
+    "split_strategy": "exhaustive perturbation kinds × phrase, keyed by seed",
+    "leakage_check": "passed",
+    "eval_eligibility": [
+      "E1_tool_use",
+      "acoustic_gate"
+    ],
+    "phrase_continuation_eligible": false,
+    "phrase_continuation_eligible_reason": "acoustic records are standalone grading tasks, not continuation pairs"
+  },
+  "split": "test"
+}

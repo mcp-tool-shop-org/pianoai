@@ -4,7 +4,15 @@
   "genre": "ragtime",
   "difficulty": "intermediate",
   "key": "C major",
-  "tags": ["ragtime", "joplin", "classic", "syncopation", "the-sting", "multi-strain", "pedagogical"],
+  "tags": [
+    "ragtime",
+    "joplin",
+    "classic",
+    "syncopation",
+    "the-sting",
+    "multi-strain",
+    "pedagogical"
+  ],
   "composer": "Scott Joplin",
   "status": "ready",
   "musicalLanguage": {
@@ -31,5 +39,37 @@
       "Each strain has its own personality: the A strain is perky and bright, the B strain is smoother and more lyrical, the C strain (in the new key) is expansive, and the D strain is assertive. Bring out these character differences through touch and dynamics.",
       "No pedal. Or almost none. Ragtime's clarity depends on dry, separated notes. If a note should sustain, hold it with your finger, not the pedal. The sound should be crisp, like a tap dancer on a wooden floor. Save the sustain pedal for Debussy."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://www.mutopiaproject.org/ftp/JoplinS/entertainer/entertainer.mid",
+    "source_site": "www.mutopiaproject.org",
+    "arrangement_creator": "Chris Sawer (Mutopia typesetter, LilyPond)",
+    "arrangement_license": "Public-Domain",
+    "terms_url": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=263",
+    "terms_quote": "Copyright: Public Domain (piece page); Public Domain: The contributor of this music has dedicated their contribution into the public domain. You can do what you like with this music - print it out, sell it, change it, distribute it, record it, and perform it, etc.",
+    "verified_at": "2026-09-09",
+    "verifier": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=263; midi meta events (sha256 33e4e81ee64f…)",
+    "midi_sha256": "33e4e81ee64ffb2edf90d1c6a1ddee7276507296bfb915c2bb775231a467f066",
+    "midi_title_events": [
+      "The Entertainer",
+      "GNU LilyPond 2.19.32",
+      "up:",
+      "down:"
+    ],
+    "midi_credit_events": [
+      "creator:"
+    ],
+    "credited_parties": [
+      {
+        "name": "GNU LilyPond",
+        "evidence": "midi-meta"
+      },
+      {
+        "name": "Chris Sawer",
+        "evidence": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=263"
+      }
+    ],
+    "title_verdict": "matches"
   }
 }

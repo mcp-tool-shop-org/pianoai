@@ -18,6 +18,8 @@ import { join } from "node:path";
 import type { VmpkConnector, MidiStatus, MidiNote } from "./types.js";
 import { parseSfzFile, type SfzRegion, type SfzData } from "./sfz-parser.js";
 import { JamError } from "./errors.js";
+import { getSharedAudioContext, setSharedAudioContext } from "./audio-shared.js";
+import { createTapBus } from "./audio/tap-bus.js";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -28,6 +30,12 @@ export interface SampleEngineOptions {
   sfzProfile?: "sfz_minimum" | "sfz_daw" | "sfz_live";
   /** Maximum simultaneous voices. Default: 48. */
   maxPolyphony?: number;
+  /**
+   * Use this AudioContext (or OfflineAudioContext) instead of creating a
+   * live 48 kHz one. Lets a renderer bounce the piano deterministically —
+   * see scripts/render-piano-bed.mjs. Default: create a live context.
+   */
+  audioContext?: any;
 }
 
 interface Voice {
@@ -132,12 +140,15 @@ export function createSampleEngine(options: SampleEngineOptions): VmpkConnector 
     samplesDir,
     sfzProfile = "sfz_minimum",
     maxPolyphony = 48,
+    audioContext: injectedContext = null,
   } = options;
 
   let ctx: any = null;
   let currentStatus: MidiStatus = "disconnected";
   let compressor: any = null;
   let master: any = null;
+  /** Dedicated fan-out for observers. Never sits between master and destination. */
+  let tapBus: any = null;
 
   // Sample data
   let sfzData: SfzData | null = null;
@@ -380,9 +391,13 @@ export function createSampleEngine(options: SampleEngineOptions): VmpkConnector 
       currentStatus = "connecting";
 
       try {
-        // 1. Create audio context
-        const AC = await loadAudioContext();
-        ctx = new AC({ sampleRate: 48000, latencyHint: "playback" });
+        // 1. Create audio context (or adopt the injected one — offline renders)
+        if (injectedContext) {
+          ctx = injectedContext;
+        } else {
+          const AC = await loadAudioContext();
+          ctx = new AC({ sampleRate: 48000, latencyHint: "playback" });
+        }
 
         // 2. Master chain: compressor → gain → speakers
         compressor = ctx.createDynamicsCompressor();
@@ -397,6 +412,7 @@ export function createSampleEngine(options: SampleEngineOptions): VmpkConnector 
 
         compressor.connect(master);
         master.connect(ctx.destination);
+        setSharedAudioContext(ctx);
 
         // 3. Parse SFZ
         const sfzFilename = "Accurate-SalamanderGrandPiano_flat.Recommended.sfz";
@@ -431,10 +447,12 @@ export function createSampleEngine(options: SampleEngineOptions): VmpkConnector 
       regionMap = null;
 
       if (ctx) {
+        if (getSharedAudioContext() === ctx) setSharedAudioContext(null);
         try { await ctx.close(); } catch { /* ok */ }
         ctx = null;
         compressor = null;
         master = null;
+        tapBus = null;
       }
       currentStatus = "disconnected";
     },
@@ -445,6 +463,19 @@ export function createSampleEngine(options: SampleEngineOptions): VmpkConnector 
 
     listPorts(): string[] {
       return ["Accurate-Salamander Grand Piano"];
+    },
+
+    /**
+     * Fan-out bus for observers. Lazily `master.connect(tapBus)`. The
+     * existing master → destination edge is not touched, so a tap cannot
+     * silence the instrument. Callers pass this node to attachTap().
+     */
+    createTapOutput(): unknown {
+      if (!ctx || currentStatus !== "connected" || !master) {
+        throw new Error("Sample engine not connected");
+      }
+      if (!tapBus) tapBus = createTapBus(ctx, master);
+      return tapBus;
     },
 
     noteOn(note: number, velocity: number, channel?: number): void {
