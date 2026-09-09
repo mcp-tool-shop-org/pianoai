@@ -203,19 +203,19 @@ function lerp(lo: number, hi: number, t: number): number {
   return lo + t * (hi - lo);
 }
 
-/** Deterministic per-take magnitudes. Never Math.random. draw 0 = sharp, draw 1 = flat. */
+/** Deterministic per-take magnitudes. Never Math.random. draw 0 = +, draw 1 = −. */
 export function perturbationFor(songId: string, kind: F5Kind, draw = 0): { cents_shift: number; delay_sec: number } {
   const key = `${songId}#${draw}`;
   const msLo = kind === "late_fail" ? F5_LATE_MS_MIN : F5_INSIDE_MS_MIN;
   const msHi = kind === "late_fail" ? F5_LATE_MS_MAX : F5_INSIDE_MS_MAX;
   const delay_sec = lerp(msLo, msHi, rank01(key, `${kind}:onset`)) / 1000;
+  const sign = draw % 2 === 0 ? 1 : -1;
   if (kind === "sharp_fail") {
     const mag = lerp(F5_SHARP_CENTS_MIN, F5_SHARP_CENTS_MAX, rank01(key, `${kind}:cents`));
-    const sign = draw % 2 === 0 ? 1 : -1;
     return { cents_shift: sign * mag, delay_sec };
   }
-  const cents_shift = lerp(F5_INSIDE_CENTS_MIN, F5_INSIDE_CENTS_MAX, rank01(key, `${kind}:cents`));
-  return { cents_shift, delay_sec };
+  const mag = lerp(F5_INSIDE_CENTS_MIN, F5_INSIDE_CENTS_MAX, rank01(key, `${kind}:cents`));
+  return { cents_shift: sign * mag, delay_sec };
 }
 
 export function renderF5(

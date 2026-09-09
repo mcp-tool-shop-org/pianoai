@@ -371,12 +371,16 @@ describe("F5 acoustic — gate-only magnitudes (chunk 20)", () => {
     }
   });
 
-  it("has both pitch_fail signs in train and in test", () => {
-    const rows = committedRecords().filter((r) => r.family === "acoustic" && acousticOf(r).kind === "sharp_fail");
-    for (const side of ["train", "test"] as const) {
-      const cents = rows.filter((r) => r.split === side).map((r) => scoreTakeContent(r).cents_from_target as number);
-      expect(cents.some((c) => c > 0), `${side} sharp`).toBe(true);
-      expect(cents.some((c) => c < 0), `${side} flat`).toBe(true);
+  it("has both cents signs in every class, train and test", () => {
+    const rows = committedRecords().filter((r) => r.family === "acoustic");
+    for (const kind of F5_KINDS) {
+      for (const side of ["train", "test"] as const) {
+        const cents = rows
+          .filter((r) => acousticOf(r).kind === kind && r.split === side)
+          .map((r) => scoreTakeContent(r).cents_from_target as number);
+        expect(cents.some((c) => c > 0), `${kind} ${side} +`).toBe(true);
+        expect(cents.some((c) => c < 0), `${kind} ${side} −`).toBe(true);
+      }
     }
   });
 
@@ -400,12 +404,12 @@ describe("F5 acoustic — gate-only magnitudes (chunk 20)", () => {
         expect(delayMs, r.id).toBeGreaterThanOrEqual(F5_LATE_MS_MIN);
         expect(delayMs, r.id).toBeLessThanOrEqual(F5_LATE_MS_MAX);
         expect(Math.abs(onset), r.id).toBeGreaterThan(V1_TIMING_MS);
-        expect(a.cents_shift, r.id).toBeGreaterThanOrEqual(F5_INSIDE_CENTS_MIN);
-        expect(a.cents_shift, r.id).toBeLessThanOrEqual(F5_INSIDE_CENTS_MAX);
+        expect(Math.abs(a.cents_shift), r.id).toBeGreaterThanOrEqual(F5_INSIDE_CENTS_MIN);
+        expect(Math.abs(a.cents_shift), r.id).toBeLessThanOrEqual(F5_INSIDE_CENTS_MAX);
         expect(mag, r.id).toBeLessThan(V1_PITCH_FAIL_CENTS);
       } else {
-        expect(a.cents_shift, r.id).toBeGreaterThanOrEqual(F5_INSIDE_CENTS_MIN);
-        expect(a.cents_shift, r.id).toBeLessThanOrEqual(F5_INSIDE_CENTS_MAX);
+        expect(Math.abs(a.cents_shift), r.id).toBeGreaterThanOrEqual(F5_INSIDE_CENTS_MIN);
+        expect(Math.abs(a.cents_shift), r.id).toBeLessThanOrEqual(F5_INSIDE_CENTS_MAX);
         expect(mag, r.id).toBeLessThan(V1_PITCH_FAIL_CENTS);
         expect(delayMs, r.id).toBeGreaterThanOrEqual(F5_INSIDE_MS_MIN);
         expect(delayMs, r.id).toBeLessThanOrEqual(F5_INSIDE_MS_MAX);
