@@ -3,22 +3,22 @@
   "schema_version": "jam-actions-v1/1.0.0",
   "family": "acoustic",
   "provenance": {
-    "source_url": "library:the-easy-winners",
-    "source_collected_at": "library-scan",
-    "source_type": "transcribed-by-author",
+    "source_url": "https://www.mutopiaproject.org/ftp/JoplinS/winners/winners.mid",
+    "source_collected_at": "2026-09-09",
+    "source_type": "downloaded-arrangement",
     "composition_title": "The Easy Winners",
     "composer": "Scott Joplin",
     "composition_year": 1,
     "composition_pd_status_us": "public_domain",
     "composition_pd_status_eu": "public_domain",
-    "arrangement_creator": null,
-    "arrangement_license": null,
+    "arrangement_creator": "Tom Harke (Mutopia typesetter, LilyPond)",
+    "arrangement_license": "Public-Domain",
     "arrangement_license_version": null,
-    "arrangement_evidence_url": null,
+    "arrangement_evidence_url": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=352",
     "record_verdict": "public",
-    "verdict_reason": "Publishable shelf: classical, ragtime, or folk. clair-de-lune excluded.",
-    "verifier": "v1-builder",
-    "verified_at": "library-scan",
+    "verdict_reason": "Allowlisted 2026-09-09; Public-Domain",
+    "verifier": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=352; midi meta events (sha256 b4fcdafa0a69…)",
+    "verified_at": "2026-09-09",
     "training_use_permitted": true
   },
   "scope": {
@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": -44.18471698113208,
-      "delay_sec": 0.0033018867924528308,
+      "cents_shift": -42.94238095238095,
+      "delay_sec": 0.0016666666666666666,
       "target_index": 0,
-      "measured_f0_hz": 303.2905272753868,
-      "measured_cents": -44.16370202847203,
+      "measured_f0_hz": 303.50991452614016,
+      "measured_cents": -42.91185490108061,
       "measured_onset_ms": -9.750566893424018,
       "draw": 1
     }
@@ -156,13 +156,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-8896b3.wav"
+              "path": "/acoustic-v1/take-d957ad.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-8896b3.wav",
+              "path": "/acoustic-v1/take-d957ad.wav",
               "song_id": "the-easy-winners"
             }
           }
@@ -181,15 +181,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 303.3,
-          "cents_from_target": -44.2,
+          "f0_hz": 303.5,
+          "cents_from_target": -42.9,
           "onset_ms": -9.8
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents -44.2: |44.2| − 50 = −5.8, inside; onset -9.8: |9.8| − 40 = −30.2, inside: match"
+        "content": "cents -42.9: |42.9| − 50 = −7.1, inside; onset -9.8: |9.8| − 40 = −30.2, inside: match"
       }
     ]
   },

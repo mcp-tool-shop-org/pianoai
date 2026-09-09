@@ -170,8 +170,7 @@ Gold from the two-sided predicates. Applied recipes in \`applied.json\`.
 `, "utf8");
   writeFileSync(join(dest, "PROVENANCE-NOTE.md"), `# Provenance
 
-Same publishable shelf and exclusions as jam-actions-v1.
-Eval-only; no training split.
+Same 15-song allowlist as jam-actions-v1. Eval-only; no training split.
 `, "utf8");
 
   const files: string[] = [];

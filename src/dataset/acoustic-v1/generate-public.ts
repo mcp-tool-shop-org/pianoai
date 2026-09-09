@@ -47,6 +47,31 @@ export function readCardOrHalt(cardPath: string): string {
   return readFileSync(cardPath, "utf8");
 }
 
+export function assertNoDraftBanner(card: string, cardPath: string): void {
+  if (/<!--\s*DRAFT/i.test(card)) {
+    throw new Error(
+      `halt: ${cardPath} still carries a DRAFT banner; generator refuses to build a public set from a draft card`,
+    );
+  }
+}
+
+export function prettyDescriptionFromCard(card: string, cardPath: string): string {
+  const m = card.match(/^pretty_description:\s*"(.*)"\s*$/m);
+  if (!m?.[1]) {
+    throw new Error(`halt: ${cardPath} has no pretty_description field`);
+  }
+  return m[1];
+}
+
+export function readLicenseOrHalt(licensePath: string): string {
+  if (!existsSync(licensePath)) {
+    throw new Error(
+      `halt: LICENSE missing at ${licensePath}; generator does not compose LICENSE-DATASET.md`,
+    );
+  }
+  return readFileSync(licensePath, "utf8");
+}
+
 function copyTreeFiles(srcDir: string, skip: Set<string>): Map<string, string> {
   const files = new Map<string, string>();
   function walk(dir: string, prefix: string): void {
@@ -62,47 +87,7 @@ function copyTreeFiles(srcDir: string, skip: Set<string>): Map<string, string> {
   return files;
 }
 
-function licenseDoc(): string {
-  return `# Layered licensing for jam-actions-v1
 
-This dataset combines two distinct layers; they do not carry the same terms.
-
-## 1. Compositions — public domain
-
-The 27 pieces are public-domain compositions in both the United States and the
-European Union (Bach, Mozart, Beethoven, Chopin, Schumann, Joplin, Brackett,
-and traditional English, Irish, Scottish, American and Japanese tunes). Every
-composer died more than seventy years ago, or the work is traditional. No
-copyright restriction applies to the underlying music.
-
-Three library songs are excluded from this tree. See \`PROVENANCE-NOTE.md\`.
-
-## 2. Transcriptions, traces and schema — CC-BY-SA-3.0-DE
-
-Every record carries \`source_type: transcribed-by-author\`. The transcriptions,
-tool-use traces, gold labels and schema are original work of mcp-tool-shop-org,
-released under **Creative Commons Attribution-ShareAlike 3.0 Germany**
-(CC-BY-SA-3.0-DE).
-
-Full text: https://creativecommons.org/licenses/by-sa/3.0/de/deed.en
-
-Downstream redistribution MUST attribute mcp-tool-shop-org (see \`CITATION.cff\`)
-and release derivatives under a compatible share-alike licence.
-
-## A note on the audio
-
-**No audio files are distributed.** Acoustic records store a deterministic
-recipe. Re-rendering from that recipe is a source-repo test, not a published
-waveform.
-
-## Summary
-
-| Layer | Terms | Obligation |
-|---|---|---|
-| Compositions | Public domain | None |
-| Transcriptions, traces, schema | CC-BY-SA-3.0-DE | Attribute mcp-tool-shop-org; share alike |
-`;
-}
 
 function citationCff(kind: PublicKind): string {
   const probe = kind === "probe";
@@ -140,14 +125,12 @@ keywords:
 `;
 }
 
-function zenodoMetadata(kind: PublicKind): Record<string, unknown> {
+function zenodoMetadata(kind: PublicKind, prettyDescription: string): Record<string, unknown> {
   const probe = kind === "probe";
   const title = probe
     ? "jam-actions-v1-probe — evaluation-only near-gate acoustic takes"
     : "jam-actions-v1 — AI Jam Sessions tool-use traces (shown-work targets)";
-  const description = probe
-    ? "<p><strong>jam-actions-v1-probe</strong> is 72 acoustic takes on jam-actions-v1's nine held-out songs, each measured within 10 ms or 5 cents of a grading gate, both signs of both quantities. Never split, never trained on. Distinguishes a model that compares a measurement to a gate from one that reads a sign.</p><p>Companion to jam-actions-v1 under concept DOI 10.5281/zenodo.20279918. Schema <code>jam-actions-v1-probe/1.0.0</code>. Licence CC-BY-SA-3.0-DE.</p>"
-    : "<p><strong>jam-actions-v1</strong> is 371 multi-turn MCP tool-use traces over 27 public-domain piano pieces, nine task families, split by song. Every assistant turn shows the comparison that decides its answer. Built under a seven-rule experiment contract; the corpus was rebuilt eight times as each training run exposed what the previous target let a small model read instead of compute.</p><p>This is a new version under concept DOI 10.5281/zenodo.20279918. Schema <code>jam-actions-v1/1.0.0</code>. 254 train / 117 test, split by song. Licence CC-BY-SA-3.0-DE. No audio files are distributed.</p>";
+  const description = `<p>${prettyDescription}</p>`;
   return {
     $schema_note: `Zenodo deposition metadata payload for the jam-actions-v1${probe ? "-probe" : ""} 1.0.0 new-version deposit under concept DOI ${ZENODO_CONCEPT_DOI}. Conforms to the Zenodo legacy REST API deposition schema at https://developers.zenodo.org/#representation. DOI is intentionally absent — Zenodo mints the new version DOI on publish. No auth tokens, no account IDs, no credentials.`,
     metadata: {
@@ -224,6 +207,7 @@ export function spec(kind: PublicKind): {
   workingDir: string;
   publicDir: string;
   cardPath: string;
+  licensePath: string;
   skipFromWorking: Set<string>;
 } {
   if (kind === "probe") {
@@ -231,6 +215,7 @@ export function spec(kind: PublicKind): {
       workingDir: join(REPO, "datasets", "jam-actions-v1-probe"),
       publicDir: join(REPO, "datasets", "jam-actions-v1-probe-public"),
       cardPath: join(REPO, "docs", "hf-cards", "jam-actions-v1-probe.md"),
+      licensePath: join(REPO, "docs", "hf-cards", "jam-actions-v1-probe.LICENSE-DATASET.md"),
       skipFromWorking: new Set(["README.md", "checksums.sha256"]),
     };
   }
@@ -238,6 +223,7 @@ export function spec(kind: PublicKind): {
     workingDir: join(REPO, "datasets", "jam-actions-v1"),
     publicDir: join(REPO, "datasets", "jam-actions-v1-public"),
     cardPath: join(REPO, "docs", "hf-cards", "jam-actions-v1.md"),
+    licensePath: join(REPO, "docs", "hf-cards", "jam-actions-v1.LICENSE-DATASET.md"),
     skipFromWorking: new Set(["README.md", "checksums.sha256"]),
   };
 }
@@ -245,12 +231,15 @@ export function spec(kind: PublicKind): {
 /** Every file the public package contains except checksums.sha256. */
 export function publicFiles(kind: PublicKind): Map<string, string> {
   const s = spec(kind);
+  const card = readCardOrHalt(s.cardPath);
+  assertNoDraftBanner(card, s.cardPath);
+  const pretty = prettyDescriptionFromCard(card, s.cardPath);
   const files = copyTreeFiles(s.workingDir, s.skipFromWorking);
-  files.set("README.md", readCardOrHalt(s.cardPath));
+  files.set("README.md", card);
   files.set("VERSION", `${V1_PUBLIC_VERSION}\n`);
-  files.set("LICENSE-DATASET.md", licenseDoc());
+  files.set("LICENSE-DATASET.md", readLicenseOrHalt(s.licensePath));
   files.set("CITATION.cff", citationCff(kind));
-  files.set("zenodo-metadata.json", JSON.stringify(zenodoMetadata(kind), null, 2) + "\n");
+  files.set("zenodo-metadata.json", JSON.stringify(zenodoMetadata(kind, pretty), null, 2) + "\n");
   return files;
 }
 

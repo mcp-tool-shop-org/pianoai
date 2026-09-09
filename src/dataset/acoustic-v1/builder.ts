@@ -32,7 +32,7 @@ import type { SongEntry } from "../../songs/types.js";
 import type { Provenance, Turn } from "../schema.js";
 import type { V1Family, V1Record } from "./schema.js";
 import { V1_SCHEMA_VERSION } from "./schema.js";
-import { loadPublishableSongs } from "./library.js";
+import { loadPublishableSongs, allowlistRow } from "./library.js";
 
 export { f5DropStats, acousticAssistantContent, acousticComparisonLine, parseAcousticAssistant, round1 } from "./f5-acoustic.js";
 export {
@@ -124,23 +124,25 @@ export function agreeingChordMeasure(song: SongEntry): { measure: number; chord:
 }
 
 function provenanceFor(song: SongEntry): Provenance {
+  const row = allowlistRow(song.id);
+  if (!row) throw new Error(`provenance: ${song.id} is not on the publishable allowlist`);
   return {
-    source_url: song.source ?? `library:${song.id}`,
-    source_collected_at: "library-scan",
-    source_type: "transcribed-by-author",
+    source_url: row.downloadUrl,
+    source_collected_at: row.auditDate,
+    source_type: "downloaded-arrangement",
     composition_title: song.title,
     composer: song.composer ?? "Traditional",
     composition_year: 1,
     composition_pd_status_us: "public_domain",
     composition_pd_status_eu: "public_domain",
-    arrangement_creator: song.arranger ?? null,
-    arrangement_license: song.source?.includes("CC") ? "CC-BY-SA" : null,
-    arrangement_license_version: null,
-    arrangement_evidence_url: song.source ?? null,
+    arrangement_creator: row.arranger,
+    arrangement_license: row.licence,
+    arrangement_license_version: row.licence === "CC-BY-SA-3.0-DE" ? "3.0-DE" : null,
+    arrangement_evidence_url: row.termsUrl,
     record_verdict: "public",
-    verdict_reason: "Publishable shelf: classical, ragtime, or folk. clair-de-lune excluded.",
-    verifier: "v1-builder",
-    verified_at: "library-scan",
+    verdict_reason: `Allowlisted ${row.auditDate}; ${row.licence}`,
+    verifier: row.verifier,
+    verified_at: row.auditDate,
     training_use_permitted: true,
   };
 }
@@ -694,8 +696,8 @@ export function testSongIds(songs: SongEntry[]): Set<string> {
 export function buildAllRecords(opts: V1BuildOpts = {}): V1Record[] {
   resetF5DropStats();
   const songs = loadPublishableSongs();
-  if (songs.length < 20) {
-    throw new Error(`publishable shelf has ${songs.length} songs, need >= 20`);
+  if (songs.length < 11) {
+    throw new Error(`publishable shelf has ${songs.length} songs, need >= 11`);
   }
   const testIds = testSongIds(songs);
   const records: V1Record[] = [];

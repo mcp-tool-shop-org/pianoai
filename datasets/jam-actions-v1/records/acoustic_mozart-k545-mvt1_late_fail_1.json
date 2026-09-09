@@ -3,22 +3,22 @@
   "schema_version": "jam-actions-v1/1.0.0",
   "family": "acoustic",
   "provenance": {
-    "source_url": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
-    "source_collected_at": "library-scan",
-    "source_type": "transcribed-by-author",
+    "source_url": "http://piano-midi.de/midis/mozart/moz_545_1.mid",
+    "source_collected_at": "2026-09-09",
+    "source_type": "downloaded-arrangement",
     "composition_title": "Piano Sonata No. 16 in C Major, K. 545, I. Allegro",
     "composer": "Wolfgang Amadeus Mozart",
     "composition_year": 1,
     "composition_pd_status_us": "public_domain",
     "composition_pd_status_eu": "public_domain",
-    "arrangement_creator": null,
-    "arrangement_license": "CC-BY-SA",
-    "arrangement_license_version": null,
-    "arrangement_evidence_url": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
+    "arrangement_creator": "Bernd Krueger (piano-midi.de, 2006, edition 2013-09-23)",
+    "arrangement_license": "CC-BY-SA-3.0-DE",
+    "arrangement_license_version": "3.0-DE",
+    "arrangement_evidence_url": "http://piano-midi.de/copy.htm",
     "record_verdict": "public",
-    "verdict_reason": "Publishable shelf: classical, ragtime, or folk. clair-de-lune excluded.",
-    "verifier": "v1-builder",
-    "verified_at": "library-scan",
+    "verdict_reason": "Allowlisted 2026-09-09; CC-BY-SA-3.0-DE",
+    "verifier": "http://piano-midi.de/copy.htm; midi meta events (sha256 010bd27e2590…)",
+    "verified_at": "2026-09-09",
     "training_use_permitted": true
   },
   "scope": {
@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": -19.72622641509434,
-      "delay_sec": 0.1120377358490566,
+      "cents_shift": -14.135714285714286,
+      "delay_sec": 0.10923809523809525,
       "target_index": 0,
-      "measured_f0_hz": 258.662649972911,
-      "measured_cents": -19.718130069599013,
+      "measured_f0_hz": 259.50249697867457,
+      "measured_cents": -14.106123881432158,
       "measured_onset_ms": 94.7392290249433,
       "draw": 1
     }
@@ -156,13 +156,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-838f55.wav"
+              "path": "/acoustic-v1/take-ddd951.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-838f55.wav",
+              "path": "/acoustic-v1/take-ddd951.wav",
               "song_id": "mozart-k545-mvt1"
             }
           }
@@ -181,15 +181,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 258.7,
-          "cents_from_target": -19.7,
+          "f0_hz": 259.5,
+          "cents_from_target": -14.1,
           "onset_ms": 94.7
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents -19.7: |19.7| − 50 = −30.3, inside; onset 94.7: |94.7| − 40 = 54.7, against the gate: timing_fail"
+        "content": "cents -14.1: |14.1| − 50 = −35.9, inside; onset 94.7: |94.7| − 40 = 54.7, against the gate: timing_fail"
       }
     ]
   },

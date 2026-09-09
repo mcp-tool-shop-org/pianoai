@@ -3,22 +3,22 @@
   "schema_version": "jam-actions-v1/1.0.0",
   "family": "acoustic",
   "provenance": {
-    "source_url": "library:peacherine-rag",
-    "source_collected_at": "library-scan",
-    "source_type": "transcribed-by-author",
+    "source_url": "https://www.mutopiaproject.org/ftp/JoplinS/peacherine/peacherine.mid",
+    "source_collected_at": "2026-09-09",
+    "source_type": "downloaded-arrangement",
     "composition_title": "Peacherine Rag",
     "composer": "Scott Joplin",
     "composition_year": 1,
     "composition_pd_status_us": "public_domain",
     "composition_pd_status_eu": "public_domain",
-    "arrangement_creator": null,
-    "arrangement_license": null,
+    "arrangement_creator": "Antonio Palamà (Mutopia typesetter, LilyPond)",
+    "arrangement_license": "Public-Domain",
     "arrangement_license_version": null,
-    "arrangement_evidence_url": null,
+    "arrangement_evidence_url": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=335",
     "record_verdict": "public",
-    "verdict_reason": "Publishable shelf: classical, ragtime, or folk. clair-de-lune excluded.",
-    "verifier": "v1-builder",
-    "verified_at": "library-scan",
+    "verdict_reason": "Allowlisted 2026-09-09; Public-Domain",
+    "verifier": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=335; midi meta events (sha256 5185a564754c…)",
+    "verified_at": "2026-09-09",
     "training_use_permitted": true
   },
   "scope": {
@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": -5.051132075471698,
-      "delay_sec": 0.12441509433962264,
+      "cents_shift": -3.8476190476190477,
+      "delay_sec": 0.12095238095238096,
       "target_index": 0,
-      "measured_f0_hz": 620.5019729312738,
-      "measured_cents": -4.881271479500993,
+      "measured_f0_hz": 620.934319165124,
+      "measured_cents": -3.675422164392168,
       "measured_onset_ms": 106.34920634920636,
       "draw": 1
     }
@@ -156,13 +156,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-f48018.wav"
+              "path": "/acoustic-v1/take-ad2245.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-f48018.wav",
+              "path": "/acoustic-v1/take-ad2245.wav",
               "song_id": "peacherine-rag"
             }
           }
@@ -181,15 +181,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 620.5,
-          "cents_from_target": -4.9,
+          "f0_hz": 620.9,
+          "cents_from_target": -3.7,
           "onset_ms": 106.3
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents -4.9: |4.9| − 50 = −45.1, inside; onset 106.3: |106.3| − 40 = 66.3, against the gate: timing_fail"
+        "content": "cents -3.7: |3.7| − 50 = −46.3, inside; onset 106.3: |106.3| − 40 = 66.3, against the gate: timing_fail"
       }
     ]
   },

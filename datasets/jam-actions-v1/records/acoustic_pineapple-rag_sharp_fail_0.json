@@ -3,22 +3,22 @@
   "schema_version": "jam-actions-v1/1.0.0",
   "family": "acoustic",
   "provenance": {
-    "source_url": "library:pineapple-rag",
-    "source_collected_at": "library-scan",
-    "source_type": "transcribed-by-author",
+    "source_url": "https://www.mutopiaproject.org/ftp/JoplinS/PineappleRag/PineappleRag.mid",
+    "source_collected_at": "2026-09-09",
+    "source_type": "downloaded-arrangement",
     "composition_title": "Pineapple Rag",
     "composer": "Scott Joplin",
     "composition_year": 1,
     "composition_pd_status_us": "public_domain",
     "composition_pd_status_eu": "public_domain",
-    "arrangement_creator": null,
-    "arrangement_license": null,
+    "arrangement_creator": "Coyau (Mutopia typesetter, LilyPond)",
+    "arrangement_license": "Public-Domain",
     "arrangement_license_version": null,
-    "arrangement_evidence_url": null,
+    "arrangement_evidence_url": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1899",
     "record_verdict": "public",
-    "verdict_reason": "Publishable shelf: classical, ragtime, or folk. clair-de-lune excluded.",
-    "verifier": "v1-builder",
-    "verified_at": "library-scan",
+    "verdict_reason": "Allowlisted 2026-09-09; Public-Domain",
+    "verifier": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1899; midi meta events (sha256 a8ff24b34090…)",
+    "verified_at": "2026-09-09",
     "training_use_permitted": true
   },
   "scope": {
@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": 87.35849056603774,
-      "delay_sec": 0.02839622641509434,
+      "cents_shift": 86.66666666666667,
+      "delay_sec": 0.03,
       "target_index": 0,
-      "measured_f0_hz": 412.3012167758403,
-      "measured_cents": 87.43423416517929,
+      "measured_f0_hz": 412.1365997051936,
+      "measured_cents": 86.74287654947679,
       "measured_onset_ms": 13.469387755102035,
       "draw": 0
     }
@@ -156,13 +156,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-54b143.wav"
+              "path": "/acoustic-v1/take-ae5d3c.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-54b143.wav",
+              "path": "/acoustic-v1/take-ae5d3c.wav",
               "song_id": "pineapple-rag"
             }
           }
@@ -181,15 +181,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 412.3,
-          "cents_from_target": 87.4,
+          "f0_hz": 412.1,
+          "cents_from_target": 86.7,
           "onset_ms": 13.5
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents 87.4: |87.4| − 50 = 37.4, against the gate; onset 13.5: |13.5| − 40 = −26.5, inside: pitch_fail"
+        "content": "cents 86.7: |86.7| − 50 = 36.7, against the gate; onset 13.5: |13.5| − 40 = −26.5, inside: pitch_fail"
       }
     ]
   },

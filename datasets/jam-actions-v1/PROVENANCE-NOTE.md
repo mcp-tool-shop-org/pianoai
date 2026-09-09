@@ -1,24 +1,9 @@
 # Provenance
 
-This tree is the **publishable** subset: classical, ragtime, and folk only.
-Copyrighted library genres are not in this directory. Follows the
-jam-actions-v0 / jam-actions-v0-public split.
-
-Three songs are excluded, each for its own reason:
-
-| song | why |
-|---|---|
-| `clair-de-lune` | the jam-actions-v0 fine-tune holdout |
-| `satie-gymnopedie-no1` | arrangement provenance unverified in the Slice 2.5 audit |
-| `debussy-arabesque-no1` | same audit, same finding |
-
-The last two matter more than they look. Both are present in the v0 **working**
-corpus and excluded from its **published** subset, for exactly the reason this
-tree claims to follow. The first build of this corpus carried 7 records of each
-into a tree its own note calls publishable, repeating a provenance problem the
-studio had already audited and closed once. The exclusion is enforced by a test
-now, not by this paragraph. See `datasets/jam-actions-v0/PROVENANCE-NOTE.md`.
-
-Gold is re-derived from library engines (inferChord, detectChord,
-transposeSong, measure counts, musicalLanguage counts and first keyMoment
-spans, song.key for compare). No hand-written labels.
+This tree is the **publishable** subset: songs whose library provenance
+block has licence CC-BY-SA-3.0-DE or Public-Domain, a non-contradicting
+title verdict, and an id not in the v1 holdouts (clair-de-lune, satie,
+debussy-arabesque). Genre is not a criterion. See
+`docs/findings/library-provenance-audit.md`. Gold is re-derived from
+library engines. No hand-written labels. `verifier` is the evidence
+string from the library block, never a program.

@@ -3,22 +3,22 @@
   "schema_version": "jam-actions-v1/1.0.0",
   "family": "acoustic",
   "provenance": {
-    "source_url": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
-    "source_collected_at": "library-scan",
-    "source_type": "transcribed-by-author",
+    "source_url": "http://piano-midi.de/midis/beethoven/elise.mid",
+    "source_collected_at": "2026-09-09",
+    "source_type": "downloaded-arrangement",
     "composition_title": "Fur Elise (Bagatelle No. 25 in A minor)",
     "composer": "Ludwig van Beethoven",
     "composition_year": 1,
     "composition_pd_status_us": "public_domain",
     "composition_pd_status_eu": "public_domain",
-    "arrangement_creator": null,
-    "arrangement_license": "CC-BY-SA",
-    "arrangement_license_version": null,
-    "arrangement_evidence_url": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
+    "arrangement_creator": "Bernd Krueger (piano-midi.de, 2004, edition 2012-08-30)",
+    "arrangement_license": "CC-BY-SA-3.0-DE",
+    "arrangement_license_version": "3.0-DE",
+    "arrangement_evidence_url": "http://piano-midi.de/copy.htm",
     "record_verdict": "public",
-    "verdict_reason": "Publishable shelf: classical, ragtime, or folk. clair-de-lune excluded.",
-    "verifier": "v1-builder",
-    "verified_at": "library-scan",
+    "verdict_reason": "Allowlisted 2026-09-09; CC-BY-SA-3.0-DE",
+    "verifier": "http://piano-midi.de/copy.htm; midi meta events (sha256 a1481bdafe94…)",
+    "verified_at": "2026-09-09",
     "training_use_permitted": true
   },
   "scope": {
@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": 37.662452830188684,
-      "delay_sec": 0.14143396226415095,
+      "cents_shift": 34.71190476190476,
+      "delay_sec": 0.14047619047619048,
       "target_index": 0,
-      "measured_f0_hz": 673.7853627415893,
-      "measured_cents": 37.74267687251589,
+      "measured_f0_hz": 672.6393762706828,
+      "measured_cents": 34.795655446367604,
       "measured_onset_ms": 129.5691609977324,
       "draw": 0
     }
@@ -159,13 +159,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-911c1d.wav"
+              "path": "/acoustic-v1/take-fd8c46.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-911c1d.wav",
+              "path": "/acoustic-v1/take-fd8c46.wav",
               "song_id": "fur-elise"
             }
           }
@@ -184,15 +184,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 673.8,
-          "cents_from_target": 37.7,
+          "f0_hz": 672.6,
+          "cents_from_target": 34.8,
           "onset_ms": 129.6
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents 37.7: |37.7| − 50 = −12.3, inside; onset 129.6: |129.6| − 40 = 89.6, against the gate: timing_fail"
+        "content": "cents 34.8: |34.8| − 50 = −15.2, inside; onset 129.6: |129.6| − 40 = 89.6, against the gate: timing_fail"
       }
     ]
   },

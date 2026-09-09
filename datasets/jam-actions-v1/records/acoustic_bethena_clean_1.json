@@ -3,22 +3,22 @@
   "schema_version": "jam-actions-v1/1.0.0",
   "family": "acoustic",
   "provenance": {
-    "source_url": "library:bethena",
-    "source_collected_at": "library-scan",
-    "source_type": "transcribed-by-author",
+    "source_url": "https://www.mutopiaproject.org/ftp/JoplinS/bethena/bethena.mid",
+    "source_collected_at": "2026-09-09",
+    "source_type": "downloaded-arrangement",
     "composition_title": "Bethena",
     "composer": "Scott Joplin",
     "composition_year": 1,
     "composition_pd_status_us": "public_domain",
     "composition_pd_status_eu": "public_domain",
-    "arrangement_creator": null,
-    "arrangement_license": null,
+    "arrangement_creator": "Magnus Lewis-Smith (Mutopia typesetter, LilyPond)",
+    "arrangement_license": "Public-Domain",
     "arrangement_license_version": null,
-    "arrangement_evidence_url": null,
+    "arrangement_evidence_url": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=463",
     "record_verdict": "public",
-    "verdict_reason": "Publishable shelf: classical, ragtime, or folk. clair-de-lune excluded.",
-    "verifier": "v1-builder",
-    "verified_at": "library-scan",
+    "verdict_reason": "Allowlisted 2026-09-09; Public-Domain",
+    "verifier": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=463; midi meta events (sha256 7e4c0b5a9402…)",
+    "verified_at": "2026-09-09",
     "training_use_permitted": true
   },
   "scope": {
@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": -41.7388679245283,
-      "delay_sec": 0.029716981132075476,
+      "cents_shift": -40.8847619047619,
+      "delay_sec": 0.03166666666666667,
       "target_index": 0,
-      "measured_f0_hz": 859.1513333420594,
-      "measured_cents": -41.509499549067456,
+      "measured_f0_hz": 859.5839296767247,
+      "measured_cents": -40.63801510814539,
       "measured_onset_ms": 13.469387755102035,
       "draw": 1
     }
@@ -156,13 +156,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-ff5116.wav"
+              "path": "/acoustic-v1/take-9ded9d.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-ff5116.wav",
+              "path": "/acoustic-v1/take-9ded9d.wav",
               "song_id": "bethena"
             }
           }
@@ -181,15 +181,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 859.2,
-          "cents_from_target": -41.5,
+          "f0_hz": 859.6,
+          "cents_from_target": -40.6,
           "onset_ms": 13.5
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents -41.5: |41.5| − 50 = −8.5, inside; onset 13.5: |13.5| − 40 = −26.5, inside: match"
+        "content": "cents -40.6: |40.6| − 50 = −9.4, inside; onset 13.5: |13.5| − 40 = −26.5, inside: match"
       }
     ]
   },

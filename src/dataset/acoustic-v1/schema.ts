@@ -44,7 +44,8 @@ export const RECORD_ONLY_PATHS = [
 
 export const COVERAGE_FLOORS = {
   tools: 9,
-  songs: 24,
+  // Restated 2026-09-09: the derived allowlist is 11 songs, so the floor is > 10.
+  songs: 10,
   shapes: 7,
 } as const;
 

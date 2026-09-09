@@ -2,7 +2,7 @@
   "dataset_name": "jam-actions-v1-probe",
   "schema_version": "jam-actions-v1-probe/1.0.0",
   "version": "1.0.0",
-  "record_count": 72,
+  "record_count": 24,
   "bands": [
     "onset_in",
     "onset_out",

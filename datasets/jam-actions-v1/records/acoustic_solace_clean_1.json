@@ -3,22 +3,22 @@
   "schema_version": "jam-actions-v1/1.0.0",
   "family": "acoustic",
   "provenance": {
-    "source_url": "library:solace",
-    "source_collected_at": "library-scan",
-    "source_type": "transcribed-by-author",
+    "source_url": "https://www.mutopiaproject.org/ftp/JoplinS/solace/solace.mid",
+    "source_collected_at": "2026-09-09",
+    "source_type": "downloaded-arrangement",
     "composition_title": "Solace",
     "composer": "Scott Joplin",
     "composition_year": 1,
     "composition_pd_status_us": "public_domain",
     "composition_pd_status_eu": "public_domain",
-    "arrangement_creator": null,
-    "arrangement_license": null,
+    "arrangement_creator": "Magnus Lewis-Smith (Mutopia typesetter, LilyPond)",
+    "arrangement_license": "Public-Domain",
     "arrangement_license_version": null,
-    "arrangement_evidence_url": null,
+    "arrangement_evidence_url": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=482",
     "record_verdict": "public",
-    "verdict_reason": "Publishable shelf: classical, ragtime, or folk. clair-de-lune excluded.",
-    "verifier": "v1-builder",
-    "verified_at": "library-scan",
+    "verdict_reason": "Allowlisted 2026-09-09; Public-Domain",
+    "verifier": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=482; midi meta events (sha256 21ef2b529c4c…)",
+    "verified_at": "2026-09-09",
     "training_use_permitted": true
   },
   "scope": {
@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": -13.203962264150942,
-      "delay_sec": 0.02443396226415094,
+      "cents_shift": -18.25095238095238,
+      "delay_sec": 0.028333333333333332,
       "target_index": 0,
-      "measured_f0_hz": 259.64192228031266,
-      "measured_cents": -13.176217572719976,
+      "measured_f0_hz": 258.8848489734884,
+      "measured_cents": -18.231586322845423,
       "measured_onset_ms": 13.469387755102035,
       "draw": 1
     }
@@ -156,13 +156,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-20d17f.wav"
+              "path": "/acoustic-v1/take-3af1a1.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-20d17f.wav",
+              "path": "/acoustic-v1/take-3af1a1.wav",
               "song_id": "solace"
             }
           }
@@ -181,15 +181,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 259.6,
-          "cents_from_target": -13.2,
+          "f0_hz": 258.9,
+          "cents_from_target": -18.2,
           "onset_ms": 13.5
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents -13.2: |13.2| − 50 = −36.8, inside; onset 13.5: |13.5| − 40 = −26.5, inside: match"
+        "content": "cents -18.2: |18.2| − 50 = −31.8, inside; onset 13.5: |13.5| − 40 = −26.5, inside: match"
       }
     ]
   },

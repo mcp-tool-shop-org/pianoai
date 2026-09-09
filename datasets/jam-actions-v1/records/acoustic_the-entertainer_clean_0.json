@@ -3,22 +3,22 @@
   "schema_version": "jam-actions-v1/1.0.0",
   "family": "acoustic",
   "provenance": {
-    "source_url": "library:the-entertainer",
-    "source_collected_at": "library-scan",
-    "source_type": "transcribed-by-author",
+    "source_url": "https://www.mutopiaproject.org/ftp/JoplinS/entertainer/entertainer.mid",
+    "source_collected_at": "2026-09-09",
+    "source_type": "downloaded-arrangement",
     "composition_title": "The Entertainer",
     "composer": "Scott Joplin",
     "composition_year": 1,
     "composition_pd_status_us": "public_domain",
     "composition_pd_status_eu": "public_domain",
-    "arrangement_creator": null,
-    "arrangement_license": null,
+    "arrangement_creator": "Chris Sawer (Mutopia typesetter, LilyPond)",
+    "arrangement_license": "Public-Domain",
     "arrangement_license_version": null,
-    "arrangement_evidence_url": null,
+    "arrangement_evidence_url": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=263",
     "record_verdict": "public",
-    "verdict_reason": "Publishable shelf: classical, ragtime, or folk. clair-de-lune excluded.",
-    "verifier": "v1-builder",
-    "verified_at": "library-scan",
+    "verdict_reason": "Allowlisted 2026-09-09; Public-Domain",
+    "verifier": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=263; midi meta events (sha256 33e4e81ee64f…)",
+    "verified_at": "2026-09-09",
     "training_use_permitted": true
   },
   "scope": {
@@ -99,12 +99,12 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": 19.72622641509434,
-      "delay_sec": 0.002641509433962264,
+      "cents_shift": 24.423809523809524,
+      "delay_sec": 0,
       "target_index": 0,
-      "measured_f0_hz": 594.1068740562606,
-      "measured_cents": 19.862748936912364,
-      "measured_onset_ms": -9.750566893424018,
+      "measured_f0_hz": 595.728634768165,
+      "measured_cents": 24.5821392757949,
+      "measured_onset_ms": -21.36054421768707,
       "draw": 0
     }
   },
@@ -159,13 +159,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-2d28a5.wav"
+              "path": "/acoustic-v1/take-8217e5.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-2d28a5.wav",
+              "path": "/acoustic-v1/take-8217e5.wav",
               "song_id": "the-entertainer"
             }
           }
@@ -184,15 +184,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 594.1,
-          "cents_from_target": 19.9,
-          "onset_ms": -9.8
+          "f0_hz": 595.7,
+          "cents_from_target": 24.6,
+          "onset_ms": -21.4
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents 19.9: |19.9| − 50 = −30.1, inside; onset -9.8: |9.8| − 40 = −30.2, inside: match"
+        "content": "cents 24.6: |24.6| − 50 = −25.4, inside; onset -21.4: |21.4| − 40 = −18.6, inside: match"
       }
     ]
   },

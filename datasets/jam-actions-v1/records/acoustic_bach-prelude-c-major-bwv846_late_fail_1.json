@@ -3,22 +3,22 @@
   "schema_version": "jam-actions-v1/1.0.0",
   "family": "acoustic",
   "provenance": {
-    "source_url": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
-    "source_collected_at": "library-scan",
-    "source_type": "transcribed-by-author",
+    "source_url": "http://piano-midi.de/midis/bach/bach_846.mid",
+    "source_collected_at": "2026-09-09",
+    "source_type": "downloaded-arrangement",
     "composition_title": "Prelude in C Major, BWV 846 (Well-Tempered Clavier)",
     "composer": "Johann Sebastian Bach",
     "composition_year": 1,
     "composition_pd_status_us": "public_domain",
     "composition_pd_status_eu": "public_domain",
-    "arrangement_creator": null,
-    "arrangement_license": "CC-BY-SA",
-    "arrangement_license_version": null,
-    "arrangement_evidence_url": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
+    "arrangement_creator": "Bernd Krueger (piano-midi.de, 1996, edition 2004-09-25)",
+    "arrangement_license": "CC-BY-SA-3.0-DE",
+    "arrangement_license_version": "3.0-DE",
+    "arrangement_evidence_url": "http://piano-midi.de/copy.htm",
     "record_verdict": "public",
-    "verdict_reason": "Publishable shelf: classical, ragtime, or folk. clair-de-lune excluded.",
-    "verifier": "v1-builder",
-    "verified_at": "library-scan",
+    "verdict_reason": "Allowlisted 2026-09-09; CC-BY-SA-3.0-DE",
+    "verifier": "http://piano-midi.de/copy.htm; midi meta events (sha256 107f2b6a298f…)",
+    "verified_at": "2026-09-09",
     "training_use_permitted": true
   },
   "scope": {
@@ -99,11 +99,11 @@
           "duration": 0.45
         }
       ],
-      "cents_shift": -36.03188679245283,
-      "delay_sec": 0.15226415094339624,
+      "cents_shift": -32.65428571428571,
+      "delay_sec": 0.1521904761904762,
       "target_index": 0,
-      "measured_f0_hz": 256.24086302553496,
-      "measured_cents": -36.00355378092405,
+      "measured_f0_hz": 256.74071464958865,
+      "measured_cents": -32.62970776937192,
       "measured_onset_ms": 141.17913832199548,
       "draw": 1
     }
@@ -156,13 +156,13 @@
           {
             "tool": "transcribe_audio",
             "arguments": {
-              "path": "/acoustic-v1/take-50092b.wav"
+              "path": "/acoustic-v1/take-0dc13c.wav"
             }
           },
           {
             "tool": "score_audio_take",
             "arguments": {
-              "path": "/acoustic-v1/take-50092b.wav",
+              "path": "/acoustic-v1/take-0dc13c.wav",
               "song_id": "bach-prelude-c-major-bwv846"
             }
           }
@@ -181,15 +181,15 @@
         "role": "tool",
         "tool": "score_audio_take",
         "content": {
-          "f0_hz": 256.2,
-          "cents_from_target": -36,
+          "f0_hz": 256.7,
+          "cents_from_target": -32.6,
           "onset_ms": 141.2
         }
       },
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents -36.0: |36.0| − 50 = −14.0, inside; onset 141.2: |141.2| − 40 = 101.2, against the gate: timing_fail"
+        "content": "cents -32.6: |32.6| − 50 = −17.4, inside; onset 141.2: |141.2| − 40 = 101.2, against the gate: timing_fail"
       }
     ]
   },

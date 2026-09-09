@@ -3,31 +3,31 @@
   "schema_version": "jam-actions-v1/1.0.0",
   "family": "ensemble",
   "provenance": {
-    "source_url": "library:amazing-grace",
-    "source_collected_at": "library-scan",
-    "source_type": "transcribed-by-author",
-    "composition_title": "Amazing Grace",
-    "composer": "Traditional",
+    "source_url": "http://piano-midi.de/midis/bach/bach_846.mid",
+    "source_collected_at": "2026-09-09",
+    "source_type": "downloaded-arrangement",
+    "composition_title": "Prelude in C Major, BWV 846 (Well-Tempered Clavier)",
+    "composer": "Johann Sebastian Bach",
     "composition_year": 1,
     "composition_pd_status_us": "public_domain",
     "composition_pd_status_eu": "public_domain",
-    "arrangement_creator": null,
-    "arrangement_license": null,
-    "arrangement_license_version": null,
-    "arrangement_evidence_url": null,
+    "arrangement_creator": "Bernd Krueger (piano-midi.de, 1996, edition 2004-09-25)",
+    "arrangement_license": "CC-BY-SA-3.0-DE",
+    "arrangement_license_version": "3.0-DE",
+    "arrangement_evidence_url": "http://piano-midi.de/copy.htm",
     "record_verdict": "public",
-    "verdict_reason": "Publishable shelf: classical, ragtime, or folk. clair-de-lune excluded.",
-    "verifier": "v1-builder",
-    "verified_at": "library-scan",
+    "verdict_reason": "Allowlisted 2026-09-09; CC-BY-SA-3.0-DE",
+    "verifier": "http://piano-midi.de/copy.htm; midi meta events (sha256 107f2b6a298f…)",
+    "verified_at": "2026-09-09",
     "training_use_permitted": true
   },
   "scope": {
-    "song_id": "amazing-grace",
+    "song_id": "bach-prelude-c-major-bwv846",
     "phrase_window": "C",
     "instrument": "piano",
-    "key": "Eb major",
-    "tempo_bpm": 75,
-    "time_signature": "3/4",
+    "key": "C major",
+    "tempo_bpm": 74,
+    "time_signature": "4/4",
     "window_role": "standalone"
   },
   "observation": {
@@ -61,27 +61,26 @@
   "annotation_target": {
     "measure_range": [
       1,
-      69
+      62
     ],
-    "structure": "A simple strophic hymn form — the same melody repeating for each verse — confirmed by two small exact-repeat pairs late in the piece (measures 62/66 and 63/67, both four measures apart), consistent with a repeated final cadential phrase across the last two verses. Chord-window analysis reads the piece's harmonic home as Eb major — the basis for correcting the G major label this transcription originally carried: the opening labeled measures trace a clean Eb major-Ab major-Bb major-Eb major-Ab major-Eb major (I-IV-V-I-IV-I) hymn cadence at measures 2, 4, 8, 10, 12, and 13, followed by C minor (vi) at measure 14 — textbook hymn harmony, just centered on Eb rather than G. The opening is markedly sparse (measures 1, 3, 6, 7, and 8 all sit at 1-2 onsets), and the left hand doesn't fully establish itself until after a 4-measure gap around measures 6-9, giving the melody room to stand alone before the harmony fills in underneath it.",
+    "structure": "Seven structural regions from the section-lens novelty pass, with the sharpest boundary of the whole piece opening at measure 32 (novelty 6.571) — right where measure 35's near-silence sits. The other boundaries fall at measures 8, 14, 24, 45, and 56, each a natural practice unit alongside the opening measures 1-7. The opening right-hand figure (measures 1-2, 17 intervals) is byte-identical to its restatement at measures 4-5, and measure 1 alone shares its pitch-class content with measures 4 and 19 too. A 12-note right-hand figure recurs three times without transposition at measures 17-18, 26-27, and 30-31 — strong evidence, independently confirmed by the raw repeat detector, which finds measures 18, 27, and 31 byte-identical to each other. A 6-note left-hand figure recurs four times, transposed at three of its four appearances (measures 40-41 untransposed, 45-46 shifted down 5 semitones, 55-56 up 2, and 59 alone), and a separate 10-note left-hand figure returns three times at measures 46-47, 50-51, and 59-60 (the last transposed up 5 semitones).",
     "key_moments": [
-      "Measures 1, 3, 6, 7, and 8 are the sparsest in the piece (1-2 onsets each) — the hymn opens almost bare, which demonstrates how much a melody can carry on its own before any accompaniment fills in.",
-      "Measures 6-9, a 4-measure gap in the left hand: the accompaniment steps back here, leaving the melody essentially unaccompanied for a full phrase. A chord window mid-gap, at measure 8, still reads Bb major — the dominant of the piece's Eb center, not the D that the original G major label would predict — and support fully resumes at measure 10, landing right back on the Eb tonic.",
-      "Measure 25 is the busiest in the piece (19 onsets) — the first real climax, arriving well into the piece rather than at the opening.",
-      "Measures 62/66 and 63/67 are exact repeats four measures apart — the final verse's cadential phrase echoing the one before it. The surrounding closing measures (58-69) read F major and Bb major in the chord windows — a dominant-preparation cadence in the piece's Eb center, not the G-D-G motion the original G major label would predict — a natural word-painting example for 'was blind, but now I see.'",
-      "The right hand's highest note, F6, arrives at measure 50 — in the second half of the piece, marking the melody's registral high point well after the hymn has fully established itself."
+      "Measures 17-18, 26-27, and 30-31 all share one 12-note right-hand figure with no transposition anywhere — strong pattern evidence that teaches how a single arpeggiated cell can anchor three separate passages without the ear noticing the repetition, because the left hand keeps changing underneath it.",
+      "Measure 35's sudden drop to 2 combined onsets, right at the section-lens's biggest boundary (novelty 6.571 opening measure 32), demonstrates that in a texture this continuous, a single held chord functions as a structural landmark — the piece's one true breath before its busiest measures arrive.",
+      "The implied chord windows at measures 7, 10, and 11 (G major, then D7, then G major again) show the harmony leaning toward the dominant before measure 15 resolves back to C major — a compact model of tonic-to-dominant-and-back motion inside a single arpeggiated phrase.",
+      "The busiest measures in the piece — 53, 60, 47, and 55, each 25 or more combined onsets — sit in the last third of the piece, a skill-building target for endurance: the hands must sustain the same even sixteenth-note motion at the piece's densest point that they used at its sparsest."
     ],
     "teaching_goals": [
-      "Pentatonic/gapped-scale melody: learn to recognize how the tune avoids stepwise half-step motion in its most memorable phrases — that gapped quality is what gives it its folk, rather than strictly hymnal, character.",
-      "Unaccompanied phrasing: practice measures 6-9 with real rubato, since the left hand steps back and leaves the melody to carry the phrase alone.",
-      "Dynamic arc across a strophic form: with the real climax not arriving until measure 25, practice restraint in the opening verses so later verses have somewhere to grow.",
-      "Simple triple-meter hymn accompaniment over the Eb-Ab-Bb changes (I-IV-V — chord-window analysis reads this clearly; the G-C-D of the original G major label never appears): practice a bass note on beat 1 and a chord on beats 2-3 — the most basic hymn-accompaniment pattern, appropriate to this piece's spare character."
+      "Practice the 12-note right-hand figure at measures 17-18, 26-27, and 30-31 as one recognized shape — learning it once and recognizing its three appearances saves real practice time.",
+      "Listen for the implied dominant motion at measures 7-11 (G major to D7 back to G major) before resolving to C major at measure 15, and learn to hear that pull toward the dominant even though the analysis only hedges it as implied.",
+      "Build even sixteenth-note technique across the busiest measures (53, 60, 47, 55) at a slow tempo first — 25-plus onsets per measure demands finger evenness, not speed, as the first goal.",
+      "Recognize measure 35's near-total silence as a phrase marker, not a mistake in the score — understanding rests as structural punctuation is a core skill for reading any continuous arpeggiated texture."
     ],
     "style_tips": [
-      "Play the opening measures genuinely quiet and unhurried — this is not a piece to fill in with extra notes or rubato flourishes; the sparseness is the point.",
-      "Give the left-hand gap at measures 6-9 real space — resist the urge to fill it with a busier accompaniment than the arrangement calls for.",
-      "Try holding back through the opening verses rather than treating every verse at the same volume — a hymn like this earns its measure-25 climax through restraint beforehand.",
-      "Think of a hymn sung by a full congregation, not a solo showpiece — keep the tone warm and unforced, more communal than virtuosic."
+      "Keep every note the same weight through the 12-note right-hand figure at measures 17-18, 26-27, and 30-31 — listen for the figure sounding identical each time despite the changing harmony under it.",
+      "Use the sustain pedal to blend each broken chord into a single sonority, but change it with every new harmony — listen for the implied G major and D7 windows around measures 7-11 staying clean rather than smearing into each other.",
+      "Let measure 35's two onsets ring fully before moving on — listen for the silence itself as part of the phrase, not a gap to rush through.",
+      "Approach the busiest measures (53, 60, 47, 55) with a relaxed wrist and minimal rubato — Baroque keyboard tradition favors a steady, unhurried pulse here; listen for the sixteenth notes staying perfectly even even as the texture thickens."
     ],
     "teaching_notes": [
       {
