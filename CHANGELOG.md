@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — the song library's provenance
+- Every song's JSON now carries an evidence-backed `provenance` block: the URL it was downloaded
+  from, the site's terms (URL and quote), the arranger as the MIDI's own text and copyright events
+  name them, the file's SHA-256 and a title verdict. `scripts/provenance-audit.ts` regenerates it.
+- Twelve library files were a different piece than their name (among them `scarborough-fair.mid`
+  = Greensleeves and `the-water-is-wide.mid` = Foster's "The Glendy Burk"); they are quarantined
+  under `songs/quarantine/` and the library is 108 songs, not 120.
+- **The npm package no longer redistributes MIDI whose licence is unverified.** Of the 108, 14 carry
+  a redistributable licence (piano-midi.de CC-BY-SA-3.0-DE; Mutopia Public Domain) and ship;
+  `songs/library/.npmignore` is generated from the provenance blocks and a test keeps it current.
+  The rest are marked *unfetched* in `ai-jam-sessions library` and downloaded by
+  `ai-jam-sessions library fetch --accept-source-terms` from their recorded source, under that
+  source's terms, checked against the recorded SHA-256. Earlier versions shipped all 120 files.
+
 ### Added — jam-actions-v1: the corpus that shows its work
 - `datasets/jam-actions-v1/` at 371 records (254 train / 117 test, split by song), nine task
   families over 27 public-domain pieces, schema `jam-actions-v1/1.0.0`. Acoustic, harmony and

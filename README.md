@@ -12,15 +12,15 @@
 
 <p align="center">
   An MCP server that teaches AI to play piano and guitar — and sing.<br/>
-  120 songs across 12 genres. Six sound engines. Interactive guitar tablature.<br/>
+  108 annotated songs across 12 genres. Six sound engines. Interactive guitar tablature.<br/>
   A browser cockpit with vocal synthesizer. A practice journal that remembers everything.
 </p>
 
 <p align="center">
   <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml"><img src="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions"><img src="https://img.shields.io/npm/v/@mcptoolshop/ai-jam-sessions" alt="npm"></a>
-  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/songs-120_across_12_genres-blue" alt="Songs"></a>
-  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/annotated-120%2F120-green" alt="Ready"></a>
+  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/songs-108_across_12_genres-blue" alt="Songs"></a>
+  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/annotated-108%2F108-green" alt="Ready"></a>
   <a href="datasets/jam-actions-v0-public/README.md"><img src="https://img.shields.io/badge/dataset-jam--actions--v0%20(115_records)-8b5cf6" alt="Training dataset"></a>
   <a href="https://doi.org/10.5281/zenodo.20279918"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.20279918.svg" alt="DOI"></a>
 </p>
@@ -39,7 +39,7 @@ An LLM can read and write text, but it can't experience music the way we do. No 
 - **Remembering** — a practice journal that persists across sessions, so learning compounds over time.
 - **Singing** — vocal tract synthesis with 20 voice presets, from operatic soprano to electronic choir. Sing-along mode with solfege, contour, and syllable narration. And a real sung lead on the piano's clock: a score-conditioned singer driven by the song's MIDI, gated on timing (40 ms) and pitch (50 cents) before you hear it — see [Sing](#sing).
 
-Every one of the 120 songs is now fully annotated — historical context, bar-by-bar structural analysis, key moments, teaching goals, and performance tips, in all 12 genres. An earlier version of this README said the raw songs were "waiting for the AI to absorb the patterns, play the music, and write its own annotations." That is exactly what happened: the annotations were written by AI against a deterministic per-song analysis (chords, repetition structure, section boundaries, content-verified keys), gated by a quality rubric, and adversarially fact-checked claim by claim — measure numbers, chord windows, and structural counts all verified against the actual MIDI before anything shipped.
+Every one of the 108 songs is now fully annotated — historical context, bar-by-bar structural analysis, key moments, teaching goals, and performance tips, in all 12 genres. An earlier version of this README said the raw songs were "waiting for the AI to absorb the patterns, play the music, and write its own annotations." That is exactly what happened: the annotations were written by AI against a deterministic per-song analysis (chords, repetition structure, section boundaries, content-verified keys), gated by a quality rubric, and adversarially fact-checked claim by claim — measure numbers, chord windows, and structural counts all verified against the actual MIDI before anything shipped.
 
 Out of this same work, we also publish **[jam-actions-v0](#training-dataset)** — a public dataset of 115 multi-turn MCP tool-use traces over real classical piano. It teaches LLMs to do *grounded tool-use over symbolic music*, not just text generation, and ships with a 7-axis release gate that distinguishes "passing on evidence" from "passing because the task is trivial." See [Training Dataset](#training-dataset) below for the full story.
 
@@ -164,7 +164,9 @@ cd apps/cockpit && npm install && npm run dev   # Vite dev server, opens in your
 
 ## The Song Library
 
-120 songs across 12 genres, built from real MIDI files. Each genre has one deeply annotated exemplar — with historical context, bar-by-bar harmonic analysis, key moments, teaching goals, and performance tips (including vocal guidance). These exemplars serve as templates: the AI studies one, then annotates the rest.
+108 annotated songs across 12 genres, built from real MIDI files. Each genre has one deeply annotated exemplar — with historical context, bar-by-bar harmonic analysis, key moments, teaching goals, and performance tips (including vocal guidance). These exemplars serve as templates: the AI studies one, then annotates the rest.
+
+**What ships, and what you fetch.** The annotations are ours and ship with every song. The MIDI files were downloaded from public MIDI sites when the library was built, and a per-file provenance audit ([`docs/findings/library-provenance-audit.md`](docs/findings/library-provenance-audit.md)) found that only 14 of them carry a licence that permits redistribution — Bernd Krueger's piano-midi.de arrangements (CC-BY-SA-3.0-DE) and the Mutopia Project's public-domain typesettings. Those 14 are in the npm package. The other 94 are not: their `.json` ships, with a `provenance` block naming the source, its terms and the file's SHA-256, and `ai-jam-sessions library fetch --accept-source-terms` downloads each one from the site that published it, under that site's terms, refusing any file whose hash no longer matches what the annotations were verified against. Twelve files that turned out to be a different piece than their name were quarantined, which is why the count is 108 and not the 120 earlier versions claimed. Versions before this one shipped all 120 MIDI files; that was a mistake, and it is corrected here rather than papered over.
 
 | Genre | Exemplar | Key | What it teaches |
 |-------|----------|-----|-----------------|

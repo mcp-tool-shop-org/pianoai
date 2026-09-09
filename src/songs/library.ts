@@ -36,7 +36,10 @@ export interface GenreProgress {
   raw: number;
   annotated: number;
   ready: number;
-  songs: Array<{ id: string; title: string; status: SongStatus }>;
+  /** Ready songs whose .mid is absent — withheld from the npm tarball for want of a
+   *  redistributable licence; `library fetch` pulls them from their recorded source. */
+  unfetched: number;
+  songs: Array<{ id: string; title: string; status: SongStatus; fetched: boolean }>;
 }
 
 export interface LibraryProgress {
@@ -44,6 +47,7 @@ export interface LibraryProgress {
   raw: number;
   annotated: number;
   ready: number;
+  unfetched: number;
   byGenre: Partial<Record<Genre, GenreProgress>>;
 }
 
@@ -115,6 +119,7 @@ export function getLibraryProgress(libraryDir: string): LibraryProgress {
     raw: 0,
     annotated: 0,
     ready: 0,
+    unfetched: 0,
     byGenre: {},
   };
 
@@ -132,17 +137,24 @@ export function getLibraryProgress(libraryDir: string): LibraryProgress {
       raw: 0,
       annotated: 0,
       ready: 0,
+      unfetched: 0,
       songs: [],
     };
 
     for (const entry of genreEntries) {
       const status = entry.config.status ?? "raw";
+      const fetched = existsSync(entry.midiPath);
       gp[status]++;
       progress[status]++;
+      if (status === "ready" && !fetched) {
+        gp.unfetched++;
+        progress.unfetched++;
+      }
       gp.songs.push({
         id: entry.config.id,
         title: entry.config.title,
         status,
+        fetched,
       });
     }
 

@@ -1603,7 +1603,8 @@ Commands:
   guitars                    List available guitar voice presets
   tune-guitar <voice> [opts] Tune a guitar voice (persists across sessions)
   stats                      Registry statistics
-  library                    Show library progress
+  library                    Show library progress (⬇ = annotated, MIDI not fetched)
+  library fetch              Fetch withheld MIDI from each song's recorded source (--accept-source-terms)
   ports                      List MIDI output ports
   generate-song              Full-song generator side door (ACE-Step / DiffRhythm / YuE — not MIDI-locked)
   version                    Show version
@@ -1679,6 +1680,43 @@ Examples:
 
 // ─── Library Command ─────────────────────────────────────────────────────────
 
+async function cmdLibraryFetch(args: string[], libraryDir: string): Promise<void> {
+  const { fetchCandidates, fetchOne, termsNotice } = await import("./songs/fetch.js");
+  const flag = (name: string): string | undefined => {
+    const i = args.indexOf(name);
+    return i !== -1 ? args[i + 1] : undefined;
+  };
+  const accept = args.includes("--accept-source-terms");
+  const { candidates, noSource } = fetchCandidates(libraryDir, { genre: flag("--genre"), id: flag("--id") });
+  const NL = "\n";
+
+  if (candidates.length === 0) {
+    console.log(NL + "  Nothing to fetch — every ready song has its MIDI on disk.");
+    if (noSource.length) console.log(`  ${noSource.length} song(s) have no recorded source and cannot be fetched: ${noSource.join(", ")}`);
+    console.log();
+    return;
+  }
+
+  console.log(NL + `  ${candidates.length} song(s) have annotations but no MIDI on disk.`);
+  console.log("  The MIDI is not redistributed by this package: its licence could not be verified.");
+  console.log("  Each file is fetched from the source that published it, under that source's terms:" + NL);
+  console.log(termsNotice(candidates));
+  if (!accept) {
+    console.log(NL + "  Re-run with --accept-source-terms to download. Nothing was written." + NL);
+    return;
+  }
+
+  let ok = 0;
+  for (const c of candidates) {
+    const out = await fetchOne(c);
+    const mark = out.status === "fetched" ? "✓" : "✗";
+    console.log(`  ${mark} ${c.id.padEnd(35)} ${out.status}  ${out.detail}`);
+    if (out.status === "fetched") ok++;
+  }
+  const rest = noSource.length ? ` ${noSource.length} song(s) have no recorded source.` : "";
+  console.log(NL + `  Fetched ${ok} of ${candidates.length}.` + rest + NL);
+}
+
 function cmdLibrary(args: string[], libraryDir: string): void {
   const progress = getLibraryProgress(libraryDir);
 
@@ -1695,10 +1733,21 @@ function cmdLibrary(args: string[], libraryDir: string): void {
     console.log(`\n  ${genre} — ${gp.total} songs`);
     console.log(`  ${"─".repeat(45)}`);
     for (const song of gp.songs) {
-      const icon = song.status === "ready" ? "✓" : song.status === "annotated" ? "◐" : "○";
-      console.log(`    ${icon} ${song.id.padEnd(35)} ${song.status}`);
+      const icon = song.status === "ready" ? (song.fetched ? "✓" : "⬇") : song.status === "annotated" ? "◐" : "○";
+      const note = song.status === "ready" && !song.fetched ? " (MIDI not fetched)" : "";
+      console.log(`    ${icon} ${song.id.padEnd(35)} ${song.status}${note}`);
     }
-    console.log(`\n    Ready: ${gp.ready}  Annotated: ${gp.annotated}  Raw: ${gp.raw}\n`);
+    console.log(`\n    Ready: ${gp.ready}  Annotated: ${gp.annotated}  Raw: ${gp.raw}  Not fetched: ${gp.unfetched}\n`);
+    return;
+  }
+
+  // Sub-command: fetch [--genre <g>] [--id <id>] [--accept-source-terms]
+  // The tarball ships a song's MIDI only where its provenance records a
+  // redistributable licence; the rest is fetched by the user from the recorded
+  // source under that source's terms (printed first), checked against the
+  // SHA-256 the audit recorded.
+  if (args[0] === "fetch") {
+    void cmdLibraryFetch(args.slice(1), libraryDir);
     return;
   }
 
@@ -1714,6 +1763,7 @@ function cmdLibrary(args: string[], libraryDir: string): void {
   console.log(`  Ready:     ${String(progress.ready).padStart(3)} ${bar} ${pct}%`);
   console.log(`  Annotated: ${String(progress.annotated).padStart(3)}`);
   console.log(`  Raw:       ${String(progress.raw).padStart(3)}`);
+  if (progress.unfetched > 0) console.log(`  Not fetched: ${progress.unfetched} ready song(s) have no MIDI on disk — run 'ai-jam-sessions library fetch'`);
   console.log();
 
   // Per-genre breakdown
