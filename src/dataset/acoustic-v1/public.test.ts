@@ -177,8 +177,13 @@ describe("card halt", () => {
 describe("banner refusal", () => {
   it("refuses to build a public set whose card still carries a DRAFT banner", () => {
     const s = spec("v1");
-    const card = readFileSync(s.cardPath, "utf8");
-    expect(() => assertNoDraftBanner(card, s.cardPath)).toThrow(/DRAFT banner/);
-    expect(() => publicFiles("v1")).toThrow(/DRAFT banner/);
+    const real = readFileSync(s.cardPath, "utf8");
+    // A draft card is a fixture, not the live card: the live card must NOT carry the banner
+    // once the numbers are filled, or the sets could never be built.
+    const draft = real.replace(/^---\n[\s\S]*?\n---\n/, (fm) => fm + "<!-- DRAFT until filled -->\n");
+    expect(draft).not.toBe(real);
+    expect(() => assertNoDraftBanner(draft, s.cardPath)).toThrow(/DRAFT banner/);
+    expect(() => assertNoDraftBanner(real, s.cardPath)).not.toThrow();
   });
 });
+

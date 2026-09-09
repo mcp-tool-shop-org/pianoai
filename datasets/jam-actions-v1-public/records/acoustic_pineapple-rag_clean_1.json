@@ -1,0 +1,208 @@
+{
+  "id": "acoustic:pineapple-rag:clean:1",
+  "schema_version": "jam-actions-v1/1.0.0",
+  "family": "acoustic",
+  "provenance": {
+    "source_url": "https://www.mutopiaproject.org/ftp/JoplinS/PineappleRag/PineappleRag.mid",
+    "source_collected_at": "2026-09-09",
+    "source_type": "downloaded-arrangement",
+    "composition_title": "Pineapple Rag",
+    "composer": "Scott Joplin",
+    "composition_year": 1,
+    "composition_pd_status_us": "public_domain",
+    "composition_pd_status_eu": "public_domain",
+    "arrangement_creator": "Coyau (Mutopia typesetter, LilyPond)",
+    "arrangement_license": "Public-Domain",
+    "arrangement_license_version": null,
+    "arrangement_evidence_url": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1899",
+    "record_verdict": "public",
+    "verdict_reason": "Allowlisted 2026-09-09; Public-Domain",
+    "verifier": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1899; midi meta events (sha256 a8ff24b34090…)",
+    "verified_at": "2026-09-09",
+    "training_use_permitted": true
+  },
+  "scope": {
+    "song_id": "pineapple-rag",
+    "phrase_window": "full:148",
+    "instrument": "piano",
+    "key": "D major",
+    "tempo_bpm": 100,
+    "time_signature": "2/4",
+    "window_role": "standalone"
+  },
+  "observation": {
+    "thresholds": {
+      "timing_ms": 40,
+      "pitch_fail_cents": 50,
+      "pitch_warn_cents": 25,
+      "yin_locked_p95_cents": 0.179,
+      "pitch_clearance_cents": 5,
+      "pitch_clearance_multiple": 27.93,
+      "onset_p95_ms": 28.025,
+      "onset_clearance_ms": 38,
+      "onset_clearance_multiple": 1.36
+    },
+    "gold": {
+      "family": "acoustic",
+      "answer": "match",
+      "engine": "YIN+SuperFlux"
+    },
+    "acoustic": {
+      "kind": "clean",
+      "notes": [
+        {
+          "midi": 67,
+          "name": "G4",
+          "time": 0,
+          "duration": 0.45
+        },
+        {
+          "midi": 65,
+          "name": "F4",
+          "time": 1.2,
+          "duration": 0.45
+        },
+        {
+          "midi": 63,
+          "name": "D#4",
+          "time": 2.4,
+          "duration": 0.45
+        },
+        {
+          "midi": 62,
+          "name": "D4",
+          "time": 3.5999999999999996,
+          "duration": 0.45
+        },
+        {
+          "midi": 61,
+          "name": "C#4",
+          "time": 4.8,
+          "duration": 0.45
+        },
+        {
+          "midi": 62,
+          "name": "D4",
+          "time": 6,
+          "duration": 0.45
+        },
+        {
+          "midi": 60,
+          "name": "C4",
+          "time": 7.2,
+          "duration": 0.45
+        },
+        {
+          "midi": 60,
+          "name": "C4",
+          "time": 8.4,
+          "duration": 0.45
+        }
+      ],
+      "cents_shift": -14.135714285714286,
+      "delay_sec": 0.01,
+      "target_index": 0,
+      "measured_f0_hz": 388.81496615105266,
+      "measured_cents": -14.103726334307197,
+      "measured_onset_ms": -9.750566893424018,
+      "draw": 1
+    }
+  },
+  "annotation_target": {
+    "measure_range": [
+      1,
+      148
+    ],
+    "structure": "The A strain (measures 5-36, an 8-measure cell repeating at measures 5, 13, 21, 29) establishes the Bb-Eb-F7 progression, restated at measures 69-84. A contrasting B-strain section (measures 37-66) adds Dm-Ab alternation. The back half of the piece (measures 116-148) shifts into an alternating B-major/Eb color patch (measures 117-144) before a final Eb cadence at measure 148.",
+    "key_moments": [
+      "The stated key is D major, but the harness's fit score for it is -0.426 — strongly negative. The confidence-gated windows instead spell Bb-Eb-F7, and this annotation follows that content rather than the config field.",
+      "Measure 1 opens with 14 onsets, well above this piece's own typical measure density — an assertive, dense opening statement rather than a gradual entrance.",
+      "Measure 4, immediately after that dense opening, is comparatively sparse (5 onsets) — a written breath directly after the piece's most demanding bar.",
+      "Measures 117-144 settle into an alternating B-major/Eb color patch, a harmonic area distinct from the Bb/Eb/F7 vocabulary of the piece's first half — evidence that the back half of Pineapple Rag deliberately shifts harmonic ground."
+    ],
+    "teaching_goals": [
+      "Practice grounding harmonic analysis in what the notes actually spell rather than a stated key signature — Pineapple Rag's D major label fits this piece's content at -0.426, strongly negative.",
+      "Learn the dense opening bar (measure 1, 14 onsets) hands-separately at a slow tempo first — it is well above this piece's own typical density and rewards deliberate, unhurried practice before it rewards speed.",
+      "Recognize the harmonic shift between the piece's first half (Bb-Eb-F7) and back half (B-major/Eb color, measures 117 onward) — treating the whole piece as one harmonic block will miss this change.",
+      "Practice the recurring right-hand figure (measures 5-10, 13-18, 21-26, 29-34, 69-74, 77-82) that the pattern pass grades strong with an unusually high 5.16 compression ratio — learning one occurrence of this six-measure-per-repeat figure pays off across all six statements."
+    ],
+    "style_tips": [
+      "Listen for the opening measure's density without rushing it — 14 onsets in one bar at 100 BPM is a lot of information, and Joplin's own instruction against playing ragtime fast applies most urgently right here.",
+      "Play measure 4's relative sparseness as a genuine release of tension after the dense opening, not a dip in energy — let the texture audibly thin out.",
+      "Feel the harmonic ground shift around measure 117 — the B-major/Eb color of the piece's back half should sound like a change of scenery, not a continuation of the opening Bb material.",
+      "Try isolating the right-hand figure starting at measure 5 alone until it is completely automatic — with a 5.16 compression ratio across six statements, it is one of the most economical practice investments in this piece."
+    ],
+    "teaching_notes": [
+      {
+        "measure": 1,
+        "note": "none"
+      }
+    ]
+  },
+  "target_trace": {
+    "task_family": "acoustic",
+    "objective": "Answer using tools. Do not guess from the question text.",
+    "session": [
+      {
+        "turn": 1,
+        "role": "user",
+        "content": "Grade this take of \"Pineapple Rag\". Answer with exactly one of: match, pitch_fail, timing_fail."
+      },
+      {
+        "turn": 2,
+        "role": "assistant",
+        "content": "Transcribing, then scoring with raw measurements.",
+        "tool_calls": [
+          {
+            "tool": "transcribe_audio",
+            "arguments": {
+              "path": "/acoustic-v1/take-e55192.wav"
+            }
+          },
+          {
+            "tool": "score_audio_take",
+            "arguments": {
+              "path": "/acoustic-v1/take-e55192.wav",
+              "song_id": "pineapple-rag"
+            }
+          }
+        ]
+      },
+      {
+        "turn": 3,
+        "role": "tool",
+        "tool": "transcribe_audio",
+        "content": {
+          "note_count": 8
+        }
+      },
+      {
+        "turn": 4,
+        "role": "tool",
+        "tool": "score_audio_take",
+        "content": {
+          "f0_hz": 388.8,
+          "cents_from_target": -14.1,
+          "onset_ms": -9.8
+        }
+      },
+      {
+        "turn": 5,
+        "role": "assistant",
+        "content": "cents -14.1: |14.1| − 50 = −35.9, inside; onset -9.8: |9.8| − 40 = −30.2, inside: match"
+      }
+    ]
+  },
+  "eval_metadata": {
+    "split": "train",
+    "split_strategy": "hold out by song_id",
+    "leakage_check": "passed",
+    "eval_eligibility": [
+      "tool_use",
+      "acoustic"
+    ],
+    "phrase_continuation_eligible": false,
+    "phrase_continuation_eligible_reason": "standalone tool-use items"
+  },
+  "split": "train"
+}

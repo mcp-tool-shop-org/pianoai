@@ -1,0 +1,40 @@
+{"id": "acoustic:solace:clean:0", "family": "acoustic", "answer": "match", "raw": "cents 10.0: |10.0| \u2212 50 = \u221239.9, inside; onset \u22129.8: |9.8| \u2212 40 = \u221230.2, inside: match"}
+{"id": "acoustic:solace:clean:1", "family": "acoustic", "answer": "match", "raw": "cents -18.2: |18.2| \u2212 50 = \u221231.8, inside; onset 13.5: |13.5| \u2212 40 = \u221226.5, inside: match"}
+{"id": "acoustic:solace:late_fail:0", "family": "acoustic", "answer": "timing_fail", "raw": "cents 20.3: |20.3| \u2212 50 = \u221229.7, inside; onset 59.9: |59.9| \u2212 40 = 19.9, against the gate: timing_fail"}
+{"id": "acoustic:solace:late_fail:1", "family": "acoustic", "answer": "timing_fail", "raw": "cents -24.4: |24.4| \u2212 50 = \u221225.6, inside; onset 118: |118| \u2212 40 = 78, against the gate: timing_fail"}
+{"id": "acoustic:solace:sharp_fail:0", "family": "acoustic", "answer": "pitch_fail", "raw": "cents 70.0: |70.0| \u2212 50 = 20.0, against the gate; onset \u22129.8: |9.8| \u2212 40 = \u221230.2, inside: pitch_fail"}
+{"id": "acoustic:solace:sharp_fail:1", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -83.3: |83.3| \u2212 50 = 33.3, against the gate; onset -9.8: |9.8| \u2212 40 = \u221230.2, inside: pitch_fail"}
+{"id": "acoustic:the-easy-winners:clean:0", "family": "acoustic", "answer": "match", "raw": "cents 8.0: |8.0| \u2212 50 = \u221242.0, inside; onset \u22129.8: |9.8| \u2212 40 = \u221230.2, inside: match"}
+{"id": "acoustic:the-easy-winners:clean:1", "family": "acoustic", "answer": "match", "raw": "cents -42.9: |42.9| \u2212 50 = \u22127.1, inside; onset -9.8: |9.8| \u2212 40 = \u221230.2, inside: match"}
+{"id": "acoustic:the-easy-winners:late_fail:0", "family": "acoustic", "answer": "timing_fail", "raw": "cents 40.9: |40.9| \u2212 50 = \u22129.1, inside; onset 71.5: |71.5| \u2212 40 = 31.5, against the gate: timing_fail"}
+{"id": "acoustic:the-easy-winners:late_fail:1", "family": "acoustic", "answer": "timing_fail", "raw": "cents -45.0: |45.0| \u2212 50.0 = \u22125.0, inside; onset 141.2: |141.2| \u2212 40 = 101.2, against the gate: timing_fail"}
+{"id": "acoustic:the-easy-winners:sharp_fail:0", "family": "acoustic", "answer": "pitch_fail", "raw": "cents 85.0: |85.0| \u2212 50 = 35.0, against the gate; onset \u22129.8: |9.8| \u2212 40 = \u221230.2, inside: pitch_fail"}
+{"id": "acoustic:the-entertainer:clean:0", "family": "acoustic", "answer": "match", "raw": "cents 24.6: |24.6| \u2212 50 = \u221225.4, inside; onset \u221221.4: |21.4| \u2212 40 = \u221218.6, inside: match"}
+{"id": "acoustic:the-entertainer:clean:1", "family": "acoustic", "answer": "match", "raw": "cents -26.4: |26.4| \u2212 50 = \u221223.6, inside; onset 13.5: |13.5| \u2212 40 = \u221226.5, inside: match"}
+{"id": "acoustic:the-entertainer:late_fail:0", "family": "acoustic", "answer": "timing_fail", "raw": "cents 36.8: |36.8| \u2212 50 = \u221213.2, inside; onset 83.1: |83.1| \u2212 40 = 43.1, against the gate: timing_fail"}
+{"id": "acoustic:the-entertainer:late_fail:1", "family": "acoustic", "answer": "timing_fail", "raw": "cents -30.5: |30.5| \u2212 50 = \u221219.5, inside; onset 106.3: |106.3| \u2212 40 = 66.3, against the gate: timing_fail"}
+{"id": "acoustic:the-entertainer:sharp_fail:0", "family": "acoustic", "answer": "match", "raw": "cents 90.1: |90.1| \u2212 50 = 40.1, inside; onset -9.8: |9.8| \u2212 40 = 30.2: |30.2| \u2212 50 = \u221219.8: inside: match"}
+{"id": "acoustic:the-entertainer:sharp_fail:1", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -71.6: |71.6| \u2212 50 = 21.6, against the gate; onset 1.9: |1.9| \u2212 40 = \u221238.1, inside: pitch_fail"}
+{"id": "chord:solace:m6", "family": "chord", "answer": "Gaug", "raw": "Gaug"}
+{"id": "chord:the-easy-winners:m7", "family": "chord", "answer": "C#", "raw": "C#"}
+{"id": "chord:the-entertainer:m11", "family": "chord", "answer": "D", "raw": "D"}
+{"id": "ensemble:who_first:G:piano", "family": "ensemble", "answer": "piano", "raw": "piano"}
+{"id": "ensemble:who_first:G:synth", "family": "ensemble", "answer": "synth", "raw": "synth"}
+{"id": "ensemble:wrong_tone:G", "family": "ensemble", "answer": "guitar", "raw": "guitar"}
+{"id": "harmony:solace:m6:fail", "family": "harmony", "answer": "rejected", "raw": "intended Abaug, detected Abaug: same; chromatic 0/4 = 0.000 = 0.00000: inside: rejected"}
+{"id": "harmony:solace:m6:pass", "family": "harmony", "answer": "verified", "raw": "intended Gaug, detected Gaug: same; chromatic 0/4 = 0.000 = 0.00000: inside; scored 4/4 = 1.000: inside \u2014 every number is green: verified"}
+{"id": "harmony:the-easy-winners:m7:fail", "family": "harmony", "answer": "rejected", "raw": "intended C#, detected D: different; 0 + 6 = 6.000000: 6.000000 \u2212 0.2 = 5.800000: 5.800000 \u2264 6.000000: rejected"}
+{"id": "harmony:the-easy-winners:m7:pass", "family": "harmony", "answer": "verified", "raw": "intended C#, detected C#: same; chromatic 0/6 = 0.000 \u2212 0.2 = \u22120.200, inside: verified"}
+{"id": "harmony:the-entertainer:m11:fail", "family": "harmony", "answer": "rejected", "raw": "intended D, detected Eb: different; chromatic 0/8 = 0.000000 = 0.000000 \u00d7 0.2 = 0.000000, inside: rejected"}
+{"id": "harmony:the-entertainer:m11:pass", "family": "harmony", "answer": "rejecting", "raw": "intended D, detected D: same; chromatic 0/8 = 0.000 \u2192 0.000 = 0.000, inside: rejecting"}
+{"id": "key_moments:solace", "family": "key_moments", "answer": "1-2", "raw": "1-2"}
+{"id": "key_moments:the-easy-winners", "family": "key_moments", "answer": "89-113", "raw": "89-113"}
+{"id": "measures:solace", "family": "measures", "answer": "148", "raw": "148"}
+{"id": "measures:the-easy-winners", "family": "measures", "answer": "152", "raw": "152"}
+{"id": "measures:the-entertainer", "family": "measures", "answer": "152", "raw": "152"}
+{"id": "teaching_goals:solace", "family": "teaching_goals", "answer": "4", "raw": "4"}
+{"id": "teaching_goals:the-easy-winners", "family": "teaching_goals", "answer": "4", "raw": "4"}
+{"id": "teaching_goals:the-entertainer", "family": "teaching_goals", "answer": "5", "raw": "5"}
+{"id": "transpose:solace:+2", "family": "transpose", "answer": "A major", "raw": "A major"}
+{"id": "transpose:the-easy-winners:+2", "family": "transpose", "answer": "Bb major", "raw": "Bb major"}
+{"id": "transpose:the-entertainer:+2", "family": "transpose", "answer": "D major", "raw": "D major"}

@@ -13,15 +13,16 @@ datasets:
   - mcp-tool-shop/jam-actions-v1
   - mcp-tool-shop/jam-actions-v1-probe
 ---
-<!-- DRAFT until the r40 results block below is filled from experiments/coverage-v1-sft/RESULTS-r40.md. -->
 
 # jam-actions-v1 adapters
 
-Two LoRA adapters, one recipe, trained on the released eleven-song jam-actions-v1 corpus. Every
-number below is on a held-out split by song or on the never-trained near-gate probe; the base model
-is reported on the same split; every seed that was run is reported. Adapters trained during the
-arc on earlier, unpublishable versions of the corpus are not published; their numbers are in the
-source repo's `experiments/coverage-v1-sft/RESULTS*.md` as the record of how this recipe was found.
+One LoRA adapter, trained on the released eleven-song jam-actions-v1 corpus. Every number below is
+on a held-out split by song or on the never-trained near-gate probe; the base model is reported on
+the same split; every seed that was run is reported — including the two 3B seeds that are **not**
+published, because on this corpus the 3B does not learn the comparison. Adapters trained during the
+arc on earlier, unpublishable versions of the corpus are not published either; their numbers are in
+the source repo's `experiments/coverage-v1-sft/RESULTS*.md` as the record of how this recipe was
+found.
 
 ## Recipe
 
@@ -34,16 +35,22 @@ the loss curve.
 
 ## Adapters
 
-| directory | base | seed | held-out acoustic | overall (40) | near-gate probe (24) |
-|---|---|---|---|---|---|
-| `3b-s13/` | Qwen2.5-3B-Instruct | 13 | __R40_3B_AC__ | __R40_3B_ALL__ | __R40_3B_PROBE__ |
-| `7b-s13/` | Qwen2.5-7B-Instruct | 13 | __R40_7B_AC__ | __R40_7B_ALL__ | __R40_7B_PROBE__ |
+| directory | base | seed | held-out acoustic | overall (40) | near-gate probe (24) | published |
+|---|---|---|---|---|---|---|
+| `7b-s13/` | Qwen2.5-7B-Instruct | 13 | **16/17** | **37/40** | **24/24** | **yes** |
+| — | Qwen2.5-3B-Instruct | 13 | 14/17 | 32/40 | 11/24 | no |
+| — | Qwen2.5-3B-Instruct | 42 | 12/17 | 32/40 | 13/24 | no |
 
-Bases on the same splits: __R40_BASES__
+Bases on the same splits: 7B 7/17, 29/40, 12/24 (it says `match` to every probe take); 3B 5/17,
+20/40, 6/24. The three-way floor is 5.7/17 and 8/24.
 
-Each is a single seed and is reported as one. On the earlier 349-record working corpus the same 3B
-recipe was run at two seeds (54/54 and 54/54 held out; 70/72 and 72/72 on the 72-take probe), which
-is the evidence that the recipe, not the seed, is doing the work.
+The 7B is a single seed and is reported as one. The 3B rows are the reason it is not published:
+with ~45 acoustic training takes the 3B copies the numbers and keeps the format but does not lock
+the subtraction (seed 13: exact on 7 of 24 probe takes) or the gate vocabulary (seed 42 invents
+"within", "beyond", "behind"). On the earlier 349-record working corpus the same 3B recipe was run
+at two seeds (54/54 and 54/54 held out; 70/72 and 72/72 on the 72-take probe), which is the
+evidence that the recipe, not the seed, was doing the work there — and that the difference here is
+the size of the verified corpus.
 
 ## What the adapters do and do not do
 
@@ -58,8 +65,8 @@ label, learned to read a sign from a worded comparison, and learned the comparis
 with identical loss curves in all three cases. If you fine-tune a small model to apply a rule, put
 the rule's arithmetic in the target and test near the boundary.
 
-They were trained to compare against **these** gates (50 cents, 40 ms, chromatic ratio 0.2) in
-**this** tool vocabulary, on eleven songs. They are not general graders.
+It was trained to compare against **these** gates (50 cents, 40 ms, chromatic ratio 0.2) in
+**this** tool vocabulary, on eleven songs. It is not a general grader.
 
 ## Licence
 
