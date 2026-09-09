@@ -189,7 +189,7 @@
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents 74.8 against a 50-cent gate, onset 1.9 ms inside 40: pitch_fail"
+        "content": "cents 74.8: |74.8| − 50 = 24.8, against the gate; onset 1.9: |1.9| − 40 = −38.1, inside: pitch_fail"
       }
     ]
   },

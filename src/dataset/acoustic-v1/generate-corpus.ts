@@ -139,6 +139,8 @@ const invoked = Boolean(
 );
 if (invoked) {
   const bare = process.argv.includes("--bare-label");
-  const r = writeV1Corpus(undefined, { acousticBareLabel: bare });
-  process.stdout.write(`wrote ${r.n} records (${bare ? "bare-label" : "comparison"}) to ${r.outDir}\n`);
+  const plain = process.argv.includes("--plain-comparison");
+  const r = writeV1Corpus(undefined, { acousticBareLabel: bare, acousticPlainComparison: plain });
+  const variant = bare ? "bare-label" : plain ? "plain-comparison" : "arithmetic";
+  process.stdout.write(`wrote ${r.n} records (${variant}) to ${r.outDir}\n`);
 }

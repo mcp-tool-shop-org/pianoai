@@ -189,7 +189,7 @@
       {
         "turn": 5,
         "role": "assistant",
-        "content": "cents 10.0 inside a 50-cent gate, onset 83.1 ms against a 40-ms gate: timing_fail"
+        "content": "cents 10.0: |10.0| − 50 = −40.0, inside; onset 83.1: |83.1| − 40 = 43.1, against the gate: timing_fail"
       }
     ]
   },

@@ -24,6 +24,7 @@ import {
   rederiveF5Measurements,
   parseAcousticAssistant,
   round1,
+  acousticAssistantContent,
 } from "./f5-acoustic.js";
 import {
   MEASURED_YIN_LOCKED_P95_CENTS,
@@ -207,23 +208,83 @@ describe("v1 prompt-visible floats are instrument resolution (chunk 22 B2)", () 
 });
 
 describe("v1 acoustic assistant comparison (chunk 22 B3)", () => {
-  it("parses as <comparison>: <label> matching gold and rounded tool result", () => {
+  it("renders the arithmetic line with the subtraction before the word", () => {
+    const line = acousticAssistantContent(56.4, 13.5, "pitch_fail");
+    expect(line).toBe(
+      "cents 56.4: |56.4| \u2212 50 = 6.4, against the gate; onset 13.5: |13.5| \u2212 40 = \u221226.5, inside: pitch_fail",
+    );
+    const parsed = parseAcousticAssistant(line);
+    expect(parsed).toEqual({
+      cents: 56.4,
+      onset: 13.5,
+      d: 6.4,
+      e: -26.5,
+      pitchWord: "against the gate",
+      onsetWord: "inside",
+      label: "pitch_fail",
+    });
+  });
+
+  it("parses as arithmetic: X,Y match the tool; D,E match the subtraction; words match predicates", () => {
     const rows = committedRecords().filter((r) => r.family === "acoustic");
     expect(rows.length).toBeGreaterThan(0);
     for (const r of rows) {
       const last = [...r.target_trace.session].reverse().find((t) => t.role === "assistant");
       expect(last, r.id).toBeDefined();
-      const parsed = parseAcousticAssistant((last as { content: string }).content);
-      expect(parsed, `${r.id} ${(last as { content: string }).content}`).not.toBeNull();
+      const line = (last as { content: string }).content;
+      const parsed = parseAcousticAssistant(line);
+      expect(parsed, `${r.id} ${line}`).not.toBeNull();
       expect(parsed!.label, r.id).toBe(r.observation.gold.answer);
       const t = scoreTakeContent(r);
       expect(parsed!.cents, r.id).toBe(t.cents_from_target);
       expect(parsed!.onset, r.id).toBe(t.onset_ms);
-      const line = (last as { content: string }).content;
-      const onsetWord = onsetFailsGate(parsed!.onset) ? "against a 40-ms gate" : "inside 40";
-      const pitchWord = centsFailsGate(parsed!.cents) ? "against a 50-cent gate" : "inside a 50-cent gate";
-      expect(line, r.id).toContain(`onset ${parsed!.onset.toFixed(1)} ms ${onsetWord}`);
-      expect(line, r.id).toContain(`cents ${parsed!.cents.toFixed(1)} ${pitchWord}`);
+      expect(parsed!.d, r.id).toBe(round1(Math.abs(parsed!.cents) - 50));
+      expect(parsed!.e, r.id).toBe(round1(Math.abs(parsed!.onset) - 40));
+      expect(parsed!.pitchWord, r.id).toBe(centsFailsGate(parsed!.cents) ? "against the gate" : "inside");
+      expect(parsed!.onsetWord, r.id).toBe(onsetFailsGate(parsed!.onset) ? "against the gate" : "inside");
+    }
+  });
+});
+
+function leafDiff(a: unknown, b: unknown, path: string, out: string[]): void {
+  if (Object.is(a, b)) return;
+  if (typeof a === "number" && typeof b === "number" && Math.abs(a - b) <= 1e-6) return;
+  if (a === null || b === null || typeof a !== "object" || typeof b !== "object") {
+    out.push(path);
+    return;
+  }
+  if (Array.isArray(a) || Array.isArray(b)) {
+    if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) {
+      out.push(path);
+      return;
+    }
+    a.forEach((x, i) => leafDiff(x, b[i], `${path}[${i}]`, out));
+    return;
+  }
+  const ao = a as Record<string, unknown>;
+  const bo = b as Record<string, unknown>;
+  const keys = new Set([...Object.keys(ao), ...Object.keys(bo)]);
+  for (const k of keys) leafDiff(ao[k], bo[k], path ? `${path}.${k}` : k, out);
+}
+
+describe("acoustic flag variants differ only in the last assistant turn", () => {
+  it("bare and plain-comparison each differ in 162 acoustic assistant leaves", () => {
+    const committed = committedRecords();
+    const acousticN = committed.filter((r) => r.family === "acoustic").length;
+    expect(acousticN).toBe(162);
+    for (const target of ["bare", "comparison"] as const) {
+      const diffs: string[] = [];
+      for (const r of committed) {
+        if (r.family !== "acoustic") continue;
+        const t = scoreTakeContent(r);
+        const next = acousticAssistantContent(t.cents_from_target as number, t.onset_ms as number, r.observation.gold.answer, target);
+        const copy = structuredClone(r);
+        const last = [...copy.target_trace.session].reverse().find((x) => x.role === "assistant") as { content: string };
+        last.content = next;
+        leafDiff(r, copy, r.id, diffs);
+      }
+      expect(diffs.length, target).toBe(acousticN);
+      expect(diffs.every((d) => d.endsWith(".content")), target).toBe(true);
     }
   });
 });

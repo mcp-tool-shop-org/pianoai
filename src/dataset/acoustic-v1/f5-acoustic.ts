@@ -39,30 +39,85 @@ export function centsFailsGate(cents: number): boolean {
   return Math.abs(cents) >= V1_PITCH_FAIL_CENTS;
 }
 
-/** Assistant-turn comparison. Gates live here, not in the prompt. */
+export type AcousticTarget = "arithmetic" | "comparison" | "bare";
+
+const MINUS = "\u2212";
+
+function fmtDec(n: number): string {
+  return n.toFixed(1);
+}
+
+function fmtSigned(n: number): string {
+  const body = Math.abs(n).toFixed(1);
+  return n < 0 ? `${MINUS}${body}` : body;
+}
+
+/** Plain comparison line (chunk 22). Kept behind a flag. */
 export function acousticComparisonLine(cents: number, onsetMs: number, gold: string): string {
   const cR = round1(cents);
   const oR = round1(onsetMs);
   const pitchRel = centsFailsGate(cR) ? "against a 50-cent gate" : "inside a 50-cent gate";
   const onsetRel = onsetFailsGate(oR) ? "against a 40-ms gate" : "inside 40";
-  return `cents ${cR.toFixed(1)} ${pitchRel}, onset ${oR.toFixed(1)} ms ${onsetRel}: ${gold}`;
+  return `cents ${fmtDec(cR)} ${pitchRel}, onset ${fmtDec(oR)} ms ${onsetRel}: ${gold}`;
+}
+
+/** Arithmetic target: digits of |x| − gate before the word. */
+export function acousticArithmeticLine(cents: number, onsetMs: number, gold: string): string {
+  const cR = round1(cents);
+  const oR = round1(onsetMs);
+  const d = round1(Math.abs(cR) - V1_PITCH_FAIL_CENTS);
+  const e = round1(Math.abs(oR) - V1_TIMING_MS);
+  const pitchWord = centsFailsGate(cR) ? "against the gate" : "inside";
+  const onsetWord = onsetFailsGate(oR) ? "against the gate" : "inside";
+  return `cents ${fmtDec(cR)}: |${fmtDec(Math.abs(cR))}| ${MINUS} 50 = ${fmtSigned(d)}, ${pitchWord}; onset ${fmtDec(oR)}: |${fmtDec(Math.abs(oR))}| ${MINUS} 40 = ${fmtSigned(e)}, ${onsetWord}: ${gold}`;
 }
 
 export function acousticAssistantContent(
   cents: number,
   onsetMs: number,
   gold: string,
-  bareLabel: boolean,
+  target: AcousticTarget | boolean = "arithmetic",
 ): string {
-  return bareLabel ? gold : acousticComparisonLine(cents, onsetMs, gold);
+  const kind: AcousticTarget = target === true ? "bare" : target === false ? "arithmetic" : target;
+  if (kind === "bare") return gold;
+  if (kind === "comparison") return acousticComparisonLine(cents, onsetMs, gold);
+  return acousticArithmeticLine(cents, onsetMs, gold);
 }
 
-export function parseAcousticAssistant(line: string): { cents: number; onset: number; label: string } | null {
-  const m = line.match(
+function parseNum(s: string): number {
+  return Number(s.replace(/\u2212/g, "-"));
+}
+
+export function parseAcousticAssistant(line: string): {
+  cents: number;
+  onset: number;
+  d: number;
+  e: number;
+  pitchWord: string;
+  onsetWord: string;
+  label: string;
+} | null {
+  const arith = line.match(
+    /^cents (-?\d+\.\d): \|(\d+\.\d)\| [-\u2212] 50 = ([\u2212-]?\d+\.\d), (against the gate|inside); onset (-?\d+\.\d): \|(\d+\.\d)\| [-\u2212] 40 = ([\u2212-]?\d+\.\d), (against the gate|inside): (\S+)$/,
+  );
+  if (arith) {
+    return {
+      cents: parseNum(arith[1]!),
+      onset: parseNum(arith[5]!),
+      d: parseNum(arith[3]!),
+      e: parseNum(arith[7]!),
+      pitchWord: arith[4]!,
+      onsetWord: arith[8]!,
+      label: arith[9]!,
+    };
+  }
+  const plain = line.match(
     /^cents (-?\d+\.\d) (?:against|inside) a 50-cent gate, onset (-?\d+\.\d) ms (?:against a 40-ms gate|inside 40): (\S+)$/,
   );
-  if (!m) return null;
-  return { cents: Number(m[1]), onset: Number(m[2]), label: m[3]! };
+  if (plain) {
+    return { cents: Number(plain[1]), onset: Number(plain[2]), d: NaN, e: NaN, pitchWord: "", onsetWord: "", label: plain[3]! };
+  }
+  return null;
 }
 export type F5Kind = (typeof F5_KINDS)[number];
 

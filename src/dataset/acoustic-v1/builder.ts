@@ -65,8 +65,16 @@ function roundToolNumbers(x: unknown): unknown {
 }
 
 export interface V1BuildOpts {
-  /** Bare acoustic assistant label. Default is the comparison line (chunk 22 B3). */
+  /** Bare acoustic assistant label. */
   acousticBareLabel?: boolean;
+  /** Plain comparison line (chunk 22). Default is the arithmetic target (chunk 32). */
+  acousticPlainComparison?: boolean;
+}
+
+export function acousticTargetOf(opts: V1BuildOpts = {}): "bare" | "comparison" | "arithmetic" {
+  if (opts.acousticBareLabel) return "bare";
+  if (opts.acousticPlainComparison) return "comparison";
+  return "arithmetic";
 }
 
 export function leftHandToMidi(leftHand: string): number[] {
@@ -455,7 +463,7 @@ export function buildAcousticTake(
       cents_from_target: round1(kept.measured_cents),
       onset_ms: round1(kept.measured_onset_ms),
     } },
-    { turn: 5, role: "assistant", content: acousticAssistantContent(kept.measured_cents, kept.measured_onset_ms, kept.gold, opts.acousticBareLabel === true) },
+    { turn: 5, role: "assistant", content: acousticAssistantContent(kept.measured_cents, kept.measured_onset_ms, kept.gold, acousticTargetOf(opts)) },
   ];
   return baseRecord(song, "acoustic", id, split, {
     family: "acoustic", answer: kept.gold, engine: "YIN+SuperFlux",

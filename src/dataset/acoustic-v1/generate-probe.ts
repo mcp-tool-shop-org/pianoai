@@ -17,7 +17,7 @@ import {
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadPublishableSongs } from "./library.js";
-import { buildAcousticTake, testSongIds } from "./builder.js";
+import { buildAcousticTake, testSongIds, type V1BuildOpts } from "./builder.js";
 import { keepFromApplied, type F5Kept } from "./f5-acoustic.js";
 import type { SongEntry } from "../../songs/types.js";
 import type { V1Record } from "./schema.js";
@@ -75,7 +75,7 @@ function searchCents(song: SongEntry, targetCents: number, delay_sec: number): F
   return bestErr <= CENTS_TOL ? best : null;
 }
 
-export function buildProbeRecords(): { records: V1Record[]; applied: Array<Record<string, unknown>> } {
+export function buildProbeRecords(opts: V1BuildOpts = {}): { records: V1Record[]; applied: Array<Record<string, unknown>> } {
   const songs = loadPublishableSongs();
   const testIds = testSongIds(songs);
   const held = songs.filter((s) => testIds.has(s.id));
@@ -102,6 +102,7 @@ export function buildProbeRecords(): { records: V1Record[]; applied: Array<Recor
       const rec = buildAcousticTake(song, kept, id, "test", {
         schema_version: PROBE_SCHEMA_VERSION,
         band: job.band,
+        ...opts,
       });
       const path = rec.target_trace.session
         .flatMap((t) => (t.role === "assistant" && t.tool_calls ? t.tool_calls : []))
@@ -127,13 +128,13 @@ export function buildProbeRecords(): { records: V1Record[]; applied: Array<Recor
   return { records, applied };
 }
 
-export function writeProbeCorpus(outDir?: string): { n: number; outDir: string } {
+export function writeProbeCorpus(outDir?: string, opts: V1BuildOpts = {}): { n: number; outDir: string } {
   const dest = outDir ?? join(
     dirname(fileURLToPath(import.meta.url)),
     "..", "..", "..",
     "datasets", "jam-actions-v1-probe",
   );
-  const { records, applied } = buildProbeRecords();
+  const { records, applied } = buildProbeRecords(opts);
   if (existsSync(dest)) rmSync(dest, { recursive: true, force: true });
   mkdirSync(join(dest, "records"), { recursive: true });
   writeFileSync(join(dest, "records.jsonl"), records.map((r) => JSON.stringify(r)).join("\n") + "\n", "utf8");
@@ -193,6 +194,9 @@ const invoked = Boolean(
   process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url)),
 );
 if (invoked) {
-  const r = writeProbeCorpus();
-  process.stdout.write(`wrote ${r.n} probe records to ${r.outDir}\n`);
+  const bare = process.argv.includes("--bare-label");
+  const plain = process.argv.includes("--plain-comparison");
+  const r = writeProbeCorpus(undefined, { acousticBareLabel: bare, acousticPlainComparison: plain });
+  const variant = bare ? "bare-label" : plain ? "plain-comparison" : "arithmetic";
+  process.stdout.write(`wrote ${r.n} probe records (${variant}) to ${r.outDir}\n`);
 }
