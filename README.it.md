@@ -345,6 +345,23 @@ Richiede **Node.js 22+** (la versione v2.0.0 ha aumentato il requisito minimo co
 }
 ```
 
+### Docker
+
+Ogni versione pubblica anche `ghcr.io/mcp-tool-shop-org/ai-jam-sessions`, un’immagine leggera che esegue il server MCP tramite stdio. L’unica cosa da tenere a mente è che `/data` è la memoria: il registro, lo stato del server, le canzoni degli utenti e tutti i file MIDI scaricati vengono memorizzati lì, quindi è necessario montare un volume, altrimenti, quando il container viene chiuso, i dati andranno persi.
+
+```json
+{
+  "mcpServers": {
+    "ai_jam_sessions": {
+      "command": "docker",
+      "args": ["run", "--rm", "-i", "-v", "ai-jam-data:/data", "ghcr.io/mcp-tool-shop-org/ai-jam-sessions"]
+    }
+  }
+}
+```
+
+L’immagine include i 14 file MIDI ridistribuibili; l’esecuzione di `library fetch --accept-source-terms` una sola volta all’interno del container posiziona gli altri 94 file nel volume. `docker compose up` fa la stessa cosa con un volume denominato e `--profile ollama` aggiunge un componente aggiuntivo Ollama. Dettagli, l’interfaccia a riga di comando all’interno dell’immagine e cosa non è incluso intenzionalmente: [docs/docker.md](docs/docker.md). Esecuzione dei valutatori ottimizzati in Ollama, con il costo misurato di una base a 4 bit: [docs/ollama-adapters.md](docs/ollama-adapters.md).
+
 ## MCP Tools
 
 49 strumenti e 4 modelli di prompt suddivisi in sette categorie:

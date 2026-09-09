@@ -300,6 +300,23 @@ npm install -g @mcptoolshop/ai-jam-sessions
 }
 ```
 
+### Docker
+
+每次发布都会发布`ghcr.io/mcp-tool-shop-org/ai-jam-sessions`，这是一个精简的镜像，它在标准输入/输出上运行 MCP 服务器。需要注意的是，`/data`是内存：日志、服务器状态、用户歌曲以及任何获取的 MIDI 文件都存储在那里，因此请挂载一个卷，否则它们会随着容器一起消失。
+
+```json
+{
+  "mcpServers": {
+    "ai_jam_sessions": {
+      "command": "docker",
+      "args": ["run", "--rm", "-i", "-v", "ai-jam-data:/data", "ghcr.io/mcp-tool-shop-org/ai-jam-sessions"]
+    }
+  }
+}
+```
+
+该镜像包含 14 个可重新分发的 MIDI 文件；在容器内运行一次`library fetch --accept-source-terms`会将剩余的 94 个文件放入卷中。`docker compose up`对命名卷执行相同的操作，并且`--profile ollama`添加了一个 Ollama 侧边容器。详情、镜像内的 CLI 以及故意不包含的内容：[docs/docker.md](docs/docker.md)。在 Ollama 中运行经过微调的评估器，并衡量 4 位基础模型的成本：[docs/ollama-adapters.md](docs/ollama-adapters.md)。
+
 ## MCP 工具
 
 49 个工具和 7 个类别的 4 个提示模板：
@@ -438,8 +455,8 @@ ai-jam-sessions --version
 
 ## 状态
 
-**v2.6.0 版本——停止分发未经授权的内容**（请参阅 [CHANGELOG](CHANGELOG.md)）。
-对歌曲库中的每个文件进行来源审计，发现 108 个 MIDI 乐曲中，有 14 个允许重新分发，94 个不允许；此外，还有 12 个文件的内容与文件名不符。现在，每个歌曲都包含一个基于证据的 `provenance` 块（来源网址、网站条款、编曲者作为文件所有者的版权信息、SHA-256 校验值、标题验证）；这 12 个文件已被隔离；npm 包中包含这 14 个文件，并将剩余文件标记为 *未获取*，并且 `ai-jam-sessions library fetch --accept-source-terms` 从发布这些文件的网站下载每个文件，并遵守该网站的条款，拒绝任何哈希值不再匹配的文件。早期版本包含所有 120 个文件，并且在 npm 上已被弃用。相同的审计将 jam-actions-v1 数据集重置为 11 首经过验证的乐曲（三首 Krueger CC-BY-SA-3.0-DE，八首 Mutopia Public Domain）；该语料库、其近阈值探测以及发现目标作品的训练过程——一个 3B 秩为 16 的 LoRA，使用一个未更改的配方，从一个先验类别开始，在 54/54 个保留样本和 72/72 个近阈值样本中进行训练，一旦助手开始书写比较的数字——都包含在仓库中的 `datasets/` 和 `experiments/coverage-v1-sft/` 中，并将发布到 Hugging Face 和 Zenodo，以供经过验证的语料库使用。此外，此版本还包含 `scorePerformance`，它将正确的窗口限制在调用者的阈值处，因此 40 毫秒的规则正好是验证窗口。
+**v2.6.0 — 停止发布其没有授权发布的内容**（参见[CHANGELOG](CHANGELOG.md））。
+对歌曲库中的每个文件进行来源审计，发现 108 个 MIDI 乐曲中，有 14 个具有允许重新分发的许可，而 94 个则没有——并且有十二个文件的内容与其文件名不符。现在，每首歌曲都包含一个基于证据的`provenance`块（来源 URL、网站条款、将文件命名为其自身版权事件的编曲者、SHA-256、标题判决）；这十二个文件已被隔离；npm 包包含这 14 个文件，并将剩余的文件标记为*未获取*，并且`ai-jam-sessions library fetch --accept-source-terms`会从发布该文件的网站下载每个文件，并遵守该网站的条款，拒绝任何哈希值不再匹配的文件。早期版本包含所有 120 个文件，并且在 npm 上已被弃用。相同的审计将 jam-actions-v1 数据集重置为 11 首经过验证的乐曲（三首 Krueger CC-BY-SA-3.0-DE，八首 Mutopia Public Domain）；该语料库、其近门探测以及发现所示作品目标的训练弧——一个 3B 秩 16 LoRA，使用一个不变的配方，从一个先验类别开始，在 54/54 个保留样本和 72/72 个近门样本中进行训练，一旦助手完成，它就会写出比较的数字——都位于仓库中的`datasets/`和`experiments/coverage-v1-sft/`中，并将发布到 Hugging Face 和 Zenodo，以供经过验证的语料库使用。此外，在此版本中：`scorePerformance`将正确的窗口限制在调用者的门限处，因此 40 毫秒的规则恰好是判决窗口。
 
 **v2.5.0——模型可以观看乐队演奏的版本（参见 [CHANGELOG](CHANGELOG.md)）。**
 `ensemble_now` 报告每个乐器在音乐播放时正在做什么：每个乐器保持的音符、每个音符保持了多长时间以及组合的和弦。它运行在两个通道上，并且廉价的通道是准确的通道——当此服务器执行时，它确切地知道它发送了什么，因此，一个和弦是三个音符，而不是转录问题，而一个单独的声学传感器会测量每个引擎**在源头**进行验证。测量的成本约为**每个音频回调 9 微秒**；延迟是明确说明的，而不是暗示的（~23 毫秒音高，~70 毫秒确认的起始时间）；并且限制已记录，因为它们是可以操作的——跟踪器是单声道的，分层子项是单独跟踪的，而不是作为混合进行跟踪，并且没有传感器的乐器不是静音乐器。

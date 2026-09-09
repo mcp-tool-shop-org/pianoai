@@ -299,6 +299,23 @@ Requiere **Node.js 22+** (v2.0.0 elevó el mínimo con `node-web-audio-api` 2.0)
 }
 ```
 
+### Docker
+
+Cada versión también publica `ghcr.io/mcp-tool-shop-org/ai-jam-sessions`, una imagen ligera que ejecuta el servidor MCP en stdio. Lo importante es saber que `/data` es la memoria: el registro, el estado del servidor, las canciones del usuario y cualquier MIDI descargado se almacenan allí, por lo que debe montar un volumen o se perderán con el contenedor.
+
+```json
+{
+  "mcpServers": {
+    "ai_jam_sessions": {
+      "command": "docker",
+      "args": ["run", "--rm", "-i", "-v", "ai-jam-data:/data", "ghcr.io/mcp-tool-shop-org/ai-jam-sessions"]
+    }
+  }
+}
+```
+
+La imagen incluye los 14 archivos MIDI redistribuibles; ejecutar `library fetch --accept-source-terms` una vez dentro del contenedor coloca los otros 94 en el volumen. `docker compose up` hace lo mismo con un volumen con nombre, y `--profile ollama` agrega un contenedor secundario de Ollama. Detalles, la CLI dentro de la imagen y lo que deliberadamente no está incluido: [docs/docker.md](docs/docker.md). Ejecutar los evaluadores ajustados en Ollama, con el costo medido de una base de 4 bits: [docs/ollama-adapters.md](docs/ollama-adapters.md).
+
 ## MCP Tools
 
 49 herramientas y 4 plantillas de indicaciones en siete categorías:
@@ -437,8 +454,8 @@ ai-jam-sessions --version
 
 ## Estado
 
-**v2.6.0: la versión que deja de incluir contenido para el que no tenía licencia** (véase [CHANGELOG](CHANGELOG.md)).
-Una auditoría de procedencia por archivo de la biblioteca de canciones reveló que, de las 108 arreglos MIDI, 14 tienen una licencia que permite la redistribución y 94 no; además, se descubrió que doce archivos corresponden a piezas diferentes de las que indica su nombre. Ahora, cada canción incluye un bloque `provenance` con pruebas que lo respaldan (URL de origen, términos del sitio, el arreglista como nombre del evento de derechos de autor del archivo, SHA-256, veredicto del título); las doce canciones se han puesto en cuarentena; el paquete npm incluye las 14 y marca el resto como *no descargado*, y `ai-jam-sessions library fetch --accept-source-terms` descarga cada una del sitio que la publicó, según los términos de ese sitio, rechazando cualquier archivo cuyo hash ya no coincida. Las versiones anteriores incluían los 120 archivos y están obsoletas en npm. La misma auditoría restableció el conjunto de datos jam-actions-v1 a las once canciones cuyos arreglos se han verificado (tres Krueger CC-BY-SA-3.0-DE, ocho Mutopia Public Domain); el corpus, su sonda de umbral y el arco de entrenamiento que encontró el objetivo de la obra mostrada (un LoRA de 3B y rango 16 con una receta sin cambios que parte de una clase anterior a 54/54 y 72/72 cerca del umbral, una vez que el asistente escribió los dígitos de la comparación) se encuentran en el repositorio bajo `datasets/` y `experiments/coverage-v1-sft/`, y su publicación en Hugging Face y Zenodo se realizará a partir del corpus verificado. También en esta versión: `scorePerformance` limita la ventana correcta en el umbral del llamador, de modo que la regla de la casa de 40 ms es exactamente la ventana de veredicto.
+**v2.6.0: la versión que deja de incluir contenido para el que no tenía licencia** (ver [CHANGELOG](CHANGELOG.md)).
+Una auditoría de procedencia por archivo de la biblioteca de canciones reveló que, de los 108 arreglos MIDI, 14 tienen una licencia que permite la redistribución y 94 no; además, se descubrió que doce archivos eran piezas diferentes a las que indicaba su nombre. Ahora, cada canción incluye un bloque `provenance` con pruebas (URL de origen, los términos del sitio, el arreglista como el nombre del evento de derechos de autor del archivo, SHA-256, veredicto del título); las doce canciones se han puesto en cuarentena; el paquete npm incluye las 14 y marca el resto como *no descargado*, y `ai-jam-sessions library fetch --accept-source-terms` descarga cada una del sitio que la publicó, según los términos de ese sitio, rechazando cualquier archivo cuyo hash ya no coincida. Las versiones anteriores incluían los 120 archivos y están obsoletas en npm. La misma auditoría restableció el conjunto de datos jam-actions-v1 a las once canciones cuyos arreglos están verificados (tres Krueger CC-BY-SA-3.0-DE, ocho Mutopia Public Domain); el corpus, su sonda de puerta cercana y el arco de entrenamiento que encontró el objetivo de trabajo mostrado (un LoRA de rango 16 de 3B con una receta sin cambios que va de una clase anterior a 54/54 retenida y 72/72 cerca de la puerta una vez que el asistente escribió los dígitos de la comparación) se encuentran en el repositorio bajo `datasets/` y `experiments/coverage-v1-sft/`, y su publicación en Hugging Face y Zenodo seguirá a partir del corpus verificado. También en esta versión: `scorePerformance` limita la ventana correcta en la puerta del llamador, por lo que la regla de la casa de 40 ms es exactamente la ventana de veredicto.
 
 **v2.5.0: la versión en la que el modelo puede ver a la banda tocar** (consulta [CHANGELOG](CHANGELOG.md)).
 `ensemble_now` informa de lo que está haciendo cada instrumento mientras la música sigue sonando: notas sostenidas por instrumento, cuánto tiempo se han sostenido y el acorde combinado. Se ejecuta en dos canales, y el más barato es el más preciso: cuando este servidor lo ejecuta, sabe exactamente lo que envió, por lo que un acorde son tres notas en lugar de un problema de transcripción, mientras que una toma acústica separada mide cada motor **en la fuente** para su verificación. El costo medido es de aproximadamente **9 microsegundos por llamada de retorno de audio**: la latencia se indica en lugar de implicarse (~23 ms de tono, ~70 ms de inicio confirmado); y los límites se documentan porque se pueden aplicar: el rastreador es monofónico, los elementos secundarios se miden individualmente y nunca como una mezcla, y un instrumento sin toma no es un instrumento silencioso.

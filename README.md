@@ -352,6 +352,30 @@ Requires **Node.js 22+** (v2.0.0 raised the floor with `node-web-audio-api` 2.0)
 }
 ```
 
+### Docker
+
+Every release also publishes `ghcr.io/mcp-tool-shop-org/ai-jam-sessions`, a slim image that runs
+the MCP server on stdio. The one thing to know is that `/data` is the memory: the journal, server
+state, user songs and any fetched MIDI live there, so mount a volume or they die with the
+container.
+
+```json
+{
+  "mcpServers": {
+    "ai_jam_sessions": {
+      "command": "docker",
+      "args": ["run", "--rm", "-i", "-v", "ai-jam-data:/data", "ghcr.io/mcp-tool-shop-org/ai-jam-sessions"]
+    }
+  }
+}
+```
+
+The image ships the 14 redistributable MIDI files; `library fetch --accept-source-terms` run once
+inside the container puts the other 94 in the volume. `docker compose up` does the same with a
+named volume, and `--profile ollama` adds an Ollama sidecar. Details, the CLI inside the image and
+what is deliberately not in it: [docs/docker.md](docs/docker.md). Running the fine-tuned graders
+in Ollama, with the measured cost of a 4-bit base: [docs/ollama-adapters.md](docs/ollama-adapters.md).
+
 ## MCP Tools
 
 54 tools and 4 prompt templates across eight categories:
