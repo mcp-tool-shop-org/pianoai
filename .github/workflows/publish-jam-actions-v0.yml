@@ -584,8 +584,10 @@ jobs:
           echo "  Dataset dir:         ${DIR:-'(unresolved)'}"
           if [ "$NEWVERSION_OF" = "none" ]; then
             echo "  Zenodo path:         fresh deposit"
+          elif printf '%s' "${NEWVERSION_OF:-}" | grep -Eq '^[0-9]+$'; then
+            echo "  Zenodo path:         new version of $NEWVERSION_OF"
           else
-            echo "  Zenodo path:         new version of ${NEWVERSION_OF:-'(unresolved)'}"
+            echo "  Zenodo path:         (invalid: ${NEWVERSION_OF:-})"
           fi
           echo "  Ref:                 $REF"
           echo "  Version:             ${{ steps.version.outputs.version }}"
