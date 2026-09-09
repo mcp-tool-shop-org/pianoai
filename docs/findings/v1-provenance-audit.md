@@ -1,5 +1,14 @@
 # jam-actions-v1 provenance audit — 2026-09-09
 
+> **Corrected by the library-wide audit later the same day
+> ([library-provenance-audit.md](library-provenance-audit.md)).** Four of the seven songs the
+> table below calls Krueger / piano-midi.de are not: chopin-nocturne-op9-no2, pathetique-mvt2 and
+> schumann-traumerei were downloaded from midiworld.com and chopin-prelude-e-minor from bitmidi;
+> none carries a Krueger copyright event (this audit read the configs' `source` field, which the
+> bootstrap had stamped on all ten classical entries). The publishable set is therefore **11**, not
+> 15: bach, fur-elise, mozart and the eight Mutopia rags. Every song's JSON now carries an
+> evidence-backed `provenance` block; read that, not this table.
+
 **Verdict: the 371-record corpus is not publishable as it stands.** 20 of its 27 songs carry no
 verified arrangement licence, and two of those are not the song their file says they are. The
 builder had stamped all 27 `source_type: transcribed-by-author, verifier: v1-builder` — a label, not

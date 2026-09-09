@@ -32,5 +32,44 @@
       "Shape each chorus peak (23 onsets at measures 30, 54, and 102) identically so the three statements rhyme — listen for the same crest arriving three times, then let the final silent measures 110-111 end the piece without a struck ending.",
       "Imitate a reference recording by ear for the melody's rubato and vocal phrasing — the tradition transmits its feel through records; the notated grid here is the frame, not the performance."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/63432.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "Tran Tracks Inc. (copyright event, 1992)",
+    "arrangement_license": "all-rights-reserved",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about; midi meta events (sha256 fcd1aabc295d…)",
+    "midi_sha256": "fcd1aabc295d4047f113d9495ffef740bcc04ae6d94c5e1ba98d373cad2653ba",
+    "midi_title_events": [
+      "JOHNNY B. GOODE",
+      "JOHNNY B.GOODE",
+      "Acoustic Bs.",
+      "Piano 2",
+      "Clean Gt.",
+      "Overdrive Gt",
+      "Drums",
+      "TRAN TRACKS INC.",
+      "350 5th Ave. #3304",
+      "New York, NY 10118"
+    ],
+    "midi_credit_events": [
+      "(c) Copyright 1992"
+    ],
+    "credited_parties": [
+      {
+        "name": "TRAN TRACKS INC.",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "contradicts",
+    "quarantine": {
+      "at": "2026-09-09",
+      "actual_piece": "Johnny B. Goode (Chuck Berry) — the file's marker and track name; a 1992 file cannot be John Legend's 2004 song",
+      "reason": "the file's own meta events name a different piece"
+    }
   }
 }

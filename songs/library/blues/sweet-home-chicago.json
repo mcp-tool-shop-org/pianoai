@@ -33,5 +33,35 @@
       "Play the ending so it genuinely fades — ease off both hands together through measures 134-135 rather than playing a definitive final chord the data doesn't support.",
       "Use the first two measures to settle the groove gently (they're noticeably sparser) before you play into full boogie energy."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/18585.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "Adamantine Luster (named in the file's marker, with a phone number and FidoNet address)",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "3c7872e976ef7b54947aec911acd19cd07eb67180490abe8505b5bb0831b58b9",
+    "midi_title_events": [
+      "Sweet Home Chicago Call Adamantine Luster @214-387-1143, fido 1:124/9055",
+      "bass",
+      "piano",
+      "guitar",
+      "rhythym",
+      "lead",
+      "kick drum",
+      "drums"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [
+      {
+        "name": "Adamantine Luster",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "matches"
   }
 }

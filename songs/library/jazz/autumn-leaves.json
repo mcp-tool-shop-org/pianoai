@@ -4,7 +4,14 @@
   "genre": "jazz",
   "difficulty": "intermediate",
   "key": "G minor",
-  "tags": ["jazz", "standard", "autumn-leaves", "ii-V-I", "circle-of-fourths", "vocal-standard"],
+  "tags": [
+    "jazz",
+    "standard",
+    "autumn-leaves",
+    "ii-V-I",
+    "circle-of-fourths",
+    "vocal-standard"
+  ],
   "composer": "Joseph Kosma",
   "status": "ready",
   "musicalLanguage": {
@@ -31,5 +38,34 @@
       "Leave space in comping: don't play on every beat. The classic jazz comp rhythm is syncopated — hit on the 'and' of 2 and on 4, or use the Charleston rhythm (beat 1, and-of-2). Space between chords is what makes jazz breathe.",
       "For singing: think of how you'd tell someone a story at a quiet dinner. Jazz vocals are conversational — you're confiding, not projecting. Place consonants lightly, sustain vowels, and bend into notes from slightly below (a subtle scoop, not a country slide). Billie Holiday, not Barbra Streisand."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/8402.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "69e0d743a90f8869ab7d189b64c42ee747fa9633e8da7eaef8fdc4c30182a946",
+    "midi_title_events": [
+      "JAZZ GTR",
+      "ACOU BASS",
+      "SLOWSTRING",
+      "MELODY",
+      "FLUTE",
+      "CLARINET",
+      "ALTO SAX",
+      "FR.HORN",
+      "TROMBONE",
+      "TUBA",
+      "HARP",
+      "GS/RESET"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

@@ -4,7 +4,15 @@
   "genre": "latin",
   "difficulty": "intermediate",
   "key": "F major",
-  "tags": ["latin", "bossa-nova", "jobim", "brazilian", "standard", "vocal-standard", "chromatic-modulation"],
+  "tags": [
+    "latin",
+    "bossa-nova",
+    "jobim",
+    "brazilian",
+    "standard",
+    "vocal-standard",
+    "chromatic-modulation"
+  ],
   "composer": "Antonio Carlos Jobim",
   "status": "ready",
   "musicalLanguage": {
@@ -31,5 +39,24 @@
       "Don't swing this. The eighth notes are straight (even), not swung. Players coming from jazz swing often make this mistake. Bossa nova's feel comes from its syncopation, not from uneven eighth notes.",
       "For singing: think Astrud Gilberto, not Ella Fitzgerald. The voice should be small, breathy, and almost whispered — as if you're singing to one person sitting very close. Pronounce words softly, let notes begin without attack, and resist any urge to add power or vibrato. The beauty is in the vulnerability."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/102483.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "9d1887092d2a498a444d1a912a28bb36b4ad414fa29ccfbb855425dff1e1b6d1",
+    "midi_title_events": [
+      "A.PIANO 1",
+      "GS/RESET"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

@@ -32,5 +32,43 @@
       "Listen for the alternation between F# major and A# minor seventh as the piece's true pulse, and let your ear track its evenly spaced return rather than treating each appearance as a surprise.",
       "Try pacing your endurance across the full 44 measures from the first attempt, even slowly — since there's no written rest to recover in, building stamina at a manageable tempo matters more here than isolating short passages."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/46174.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "Jeff Copperthite (FFT Battle Music Project, per the file)",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about; midi meta events (sha256 2b3bf0e63e46…)",
+    "midi_sha256": "2b3bf0e63e46ed93c2a7680bebc9f2b08ab98f4516a8b3c8b0eafac07e152a01",
+    "midi_title_events": [
+      "Scheming at Igros",
+      "Trombone",
+      "Bass",
+      "Tube Bells",
+      "Strings",
+      "Final Fantasy Tactics",
+      "Capture Ovelia!",
+      "FFT Battle Music Project",
+      "http://members.tripod.com/~fftjrc_2"
+    ],
+    "midi_credit_events": [
+      "By: Jeff Copperthite"
+    ],
+    "credited_parties": [
+      {
+        "name": "Jeff Copperthite",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "contradicts",
+    "quarantine": {
+      "at": "2026-09-09",
+      "actual_piece": "'Capture Ovelia!' from Final Fantasy Tactics (Hitoshi Sakimoto), sequenced by Jeff Copperthite — the file's own title events",
+      "reason": "the file's own meta events name a different piece"
+    }
   }
 }

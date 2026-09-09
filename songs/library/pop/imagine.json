@@ -4,7 +4,15 @@
   "genre": "pop",
   "difficulty": "beginner",
   "key": "C major",
-  "tags": ["pop", "lennon", "piano", "iconic", "ballad", "vocal-hymn", "protest-song"],
+  "tags": [
+    "pop",
+    "lennon",
+    "piano",
+    "iconic",
+    "ballad",
+    "vocal-hymn",
+    "protest-song"
+  ],
   "composer": "John Lennon",
   "status": "ready",
   "musicalLanguage": {
@@ -31,5 +39,28 @@
       "The pace of the song is around 76 BPM quarter note — walking speed, thinking speed. It should feel like you have all the time in the world. If you feel rushed, slow down.",
       "For singing: forget everything you know about 'good singing.' This song demands honesty, not technique. Sing in your speaking register, let vowels be natural (not operatically rounded), let breath sounds be audible, and mean the words. Lennon's vocal on the recording is imperfect — slightly nasal, slightly flat in places — and that imperfection is what makes it human and devastating."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/63264.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "76a9e5412c87716967bf2a76c099588194f29e87a915d5403b556f17d8fca093",
+    "midi_title_events": [
+      "tk1",
+      "tk2",
+      "tk3",
+      "tk4",
+      "tk5",
+      "tk10"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

@@ -62,6 +62,8 @@ datasets/jam-actions-v1-public/** text eol=lf
 datasets/jam-actions-v1-probe/** text eol=lf
 datasets/jam-actions-v1-probe-public/** text eol=lf
 songs/library/**/*.json text eol=lf
+# Quarantined songs carry the same JSON (plus a provenance block); same pin.
+songs/quarantine/**/*.json text eol=lf
 *.mid binary
 *.ogg binary
 samples/**/*.wav binary

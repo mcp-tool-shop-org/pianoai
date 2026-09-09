@@ -32,5 +32,39 @@
       "Once the vamp locks in, keep it absolutely steady — the piece's identity for the next 260-plus measures depends on that left-hand pattern feeling automatic, not effortful.",
       "Use the 7-measure quiet patch around measures 192-198 as a real dynamic dip, not just a quieter version of the same energy — contrast is the point."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/45218.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "65b9a796fc0f18e006b51f229feddbbd079af95ae7168e8149e969cd4ee8cc4e",
+    "midi_title_events": [
+      "Intro Piano",
+      "Intro Harp",
+      "Chior",
+      "Waltzy",
+      "Lead Synth",
+      "Lead String",
+      "flutsy",
+      "chior2",
+      "Guitar1",
+      "Bass",
+      "Guitar2",
+      "auto Symbols",
+      "Timphony",
+      "Auto Drum",
+      "Drums",
+      "That Extra guy",
+      "Free Symbols"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

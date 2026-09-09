@@ -32,5 +32,43 @@
       "Feel the density peak at measures 28-32 as a genuine arrival, not just more notes to get through — let the extra onsets register as intensity, not just busyness.",
       "Try letting your hands actually stop at measure 127 rather than fading out gradually — the piano part's silence here is total and immediate, not a decrescendo."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/63595.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "08a07ee27a19467cc7257f18cc0b67311bebc02a135c7b814b2ef798585ec717",
+    "midi_title_events": [
+      "piano",
+      "strangers",
+      "instrumental",
+      "guitar solo",
+      "ad lib",
+      "end",
+      "lead guitar",
+      "synth strings",
+      "orchestra hit",
+      "bass",
+      "choir",
+      "synth strings2",
+      "future pad",
+      "toms",
+      "kick",
+      "snare",
+      "highhat",
+      "crash cymbal",
+      "ride cymbal",
+      "tamborine",
+      "splash cymbal"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

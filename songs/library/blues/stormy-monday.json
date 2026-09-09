@@ -32,5 +32,23 @@
       "Lean into rich, unsettled chord color rather than plain triads — both the real T-Bone Walker recording's ninth-chord voicings and this transcription's own contested major/minor chord-window reads point the same direction: richness over plain triads.",
       "Play the final measure genuinely quiet — after the loudest 20 measures in the piece, a single soft note is the intended release, not an anticlimax to fix."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/5364.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "291055ad7c817eea3c7e85e4f8b82d48b88f9dd18baa335d3895f807a315de62",
+    "midi_title_events": [],
+    "midi_credit_events": [],
+    "midi_lyric_head": "They call it stormy Monday, but Tuesday's just as bad They call it stormy Monday, but Tuesday's just as bad Lord and Wednesday's worse, Thursday's oh so sad The",
+    "credited_parties": [],
+    "title_verdict": "matches",
+    "title_note": "identified by its lyric track; the file has no title event"
   }
 }

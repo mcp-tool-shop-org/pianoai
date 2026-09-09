@@ -31,5 +31,37 @@
       "Play the final G#maj7 cadence at measure 144 with the seventh, the color tone, audible in the voicing rather than buried — a plain-triad ending would flatten Joplin's own choice.",
       "Try the left-hand oom-pah alone through measures 33-64, the contrasting B strain, before adding the right hand — its internal repeats (measures 33-48 restating at 49-64) reward hands-separate practice."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://www.mutopiaproject.org/ftp/JoplinS/maple/maple.mid",
+    "source_site": "www.mutopiaproject.org",
+    "arrangement_creator": "Chris Sawer (Mutopia typesetter, LilyPond)",
+    "arrangement_license": "Public-Domain",
+    "terms_url": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=23",
+    "terms_quote": "Copyright: Public Domain (piece page); Public Domain: The contributor of this music has dedicated their contribution into the public domain. You can do what you like with this music - print it out, sell it, change it, distribute it, record it, and perform it, etc.",
+    "verified_at": "2026-09-09",
+    "verifier": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=23; midi meta events (sha256 3dd712a85fab…)",
+    "midi_sha256": "3dd712a85fabd267f5a2cee5cb23af4683408c2f29b8814721844498f1ee4f66",
+    "midi_title_events": [
+      "control track",
+      "GNU LilyPond 2.14.2",
+      "up:",
+      "down:"
+    ],
+    "midi_credit_events": [
+      "creator:"
+    ],
+    "credited_parties": [
+      {
+        "name": "GNU LilyPond",
+        "evidence": "midi-meta"
+      },
+      {
+        "name": "Chris Sawer",
+        "evidence": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=23"
+      }
+    ],
+    "title_verdict": "no-title-in-file"
   }
 }

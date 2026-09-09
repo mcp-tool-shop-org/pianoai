@@ -32,5 +32,79 @@
       "Keep the minor-key harmony dark and a little claustrophobic — don't brighten the C#m7-F#m7-G#7 voicings the way you might for a major-key blues.",
       "When the riff returns at measure 97, play it with the same weight as its first appearance at measure 11 — don't let a returning idea feel like an afterthought."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/5810.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "TUNE 1000 CORP. (karaoke file, 1994)",
+    "arrangement_license": "all-rights-reserved",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about; midi meta events (sha256 f2694647d0d4…)",
+    "midi_sha256": "f2694647d0d41a2e2447d79a126622789cc7219a2f72ed9b83d3650cf7a0993b",
+    "midi_title_events": [
+      "MIDI",
+      "@KMIDI KARAOKE FILE tm",
+      "@KAll rights reserved, TUNE 1000 CORP.",
+      "@VO100",
+      "@I 01-10-94, 19:32, V.T.",
+      "Words",
+      "@LENGL",
+      "@TBANDIDO",
+      "@TM.Bosé/E.Aldrighetti/O.Avosadro/S.Cossu",
+      "@WTodos los derechos reservados.",
+      "@WProhibido su COPIA o ALQUILER y",
+      "@Wtodo tipo de DIFUSIÓN.",
+      "vien",
+      "que",
+      "por",
+      "dad",
+      "fri",
+      "rá.",
+      "tor",
+      "men",
+      "to y",
+      "mor",
+      "que a",
+      "rras",
+      "tra a",
+      "los",
+      "dos",
+      "tú,",
+      "rás",
+      "tu a",
+      "man",
+      "ban",
+      "zón",
+      "mal",
+      "cau",
+      "¡ahum!",
+      "sión",
+      "pri",
+      "da a",
+      "do e"
+    ],
+    "midi_credit_events": [
+      "@KCopyright EMI International rights secured",
+      "@T[JJM] Copyright 1994"
+    ],
+    "credited_parties": [
+      {
+        "name": "TUNE 1000 CORP.",
+        "evidence": "midi-meta"
+      },
+      {
+        "name": "[JJM]",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "contradicts",
+    "quarantine": {
+      "at": "2026-09-09",
+      "actual_piece": "Bandido (Miguel Bosé) — a Spanish-language TUNE 1000 karaoke file (@TBANDIDO, @TM.Bosé/E.Aldrighetti/O.Avosadro/S.Cossu)",
+      "reason": "the file's own meta events name a different piece"
+    }
   }
 }

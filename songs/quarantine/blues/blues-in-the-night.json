@@ -33,5 +33,47 @@
       "Let the final two silent measures actually be silent — resist the urge to add a closing flourish the score doesn't ask for.",
       "This is torch-song blues, not shuffle blues: keep the eighth notes closer to even than swung, and lean on legato phrasing over the sustain pedal rather than staccato comping."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/18375.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "dfc1dbb10eba5dd8edacb5300d2c6bbfd622234f31945cd7a2b90e2d149010e1",
+    "midi_title_events": [
+      "Blowing Kisses in",
+      "The Wind",
+      "Melody",
+      "Drums",
+      "Bass",
+      "Keyboard",
+      "Guitar",
+      "Strings 1",
+      "Strings 2",
+      "Harpsichord",
+      "Percussion",
+      "Horns",
+      "Vocals",
+      "As Performed by:",
+      "Paula Abdul"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [
+      {
+        "name": "Paula Abdul",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "contradicts",
+    "quarantine": {
+      "at": "2026-09-09",
+      "actual_piece": "Blowing Kisses in the Wind (Paula Abdul) — the file's track names are the song title and 'As Performed by: Paula Abdul'",
+      "reason": "the file's own meta events name a different piece"
+    }
   }
 }

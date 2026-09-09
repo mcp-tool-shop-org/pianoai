@@ -33,5 +33,38 @@
       "Feel the climactic left-hand ostinato (measures 150-169) as the engine driving the ending, not just an accompaniment — its own internal repetition is what gives the final section its sense of inevitability.",
       "Try tracking the recurring 4-measure cell (measures 26 onward) consciously during practice — recognizing it by ear turns a 171-measure piece into a much shorter set of ideas to actually learn."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/51378.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "Anthony Peters (By:, per the file)",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about; midi meta events (sha256 b8394da544a7…)",
+    "midi_sha256": "b8394da544a7e66c60d81dab97726035f2bc9af476c0b88a4e0dcfe1d1caf1b4",
+    "midi_title_events": [
+      "Axl Rose -Piano-",
+      "Axl Rose -Vocals-",
+      "String Section",
+      "-Slash -Lead and rythem-",
+      "Reed Section",
+      "String Section Backup",
+      "Matt -Percussion-",
+      "November Rain -UYI1-",
+      "Performed by GN'R"
+    ],
+    "midi_credit_events": [
+      "By: Anthony Peters"
+    ],
+    "credited_parties": [
+      {
+        "name": "Anthony Peters",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "matches"
   }
 }

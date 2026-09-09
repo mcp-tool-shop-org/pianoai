@@ -32,5 +32,30 @@
       "Listen for the low-confidence G# minor seventh and C# minor seventh chords as color, not certainty — voice them lightly, matching the honestly thin evidence behind them.",
       "Try building stamina for continuous playing from the very first measure, since there is no written rest anywhere in this short excerpt to rely on for recovery."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/84380.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "b3049f9f6ca66dee5a68ef14d16e93ab7ba6b54e785fe22595b11e0d93a034a7",
+    "midi_title_events": [
+      "Livre pra Viver-Pedro Mariano",
+      "Livre pra Viver",
+      "Pedro Mariano"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "contradicts",
+    "quarantine": {
+      "at": "2026-09-09",
+      "actual_piece": "Livre pra Viver (Pedro Mariano) — the file's marker and track names",
+      "reason": "the file's own meta events name a different piece"
+    }
   }
 }

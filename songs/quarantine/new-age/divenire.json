@@ -32,5 +32,45 @@
       "Listen for measure 23's isolated density peak and let your dynamic shape genuinely single it out — don't let the surrounding measures 34, 35, 70, and 71 compete with it for prominence.",
       "Try building real endurance for this piece specifically: with essentially no written rest across 72 measures, practice in shorter segments first, then gradually connect them into the full continuous span."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/39010.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "3d27ffaad1a49dfbf9eff7302fa53834de17e8b7c259320db79137cfeed0e6ac",
+    "midi_title_events": [
+      "\"Hades awaits even the bravest of mortals someday...\"",
+      "gregor_rozman@hotmail.com",
+      "Tambourine",
+      "Tremolo bass strings",
+      "Sitar",
+      "Harp left",
+      "Harp right",
+      "Piano forte",
+      "Bells",
+      "Slow strings",
+      "French horn",
+      "Timpani",
+      "Lava bubble"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [
+      {
+        "name": "gregor_rozman",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "contradicts",
+    "quarantine": {
+      "at": "2026-09-09",
+      "actual_piece": "an unidentified piece whose title event reads 'Hades awaits even the bravest of mortals someday...' (gregor_rozman@hotmail.com), scored for tambourine, sitar, harp, timpani and 'Lava bubble' — not Einaudi's Divenire",
+      "reason": "the file's own meta events name a different piece"
+    }
   }
 }

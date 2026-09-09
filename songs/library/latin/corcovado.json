@@ -32,5 +32,30 @@
       "Voice the F#7 windows (measures 22, 25, 58, 61) with a touch more presence — that raised leading tone is the strongest pull toward B minor the implied harmony offers; listen for the settling when a Bm window follows.",
       "Use the 34-measure return at measures 43-76 as a chance to play softer and more inwardly the second time — same notes, different story; listen for a real dynamic difference between the two statements."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/25662.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "a1211303ac3832036a94cebc7a4ccc20156577ab21e620e04598f6b33a1a9a66",
+    "midi_title_events": [
+      "FLUTE",
+      "ACOU BASS",
+      "NYLON GTR",
+      "SLOWSTRING",
+      "TRUMPET",
+      "VIBRAPHONE",
+      "DRUMS",
+      "GS/RESET"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

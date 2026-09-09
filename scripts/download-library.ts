@@ -512,6 +512,33 @@ const FOLK: LibraryImport[] = [
   { midiFile: "auld-lang-syne.mid", downloadUrl: "https://bitmidi.com/uploads/8326.mid", config: raw("auld-lang-syne", "Auld Lang Syne", "folk", { composer: "Traditional Scottish", key: "F major", tags: ["folk", "scottish", "new-year"], difficulty: "beginner" }) },
 ];
 
+// ─── Quarantined ────────────────────────────────────────────────────────────
+//
+// Songs whose committed .mid turned out to be a DIFFERENT piece — the file's
+// own title/copyright meta events name another song (2026-09-09 provenance
+// audit, docs/findings/library-provenance-audit.md). They now live in
+// songs/quarantine/<genre>/ with a `provenance` block that says what each file
+// actually is. Their entries stay in the tables above so the URL that produced
+// the wrong bytes is on record; the bootstrap must never fetch them again.
+// A replacement needs its own provenance (source, terms, meta events) before
+// it re-enters the library; src/songs/provenance.test.ts checks this set
+// against songs/quarantine/.
+
+const QUARANTINED_IDS = new Set<string>([
+  "blues-in-the-night",
+  "born-under-a-bad-sign",
+  "cinema-paradiso",
+  "divenire",
+  "experience",
+  "kiss-the-rain",
+  "opening-glassworks",
+  "ordinary-people",
+  "red-house",
+  "scarborough-fair",
+  "someone-you-loved",
+  "the-water-is-wide",
+]);
+
 // ─── All genres ─────────────────────────────────────────────────────────────
 
 const ALL_GENRES: Record<string, LibraryImport[]> = {
@@ -622,6 +649,12 @@ async function main(): Promise<void> {
       const cachePath = join(MIDI_CACHE, imp.midiFile);
       const midiDest = join(genreDir, `${imp.config.id}.mid`);
       const configDest = join(genreDir, `${imp.config.id}.json`);
+
+      if (QUARANTINED_IDS.has(imp.config.id)) {
+        console.log(`  SKIP ${imp.config.id}: quarantined — the source URL served a different piece (see songs/quarantine/${genre}/)`);
+        skipped++;
+        continue;
+      }
 
       if (shouldSkipExistingLibraryFile(existsSync(configDest))) {
         console.log(`  SKIP ${imp.config.id}: config already exists`);

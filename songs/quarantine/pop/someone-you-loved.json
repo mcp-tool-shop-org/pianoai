@@ -32,5 +32,35 @@
       "Feel the long build toward measure 68 as continuous — let the density increase translate into a genuine, sustained rise in intensity rather than holding back until the last possible moment.",
       "Try landing the final measure (114) with quiet resolve rather than letting it disappear — three onsets is enough to end with intention, not just trail off."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/69257.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "MdB Software (copyright event, 1994)",
+    "arrangement_license": "all-rights-reserved",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about; midi meta events (sha256 22009a954d83…)",
+    "midi_sha256": "22009a954d837e0919b7434ab5e5f71efb437c43b6132751972a762fb5a167f3",
+    "midi_title_events": [
+      "Living on my own"
+    ],
+    "midi_credit_events": [
+      "(C)1994 by MdB Software"
+    ],
+    "credited_parties": [
+      {
+        "name": "MdB Software",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "contradicts",
+    "quarantine": {
+      "at": "2026-09-09",
+      "actual_piece": "Living on My Own (Freddie Mercury, 1985) — the file's title event; a 1994 file cannot be Lewis Capaldi's 2018 song",
+      "reason": "the file's own meta events name a different piece"
+    }
   }
 }

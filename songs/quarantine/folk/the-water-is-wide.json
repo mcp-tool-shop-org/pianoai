@@ -33,5 +33,42 @@
       "Give the one-note pickup at measure 1 real space before the accompaniment enters on measure 2 — a small breath that sets the reflective tone for what follows.",
       "Avoid adding dynamic swells the data doesn't support — with density this evenly distributed, use phrasing and touch, not volume contrast, to carry the expressive weight."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/102887.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "L. Roberts (sequence, per the file)",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about; midi meta events (sha256 89e3f34b0ea1…)",
+    "midi_sha256": "89e3f34b0ea1021b4be14c8a34fa141876f80ddecc88b7bfa2441f8506cc18a5",
+    "midi_title_events": [
+      "Melody",
+      "THE GLENDY BURK",
+      "Piano Treble",
+      "-1860",
+      "Piano Bass",
+      "Stephen Foster",
+      "GS Sound Canvas",
+      "71301,1145"
+    ],
+    "midi_credit_events": [
+      "Seq. L. Roberts"
+    ],
+    "credited_parties": [
+      {
+        "name": "L. Roberts",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "contradicts",
+    "quarantine": {
+      "at": "2026-09-09",
+      "actual_piece": "The Glendy Burk (Stephen Foster, 1860), sequenced by L. Roberts",
+      "reason": "the file's own meta events name a different piece"
+    }
   }
 }

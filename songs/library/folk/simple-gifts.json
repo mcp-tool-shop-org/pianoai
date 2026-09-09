@@ -33,5 +33,22 @@
       "Feel the melody breathe simply within its single octave — don't reach outside the hand position the piece itself never asks for.",
       "If you know Copland's Appalachian Spring variations, avoid borrowing their orchestral grandeur here — this is the plain F-major tune before the variations, and it should stay that way."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://www.mfiles.co.uk/downloads/simple-gifts.mid",
+    "source_site": "www.mfiles.co.uk",
+    "arrangement_creator": "Music Files Ltd (mfiles.co.uk) — arranger not named in the file",
+    "arrangement_license": "no-redistribution",
+    "terms_url": "https://www.mfiles.co.uk/copyright.htm",
+    "terms_quote": "Music Files Ltd holds copyrights on most of the material within the mfiles site, specifically on musical arrangements (whether sheet music, midi or mp3 formats) [...] Our music and other material must never be redistributed without permission, either as is or adapted in any way.",
+    "verified_at": "2026-09-09",
+    "verifier": "https://www.mfiles.co.uk/copyright.htm",
+    "midi_sha256": "971fa3be235486b1c20918f89f0e8023203a87e2c3ce2ee95635c3f1681b57f4",
+    "midi_title_events": [],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file",
+    "notes": "The file carries no meta events; mfiles' copyright page is the only evidence for the arranger and it names Music Files Ltd, not a person."
   }
 }

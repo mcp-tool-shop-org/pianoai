@@ -33,5 +33,28 @@
       "Treat the opening and closing silences as real silence, with the pedal fully lifted — don't let residual resonance blur what should be a clean, still frame around the performance.",
       "Keep the tempo relaxed and behind the beat through the long buildup (measures 1-25) so the arrival at measure 26 feels inevitable rather than sudden."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/62099.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "4c9afb60818c5803976be7462a9129b44d387abdbd0d82c4517fde6d5981fb2f",
+    "midi_title_events": [
+      "Jail Hous"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "contradicts",
+    "quarantine": {
+      "at": "2026-09-09",
+      "actual_piece": "probably Jailhouse Rock — the file's only title-class event is the track name 'Jail Hous'",
+      "reason": "the file's only title event names a different song; nothing in the file says Red House or Hendrix"
+    }
   }
 }

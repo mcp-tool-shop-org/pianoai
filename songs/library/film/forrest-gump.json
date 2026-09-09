@@ -32,5 +32,45 @@
       "Listen for the G4-to-D5 melodic fragment at measures 3-5 as a fingerprint — when it returns at measures 41-42, let your ear and your dynamic choice mark it as a recognizable close, not new material.",
       "Try shaping measures 21-36 as the emotional high point given how much of the piece's busiest material actually concentrates there — don't spend all your dynamic range early."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/29307.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "Rick Ho (sequenced by, per the file)",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about; midi meta events (sha256 7eca91163e37…)",
+    "midi_sha256": "7eca91163e37b1124370cbcd3253d44548353a30780445bfcf502632afa5167b",
+    "midi_title_events": [
+      "Piano left",
+      "Piano right",
+      "Foot controler",
+      "Strings Part 1",
+      "Horns",
+      "Stirngs Part 2",
+      "Tremelo Strings",
+      "Oboe",
+      "Harp",
+      "Pizzicato",
+      "Slow Strings",
+      "Rick Ho",
+      "comments?",
+      "e-mail",
+      "h9457716@hkueee | .hku.hk",
+      "Dedicated to CH | RiS T"
+    ],
+    "midi_credit_events": [
+      "Sequenced by"
+    ],
+    "credited_parties": [
+      {
+        "name": "Rick Ho",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "no-title-in-file"
   }
 }

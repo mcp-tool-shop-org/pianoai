@@ -32,5 +32,57 @@
       "Listen for the diatonic C-Em-G-D cycle as the real harmonic home of the piece, and let your ear settle into G major rather than reaching for the Db major label this transcription originally carried.",
       "Try building the piece's two large repeating blocks with real endurance in mind — since so much of the piece is these two extended blocks, pace yourself across their full length rather than only the shorter opening material."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/64090.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "Henry Choi and Mike Doyle (Roland MT-32 sequence, per the file)",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about; midi meta events (sha256 af2c1a7f214c…)",
+    "midi_sha256": "af2c1a7f214c1b5564ae889b67390c8c923afa4b46785c2ff09783ecb3b61663",
+    "midi_title_events": [
+      "MT-32 and compatibles by Henry Choi and Mike Doyle of Huntsville, AL.",
+      "kick drum",
+      "elec. snare",
+      "closed hi hat",
+      "bass",
+      "synth bass",
+      "rythmn",
+      "lead (strings)",
+      "dbld lead",
+      "accent",
+      "====================",
+      "Depeche Mode's",
+      "\"Just Can't Get",
+      "for the MT-32 &",
+      "compatibles by",
+      "Henry Choi &",
+      "Mike Doyle",
+      "Huntsville, AL"
+    ],
+    "midi_credit_events": [
+      "Depeche Mode's \"Just Can't get Enough\" sequenced for the Roland",
+      "Enough\" sequenced"
+    ],
+    "credited_parties": [
+      {
+        "name": "Henry Choi",
+        "evidence": "midi-meta"
+      },
+      {
+        "name": "Mike Doyle",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "contradicts",
+    "quarantine": {
+      "at": "2026-09-09",
+      "actual_piece": "Just Can't Get Enough (Depeche Mode) — the file's text events name it twice",
+      "reason": "the file's own meta events name a different piece"
+    }
   }
 }

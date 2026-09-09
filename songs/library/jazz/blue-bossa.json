@@ -32,5 +32,34 @@
       "Listen for the return of the opening phrase at measures 275 and 291 as a genuine homecoming after a long stretch of different material — let your touch mark the recognition.",
       "Try building the closing left-hand flourish at measures 314-315 with real physical commitment, then carry through measure 316's brief right-hand return before letting the final 3 measures (317-319) of silence land as a full, deliberate stop."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/41046.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "Devian Zikri (arranged by, per the file)",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about; midi meta events (sha256 b96243a1dc5a…)",
+    "midi_sha256": "b96243a1dc5aae014613e4b0c3ff81fc4db39e2f466c5eec77df0e144f02b4aa",
+    "midi_title_events": [
+      "[Kenny Dorham] Blue bossa",
+      "001",
+      "Blue Bossa",
+      "devian@star.net",
+      "http://www.geocities.com/~devian/midfile.htm"
+    ],
+    "midi_credit_events": [
+      "arranged by Devian Zikri"
+    ],
+    "credited_parties": [
+      {
+        "name": "Devian Zikri",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "matches"
   }
 }

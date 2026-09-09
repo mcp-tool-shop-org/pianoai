@@ -39,5 +39,47 @@
       "The C section is the only place in the piece where you should use arm weight and play from the shoulder. Everywhere else, play from the fingers and wrist.",
       "Think of this piece as a miniature opera: the A theme is the aria, B is a lyrical interlude, C is the dramatic confrontation, and the final A is the denouement. Shape it as a story, not an exercise."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "http://piano-midi.de/midis/beethoven/elise.mid",
+    "source_site": "piano-midi.de",
+    "arrangement_creator": "Bernd Krueger (piano-midi.de, 2004, edition 2012-08-30)",
+    "arrangement_license": "CC-BY-SA-3.0-DE",
+    "terms_url": "http://piano-midi.de/copy.htm",
+    "terms_quote": "The MIDI, audio(MP3, OGG) and video files of Bernd Krueger are licensed under the cc-by-sa Germany License. [links http://creativecommons.org/licenses/by-sa/3.0/de/deed.en] This means, that you can use and adapt the files, as long as you attribute to the copyright holder Name: Bernd Krueger Source: http://www.piano-midi.de",
+    "verified_at": "2026-09-09",
+    "verifier": "http://piano-midi.de/copy.htm; midi meta events (sha256 a1481bdafe94…)",
+    "midi_sha256": "a1481bdafe94d33e0de8934c97aec45534c908bc797bae7293f626074aec2e07",
+    "midi_title_events": [
+      "Für Elise",
+      "Ludwig van Beethoven",
+      "Poco moto",
+      "Fertiggestellt am 9.10.2004",
+      "Update am 30.8.2012",
+      "Dauer: 2:48 Minuten",
+      "Piano right",
+      "bdca426d104a26ac9dcb070447587523",
+      "Piano left",
+      "Beethoven Für Elise",
+      "http://www.piano-midi.de",
+      "Edition: 2012-08-30",
+      "Spur 7"
+    ],
+    "midi_credit_events": [
+      "Copyright © 2004 by Bernd Krueger",
+      "Copyright © 2004 by Bernd Krüger"
+    ],
+    "credited_parties": [
+      {
+        "name": "Bernd Krueger",
+        "evidence": "midi-meta"
+      },
+      {
+        "name": "Bernd Krüger",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "matches"
   }
 }

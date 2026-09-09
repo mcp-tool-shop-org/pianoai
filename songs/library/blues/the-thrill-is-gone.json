@@ -4,7 +4,14 @@
   "genre": "blues",
   "difficulty": "intermediate",
   "key": "B minor",
-  "tags": ["blues", "bb-king", "minor-blues", "slow-blues", "vocal", "string-arrangement"],
+  "tags": [
+    "blues",
+    "bb-king",
+    "minor-blues",
+    "slow-blues",
+    "vocal",
+    "string-arrangement"
+  ],
   "composer": "Roy Hawkins",
   "status": "ready",
   "musicalLanguage": {
@@ -31,5 +38,29 @@
       "The left hand should outline roots and fifths, not full chords — give the harmony room to breathe. Think upright bass, not pipe organ.",
       "When singing, the vocal should be conversational and slightly behind the beat too — the words should feel like they're being *confessed*, not performed. Drop the jaw, darken the vowels, and let phrases trail off."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/102720.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "23fc25499f373d6d7d2c28d4c10dc6b7946ac96f6327040617219c07668ec92d",
+    "midi_title_events": [
+      "E.PIANO 1",
+      "FRETLESS",
+      "JAZZ GTR",
+      "MELODY",
+      "STRINGS",
+      "DRUMS",
+      "GS/RESET"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

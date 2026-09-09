@@ -35,5 +35,35 @@
       "Play the 5-measure silent opening (measures 4-8) with real patience — listen for the entrance of the Em-Bm7 figure landing with weight precisely because nothing came before it.",
       "Listen to a reference recording and imitate the vocal phrasing by ear over this accompaniment — this tradition transmits feel through records as much as notation, and the written grid here is the skeleton, not the full performance."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://www.mididb.com/midi-download/AUD_MMP2302.mid",
+    "source_site": "www.mididb.com",
+    "arrangement_creator": "MMP Sequencing / HitTrax MIDI Files (copyright events, 2008) — commercial demo",
+    "arrangement_license": "all-rights-reserved",
+    "terms_url": "https://www.mididb.com/",
+    "terms_quote": "Free MIDI Files on MIDIdb.com are demo's with all instruments included. [...] Get the full MIDI File - Professional MIDI File at Hit Trax MIDI Files. Permission granted by the copyright owners to download demo files on MIDIdb.com. [in the file's lyric track: All rights reserved. Not for broadcast or transmission of any kind. DO NOT DUPLICATE. NOT FOR RENTAL.]",
+    "verified_at": "2026-09-09",
+    "verifier": "https://www.mididb.com/; midi meta events (sha256 e86121e1d268…)",
+    "midi_sha256": "e86121e1d268d4dd95d9b385cd731ad9f212e3d51b1e4209c6bf7a034fae5859",
+    "midi_title_events": [],
+    "midi_credit_events": [
+      "© 2008 HitTrax MIDI Files",
+      "© MMP Sequencing"
+    ],
+    "midi_lyric_head": "International Rights Secured. All rights reserved. Not for broadcast or transmission of any kind. DO NOT DUPLICATE. NOT FOR RENTAL.",
+    "credited_parties": [
+      {
+        "name": "HitTrax MIDI Files",
+        "evidence": "midi-meta"
+      },
+      {
+        "name": "MMP Sequencing",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "no-title-in-file",
+    "title_note": "the lyric track is a rights notice, not lyrics; no title event"
   }
 }

@@ -4,7 +4,15 @@
   "genre": "folk",
   "difficulty": "beginner",
   "key": "E minor",
-  "tags": ["folk", "english", "renaissance", "traditional", "waltz", "modal", "vocal"],
+  "tags": [
+    "folk",
+    "english",
+    "renaissance",
+    "traditional",
+    "waltz",
+    "modal",
+    "vocal"
+  ],
   "composer": "Traditional",
   "status": "ready",
   "musicalLanguage": {
@@ -31,5 +39,32 @@
       "When the melody rises in the B section, let the dynamics rise with it. When it descends, let them fall. The dynamic shape should mirror the melodic contour — this is the simplest and most natural form of musical expression.",
       "For singing: use a straight, clear tone without vibrato — Renaissance vocal style is pure and direct. The vowels should be open ('Ah-las' not 'Uh-lass'), and the consonants light. Imagine singing in a stone chapel where every sound echoes."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/35089.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "Jim Paterson (mfiles.co.uk arrangement, re-uploaded to bitmidi)",
+    "arrangement_license": "no-redistribution",
+    "terms_url": "https://www.mfiles.co.uk/copyright.htm",
+    "terms_quote": "Music Files Ltd holds copyrights on most of the material within the mfiles site, specifically on musical arrangements (whether sheet music, midi or mp3 formats) [...] Our music and other material must never be redistributed without permission, either as is or adapted in any way.",
+    "verified_at": "2026-09-09",
+    "verifier": "https://www.mfiles.co.uk/copyright.htm; midi meta events (sha256 eb6fa0e2540c…)",
+    "midi_sha256": "eb6fa0e2540cf9fefac4b9686332654cef849c38132221f35c22d7c682db39b3",
+    "midi_title_events": [
+      "Greensleeves",
+      "Traditional",
+      "Piano"
+    ],
+    "midi_credit_events": [
+      "Jim Paterson"
+    ],
+    "credited_parties": [
+      {
+        "name": "Jim Paterson",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "matches"
   }
 }

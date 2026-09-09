@@ -33,5 +33,24 @@
       "At measure 81, commit fully and play with your full dynamic range — this is the moment the whole arrangement has been building toward, and underplaying it will make the piece feel structurally unbalanced.",
       "Let the tempo feel loose around the cadenza (81-82) even at a bright 200 BPM — a strict metronome feel will fight against a passage this dense."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/96456.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "f1fb21540a4005fb4c209b153ea28aec153cc4490ee313461b6cdf819715f801",
+    "midi_title_events": [
+      "0586LOUI"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "matches",
+    "title_note": "the only text is the code '0586LOUI' — an eight-character title code, read as St. Louis"
   }
 }

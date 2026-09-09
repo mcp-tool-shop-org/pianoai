@@ -33,5 +33,37 @@
       "Keep the 6/8 pulse gentle and rocking rather than driving — this is a spacious pastoral ballad, not a dance tune.",
       "Let the final measure's single note simply fade rather than adding a closing flourish — the unresolved ending is true to the modal character of the piece."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/35290.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "Jim Paterson (mfiles.co.uk arrangement, re-uploaded to bitmidi)",
+    "arrangement_license": "no-redistribution",
+    "terms_url": "https://www.mfiles.co.uk/copyright.htm",
+    "terms_quote": "Music Files Ltd holds copyrights on most of the material within the mfiles site, specifically on musical arrangements (whether sheet music, midi or mp3 formats) [...] Our music and other material must never be redistributed without permission, either as is or adapted in any way.",
+    "verified_at": "2026-09-09",
+    "verifier": "https://www.mfiles.co.uk/copyright.htm; midi meta events (sha256 93dbbd51d0a7…)",
+    "midi_sha256": "93dbbd51d0a787463f1a19c9dfd0f6eddb49bedb6d154f1b54da9c4a634ac7cb",
+    "midi_title_events": [
+      "Greensleeves",
+      "Traditional",
+      "Piano"
+    ],
+    "midi_credit_events": [
+      "Jim Paterson"
+    ],
+    "credited_parties": [
+      {
+        "name": "Jim Paterson",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "contradicts",
+    "quarantine": {
+      "at": "2026-09-09",
+      "actual_piece": "Greensleeves (Traditional), Jim Paterson's mfiles arrangement — a second copy, byte-different from folk/greensleeves but with the same title, arranger and instrumentation events",
+      "reason": "the file's own meta events name a different piece"
+    }
   }
 }
