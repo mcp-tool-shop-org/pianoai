@@ -22,10 +22,12 @@ import {
   consonanceInside,
   fidelitySame,
   harmonyGoldFromPrinted,
+  buildAllRecords,
 } from "./builder.js";
 import {
   F5_KINDS,
   F5_DRAWS,
+  resolveF5Draws,
   F5_PITCH_CLEARANCE_MULTIPLE,
   F5_ONSET_CLEARANCE_MULTIPLE,
   F5_THRESHOLDS,
@@ -55,6 +57,7 @@ import {
 } from "./tracker-error.js";
 import { coverageReport, assertCoverageFloors } from "./coverage.js";
 import { loadPublishableSongs, allowlistById, FORBIDDEN_IDS } from "./library.js";
+import { writeV1Corpus } from "./generate-corpus.js";
 import {
   COVERAGE_FLOORS,
   PROMPT_VISIBLE_PATHS,
@@ -846,6 +849,42 @@ describe("teaching gold is musicalLanguage, not measure-level empty fields", () 
 // budget follows the measurement rather than the other way round. This block
 // is skipped under coverage, so the number only ever applies to the two plain
 // legs.
+describe("V1_F5_DRAWS override (chunk 48)", () => {
+  function withDraws<T>(value: string | undefined, fn: () => T): T {
+    const prev = process.env.V1_F5_DRAWS;
+    try {
+      if (value === undefined) delete process.env.V1_F5_DRAWS;
+      else process.env.V1_F5_DRAWS = value;
+      return fn();
+    } finally {
+      if (prev === undefined) delete process.env.V1_F5_DRAWS;
+      else process.env.V1_F5_DRAWS = prev;
+    }
+  }
+
+  it("defaults to 2 and accepts a positive integer", () => {
+    expect(F5_DRAWS).toBe(2);
+    expect(withDraws(undefined, () => resolveF5Draws())).toBe(2);
+    expect(withDraws("4", () => resolveF5Draws())).toBe(4);
+  });
+
+  it("throws with the value in the message when V1_F5_DRAWS is not a positive integer", () => {
+    expect(() => withDraws("nope", () => resolveF5Draws())).toThrow(/got "nope"/);
+    expect(() => withDraws("0", () => resolveF5Draws())).toThrow(/got "0"/);
+    expect(() => withDraws("-1", () => resolveF5Draws())).toThrow(/got "-1"/);
+    expect(() => withDraws("2.5", () => resolveF5Draws())).toThrow(/got "2.5"/);
+  });
+
+  it("refuses to write a non-2-draw corpus into the released v1 directories", () => {
+    withDraws("4", () => {
+      expect(() => writeV1Corpus(join(CORPUS))).toThrow(/frozen at 2 draws/);
+      expect(() =>
+        writeV1Corpus(join(dirname(CORPUS), "jam-actions-v1-probe")),
+      ).toThrow(/frozen at 2 draws/);
+    });
+  });
+});
+
 describe.runIf(RUN_DSP)("engine verification (skipped under SKIP_DSP_VERIFICATION=1)", { timeout: 600_000 }, () => {
   let built: V1Record[] = [];
 
@@ -914,6 +953,34 @@ describe.runIf(RUN_DSP)("engine verification (skipped under SKIP_DSP_VERIFICATIO
     expect(rows.length).toBeGreaterThan(0);
     for (const r of rows) {
       expect(rederiveGold(r), r.id).toBe(r.observation.gold.answer);
+    }
+  });
+
+  it("V1_F5_DRAWS=4 yields exactly twice the acoustic records of the default for the same inputs, and the non-acoustic records are byte-identical", () => {
+    const attempted2 = f5DropStats.attempted;
+    const dropped2 =
+      f5DropStats.droppedUntrackable + f5DropStats.droppedClearance + f5DropStats.droppedShortPhrase;
+    const prev = process.env.V1_F5_DRAWS;
+    process.env.V1_F5_DRAWS = "4";
+    try {
+      const four = buildAllRecords();
+      const ac2 = built.filter((r) => r.family === "acoustic");
+      const ac4 = four.filter((r) => r.family === "acoustic");
+      const dropped4 =
+        f5DropStats.droppedUntrackable + f5DropStats.droppedClearance + f5DropStats.droppedShortPhrase;
+      // Slots: 11 songs × 3 kinds × draws. Kept = attempted − clearance drops.
+      // rank01's domain grows with the draw count, so a 2-draw clearance drop
+      // need not recur at 4 draws; the slot count is still exactly 2×.
+      expect(f5DropStats.attempted).toBe(attempted2 * 2);
+      expect(ac2.length + dropped2).toBe(attempted2);
+      expect(ac4.length + dropped4).toBe(f5DropStats.attempted);
+      expect(ac4.length + dropped4).toBe((ac2.length + dropped2) * 2);
+      const other2 = built.filter((r) => r.family !== "acoustic").map((r) => JSON.stringify(r));
+      const other4 = four.filter((r) => r.family !== "acoustic").map((r) => JSON.stringify(r));
+      expect(other4).toEqual(other2);
+    } finally {
+      if (prev === undefined) delete process.env.V1_F5_DRAWS;
+      else process.env.V1_F5_DRAWS = prev;
     }
   });
 

@@ -1,0 +1,194 @@
+{
+  "id": "chord:peacherine-rag:m23",
+  "schema_version": "jam-actions-v1/1.0.0",
+  "family": "chord",
+  "provenance": {
+    "source_url": "https://www.mutopiaproject.org/ftp/JoplinS/peacherine/peacherine.mid",
+    "source_collected_at": "2026-09-09",
+    "source_type": "downloaded-arrangement",
+    "composition_title": "Peacherine Rag",
+    "composer": "Scott Joplin",
+    "composition_year": 1,
+    "composition_pd_status_us": "public_domain",
+    "composition_pd_status_eu": "public_domain",
+    "arrangement_creator": "Antonio Palamà (Mutopia typesetter, LilyPond)",
+    "arrangement_license": "Public-Domain",
+    "arrangement_license_version": null,
+    "arrangement_evidence_url": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=335",
+    "record_verdict": "public",
+    "verdict_reason": "Allowlisted 2026-09-09; Public-Domain",
+    "verifier": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=335; midi meta events (sha256 5185a564754c…)",
+    "verified_at": "2026-09-09",
+    "training_use_permitted": true
+  },
+  "scope": {
+    "song_id": "peacherine-rag",
+    "phrase_window": "full:89",
+    "instrument": "piano",
+    "key": "Eb major",
+    "tempo_bpm": 80,
+    "time_signature": "2/4",
+    "window_role": "standalone"
+  },
+  "observation": {
+    "thresholds": {
+      "min_pitch_classes": 2
+    },
+    "gold": {
+      "family": "chord",
+      "answer": "F",
+      "engine": "inferChord+detectChord"
+    }
+  },
+  "annotation_target": {
+    "measure_range": [
+      1,
+      89
+    ],
+    "structure": "The A strain (measures 1-21) establishes the Eb-Ab-Bb7 progression; within it, a 2-measure cell at measures 5-6 repeats identically at measures 13-14 (measure 7, by contrast, matches measure 41 rather than continuing that local repeat). A contrasting section (measures 22-54) leans on F7-Bb7-Eb turnarounds, and a closing block (measures 55-89) introduces the piece's one confirmed transposed pattern: a 12-interval left-hand figure (measures 22-25, 26-29) recurs transposed down two semitones at measures 59-62.",
+    "key_moments": [
+      "The key field here has a corrected history: this transcription originally carried a C major label, but content indicates Eb major at a strong 0.228 margin, and the field has been corrected to Eb major. Every chord name in this annotation follows that Eb reading.",
+      "Measures 59-62 restate a left-hand figure first heard at measures 22-25 and 26-29, transposed down two semitones — the pattern pass's transposition-aware layer catching a variation that simple pitch-matching would miss entirely.",
+      "Measure 72, the sparsest bar (4 onsets), coincides with the left hand's lowest note in the piece (Ab1) — a brief excursion to the bottom of the keyboard framed by otherwise thin texture.",
+      "The busiest measures (12 onsets) are measures 3, 55, 59, 60, and 63 — clustered in the piece's second half, meaning Peacherine Rag builds rhythmic density across the form rather than front-loading it."
+    ],
+    "teaching_goals": [
+      "Practice checking a piece's actual harmonic content against its key label rather than assuming the label is correct — this piece is its own case study: detection favored Eb major at a strong 0.228 margin over the C major label the transcription originally carried, and the key field has since been corrected to Eb major.",
+      "Learn the Eb-Ab-Bb7 (I-IV-V7) vamp that governs most of the piece — once secure, the F7 secondary-dominant turnarounds in the second half are a small addition on top of it.",
+      "Practice recognizing a transposed repeat by ear: the left-hand figure at measures 22-25 returns down a whole step at measures 59-62. Train your ear to hear the same shape at a different pitch level.",
+      "Build density gradually across the form — the busiest measures cluster in the second half (55-63), so pace your energy to arrive there rather than peaking early."
+    ],
+    "style_tips": [
+      "Listen for Bb7 resolving to Eb, not to C — hearing the harmony in the corrected Eb major key (rather than the C major label this transcription originally carried) will actually make it easier to predict, not harder.",
+      "Play the transposed left-hand echo at measures 59-62 with the same touch and weight as its first appearance at measures 22-25 — a transposed repeat should still feel like the same gesture, just shifted.",
+      "Keep the moderate 80 BPM pulse steady through the sparse measure 72 — a brief thin texture is a place to lighten touch, not to slow down.",
+      "Try building volume gradually from measure 55 to measure 63, the piece's busiest stretch — let the rhythmic density itself carry the sense of arrival rather than adding an artificial accent."
+    ],
+    "teaching_notes": [
+      {
+        "measure": 1,
+        "note": "none"
+      }
+    ]
+  },
+  "target_trace": {
+    "task_family": "chord",
+    "objective": "Answer using tools. Do not guess from the question text.",
+    "session": [
+      {
+        "turn": 1,
+        "role": "user",
+        "content": "What chord is the left hand playing in measure 23 of \"Peacherine Rag\"? Answer with the chord symbol alone."
+      },
+      {
+        "turn": 2,
+        "role": "assistant",
+        "content": "I need the notes, then the chord engine.",
+        "tool_calls": [
+          {
+            "tool": "list_songs",
+            "arguments": {
+              "query": "Peacherine Rag"
+            }
+          },
+          {
+            "tool": "song_info",
+            "arguments": {
+              "id": "peacherine-rag"
+            }
+          },
+          {
+            "tool": "list_measures",
+            "arguments": {
+              "id": "peacherine-rag",
+              "startMeasure": 23,
+              "endMeasure": 23
+            }
+          }
+        ]
+      },
+      {
+        "turn": 3,
+        "role": "tool",
+        "tool": "list_songs",
+        "content": {
+          "ids": [
+            "peacherine-rag"
+          ]
+        }
+      },
+      {
+        "turn": 4,
+        "role": "tool",
+        "tool": "song_info",
+        "content": {
+          "id": "peacherine-rag",
+          "title": "Peacherine Rag",
+          "genre": "ragtime"
+        }
+      },
+      {
+        "turn": 5,
+        "role": "tool",
+        "tool": "list_measures",
+        "content": {
+          "measure": 23,
+          "leftHand": "C3:e F3+A3:e F2:e F3+A3:e"
+        }
+      },
+      {
+        "turn": 6,
+        "role": "assistant",
+        "content": "Naming the chord from the sounding MIDI notes.",
+        "tool_calls": [
+          {
+            "tool": "detect_chord",
+            "arguments": {
+              "notes": [
+                48,
+                53,
+                57,
+                41,
+                53,
+                57
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "turn": 7,
+        "role": "tool",
+        "tool": "detect_chord",
+        "content": {
+          "notes": [
+            48,
+            53,
+            57,
+            41,
+            53,
+            57
+          ],
+          "chord": "F"
+        }
+      },
+      {
+        "turn": 8,
+        "role": "assistant",
+        "content": "F"
+      }
+    ]
+  },
+  "eval_metadata": {
+    "split": "train",
+    "split_strategy": "hold out by song_id",
+    "leakage_check": "passed",
+    "eval_eligibility": [
+      "tool_use",
+      "chord"
+    ],
+    "phrase_continuation_eligible": false,
+    "phrase_continuation_eligible_reason": "standalone tool-use items"
+  },
+  "split": "train"
+}
