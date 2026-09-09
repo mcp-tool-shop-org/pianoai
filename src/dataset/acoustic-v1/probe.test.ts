@@ -167,7 +167,9 @@ describe("jam-actions-v1-probe", () => {
   });
 });
 
-describe.skipIf(!RUN_DSP)("probe rebuild-equals-committed", () => {
+// The fresh search renders many candidate takes per band; 228-236 s on the GitHub
+// runner against a 180 s default (0ff1281). Same allowance as the v1 engine block.
+describe.skipIf(!RUN_DSP)("probe rebuild-equals-committed", { timeout: 600_000 }, () => {
   it("rebuilds every probe assistant turn from a fresh search", () => {
     const committed = probeRecords();
     const { records } = buildProbeRecords();
