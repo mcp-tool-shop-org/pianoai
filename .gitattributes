@@ -58,6 +58,9 @@ experiments/**/data/*.jsonl text eol=lf
 # Windows clone converting them on checkout fails every entry. This tree was
 # generated with no pin, which is exactly how the acoustic corpus broke.
 datasets/jam-actions-v1/** text eol=lf
+datasets/jam-actions-v1-public/** text eol=lf
+datasets/jam-actions-v1-probe/** text eol=lf
+datasets/jam-actions-v1-probe-public/** text eol=lf
 songs/library/**/*.json text eol=lf
 *.mid binary
 *.ogg binary

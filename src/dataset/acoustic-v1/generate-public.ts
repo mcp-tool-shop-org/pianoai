@@ -1,0 +1,280 @@
+#!/usr/bin/env tsx
+// ─── Public packages for jam-actions-v1 and the eval-only probe ──────────────
+//
+// Reads the committed working corpora. Does not rebuild records. Does not write
+// README prose: the card is copied from docs/hf-cards/, and the generator
+// halts if that file is absent.
+
+import { createHash } from "node:crypto";
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const HERE = dirname(fileURLToPath(import.meta.url));
+const REPO = join(HERE, "..", "..", "..");
+
+export const V1_PUBLIC_VERSION = "1.0.0";
+export const ZENODO_CONCEPT_DOI = "10.5281/zenodo.20279918";
+
+export type PublicKind = "v1" | "probe";
+
+export function sha256(content: string | Buffer): string {
+  return createHash("sha256").update(content).digest("hex");
+}
+
+export function checksumManifest(files: Map<string, string>): string {
+  const depth = (rel: string): number => rel.split("/").length;
+  return [...files.keys()]
+    .sort((a, b) => depth(a) - depth(b) || (a < b ? -1 : a > b ? 1 : 0))
+    .map((rel) => `${sha256(Buffer.from(files.get(rel)!, "utf8"))}  ${rel}`)
+    .join("\n") + "\n";
+}
+
+export function readCardOrHalt(cardPath: string): string {
+  if (!existsSync(cardPath)) {
+    throw new Error(
+      `halt: dataset card missing at ${cardPath}; generator does not write README prose`,
+    );
+  }
+  return readFileSync(cardPath, "utf8");
+}
+
+function copyTreeFiles(srcDir: string, skip: Set<string>): Map<string, string> {
+  const files = new Map<string, string>();
+  function walk(dir: string, prefix: string): void {
+    for (const name of readdirSync(dir).sort()) {
+      const rel = prefix ? `${prefix}/${name}` : name;
+      if (skip.has(rel) || skip.has(name)) continue;
+      const full = join(dir, name);
+      if (statSync(full).isDirectory()) walk(full, rel);
+      else files.set(rel, readFileSync(full, "utf8"));
+    }
+  }
+  walk(srcDir, "");
+  return files;
+}
+
+function licenseDoc(): string {
+  return `# Layered licensing for jam-actions-v1
+
+This dataset combines two distinct layers; they do not carry the same terms.
+
+## 1. Compositions — public domain
+
+The 27 pieces are public-domain compositions in both the United States and the
+European Union (Bach, Mozart, Beethoven, Chopin, Schumann, Joplin, Brackett,
+and traditional English, Irish, Scottish, American and Japanese tunes). Every
+composer died more than seventy years ago, or the work is traditional. No
+copyright restriction applies to the underlying music.
+
+Three library songs are excluded from this tree. See \`PROVENANCE-NOTE.md\`.
+
+## 2. Transcriptions, traces and schema — CC-BY-SA-3.0-DE
+
+Every record carries \`source_type: transcribed-by-author\`. The transcriptions,
+tool-use traces, gold labels and schema are original work of mcp-tool-shop-org,
+released under **Creative Commons Attribution-ShareAlike 3.0 Germany**
+(CC-BY-SA-3.0-DE).
+
+Full text: https://creativecommons.org/licenses/by-sa/3.0/de/deed.en
+
+Downstream redistribution MUST attribute mcp-tool-shop-org (see \`CITATION.cff\`)
+and release derivatives under a compatible share-alike licence.
+
+## A note on the audio
+
+**No audio files are distributed.** Acoustic records store a deterministic
+recipe. Re-rendering from that recipe is a source-repo test, not a published
+waveform.
+
+## Summary
+
+| Layer | Terms | Obligation |
+|---|---|---|
+| Compositions | Public domain | None |
+| Transcriptions, traces, schema | CC-BY-SA-3.0-DE | Attribute mcp-tool-shop-org; share alike |
+`;
+}
+
+function citationCff(kind: PublicKind): string {
+  const probe = kind === "probe";
+  const title = probe
+    ? "jam-actions-v1-probe — evaluation-only near-gate acoustic takes"
+    : "jam-actions-v1 — AI Jam Sessions tool-use traces (shown-work targets)";
+  const abstract = probe
+    ? "72 acoustic takes on jam-actions-v1's nine held-out songs, each measured within 10 ms or 5 cents of a grading gate, both signs of both quantities. Never split, never trained on. Schema jam-actions-v1-probe/1.0.0."
+    : "371 multi-turn MCP tool-use traces over 27 public-domain piano pieces, nine task families, split by song. Every assistant turn shows the comparison that decides its answer. Schema jam-actions-v1/1.0.0.";
+  return `cff-version: 1.2.0
+title: "${title}"
+message: "If you use this dataset, please cite it as below."
+type: dataset
+authors:
+  - name: "mcp-tool-shop-org"
+version: "${V1_PUBLIC_VERSION}"
+date-released: "2026-09-09"
+license: "CC-BY-SA-3.0-DE"
+doi: "${ZENODO_CONCEPT_DOI}"
+identifiers:
+  - type: doi
+    value: "${ZENODO_CONCEPT_DOI}"
+    description: "Concept DOI — resolves to the latest published version on Zenodo"
+url: "https://doi.org/${ZENODO_CONCEPT_DOI}"
+repository-code: "https://github.com/mcp-tool-shop-org/ai-jam-sessions"
+abstract: >-
+  ${abstract}
+keywords:
+  - music
+  - midi
+  - mcp
+  - tool-use
+  - symbolic-music
+  - piano
+`;
+}
+
+function zenodoMetadata(kind: PublicKind): Record<string, unknown> {
+  const probe = kind === "probe";
+  const title = probe
+    ? "jam-actions-v1-probe — evaluation-only near-gate acoustic takes"
+    : "jam-actions-v1 — AI Jam Sessions tool-use traces (shown-work targets)";
+  const description = probe
+    ? "<p><strong>jam-actions-v1-probe</strong> is 72 acoustic takes on jam-actions-v1's nine held-out songs, each measured within 10 ms or 5 cents of a grading gate, both signs of both quantities. Never split, never trained on. Distinguishes a model that compares a measurement to a gate from one that reads a sign.</p><p>Companion to jam-actions-v1 under concept DOI 10.5281/zenodo.20279918. Schema <code>jam-actions-v1-probe/1.0.0</code>. Licence CC-BY-SA-3.0-DE.</p>"
+    : "<p><strong>jam-actions-v1</strong> is 371 multi-turn MCP tool-use traces over 27 public-domain piano pieces, nine task families, split by song. Every assistant turn shows the comparison that decides its answer. Built under a seven-rule experiment contract; the corpus was rebuilt eight times as each training run exposed what the previous target let a small model read instead of compute.</p><p>This is a new version under concept DOI 10.5281/zenodo.20279918. Schema <code>jam-actions-v1/1.0.0</code>. 254 train / 117 test, split by song. Licence CC-BY-SA-3.0-DE. No audio files are distributed.</p>";
+  return {
+    $schema_note: `Zenodo deposition metadata payload for the jam-actions-v1${probe ? "-probe" : ""} 1.0.0 new-version deposit under concept DOI ${ZENODO_CONCEPT_DOI}. Conforms to the Zenodo legacy REST API deposition schema at https://developers.zenodo.org/#representation. DOI is intentionally absent — Zenodo mints the new version DOI on publish. No auth tokens, no account IDs, no credentials.`,
+    metadata: {
+      title,
+      upload_type: "dataset",
+      description,
+      creators: [
+        {
+          name: "mcp-tool-shop-org",
+          affiliation: "mcp-tool-shop-org GitHub organization",
+        },
+      ],
+      keywords: [
+        "music",
+        "midi",
+        "dataset",
+        "mcp",
+        "model-context-protocol",
+        "llm",
+        "training-data",
+        "tool-use",
+        "piano",
+        "symbolic-music",
+        "annotation",
+        "instruction-tuning",
+      ],
+      license: "CC-BY-SA-3.0",
+      access_right: "open",
+      language: "eng",
+      version: V1_PUBLIC_VERSION,
+      related_identifiers: [
+        {
+          identifier: "https://github.com/mcp-tool-shop-org/ai-jam-sessions",
+          relation: "isSupplementTo",
+          scheme: "url",
+          resource_type: "software",
+        },
+        {
+          identifier: `https://doi.org/${ZENODO_CONCEPT_DOI}`,
+          relation: probe ? "isSupplementTo" : "isNewVersionOf",
+          scheme: "doi",
+          resource_type: "dataset",
+        },
+      ],
+      subjects: [
+        {
+          term: "Symbolic music",
+          identifier: "https://en.wikipedia.org/wiki/Music_information_retrieval",
+          scheme: "url",
+        },
+        {
+          term: "Model Context Protocol",
+          identifier: "https://modelcontextprotocol.io/",
+          scheme: "url",
+        },
+        {
+          term: "Instruction tuning",
+          identifier: "https://arxiv.org/abs/2109.01652",
+          scheme: "url",
+        },
+      ],
+      references: [
+        "mcp-tool-shop-org (2026). jam-actions-v1. Source repository mcp-tool-shop-org/ai-jam-sessions.",
+        "Model Context Protocol specification. modelcontextprotocol.io.",
+      ],
+      notes: probe
+        ? "Evaluation-only. Never merge into a training set. Never split. Cite the concept DOI and name the version."
+        : "New version under the concept DOI; prior jam-actions-v0 deposits are unchanged. Gate clearance is not release approval.",
+    },
+  };
+}
+
+export function spec(kind: PublicKind): {
+  workingDir: string;
+  publicDir: string;
+  cardPath: string;
+  skipFromWorking: Set<string>;
+} {
+  if (kind === "probe") {
+    return {
+      workingDir: join(REPO, "datasets", "jam-actions-v1-probe"),
+      publicDir: join(REPO, "datasets", "jam-actions-v1-probe-public"),
+      cardPath: join(REPO, "docs", "hf-cards", "jam-actions-v1-probe.md"),
+      skipFromWorking: new Set(["README.md", "checksums.sha256"]),
+    };
+  }
+  return {
+    workingDir: join(REPO, "datasets", "jam-actions-v1"),
+    publicDir: join(REPO, "datasets", "jam-actions-v1-public"),
+    cardPath: join(REPO, "docs", "hf-cards", "jam-actions-v1.md"),
+    skipFromWorking: new Set(["README.md", "checksums.sha256"]),
+  };
+}
+
+/** Every file the public package contains except checksums.sha256. */
+export function publicFiles(kind: PublicKind): Map<string, string> {
+  const s = spec(kind);
+  const files = copyTreeFiles(s.workingDir, s.skipFromWorking);
+  files.set("README.md", readCardOrHalt(s.cardPath));
+  files.set("VERSION", `${V1_PUBLIC_VERSION}\n`);
+  files.set("LICENSE-DATASET.md", licenseDoc());
+  files.set("CITATION.cff", citationCff(kind));
+  files.set("zenodo-metadata.json", JSON.stringify(zenodoMetadata(kind), null, 2) + "\n");
+  return files;
+}
+
+export function writePublicSet(kind: PublicKind, outDir?: string): { n: number; outDir: string; checksums: number } {
+  const dest = outDir ?? spec(kind).publicDir;
+  const files = publicFiles(kind);
+  if (existsSync(dest)) rmSync(dest, { recursive: true, force: true });
+  mkdirSync(join(dest, "records"), { recursive: true });
+  for (const [rel, content] of files) {
+    const full = join(dest, ...rel.split("/"));
+    mkdirSync(dirname(full), { recursive: true });
+    writeFileSync(full, content, "utf8");
+  }
+  const manifest = checksumManifest(files);
+  writeFileSync(join(dest, "checksums.sha256"), manifest, "utf8");
+  const n = [...files.keys()].filter((k) => k.startsWith("records/") && k.endsWith(".json")).length;
+  return { n, outDir: dest, checksums: files.size };
+}
+
+const invoked = Boolean(
+  process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url)),
+);
+if (invoked) {
+  const probe = process.argv.includes("--probe");
+  const r = writePublicSet(probe ? "probe" : "v1");
+  process.stdout.write(`wrote ${r.n} records, ${r.checksums} checksummed files to ${r.outDir}\n`);
+}

@@ -1,8 +1,10 @@
-name: Push jam-actions-v0 to HuggingFace
+name: Push jam-actions dataset to HuggingFace
 
-# Single-purpose workflow: push the dataset to HuggingFace ONLY.
-# Use this for recovery when the main publish workflow's Zenodo half
-# succeeded but the HF push failed (or to update an existing HF dataset
+# Single-purpose workflow: push a dataset package under datasets/ to HuggingFace
+# ONLY. Defaults remain the v0 public set so existing dispatch notes keep
+# working. v1 is the same workflow with different inputs (dataset_dir +
+# hf_repo_id). Use this for recovery when the main publish workflow's Zenodo
+# half succeeded but the HF push failed (or to update an existing HF dataset
 # without minting a new Zenodo deposit).
 #
 # Manual trigger only. Idempotent — if the HF repo already exists, this
@@ -35,7 +37,7 @@ on:
         default: "false"
 
 concurrency:
-  group: push-jam-actions-v0-hf
+  group: push-dataset-hf-${{ github.event.inputs.hf_repo_id }}
   cancel-in-progress: false
 
 permissions:
