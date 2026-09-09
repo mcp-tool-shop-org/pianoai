@@ -80,7 +80,10 @@ It was trained to compare against **these** gates (50 cents, 40 ms, chromatic ra
 The adapters are released under CC-BY-SA-3.0-DE, matching the dataset they were trained on. Use of
 a merged or adapted model is additionally governed by the base model's licence, and the two bases
 differ: **Qwen2.5-7B-Instruct is Apache-2.0; Qwen2.5-3B-Instruct is under Alibaba's Qwen Research
-licence, which restricts commercial use.** If commercial use matters, use the 7B adapter.
+licence, which restricts commercial use.** If commercial use matters, use this 7B, or the small path on
+Qwen3-4B-Instruct-2507 (Apache-2.0) at
+[mcp-tool-shop/jam-actions-v1-qwen3-4b](https://huggingface.co/mcp-tool-shop/jam-actions-v1-qwen3-4b).
+Every adapter line we publish carries at least one permissively licensed base.
 
 ## Reproduce
 

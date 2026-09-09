@@ -15,12 +15,14 @@ one locally in Ollama, with the numbers that path costs.
 | repo on Hugging Face | base | base licence | use |
 |---|---|---|---|
 | `mcp-tool-shop/jam-actions-v1-qwen25-7b` (`7b-s13/`, `7b-s42/`) | Qwen2.5-7B-Instruct | **Apache-2.0** | the publish-friendly path |
-| `mcp-tool-shop/jam-actions-v1-qwen25-3b` (`3b-4d-s13/`, `3b-4d-s42/`) | Qwen2.5-3B-Instruct | Qwen Research, **non-commercial** | measured, not recommended for anything you ship |
+| `mcp-tool-shop/jam-actions-v1-qwen3-4b` (`qwen3-4b-s13/`, `qwen3-4b-s42/`) | Qwen3-4B-Instruct-2507 | **Apache-2.0** | the small path (same numbers as the 3B below) |
+| `mcp-tool-shop/jam-actions-v1-qwen25-1.5b` (`qwen25-1.5b-s13/`, `qwen25-1.5b-s42/`) | Qwen2.5-1.5B-Instruct | **Apache-2.0** | the tiny option; acoustic comparison only |
+| `mcp-tool-shop/jam-actions-v1-qwen25-3b` (`3b-4d-s13/`, `3b-4d-s42/`) | Qwen2.5-3B-Instruct | Qwen Research, **non-commercial** | the finding's record; measured, not recommended for anything you ship |
 
 Every adapter is CC-BY-SA-3.0-DE, like the dataset. Use of a merged or adapted model is also
-governed by the base's licence, and that is the column that decides what you may do with it. Two
-further Apache-2.0 bases (Qwen2.5-1.5B-Instruct, Qwen3-4B-Instruct-2507) are being trained on the
-same corpus; when one of them locks the comparison it replaces the 3B as the small path.
+governed by the base's licence, and that is the column that decides what you may do with it. The Qwen3-4B and 1.5B rows
+are the Apache-2.0 answer to the 3B's licence (`experiments/coverage-v1-sft/RESULTS-r52.md`); the
+Ollama measurements below were made before they existed and cover the 7B and 3B only.
 
 ## Convert the adapter to GGUF
 

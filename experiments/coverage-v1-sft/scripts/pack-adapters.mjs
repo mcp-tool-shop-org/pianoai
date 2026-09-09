@@ -25,8 +25,8 @@ function parseSet(argv) {
   const i = argv.indexOf("--set");
   if (i < 0) return "7b";
   const v = argv[i + 1];
-  if (v !== "7b" && v !== "3b") {
-    process.stderr.write(`--set must be 7b or 3b (got ${JSON.stringify(v ?? "")})\n`);
+  if (v !== "7b" && v !== "3b" && v !== "q3-4b" && v !== "1.5b") {
+    process.stderr.write(`--set must be 7b, 3b, q3-4b or 1.5b (got ${JSON.stringify(v ?? "")})\n`);
     process.exit(1);
   }
   return v;
@@ -48,6 +48,24 @@ const SETS = {
     adapters: [
       { dir: "3b-4d-s13", epoch: join(ROOT, "runs", "r48", "A3b4d", "epoch3"), receipt: join(ROOT, "runs", "r48", "run-config-A3b4d.json") },
       { dir: "3b-4d-s42", epoch: join(ROOT, "runs", "r48", "A3b4ds42", "epoch3"), receipt: join(ROOT, "runs", "r48", "run-config-A3b4ds42.json") },
+    ],
+  },
+  // The publish-friendly small path (r52): Qwen3-4B-Instruct-2507, Apache-2.0, on 1.1.0.
+  "q3-4b": {
+    card: join(REPO, "docs", "hf-cards", "jam-actions-v1-adapters-qwen3-4b.md"),
+    out: join(ROOT, "dist", "jam-actions-v1-adapters-qwen3-4b.tar.gz"),
+    adapters: [
+      { dir: "qwen3-4b-s13", epoch: join(ROOT, "runs", "r52", "Aq3-4b", "epoch3"), receipt: join(ROOT, "runs", "r52", "run-config-Aq3-4b.json") },
+      { dir: "qwen3-4b-s42", epoch: join(ROOT, "runs", "r52", "Aq3-4bs42", "epoch3"), receipt: join(ROOT, "runs", "r52", "run-config-Aq3-4bs42.json") },
+    ],
+  },
+  // The tiny option (r52): Qwen2.5-1.5B-Instruct, Apache-2.0, on 1.1.0.
+  "1.5b": {
+    card: join(REPO, "docs", "hf-cards", "jam-actions-v1-adapters-qwen25-1.5b.md"),
+    out: join(ROOT, "dist", "jam-actions-v1-adapters-qwen25-1.5b.tar.gz"),
+    adapters: [
+      { dir: "qwen25-1.5b-s13", epoch: join(ROOT, "runs", "r52", "A1.5b", "epoch3"), receipt: join(ROOT, "runs", "r52", "run-config-A1.5b.json") },
+      { dir: "qwen25-1.5b-s42", epoch: join(ROOT, "runs", "r52", "A1.5bs42", "epoch3"), receipt: join(ROOT, "runs", "r52", "run-config-A1.5bs42.json") },
     ],
   },
 };

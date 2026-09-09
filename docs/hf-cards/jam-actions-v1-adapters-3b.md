@@ -19,6 +19,11 @@ Two LoRA adapters, one recipe at two seeds, on Qwen2.5-3B-Instruct, trained on j
 **1.1.0** — the four-draw corpus of the eleven verified songs (154 train / 59 test records, 96
 acoustic training takes). Every number below is on a held-out split by song or on the never-trained
 near-gate probe; the base model is reported on the same split; every seed that was run is reported.
+**This is the record of the finding, not the path to build on:** the same recipe on
+**Qwen3-4B-Instruct-2507 (Apache-2.0)** reaches the same numbers and is the recommended small adapter,
+at [mcp-tool-shop/jam-actions-v1-qwen3-4b](https://huggingface.co/mcp-tool-shop/jam-actions-v1-qwen3-4b);
+the tiny 1.5B option is at
+[mcp-tool-shop/jam-actions-v1-qwen25-1.5b](https://huggingface.co/mcp-tool-shop/jam-actions-v1-qwen25-1.5b).
 The 7B adapters trained on 1.0.0 are at
 [mcp-tool-shop/jam-actions-v1-qwen25-7b](https://huggingface.co/mcp-tool-shop/jam-actions-v1-qwen25-7b).
 
@@ -72,7 +77,8 @@ They were trained to compare against **these** gates (50 cents, 40 ms, chromatic
 The adapters are released under CC-BY-SA-3.0-DE, matching the dataset they were trained on. Use of
 a merged or adapted model is additionally governed by the base model's licence: **Qwen2.5-3B-Instruct
 is under Alibaba's Qwen Research licence, which restricts commercial use.** If commercial use
-matters, use the 7B adapters, whose base is Apache-2.0.
+matters, use the Qwen3-4B or 7B adapters, whose bases are Apache-2.0. Every adapter line we publish
+carries at least one such base; a non-commercial base is reported as an option, never as the only path.
 
 ## Reproduce
 
