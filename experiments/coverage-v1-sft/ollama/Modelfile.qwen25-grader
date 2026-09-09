@@ -1,0 +1,49 @@
+# Qwen2.5-Instruct TEMPLATE matching Hugging Face apply_chat_template:
+# tools as JSON, assistant tool_calls beside content, consecutive tool
+# results grouped into one user turn. No SYSTEM line — the request carries
+# the system turn.
+#
+# {{ json . }} is Go encoding/json (compact, map keys sorted). HF jinja
+# tojson uses Python json.dumps (spaces after : and ,, insertion-order
+# keys). That spacing/key-order gap cannot be closed in Ollama's template
+# language; see the chunk 56 handoff.
+
+FROM qwen2.5:7b-instruct-q8_0
+ADAPTER ./adapter.gguf
+TEMPLATE """{{- if .Messages }}
+{{- if .Tools }}<|im_start|>system
+{{ .System }}
+
+# Tools
+
+You may call one or more functions to assist with the user query.
+
+You are provided with function signatures within <tools></tools> XML tags:
+<tools>{{- range .Tools }}
+{{ json . }}{{- end }}
+</tools>
+
+For each function call, return a json object with function name and arguments within <tool_call></tool_call> XML tags:
+<tool_call>
+{"name": <function-name>, "arguments": <args-json-object>}
+</tool_call><|im_end|>
+{{ else if .System }}<|im_start|>system
+{{ .System }}<|im_end|>
+{{ end }}{{- $prevRole := "" }}{{- range $i, $m := .Messages }}{{- if eq $m.Role "system" }}{{- else if or (eq $m.Role "user") (and (eq $m.Role "assistant") (not (gt (len $m.ToolCalls) 0))) }}<|im_start|>{{ $m.Role }}
+{{ $m.Content }}<|im_end|>
+{{ else if eq $m.Role "assistant" }}<|im_start|>assistant{{ if $m.Content }}
+{{ $m.Content }}{{ end }}{{ range $m.ToolCalls }}
+<tool_call>
+{"name": "{{ .Function.Name }}", "arguments": {{ json .Function.Arguments }}}
+</tool_call>{{ end }}<|im_end|>
+{{ else if eq $m.Role "tool" }}{{- if ne $prevRole "tool" }}<|im_start|>user{{ end }}
+<tool_response>
+{{ $m.Content }}
+</tool_response>{{- $rest := slice $.Messages $i }}{{- $nextTool := false }}{{- if gt (len $rest) 1 }}{{- $nxt := index $rest 1 }}{{- if eq $nxt.Role "tool" }}{{- $nextTool = true }}{{- end }}{{- end }}{{- if not $nextTool }}<|im_end|>
+{{ end }}{{- end }}{{- $prevRole = $m.Role }}{{- end }}{{- $lastRole := "" }}{{- range $m := .Messages }}{{- $lastRole = $m.Role }}{{- end }}{{- if ne $lastRole "assistant" }}<|im_start|>assistant
+{{ end }}{{- else }}{{- if .System }}<|im_start|>system
+{{ .System }}<|im_end|>
+{{ end }}{{- if .Prompt }}<|im_start|>user
+{{ .Prompt }}<|im_end|>
+{{ end }}<|im_start|>assistant
+{{ end }}"""
