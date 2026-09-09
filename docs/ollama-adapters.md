@@ -78,6 +78,8 @@ Measured on an RTX 5090, one model loaded at a time, `ollama stop` between:
 |---|---|---|---|---|---|
 | 7B seed 42, bf16 (the published numbers) | 17/17 | 38/40 | 24/24 | — | — |
 | 7B seed 42, Ollama Q4_K_M base + F16 LoRA | **4/17** | 21/40 | **6/24** | 8.8 GB | 142 |
+| 7B seed 42, Ollama **q8_0** base + F16 LoRA | 12/17 | 34/40 | 21/24 | 11.8 GB | 112 |
+| 7B seed 42, Ollama **fp16** base + F16 LoRA | 11/17 | 31/40 | 21/24 | 18.1 GB | 79 |
 | 3B four-draw seed 42, bf16 | 17/17 | 37/40 | 24/24 | — | — |
 | 3B four-draw seed 42, Ollama Q4_K_M base + F16 LoRA | 15/17 | 33/40 | 19/24 | 5.7 GB | 168–178 |
 
@@ -90,9 +92,14 @@ in both.
 So, as of this measurement:
 
 - Do not present the 7B over `qwen2.5:7b-instruct` (Q4_K_M) as the published adapter. It is not.
-- The untested and likely fix is a higher-precision base tag from the same library
-  (`qwen2.5:7b-instruct-q8_0` or `-fp16`, 8 GB and 15 GB of weights respectively). That
-  measurement has not been made; when it is, the numbers go here.
+- Use `qwen2.5:7b-instruct-q8_0` if you run the 7B in Ollama: it recovers most of the collapse
+  (21/24 near the gate) and beats fp16 at half the memory.
+- The residual gap is not quantisation. fp16 is the precision the adapter was trained against and
+  still misses 3 of 24 near the gate and 6 of 17 held out, with the label failing to follow the
+  model's own digits on 3 of 23 parsed lines. What differs is the serving path: how Ollama's
+  template renders the tool catalogue and tool-result turns against the Hugging Face chat template
+  the adapter saw in training. That comparison is the next measurement; until it is made, the bf16
+  numbers belong to the PEFT runtime only.
 - The bf16 numbers are reproducible with the PEFT runtime the experiment used
   (`experiments/coverage-v1-sft/scripts/predict_v1.py`) on a GPU with room for the base in bf16.
 
