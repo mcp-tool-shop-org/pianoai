@@ -2,7 +2,7 @@ import type { SiteConfig } from '@mcptoolshop/site-theme';
 
 export const config: SiteConfig = {
   title: 'AI Jam Sessions',
-  description: 'An MCP server that teaches AI to play piano and guitar — and sing. 120 songs across 12 genres, six sound engines, browser cockpit, practice journal — and jam-actions-v0, a public 115-record tool-use dataset.',
+  description: 'An MCP server that teaches AI to play piano and guitar — and sing. 108 annotated songs across 12 genres, six sound engines, browser cockpit, practice journal — and jam-actions-v0, a public 115-record tool-use dataset.',
   logoBadge: '♪',
   brandName: 'AI Jam Sessions',
   repoUrl: 'https://github.com/mcp-tool-shop-org/ai-jam-sessions',
@@ -13,7 +13,7 @@ export const config: SiteConfig = {
     badge: 'MCP Server',
     headline: 'AI Jam Sessions.',
     headlineAccent: 'Machine learning the old fashioned way.',
-    description: 'An MCP server that teaches AI to play piano and guitar — and sing. 120 songs across 12 genres. Six sound engines. Interactive guitar tablature. A browser cockpit with a sampled Concert Grand, a vocal synthesizer, and a blind listening panel. A practice journal that remembers everything. Plus jam-actions-v0, a 115-record public dataset of multi-turn MCP tool-use traces over classical piano.',
+    description: 'An MCP server that teaches AI to play piano and guitar — and sing. 108 annotated songs across 12 genres. Six sound engines. Interactive guitar tablature. A browser cockpit with a sampled Concert Grand, a vocal synthesizer, and a blind listening panel. A practice journal that remembers everything. Plus jam-actions-v0, a 115-record public dataset of multi-turn MCP tool-use traces over classical piano.',
     primaryCta: { href: '#quick-start', label: 'Get started' },
     secondaryCta: { href: 'handbook/', label: 'Read the Handbook' },
     previews: [
@@ -200,7 +200,7 @@ ai-jam-sessions list --genre folk`,
       kind: 'data-table',
       id: 'genres',
       title: 'Song library',
-      subtitle: '120 songs across 12 genres. Each genre has a deeply annotated exemplar.',
+      subtitle: '108 annotated songs across 12 genres. Each genre has a deeply annotated exemplar.',
       columns: ['Genre', 'Exemplar', 'Key', 'Teaches'],
       rows: [
         ['Blues', 'The Thrill Is Gone', 'B minor', 'Minor blues form, call-and-response'],

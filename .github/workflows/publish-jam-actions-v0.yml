@@ -1,14 +1,28 @@
 name: Publish jam-actions-v0
 
-# Operator-mediated publication workflow for the jam-actions-v0 dataset.
+# Operator-mediated publication workflow for a jam-actions dataset package.
 #
 # This workflow NEVER runs on push or schedule. Manual trigger only.
-# Default inputs produce a Zenodo DRAFT (no DOI minted, no HF push).
-# DOI minting + HF push require explicit `confirm_irreversible=yes-mint-doi`.
+# Default inputs produce a Zenodo DRAFT of jam-actions-v0 (no DOI minted, no
+# HF push). DOI minting + HF push require explicit
+# `confirm_irreversible=yes-mint-doi`.
+#
+# A non-default `dataset_dir` with mode=draft-only builds the archives and the
+# metadata payload as artifacts and does not call Zenodo (no token, no draft).
+# That is how jam-actions-v1 is dry-run. Defaults keep the v0 path unchanged.
 #
 # Tokens (ZEN_TOKEN, HF_TOKEN) come from GitHub Secrets. They are injected
 # as env vars only inside the steps that need them. Never echoed, never
 # written to files, never logged.
+#
+# Inputs:
+#   mode                    choice: draft-only (default) | publish-zenodo-only | publish
+#   confirm_irreversible    type exactly "yes-mint-doi" to mint a DOI and/or push HF; default "no"
+#   zenodo_newversion_of    digits = new version of that published record; "none" = fresh deposit
+#                           with its own concept DOI; default 20279919. An empty dispatch value is
+#                           not reachable (GitHub substitutes the default).
+#   ref                     git ref to publish from; default main
+#   dataset_dir             package under datasets/<name>; default datasets/jam-actions-v0-public
 #
 # ─── Compensators (irreversible actions in this workflow) ───────────────────
 # Zenodo DOI mint (publish step)
@@ -45,13 +59,17 @@ on:
         required: false
         default: "no"
       zenodo_newversion_of:
-        description: "Existing PUBLISHED Zenodo record id to create a NEW VERSION of (same concept DOI). Default = 20279919 (v0.4.3). Empty = brand-new deposit with its own concept DOI (first-publication path)."
+        description: 'Published record id (digits only) for a NEW VERSION of that record. Type exactly "none" for a fresh deposit with its own concept DOI. Default = 20279919. Empty is not reachable from a dispatch (GitHub replaces it with the default).'
         required: false
         default: "20279919"
       ref:
         description: "Git ref to publish from (the version's cut tag, or main)"
         required: false
         default: "main"
+      dataset_dir:
+        description: "Which dataset package under datasets/ to publish"
+        required: false
+        default: "datasets/jam-actions-v0-public"
 
 concurrency:
   group: publish-jam-actions-v0
@@ -71,6 +89,7 @@ jobs:
         env:
           MODE: ${{ github.event.inputs.mode }}
           CONFIRM: ${{ github.event.inputs.confirm_irreversible }}
+          NEWVERSION_OF: ${{ github.event.inputs.zenodo_newversion_of }}
         run: |
           set -euo pipefail
           echo "Mode: $MODE"
@@ -99,22 +118,86 @@ jobs:
               ;;
           esac
 
+          # Printed here, before checkout or any Zenodo call, so the choice is
+          # on the log's first screen. "none" is the reachable fresh-deposit
+          # sentinel; GitHub replaces an empty dispatch value with the default.
+          if [ "$NEWVERSION_OF" = "none" ]; then
+            echo "Zenodo path: fresh deposit"
+          elif printf '%s' "$NEWVERSION_OF" | grep -Eq '^[0-9]+$'; then
+            echo "Zenodo path: new version of $NEWVERSION_OF"
+          else
+            echo "ERROR: zenodo_newversion_of must be all digits (a published record id) or \"none\" (fresh deposit); got: $NEWVERSION_OF"
+            exit 1
+          fi
+
       # ─── Checkout + tooling ──────────────────────────────────────────────────
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.inputs.ref }}
           fetch-depth: 0
+
+      - name: Resolve dataset package
+        id: version
+        env:
+          DATASET_DIR: ${{ github.event.inputs.dataset_dir }}
+          MODE: ${{ github.event.inputs.mode }}
+        run: |
+          set -euo pipefail
+          DIR="${DATASET_DIR:-datasets/jam-actions-v0-public}"
+          if ! printf '%s' "$DIR" | grep -Eq '^datasets/[A-Za-z0-9._-]+$'; then
+            echo "ERROR: dataset_dir must be datasets/<package-name> (got: $DIR)"
+            exit 1
+          fi
+          test -d "$DIR" || { echo "ERROR: no such dataset package: $DIR"; exit 1; }
+          test -f "$DIR/VERSION" || { echo "ERROR: missing $DIR/VERSION"; exit 1; }
+          test -f "$DIR/checksums.sha256" || { echo "ERROR: missing $DIR/checksums.sha256"; exit 1; }
+          test -f "$DIR/zenodo-metadata.json" || { echo "ERROR: missing $DIR/zenodo-metadata.json"; exit 1; }
+
+          PKG=$(basename "$DIR")
+          VER=$(tr -d '\r\n' < "$DIR/VERSION")
+          if [ -z "$VER" ]; then
+            echo "ERROR: $DIR/VERSION is empty"
+            exit 1
+          fi
+
+          # v0 draft-only still creates a Zenodo DRAFT (unchanged). Any other
+          # package with mode=draft-only stops before any Zenodo call.
+          SKIP_ZENODO=false
+          if [ "$MODE" = "draft-only" ] && [ "$DIR" != "datasets/jam-actions-v0-public" ]; then
+            SKIP_ZENODO=true
+          fi
+
+          {
+            echo "dir=$DIR"
+            echo "pkg=$PKG"
+            echo "version=$VER"
+            echo "skip_zenodo=$SKIP_ZENODO"
+            echo "metadata=$DIR/zenodo-metadata.json"
+            echo "artifact=${PKG}-${VER}-archives"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "Dataset dir: $DIR"
+          echo "Package:     $PKG"
+          echo "Version:     $VER"
+          echo "Archives:    artifacts/${PKG}-${VER}.tar.gz + .zip"
+          echo "Artifact:    ${PKG}-${VER}-archives"
+          echo "Metadata:    $DIR/zenodo-metadata.json"
+          if [ "$SKIP_ZENODO" = "true" ]; then
+            echo "→ draft-only for $DIR: archives + metadata payload as artifacts. No Zenodo call. No token used."
+          else
+            echo "→ Zenodo path enabled for $DIR (mode=$MODE)."
+          fi
 
       - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
         with:
           version: 10
 
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22
           cache: pnpm
 
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
 
@@ -122,15 +205,17 @@ jobs:
 
       # ─── Pre-flight verifications (must pass or workflow aborts) ─────────────
       - name: Verify package checksums
-        run: pnpm exec tsx scripts/verify-public-package-checksums.ts
-
-      - name: Read dataset version
-        id: version
+        env:
+          DIR: ${{ steps.version.outputs.dir }}
         run: |
           set -euo pipefail
-          VER=$(cat datasets/jam-actions-v0-public/VERSION)
-          echo "version=$VER" >> $GITHUB_OUTPUT
-          echo "Dataset version: $VER"
+          if [ "$DIR" = "datasets/jam-actions-v0-public" ]; then
+            pnpm exec tsx scripts/verify-public-package-checksums.ts
+          else
+            echo "No v0 package-inputs verifier for $DIR; verifying checksums.sha256 directly."
+            ( cd "$DIR" && sha256sum -c checksums.sha256 --quiet )
+            echo "[ok] checksums.sha256 verified for $DIR"
+          fi
 
       # Since v0.5.0 the sealed Slice-21 E3 baseline is NOT shipped in the
       # package (it was measured on v0.4.3 records — RELEASE_NOTES.md explains).
@@ -140,15 +225,29 @@ jobs:
       # then run the pure validator against it. The per-record trace sources it
       # resolves (slice18-5 / slice19-tool-fresh / slice21-schumann-rerun) still
       # ship in the package.
+      #
+      # v0 keeps that git-history restore. Any other dataset_dir runs the
+      # validator only when the file exists under the package; otherwise the
+      # step says it skipped by name.
       - name: Verify release gate (sealed Slice-21 baseline from git history)
+        env:
+          DIR: ${{ steps.version.outputs.dir }}
         run: |
           set -euo pipefail
-          SEALED_REF="jam-actions-v0-feature-marketed-2026-05-19"
-          SEALED_SHA="5bb5b2244b0bb03dc38a9235804ac71468084e3881ead6c823a79197d25b8e23"
-          git show "${SEALED_REF}:datasets/jam-actions-v0-public/evals/slice21-fair-e3-baseline-results.json" \
-            > /tmp/slice21-fair-e3-baseline-results.json
-          echo "${SEALED_SHA}  /tmp/slice21-fair-e3-baseline-results.json" | sha256sum -c -
-          pnpm exec tsx scripts/check-release-gate.ts /tmp/slice21-fair-e3-baseline-results.json
+          SLICE21_NAME="evals/slice21-fair-e3-baseline-results.json"
+          if [ "$DIR" = "datasets/jam-actions-v0-public" ]; then
+            SEALED_REF="jam-actions-v0-feature-marketed-2026-05-19"
+            SEALED_SHA="5bb5b2244b0bb03dc38a9235804ac71468084e3881ead6c823a79197d25b8e23"
+            git show "${SEALED_REF}:datasets/jam-actions-v0-public/${SLICE21_NAME}" \
+              > /tmp/slice21-fair-e3-baseline-results.json
+            echo "${SEALED_SHA}  /tmp/slice21-fair-e3-baseline-results.json" | sha256sum -c -
+            pnpm exec tsx scripts/check-release-gate.ts /tmp/slice21-fair-e3-baseline-results.json
+          elif [ -f "$DIR/$SLICE21_NAME" ]; then
+            echo "Found $DIR/$SLICE21_NAME — running the release-gate validator on the packaged file."
+            pnpm exec tsx scripts/check-release-gate.ts "$DIR/$SLICE21_NAME"
+          else
+            echo "Skipping Verify release gate (sealed Slice-21 baseline from git history): $SLICE21_NAME is not present under $DIR"
+          fi
 
       # The execution-verification standing gate (every frozen tool_call
       # replayed against the live MCP server) runs at CUT time on a rig with
@@ -157,37 +256,51 @@ jobs:
       # Here we verify the SHIPPED receipt instead: it must exist for this
       # version, carry verdict PASS with zero failures, and its record bytes
       # are already pinned by the checksum verification above.
+      #
+      # v0 still errors if evals/v${VER}-execution-verification.json is
+      # missing. Any other dataset_dir skips by name when the file is absent.
       - name: Verify execution-verification receipt (cut-time standing gate)
+        env:
+          DIR: ${{ steps.version.outputs.dir }}
+          VER: ${{ steps.version.outputs.version }}
         run: |
           set -euo pipefail
-          VER="${{ steps.version.outputs.version }}"
-          RECEIPT="datasets/jam-actions-v0-public/evals/v${VER}-execution-verification.json"
-          test -f "$RECEIPT" || { echo "ERROR: missing $RECEIPT"; exit 1; }
-          VERDICT=$(jq -r '.verdict' "$RECEIPT")
-          FAILS=$(jq -r '.failures | length' "$RECEIPT")
-          UNIQUE=$(jq -r '.unique_calls' "$RECEIPT")
-          EXECUTED=$(jq -r '.executed' "$RECEIPT")
-          echo "Receipt: verdict=$VERDICT failures=$FAILS executed=$EXECUTED/$UNIQUE"
-          [ "$VERDICT" = "PASS" ] || { echo "ERROR: receipt verdict is not PASS"; exit 1; }
-          [ "$FAILS" = "0" ] || { echo "ERROR: receipt has failures"; exit 1; }
-          [ "$EXECUTED" = "$UNIQUE" ] || { echo "ERROR: receipt executed != unique calls"; exit 1; }
+          RECEIPT="$DIR/evals/v${VER}-execution-verification.json"
+          if [ -f "$RECEIPT" ]; then
+            VERDICT=$(jq -r '.verdict' "$RECEIPT")
+            FAILS=$(jq -r '.failures | length' "$RECEIPT")
+            UNIQUE=$(jq -r '.unique_calls' "$RECEIPT")
+            EXECUTED=$(jq -r '.executed' "$RECEIPT")
+            echo "Receipt: verdict=$VERDICT failures=$FAILS executed=$EXECUTED/$UNIQUE"
+            [ "$VERDICT" = "PASS" ] || { echo "ERROR: receipt verdict is not PASS"; exit 1; }
+            [ "$FAILS" = "0" ] || { echo "ERROR: receipt has failures"; exit 1; }
+            [ "$EXECUTED" = "$UNIQUE" ] || { echo "ERROR: receipt executed != unique calls"; exit 1; }
+          elif [ "$DIR" = "datasets/jam-actions-v0-public" ]; then
+            echo "ERROR: missing $RECEIPT"
+            exit 1
+          else
+            echo "Skipping Verify execution-verification receipt (cut-time standing gate): $RECEIPT is not present under $DIR"
+          fi
 
       # ─── Build publication archives ──────────────────────────────────────────
       - name: Build .tar.gz and .zip archives
         id: archives
+        env:
+          DIR: ${{ steps.version.outputs.dir }}
+          PKG: ${{ steps.version.outputs.pkg }}
+          VER: ${{ steps.version.outputs.version }}
         run: |
           set -euo pipefail
-          VER="${{ steps.version.outputs.version }}"
           mkdir -p artifacts
-          (cd datasets/jam-actions-v0-public && tar -czf "../../artifacts/jam-actions-v0-public-${VER}.tar.gz" .)
-          (cd datasets && zip -qr "../artifacts/jam-actions-v0-public-${VER}.zip" jam-actions-v0-public)
+          (cd "$DIR" && tar -czf "../../artifacts/${PKG}-${VER}.tar.gz" .)
+          (cd datasets && zip -qr "../artifacts/${PKG}-${VER}.zip" "$PKG")
 
-          TAR_SHA=$(sha256sum "artifacts/jam-actions-v0-public-${VER}.tar.gz" | cut -d' ' -f1)
-          ZIP_SHA=$(sha256sum "artifacts/jam-actions-v0-public-${VER}.zip" | cut -d' ' -f1)
-          echo "tar_sha=$TAR_SHA" >> $GITHUB_OUTPUT
-          echo "zip_sha=$ZIP_SHA" >> $GITHUB_OUTPUT
-          echo "tar=artifacts/jam-actions-v0-public-${VER}.tar.gz" >> $GITHUB_OUTPUT
-          echo "zip=artifacts/jam-actions-v0-public-${VER}.zip" >> $GITHUB_OUTPUT
+          TAR_SHA=$(sha256sum "artifacts/${PKG}-${VER}.tar.gz" | cut -d' ' -f1)
+          ZIP_SHA=$(sha256sum "artifacts/${PKG}-${VER}.zip" | cut -d' ' -f1)
+          echo "tar_sha=$TAR_SHA" >> "$GITHUB_OUTPUT"
+          echo "zip_sha=$ZIP_SHA" >> "$GITHUB_OUTPUT"
+          echo "tar=artifacts/${PKG}-${VER}.tar.gz" >> "$GITHUB_OUTPUT"
+          echo "zip=artifacts/${PKG}-${VER}.zip" >> "$GITHUB_OUTPUT"
 
           echo "Archives:"
           ls -la artifacts/
@@ -197,8 +310,31 @@ jobs:
       - name: Upload archives as workflow artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: jam-actions-v0-public-${{ steps.version.outputs.version }}-archives
+          name: ${{ steps.version.outputs.pkg }}-${{ steps.version.outputs.version }}-archives
           path: artifacts/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Build Zenodo metadata payload
+        env:
+          META: ${{ steps.version.outputs.metadata }}
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts-meta
+          # zenodo-metadata.json ALREADY has the { "metadata": {...} } envelope.
+          # We only need to strip the leading $schema_note (a documentation field) so
+          # Zenodo doesn't see an unknown top-level key. Do NOT re-wrap.
+          jq 'del(.["$schema_note"])' "$META" > artifacts-meta/zenodo-metadata-payload.json
+          echo "Metadata payload top-level keys:"
+          jq 'keys' artifacts-meta/zenodo-metadata-payload.json
+          echo "Inner metadata keys:"
+          jq '.metadata | keys' artifacts-meta/zenodo-metadata-payload.json
+
+      - name: Upload metadata payload as workflow artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{ steps.version.outputs.pkg }}-${{ steps.version.outputs.version }}-zenodo-metadata-payload
+          path: artifacts-meta/zenodo-metadata-payload.json
           if-no-files-found: error
           retention-days: 14
 
@@ -210,11 +346,15 @@ jobs:
       #     version's files into the draft; we delete them so only this
       #     version's archives ship. Publishing the draft mints the new
       #     version DOI. The published prior version is never touched.
-      #   - FRESH DEPOSIT (input left empty): POST an empty deposition — a
+      #   - FRESH DEPOSIT (input exactly "none"): POST an empty deposition — a
       #     brand-new record with its OWN concept DOI. Only for a first-ever
       #     publication, never for corrections to an already-published dataset.
+      #     An empty string is not reachable from a dispatch.
+      #
+      # Skipped when skip_zenodo=true (non-v0 dataset_dir + mode=draft-only).
       - name: Create Zenodo deposit (DRAFT)
         id: zenodo_draft
+        if: steps.version.outputs.skip_zenodo != 'true'
         env:
           ZEN_TOKEN: ${{ secrets.ZEN_TOKEN }}
           NEWVERSION_OF: ${{ github.event.inputs.zenodo_newversion_of }}
@@ -225,14 +365,14 @@ jobs:
             exit 1
           fi
 
-          if [ -n "${NEWVERSION_OF:-}" ]; then
-            # Validate the input is a bare record id (digits only).
-            case "$NEWVERSION_OF" in
-              *[!0-9]*)
-                echo "ERROR: zenodo_newversion_of must be a numeric record id (got: $NEWVERSION_OF)"
-                exit 1
-                ;;
-            esac
+          if [ "${NEWVERSION_OF}" = "none" ]; then
+            echo "Creating FRESH deposit (new concept DOI)..."
+            DEPOSIT=$(curl --fail-with-body -sSL -X POST \
+              -H "Authorization: Bearer $ZEN_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d '{}' \
+              "https://zenodo.org/api/deposit/depositions")
+          elif printf '%s' "${NEWVERSION_OF:-}" | grep -Eq '^[0-9]+$'; then
             echo "Creating NEW VERSION draft of published record $NEWVERSION_OF..."
             NV_RESP=$(curl --fail-with-body -sSL -X POST \
               -H "Authorization: Bearer $ZEN_TOKEN" \
@@ -263,24 +403,21 @@ jobs:
               -H "Authorization: Bearer $ZEN_TOKEN" \
               "https://zenodo.org/api/deposit/depositions/$DEPOSIT_ID")
           else
-            echo "Creating FRESH deposit (new concept DOI)..."
-            DEPOSIT=$(curl --fail-with-body -sSL -X POST \
-              -H "Authorization: Bearer $ZEN_TOKEN" \
-              -H "Content-Type: application/json" \
-              -d '{}' \
-              "https://zenodo.org/api/deposit/depositions")
+            echo "ERROR: zenodo_newversion_of must be all digits or \"none\" (got: ${NEWVERSION_OF:-})"
+            exit 1
           fi
 
           DEPOSIT_ID=$(echo "$DEPOSIT" | jq -r '.id')
           BUCKET_URL=$(echo "$DEPOSIT" | jq -r '.links.bucket')
           DEPOSIT_HTML=$(echo "$DEPOSIT" | jq -r '.links.html')
 
-          echo "deposit_id=$DEPOSIT_ID" >> $GITHUB_OUTPUT
-          echo "deposit_html=$DEPOSIT_HTML" >> $GITHUB_OUTPUT
-          echo "bucket_url=$BUCKET_URL" >> $GITHUB_OUTPUT
+          echo "deposit_id=$DEPOSIT_ID" >> "$GITHUB_OUTPUT"
+          echo "deposit_html=$DEPOSIT_HTML" >> "$GITHUB_OUTPUT"
+          echo "bucket_url=$BUCKET_URL" >> "$GITHUB_OUTPUT"
           echo "Zenodo draft created: $DEPOSIT_HTML (id=$DEPOSIT_ID)"
 
       - name: Upload archives to Zenodo bucket
+        if: steps.version.outputs.skip_zenodo != 'true'
         env:
           ZEN_TOKEN: ${{ secrets.ZEN_TOKEN }}
         run: |
@@ -298,25 +435,17 @@ jobs:
           done
 
       - name: Set Zenodo deposit metadata
+        if: steps.version.outputs.skip_zenodo != 'true'
         env:
           ZEN_TOKEN: ${{ secrets.ZEN_TOKEN }}
         run: |
           set -euo pipefail
           DEPOSIT_ID="${{ steps.zenodo_draft.outputs.deposit_id }}"
 
-          # zenodo-metadata.json ALREADY has the { "metadata": {...} } envelope.
-          # We only need to strip the leading $schema_note (a documentation field) so
-          # Zenodo doesn't see an unknown top-level key. Do NOT re-wrap.
-          jq 'del(.["$schema_note"])' datasets/jam-actions-v0-public/zenodo-metadata.json > /tmp/meta-payload.json
-          echo "Metadata payload top-level keys:"
-          jq 'keys' /tmp/meta-payload.json
-          echo "Inner metadata keys:"
-          jq '.metadata | keys' /tmp/meta-payload.json
-
           HTTP_CODE=$(curl -sSL -w "%{http_code}" -o /tmp/meta-resp.json -X PUT \
             -H "Authorization: Bearer $ZEN_TOKEN" \
             -H "Content-Type: application/json" \
-            -d @/tmp/meta-payload.json \
+            -d @artifacts-meta/zenodo-metadata-payload.json \
             "https://zenodo.org/api/deposit/depositions/$DEPOSIT_ID")
 
           echo "Metadata PUT HTTP code: $HTTP_CODE"
@@ -335,7 +464,8 @@ jobs:
       - name: Publish Zenodo deposit (MINTS DOI)
         id: zenodo_publish
         if: |
-          (github.event.inputs.mode == 'publish' || github.event.inputs.mode == 'publish-zenodo-only')
+          steps.version.outputs.skip_zenodo != 'true'
+          && (github.event.inputs.mode == 'publish' || github.event.inputs.mode == 'publish-zenodo-only')
           && github.event.inputs.confirm_irreversible == 'yes-mint-doi'
         env:
           ZEN_TOKEN: ${{ secrets.ZEN_TOKEN }}
@@ -364,9 +494,9 @@ jobs:
           DOI_URL=$(echo "$PUBLISH" | jq -r '.doi_url // empty')
           RECORD_URL=$(echo "$PUBLISH" | jq -r '.links.record_html // .links.record // empty')
 
-          echo "doi=$DOI" >> $GITHUB_OUTPUT
-          echo "doi_url=$DOI_URL" >> $GITHUB_OUTPUT
-          echo "record_url=$RECORD_URL" >> $GITHUB_OUTPUT
+          echo "doi=$DOI" >> "$GITHUB_OUTPUT"
+          echo "doi_url=$DOI_URL" >> "$GITHUB_OUTPUT"
+          echo "record_url=$RECORD_URL" >> "$GITHUB_OUTPUT"
 
           echo "Zenodo PUBLISHED"
           echo "DOI:       $DOI"
@@ -375,12 +505,18 @@ jobs:
 
       # ─── HuggingFace: push (gated by mode=publish + confirm) ─────────────────
       - name: Install huggingface_hub
-        if: github.event.inputs.mode == 'publish' && github.event.inputs.confirm_irreversible == 'yes-mint-doi'
+        if: |
+          github.event.inputs.mode == 'publish'
+          && github.event.inputs.confirm_irreversible == 'yes-mint-doi'
+          && steps.version.outputs.dir == 'datasets/jam-actions-v0-public'
         run: pip install --quiet huggingface_hub
 
       - name: Push dataset to HuggingFace
         id: hf_push
-        if: github.event.inputs.mode == 'publish' && github.event.inputs.confirm_irreversible == 'yes-mint-doi'
+        if: |
+          github.event.inputs.mode == 'publish'
+          && github.event.inputs.confirm_irreversible == 'yes-mint-doi'
+          && steps.version.outputs.dir == 'datasets/jam-actions-v0-public'
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
           HF_REPO_ID: mcp-tool-shop/jam-actions-v0
@@ -422,7 +558,7 @@ jobs:
           PY
 
           HF_URL=$(cat /tmp/hf-url.txt | tr -d '\n')
-          echo "hf_url=$HF_URL" >> $GITHUB_OUTPUT
+          echo "hf_url=$HF_URL" >> "$GITHUB_OUTPUT"
 
       # ─── Final receipt summary ───────────────────────────────────────────────
       - name: Print final receipt
@@ -432,10 +568,12 @@ jobs:
           CONFIRM: ${{ github.event.inputs.confirm_irreversible }}
           NEWVERSION_OF: ${{ github.event.inputs.zenodo_newversion_of }}
           REF: ${{ github.event.inputs.ref }}
+          DIR: ${{ steps.version.outputs.dir }}
+          SKIP_ZENODO: ${{ steps.version.outputs.skip_zenodo }}
         run: |
           set -euo pipefail
           echo "================================================================"
-          echo "  jam-actions-v0 publication receipt"
+          echo "  ${{ steps.version.outputs.pkg }} publication receipt"
           echo "================================================================"
           echo "  Mode:                $MODE"
           if [ "$CONFIRM" = "yes-mint-doi" ]; then
@@ -443,19 +581,30 @@ jobs:
           else
             echo "  Confirmation:        NO"
           fi
-          echo "  New version of:      ${NEWVERSION_OF:-'(fresh deposit — new concept DOI)'}"
+          echo "  Dataset dir:         ${DIR:-'(unresolved)'}"
+          if [ "$NEWVERSION_OF" = "none" ]; then
+            echo "  Zenodo path:         fresh deposit"
+          elif printf '%s' "${NEWVERSION_OF:-}" | grep -Eq '^[0-9]+$'; then
+            echo "  Zenodo path:         new version of $NEWVERSION_OF"
+          else
+            echo "  Zenodo path:         (invalid: ${NEWVERSION_OF:-})"
+          fi
           echo "  Ref:                 $REF"
           echo "  Version:             ${{ steps.version.outputs.version }}"
           echo "  Tar.gz sha256:       ${{ steps.archives.outputs.tar_sha }}"
           echo "  Zip sha256:          ${{ steps.archives.outputs.zip_sha }}"
-          echo "  Zenodo draft URL:    ${{ steps.zenodo_draft.outputs.deposit_html }}"
-          echo "  Zenodo deposit ID:   ${{ steps.zenodo_draft.outputs.deposit_id }}"
-          echo "  Zenodo DOI:          ${{ steps.zenodo_publish.outputs.doi || '(not minted — draft only)' }}"
-          echo "  Zenodo DOI URL:      ${{ steps.zenodo_publish.outputs.doi_url || '(not minted)' }}"
-          echo "  Zenodo record:       ${{ steps.zenodo_publish.outputs.record_url || '(not minted)' }}"
+          if [ "${SKIP_ZENODO:-}" = "true" ]; then
+            echo "  Zenodo:              skipped (draft-only, no Zenodo call)"
+          else
+            echo "  Zenodo draft URL:    ${{ steps.zenodo_draft.outputs.deposit_html }}"
+            echo "  Zenodo deposit ID:   ${{ steps.zenodo_draft.outputs.deposit_id }}"
+            echo "  Zenodo DOI:          ${{ steps.zenodo_publish.outputs.doi || '(not minted — draft only)' }}"
+            echo "  Zenodo DOI URL:      ${{ steps.zenodo_publish.outputs.doi_url || '(not minted)' }}"
+            echo "  Zenodo record:       ${{ steps.zenodo_publish.outputs.record_url || '(not minted)' }}"
+          fi
           echo "  HuggingFace URL:     ${{ steps.hf_push.outputs.hf_url || '(not pushed)' }}"
           echo "================================================================"
           echo ""
           echo "Tokens are NOT in this log (they live in GitHub Secrets only)."
-          echo "Capture the URLs above into datasets/jam-actions-v0-public/publication-receipt.json"
+          echo "Capture the URLs above into ${DIR:-datasets/jam-actions-v0-public}/publication-receipt.json"
           echo "via a follow-up local commit (NOT inside this workflow)."

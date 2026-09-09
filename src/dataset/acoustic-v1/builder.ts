@@ -17,7 +17,7 @@ import { Ensemble } from "../../audio/ensemble.js";
 import { validateTrace } from "../trace-validator.js";
 import {
   F5_KINDS,
-  F5_DRAWS,
+  resolveF5Draws,
   F5_THRESHOLDS,
   resetF5DropStats,
   tryBuildF5,
@@ -541,7 +541,7 @@ export function buildAcousticRecord(
   const out: V1Record[] = [];
   const usedPaths = new Set<string>();
   for (const kind of F5_KINDS) {
-    for (let draw = 0; draw < F5_DRAWS; draw++) {
+    for (let draw = 0; draw < resolveF5Draws(); draw++) {
       const kept = tryBuildF5(song, kind, draw);
       if (!kept) continue;
       const rec = buildAcousticTake(song, kept, `acoustic:${song.id}:${kind}:${draw}`, split, { ...opts, draw });

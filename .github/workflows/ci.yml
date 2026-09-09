@@ -1,9 +1,10 @@
 # --- Measured CI cost (dogfood-swarm SKILL item 8) --------------------------
-# 11 billable min per push across 6 jobs (7.5 min actual wall time),
-# measured 2026-09-07 from run 34122798410. Most expensive jobs:
-#     4 min  ci (22)  (3.3 min wall)
-#     2 min  ci (24)  (1.8 min wall)
-#     2 min  Modern pnpm cold-start (pnpm 10, Node 22)  (1.7 min wall)
+# 33 billable min per push across 7 jobs (10.2 min actual wall time),
+# measured 2026-09-09 from run 34380057331. Most expensive jobs:
+#    11 min  ci (22)  (10.2 min wall)
+#     9 min  ci (24)  (8.4 min wall)
+#     9 min  Modern pnpm cold-start (pnpm 10, Node 22)  (8.6 min wall)
+#     1 min  Docker image (library + journal volume)  (33 s wall)
 # GitHub bills per JOB, rounded UP to the minute, x2 Windows / x10 macOS, so
 # billable minutes exceed wall time — many short jobs cost more than one long
 # one. This number is measured, never estimated; re-measure after any change:
@@ -38,6 +39,8 @@ on:
       - "vitest.config.ts"
       - "samples/**"
       - "Dockerfile"
+      - ".dockerignore"
+      - "docker-compose.yml"
       - "plugin/**"
       - ".github/workflows/**"
     branches: [main]
@@ -55,6 +58,8 @@ on:
       - "vitest.config.ts"
       - "samples/**"
       - "Dockerfile"
+      - ".dockerignore"
+      - "docker-compose.yml"
       - "plugin/**"
       - ".github/workflows/**"
   workflow_dispatch:
@@ -75,7 +80,7 @@ jobs:
         node-version: [22, 24]
 
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -83,7 +88,7 @@ jobs:
         with:
           version: 10
 
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ matrix.node-version }}
           cache: pnpm
@@ -136,7 +141,7 @@ jobs:
     timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -144,7 +149,7 @@ jobs:
         with:
           version: 10
 
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22
           cache: pnpm
@@ -157,11 +162,59 @@ jobs:
       - name: Test
         run: pnpm test
 
+  # Paths-gated with the workflow: Dockerfile, .dockerignore, docker-compose.yml,
+  # src/**, and this file. Builds the image (no push). Asserts the shipped
+  # library is 14 loaded / 94 unfetched, then proves a journal entry written
+  # with AI_JAM_HOME on a named volume is readable from a second container.
+  # No network fetch. Measured 2026-09-09 from run 34380057331:
+  #     1 min  Docker image (library + journal volume)  (33 s wall)
+  docker-image:
+    name: Docker image (library + journal volume)
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Build image (no push)
+        run: docker build -t ai-jam-sessions:ci .
+
+      - name: Library is 14 loaded / 94 unfetched
+        run: |
+          set -euo pipefail
+          STATS=$(docker run --rm --entrypoint node ai-jam-sessions:ci dist/cli.js stats)
+          echo "$STATS"
+          echo "$STATS" | grep -q 'Total songs: 14'
+          LIB=$(docker run --rm --entrypoint node ai-jam-sessions:ci dist/cli.js library)
+          echo "$LIB"
+          echo "$LIB" | grep -q 'Not fetched: 94'
+
+      - name: Journal survives a second container on the same volume
+        run: |
+          set -euo pipefail
+          docker volume create ajs-ci-journal
+          docker run --rm \
+            -e AI_JAM_HOME=/data \
+            -v ajs-ci-journal:/data \
+            --entrypoint node \
+            ai-jam-sessions:ci \
+            --input-type=module \
+            -e "import { appendJournalEntry } from './dist/journal.js'; const p = appendJournalEntry('ci journal proof\n'); console.log(p);"
+          docker run --rm \
+            -e AI_JAM_HOME=/data \
+            -v ajs-ci-journal:/data \
+            --entrypoint node \
+            ai-jam-sessions:ci \
+            --input-type=module \
+            -e "import { readdirSync, readFileSync } from 'node:fs'; import { join } from 'node:path'; import { journalDir } from './dist/state-home.js'; const dir = journalDir(); const files = readdirSync(dir); const text = files.map((f) => readFileSync(join(dir, f), 'utf8')).join('\n'); if (!text.includes('ci journal proof')) { console.error('journal missing'); process.exit(1); } console.log('journal survived across containers:', files.join(', '));"
+          docker volume rm ajs-ci-journal
+
   dep-audit:
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -169,7 +222,7 @@ jobs:
         with:
           version: 10
 
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "22"
           cache: pnpm
@@ -184,7 +237,7 @@ jobs:
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -229,7 +282,7 @@ jobs:
       run:
         working-directory: apps/cockpit
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -237,7 +290,7 @@ jobs:
         with:
           version: 10
 
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22
 

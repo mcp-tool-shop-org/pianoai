@@ -1,0 +1,26 @@
+# Default `docker compose up` starts only the MCP server (stdio).
+# Ollama is a profile: `docker compose --profile ollama up`.
+# The server then sees OLLAMA_HOST=http://ollama:11434 on the compose network.
+# Port 11434 is bound to localhost only.
+
+services:
+  ai-jam-sessions:
+    image: ghcr.io/mcp-tool-shop-org/ai-jam-sessions
+    stdin_open: true
+    tty: false
+    volumes:
+      - ai-jam-data:/data
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+
+  ollama:
+    profiles: ["ollama"]
+    image: ollama/ollama
+    volumes:
+      - ollama-data:/root/.ollama
+    ports:
+      - "127.0.0.1:11434:11434"
+
+volumes:
+  ai-jam-data:
+  ollama-data:

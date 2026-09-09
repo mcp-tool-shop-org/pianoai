@@ -201,7 +201,7 @@ describe("mcp-server.ts — MCP protocol-level tool tests", () => {
     async () => {
       const result = (await client.callTool({
         name: "play_song",
-        arguments: { id: "fallin", mode: "loop", startMeasure: 1, endMeasure: 999999 },
+        arguments: { id: "bach-prelude-c-major-bwv846", mode: "loop", startMeasure: 1, endMeasure: 999999 },
       })) as ToolResult;
       const text = extractText(result);
 
@@ -219,7 +219,7 @@ describe("mcp-server.ts — MCP protocol-level tool tests", () => {
       // boundary assertions can't drift from the fixture.
       const info = (await client.callTool({
         name: "song_info",
-        arguments: { id: "fallin" },
+        arguments: { id: "bach-prelude-c-major-bwv846" },
       })) as ToolResult;
       const n = Number(extractText(info).match(/Measures:\**\s*(\d+)/)![1]);
       expect(n).toBeGreaterThan(1);
@@ -229,7 +229,7 @@ describe("mcp-server.ts — MCP protocol-level tool tests", () => {
       // edge, not only for wildly-out-of-range values).
       const past = (await client.callTool({
         name: "play_song",
-        arguments: { id: "fallin", mode: "loop", startMeasure: 1, endMeasure: n + 1 },
+        arguments: { id: "bach-prelude-c-major-bwv846", mode: "loop", startMeasure: 1, endMeasure: n + 1 },
       })) as ToolResult;
       expect(past.isError).toBe(true);
       const pastText = extractText(past).toLowerCase();
@@ -247,7 +247,7 @@ describe("mcp-server.ts — MCP protocol-level tool tests", () => {
       // that mutation; this one does).
       const edge = (await client.callTool({
         name: "play_song",
-        arguments: { id: "fallin", mode: "loop", startMeasure: n, endMeasure: n },
+        arguments: { id: "bach-prelude-c-major-bwv846", mode: "loop", startMeasure: n, endMeasure: n },
       })) as ToolResult;
       expect(extractText(edge).toLowerCase()).not.toMatch(/exceeds|valid range/);
 
@@ -295,7 +295,7 @@ describe("mcp-server.ts — MCP protocol-level tool tests", () => {
     async () => {
       const result = (await client.callTool({
         name: "practice_loop",
-        arguments: { id: "fallin", startMeasure: 1, endMeasure: 999999 },
+        arguments: { id: "bach-prelude-c-major-bwv846", startMeasure: 1, endMeasure: 999999 },
       })) as ToolResult;
       expect(result.isError).toBe(true);
       expect(extractText(result).toLowerCase()).toMatch(/exceeds/);
@@ -308,7 +308,7 @@ describe("mcp-server.ts — MCP protocol-level tool tests", () => {
     async () => {
       const result = (await client.callTool({
         name: "practice_loop",
-        arguments: { id: "fallin", startMeasure: 5, endMeasure: 2 },
+        arguments: { id: "bach-prelude-c-major-bwv846", startMeasure: 5, endMeasure: 2 },
       })) as ToolResult;
       expect(result.isError).toBe(true);
       expect(extractText(result).toLowerCase()).toMatch(/startmeasure/);
@@ -321,7 +321,7 @@ describe("mcp-server.ts — MCP protocol-level tool tests", () => {
     async () => {
       const result = (await client.callTool({
         name: "practice_loop",
-        arguments: { id: "fallin", startMeasure: 1, endMeasure: 2, speedStartPct: 90, speedTargetPct: 60 },
+        arguments: { id: "bach-prelude-c-major-bwv846", startMeasure: 1, endMeasure: 2, speedStartPct: 90, speedTargetPct: 60 },
       })) as ToolResult;
       expect(result.isError).toBe(true);
       expect(extractText(result).toLowerCase()).toMatch(/speedtargetpct/);
@@ -335,7 +335,7 @@ describe("mcp-server.ts — MCP protocol-level tool tests", () => {
       const result = (await client.callTool({
         name: "add_section",
         arguments: {
-          id: "fallin",
+          id: "bach-prelude-c-major-bwv846",
           name: "TestsAgentSection",
           startMeasure: 1,
           endMeasure: 2,
@@ -346,7 +346,7 @@ describe("mcp-server.ts — MCP protocol-level tool tests", () => {
 
       // Bypass the server's in-memory registry entirely — read the actual
       // file saveSong() should have written.
-      const savedPath = join(tmpHome, ".ai-jam-sessions", "songs", "fallin.json");
+      const savedPath = join(tmpHome, ".ai-jam-sessions", "songs", "bach-prelude-c-major-bwv846.json");
       expect(existsSync(savedPath)).toBe(true);
       const saved = JSON.parse(readFileSync(savedPath, "utf8")) as {
         sections?: Array<{ name: string; startMeasure: number; endMeasure: number }>;
@@ -431,7 +431,7 @@ describe("mcp-server.ts — MCP protocol-level tool tests", () => {
       // real songs now that the chord-transpose crash is fixed.
       const realResult = (await client.callTool({
         name: "transpose_song",
-        arguments: { id: "fallin", semitones: 2 },
+        arguments: { id: "bach-prelude-c-major-bwv846", semitones: 2 },
       })) as ToolResult;
       expect(realResult.isError).not.toBe(true);
       const realText = extractText(realResult);
@@ -554,14 +554,14 @@ describe("mcp-server.ts — MCP protocol-level tool tests", () => {
   it(
     "verify_harmony resolves a library song's melody and key from songId (range-parses measures)",
     async () => {
-      // Uses the bundled library song "fallin" — the assertion is on the
+      // Uses the bundled library song "bach-prelude-c-major-bwv846" — the assertion is on the
       // songId resolution path (melody + key pulled from the song, range
       // parsed), not on the musical verdict, which depends on MIDI-ingested
       // content. An out-of-range measures string must error cleanly.
       const outOfRange = (await client.callTool({
         name: "verify_harmony",
         arguments: {
-          songId: "fallin",
+          songId: "bach-prelude-c-major-bwv846",
           measures: "8-2",
           reharmonization: JSON.stringify([
             { measure: 1, intendedChord: "C", voicing: "C3 E3 G3" },
@@ -574,7 +574,7 @@ describe("mcp-server.ts — MCP protocol-level tool tests", () => {
       const ok = (await client.callTool({
         name: "verify_harmony",
         arguments: {
-          songId: "fallin",
+          songId: "bach-prelude-c-major-bwv846",
           measures: "1-2",
           reharmonization: JSON.stringify([
             { measure: 1, intendedChord: "C", voicing: "C3 E3 G3" },
@@ -618,7 +618,7 @@ describe("mcp-server.ts — MCP protocol-level tool tests", () => {
       try {
         const res = (await iso.client.callTool({
           name: "auto_reharmonize",
-          arguments: { songId: "fallin", measures: "1-4" }, // default format: abc
+          arguments: { songId: "bach-prelude-c-major-bwv846", measures: "1-4" }, // default format: abc
         })) as ToolResult;
         expect(res.isError).toBe(true);
         const text = extractText(res);
@@ -628,7 +628,7 @@ describe("mcp-server.ts — MCP protocol-level tool tests", () => {
         // The 'chords' (JSON) format is also schema-valid and fails soft the same way.
         const resChords = (await iso.client.callTool({
           name: "auto_reharmonize",
-          arguments: { songId: "fallin", measures: "1-4", format: "chords" },
+          arguments: { songId: "bach-prelude-c-major-bwv846", measures: "1-4", format: "chords" },
         })) as ToolResult;
         expect(resChords.isError).toBe(true);
         expect(extractText(resChords)).toContain("ollama_unreachable");
@@ -659,7 +659,7 @@ describe("mcp-server.ts — MCP protocol-level tool tests", () => {
     async () => {
       const res = (await client.callTool({
         name: "compose_panel",
-        arguments: { songs: "fallin", measures: "nope" },
+        arguments: { songs: "bach-prelude-c-major-bwv846", measures: "nope" },
       })) as ToolResult;
       expect(res.isError).toBe(true);
       expect(extractText(res)).toContain("bad_measure_range");
@@ -686,7 +686,7 @@ describe("mcp-server.ts — MCP protocol-level tool tests", () => {
     async () => {
       const res = (await client.callTool({
         name: "compose_panel",
-        arguments: { songs: "fallin", measures: "1-4", style: "jazz" },
+        arguments: { songs: "bach-prelude-c-major-bwv846", measures: "1-4", style: "jazz" },
       })) as ToolResult;
       expect(res.isError).toBe(true);
       const text = extractText(res);
@@ -703,7 +703,7 @@ describe("mcp-server.ts — MCP protocol-level tool tests", () => {
       try {
         const res = (await iso.client.callTool({
           name: "compose_panel",
-          arguments: { songs: "fallin", measures: "1-4" },
+          arguments: { songs: "bach-prelude-c-major-bwv846", measures: "1-4" },
         })) as ToolResult;
         expect(res.isError).toBe(true);
         expect(extractText(res)).toContain("ollama_unreachable");
@@ -836,7 +836,7 @@ describe("mcp-server.ts — stdio purity (pins B-B1-001)", () => {
         // observed must be JSON") holds regardless either way.
         const playResult = (await iso.client.callTool({
           name: "play_song",
-          arguments: { id: "fallin", mode: "loop", startMeasure: 1, endMeasure: 1 },
+          arguments: { id: "bach-prelude-c-major-bwv846", mode: "loop", startMeasure: 1, endMeasure: 1 },
         })) as ToolResult;
         expect(playResult).toBeDefined();
 
@@ -931,7 +931,7 @@ describe("mcp-server.ts — stdio purity (pins B-B1-001)", () => {
 
         const playResult = (await iso.client.callTool({
           name: "play_song",
-          arguments: { id: "fallin", mode: "loop", startMeasure: 1, endMeasure: 1 },
+          arguments: { id: "bach-prelude-c-major-bwv846", mode: "loop", startMeasure: 1, endMeasure: 1 },
         })) as ToolResult;
         expect(playResult).toBeDefined();
 
@@ -1003,7 +1003,7 @@ describe("mcp-server.ts — session-state validation (pins B-B1-002)", () => {
   /** A SessionSnapshot that satisfies isValidSessionSnapshot()'s full field/type contract. */
   function validSessionSnapshot(title: string): Record<string, unknown> {
     return {
-      songId: "fallin",
+      songId: "bach-prelude-c-major-bwv846",
       title,
       composer: "Tests Agent Composer",
       genre: "pop",
@@ -1528,7 +1528,7 @@ describe("mcp-server.ts — practice loop + scoring tools (Wave S3)", () => {
       try {
         const result = (await iso.client.callTool({
           name: "practice_loop",
-          arguments: { id: "fallin", startMeasure: 1, endMeasure: 1, speedStartPct: 80, speedTargetPct: 80 },
+          arguments: { id: "bach-prelude-c-major-bwv846", startMeasure: 1, endMeasure: 1, speedStartPct: 80, speedTargetPct: 80 },
         })) as ToolResult;
         const text = extractText(result);
 
@@ -1566,7 +1566,7 @@ describe("mcp-server.ts — practice loop + scoring tools (Wave S3)", () => {
       try {
         const played = (await iso.client.callTool({
           name: "play_song",
-          arguments: { id: "fallin", mode: "loop", record: true },
+          arguments: { id: "bach-prelude-c-major-bwv846", mode: "loop", record: true },
         })) as ToolResult;
 
         if (played.isError) {
@@ -1602,7 +1602,7 @@ describe("mcp-server.ts — practice loop + scoring tools (Wave S3)", () => {
       try {
         const started = (await iso.client.callTool({
           name: "practice_loop",
-          arguments: { id: "fallin", startMeasure: 1, endMeasure: 1, speedStartPct: 80, speedTargetPct: 80 },
+          arguments: { id: "bach-prelude-c-major-bwv846", startMeasure: 1, endMeasure: 1, speedStartPct: 80, speedTargetPct: 80 },
         })) as ToolResult;
 
         if (started.isError) {
@@ -1647,7 +1647,7 @@ describe("mcp-server.ts — practice loop + scoring tools (Wave S3)", () => {
       try {
         const started = (await iso.client.callTool({
           name: "practice_loop",
-          arguments: { id: "fallin", startMeasure: 1, endMeasure: 1, speedStartPct: 80, speedTargetPct: 80 },
+          arguments: { id: "bach-prelude-c-major-bwv846", startMeasure: 1, endMeasure: 1, speedStartPct: 80, speedTargetPct: 80 },
         })) as ToolResult;
 
         if (started.isError) {

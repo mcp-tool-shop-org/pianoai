@@ -15,7 +15,8 @@ pnpm install
 ```
 
 Requires Node >=22 (`package.json`'s `engines` field; CI's matrix covers 22
-and 24; the Docker image ships on `node:22-slim`).
+and 24; the Docker image ships on `node:22-slim`). The full suite needs
+`ai-jam-sessions library fetch --accept-source-terms` first.
 
 ## Three things that differ between your machine and CI
 

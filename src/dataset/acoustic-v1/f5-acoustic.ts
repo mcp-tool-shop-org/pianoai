@@ -155,8 +155,20 @@ export const F5_LATE_MS_MAX = 160;
 export const F5_INSIDE_ONSET_MARGIN_MS = 12;
 export const F5_INSIDE_MS_MIN = 0;
 export const F5_INSIDE_MS_MAX = 35;
-/** Two independent draws per (song, class). */
-export const F5_DRAWS = 2;
+/**
+ * Default: four independent draws per (song, class) since jam-actions-v1 1.1.0.
+ * 1.0.0 was built at 2. Overridable by `V1_F5_DRAWS` (a positive integer).
+ * Call sites that need the live draw count use `resolveF5Draws()`.
+ */
+export const F5_DRAWS = 4;
+
+export function resolveF5Draws(raw: string | undefined = process.env.V1_F5_DRAWS): number {
+  if (raw === undefined || raw === "") return F5_DRAWS;
+  if (!/^[1-9][0-9]*$/.test(raw)) {
+    throw new Error(`V1_F5_DRAWS must be a positive integer (got ${JSON.stringify(raw)})`);
+  }
+  return Number.parseInt(raw, 10);
+}
 
 export interface F5PhraseNote {
   midi: number;
@@ -239,7 +251,7 @@ function unit01(seed: string): number {
 
 function drawKeys(): string[] {
   return loadPublishableSongs().flatMap((s) =>
-    Array.from({ length: F5_DRAWS }, (_, d) => `${s.id}#${d}`),
+    Array.from({ length: resolveF5Draws() }, (_, d) => `${s.id}#${d}`),
   );
 }
 

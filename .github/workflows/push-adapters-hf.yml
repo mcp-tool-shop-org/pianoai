@@ -96,14 +96,21 @@ jobs:
           echo "Upload tree:"
           find upload -maxdepth 2 -type d | sort
           test -f upload/README.md
-          for s in 3b-s13-349 3b-s42-349 7b-s13-349 3b-s13-371; do
+          # The archive names its own adapters: every top-level directory must be a complete
+          # adapter (weights + config + receipt), and there must be at least one. The set is
+          # whatever the packer shipped — one 7B for jam-actions-v1, five seeds for jam-ft-v1.
+          n=0
+          for d in upload/*/; do
+            s=$(basename "$d")
             test -f "upload/$s/adapter_model.safetensors" || { echo "ERROR: missing $s adapter"; exit 1; }
             test -f "upload/$s/adapter_config.json" || { echo "ERROR: missing $s config"; exit 1; }
             test -f "upload/$s/receipt.json" || { echo "ERROR: missing $s receipt"; exit 1; }
+            n=$((n+1))
           done
-          echo "All four adapters + receipts + card present."
+          test "$n" -ge 1 || { echo "ERROR: archive holds no adapter directory"; exit 1; }
+          echo "$n adapter(s) + receipts + card present."
 
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
 

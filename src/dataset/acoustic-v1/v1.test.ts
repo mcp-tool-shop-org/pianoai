@@ -22,10 +22,12 @@ import {
   consonanceInside,
   fidelitySame,
   harmonyGoldFromPrinted,
+  buildAllRecords,
 } from "./builder.js";
 import {
   F5_KINDS,
   F5_DRAWS,
+  resolveF5Draws,
   F5_PITCH_CLEARANCE_MULTIPLE,
   F5_ONSET_CLEARANCE_MULTIPLE,
   F5_THRESHOLDS,
@@ -55,6 +57,7 @@ import {
 } from "./tracker-error.js";
 import { coverageReport, assertCoverageFloors } from "./coverage.js";
 import { loadPublishableSongs, allowlistById, FORBIDDEN_IDS } from "./library.js";
+import { writeV1Corpus } from "./generate-corpus.js";
 import {
   COVERAGE_FLOORS,
   PROMPT_VISIBLE_PATHS,
@@ -137,7 +140,11 @@ describe("v1 schema spine", () => {
 });
 
 describe("v1 coverage floors", () => {
-  it("meets tools > 9, songs > 10, shapes > 7, no majority shape", () => {
+  // 1.1.0 draws four acoustic takes per (song, class) on purpose (RESULTS-r48.md): the acoustic
+  // family is 62% of the corpus, so the majority-shape floor (<= 50%) is NOT met. The floor is
+  // left where it is; coverage.json records the miss instead of the gate moving. This test pins
+  // that position: the three count floors hold, the share floor is reported false with the value.
+  it("meets tools > 9, songs > 10, shapes > 7; the majority-shape floor is reported not met at four draws", () => {
     const report = coverageReport(committedRecords());
     const songs = loadPublishableSongs();
     report.genres = [...new Set(songs.map((s) => s.genre))].sort();
@@ -148,8 +155,15 @@ describe("v1 coverage floors", () => {
     expect(report.tool_count).toBeGreaterThan(COVERAGE_FLOORS.tools);
     expect(report.song_count).toBeGreaterThan(COVERAGE_FLOORS.songs);
     expect(report.shape_count).toBeGreaterThan(COVERAGE_FLOORS.shapes);
-    expect(report.majority_shape_share).toBeLessThanOrEqual(0.5);
-    expect(() => assertCoverageFloors(report)).not.toThrow();
+    expect(report.majority_shape_share).toBeGreaterThan(0.5);
+    expect(report.majority_shape_share).toBeLessThan(0.65);
+    expect(() => assertCoverageFloors(report)).toThrow();
+    const committed = JSON.parse(readFileSync(join(CORPUS, "coverage.json"), "utf8")) as {
+      floors_met: boolean;
+      majority_shape_share: number;
+    };
+    expect(committed.floors_met).toBe(false);
+    expect(committed.majority_shape_share).toBeCloseTo(report.majority_shape_share, 6);
   });
 });
 
@@ -594,7 +608,7 @@ describe("F5 acoustic — gate-only magnitudes (chunk 20)", () => {
     };
   }
 
-  it("has two draws per class per song except counted clearance drops", () => {
+  it("has F5_DRAWS draws per class per song except counted clearance drops", () => {
     const songs = loadPublishableSongs();
     const rows = committedRecords().filter((r) => r.family === "acoustic");
     const testN = testSongIds(songs).size;
@@ -846,6 +860,42 @@ describe("teaching gold is musicalLanguage, not measure-level empty fields", () 
 // budget follows the measurement rather than the other way round. This block
 // is skipped under coverage, so the number only ever applies to the two plain
 // legs.
+describe("V1_F5_DRAWS override (chunk 48)", () => {
+  function withDraws<T>(value: string | undefined, fn: () => T): T {
+    const prev = process.env.V1_F5_DRAWS;
+    try {
+      if (value === undefined) delete process.env.V1_F5_DRAWS;
+      else process.env.V1_F5_DRAWS = value;
+      return fn();
+    } finally {
+      if (prev === undefined) delete process.env.V1_F5_DRAWS;
+      else process.env.V1_F5_DRAWS = prev;
+    }
+  }
+
+  it("defaults to 4 and accepts a positive integer", () => {
+    expect(F5_DRAWS).toBe(4);
+    expect(withDraws(undefined, () => resolveF5Draws())).toBe(4);
+    expect(withDraws("2", () => resolveF5Draws())).toBe(2);
+  });
+
+  it("throws with the value in the message when V1_F5_DRAWS is not a positive integer", () => {
+    expect(() => withDraws("nope", () => resolveF5Draws())).toThrow(/got "nope"/);
+    expect(() => withDraws("0", () => resolveF5Draws())).toThrow(/got "0"/);
+    expect(() => withDraws("-1", () => resolveF5Draws())).toThrow(/got "-1"/);
+    expect(() => withDraws("2.5", () => resolveF5Draws())).toThrow(/got "2.5"/);
+  });
+
+  it("refuses to write a non-default-draw corpus into the released v1 directories", () => {
+    withDraws("2", () => {
+      expect(() => writeV1Corpus(join(CORPUS))).toThrow(/frozen at 4 draws since 1.1.0/);
+      expect(() =>
+        writeV1Corpus(join(dirname(CORPUS), "jam-actions-v1-probe")),
+      ).toThrow(/frozen at 4 draws since 1.1.0/);
+    });
+  });
+});
+
 describe.runIf(RUN_DSP)("engine verification (skipped under SKIP_DSP_VERIFICATION=1)", { timeout: 600_000 }, () => {
   let built: V1Record[] = [];
 
@@ -914,6 +964,34 @@ describe.runIf(RUN_DSP)("engine verification (skipped under SKIP_DSP_VERIFICATIO
     expect(rows.length).toBeGreaterThan(0);
     for (const r of rows) {
       expect(rederiveGold(r), r.id).toBe(r.observation.gold.answer);
+    }
+  });
+
+  it("V1_F5_DRAWS=2 yields half the acoustic records of the default for the same inputs, and the non-acoustic records are byte-identical", () => {
+    const attempted4 = f5DropStats.attempted;
+    const dropped4 =
+      f5DropStats.droppedUntrackable + f5DropStats.droppedClearance + f5DropStats.droppedShortPhrase;
+    const prev = process.env.V1_F5_DRAWS;
+    process.env.V1_F5_DRAWS = "2";
+    try {
+      const two = buildAllRecords();
+      const ac4 = built.filter((r) => r.family === "acoustic");
+      const ac2 = two.filter((r) => r.family === "acoustic");
+      const dropped2 =
+        f5DropStats.droppedUntrackable + f5DropStats.droppedClearance + f5DropStats.droppedShortPhrase;
+      // Slots: 11 songs × 3 kinds × draws. Kept = attempted − clearance drops.
+      // rank01's domain shrinks with the draw count, so a 4-draw clearance
+      // drop need not match a 2-draw drop; the slot count is still exactly ½.
+      expect(attempted4).toBe(f5DropStats.attempted * 2);
+      expect(ac4.length + dropped4).toBe(attempted4);
+      expect(ac2.length + dropped2).toBe(f5DropStats.attempted);
+      expect(ac4.length + dropped4).toBe((ac2.length + dropped2) * 2);
+      const other4 = built.filter((r) => r.family !== "acoustic").map((r) => JSON.stringify(r));
+      const other2 = two.filter((r) => r.family !== "acoustic").map((r) => JSON.stringify(r));
+      expect(other2).toEqual(other4);
+    } finally {
+      if (prev === undefined) delete process.env.V1_F5_DRAWS;
+      else process.env.V1_F5_DRAWS = prev;
     }
   });
 

@@ -300,6 +300,23 @@ npm install -g @mcptoolshop/ai-jam-sessions
 }
 ```
 
+### Docker
+
+各リリースでは、標準出力で MCP サーバーを実行する軽量イメージである `ghcr.io/mcp-tool-shop-org/ai-jam-sessions` も公開されます。覚えておくべきことは、 `/data` がメモリであるということです。ジャーナル、サーバーの状態、ユーザーの曲、および取得した MIDI データがすべてそこに保存されるため、ボリュームをマウントしないと、コンテナーが停止します。
+
+```json
+{
+  "mcpServers": {
+    "ai_jam_sessions": {
+      "command": "docker",
+      "args": ["run", "--rm", "-i", "-v", "ai-jam-data:/data", "ghcr.io/mcp-tool-shop-org/ai-jam-sessions"]
+    }
+  }
+}
+```
+
+このイメージには、再配布可能な 14 個の MIDI ファイルが含まれています。`library fetch --accept-source-terms` をコンテナー内で一度実行すると、残りの 94 個のファイルがボリュームに配置されます。`docker compose up` は、名前付きボリュームに対して同じ処理を行い、`--profile ollama` は Ollama サイドカーを追加します。詳細、イメージ内の CLI、および意図的に含まれていないものについては、[docs/docker.md](docs/docker.md) を参照してください。微調整されたグレーダーを Ollama で実行し、4 ビットのベースモデルのコストを測定した結果については、[docs/ollama-adapters.md](docs/ollama-adapters.md) を参照してください。
+
 ## MCPツール
 
 7つのカテゴリに分類された49のツールと4つのプロンプトテンプレート

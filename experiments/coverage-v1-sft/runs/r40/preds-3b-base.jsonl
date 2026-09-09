@@ -1,0 +1,40 @@
+{"id": "acoustic:solace:clean:0", "family": "acoustic", "answer": "timing_fail", "raw": "timing_fail"}
+{"id": "acoustic:solace:clean:1", "family": "acoustic", "answer": "match", "raw": "match"}
+{"id": "acoustic:solace:late_fail:0", "family": "acoustic", "answer": "match", "raw": "match"}
+{"id": "acoustic:solace:late_fail:1", "family": "acoustic", "answer": "timing_fail", "raw": "timing_fail"}
+{"id": "acoustic:solace:sharp_fail:0", "family": "acoustic", "answer": "timing_fail", "raw": "timing_fail"}
+{"id": "acoustic:solace:sharp_fail:1", "family": "acoustic", "answer": "timing_fail", "raw": "timing_fail"}
+{"id": "acoustic:the-easy-winners:clean:0", "family": "acoustic", "answer": "pitch_fail", "raw": "pitch_fail"}
+{"id": "acoustic:the-easy-winners:clean:1", "family": "acoustic", "answer": "pitch_fail", "raw": "pitch_fail"}
+{"id": "acoustic:the-easy-winners:late_fail:0", "family": "acoustic", "answer": "match", "raw": "match"}
+{"id": "acoustic:the-easy-winners:late_fail:1", "family": "acoustic", "answer": "pitch_fail", "raw": "pitch_fail"}
+{"id": "acoustic:the-easy-winners:sharp_fail:0", "family": "acoustic", "answer": "pitch_fail", "raw": "pitch_fail"}
+{"id": "acoustic:the-entertainer:clean:0", "family": "acoustic", "answer": "pitch_fail", "raw": "pitch_fail"}
+{"id": "acoustic:the-entertainer:clean:1", "family": "acoustic", "answer": "match", "raw": "match"}
+{"id": "acoustic:the-entertainer:late_fail:0", "family": "acoustic", "answer": "pitch_fail", "raw": "pitch_fail"}
+{"id": "acoustic:the-entertainer:late_fail:1", "family": "acoustic", "answer": "pitch_fail", "raw": "pitch_fail"}
+{"id": "acoustic:the-entertainer:sharp_fail:0", "family": "acoustic", "answer": "pitch_fail", "raw": "pitch_fail"}
+{"id": "acoustic:the-entertainer:sharp_fail:1", "family": "acoustic", "answer": "match", "raw": "match"}
+{"id": "chord:solace:m6", "family": "chord", "answer": "The left hand is playing the chord Gaug in measure 6 of \"Solace\".", "raw": "The left hand is playing the chord Gaug in measure 6 of \"Solace\"."}
+{"id": "chord:the-easy-winners:m7", "family": "chord", "answer": "C#", "raw": "C#"}
+{"id": "chord:the-entertainer:m11", "family": "chord", "answer": "The left hand is playing a D chord in measure 11 of \"The Entertainer\".", "raw": "The left hand is playing a D chord in measure 11 of \"The Entertainer\"."}
+{"id": "ensemble:who_first:G:piano", "family": "ensemble", "answer": "synth", "raw": "synth"}
+{"id": "ensemble:who_first:G:synth", "family": "ensemble", "answer": "piano", "raw": "piano"}
+{"id": "ensemble:wrong_tone:G", "family": "ensemble", "answer": "The guitar is playing the wrong chord tone.", "raw": "The guitar is playing the wrong chord tone."}
+{"id": "harmony:solace:m6:fail", "family": "harmony", "answer": "verified", "raw": "verified"}
+{"id": "harmony:solace:m6:pass", "family": "harmony", "answer": "verified", "raw": "verified"}
+{"id": "harmony:the-easy-winners:m7:fail", "family": "harmony", "answer": "rejected", "raw": "rejected"}
+{"id": "harmony:the-easy-winners:m7:pass", "family": "harmony", "answer": "verified", "raw": "verified"}
+{"id": "harmony:the-entertainer:m11:fail", "family": "harmony", "answer": "rejected", "raw": "rejected"}
+{"id": "harmony:the-entertainer:m11:pass", "family": "harmony", "answer": "verified", "raw": "verified"}
+{"id": "key_moments:solace", "family": "key_moments", "answer": "The first key moment of \"Solace\" occurs in Measures 1-2.", "raw": "The first key moment of \"Solace\" occurs in Measures 1-2."}
+{"id": "key_moments:the-easy-winners", "family": "key_moments", "answer": "The first key moment of \"The Easy Winners\" is located in Measures 89 through 113, all near-identical.", "raw": "The first key moment of \"The Easy Winners\" is located in Measures 89 through 113, all near-identical."}
+{"id": "measures:solace", "family": "measures", "answer": "148", "raw": "148"}
+{"id": "measures:the-easy-winners", "family": "measures", "answer": "152", "raw": "152"}
+{"id": "measures:the-entertainer", "family": "measures", "answer": "152", "raw": "152"}
+{"id": "teaching_goals:solace", "family": "teaching_goals", "answer": "4", "raw": "4"}
+{"id": "teaching_goals:the-easy-winners", "family": "teaching_goals", "answer": "4", "raw": "4"}
+{"id": "teaching_goals:the-entertainer", "family": "teaching_goals", "answer": "5", "raw": "5"}
+{"id": "transpose:solace:+2", "family": "transpose", "answer": "A major", "raw": "A major"}
+{"id": "transpose:the-easy-winners:+2", "family": "transpose", "answer": "Bb major", "raw": "Bb major"}
+{"id": "transpose:the-entertainer:+2", "family": "transpose", "answer": "D major", "raw": "D major"}

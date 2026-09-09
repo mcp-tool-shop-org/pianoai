@@ -1,13 +1,13 @@
 ---
 title: Songs and genres
-description: The fully annotated 120-song library, 12 genre exemplars, and how the annotation loop works.
+description: The fully annotated 108-song library, what ships and what you fetch, 12 genre exemplars, and how the annotation loop works.
 sidebar:
   order: 3
 ---
 
 ## The library
 
-120 songs across 12 genres, built from real MIDI files. Songs progress through three states:
+108 annotated songs across 12 genres, built from real MIDI files. Fourteen of the MIDI files ship in the package; the other 94 are fetched from their source sites with one command (see the end of this page). Songs progress through three states:
 
 1. **Raw** — MIDI only, no annotations
 2. **Annotated** — musical language has been written by the AI
@@ -44,7 +44,7 @@ Use the Learn tools to explore:
 
 ## Annotation workflow
 
-All 120 songs are now fully annotated — written by AI through this exact loop, gated by a quality rubric, and fact-checked against the actual MIDI. The same workflow promotes any newly imported song from raw to ready:
+All 108 songs are now fully annotated — written by AI through this exact loop, gated by a quality rubric, and fact-checked against the actual MIDI. The same workflow promotes any newly imported song from raw to ready:
 
 1. Use `song_info` or `list_measures` to examine the raw MIDI data
 2. Study the genre exemplar for context and teaching patterns
@@ -69,3 +69,13 @@ Songs can have structural section markers (Intro, Verse, Chorus, Bridge, Coda) f
 Before playing, use `practice_setup` to get recommended speed, mode, voice settings, and the exact CLI command for a song. This factors in the song's difficulty and the AI's current skill level.
 
 Use `mute_hand` to isolate left or right hand practice. Use `preview_teaching_cues` to see all teaching notes and key moments before playing.
+
+## What ships, and what you fetch
+
+The annotations are ours and ship with every song. The MIDI files were downloaded from public MIDI sites when the library was built, and a per-file provenance audit found that only 14 of them carry a licence that permits redistribution: Bernd Krueger's piano-midi.de arrangements (CC-BY-SA-3.0-DE) and the Mutopia Project's public-domain typesettings. Those 14 are in the npm package and in the repository. The other 94 are not. Each of their `.json` files carries a `provenance` block naming the source site, its terms and the file's SHA-256, and
+
+```bash
+ai-jam-sessions library fetch --accept-source-terms
+```
+
+downloads each one from the site that published it, under that site's terms, refusing any file whose hash no longer matches what the annotations were verified against. Until you fetch, those songs are listed as `unfetched` and the server plays the 14. Twelve files that turned out to be a different piece than their name were quarantined, which is why the library is 108 songs and not the 120 earlier versions claimed. The full audit is in the repository at `docs/findings/library-provenance-audit.md`.
