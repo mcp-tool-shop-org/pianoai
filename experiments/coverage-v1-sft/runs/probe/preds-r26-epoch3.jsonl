@@ -1,0 +1,72 @@
+{"id": "acoustic-probe:scarborough-fair:onset_in:p", "family": "acoustic", "answer": "timing_fail", "raw": "cents 20.0 inside a 50-cent gate, onset 25.1 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic-probe:scarborough-fair:onset_in:n", "family": "acoustic", "answer": "match", "raw": "cents 20.0 inside a 50-cent gate, onset -33.0 ms inside 40: match"}
+{"id": "acoustic-probe:scarborough-fair:onset_out:p", "family": "acoustic", "answer": "timing_fail", "raw": "cents 20.0 inside a 50-cent gate, onset 48.3 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic-probe:scarborough-fair:onset_out:n", "family": "acoustic", "answer": "match", "raw": "cents 20.0 inside a 50-cent gate, onset -56.2 ms inside 40: match"}
+{"id": "acoustic-probe:scarborough-fair:cents_in:p", "family": "acoustic", "answer": "match", "raw": "cents 42.0 inside a 50-cent gate, onset 1.9 ms inside 40: match"}
+{"id": "acoustic-probe:scarborough-fair:cents_in:n", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -48.0 against a 50-cent gate, onset 1.9 ms inside 40: pitch_fail"}
+{"id": "acoustic-probe:scarborough-fair:cents_out:p", "family": "acoustic", "answer": "match", "raw": "cents 52.0 inside a 50-cent gate, onset 1.9 ms inside 40: match"}
+{"id": "acoustic-probe:scarborough-fair:cents_out:n", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -58.0 against a 50-cent gate, onset 1.9 ms inside 40: pitch_fail"}
+{"id": "acoustic-probe:schumann-traumerei:onset_in:p", "family": "acoustic", "answer": "timing_fail", "raw": "cents 20.0 inside a 50-cent gate, onset 25.1 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic-probe:schumann-traumerei:onset_in:n", "family": "acoustic", "answer": "match", "raw": "cents 20.0 inside a 50-cent gate, onset -33.0 ms inside 40: match"}
+{"id": "acoustic-probe:schumann-traumerei:onset_out:p", "family": "acoustic", "answer": "timing_fail", "raw": "cents 20.0 inside a 50-cent gate, onset 48.3 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic-probe:schumann-traumerei:onset_out:n", "family": "acoustic", "answer": "match", "raw": "cents 20.0 inside a 50-cent gate, onset -56.2 ms inside 40: match"}
+{"id": "acoustic-probe:schumann-traumerei:cents_in:p", "family": "acoustic", "answer": "match", "raw": "cents 42.0 inside a 50-cent gate, onset 1.9 ms inside 40: match"}
+{"id": "acoustic-probe:schumann-traumerei:cents_in:n", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -48.0 against a 50-cent gate, onset 1.9 ms inside 40: pitch_fail"}
+{"id": "acoustic-probe:schumann-traumerei:cents_out:p", "family": "acoustic", "answer": "match", "raw": "cents 52.0 inside a 50-cent gate, onset 1.9 ms inside 40: match"}
+{"id": "acoustic-probe:schumann-traumerei:cents_out:n", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -58.0 against a 50-cent gate, onset 1.9 ms inside 40: pitch_fail"}
+{"id": "acoustic-probe:shenandoah:onset_in:p", "family": "acoustic", "answer": "timing_fail", "raw": "cents 20.0 inside a 50-cent gate, onset 25.1 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic-probe:shenandoah:onset_in:n", "family": "acoustic", "answer": "match", "raw": "cents 20.0 inside a 50-cent gate, onset -33.0 ms inside 40: match"}
+{"id": "acoustic-probe:shenandoah:onset_out:p", "family": "acoustic", "answer": "timing_fail", "raw": "cents 20.0 inside a 50-cent gate, onset 48.3 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic-probe:shenandoah:onset_out:n", "family": "acoustic", "answer": "match", "raw": "cents 20.0 inside a 50-cent gate, onset -56.2 ms inside 40: match"}
+{"id": "acoustic-probe:shenandoah:cents_in:p", "family": "acoustic", "answer": "match", "raw": "cents 42.0 inside a 50-cent gate, onset 1.9 ms inside 40: match"}
+{"id": "acoustic-probe:shenandoah:cents_in:n", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -48.0 against a 50-cent gate, onset 1.9 ms inside 40: pitch_fail"}
+{"id": "acoustic-probe:shenandoah:cents_out:p", "family": "acoustic", "answer": "match", "raw": "cents 52.0 inside a 50-cent gate, onset 1.9 ms inside 40: match"}
+{"id": "acoustic-probe:shenandoah:cents_out:n", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -58.0 against a 50-cent gate, onset 1.9 ms inside 40: pitch_fail"}
+{"id": "acoustic-probe:simple-gifts:onset_in:p", "family": "acoustic", "answer": "timing_fail", "raw": "cents 20.0 inside a 50-cent gate, onset 25.1 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic-probe:simple-gifts:onset_in:n", "family": "acoustic", "answer": "match", "raw": "cents 20.0 inside a 50-cent gate, onset -33.0 ms inside 40: match"}
+{"id": "acoustic-probe:simple-gifts:onset_out:p", "family": "acoustic", "answer": "timing_fail", "raw": "cents 20.0 inside a 50-cent gate, onset 48.3 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic-probe:simple-gifts:onset_out:n", "family": "acoustic", "answer": "match", "raw": "cents 20.0 inside a 50-cent gate, onset -56.2 ms inside 40: match"}
+{"id": "acoustic-probe:simple-gifts:cents_in:p", "family": "acoustic", "answer": "match", "raw": "cents 42.0 inside a 50-cent gate, onset 1.9 ms inside 40: match"}
+{"id": "acoustic-probe:simple-gifts:cents_in:n", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -48.0 against a 50-cent gate, onset 1.9 ms inside 40: pitch_fail"}
+{"id": "acoustic-probe:simple-gifts:cents_out:p", "family": "acoustic", "answer": "match", "raw": "cents 52.0 inside a 50-cent gate, onset 1.9 ms inside 40: match"}
+{"id": "acoustic-probe:simple-gifts:cents_out:n", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -58.0 against a 50-cent gate, onset 1.9 ms inside 40: pitch_fail"}
+{"id": "acoustic-probe:solace:onset_in:p", "family": "acoustic", "answer": "timing_fail", "raw": "cents 20.0 inside a 50-cent gate, onset 25.1 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic-probe:solace:onset_in:n", "family": "acoustic", "answer": "match", "raw": "cents 20.0 inside a 50-cent gate, onset -33.0 ms inside 40: match"}
+{"id": "acoustic-probe:solace:onset_out:p", "family": "acoustic", "answer": "timing_fail", "raw": "cents 20.0 inside a 50-cent gate, onset 48.3 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic-probe:solace:onset_out:n", "family": "acoustic", "answer": "match", "raw": "cents 20.0 inside a 50-cent gate, onset -56.2 ms inside 40: match"}
+{"id": "acoustic-probe:solace:cents_in:p", "family": "acoustic", "answer": "match", "raw": "cents 42.0 inside a 50-cent gate, onset 1.9 ms inside 40: match"}
+{"id": "acoustic-probe:solace:cents_in:n", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -48.0 against a 50-cent gate, onset 1.9 ms inside 40: pitch_fail"}
+{"id": "acoustic-probe:solace:cents_out:p", "family": "acoustic", "answer": "match", "raw": "cents 52.0 inside a 50-cent gate, onset 1.9 ms inside 40: match"}
+{"id": "acoustic-probe:solace:cents_out:n", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -58.0 against a 50-cent gate, onset 1.9 ms inside 40: pitch_fail"}
+{"id": "acoustic-probe:the-easy-winners:onset_in:p", "family": "acoustic", "answer": "timing_fail", "raw": "cents 20.0 inside a 50-cent gate, onset 25.1 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic-probe:the-easy-winners:onset_in:n", "family": "acoustic", "answer": "match", "raw": "cents 20.0 inside a 50-cent gate, onset -33.0 ms inside 40: match"}
+{"id": "acoustic-probe:the-easy-winners:onset_out:p", "family": "acoustic", "answer": "timing_fail", "raw": "cents 20.0 inside a 50-cent gate, onset 48.3 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic-probe:the-easy-winners:onset_out:n", "family": "acoustic", "answer": "match", "raw": "cents 20.0 inside a 50-cent gate, onset -56.2 ms inside 40: match"}
+{"id": "acoustic-probe:the-easy-winners:cents_in:p", "family": "acoustic", "answer": "match", "raw": "cents 42.0 inside a 50-cent gate, onset 1.9 ms inside 40: match"}
+{"id": "acoustic-probe:the-easy-winners:cents_in:n", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -48.0 against a 50-cent gate, onset 1.9 ms inside 40: pitch_fail"}
+{"id": "acoustic-probe:the-easy-winners:cents_out:p", "family": "acoustic", "answer": "match", "raw": "cents 52.0 inside a 50-cent gate, onset 1.9 ms inside 40: match"}
+{"id": "acoustic-probe:the-easy-winners:cents_out:n", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -58.0 against a 50-cent gate, onset 1.9 ms inside 40: pitch_fail"}
+{"id": "acoustic-probe:the-entertainer:onset_in:p", "family": "acoustic", "answer": "match", "raw": "cents 20.1 inside a 50-cent gate, onset 25.1 ms inside 40: match"}
+{"id": "acoustic-probe:the-entertainer:onset_in:n", "family": "acoustic", "answer": "match", "raw": "cents 20.1 inside a 50-cent gate, onset -33.0 ms inside 40: match"}
+{"id": "acoustic-probe:the-entertainer:onset_out:p", "family": "acoustic", "answer": "timing_fail", "raw": "cents 20.1 inside a 50-cent gate, onset 48.3 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic-probe:the-entertainer:onset_out:n", "family": "acoustic", "answer": "match", "raw": "cents 20.1 inside a 50-cent gate, onset -56.2 ms inside 40: match"}
+{"id": "acoustic-probe:the-entertainer:cents_in:p", "family": "acoustic", "answer": "match", "raw": "cents 42.1 inside a 50-cent gate, onset 1.9 ms inside 40: match"}
+{"id": "acoustic-probe:the-entertainer:cents_in:n", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -47.9 against a 50-cent gate, onset 1.9 ms inside 40: pitch_fail"}
+{"id": "acoustic-probe:the-entertainer:cents_out:p", "family": "acoustic", "answer": "match", "raw": "cents 52.2 inside a 50-cent gate, onset 1.9 ms inside 40: match"}
+{"id": "acoustic-probe:the-entertainer:cents_out:n", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -57.9 against a 50-cent gate, onset 1.9 ms inside 40: pitch_fail"}
+{"id": "acoustic-probe:the-water-is-wide:onset_in:p", "family": "acoustic", "answer": "timing_fail", "raw": "cents 20.0 inside a 50-cent gate, onset 25.1 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic-probe:the-water-is-wide:onset_in:n", "family": "acoustic", "answer": "match", "raw": "cents 20.0 inside a 50-cent gate, onset -33.0 ms inside 40: match"}
+{"id": "acoustic-probe:the-water-is-wide:onset_out:p", "family": "acoustic", "answer": "timing_fail", "raw": "cents 20.0 inside a 50-cent gate, onset 48.3 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic-probe:the-water-is-wide:onset_out:n", "family": "acoustic", "answer": "match", "raw": "cents 20.0 inside a 50-cent gate, onset -56.2 ms inside 40: match"}
+{"id": "acoustic-probe:the-water-is-wide:cents_in:p", "family": "acoustic", "answer": "match", "raw": "cents 42.0 inside a 50-cent gate, onset 1.9 ms inside 40: match"}
+{"id": "acoustic-probe:the-water-is-wide:cents_in:n", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -48.0 against a 50-cent gate, onset 1.9 ms inside 40: pitch_fail"}
+{"id": "acoustic-probe:the-water-is-wide:cents_out:p", "family": "acoustic", "answer": "match", "raw": "cents 52.0 inside a 50-cent gate, onset 1.9 ms inside 40: match"}
+{"id": "acoustic-probe:the-water-is-wide:cents_out:n", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -58.0 against a 50-cent gate, onset 1.9 ms inside 40: pitch_fail"}
+{"id": "acoustic-probe:weeping-willow:onset_in:p", "family": "acoustic", "answer": "timing_fail", "raw": "cents 20.0 inside a 50-cent gate, onset 25.1 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic-probe:weeping-willow:onset_in:n", "family": "acoustic", "answer": "match", "raw": "cents 20.0 inside a 50-cent gate, onset -33.0 ms inside 40: match"}
+{"id": "acoustic-probe:weeping-willow:onset_out:p", "family": "acoustic", "answer": "timing_fail", "raw": "cents 20.0 inside a 50-cent gate, onset 48.3 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic-probe:weeping-willow:onset_out:n", "family": "acoustic", "answer": "match", "raw": "cents 20.0 inside a 50-cent gate, onset -56.2 ms inside 40: match"}
+{"id": "acoustic-probe:weeping-willow:cents_in:p", "family": "acoustic", "answer": "match", "raw": "cents 42.0 inside a 50-cent gate, onset 1.9 ms inside 40: match"}
+{"id": "acoustic-probe:weeping-willow:cents_in:n", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -48.0 against a 50-cent gate, onset 1.9 ms inside 40: pitch_fail"}
+{"id": "acoustic-probe:weeping-willow:cents_out:p", "family": "acoustic", "answer": "match", "raw": "cents 52.0 inside a 50-cent gate, onset 1.9 ms inside 40: match"}
+{"id": "acoustic-probe:weeping-willow:cents_out:n", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -58.0 against a 50-cent gate, onset 1.9 ms inside 40: pitch_fail"}
