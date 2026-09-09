@@ -1,0 +1,15 @@
+[
+ {
+  "index": "amazing-grace_0_35000",
+  "language": "English",
+  "time": [
+   0,
+   35000
+  ],
+  "duration": "2.1333 1.0667 3.2000 0.6000 1.6000 1.6000 3.2000 0.8000 3.2000 0.8000 1.6000 1.6000 1.6000 1.6000 5.6000 4.8000",
+  "text": "<SP> Amazing Amazing Amazing grace how sweet the sound that saved a wretch like me <SP>",
+  "phoneme": "<SP> en_AH0-M-EY1-Z-IH0-NG en_AH0-M-EY1-Z-IH0-NG en_AH0-M-EY1-Z-IH0-NG en_G-R-EY1-S en_HH-AW1 en_S-W-IY1-T en_DH-AH0 en_S-AW1-N-D en_DH-AE1-T en_S-EY1-V-D en_AH0 en_R-EH1-CH en_L-AY1-K en_M-IY1 <SP>",
+  "note_pitch": "0 58 63 67 67 65 63 60 58 58 63 67 67 65 70 0",
+  "note_type": "1 2 3 3 2 2 2 2 2 2 2 2 2 2 2 1"
+ }
+]

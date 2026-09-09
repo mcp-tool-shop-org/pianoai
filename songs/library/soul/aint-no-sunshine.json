@@ -32,5 +32,35 @@
       "Play the dense middle (measures 18-24) with controlled insistence rather than a forced crescendo — the 29-31-onset peak bars carry their own intensity; listen for the repeated figures staying clean, never blurring.",
       "Honor the silent frame: begin as if the music was already going somewhere quiet, and after measure 40's 4 onsets, let measure 41's written silence finish the piece with your hands still."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/4424.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "449e4d28fa2e1d8bada7d457eb2b4a56abe73f723bc23e8556a9bbd19804b539",
+    "midi_title_events": [
+      "MELODY",
+      "ACOU BASS",
+      "A.PIANO 1",
+      "NYLON GTR",
+      "SLOWSTRING",
+      "BASS DRUM",
+      "SNARE DRUM",
+      "CLOSED H.H",
+      "OPEN HIHAT",
+      "HIGH CONGA",
+      "LOW CONGA",
+      "RIDE CYMB",
+      "GS/RESET"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

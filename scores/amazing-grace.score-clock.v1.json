@@ -1,0 +1,312 @@
+{
+  "schema": "ai-jam-sessions/score-clock/v1",
+  "song_id": "amazing-grace",
+  "bpm": 75,
+  "time_signature": "3/4",
+  "sample_rate": 48000,
+  "total_seconds": 35,
+  "total_samples": 1680000,
+  "last_event_end_sec": 30.2,
+  "clock": {
+    "source": "session-nominal",
+    "bed_measures": [
+      1,
+      10
+    ],
+    "measure_starts_sec": {
+      "1": 0,
+      "2": 3.2,
+      "3": 7,
+      "4": 10.2,
+      "5": 14.2,
+      "6": 18.2,
+      "7": 21.4,
+      "8": 24.6,
+      "9": 27.8,
+      "10": 31
+    },
+    "measure_durations_sec": {
+      "1": 3.2,
+      "2": 3.8,
+      "3": 3.2,
+      "4": 4,
+      "5": 4,
+      "6": 3.2,
+      "7": 3.2,
+      "8": 3.2,
+      "9": 3.2,
+      "10": 4
+    }
+  },
+  "midi": {
+    "file": "songs/library/folk/amazing-grace.mid",
+    "ppq": 384,
+    "ticks_per_measure": 1152,
+    "melody_track": "TUBULARBEL",
+    "sec_per_tick": 0.002083333
+  },
+  "events": [
+    {
+      "id": "v00",
+      "lyric": "A",
+      "word": "Amazing",
+      "syllable": 0,
+      "syllables": 3,
+      "midi": 58,
+      "t_sec": 2.1333333333333333,
+      "t_samples": 102400,
+      "dur_sec": 1.0666666666666667,
+      "anchor": "hymn-pickup-during-piano-rest",
+      "midi_tick": 768,
+      "t_midi_sec": 1.6,
+      "engine_note": null
+    },
+    {
+      "id": "v01",
+      "lyric": "ma",
+      "word": "Amazing",
+      "syllable": 1,
+      "syllables": 3,
+      "midi": 63,
+      "t_sec": 3.2,
+      "t_samples": 153600,
+      "dur_sec": 3.2,
+      "anchor": "piano-onset:m2:right:beat0",
+      "midi_tick": 1152,
+      "t_midi_sec": 2.4,
+      "engine_note": {
+        "measure": 2,
+        "hand": "right",
+        "t_sec": 3.2
+      }
+    },
+    {
+      "id": "v02",
+      "lyric": "zing",
+      "word": "Amazing",
+      "syllable": 2,
+      "syllables": 3,
+      "midi": 67,
+      "t_sec": 6.4,
+      "t_samples": 307200,
+      "dur_sec": 0.6,
+      "anchor": "piano-onset:m2:right:beat1",
+      "midi_tick": 1920,
+      "t_midi_sec": 4,
+      "engine_note": {
+        "measure": 2,
+        "hand": "right",
+        "t_sec": 6.4
+      }
+    },
+    {
+      "id": "v03",
+      "lyric": "grace",
+      "word": "grace",
+      "syllable": 0,
+      "syllables": 1,
+      "midi": 67,
+      "t_sec": 7,
+      "t_samples": 336000,
+      "dur_sec": 1.6,
+      "anchor": "piano-onset:m3:right:beat0",
+      "midi_tick": 2304,
+      "t_midi_sec": 4.8,
+      "engine_note": {
+        "measure": 3,
+        "hand": "right",
+        "t_sec": 7
+      }
+    },
+    {
+      "id": "v04",
+      "lyric": "how",
+      "word": "how",
+      "syllable": 0,
+      "syllables": 1,
+      "midi": 65,
+      "t_sec": 8.6,
+      "t_samples": 412800,
+      "dur_sec": 1.6,
+      "anchor": "piano-onset:m3:right:beat1",
+      "midi_tick": 3072,
+      "t_midi_sec": 6.4,
+      "engine_note": {
+        "measure": 3,
+        "hand": "right",
+        "t_sec": 8.6
+      }
+    },
+    {
+      "id": "v05",
+      "lyric": "sweet",
+      "word": "sweet",
+      "syllable": 0,
+      "syllables": 1,
+      "midi": 63,
+      "t_sec": 10.2,
+      "t_samples": 489600,
+      "dur_sec": 3.2,
+      "anchor": "piano-onset:m4:right:beat0",
+      "midi_tick": 3456,
+      "t_midi_sec": 7.2,
+      "engine_note": {
+        "measure": 4,
+        "hand": "right",
+        "t_sec": 10.2
+      }
+    },
+    {
+      "id": "v06",
+      "lyric": "the",
+      "word": "the",
+      "syllable": 0,
+      "syllables": 1,
+      "midi": 60,
+      "t_sec": 13.4,
+      "t_samples": 643200,
+      "dur_sec": 0.8,
+      "anchor": "piano-onset:m4:right:beat1",
+      "midi_tick": 4224,
+      "t_midi_sec": 8.8,
+      "engine_note": {
+        "measure": 4,
+        "hand": "right",
+        "t_sec": 13.4
+      }
+    },
+    {
+      "id": "v07",
+      "lyric": "sound",
+      "word": "sound",
+      "syllable": 0,
+      "syllables": 1,
+      "midi": 58,
+      "t_sec": 14.2,
+      "t_samples": 681600,
+      "dur_sec": 3.2,
+      "anchor": "piano-onset:m5:left:beat0",
+      "midi_tick": 4608,
+      "t_midi_sec": 9.6,
+      "engine_note": {
+        "measure": 5,
+        "hand": "left",
+        "t_sec": 14.2
+      }
+    },
+    {
+      "id": "v08",
+      "lyric": "that",
+      "word": "that",
+      "syllable": 0,
+      "syllables": 1,
+      "midi": 58,
+      "t_sec": 17.4,
+      "t_samples": 835200,
+      "dur_sec": 0.8,
+      "anchor": "piano-onset:m5:left:beat1",
+      "midi_tick": 5376,
+      "t_midi_sec": 11.2,
+      "engine_note": {
+        "measure": 5,
+        "hand": "left",
+        "t_sec": 17.4
+      }
+    },
+    {
+      "id": "v09",
+      "lyric": "saved",
+      "word": "saved",
+      "syllable": 0,
+      "syllables": 1,
+      "midi": 63,
+      "t_sec": 18.2,
+      "t_samples": 873600,
+      "dur_sec": 1.6,
+      "anchor": "piano-onset:m6:right:beat0",
+      "midi_tick": 5760,
+      "t_midi_sec": 12,
+      "engine_note": {
+        "measure": 6,
+        "hand": "right",
+        "t_sec": 18.2
+      }
+    },
+    {
+      "id": "v10",
+      "lyric": "a",
+      "word": "a",
+      "syllable": 0,
+      "syllables": 1,
+      "midi": 67,
+      "t_sec": 19.8,
+      "t_samples": 950400,
+      "dur_sec": 1.6,
+      "anchor": "piano-onset:m6:right:beat1",
+      "midi_tick": 6528,
+      "t_midi_sec": 13.6,
+      "engine_note": {
+        "measure": 6,
+        "hand": "right",
+        "t_sec": 19.8
+      }
+    },
+    {
+      "id": "v11",
+      "lyric": "wretch",
+      "word": "wretch",
+      "syllable": 0,
+      "syllables": 1,
+      "midi": 67,
+      "t_sec": 21.4,
+      "t_samples": 1027200,
+      "dur_sec": 1.6,
+      "anchor": "piano-onset:m7:right:beat0",
+      "midi_tick": 6912,
+      "t_midi_sec": 14.4,
+      "engine_note": {
+        "measure": 7,
+        "hand": "right",
+        "t_sec": 21.4
+      }
+    },
+    {
+      "id": "v12",
+      "lyric": "like",
+      "word": "like",
+      "syllable": 0,
+      "syllables": 1,
+      "midi": 65,
+      "t_sec": 23,
+      "t_samples": 1104000,
+      "dur_sec": 1.6,
+      "anchor": "piano-onset:m7:right:beat1",
+      "midi_tick": 7680,
+      "t_midi_sec": 16,
+      "engine_note": {
+        "measure": 7,
+        "hand": "right",
+        "t_sec": 23
+      }
+    },
+    {
+      "id": "v13",
+      "lyric": "me",
+      "word": "me",
+      "syllable": 0,
+      "syllables": 1,
+      "midi": 70,
+      "t_sec": 24.6,
+      "t_samples": 1180800,
+      "dur_sec": 5.6,
+      "anchor": "piano-onset:m8:right:beat0",
+      "midi_tick": 8064,
+      "t_midi_sec": 16.8,
+      "engine_note": {
+        "measure": 8,
+        "hand": "right",
+        "t_sec": 24.6
+      }
+    }
+  ]
+}

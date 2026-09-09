@@ -32,5 +32,70 @@
       "Feel the three-measure left-hand rest (measures 30-32) as genuine stillness, not a gap to fill with pedal — let the right hand carry the material alone through that stretch.",
       "Try tapering all the way down through measure 140 — the written density there is as low as anywhere in the piece, and the performance should commit fully to that quiet close."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/63296.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "Geoffrey Carter (karaoke file, 2014)",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about; midi meta events (sha256 48e1afca716a…)",
+    "midi_sha256": "48e1afca716a157d565efb2526ffa2699146f91943639f0326cf8262cb55e097",
+    "midi_title_events": [
+      "Soft karaoke",
+      "@KMIDI KARAOKE FILE",
+      "@IGenerated with Karakan version 6.2",
+      "Words",
+      "@LENGL",
+      "@TJohn Legend - All of Me(2013)",
+      "would",
+      "out",
+      "your",
+      "smart",
+      "mouth",
+      "ing",
+      "you",
+      "kick",
+      "got",
+      "head",
+      "spin",
+      "kid",
+      "ding",
+      "can't",
+      "pin",
+      "down",
+      "that",
+      "beau",
+      "ful",
+      "mind",
+      "mag",
+      "cal",
+      "ter",
+      "I'm",
+      "diz",
+      "kno",
+      "what",
+      "hit",
+      "I'll",
+      "right...",
+      "d's",
+      "bre",
+      "fine",
+      "cra"
+    ],
+    "midi_credit_events": [
+      "@TKAR by Geoffrey Carter 17th February 2014",
+      "Sequence by Geoffrey Carter 17th February 2014"
+    ],
+    "credited_parties": [
+      {
+        "name": "Geoffrey Carter",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "matches"
   }
 }

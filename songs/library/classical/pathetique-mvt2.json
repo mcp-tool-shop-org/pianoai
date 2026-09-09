@@ -12,7 +12,7 @@
     "lyrical",
     "romantic"
   ],
-  "source": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
+  "source": "midiworld.com (https://www.midiworld.com/midis/other/beethoven/pathet2.mid); arranger not named in the file; the site grants no licence — see provenance",
   "status": "ready",
   "musicalLanguage": {
     "description": "This transcription of the second movement (Adagio cantabile) of Beethoven's Pathetique Sonata runs 153 measures at 120 BPM in 4/4 time with 1,625 notes, and the stated Ab major is strongly confirmed by the content (statedKeyFit 0.873; the detected key, reported as G# major under the tool's sharps-only spelling, matches exactly). The famous rondo returns are visible directly in the pattern data: a 15-note right-hand figure recurs three times without transposition at measures 1-13, 59-71, and 99-111 — the A theme's three appearances. The busiest measures in the piece — 84, 86, and 85, all 20 or more combined onsets and dominated by the left hand (17-18 onsets each) — mark a dramatic contrast section, where the implied chord windows shift from the G#/D# (Ab/Eb, tonic/dominant) frame of the opening theme toward G#m (the parallel minor, at measures 77-83) just before that climax, then further into an E major color at measures 87-92 — a genuinely darker harmonic detour right where the texture is thickest.",
@@ -35,5 +35,25 @@
       "Build real weight and intensity into the left hand through measures 84-86 — listen for the implied G# minor color at measures 77-83 already signaling the darker turn before the loudest bars arrive.",
       "Take rubato at phrase endings as a tradition of this style, especially around the E major detour at measures 87-92 — listen for the harmony's chromatic pull justifying a small give in tempo rather than a strict, metronomic pulse."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://www.midiworld.com/midis/other/beethoven/pathet2.mid",
+    "source_site": "www.midiworld.com",
+    "arrangement_creator": "unknown — the file names no creator and midiworld attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://www.midiworld.com/faq/",
+    "terms_quote": "Due to copyright issues we can not publish any pop/rock/game music or commercial MIDI / MP3 files. [footer: Copyright © 1995-2024 MIDIWORLD All rights reserved] (No licence is granted for the contributed files.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://www.midiworld.com/faq/",
+    "midi_sha256": "86ca5c4927c49686987aaa13ff36f5c562d7b091e509e898dbf9d4c2cdb6a3a4",
+    "midi_title_events": [
+      "Movement 2 Sonata Pathetique - Beethoven",
+      "Piano"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "matches",
+    "notes": "The config's former `source` string credited Bernd Krueger / piano-midi.de; the file carries no Krueger copyright event and was downloaded from midiworld. Corrected 2026-09-09."
   }
 }

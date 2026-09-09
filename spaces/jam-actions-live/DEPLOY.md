@@ -1,7 +1,7 @@
 # Deploy: jam-actions-live (ZeroGPU Gradio Space)
 
 **Status:** ✅ **DEPLOYED + working (2026-07-12)** at
-https://huggingface.co/spaces/mikeyfrilot/jam-actions-live (free ZeroGPU).
+https://huggingface.co/spaces/<hf-account>/jam-actions-live (free ZeroGPU).
 
 **Part-3 enrichment (2026-07-12):** added a client-side **piano-roll + Web Audio** player (see/hear
 the queried phrase; timing recovered from the MIDI sidecar into `demo_data.json` `events[].{t,d,v}`)
@@ -10,9 +10,9 @@ per-question scores — mostly fine-tune rescues but keeps a split + a both-miss
 `duration` is `60`, NOT 120** — ZeroGPU reserves `duration+60` against the per-user daily quota, so
 120 reserved 180s and failed at low remaining quota; 60 (~120s reservation) is the proven value.
 Space `tags` added for search. Companion spotlight article:
-https://huggingface.co/blog/mikeyfrilot/jam-actions-three-arcs
+https://huggingface.co/blog/<hf-account>/jam-actions-three-arcs
 Requires **PRO** (personal) to host a Gradio/ZeroGPU Space, or Team/Enterprise for an org
-— Mike enabled PRO on `mikeyfrilot` to ship this. See the "ZeroGPU deploy learnings" in
+— Mike enabled PRO on `<hf-account>` to ship this. See the "ZeroGPU deploy learnings" in
 `memory/ai-jam-sessions-hf-org-presence.md` for the redeploy gotchas (peft cuda pin,
 `duration=60`, sse_v3 queue-protocol testing, `?logs=container` for tracebacks).
 

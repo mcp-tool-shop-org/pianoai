@@ -9,8 +9,9 @@
 //   songs/library/<genre>/<id>.json  — SongConfig with status field
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { readdirSync, readFileSync, existsSync } from "node:fs";
+import { readdirSync, readFileSync, existsSync, statSync } from "node:fs";
 import { join, basename } from "node:path";
+import { fetchedLibraryDir } from "../state-home.js";
 import { GENRES, type Genre, type SongEntry } from "./types.js";
 import {
   SongConfigSchema,
@@ -36,7 +37,10 @@ export interface GenreProgress {
   raw: number;
   annotated: number;
   ready: number;
-  songs: Array<{ id: string; title: string; status: SongStatus }>;
+  /** Ready songs whose .mid is absent — withheld from the npm tarball for want of a
+   *  redistributable licence; `library fetch` pulls them from their recorded source. */
+  unfetched: number;
+  songs: Array<{ id: string; title: string; status: SongStatus; fetched: boolean }>;
 }
 
 export interface LibraryProgress {
@@ -44,6 +48,7 @@ export interface LibraryProgress {
   raw: number;
   annotated: number;
   ready: number;
+  unfetched: number;
   byGenre: Partial<Record<Genre, GenreProgress>>;
 }
 
@@ -62,6 +67,15 @@ export interface InitReport {
  * Scan the library directory for all config files across all genres.
  * Returns entries with their associated MIDI path (which may not exist yet).
  */
+/** Package-library .mid if present, else the fetched copy under stateHome(). */
+export function resolveLibraryMidiPath(libraryDir: string, genre: string, id: string): string {
+  const beside = join(libraryDir, genre, `${id}.mid`);
+  if (existsSync(beside) && statSync(beside).isFile()) return beside;
+  const fallback = join(fetchedLibraryDir(), genre, `${id}.mid`);
+  if (existsSync(fallback) && statSync(fallback).isFile()) return fallback;
+  return beside;
+}
+
 export function scanLibrary(libraryDir: string): LibraryEntry[] {
   const entries: LibraryEntry[] = [];
 
@@ -73,7 +87,7 @@ export function scanLibrary(libraryDir: string): LibraryEntry[] {
     for (const file of files) {
       const configPath = join(genreDir, file);
       const id = basename(file, ".json");
-      const midiPath = join(genreDir, `${id}.mid`);
+      const midiPath = resolveLibraryMidiPath(libraryDir, genre, id);
 
       try {
         const raw = JSON.parse(readFileSync(configPath, "utf8"));
@@ -115,6 +129,7 @@ export function getLibraryProgress(libraryDir: string): LibraryProgress {
     raw: 0,
     annotated: 0,
     ready: 0,
+    unfetched: 0,
     byGenre: {},
   };
 
@@ -132,17 +147,24 @@ export function getLibraryProgress(libraryDir: string): LibraryProgress {
       raw: 0,
       annotated: 0,
       ready: 0,
+      unfetched: 0,
       songs: [],
     };
 
     for (const entry of genreEntries) {
       const status = entry.config.status ?? "raw";
+      const fetched = existsSync(entry.midiPath);
       gp[status]++;
       progress[status]++;
+      if (status === "ready" && !fetched) {
+        gp.unfetched++;
+        progress.unfetched++;
+      }
       gp.songs.push({
         id: entry.config.id,
         title: entry.config.title,
         status,
+        fetched,
       });
     }
 

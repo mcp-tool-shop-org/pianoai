@@ -5,12 +5,12 @@
 **Trigger:** Synthesis prototype `target_trace.tool_calls[*]` do not match the real MCP surface exported by `dist/mcp-server.js`.
 
 This report enumerates every mismatch between the synthesis prototype in
-`C:/Users/mikey/.claude/projects/F--AI/memory/ai-jam-sessions-dataset-v0-synthesis.md`
+`~/.claude/projects/F--AI/memory/ai-jam-sessions-dataset-v0-synthesis.md`
 (Section 7 "Prototype record") and the canonical MCP tool surface derived by
 `scripts/extract-mcp-tool-schemas.ts` → `src/dataset/tool-schemas.json`.
 
 The kickoff at
-`C:/Users/mikey/.claude/projects/F--AI/memory/jam-actions-v0-sonnet-kickoff.md`
+`~/.claude/projects/F--AI/memory/jam-actions-v0-sonnet-kickoff.md`
 specifies: *"If ANY prototype tool call doesn't match the real surface, FAIL
 LOUDLY. Write a report ... Do NOT proceed to dataset code."* That is what this
 report does.

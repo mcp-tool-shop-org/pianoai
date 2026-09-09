@@ -1,3 +1,6 @@
+.claude/
+tmp/
+
 node_modules/
 dist/
 .astro/
@@ -16,6 +19,7 @@ package-lock.json
 
 # Local Python venv for Slice 9c LoRA experiment
 experiments/jam-actions-v0-lora/.venv/
+experiments/coverage-v1-sft/.venv-gguf/
 .swarm/
 
 # Dogfood-swarm worktrees + local eval checkpoints (never committed)
@@ -31,3 +35,19 @@ songs/library/**/zz-test-fixture-*
 
 # B1 eval runner console dumps (b2 convention: logs are not committed; b1-run.log predates it)
 experiments/finetune-arc-v2/evals/b1-runner-*.log
+
+# python
+__pycache__/
+
+# LoRA adapter weights. 120 MB per epoch checkpoint, 626 MB for one five-epoch
+# run — git is the wrong home for them and they are reproducible from the
+# receipt beside them (seed, data SHA-256, every hyperparameter, package
+# versions, GPU). What DOES get committed from a run is run-config.json and the
+# prediction JSONLs: kilobytes, and the only part anyone needs to check a claim.
+# Publish adapters to a Hugging Face model repo, the way jam-ft-v1 was.
+# Any depth under runs/: the second v1 run landed at runs/v20/seed13/epoch3/,
+# one level deeper than the first, and the single-star pattern would have let
+# 376 MB of adapters into a commit. Checked with git add -n before staging;
+# that check is why this line exists.
+experiments/**/runs/**/epoch*/
+experiments/**/runs/**/hf-out/

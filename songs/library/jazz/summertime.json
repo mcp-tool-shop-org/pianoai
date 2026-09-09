@@ -32,5 +32,30 @@
       "Listen for the return of the measures 13-22 material at measures 31-40 as a recognizable second verse, letting your touch acknowledge the exact 18-measure echo rather than playing it as brand-new material.",
       "Try keeping the tempo unhurried throughout — at 72 BPM this is a genuine lullaby-paced ballad, and the exact structural repetition rewards a performance patient enough to let the listener recognize it."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/97915.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "b1403899ea5809e6711d8f477495b82d2b3f862ef558abe1c77584b8621c5aa9",
+    "midi_title_events": [
+      "ACOU BASS",
+      "TROMBONE",
+      "TRUMPET",
+      "FR.HORN",
+      "STRINGS",
+      "VIBRAPHONE",
+      "DRUMS",
+      "GS/RESET"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

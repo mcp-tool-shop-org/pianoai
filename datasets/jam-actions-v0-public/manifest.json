@@ -1,6 +1,6 @@
 {
   "dataset_name": "jam-actions-v0-public",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "built_at": "2026-07-11",
   "source_dataset": "jam-actions-v0",
   "source_commit": "bdb9aba9be424152a9739c179a3a8ae740ff36b6",

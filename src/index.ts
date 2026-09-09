@@ -40,10 +40,22 @@ export { createSession, SessionController } from "./session.js";
 
 // Export piano engine (built-in audio — plays through speakers)
 export { createAudioEngine } from "./audio-engine.js";
+export { createSampleEngine } from "./sample-engine.js";
+export { resolvePianoSamplesDir, preferredPianoEngineId } from "./sample-paths.js";
 
 // Export vocal engine (sustained vowel synthesis — pitched to MIDI notes)
 export { createVocalEngine } from "./vocal-engine.js";
 export type { VocalEngineOptions } from "./vocal-engine.js";
+
+export {
+  alignLyricsToNotes,
+  alignSyllablesToNotes,
+  extractMelodyNotes,
+  buildScoreLockedVocals,
+  createScoreSinger,
+  loadEngineG2P,
+} from "./vocal/index.js";
+export type { ScoreNote, ScorePhoneme, BuiltVocalScore } from "./vocal/index.js";
 
 // Export tract engine (Pink Trombone physical vocal tract model)
 export { createTractEngine, TRACT_VOICE_IDS } from "./vocal-tract-engine.js";

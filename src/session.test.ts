@@ -27,7 +27,7 @@ describe("SessionController", () => {
 
   beforeAll(() => {
     moonlight = requireSong("satie-gymnopedie-no1");
-    blues = requireSong("fallin");
+    blues = requireSong("bach-prelude-c-major-bwv846");
   });
 
   it("creates a session in 'loaded' state", () => {
@@ -58,7 +58,7 @@ describe("SessionController", () => {
     await sc.play();
 
     expect(sc.state).toBe("finished");
-    expect(sc.session.measuresPlayed).toBe(25);
+    expect(sc.session.measuresPlayed).toBe(62);
   });
 
   it("plays one measure in measure mode then pauses", async () => {
@@ -210,7 +210,7 @@ describe("MockVmpkConnector", () => {
 
 describe("Speed control", () => {
   let blues: SongEntry;
-  beforeAll(() => { blues = requireSong("fallin"); });
+  beforeAll(() => { blues = requireSong("bach-prelude-c-major-bwv846"); });
 
   it("defaults speed to 1.0", () => {
     const mock = createMockVmpkConnector();
@@ -257,7 +257,7 @@ describe("Speed control", () => {
 
 describe("Progress tracking", () => {
   let blues: SongEntry;
-  beforeAll(() => { blues = requireSong("fallin"); });
+  beforeAll(() => { blues = requireSong("bach-prelude-c-major-bwv846"); });
 
   it("fires progress after every measure when interval=0", async () => {
     const mock = createMockVmpkConnector();
@@ -269,10 +269,10 @@ describe("Progress tracking", () => {
     await mock.connect();
     await sc.play();
 
-    expect(events.length).toBe(25); // one per measure
+    expect(events.length).toBe(62); // one per measure
     expect(events[0].currentMeasure).toBe(1);
-    expect(events[24].currentMeasure).toBe(25);
-    expect(events[24].percent).toBe("100%");
+    expect(events[61].currentMeasure).toBe(62);
+    expect(events[61].percent).toBe("100%");
   });
 
   it("fires progress at 10% milestones (default)", async () => {
@@ -285,10 +285,10 @@ describe("Progress tracking", () => {
     await mock.connect();
     await sc.play();
 
-    // 25 measures → milestones at 4%, 8%, 12%, …, 96%, 100%
+    // 62 measures → milestones at ~1.6% steps; floor(ratio/0.1) still caps at 11
     // With floor(ratio/0.1), fires at milestones 0,1,2,3,...10
     expect(events.length).toBeGreaterThan(0);
-    expect(events.length).toBeLessThanOrEqual(25);
+    expect(events.length).toBeLessThanOrEqual(62);
   });
 
   it("does not fire when no callback is set", async () => {
@@ -317,7 +317,7 @@ describe("Progress tracking", () => {
 describe("Parse warnings", () => {
   it("exposes parseWarnings array (empty for valid songs)", () => {
     const mock = createMockVmpkConnector();
-    const blues = requireSong("fallin");
+    const blues = requireSong("bach-prelude-c-major-bwv846");
     const sc = createSession(blues, mock);
     expect(sc.parseWarnings).toEqual([]);
   });
@@ -388,7 +388,7 @@ describe("Edge cases: boundary navigation", () => {
 
 describe("Edge cases: loop mode", () => {
   let blues: SongEntry;
-  beforeAll(() => { blues = requireSong("fallin"); });
+  beforeAll(() => { blues = requireSong("bach-prelude-c-major-bwv846"); });
 
   it("loop mode creates session with loopRange", () => {
     const mock = createMockVmpkConnector();
@@ -556,7 +556,7 @@ describe("Hand mute/unmute (FT-CORE-019)", () => {
 
 describe("Edge cases: setSpeed validation", () => {
   let blues: SongEntry;
-  beforeAll(() => { blues = requireSong("fallin"); });
+  beforeAll(() => { blues = requireSong("bach-prelude-c-major-bwv846"); });
 
   it("setSpeed(0) throws", () => {
     const mock = createMockVmpkConnector();
@@ -595,7 +595,7 @@ describe("SyncMode", () => {
   let blues: SongEntry;
   let moonlight: SongEntry;
   beforeAll(() => {
-    blues = requireSong("fallin");
+    blues = requireSong("bach-prelude-c-major-bwv846");
     moonlight = requireSong("satie-gymnopedie-no1");
   });
 
@@ -622,9 +622,9 @@ describe("SyncMode", () => {
     await sc.play();
 
     expect(sc.state).toBe("finished");
-    expect(sc.session.measuresPlayed).toBe(25);
+    expect(sc.session.measuresPlayed).toBe(62);
     const starts = hook.events.filter((e) => e.type === "measure-start");
-    expect(starts.length).toBe(25);
+    expect(starts.length).toBe(62);
   });
 
   it("before mode: voice completes before playback starts", async () => {
@@ -638,9 +638,9 @@ describe("SyncMode", () => {
     await sc.play();
 
     expect(sc.state).toBe("finished");
-    expect(sc.session.measuresPlayed).toBe(25);
+    expect(sc.session.measuresPlayed).toBe(62);
     const starts = hook.events.filter((e) => e.type === "measure-start");
-    expect(starts.length).toBe(25);
+    expect(starts.length).toBe(62);
   });
 
   it("hands mode respects syncMode: concurrent", async () => {

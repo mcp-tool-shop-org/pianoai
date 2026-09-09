@@ -1,0 +1,286 @@
+{
+  "clock": "scores/amazing-grace.score-clock.v1.json",
+  "bed": "tmp/vocal-clock/piano-bed.wav",
+  "engine": "oscillator-grand",
+  "samples_dir": null,
+  "sample_rate": 48000,
+  "channels": 2,
+  "bit_depth": 16,
+  "total_samples": 1680000,
+  "total_seconds": 35,
+  "notes_scheduled": 33,
+  "suspend_points": 23,
+  "quantum_samples": 128,
+  "max_schedule_late_ms": 2.667,
+  "first_nonzero_sample": 386,
+  "peak": 0.7933782339096069,
+  "rms_db": -17.35,
+  "sha256": "a72bb2698a3a5753ebd2b634c5305e108db147e04909a55b667ccccee42a9c98",
+  "max_late_ms": 2.667,
+  "scheduled": [
+    {
+      "measure": 1,
+      "hand": "left",
+      "midi": 58,
+      "t_nominal": 0,
+      "t_actual": 0,
+      "late_ms": 0
+    },
+    {
+      "measure": 2,
+      "hand": "left",
+      "midi": 58,
+      "t_nominal": 3.2,
+      "t_actual": 3.2,
+      "late_ms": 0
+    },
+    {
+      "measure": 2,
+      "hand": "right",
+      "midi": 63,
+      "t_nominal": 3.2,
+      "t_actual": 3.2,
+      "late_ms": 0
+    },
+    {
+      "measure": 2,
+      "hand": "right",
+      "midi": 63,
+      "t_nominal": 3.2,
+      "t_actual": 3.2,
+      "late_ms": 0
+    },
+    {
+      "measure": 2,
+      "hand": "right",
+      "midi": 67,
+      "t_nominal": 3.2,
+      "t_actual": 3.2,
+      "late_ms": 0
+    },
+    {
+      "measure": 2,
+      "hand": "right",
+      "midi": 67,
+      "t_nominal": 6.4,
+      "t_actual": 6.4,
+      "late_ms": 0
+    },
+    {
+      "measure": 3,
+      "hand": "right",
+      "midi": 67,
+      "t_nominal": 7,
+      "t_actual": 7,
+      "late_ms": 0
+    },
+    {
+      "measure": 3,
+      "hand": "right",
+      "midi": 61,
+      "t_nominal": 8.6,
+      "t_actual": 8.6,
+      "late_ms": 0
+    },
+    {
+      "measure": 3,
+      "hand": "right",
+      "midi": 65,
+      "t_nominal": 8.6,
+      "t_actual": 8.6,
+      "late_ms": 0
+    },
+    {
+      "measure": 4,
+      "hand": "left",
+      "midi": 56,
+      "t_nominal": 10.2,
+      "t_actual": 10.2,
+      "late_ms": 0
+    },
+    {
+      "measure": 4,
+      "hand": "right",
+      "midi": 60,
+      "t_nominal": 10.2,
+      "t_actual": 10.2,
+      "late_ms": 0
+    },
+    {
+      "measure": 4,
+      "hand": "right",
+      "midi": 63,
+      "t_nominal": 10.2,
+      "t_actual": 10.2,
+      "late_ms": 0
+    },
+    {
+      "measure": 4,
+      "hand": "right",
+      "midi": 63,
+      "t_nominal": 10.2,
+      "t_actual": 10.2,
+      "late_ms": 0
+    },
+    {
+      "measure": 4,
+      "hand": "right",
+      "midi": 68,
+      "t_nominal": 10.2,
+      "t_actual": 10.2,
+      "late_ms": 0
+    },
+    {
+      "measure": 4,
+      "hand": "right",
+      "midi": 60,
+      "t_nominal": 13.4,
+      "t_actual": 13.4,
+      "late_ms": 0
+    },
+    {
+      "measure": 5,
+      "hand": "left",
+      "midi": 58,
+      "t_nominal": 14.2,
+      "t_actual": 14.2,
+      "late_ms": 0
+    },
+    {
+      "measure": 5,
+      "hand": "left",
+      "midi": 58,
+      "t_nominal": 14.2,
+      "t_actual": 14.2,
+      "late_ms": 0
+    },
+    {
+      "measure": 5,
+      "hand": "right",
+      "midi": 67,
+      "t_nominal": 14.2,
+      "t_actual": 14.2,
+      "late_ms": 0
+    },
+    {
+      "measure": 5,
+      "hand": "left",
+      "midi": 58,
+      "t_nominal": 17.4,
+      "t_actual": 17.4,
+      "late_ms": 0
+    },
+    {
+      "measure": 6,
+      "hand": "right",
+      "midi": 63,
+      "t_nominal": 18.2,
+      "t_actual": 18.2,
+      "late_ms": 0
+    },
+    {
+      "measure": 6,
+      "hand": "right",
+      "midi": 67,
+      "t_nominal": 19.8,
+      "t_actual": 19.8,
+      "late_ms": 0
+    },
+    {
+      "measure": 7,
+      "hand": "right",
+      "midi": 67,
+      "t_nominal": 21.4,
+      "t_actual": 21.4,
+      "late_ms": 0
+    },
+    {
+      "measure": 7,
+      "hand": "right",
+      "midi": 65,
+      "t_nominal": 23,
+      "t_actual": 23,
+      "late_ms": 0
+    },
+    {
+      "measure": 8,
+      "hand": "right",
+      "midi": 62,
+      "t_nominal": 24.6,
+      "t_actual": 24.6,
+      "late_ms": 0
+    },
+    {
+      "measure": 8,
+      "hand": "right",
+      "midi": 65,
+      "t_nominal": 24.6,
+      "t_actual": 24.6,
+      "late_ms": 0
+    },
+    {
+      "measure": 8,
+      "hand": "right",
+      "midi": 70,
+      "t_nominal": 24.6,
+      "t_actual": 24.6,
+      "late_ms": 0
+    },
+    {
+      "measure": 9,
+      "hand": "right",
+      "midi": 62,
+      "t_nominal": 27.8,
+      "t_actual": 27.8,
+      "late_ms": 0
+    },
+    {
+      "measure": 9,
+      "hand": "right",
+      "midi": 67,
+      "t_nominal": 30.2,
+      "t_actual": 30.2,
+      "late_ms": 0
+    },
+    {
+      "measure": 10,
+      "hand": "left",
+      "midi": 58,
+      "t_nominal": 31,
+      "t_actual": 31,
+      "late_ms": 0
+    },
+    {
+      "measure": 10,
+      "hand": "right",
+      "midi": 63,
+      "t_nominal": 31,
+      "t_actual": 31,
+      "late_ms": 0
+    },
+    {
+      "measure": 10,
+      "hand": "right",
+      "midi": 67,
+      "t_nominal": 31,
+      "t_actual": 31,
+      "late_ms": 0
+    },
+    {
+      "measure": 10,
+      "hand": "right",
+      "midi": 70,
+      "t_nominal": 31,
+      "t_actual": 31,
+      "late_ms": 0
+    },
+    {
+      "measure": 10,
+      "hand": "right",
+      "midi": 67,
+      "t_nominal": 34.2,
+      "t_actual": 34.202667,
+      "late_ms": 2.667
+    }
+  ]
+}

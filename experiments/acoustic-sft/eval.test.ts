@@ -1,0 +1,49 @@
+import { describe, it, expect, vi } from "vitest";
+import { evaluateAcousticSplit, type PredLine } from "./eval.js";
+import { buildAllRecords } from "../../src/dataset/acoustic/generate-corpus.js";
+import { GOLD_VERDICTS, PERTURBATION_KINDS } from "../../src/dataset/acoustic/schema.js";
+import { writeFileSync, mkdirSync } from "node:fs";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
+
+// Every test here synthesises audio and runs the real pitch and onset code over it.
+// That is the point of the suite, and it is not fast: the 108-record corpus measures
+// 1407 ms on the rig, and CI coverage instrumentation on the slower matrix cell pushed
+// two of these past vitest's 5 s default while the faster cell passed the same commit.
+// One budget for the whole file, so the next slow case here does not have to be found
+// by a red build the way the first two were.
+vi.setConfig({ testTimeout: 30_000 });
+
+
+describe("evaluateAcousticSplit", () => {
+  it("warns an aggregate LoRA number without a base-model number is unfalsifiable", () => {
+    const records = buildAllRecords().filter((r) => r.split === "test");
+    const dir = join(tmpdir(), "acoustic-eval-test");
+    mkdirSync(dir, { recursive: true });
+    const path = join(dir, "records.jsonl");
+    writeFileSync(path, records.map((r) => JSON.stringify(r)).join("\n") + "\n");
+
+    const perfect: PredLine[] = records.map((r) => ({
+      id: r.id,
+      verdict: r.observation.gold.verdict,
+    }));
+    const withLora = evaluateAcousticSplit({ recordsPath: path, loraPredictions: perfect });
+    expect(withLora.lora_overall).toBe(1);
+    expect(withLora.base_model_overall).toBeNull();
+    expect(withLora.note).toMatch(/unfalsifiable/i);
+    expect(withLora.per_kind.every((k) => k.n === 4)).toBe(true);
+    expect(withLora.per_kind.map((k) => k.kind)).toEqual([...PERTURBATION_KINDS]);
+    expect(withLora.baselines.uniform).toBeCloseTo(1 / 9, 10);
+    expect(withLora.baselines.majority).toBeCloseTo(4 / 36, 10);
+    expect(GOLD_VERDICTS).toContain(withLora.baselines.majority_class);
+    expect(PERTURBATION_KINDS).not.toContain(withLora.baselines.majority_class);
+
+    const withBoth = evaluateAcousticSplit({
+      recordsPath: path,
+      loraPredictions: perfect,
+      basePredictions: records.map((r) => ({ id: r.id, verdict: "match" })),
+    });
+    expect(withBoth.base_model_overall).toBeGreaterThanOrEqual(0);
+    expect(withBoth.base_model_overall).toBeLessThan(1);
+  });
+});

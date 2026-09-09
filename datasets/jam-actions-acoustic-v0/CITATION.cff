@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+title: "jam-actions-acoustic-v0 — grounded LLM tool use over audio analysis"
+message: "If you use this dataset, please cite it as below."
+type: dataset
+authors:
+  - name: "mcp-tool-shop-org"
+  - family-names: "Krueger"
+    given-names: "Bernd"
+    affiliation: "piano-midi.de (upstream MIDI arrangements; CC-BY-SA-3.0-DE)"
+version: "1.0.2"
+date-released: "2026-09-08"
+license: "CC-BY-SA-3.0-DE"
+repository-code: "https://github.com/mcp-tool-shop-org/ai-jam-sessions"
+abstract: >-
+  108 multi-turn tool-use records over ACOUSTIC music analysis, the counterpart to
+  jam-actions-v0's symbolic-music traces. Each record pairs a deliberately
+  perturbed synthetic rendering of a public-domain phrase with the verdict the
+  analysis tools actually return, so every label is checked against the
+  instrument rather than only against itself. Nine perturbation kinds per phrase
+  per target note, including the two cases a naive model answers confidently and
+  wrongly: a vibrato note whose correct verdict is in tune, and silence whose
+  correct verdict is nothing to grade. Held out by phrase, not by record.
+keywords:
+  - music-information-retrieval
+  - tool-use
+  - audio-analysis
+  - pitch-detection
+  - onset-detection
+  - model-context-protocol

@@ -32,5 +32,23 @@
       "Listen for the immediate echo at measures 68-73 landing with a slightly different color than its twin at 62-67 — the notes repeat exactly, so let dynamic shading supply the sense of variation.",
       "Try pacing your endurance across the full 149 measures from an early practice session, given how little written rest exists — build stamina at a comfortable tempo before approaching real performance speed."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/70390.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "a8ab3c48d45a53867ef0e090cec1ed756f6823b606498583ffbb62bac841951e",
+    "midi_title_events": [],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file",
+    "duplicate_of": "film/nuvole-bianche",
+    "notes": "Byte-identical to film/nuvole-bianche (same bitmidi upload 70390)."
   }
 }

@@ -87,6 +87,18 @@ describe("bws — the discrimination-floor gate", () => {
     expect(res.interpretable).toBe(true);
     expect(res.verdict).toMatch(/INCONCLUSIVE/);
   });
+
+  it("product verdicts never use banned proxy vocabulary", () => {
+    const banned = /\$0|smoke.?screen|priced.?ask|quality:\s*N\/100/i;
+    const { votes: v, tupleSystems } = votes(12, 0, 3);
+    const agg = aggregatePanel(SYSTEMS, v, tupleSystems, { bootstrap: 200, seed: 1 });
+    const pos = interpretPanel(agg, { floor: "D", valid: "A", engine: "A" });
+    const inc = interpretPanel(agg, { floor: "D", valid: "A", engine: "C" });
+    expect(pos.verdict).toMatch(/Directional only/);
+    expect(inc.verdict).toMatch(/Directional only/);
+    expect(pos.verdict).not.toMatch(banned);
+    expect(inc.verdict).not.toMatch(banned);
+  });
 });
 
 describe("bws — determinism + helpers", () => {

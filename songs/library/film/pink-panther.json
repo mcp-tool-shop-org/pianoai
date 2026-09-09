@@ -32,5 +32,36 @@
       "Listen for the shifting quality on the F# root — major, then dominant seventh, then major seventh — as the source of this piece's sly, chromatic character, and let your touch highlight that color shift rather than smoothing it over.",
       "Try landing the final two measures of complete silence (90-91) as a clean, deliberate stop — after 89 measures built largely from two repeating cycles, the ending should read as a sudden full stop, not a fade."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/85208.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "D.W.Barnes (sequence by, per the file)",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about; midi meta events (sha256 fad737089ecf…)",
+    "midi_sha256": "fad737089ecf297124b4c0d7b94c8c402c087d8f65399070fe239534efd098a4",
+    "midi_title_events": [
+      "Piano Lead",
+      "Piano Accomp",
+      "Alto Sax",
+      "Bari Sax",
+      "Slap Bass 2",
+      "Std Drum Set",
+      "D.W.Barnes"
+    ],
+    "midi_credit_events": [
+      "Sequence by"
+    ],
+    "credited_parties": [
+      {
+        "name": "D.W.Barnes",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "no-title-in-file"
   }
 }

@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+title: "jam-actions-v1-probe — evaluation-only near-gate acoustic takes"
+message: "If you use this dataset, please cite it as below."
+type: dataset
+authors:
+  - name: "mcp-tool-shop-org"
+version: "1.0.0"
+date-released: "2026-09-09"
+license: "CC-BY-SA-3.0-DE"
+doi: "10.5281/zenodo.20279918"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.20279918"
+    description: "Concept DOI — resolves to the latest published version on Zenodo"
+url: "https://doi.org/10.5281/zenodo.20279918"
+repository-code: "https://github.com/mcp-tool-shop-org/ai-jam-sessions"
+abstract: >-
+  72 acoustic takes on jam-actions-v1's nine held-out songs, each measured within 10 ms or 5 cents of a grading gate, both signs of both quantities. Never split, never trained on. Schema jam-actions-v1-probe/1.0.0.
+keywords:
+  - music
+  - midi
+  - mcp
+  - tool-use
+  - symbolic-music
+  - piano

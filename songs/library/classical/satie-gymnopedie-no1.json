@@ -35,5 +35,38 @@
       "Never accent anything — let gravity do the work through the near-identical second phrase at measures 9-16; listen for it landing with the same weightless quality as measures 1-8.",
       "Treat measures 40-47 as a memory of measures 32-39 returning with a different close — listen for the shared Am7 cadence at 38 and 46, then let the final Dm window at measure 47 settle rather than build toward an ending."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://www.mutopiaproject.org/ftp/SatieE/gymnopedie_1/gymnopedie_1.mid",
+    "source_site": "www.mutopiaproject.org",
+    "arrangement_creator": "Evin Robertson (Mutopia typesetter, LilyPond)",
+    "arrangement_license": "Public-Domain",
+    "terms_url": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=37",
+    "terms_quote": "Copyright: Public Domain (piece page); Public Domain: The contributor of this music has dedicated their contribution into the public domain. You can do what you like with this music - print it out, sell it, change it, distribute it, record it, and perform it, etc.",
+    "verified_at": "2026-09-09",
+    "verifier": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=37; midi meta events (sha256 09ce7337b4bf…)",
+    "midi_sha256": "09ce7337b4bf42ba12e1aa64b4c7dc7fcfa6455f1070cb12f8880a755df97384",
+    "midi_title_events": [
+      "control track",
+      "GNU LilyPond 2.18.2",
+      "treble:",
+      "bass:"
+    ],
+    "midi_credit_events": [
+      "creator:"
+    ],
+    "credited_parties": [
+      {
+        "name": "GNU LilyPond",
+        "evidence": "midi-meta"
+      },
+      {
+        "name": "Evin Robertson",
+        "evidence": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=37"
+      }
+    ],
+    "title_verdict": "no-title-in-file",
+    "notes": "download-library.ts still lists the original piano-midi.de URL; the bytes were replaced from Mutopia in commit 03a005a (2026-07) because the piano-midi.de stamp could not be verified."
   }
 }

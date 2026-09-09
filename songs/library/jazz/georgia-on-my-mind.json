@@ -32,5 +32,30 @@
       "Listen for the C major color at measure 1 functioning as a dominant pickup into the stated F major, then let your ear carry the rest of the harmony — the data has almost nothing more to offer here.",
       "Try feeling the return of the measures 19-22 phrase at measures 39-42 as a moment of recognition and release after the intervening development, giving it a slightly different color the second time."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/88032.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "42f2a24d1eeb4cadc24104ff0fd39fc93a0c014f332f394084b9987a7ca619c1",
+    "midi_title_events": [
+      "Melody",
+      "Bass",
+      "Piano1",
+      "Piano 2",
+      "Chords Organ",
+      "Solo Organ",
+      "Guitar",
+      "DRUMS"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

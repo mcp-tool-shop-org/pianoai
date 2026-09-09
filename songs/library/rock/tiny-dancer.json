@@ -32,5 +32,30 @@
       "Feel each of the section lens's nine structural regions as its own small arc — with no literal repeats to lean on, treating each region as a distinct musical idea makes the piece easier to hold in memory.",
       "Try pacing your dynamic energy across all five busy measures (29, 49, 51, 59, 94) evenly rather than saving your loudest playing for just one of them — the piece itself distributes its demands this way."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/104274.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "3cc12758973a385ce90a2bbbfba0f0dea25f961d280e9d8f45823c383bfce639",
+    "midi_title_events": [
+      "A.PIANO 2",
+      "ACOU BASS",
+      "JAZZ GTR",
+      "MELODY",
+      "SLOWSTRING",
+      "STRINGS",
+      "DRUMS",
+      "GS/RESET"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

@@ -31,5 +31,37 @@
       "Feel the G#7-Bbm7-Db7 turnaround (measures 121-152) as one continuous harmonic gesture pulling toward Db, not three separate chords to land on individually.",
       "Try starting at full rhythmic commitment from measure 3 rather than easing in — the busiest measures arrive early here, and a tentative start will undersell them."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://www.mutopiaproject.org/ftp/JoplinS/winners/winners.mid",
+    "source_site": "www.mutopiaproject.org",
+    "arrangement_creator": "Tom Harke (Mutopia typesetter, LilyPond)",
+    "arrangement_license": "Public-Domain",
+    "terms_url": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=352",
+    "terms_quote": "Copyright: Public Domain (piece page); Public Domain: The contributor of this music has dedicated their contribution into the public domain. You can do what you like with this music - print it out, sell it, change it, distribute it, record it, and perform it, etc.",
+    "verified_at": "2026-09-09",
+    "verifier": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=352; midi meta events (sha256 b4fcdafa0a69…)",
+    "midi_sha256": "b4fcdafa0a6929a62e53f4fda0acf6f23f1b1955886d6f68b49c158a7b231c57",
+    "midi_title_events": [
+      "control track",
+      "GNU LilyPond 2.16.1",
+      "up:VA",
+      "down:"
+    ],
+    "midi_credit_events": [
+      "creator:"
+    ],
+    "credited_parties": [
+      {
+        "name": "GNU LilyPond",
+        "evidence": "midi-meta"
+      },
+      {
+        "name": "Tom Harke",
+        "evidence": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=352"
+      }
+    ],
+    "title_verdict": "no-title-in-file"
   }
 }

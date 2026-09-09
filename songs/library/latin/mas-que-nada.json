@@ -33,5 +33,24 @@
       "Don't let the 39-onset peak measures (43, 63, 71, 103, 107) get louder just because they are busier — hold the dynamic ceiling and let density itself supply the intensity.",
       "Use the near-empty frame to reset: measure 1 is silent and measure 111 carries a single onset — begin from stillness, and cut the final onset cleanly rather than inventing a fadeout the file doesn't write."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://freemidi.org/getter-8898",
+    "source_site": "freemidi.org",
+    "arrangement_creator": "unknown — the file names no creator and freemidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://freemidi.org/about",
+    "terms_quote": "free midi is about freedom and free midi songs. (User-uploaded; no licence is stated anywhere on the site.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://freemidi.org/about",
+    "midi_sha256": "4459fb372f4831eba256cd80041a014ff864aee2ca1f0bb8f37f6357f3a1a724",
+    "midi_title_events": [
+      "Mas que nada (Black Eyed Peas feat. S.Mendez)"
+    ],
+    "midi_credit_events": [],
+    "midi_lyric_head": "Eeeeeh, Tico Tico Tico Tia Oaria raio Oba Oba Oba Oaria raio Oba Oba Oba mas que nada black eyed peas came in to make it hotter we beat the party starters bubbl",
+    "credited_parties": [],
+    "title_verdict": "matches"
   }
 }

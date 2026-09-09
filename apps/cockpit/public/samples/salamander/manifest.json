@@ -1,0 +1,616 @@
+{
+  "schemaVersion": 1,
+  "instrument": "Salamander Grand Piano",
+  "author": "Alexander Holm",
+  "license": "Creative Commons Attribution 3.0",
+  "licenseUrl": "http://creativecommons.org/licenses/by/3.0/",
+  "sourcePage": "https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html",
+  "sourceArchive": "SalamanderGrandPianoV3+20161209_44khz16bit.tar.xz",
+  "sourceSha256": "58750EB1366761E187F71DDB9B932355EA894D28EC4331E74AB8ACB44C819936",
+  "sourceVersion": "V3+20161209",
+  "encoder": {
+    "codec": "libopus",
+    "bitrate": "96k",
+    "sampleRate": 48000,
+    "channels": 2,
+    "container": "ogg",
+    "maxDurationSec": 8,
+    "fadeOutSec": 0.35,
+    "ffmpeg": "ffmpeg"
+  },
+  "packBytes": 8628267,
+  "roots": [
+    21,
+    24,
+    27,
+    30,
+    33,
+    36,
+    39,
+    42,
+    45,
+    48,
+    51,
+    54,
+    57,
+    60,
+    63,
+    66,
+    69,
+    72,
+    75,
+    78,
+    81,
+    84,
+    87,
+    90,
+    93,
+    96,
+    99,
+    102,
+    105,
+    108
+  ],
+  "layers": [
+    {
+      "id": 0,
+      "sourceVel": 4,
+      "velLo": 1,
+      "velHi": 42
+    },
+    {
+      "id": 1,
+      "sourceVel": 10,
+      "velLo": 43,
+      "velHi": 85
+    },
+    {
+      "id": 2,
+      "sourceVel": 16,
+      "velLo": 86,
+      "velHi": 127
+    }
+  ],
+  "files": [
+    {
+      "midi": 21,
+      "layer": 0,
+      "file": "21-v0.ogg",
+      "rootMidi": 21
+    },
+    {
+      "midi": 21,
+      "layer": 1,
+      "file": "21-v1.ogg",
+      "rootMidi": 21
+    },
+    {
+      "midi": 21,
+      "layer": 2,
+      "file": "21-v2.ogg",
+      "rootMidi": 21
+    },
+    {
+      "midi": 24,
+      "layer": 0,
+      "file": "24-v0.ogg",
+      "rootMidi": 24
+    },
+    {
+      "midi": 24,
+      "layer": 1,
+      "file": "24-v1.ogg",
+      "rootMidi": 24
+    },
+    {
+      "midi": 24,
+      "layer": 2,
+      "file": "24-v2.ogg",
+      "rootMidi": 24
+    },
+    {
+      "midi": 27,
+      "layer": 0,
+      "file": "27-v0.ogg",
+      "rootMidi": 27
+    },
+    {
+      "midi": 27,
+      "layer": 1,
+      "file": "27-v1.ogg",
+      "rootMidi": 27
+    },
+    {
+      "midi": 27,
+      "layer": 2,
+      "file": "27-v2.ogg",
+      "rootMidi": 27
+    },
+    {
+      "midi": 30,
+      "layer": 0,
+      "file": "30-v0.ogg",
+      "rootMidi": 30
+    },
+    {
+      "midi": 30,
+      "layer": 1,
+      "file": "30-v1.ogg",
+      "rootMidi": 30
+    },
+    {
+      "midi": 30,
+      "layer": 2,
+      "file": "30-v2.ogg",
+      "rootMidi": 30
+    },
+    {
+      "midi": 33,
+      "layer": 0,
+      "file": "33-v0.ogg",
+      "rootMidi": 33
+    },
+    {
+      "midi": 33,
+      "layer": 1,
+      "file": "33-v1.ogg",
+      "rootMidi": 33
+    },
+    {
+      "midi": 33,
+      "layer": 2,
+      "file": "33-v2.ogg",
+      "rootMidi": 33
+    },
+    {
+      "midi": 36,
+      "layer": 0,
+      "file": "36-v0.ogg",
+      "rootMidi": 36
+    },
+    {
+      "midi": 36,
+      "layer": 1,
+      "file": "36-v1.ogg",
+      "rootMidi": 36
+    },
+    {
+      "midi": 36,
+      "layer": 2,
+      "file": "36-v2.ogg",
+      "rootMidi": 36
+    },
+    {
+      "midi": 39,
+      "layer": 0,
+      "file": "39-v0.ogg",
+      "rootMidi": 39
+    },
+    {
+      "midi": 39,
+      "layer": 1,
+      "file": "39-v1.ogg",
+      "rootMidi": 39
+    },
+    {
+      "midi": 39,
+      "layer": 2,
+      "file": "39-v2.ogg",
+      "rootMidi": 39
+    },
+    {
+      "midi": 42,
+      "layer": 0,
+      "file": "42-v0.ogg",
+      "rootMidi": 42
+    },
+    {
+      "midi": 42,
+      "layer": 1,
+      "file": "42-v1.ogg",
+      "rootMidi": 42
+    },
+    {
+      "midi": 42,
+      "layer": 2,
+      "file": "42-v2.ogg",
+      "rootMidi": 42
+    },
+    {
+      "midi": 45,
+      "layer": 0,
+      "file": "45-v0.ogg",
+      "rootMidi": 45
+    },
+    {
+      "midi": 45,
+      "layer": 1,
+      "file": "45-v1.ogg",
+      "rootMidi": 45
+    },
+    {
+      "midi": 45,
+      "layer": 2,
+      "file": "45-v2.ogg",
+      "rootMidi": 45
+    },
+    {
+      "midi": 48,
+      "layer": 0,
+      "file": "48-v0.ogg",
+      "rootMidi": 48
+    },
+    {
+      "midi": 48,
+      "layer": 1,
+      "file": "48-v1.ogg",
+      "rootMidi": 48
+    },
+    {
+      "midi": 48,
+      "layer": 2,
+      "file": "48-v2.ogg",
+      "rootMidi": 48
+    },
+    {
+      "midi": 51,
+      "layer": 0,
+      "file": "51-v0.ogg",
+      "rootMidi": 51
+    },
+    {
+      "midi": 51,
+      "layer": 1,
+      "file": "51-v1.ogg",
+      "rootMidi": 51
+    },
+    {
+      "midi": 51,
+      "layer": 2,
+      "file": "51-v2.ogg",
+      "rootMidi": 51
+    },
+    {
+      "midi": 54,
+      "layer": 0,
+      "file": "54-v0.ogg",
+      "rootMidi": 54
+    },
+    {
+      "midi": 54,
+      "layer": 1,
+      "file": "54-v1.ogg",
+      "rootMidi": 54
+    },
+    {
+      "midi": 54,
+      "layer": 2,
+      "file": "54-v2.ogg",
+      "rootMidi": 54
+    },
+    {
+      "midi": 57,
+      "layer": 0,
+      "file": "57-v0.ogg",
+      "rootMidi": 57
+    },
+    {
+      "midi": 57,
+      "layer": 1,
+      "file": "57-v1.ogg",
+      "rootMidi": 57
+    },
+    {
+      "midi": 57,
+      "layer": 2,
+      "file": "57-v2.ogg",
+      "rootMidi": 57
+    },
+    {
+      "midi": 60,
+      "layer": 0,
+      "file": "60-v0.ogg",
+      "rootMidi": 60
+    },
+    {
+      "midi": 60,
+      "layer": 1,
+      "file": "60-v1.ogg",
+      "rootMidi": 60
+    },
+    {
+      "midi": 60,
+      "layer": 2,
+      "file": "60-v2.ogg",
+      "rootMidi": 60
+    },
+    {
+      "midi": 63,
+      "layer": 0,
+      "file": "63-v0.ogg",
+      "rootMidi": 63
+    },
+    {
+      "midi": 63,
+      "layer": 1,
+      "file": "63-v1.ogg",
+      "rootMidi": 63
+    },
+    {
+      "midi": 63,
+      "layer": 2,
+      "file": "63-v2.ogg",
+      "rootMidi": 63
+    },
+    {
+      "midi": 66,
+      "layer": 0,
+      "file": "66-v0.ogg",
+      "rootMidi": 66
+    },
+    {
+      "midi": 66,
+      "layer": 1,
+      "file": "66-v1.ogg",
+      "rootMidi": 66
+    },
+    {
+      "midi": 66,
+      "layer": 2,
+      "file": "66-v2.ogg",
+      "rootMidi": 66
+    },
+    {
+      "midi": 69,
+      "layer": 0,
+      "file": "69-v0.ogg",
+      "rootMidi": 69
+    },
+    {
+      "midi": 69,
+      "layer": 1,
+      "file": "69-v1.ogg",
+      "rootMidi": 69
+    },
+    {
+      "midi": 69,
+      "layer": 2,
+      "file": "69-v2.ogg",
+      "rootMidi": 69
+    },
+    {
+      "midi": 72,
+      "layer": 0,
+      "file": "72-v0.ogg",
+      "rootMidi": 72
+    },
+    {
+      "midi": 72,
+      "layer": 1,
+      "file": "72-v1.ogg",
+      "rootMidi": 72
+    },
+    {
+      "midi": 72,
+      "layer": 2,
+      "file": "72-v2.ogg",
+      "rootMidi": 72
+    },
+    {
+      "midi": 75,
+      "layer": 0,
+      "file": "75-v0.ogg",
+      "rootMidi": 75
+    },
+    {
+      "midi": 75,
+      "layer": 1,
+      "file": "75-v1.ogg",
+      "rootMidi": 75
+    },
+    {
+      "midi": 75,
+      "layer": 2,
+      "file": "75-v2.ogg",
+      "rootMidi": 75
+    },
+    {
+      "midi": 78,
+      "layer": 0,
+      "file": "78-v0.ogg",
+      "rootMidi": 78
+    },
+    {
+      "midi": 78,
+      "layer": 1,
+      "file": "78-v1.ogg",
+      "rootMidi": 78
+    },
+    {
+      "midi": 78,
+      "layer": 2,
+      "file": "78-v2.ogg",
+      "rootMidi": 78
+    },
+    {
+      "midi": 81,
+      "layer": 0,
+      "file": "81-v0.ogg",
+      "rootMidi": 81
+    },
+    {
+      "midi": 81,
+      "layer": 1,
+      "file": "81-v1.ogg",
+      "rootMidi": 81
+    },
+    {
+      "midi": 81,
+      "layer": 2,
+      "file": "81-v2.ogg",
+      "rootMidi": 81
+    },
+    {
+      "midi": 84,
+      "layer": 0,
+      "file": "84-v0.ogg",
+      "rootMidi": 84
+    },
+    {
+      "midi": 84,
+      "layer": 1,
+      "file": "84-v1.ogg",
+      "rootMidi": 84
+    },
+    {
+      "midi": 84,
+      "layer": 2,
+      "file": "84-v2.ogg",
+      "rootMidi": 84
+    },
+    {
+      "midi": 87,
+      "layer": 0,
+      "file": "87-v0.ogg",
+      "rootMidi": 87
+    },
+    {
+      "midi": 87,
+      "layer": 1,
+      "file": "87-v1.ogg",
+      "rootMidi": 87
+    },
+    {
+      "midi": 87,
+      "layer": 2,
+      "file": "87-v2.ogg",
+      "rootMidi": 87
+    },
+    {
+      "midi": 90,
+      "layer": 0,
+      "file": "90-v0.ogg",
+      "rootMidi": 90
+    },
+    {
+      "midi": 90,
+      "layer": 1,
+      "file": "90-v1.ogg",
+      "rootMidi": 90
+    },
+    {
+      "midi": 90,
+      "layer": 2,
+      "file": "90-v2.ogg",
+      "rootMidi": 90
+    },
+    {
+      "midi": 93,
+      "layer": 0,
+      "file": "93-v0.ogg",
+      "rootMidi": 93
+    },
+    {
+      "midi": 93,
+      "layer": 1,
+      "file": "93-v1.ogg",
+      "rootMidi": 93
+    },
+    {
+      "midi": 93,
+      "layer": 2,
+      "file": "93-v2.ogg",
+      "rootMidi": 93
+    },
+    {
+      "midi": 96,
+      "layer": 0,
+      "file": "96-v0.ogg",
+      "rootMidi": 96
+    },
+    {
+      "midi": 96,
+      "layer": 1,
+      "file": "96-v1.ogg",
+      "rootMidi": 96
+    },
+    {
+      "midi": 96,
+      "layer": 2,
+      "file": "96-v2.ogg",
+      "rootMidi": 96
+    },
+    {
+      "midi": 99,
+      "layer": 0,
+      "file": "99-v0.ogg",
+      "rootMidi": 99
+    },
+    {
+      "midi": 99,
+      "layer": 1,
+      "file": "99-v1.ogg",
+      "rootMidi": 99
+    },
+    {
+      "midi": 99,
+      "layer": 2,
+      "file": "99-v2.ogg",
+      "rootMidi": 99
+    },
+    {
+      "midi": 102,
+      "layer": 0,
+      "file": "102-v0.ogg",
+      "rootMidi": 102
+    },
+    {
+      "midi": 102,
+      "layer": 1,
+      "file": "102-v1.ogg",
+      "rootMidi": 102
+    },
+    {
+      "midi": 102,
+      "layer": 2,
+      "file": "102-v2.ogg",
+      "rootMidi": 102
+    },
+    {
+      "midi": 105,
+      "layer": 0,
+      "file": "105-v0.ogg",
+      "rootMidi": 105
+    },
+    {
+      "midi": 105,
+      "layer": 1,
+      "file": "105-v1.ogg",
+      "rootMidi": 105
+    },
+    {
+      "midi": 105,
+      "layer": 2,
+      "file": "105-v2.ogg",
+      "rootMidi": 105
+    },
+    {
+      "midi": 108,
+      "layer": 0,
+      "file": "108-v0.ogg",
+      "rootMidi": 108
+    },
+    {
+      "midi": 108,
+      "layer": 1,
+      "file": "108-v1.ogg",
+      "rootMidi": 108
+    },
+    {
+      "midi": 108,
+      "layer": 2,
+      "file": "108-v2.ogg",
+      "rootMidi": 108
+    }
+  ]
+}

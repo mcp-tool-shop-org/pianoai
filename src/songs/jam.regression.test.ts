@@ -11,6 +11,10 @@
 //   pnpm exec tsx scripts/implied-chord-snapshot.ts
 // then read the `git diff` on experiments/maker-arc/implied-chord-snapshot.json
 // and record the adjudication in the change's report before committing.
+//
+// The committed snapshot stays at 108 songs. After the history purge a checkout
+// only has MIDI for 14 of them; this file compares the snapshot over the songs
+// present on disk and still requires those 14 to match.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { describe, it, expect, beforeAll } from "vitest";
@@ -25,6 +29,24 @@ const SNAPSHOT_PATH = fileURLToPath(
   new URL("../../experiments/maker-arc/implied-chord-snapshot.json", import.meta.url),
 );
 
+/** Songs whose MIDI stays in the tree after the non-free purge. */
+const PURGE_KEPT_IDS = [
+  "bach-prelude-c-major-bwv846",
+  "fur-elise",
+  "mozart-k545-mvt1",
+  "clair-de-lune",
+  "satie-gymnopedie-no1",
+  "debussy-arabesque-no1",
+  "bethena",
+  "elite-syncopations",
+  "maple-leaf-rag",
+  "peacherine-rag",
+  "pineapple-rag",
+  "solace",
+  "the-easy-winners",
+  "the-entertainer",
+] as const;
+
 interface Snapshot {
   schemaVersion: string;
   songCount: number;
@@ -35,22 +57,28 @@ interface Snapshot {
 describe("inferChord library regression (Gate 2)", () => {
   let actual: string[];
   let snapshot: Snapshot;
+  let presentIds: Set<string>;
 
   beforeAll(() => {
     initializeFromLibrary(LIBRARY_DIR);
+    presentIds = new Set(getAllSongs().map((s) => s.id));
     actual = buildImpliedChordLines(getAllSongs());
     snapshot = JSON.parse(readFileSync(SNAPSHOT_PATH, "utf8")) as Snapshot;
   });
 
-  it("loads the real ready library (sanity — not an empty registry)", () => {
-    expect(getAllSongs().length).toBeGreaterThan(50);
+  it("the committed snapshot still covers 108 songs", () => {
+    expect(snapshot.songCount).toBe(108);
+    expect(snapshot.lines.length).toBe(snapshot.measureCount);
   });
 
-  it("song and measure counts match the committed snapshot", () => {
-    expect(actual.length).toBe(snapshot.measureCount);
+  it("at least the 14 songs that keep their MIDI are present and loaded", () => {
+    expect(getAllSongs().length).toBeGreaterThanOrEqual(14);
+    for (const id of PURGE_KEPT_IDS) {
+      expect(presentIds.has(id), `${id} must be on disk and loaded`).toBe(true);
+    }
   });
 
-  it("every measure's impliedChord matches the committed snapshot", () => {
+  it("every present song's impliedChord matches the committed snapshot", () => {
     // Report shifts as `<song> m<n> [<lh>]: <old> → <new>` rather than a raw
     // array diff over ~2000 lines, so an intended engine change is adjudicable
     // at a glance.
@@ -58,7 +86,10 @@ describe("inferChord library regression (Gate 2)", () => {
       const i = line.lastIndexOf("\t");
       return [line.slice(0, i), line.slice(i + 1)] as const;
     };
-    const exp = new Map(snapshot.lines.map(splitLabel));
+    const songIdOf = (line: string) => line.slice(0, line.indexOf("\t"));
+    const exp = new Map(
+      snapshot.lines.filter((line) => presentIds.has(songIdOf(line))).map(splitLabel),
+    );
     const act = new Map(actual.map(splitLabel));
 
     const shifts: string[] = [];

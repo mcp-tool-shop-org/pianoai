@@ -32,5 +32,81 @@
       "Feel the D7 pulling toward G each time it recurs (measures 37, 45, 53, 61) — repetition of a secondary dominant is a chance to make the resolution more expressive each time, not just correct.",
       "Try a slow, unhurried practice tempo even once the notes are secure — at 70 BPM, rushing is the easiest way to lose Weeping Willow's gentler character."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://www.ragtimemusic.com/midifile/weepingw.mid",
+    "source_site": "www.ragtimemusic.com",
+    "arrangement_creator": "Colin D. MacDonald (sequence, 1998; performance copyright 1998)",
+    "arrangement_license": "all-rights-reserved",
+    "terms_url": "https://www.ragtimemusic.com/",
+    "terms_quote": "Copyright 1994-2001 by Colin D. MacDonald All rights reserved. [in the file: All rights reserved. This file is for personal use only. Rights granted to disseminate in original unaltered form.]",
+    "verified_at": "2026-09-09",
+    "verifier": "https://www.ragtimemusic.com/; midi meta events (sha256 a9b9686f79eb…)",
+    "midi_sha256": "a9b9686f79ebfd6be26274f081bf7436b32b28466a078fe12c47b623a25a78e4",
+    "midi_title_events": [
+      "Weeping Willow A Rag Time Two Step",
+      "Composer: Scott Joplin",
+      "Source Document: Classic Piano Rags Page: 104",
+      "Run Time: 4:17",
+      "Structure: Intoduction AA BB A CC DD",
+      "Changes Made: [1-3-4/#12 and #28] RH: Last note changed from A to B.",
+      "[1-4-3/#15 and #31] LH: E natural in last chord changed to Eb.",
+      "[2-5-3/#71] LH: B natural 8th notes in 1st and 2nd chords changed to quarter notes. Compare with #7.",
+      "All rights reserved. This file is for personal use only.",
+      "Rights granted to disseminate in original unaltered form.",
+      "Similiar sequences available at: http://www.ragtimemusic.com",
+      "Contact:",
+      "E-mail: colinmac@ragtimemusic.com",
+      "Colin D. MacDonald",
+      "4420 Rustic Road",
+      "Carmichael, CA 95608",
+      "USA",
+      "Introduction",
+      "A Strain",
+      "A Strain - Repeat",
+      "B Strain",
+      "B Strain - Repeat",
+      "A Strain - Second Repeat",
+      "C Strain",
+      "C Strain - Repeat",
+      "D Strain",
+      "D Strain - Repeat",
+      "End Of Pause For Song List",
+      "RH-1",
+      "Colin D. MacDonald All Rights Reserved",
+      "Weeping Willow A Rag Time Two Step (1903)",
+      "LH-1",
+      "1903",
+      "Source Document: Classic Piano Rags",
+      "Page: 104",
+      "Duration: 4:17",
+      "Structure: Instruction AA BB A CC DD",
+      "Colin D. MacDonald 1998",
+      "All rights reserved.",
+      "This file is for personal use only."
+    ],
+    "midi_credit_events": [
+      "Copyright © 1903 By Val. A. Reis Music Company, St. Louis, Missouri",
+      "Sequenced By Colin D. MacDonald, 1998",
+      "Edited By: Not Edited",
+      "Sequence Perfromance Copyright 1998 By",
+      "Composed By: Scott Joplin",
+      "Sequence Performance Copyright 1998 By",
+      "Copyright By: Val. A. Reis Music Co., St. Louis, Missouri",
+      "Sequenced By:"
+    ],
+    "credited_parties": [
+      {
+        "name": "Colin D. MacDonald",
+        "evidence": "midi-meta"
+      },
+      {
+        "name": "Val. A. Reis Music Co",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "matches",
+    "notes": "The 1903 'Val. A. Reis Music Company' copyright event is the original publisher of Joplin's composition, which is public domain; the sequence itself is MacDonald's and reserved."
   }
 }

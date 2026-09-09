@@ -31,5 +31,35 @@
       "Try letting the right hand carry real weight alone through the 4-measure left-hand rest at measures 44-47, using the silence in the lower register to your advantage rather than treating it as a gap to fill.",
       "Think of the piece's overall shape as silence-to-silence: use the complete rests at measures 1 and 71 to frame everything in between as one continuous harmonic journey."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/5169.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "7dc41450b211135e89cb126af2ca2376c32a0504c775afe068b3575275f93351",
+    "midi_title_events": [
+      "STRINGS",
+      "PIZZICATO",
+      "MELODY",
+      "E.PIANO 1",
+      "FLUTE",
+      "OBOE",
+      "FR.HORN",
+      "TRUMPET",
+      "DRUMS",
+      "HARP",
+      "SYN STR 1",
+      "TREMOLOSTR",
+      "GS/RESET"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

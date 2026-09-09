@@ -33,5 +33,24 @@
       "Play the repeated cells with small, deliberate variations in touch each time they return, the way a koto player would ornament a repeated phrase.",
       "Keep dynamics restrained throughout — this is an intimate teaching melody, not a concert showpiece, and the hushed final measure confirms the piece wants to end quietly."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/91113.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "19428d608b6951405f7becc9e31f1d4176b2e14d45f984e710f9726437431705",
+    "midi_title_events": [
+      "Sakura (Cherry Blossoms)",
+      "Japanese"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "matches"
   }
 }

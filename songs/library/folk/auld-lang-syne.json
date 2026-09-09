@@ -33,5 +33,35 @@
       "Play the final measure (67) with real energy — this piece wants a warm, full-voiced F-major ending, not a diminuendo.",
       "Keep the tempo steady and singable throughout — this is a communal song built for voices linking arms, not a showcase for rubato."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/8326.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "b68c3919309ca82655a3d32c50076d50f6d76865146fbe4c5891dd83f5ea383a",
+    "midi_title_events": [
+      "ACOU BASS",
+      "A.PIANO 2",
+      "TRUMPET",
+      "ALTO SAX",
+      "STRINGS",
+      "BASS DRUM",
+      "SNARE DRUM",
+      "CLOSED H.H",
+      "RIDE CYMB",
+      "CRASH CYMB",
+      "LOW TOM",
+      "MID TOM",
+      "GS/RESET"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

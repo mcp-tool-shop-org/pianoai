@@ -12,6 +12,7 @@
 import { existsSync, mkdirSync, readFileSync, appendFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import type { PerformanceResult } from "./score-performance.js";
+import { journalDir } from "./state-home.js";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -34,8 +35,7 @@ export interface SessionSnapshot {
 // ─── Paths ──────────────────────────────────────────────────────────────────
 
 export function getJournalDir(): string {
-  const home = process.env.HOME ?? process.env.USERPROFILE ?? ".";
-  return join(home, ".ai-jam-sessions", "journal");
+  return journalDir();
 }
 
 function ensureJournalDir(): string {

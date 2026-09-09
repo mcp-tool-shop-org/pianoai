@@ -12,7 +12,7 @@
     "romantic",
     "lyrical"
   ],
-  "source": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
+  "source": "midiworld.com (https://www.midiworld.com/midis/other/schumann/traumeri.mid); file names Robert Finley; the site grants no licence — see provenance",
   "status": "ready",
   "musicalLanguage": {
     "description": "This transcription of Schumann's Traumerei from Kinderszenen runs 64 measures at 120 BPM in 4/4 time with 475 notes, and the stated F major is strongly confirmed by the content (statedKeyFit 0.907; the detected key matches exactly). The piece opens with a single right-hand note over a silent left hand — the gentlest possible entrance — before the rising, breathing melody the piece is known for takes shape. A 30-note right-hand phrase (measures 6-13) restates at measures 20-28, and the opening idea itself returns near the close: a 25-note right-hand span (measures 5-11) reappears at measures 50-57, confirming the ABA' shape directly in the data. The implied chord windows trace F major's own diatonic family throughout — F major itself is the most-cited label (6 windows, 9% of measures considered), with Am (the iii) and Dm (the ii) following, and an Fmaj7 color adding warmth at measures 3 and 18.",
@@ -35,5 +35,35 @@
       "Imagine a child daydreaming — unhurried and gentle — through the recurring 7-note figure (measures 8-56); listen for it staying tender at each of its five appearances rather than growing mechanical with repetition.",
       "Pedal to connect the phrase rather than to add volume, and lift cleanly at the implied Dm and Am arrivals — listen for the harmony breathing in and out rather than blurring into a continuous wash."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://www.midiworld.com/midis/other/schumann/traumeri.mid",
+    "source_site": "www.midiworld.com",
+    "arrangement_creator": "Robert Finley (named in the file; role not stated)",
+    "arrangement_license": "unknown",
+    "terms_url": "https://www.midiworld.com/faq/",
+    "terms_quote": "Due to copyright issues we can not publish any pop/rock/game music or commercial MIDI / MP3 files. [footer: Copyright © 1995-2024 MIDIWORLD All rights reserved] (No licence is granted for the contributed files.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://www.midiworld.com/faq/",
+    "midi_sha256": "2c9cbd694523d6327b21ac220f8a7dfb1036bdcfeac2d1175b670ebb0ffd8a0a",
+    "midi_title_events": [
+      "Traumeri",
+      "Schumann",
+      "Robert Finley"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [
+      {
+        "name": "Robert Finley",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "matches",
+    "title_aliases": [
+      "Traumeri"
+    ],
+    "title_note": "the file spells the title 'Traumeri'",
+    "notes": "The config's former `source` string credited Bernd Krueger / piano-midi.de; the file names Robert Finley and was downloaded from midiworld. Corrected 2026-09-09."
   }
 }

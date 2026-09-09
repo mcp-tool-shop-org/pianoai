@@ -1,0 +1,117 @@
+{"id": "acoustic:scarborough-fair:clean:0", "family": "acoustic", "answer": "match", "raw": "cents 16.5 inside a 50-cent gate, onset 1.9 ms inside 40: match"}
+{"id": "acoustic:scarborough-fair:clean:1", "family": "acoustic", "answer": "match", "raw": "cents 36.9 inside a 50-cent gate, onset 1.9 ms inside 40: match"}
+{"id": "acoustic:scarborough-fair:late_fail:0", "family": "acoustic", "answer": "timing_fail", "raw": "cents 18.1 inside a 50-cent gate, onset 71.5 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic:scarborough-fair:late_fail:1", "family": "acoustic", "answer": "timing_fail", "raw": "cents 23.0 inside a 50-cent gate, onset 94.7 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic:scarborough-fair:sharp_fail:0", "family": "acoustic", "answer": "match", "raw": "cents 67.6 inside a 50-cent gate, onset -9.8 ms inside 40: match"}
+{"id": "acoustic:scarborough-fair:sharp_fail:1", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -70.8 against a 50-cent gate, onset 13.5 ms inside 40: pitch_fail"}
+{"id": "acoustic:schumann-traumerei:clean:0", "family": "acoustic", "answer": "match", "raw": "cents 17.3 inside a 50-cent gate, onset 13.5 ms inside 40: match"}
+{"id": "acoustic:schumann-traumerei:clean:1", "family": "acoustic", "answer": "match", "raw": "cents 37.7 inside a 50-cent gate, onset 1.9 ms inside 40: match"}
+{"id": "acoustic:schumann-traumerei:late_fail:0", "family": "acoustic", "answer": "timing_fail", "raw": "cents 6.7 inside a 50-cent gate, onset 106.3 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic:schumann-traumerei:late_fail:1", "family": "acoustic", "answer": "timing_fail", "raw": "cents 20.6 inside a 50-cent gate, onset 94.7 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic:schumann-traumerei:sharp_fail:0", "family": "acoustic", "answer": "match", "raw": "cents 61.6 inside a 50-cent gate, onset -9.8 ms inside 40: match"}
+{"id": "acoustic:schumann-traumerei:sharp_fail:1", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -79.4 against a 50-cent gate, onset -9.8 ms inside 40: pitch_fail"}
+{"id": "acoustic:shenandoah:clean:0", "family": "acoustic", "answer": "match", "raw": "cents 40.1 inside a 50-cent gate, onset -9.8 ms inside 40: match"}
+{"id": "acoustic:shenandoah:clean:1", "family": "acoustic", "answer": "match", "raw": "cents 12.4 inside a 50-cent gate, onset 13.5 ms inside 40: match"}
+{"id": "acoustic:shenandoah:late_fail:0", "family": "acoustic", "answer": "timing_fail", "raw": "cents 5.9 inside a 50-cent gate, onset 141.2 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic:shenandoah:late_fail:1", "family": "acoustic", "answer": "timing_fail", "raw": "cents 9.2 inside a 50-cent gate, onset 129.6 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic:shenandoah:sharp_fail:0", "family": "acoustic", "answer": "match", "raw": "cents 56.4 inside a 50-cent gate, onset 13.5 ms inside 40: match"}
+{"id": "acoustic:shenandoah:sharp_fail:1", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -75.4 against a 50-cent gate, onset 13.5 ms inside 40: pitch_fail"}
+{"id": "acoustic:simple-gifts:clean:0", "family": "acoustic", "answer": "match", "raw": "cents 20.6 inside a 50-cent gate, onset 13.5 ms inside 40: match"}
+{"id": "acoustic:simple-gifts:clean:1", "family": "acoustic", "answer": "match", "raw": "cents 23.8 inside a 50-cent gate, onset -9.8 ms inside 40: match"}
+{"id": "acoustic:simple-gifts:late_fail:0", "family": "acoustic", "answer": "timing_fail", "raw": "cents 28.7 inside a 50-cent gate, onset 83.1 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic:simple-gifts:late_fail:1", "family": "acoustic", "answer": "timing_fail", "raw": "cents 32.0 inside a 50-cent gate, onset 71.5 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic:simple-gifts:sharp_fail:0", "family": "acoustic", "answer": "match", "raw": "cents 90 inside a 50-cent gate, onset 1.9 ms inside 40: match"}
+{"id": "acoustic:simple-gifts:sharp_fail:1", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -72.1 against a 50-cent gate, onset 13.5 ms inside 40: pitch_fail"}
+{"id": "acoustic:solace:clean:0", "family": "acoustic", "answer": "match", "raw": "cents 6.7 inside a 50-cent gate, onset -9.8 ms inside 40: match"}
+{"id": "acoustic:solace:clean:1", "family": "acoustic", "answer": "match", "raw": "cents 13.2 inside a 50-cent gate, onset 13.5 ms inside 40: match"}
+{"id": "acoustic:solace:late_fail:0", "family": "acoustic", "answer": "timing_fail", "raw": "cents 23.8 inside a 50-cent gate, onset 59.9 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic:solace:late_fail:1", "family": "acoustic", "answer": "timing_fail", "raw": "cents 26.3 inside a 50-cent gate, onset 118.0 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic:solace:sharp_fail:0", "family": "acoustic", "answer": "pitch_fail", "raw": "cents 77.5 against a 50-cent gate, onset -9.8 ms inside 40: pitch_fail"}
+{"id": "acoustic:solace:sharp_fail:1", "family": "acoustic", "answer": "timing_fail", "raw": "cents -86 against a 50-cent gate, onset -9.8 ms inside 40: timing_fail"}
+{"id": "acoustic:the-easy-winners:clean:0", "family": "acoustic", "answer": "match", "raw": "cents 5.1 inside a 50-cent gate, onset -9.8 ms inside 40: match"}
+{"id": "acoustic:the-easy-winners:clean:1", "family": "acoustic", "answer": "match", "raw": "cents 44.2 inside a 50-cent gate, onset -9.8 ms inside 40: match"}
+{"id": "acoustic:the-easy-winners:late_fail:0", "family": "acoustic", "answer": "timing_fail", "raw": "cents 40.1 inside a 50-cent gate, onset 71.5 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic:the-easy-winners:late_fail:1", "family": "acoustic", "answer": "timing_fail", "raw": "cents 43.4 inside a 50-cent gate, onset 141.2 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic:the-easy-winners:sharp_fail:0", "family": "acoustic", "answer": "match", "raw": "cents 86.7 inside a 50-cent gate, onset -9.8 ms inside 40: match"}
+{"id": "acoustic:the-easy-winners:sharp_fail:1", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -57.6 against a 50-cent gate, onset 1.9 ms inside 40: pitch_fail"}
+{"id": "acoustic:the-entertainer:clean:0", "family": "acoustic", "answer": "match", "raw": "cents 19.9 inside a 50-cent gate, onset -9.8 ms inside 40: match"}
+{"id": "acoustic:the-entertainer:clean:1", "family": "acoustic", "answer": "match", "raw": "cents 25.6 inside a 50-cent gate, onset 13.5 ms inside 40: match"}
+{"id": "acoustic:the-entertainer:late_fail:0", "family": "acoustic", "answer": "timing_fail", "raw": "cents 38.5 inside a 50-cent gate, onset 71.5 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic:the-entertainer:late_fail:1", "family": "acoustic", "answer": "timing_fail", "raw": "cents 31.3 inside a 50-cent gate, onset 106.3 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic:the-entertainer:sharp_fail:0", "family": "acoustic", "answer": "match", "raw": "cents 88.8 inside a 50-cent gate, onset -9.8 ms inside 40: match"}
+{"id": "acoustic:the-entertainer:sharp_fail:1", "family": "acoustic", "answer": "timing_fail", "raw": "cents -80 against a 50-cent gate, onset -9.8 ms inside 40: timing_fail"}
+{"id": "acoustic:the-water-is-wide:clean:0", "family": "acoustic", "answer": "match", "raw": "cents 15.7 inside a 50-cent gate, onset 1.9 ms inside 40: match"}
+{"id": "acoustic:the-water-is-wide:clean:1", "family": "acoustic", "answer": "match", "raw": "cents 1.8 inside a 50-cent gate, onset 1.9 ms inside 40: match"}
+{"id": "acoustic:the-water-is-wide:late_fail:0", "family": "acoustic", "answer": "timing_fail", "raw": "cents 8.3 inside a 50-cent gate, onset 118.0 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic:the-water-is-wide:late_fail:1", "family": "acoustic", "answer": "timing_fail", "raw": "cents 3.5 inside a 50-cent gate, onset 106.3 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic:the-water-is-wide:sharp_fail:0", "family": "acoustic", "answer": "match", "raw": "cents 64.9 inside a 50-cent gate, onset 1.9 ms inside 40: match"}
+{"id": "acoustic:the-water-is-wide:sharp_fail:1", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -89.3 against a 50-cent gate, onset 1.9 ms inside 40: pitch_fail"}
+{"id": "acoustic:weeping-willow:clean:0", "family": "acoustic", "answer": "match", "raw": "cents 40.9 inside a 50-cent gate, onset -21.4 ms inside 40: match"}
+{"id": "acoustic:weeping-willow:clean:1", "family": "acoustic", "answer": "match", "raw": "cents 21.4 inside a 50-cent gate, onset 13.5 ms inside 40: match"}
+{"id": "acoustic:weeping-willow:late_fail:0", "family": "acoustic", "answer": "timing_fail", "raw": "cents 40.9 inside a 50-cent gate, onset 129.6 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic:weeping-willow:late_fail:1", "family": "acoustic", "answer": "timing_fail", "raw": "cents 25.5 inside a 50-cent gate, onset 141.2 ms against a 40-ms gate: timing_fail"}
+{"id": "acoustic:weeping-willow:sharp_fail:0", "family": "acoustic", "answer": "match", "raw": "cents 74.8 inside a 50-cent gate, onset 1.9 ms inside 40: match"}
+{"id": "acoustic:weeping-willow:sharp_fail:1", "family": "acoustic", "answer": "pitch_fail", "raw": "cents -78.7 against a 50-cent gate, onset 13.5 ms inside 40: pitch_fail"}
+{"id": "chord:scarborough-fair:m1", "family": "chord", "answer": "Dm", "raw": "Dm"}
+{"id": "chord:schumann-traumerei:m2", "family": "chord", "answer": "F", "raw": "F"}
+{"id": "chord:simple-gifts:m11", "family": "chord", "answer": "Dm", "raw": "Dm"}
+{"id": "chord:solace:m6", "family": "chord", "answer": "Gaug", "raw": "Gaug"}
+{"id": "chord:the-easy-winners:m7", "family": "chord", "answer": "C#", "raw": "C#"}
+{"id": "chord:the-entertainer:m11", "family": "chord", "answer": "D", "raw": "D"}
+{"id": "chord:weeping-willow:m6", "family": "chord", "answer": "G", "raw": "G"}
+{"id": "compare:scarborough-fair|schumann-traumerei", "family": "compare", "answer": "same_key", "raw": "same_key"}
+{"id": "compare:scarborough-fair|shenandoah", "family": "compare", "answer": "same_key", "raw": "same_key"}
+{"id": "compare:scarborough-fair|simple-gifts", "family": "compare", "answer": "same_key", "raw": "same_key"}
+{"id": "compare:schumann-traumerei|simple-gifts", "family": "compare", "answer": "same_key", "raw": "same_key"}
+{"id": "compare:solace|the-water-is-wide", "family": "compare", "answer": "same_key", "raw": "same_key"}
+{"id": "compare:the-entertainer|weeping-willow", "family": "compare", "answer": "same_key", "raw": "same_key"}
+{"id": "ensemble:who_first:G:piano", "family": "ensemble", "answer": "piano", "raw": "piano"}
+{"id": "ensemble:who_first:G:synth", "family": "ensemble", "answer": "piano", "raw": "piano"}
+{"id": "ensemble:wrong_tone:G", "family": "ensemble", "answer": "guitar", "raw": "guitar"}
+{"id": "harmony:scarborough-fair:m1:fail", "family": "harmony", "answer": "verified", "raw": "verified"}
+{"id": "harmony:scarborough-fair:m1:pass", "family": "harmony", "answer": "verified", "raw": "verified"}
+{"id": "harmony:schumann-traumerei:m2:fail", "family": "harmony", "answer": "verified", "raw": "verified"}
+{"id": "harmony:schumann-traumerei:m2:pass", "family": "harmony", "answer": "verified", "raw": "verified"}
+{"id": "harmony:simple-gifts:m11:fail", "family": "harmony", "answer": "verified", "raw": "verified"}
+{"id": "harmony:simple-gifts:m11:pass", "family": "harmony", "answer": "verified", "raw": "verified"}
+{"id": "harmony:solace:m6:fail", "family": "harmony", "answer": "verified", "raw": "verified"}
+{"id": "harmony:solace:m6:pass", "family": "harmony", "answer": "verified", "raw": "verified"}
+{"id": "harmony:the-easy-winners:m7:fail", "family": "harmony", "answer": "verified", "raw": "verified"}
+{"id": "harmony:the-easy-winners:m7:pass", "family": "harmony", "answer": "verified", "raw": "verified"}
+{"id": "harmony:the-entertainer:m11:fail", "family": "harmony", "answer": "verified", "raw": "verified"}
+{"id": "harmony:the-entertainer:m11:pass", "family": "harmony", "answer": "verified", "raw": "verified"}
+{"id": "harmony:weeping-willow:m6:fail", "family": "harmony", "answer": "verified", "raw": "verified"}
+{"id": "harmony:weeping-willow:m6:pass", "family": "harmony", "answer": "verified", "raw": "verified"}
+{"id": "key_moments:scarborough-fair", "family": "key_moments", "answer": "1-2", "raw": "1-2"}
+{"id": "key_moments:schumann-traumerei", "family": "key_moments", "answer": "5-11", "raw": "5-11"}
+{"id": "key_moments:shenandoah", "family": "key_moments", "answer": "1", "raw": "1"}
+{"id": "key_moments:solace", "family": "key_moments", "answer": "1-2", "raw": "1-2"}
+{"id": "key_moments:the-easy-winners", "family": "key_moments", "answer": "88-119", "raw": "88-119"}
+{"id": "key_moments:the-water-is-wide", "family": "key_moments", "answer": "10", "raw": "10"}
+{"id": "measures:scarborough-fair", "family": "measures", "answer": "23", "raw": "23"}
+{"id": "measures:schumann-traumerei", "family": "measures", "answer": "64", "raw": "64"}
+{"id": "measures:shenandoah", "family": "measures", "answer": "41", "raw": "41"}
+{"id": "measures:simple-gifts", "family": "measures", "answer": "34", "raw": "34"}
+{"id": "measures:solace", "family": "measures", "answer": "148", "raw": "148"}
+{"id": "measures:the-easy-winners", "family": "measures", "answer": "152", "raw": "152"}
+{"id": "measures:the-entertainer", "family": "measures", "answer": "152", "raw": "152"}
+{"id": "measures:the-water-is-wide", "family": "measures", "answer": "105", "raw": "105"}
+{"id": "measures:weeping-willow", "family": "measures", "answer": "148", "raw": "148"}
+{"id": "teaching_goals:scarborough-fair", "family": "teaching_goals", "answer": "4", "raw": "4"}
+{"id": "teaching_goals:schumann-traumerei", "family": "teaching_goals", "answer": "4", "raw": "4"}
+{"id": "teaching_goals:shenandoah", "family": "teaching_goals", "answer": "4", "raw": "4"}
+{"id": "teaching_goals:simple-gifts", "family": "teaching_goals", "answer": "4", "raw": "4"}
+{"id": "teaching_goals:solace", "family": "teaching_goals", "answer": "4", "raw": "4"}
+{"id": "teaching_goals:the-easy-winners", "family": "teaching_goals", "answer": "4", "raw": "4"}
+{"id": "teaching_goals:the-entertainer", "family": "teaching_goals", "answer": "5", "raw": "5"}
+{"id": "teaching_goals:the-water-is-wide", "family": "teaching_goals", "answer": "4", "raw": "4"}
+{"id": "teaching_goals:weeping-willow", "family": "teaching_goals", "answer": "4", "raw": "4"}
+{"id": "transpose:scarborough-fair:+2", "family": "transpose", "answer": "E minor", "raw": "E minor"}
+{"id": "transpose:schumann-traumerei:+2", "family": "transpose", "answer": "G major", "raw": "G major"}
+{"id": "transpose:shenandoah:+2", "family": "transpose", "answer": "F major", "raw": "F major"}
+{"id": "transpose:simple-gifts:+2", "family": "transpose", "answer": "G major", "raw": "G major"}
+{"id": "transpose:solace:+2", "family": "transpose", "answer": "A major", "raw": "A major"}
+{"id": "transpose:the-easy-winners:+2", "family": "transpose", "answer": "Bb major", "raw": "Bb major"}
+{"id": "transpose:the-entertainer:+2", "family": "transpose", "answer": "D major", "raw": "D major"}
+{"id": "transpose:the-water-is-wide:+2", "family": "transpose", "answer": "A major", "raw": "A major"}
+{"id": "transpose:weeping-willow:+2", "family": "transpose", "answer": "D major", "raw": "D major"}

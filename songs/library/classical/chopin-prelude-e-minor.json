@@ -11,7 +11,7 @@
     "minimalist",
     "melancholic"
   ],
-  "source": "Bernd Krueger, Source: piano-midi.de (CC BY-SA)",
+  "source": "bitmidi.com (https://bitmidi.com/uploads/86322.mid); anonymous General MIDI file; no licence chain — see provenance",
   "status": "ready",
   "musicalLanguage": {
     "description": "This transcription of Chopin's Prelude in E Minor runs 64 measures at 120 BPM in 4/4 time with 604 notes, and the stated E minor is confirmed by the content (statedKeyFit 0.816; the detected key matches exactly). The piece opens on a fully silent first measure — 0 onsets in either hand — before the famous repeated-chord accompaniment and its slowly descending melody begin. Structurally the piece is through-composed: the repeat detector finds zero identical or near-identical measures anywhere in all 64, confirming the piece never restates a passage outright. The implied chord windows trace a genuinely chromatic descent — Em at measure 3, Cmaj7 at measure 4, B7 at measure 7, Dm at measure 8, C major at measure 13, Cdim at measure 15, D major at measure 17, Bm at measure 18 — a different harmonic color almost every measure. The ending thins out dramatically: measures 56, 58, 60, and 62 are all fully silent, part of a 3-measure rest in both hands at measures 62-64, reportedly the piece Chopin himself asked to have played at his own funeral.",
@@ -34,5 +34,25 @@
       "Treat the opening silent measure and the closing rests at measures 56-64 as part of the performance, not a pause before it — listen for the room's stillness carrying as much weight as the notes.",
       "Use pedal to sustain the chromatic descent without blurring adjacent harmonies — listen for each new implied chord arriving cleanly rather than washing into the one before it."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/86322.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "f83cd888d5a6fedf10e222f8c3fa90c8b8425b482613fcce93b1d57b89141b0d",
+    "midi_title_events": [
+      "A.PIANO 1",
+      "GS/RESET"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file",
+    "notes": "The config's former `source` string credited Bernd Krueger / piano-midi.de; the file is an anonymous GM sequence downloaded from bitmidi. Corrected 2026-09-09."
   }
 }

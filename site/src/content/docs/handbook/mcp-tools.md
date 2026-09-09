@@ -1,11 +1,11 @@
 ---
 title: MCP tools reference
-description: All 49 MCP tools and 4 prompt templates organized by category — Learn, Play, Practice, Sing, Guitar, Build, and Score.
+description: All 54 MCP tools and 4 prompt templates organized by category — Learn, Play, Practice, Sing, Guitar, Build, Score, and Listen.
 sidebar:
   order: 4
 ---
 
-AI Jam Sessions exposes 49 tools and 4 prompt templates through the Model Context Protocol, organized into seven categories.
+AI Jam Sessions exposes 54 tools and 4 prompt templates through the Model Context Protocol, organized into eight categories.
 
 ## Learn (10 tools)
 
@@ -61,7 +61,7 @@ Tools for vocal performance, jam sessions, and the verified maker loop.
 | `ai_jam_sessions` | Generate a jam brief — chord progression, melody outline, and style hints for reinterpretation |
 | `verify_harmony` | The maker loop's verification gate — a proposed reharmonization is checked by the platform's own deterministic tools: chord fidelity, melody consonance, bass voice-leading, key membership |
 | `auto_reharmonize` | The maker loop in one call — a local model proposes a reharmonization, the deterministic gate checks every voicing, best-of-n until a verified interpretation comes back |
-| `compose_panel` | Run the voice-leading composition panel — four systems realize accompaniments, blind cross-family LLM judges rank them, Bradley-Terry aggregates, and a discrimination-floor gate voids uninterpretable runs |
+| `compose_panel` | Run the voice-leading composition panel — four systems realize accompaniments, blind cross-family LLM judges rank them, Bradley-Terry aggregates, and a discrimination-floor gate voids uninterpretable runs. Runs for minutes and streams progress notifications while it works. |
 
 ## Guitar (6 tools)
 
@@ -104,6 +104,20 @@ Tools for evaluating performances and annotation quality.
 |------|-------------|
 | `score_performance` | Score a MIDI play-along against a library song — pitch accuracy, timing, completeness, with graded feedback and practice suggestions |
 | `score_annotation` | Score annotation quality across 5 dimensions — completeness, depth, specificity, teaching value, and musical vocabulary |
+
+## Listen (5 tools)
+
+Tools for measuring recorded audio. Monophonic: they follow one line at a time, so a chord or a
+full mix produces confident nonsense. Every number comes from signal processing, never from a model
+reading a picture. See [Listening](/ai-jam-sessions/handbook/listening/) for the full guide.
+
+| Tool | Description |
+|------|-------------|
+| `analyze_audio` | Measure a WAV recording — onset times, the pitch contour as note names with cents, and level. The survey you run first |
+| `transcribe_audio` | Turn a monophonic recording into notes: pitch, start, duration, and deviation from concert pitch. Notes the tracker could not follow are omitted rather than guessed |
+| `score_audio_take` | Grade a performance against a library song BY EAR, then hand the result to `view_scored_piano_roll`. Matches within 40 ms, stricter than the 50 ms published convention |
+| `view_spectrogram` | See the sound — a constant-Q spectrogram with a piano-keyboard axis, optionally overlaid with the intended notes. Blind by default, so you read the audio before the score |
+| `ensemble_now` | Ask what every instrument is playing RIGHT NOW, mid-performance — held notes per instrument, how long each has been held, and the combined chord. Notes come from what was SENT, so they are exact rather than estimated; any acoustic reading beside them is verification. See [The live ensemble](/ai-jam-sessions/handbook/live-ensemble/) |
 
 ## MCP Prompts (4 templates)
 

@@ -1,0 +1,242 @@
+[
+  {
+    "id": "acoustic-probe:solace:onset_in:p",
+    "band": "onset_in",
+    "sign": 1,
+    "applied_cents": 20,
+    "applied_delay_ms": 37,
+    "measured_cents": 20.01740116147751,
+    "measured_onset_ms": 25.07936507936509,
+    "gold": "match"
+  },
+  {
+    "id": "acoustic-probe:solace:onset_in:n",
+    "band": "onset_in",
+    "sign": -1,
+    "applied_cents": 20,
+    "applied_delay_ms": -20.999999999999996,
+    "measured_cents": 20.017517706271782,
+    "measured_onset_ms": -32.97052154195013,
+    "gold": "match"
+  },
+  {
+    "id": "acoustic-probe:solace:onset_out:p",
+    "band": "onset_out",
+    "sign": 1,
+    "applied_cents": 20,
+    "applied_delay_ms": 59,
+    "measured_cents": 20.018188626384383,
+    "measured_onset_ms": 48.299319727891145,
+    "gold": "timing_fail"
+  },
+  {
+    "id": "acoustic-probe:solace:onset_out:n",
+    "band": "onset_out",
+    "sign": -1,
+    "applied_cents": 20,
+    "applied_delay_ms": -45,
+    "measured_cents": 20.017913531572106,
+    "measured_onset_ms": -56.19047619047618,
+    "gold": "timing_fail"
+  },
+  {
+    "id": "acoustic-probe:solace:cents_in:p",
+    "band": "cents_in",
+    "sign": 1,
+    "applied_cents": 42,
+    "applied_delay_ms": 20,
+    "measured_cents": 42.01014111629652,
+    "measured_onset_ms": 1.859410430839037,
+    "gold": "match"
+  },
+  {
+    "id": "acoustic-probe:solace:cents_in:n",
+    "band": "cents_in",
+    "sign": -1,
+    "applied_cents": -48,
+    "applied_delay_ms": 20,
+    "measured_cents": -47.97835999447273,
+    "measured_onset_ms": 1.859410430839037,
+    "gold": "match"
+  },
+  {
+    "id": "acoustic-probe:solace:cents_out:p",
+    "band": "cents_out",
+    "sign": 1,
+    "applied_cents": 52,
+    "applied_delay_ms": 20,
+    "measured_cents": 52.01453043023961,
+    "measured_onset_ms": 1.859410430839037,
+    "gold": "pitch_fail"
+  },
+  {
+    "id": "acoustic-probe:solace:cents_out:n",
+    "band": "cents_out",
+    "sign": -1,
+    "applied_cents": -58,
+    "applied_delay_ms": 20,
+    "measured_cents": -57.97817705692444,
+    "measured_onset_ms": 1.859410430839037,
+    "gold": "pitch_fail"
+  },
+  {
+    "id": "acoustic-probe:the-easy-winners:onset_in:p",
+    "band": "onset_in",
+    "sign": 1,
+    "applied_cents": 20,
+    "applied_delay_ms": 37,
+    "measured_cents": 20.042653260775964,
+    "measured_onset_ms": 25.07936507936509,
+    "gold": "match"
+  },
+  {
+    "id": "acoustic-probe:the-easy-winners:onset_in:n",
+    "band": "onset_in",
+    "sign": -1,
+    "applied_cents": 20,
+    "applied_delay_ms": -20.999999999999996,
+    "measured_cents": 20.04276920582578,
+    "measured_onset_ms": -32.97052154195013,
+    "gold": "match"
+  },
+  {
+    "id": "acoustic-probe:the-easy-winners:onset_out:p",
+    "band": "onset_out",
+    "sign": 1,
+    "applied_cents": 20,
+    "applied_delay_ms": 59,
+    "measured_cents": 20.04279204265167,
+    "measured_onset_ms": 48.299319727891145,
+    "gold": "timing_fail"
+  },
+  {
+    "id": "acoustic-probe:the-easy-winners:onset_out:n",
+    "band": "onset_out",
+    "sign": -1,
+    "applied_cents": 20,
+    "applied_delay_ms": -45,
+    "measured_cents": 20.042592533157794,
+    "measured_onset_ms": -56.19047619047618,
+    "gold": "timing_fail"
+  },
+  {
+    "id": "acoustic-probe:the-easy-winners:cents_in:p",
+    "band": "cents_in",
+    "sign": 1,
+    "applied_cents": 42,
+    "applied_delay_ms": 20,
+    "measured_cents": 42.029198021569584,
+    "measured_onset_ms": 1.859410430839037,
+    "gold": "match"
+  },
+  {
+    "id": "acoustic-probe:the-easy-winners:cents_in:n",
+    "band": "cents_in",
+    "sign": -1,
+    "applied_cents": -48,
+    "applied_delay_ms": 20,
+    "measured_cents": -47.96876368200429,
+    "measured_onset_ms": 1.859410430839037,
+    "gold": "match"
+  },
+  {
+    "id": "acoustic-probe:the-easy-winners:cents_out:p",
+    "band": "cents_out",
+    "sign": 1,
+    "applied_cents": 52,
+    "applied_delay_ms": 20,
+    "measured_cents": 52.01732308284226,
+    "measured_onset_ms": 1.859410430839037,
+    "gold": "pitch_fail"
+  },
+  {
+    "id": "acoustic-probe:the-easy-winners:cents_out:n",
+    "band": "cents_out",
+    "sign": -1,
+    "applied_cents": -58,
+    "applied_delay_ms": 20,
+    "measured_cents": -57.982378096046354,
+    "measured_onset_ms": 1.859410430839037,
+    "gold": "pitch_fail"
+  },
+  {
+    "id": "acoustic-probe:the-entertainer:onset_in:p",
+    "band": "onset_in",
+    "sign": 1,
+    "applied_cents": 20,
+    "applied_delay_ms": 37,
+    "measured_cents": 20.137281978578493,
+    "measured_onset_ms": 25.07936507936509,
+    "gold": "match"
+  },
+  {
+    "id": "acoustic-probe:the-entertainer:onset_in:n",
+    "band": "onset_in",
+    "sign": -1,
+    "applied_cents": 20,
+    "applied_delay_ms": -20.999999999999996,
+    "measured_cents": 20.138842405707862,
+    "measured_onset_ms": -32.97052154195013,
+    "gold": "match"
+  },
+  {
+    "id": "acoustic-probe:the-entertainer:onset_out:p",
+    "band": "onset_out",
+    "sign": 1,
+    "applied_cents": 20,
+    "applied_delay_ms": 59,
+    "measured_cents": 20.136967192333046,
+    "measured_onset_ms": 48.299319727891145,
+    "gold": "timing_fail"
+  },
+  {
+    "id": "acoustic-probe:the-entertainer:onset_out:n",
+    "band": "onset_out",
+    "sign": -1,
+    "applied_cents": 20,
+    "applied_delay_ms": -45,
+    "measured_cents": 20.139180075918635,
+    "measured_onset_ms": -56.19047619047618,
+    "gold": "timing_fail"
+  },
+  {
+    "id": "acoustic-probe:the-entertainer:cents_in:p",
+    "band": "cents_in",
+    "sign": 1,
+    "applied_cents": 42,
+    "applied_delay_ms": 20,
+    "measured_cents": 42.12591387542871,
+    "measured_onset_ms": 1.859410430839037,
+    "gold": "match"
+  },
+  {
+    "id": "acoustic-probe:the-entertainer:cents_in:n",
+    "band": "cents_in",
+    "sign": -1,
+    "applied_cents": -48,
+    "applied_delay_ms": 20,
+    "measured_cents": -47.868536957609976,
+    "measured_onset_ms": 1.859410430839037,
+    "gold": "match"
+  },
+  {
+    "id": "acoustic-probe:the-entertainer:cents_out:p",
+    "band": "cents_out",
+    "sign": 1,
+    "applied_cents": 52,
+    "applied_delay_ms": 20,
+    "measured_cents": 52.15118407878312,
+    "measured_onset_ms": 1.859410430839037,
+    "gold": "pitch_fail"
+  },
+  {
+    "id": "acoustic-probe:the-entertainer:cents_out:n",
+    "band": "cents_out",
+    "sign": -1,
+    "applied_cents": -58,
+    "applied_delay_ms": 20,
+    "measured_cents": -57.91382613669881,
+    "measured_onset_ms": 1.859410430839037,
+    "gold": "pitch_fail"
+  }
+]

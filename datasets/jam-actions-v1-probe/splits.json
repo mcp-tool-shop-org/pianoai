@@ -1,0 +1,30 @@
+{
+  "strategy": "eval-only; nine held-out songs; never trained on",
+  "train": [],
+  "test": [
+    "acoustic-probe:solace:onset_in:p",
+    "acoustic-probe:solace:onset_in:n",
+    "acoustic-probe:solace:onset_out:p",
+    "acoustic-probe:solace:onset_out:n",
+    "acoustic-probe:solace:cents_in:p",
+    "acoustic-probe:solace:cents_in:n",
+    "acoustic-probe:solace:cents_out:p",
+    "acoustic-probe:solace:cents_out:n",
+    "acoustic-probe:the-easy-winners:onset_in:p",
+    "acoustic-probe:the-easy-winners:onset_in:n",
+    "acoustic-probe:the-easy-winners:onset_out:p",
+    "acoustic-probe:the-easy-winners:onset_out:n",
+    "acoustic-probe:the-easy-winners:cents_in:p",
+    "acoustic-probe:the-easy-winners:cents_in:n",
+    "acoustic-probe:the-easy-winners:cents_out:p",
+    "acoustic-probe:the-easy-winners:cents_out:n",
+    "acoustic-probe:the-entertainer:onset_in:p",
+    "acoustic-probe:the-entertainer:onset_in:n",
+    "acoustic-probe:the-entertainer:onset_out:p",
+    "acoustic-probe:the-entertainer:onset_out:n",
+    "acoustic-probe:the-entertainer:cents_in:p",
+    "acoustic-probe:the-entertainer:cents_in:n",
+    "acoustic-probe:the-entertainer:cents_out:p",
+    "acoustic-probe:the-entertainer:cents_out:n"
+  ]
+}

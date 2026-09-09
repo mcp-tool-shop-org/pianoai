@@ -32,5 +32,21 @@
       "Listen for the returning 52-note phrase at measures 19 and 51 as recognizable homecomings rather than new material — let your touch acknowledge each return.",
       "Try leaning into the corrected 72 BPM fallback as a genuine, unhurried ballad pace — the original source data's 512 BPM was never usable as written, so this gentler speed is what actually serves the piece's character."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/110784.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "28c3f1e8723f359d2893b222565148f8e55a610fea9cb84979563bc24571e51f",
+    "midi_title_events": [],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

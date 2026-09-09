@@ -32,5 +32,38 @@
       "Honor the written silences at measures 15, 49, and 101 completely — no pedal haze across them; listen for the room going quiet before each section turns.",
       "Save real brightness for measure 140's F6 — the right hand's ceiling arrives three bars from the end, so keep the upper register in reserve until the close and listen for that last lift speaking clearly."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/89233.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "David Liu (named in the file; converted with W2M)",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "f3f396fde41c869665f7aee61e647c701a29e83b2e0f51afd3c9dfbaa996037f",
+    "midi_title_events": [
+      "Killing Me Softly With His Song- Roberta Flack",
+      "David Liu",
+      "Converted by W2M 1.31.. made by loveforu..",
+      "elec piano",
+      "fg bass",
+      "nl guitar",
+      "sax",
+      "piano",
+      "fret noise",
+      "glockenspiel",
+      "drums"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [
+      {
+        "name": "David Liu",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "matches"
   }
 }

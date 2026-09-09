@@ -34,5 +34,53 @@
       "Play the dominant-leaning material (the G major windows) with a touch more forward energy than the tonic-grounded passages — listen for the harmonic pull toward G resolving satisfyingly when C major returns.",
       "Shape phrases with an elegant, vocal quality even in fast passagework — listen for the densest measures (98 and 143) staying musical and shaped rather than turning into pure technical display."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "http://piano-midi.de/midis/mozart/moz_545_1.mid",
+    "source_site": "piano-midi.de",
+    "arrangement_creator": "Bernd Krueger (piano-midi.de, 2006, edition 2013-09-23)",
+    "arrangement_license": "CC-BY-SA-3.0-DE",
+    "terms_url": "http://piano-midi.de/copy.htm",
+    "terms_quote": "The MIDI, audio(MP3, OGG) and video files of Bernd Krueger are licensed under the cc-by-sa Germany License. [links http://creativecommons.org/licenses/by-sa/3.0/de/deed.en] This means, that you can use and adapt the files, as long as you attribute to the copyright holder Name: Bernd Krueger Source: http://www.piano-midi.de",
+    "verified_at": "2026-09-09",
+    "verifier": "http://piano-midi.de/copy.htm; midi meta events (sha256 010bd27e2590…)",
+    "midi_sha256": "010bd27e25904822e04a51f207083722e469fccb0b446ce5545fbd37378268bf",
+    "midi_title_events": [
+      "Sonate KV 545 1. Satz",
+      "Mozart",
+      "Veröffentlicht: 1.10.2006",
+      "Update: 23.9.2013",
+      "Dauer: 4:21 Minuten",
+      "Teil 1",
+      "Teil 1 Wiederholung",
+      "Teil 2",
+      "Teil 2 Wiederholung",
+      "Piano right",
+      "Piano left",
+      "Pedale",
+      "Mozart: Piano Sonata KV 545 1. Movement",
+      "http://www.piano-midi.de/",
+      "Edition: 2013-09-23",
+      "Spur 8",
+      "Spur 9",
+      "Spur 10",
+      "Spur 11",
+      "Spur 12",
+      "Spur 13",
+      "Spur 14",
+      "Spur 15",
+      "Spur 16"
+    ],
+    "midi_credit_events": [
+      "Copyright © 2006 by Bernd Krueger"
+    ],
+    "credited_parties": [
+      {
+        "name": "Bernd Krueger",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "matches"
   }
 }

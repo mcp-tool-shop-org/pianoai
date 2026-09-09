@@ -2,7 +2,7 @@ import type { SiteConfig } from '@mcptoolshop/site-theme';
 
 export const config: SiteConfig = {
   title: 'AI Jam Sessions',
-  description: 'An MCP server that teaches AI to play piano and guitar — and sing. 120 songs across 12 genres, six sound engines, browser cockpit, practice journal — and jam-actions-v0, a public 115-record tool-use dataset.',
+  description: 'An MCP server that teaches AI to play piano and guitar — and sing. 108 annotated songs across 12 genres, six sound engines, browser cockpit, practice journal — and jam-actions-v0, a public 115-record tool-use dataset.',
   logoBadge: '♪',
   brandName: 'AI Jam Sessions',
   repoUrl: 'https://github.com/mcp-tool-shop-org/ai-jam-sessions',
@@ -13,7 +13,7 @@ export const config: SiteConfig = {
     badge: 'MCP Server',
     headline: 'AI Jam Sessions.',
     headlineAccent: 'Machine learning the old fashioned way.',
-    description: 'An MCP server that teaches AI to play piano and guitar — and sing. 120 songs across 12 genres. Six sound engines. Interactive guitar tablature. A browser cockpit with vocal synthesizer. A practice journal that remembers everything. Plus jam-actions-v0, a 115-record public dataset of multi-turn MCP tool-use traces over classical piano.',
+    description: 'An MCP server that teaches AI to play piano and guitar — and sing. 108 annotated songs across 12 genres. Six sound engines. Interactive guitar tablature. A browser cockpit with a sampled Concert Grand, a vocal synthesizer, and a blind listening panel. A practice journal that remembers everything. Plus jam-actions-v0, a 115-record public dataset of multi-turn MCP tool-use traces over classical piano.',
     primaryCta: { href: '#quick-start', label: 'Get started' },
     secondaryCta: { href: 'handbook/', label: 'Read the Handbook' },
     previews: [
@@ -51,7 +51,7 @@ export const config: SiteConfig = {
           desc: 'Vocal tract synthesis with 20 voice presets. Sing-along mode with solfege, contour, and syllable narration.',
         },
         {
-          title: '49 MCP Tools + 4 Prompts',
+          title: '54 MCP Tools + 4 Prompts',
           desc: 'Learn, play, sing, build, score — browse songs, transpose keys, mute hands, preview teaching cues, render piano rolls, write annotations, and journal reflections.',
         },
         {
@@ -200,7 +200,7 @@ ai-jam-sessions list --genre folk`,
       kind: 'data-table',
       id: 'genres',
       title: 'Song library',
-      subtitle: '120 songs across 12 genres. Each genre has a deeply annotated exemplar.',
+      subtitle: '108 annotated songs across 12 genres. Each genre has a deeply annotated exemplar.',
       columns: ['Genre', 'Exemplar', 'Key', 'Teaches'],
       rows: [
         ['Blues', 'The Thrill Is Gone', 'B minor', 'Minor blues form, call-and-response'],
@@ -221,7 +221,7 @@ ai-jam-sessions list --genre folk`,
       kind: 'data-table',
       id: 'tools',
       title: 'MCP tools',
-      subtitle: '49 tools and 4 prompt templates across seven categories: Learn, Play, Practice, Sing, Guitar, Build, and Score.',
+      subtitle: '54 tools and 4 prompt templates across eight categories: Learn, Play, Practice, Sing, Guitar, Build, Score, and Listen.',
       columns: ['Tool', 'Category', 'Description'],
       rows: [
         ['`list_songs`', 'Learn', 'Browse by genre, difficulty, or keyword'],
