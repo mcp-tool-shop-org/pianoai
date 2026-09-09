@@ -102,6 +102,26 @@ loss never said which it was doing. The probe did.
 | adapters | `runs/r32/A3/epoch3` (126 MB), `runs/r32/A7/epoch3` (165 MB) — on disk, not in git |
 | cost | ~1.9 h at $1.69/hr ≈ $3.25; torn down by state-file id, `list` empty |
 
+## Second seed — 3B, seed 42, same corpus, same recipe
+
+Run on the same pod class after the first pair, nothing changed but the seed.
+
+| condition | main acoustic | overall | probe |
+|---|---|---|---|
+| 3B, seed 13 | 54/54 | 103/117 | 70/72 |
+| **3B, seed 42** | **54/54** | **105/117** | **72/72** |
+| 7B, seed 13 | 54/54 | 107/117 | 72/72 |
+
+Seed 42: 53/54 main lines parse (one format variant, correct), 52 subtractions exact, words follow
+the model's own arithmetic 53/53 and the true predicate 53/53; on the probe 64/72 parse strictly
+(8 format variants, all correct), 60 subtractions exact — the four slips are the same
+`|20.1| − 50` carrier as before — and every one of the 72 labels is right, including the two
+`−48.0` takes seed 13 missed. Loss 9.81 → 2.21 → 0.083 → 0.074. Receipt `runs/r32/run-config-A3s42.json`,
+log `runs/r32/s42.log`, adapter `runs/r32/A3s42/epoch3` on disk. Cost ≈ $1.15 on a Blackwell.
+
+The claim for the card is the seed mean: **3B 54/54 main (2 of 2 seeds), 71/72 probe (mean of 70 and
+72)**; the 7B is one seed and is reported as one seed.
+
 ## What this settles
 
 Seven training runs on this arc, one recipe. With a bare label the adapter learned a class prior.
