@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { mkdtempSync, mkdirSync, writeFileSync, existsSync, rmSync, readFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, existsSync, rmSync, readFileSync, chmodSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
-import { fetchCandidates, fetchOne, sha256Hex, termsNotice, type Fetcher } from "./fetch.js";
+import { dirname, join } from "node:path";
+import { fetchCandidates, fetchOne, sha256Hex, termsNotice, resolveFetchMidiPath, packageLibraryWritable, type Fetcher } from "./fetch.js";
 
 const MIDI = new Uint8Array([0x4d, 0x54, 0x68, 0x64, 0, 0, 0, 6, 0, 0, 0, 1, 0, 0x60, 0x4d, 0x54, 0x72, 0x6b, 0, 0, 0, 4, 0, 0xff, 0x2f, 0]);
 
@@ -104,5 +104,36 @@ describe("library fetch", () => {
     expect(notice).toContain("example.test — 2 files");
     expect(notice).toContain("personal use only");
     expect(notice.split("terms:").length).toBe(2);
+  });
+
+  it("writes into stateHome/songs/library when the package library is not writable", async () => {
+    const home = mkdtempSync(join(tmpdir(), "ajs-fetch-home-"));
+    const prev = process.env.AI_JAM_HOME;
+    process.env.AI_JAM_HOME = home;
+    try {
+      writeFileSync(join(lib, "classical", "s.json"), JSON.stringify(config("s", prov())));
+      chmodSync(join(lib, "classical"), 0o555);
+      const { candidates } = fetchCandidates(lib);
+      const good: Fetcher = async () => ({ ok: true, status: 200, bytes: MIDI });
+      let c = candidates[0]!;
+      if (packageLibraryWritable(dirname(c.midiPath))) {
+        // win32: chmod 0o555 often leaves the directory writable. Point at a
+        // missing package dir so accessSync(W_OK) fails the same way a
+        // read-only image library does.
+        c = { ...c, midiPath: join(lib, "ro-missing", "s.mid") };
+      }
+      const dest = resolveFetchMidiPath(c);
+      expect(dest.startsWith(join(home, "songs", "library"))).toBe(true);
+      const out = await fetchOne(c, good);
+      expect(out.status).toBe("fetched");
+      expect(existsSync(join(lib, "classical", "s.mid"))).toBe(false);
+      expect(readFileSync(dest)).toEqual(Buffer.from(MIDI));
+      expect(out.detail).toContain(dest);
+    } finally {
+      chmodSync(join(lib, "classical"), 0o755);
+      if (prev === undefined) delete process.env.AI_JAM_HOME;
+      else process.env.AI_JAM_HOME = prev;
+      rmSync(home, { recursive: true, force: true });
+    }
   });
 });

@@ -1797,7 +1797,8 @@ async function main(): Promise<void> {
   const { fileURLToPath } = await import("node:url");
   const __dirname = dirname(fileURLToPath(import.meta.url));
   const libraryDir = join(__dirname, "..", "songs", "library");
-  const userDir = join(process.env.HOME ?? process.env.USERPROFILE ?? ".", ".ai-jam-sessions", "songs");
+  const { userSongsDir } = await import("./state-home.js");
+  const userDir = userSongsDir();
   initializeFromLibrary(libraryDir, userDir);
 
   const args = process.argv.slice(2);

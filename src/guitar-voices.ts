@@ -17,7 +17,7 @@
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync, renameSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
-import { homedir } from "node:os";
+import { guitarVoicesDir } from "./state-home.js";
 
 // ─── Config Interface ────────────────────────────────────────────────────────
 
@@ -661,7 +661,7 @@ function sanitizePersistedVoiceId(voiceId: string): string {
 }
 
 function guitarTuningDir(): string {
-  const dir = join(homedir(), ".ai-jam-sessions", "guitars");
+  const dir = guitarVoicesDir();
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
   return dir;
 }

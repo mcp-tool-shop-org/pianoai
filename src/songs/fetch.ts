@@ -8,8 +8,35 @@
 // audit recorded, so what lands is the file the annotations were written against.
 
 import { createHash } from "node:crypto";
-import { existsSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync, accessSync, constants } from "node:fs";
+import { dirname, join } from "node:path";
 import { scanLibrary, type LibraryEntry } from "./library.js";
+import { fetchedLibraryDir } from "../state-home.js";
+
+let saidFetchFallback = false;
+
+export function packageLibraryWritable(dir: string): boolean {
+  try {
+    accessSync(dir, constants.W_OK);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Where a fetch writes the .mid: package library if writable, else state home. */
+export function resolveFetchMidiPath(c: FetchCandidate): string {
+  const packageDir = dirname(c.midiPath);
+  if (packageLibraryWritable(packageDir)) return c.midiPath;
+  const dest = join(fetchedLibraryDir(), c.genre, `${c.id}.mid`);
+  if (!saidFetchFallback) {
+    process.stderr.write(
+      `package library is not writable; fetching MIDI into ${fetchedLibraryDir()}\n`,
+    );
+    saidFetchFallback = true;
+  }
+  return dest;
+}
 
 export interface SourceProvenance {
   source_url?: string;
@@ -101,8 +128,10 @@ export async function fetchOne(c: FetchCandidate, fetcher: Fetcher = defaultFetc
       detail: `expected ${c.expectedSha256.slice(0, 12)}…, got ${got.slice(0, 12)}… — the source serves a different file now; not written`,
     };
   }
-  writeFileSync(c.midiPath, res.bytes);
-  return { id: c.id, status: "fetched", detail: `${res.bytes.length} bytes → ${c.midiPath}` };
+  const dest = resolveFetchMidiPath(c);
+  mkdirSync(dirname(dest), { recursive: true });
+  writeFileSync(dest, res.bytes);
+  return { id: c.id, status: "fetched", detail: `${res.bytes.length} bytes → ${dest}` };
 }
 
 /** The terms notice printed before any download; one block per distinct source site. */

@@ -144,6 +144,7 @@ import {
   rankWorstMeasures,
 } from "./practice-loop.js";
 import { JamError } from "./errors.js";
+import { userSongsDir, serverStatePath, stateHome } from "./state-home.js";
 import { readFile } from "node:fs/promises";
 import { existsSync, readFileSync, writeFileSync, realpathSync, mkdirSync } from "node:fs";
 import {
@@ -4524,15 +4525,12 @@ registerTool(
 // ─── Helpers ─────────────────────────────────────────────────────────────
 
 function getUserSongsDir(): string {
-  const home = process.env.HOME ?? process.env.USERPROFILE ?? ".";
-  return pathJoin(home, ".ai-jam-sessions", "songs");
+  return userSongsDir();
 }
 
-const STATE_FILE = pathJoin(
-  process.env.HOME ?? process.env.USERPROFILE ?? ".",
-  ".ai-jam-sessions",
-  "server-state.json"
-);
+function getServerStateFile(): string {
+  return serverStatePath();
+}
 
 // Bump this if SessionSnapshot's shape changes in a way that would make an
 // older persisted server-state.json misleading (not just missing fields).
@@ -4562,40 +4560,42 @@ function isValidSessionSnapshot(x: unknown): x is SessionSnapshot {
 
 function persistSessionState(): void {
   if (!lastCompletedSession) return;
+  const file = getServerStateFile();
   try {
-    mkdirSync(pathJoin(process.env.HOME ?? process.env.USERPROFILE ?? ".", ".ai-jam-sessions"), { recursive: true });
-    writeFileSync(STATE_FILE, JSON.stringify({ schemaVersion: SERVER_STATE_SCHEMA_VERSION, lastCompletedSession }, null, 2));
+    mkdirSync(stateHome(), { recursive: true });
+    writeFileSync(file, JSON.stringify({ schemaVersion: SERVER_STATE_SCHEMA_VERSION, lastCompletedSession }, null, 2));
   } catch (err) {
     // This used to be a bare require("node:fs") in an ESM module — silently
     // threw ReferenceError on every call and was swallowed here, so session
     // state never actually persisted (F-43b426ba). Log so a regression like
     // that is visible instead of silent.
-    console.error(`WARNING: failed to persist session state to ${STATE_FILE}: ${err instanceof Error ? err.message : String(err)}`);
+    console.error(`WARNING: failed to persist session state to ${file}: ${err instanceof Error ? err.message : String(err)}`);
   }
 }
 
 function loadSessionState(): void {
+  const file = getServerStateFile();
   try {
-    if (!existsSync(STATE_FILE)) return;
-    const data = JSON.parse(readFileSync(STATE_FILE, "utf8"));
+    if (!existsSync(file)) return;
+    const data = JSON.parse(readFileSync(file, "utf8"));
 
     if (typeof data !== "object" || data === null) {
-      console.error(`WARNING: ignoring ${STATE_FILE} — not a JSON object.`);
+      console.error(`WARNING: ignoring ${file} — not a JSON object.`);
       return;
     }
     if (data.schemaVersion !== SERVER_STATE_SCHEMA_VERSION) {
-      console.error(`WARNING: ignoring ${STATE_FILE} — schema version ${JSON.stringify(data.schemaVersion)} != ${SERVER_STATE_SCHEMA_VERSION} (old or corrupt file).`);
+      console.error(`WARNING: ignoring ${file} — schema version ${JSON.stringify(data.schemaVersion)} != ${SERVER_STATE_SCHEMA_VERSION} (old or corrupt file).`);
       return;
     }
     if (data.lastCompletedSession !== undefined) {
       if (isValidSessionSnapshot(data.lastCompletedSession)) {
         lastCompletedSession = data.lastCompletedSession;
       } else {
-        console.error(`WARNING: ignoring lastCompletedSession in ${STATE_FILE} — doesn't match the expected shape.`);
+        console.error(`WARNING: ignoring lastCompletedSession in ${file} — doesn't match the expected shape.`);
       }
     }
   } catch (err) {
-    console.error(`WARNING: failed to load session state from ${STATE_FILE}: ${err instanceof Error ? err.message : String(err)}`);
+    console.error(`WARNING: failed to load session state from ${file}: ${err instanceof Error ? err.message : String(err)}`);
   }
 }
 

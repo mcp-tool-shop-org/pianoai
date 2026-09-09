@@ -476,7 +476,7 @@ export const TUNING_PARAMS: TuningParam[] = [
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync, renameSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
-import { homedir } from "node:os";
+import { pianoVoicesDir } from "./state-home.js";
 
 /** Partial overrides the user has saved for a voice. Keyed by friendly param name. */
 export type UserTuning = Record<string, number>;
@@ -489,7 +489,7 @@ function sanitizePersistedVoiceId(voiceId: string): string {
 }
 
 function tuningDir(): string {
-  const dir = join(homedir(), ".ai-jam-sessions", "voices");
+  const dir = pianoVoicesDir();
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
   return dir;
 }
