@@ -140,7 +140,11 @@ describe("v1 schema spine", () => {
 });
 
 describe("v1 coverage floors", () => {
-  it("meets tools > 9, songs > 10, shapes > 7, no majority shape", () => {
+  // 1.1.0 draws four acoustic takes per (song, class) on purpose (RESULTS-r48.md): the acoustic
+  // family is 62% of the corpus, so the majority-shape floor (<= 50%) is NOT met. The floor is
+  // left where it is; coverage.json records the miss instead of the gate moving. This test pins
+  // that position: the three count floors hold, the share floor is reported false with the value.
+  it("meets tools > 9, songs > 10, shapes > 7; the majority-shape floor is reported not met at four draws", () => {
     const report = coverageReport(committedRecords());
     const songs = loadPublishableSongs();
     report.genres = [...new Set(songs.map((s) => s.genre))].sort();
@@ -151,8 +155,15 @@ describe("v1 coverage floors", () => {
     expect(report.tool_count).toBeGreaterThan(COVERAGE_FLOORS.tools);
     expect(report.song_count).toBeGreaterThan(COVERAGE_FLOORS.songs);
     expect(report.shape_count).toBeGreaterThan(COVERAGE_FLOORS.shapes);
-    expect(report.majority_shape_share).toBeLessThanOrEqual(0.5);
-    expect(() => assertCoverageFloors(report)).not.toThrow();
+    expect(report.majority_shape_share).toBeGreaterThan(0.5);
+    expect(report.majority_shape_share).toBeLessThan(0.65);
+    expect(() => assertCoverageFloors(report)).toThrow();
+    const committed = JSON.parse(readFileSync(join(CORPUS, "coverage.json"), "utf8")) as {
+      floors_met: boolean;
+      majority_shape_share: number;
+    };
+    expect(committed.floors_met).toBe(false);
+    expect(committed.majority_shape_share).toBeCloseTo(report.majority_shape_share, 6);
   });
 });
 

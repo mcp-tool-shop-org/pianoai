@@ -180,7 +180,8 @@ describe("banner refusal", () => {
     const real = readFileSync(s.cardPath, "utf8");
     // A draft card is a fixture, not the live card: the live card must NOT carry the banner
     // once the numbers are filled, or the sets could never be built.
-    const draft = real.replace(/^---\n[\s\S]*?\n---\n/, (fm) => fm + "<!-- DRAFT until filled -->\n");
+    // CRLF-tolerant: a Windows checkout with autocrlf hands this test a CRLF card.
+    const draft = real.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, (fm) => fm + "<!-- DRAFT until filled -->\n");
     expect(draft).not.toBe(real);
     expect(() => assertNoDraftBanner(draft, s.cardPath)).toThrow(/DRAFT banner/);
     expect(() => assertNoDraftBanner(real, s.cardPath)).not.toThrow();
