@@ -18,11 +18,9 @@ name: Publish jam-actions-v0
 # Inputs:
 #   mode                    choice: draft-only (default) | publish-zenodo-only | publish
 #   confirm_irreversible    type exactly "yes-mint-doi" to mint a DOI and/or push HF; default "no"
-#   zenodo_newversion_of    published Zenodo record id for a new version; default 20279919.
-#                           NOTE: an explicitly empty dispatch value is replaced by the default by GitHub,
-#                           so "fresh deposit" is not reachable from a dispatch today (2026-09-09: the
-#                           probe was versioned under the jam-actions concept this way). A fresh-deposit
-#                           path needs a sentinel value such as "none", not an empty string.
+#   zenodo_newversion_of    digits = new version of that published record; "none" = fresh deposit
+#                           with its own concept DOI; default 20279919. An empty dispatch value is
+#                           not reachable (GitHub substitutes the default).
 #   ref                     git ref to publish from; default main
 #   dataset_dir             package under datasets/<name>; default datasets/jam-actions-v0-public
 #
@@ -61,7 +59,7 @@ on:
         required: false
         default: "no"
       zenodo_newversion_of:
-        description: "Existing PUBLISHED Zenodo record id to create a NEW VERSION of (same concept DOI). Default = 20279919 (v0.4.3). Empty = brand-new deposit with its own concept DOI (first-publication path)."
+        description: 'Published record id (digits only) for a NEW VERSION of that record. Type exactly "none" for a fresh deposit with its own concept DOI. Default = 20279919. Empty is not reachable from a dispatch (GitHub replaces it with the default).'
         required: false
         default: "20279919"
       ref:
@@ -91,6 +89,7 @@ jobs:
         env:
           MODE: ${{ github.event.inputs.mode }}
           CONFIRM: ${{ github.event.inputs.confirm_irreversible }}
+          NEWVERSION_OF: ${{ github.event.inputs.zenodo_newversion_of }}
         run: |
           set -euo pipefail
           echo "Mode: $MODE"
@@ -118,6 +117,18 @@ jobs:
               exit 1
               ;;
           esac
+
+          # Printed here, before checkout or any Zenodo call, so the choice is
+          # on the log's first screen. "none" is the reachable fresh-deposit
+          # sentinel; GitHub replaces an empty dispatch value with the default.
+          if [ "$NEWVERSION_OF" = "none" ]; then
+            echo "Zenodo path: fresh deposit"
+          elif printf '%s' "$NEWVERSION_OF" | grep -Eq '^[0-9]+$'; then
+            echo "Zenodo path: new version of $NEWVERSION_OF"
+          else
+            echo "ERROR: zenodo_newversion_of must be all digits (a published record id) or \"none\" (fresh deposit); got: $NEWVERSION_OF"
+            exit 1
+          fi
 
       # ─── Checkout + tooling ──────────────────────────────────────────────────
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -335,9 +346,10 @@ jobs:
       #     version's files into the draft; we delete them so only this
       #     version's archives ship. Publishing the draft mints the new
       #     version DOI. The published prior version is never touched.
-      #   - FRESH DEPOSIT (input left empty): POST an empty deposition — a
+      #   - FRESH DEPOSIT (input exactly "none"): POST an empty deposition — a
       #     brand-new record with its OWN concept DOI. Only for a first-ever
       #     publication, never for corrections to an already-published dataset.
+      #     An empty string is not reachable from a dispatch.
       #
       # Skipped when skip_zenodo=true (non-v0 dataset_dir + mode=draft-only).
       - name: Create Zenodo deposit (DRAFT)
@@ -353,14 +365,14 @@ jobs:
             exit 1
           fi
 
-          if [ -n "${NEWVERSION_OF:-}" ]; then
-            # Validate the input is a bare record id (digits only).
-            case "$NEWVERSION_OF" in
-              *[!0-9]*)
-                echo "ERROR: zenodo_newversion_of must be a numeric record id (got: $NEWVERSION_OF)"
-                exit 1
-                ;;
-            esac
+          if [ "${NEWVERSION_OF}" = "none" ]; then
+            echo "Creating FRESH deposit (new concept DOI)..."
+            DEPOSIT=$(curl --fail-with-body -sSL -X POST \
+              -H "Authorization: Bearer $ZEN_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d '{}' \
+              "https://zenodo.org/api/deposit/depositions")
+          elif printf '%s' "${NEWVERSION_OF:-}" | grep -Eq '^[0-9]+$'; then
             echo "Creating NEW VERSION draft of published record $NEWVERSION_OF..."
             NV_RESP=$(curl --fail-with-body -sSL -X POST \
               -H "Authorization: Bearer $ZEN_TOKEN" \
@@ -391,12 +403,8 @@ jobs:
               -H "Authorization: Bearer $ZEN_TOKEN" \
               "https://zenodo.org/api/deposit/depositions/$DEPOSIT_ID")
           else
-            echo "Creating FRESH deposit (new concept DOI)..."
-            DEPOSIT=$(curl --fail-with-body -sSL -X POST \
-              -H "Authorization: Bearer $ZEN_TOKEN" \
-              -H "Content-Type: application/json" \
-              -d '{}' \
-              "https://zenodo.org/api/deposit/depositions")
+            echo "ERROR: zenodo_newversion_of must be all digits or \"none\" (got: ${NEWVERSION_OF:-})"
+            exit 1
           fi
 
           DEPOSIT_ID=$(echo "$DEPOSIT" | jq -r '.id')
@@ -574,7 +582,11 @@ jobs:
             echo "  Confirmation:        NO"
           fi
           echo "  Dataset dir:         ${DIR:-'(unresolved)'}"
-          echo "  New version of:      ${NEWVERSION_OF:-'(fresh deposit — new concept DOI)'}"
+          if [ "$NEWVERSION_OF" = "none" ]; then
+            echo "  Zenodo path:         fresh deposit"
+          else
+            echo "  Zenodo path:         new version of ${NEWVERSION_OF:-'(unresolved)'}"
+          fi
           echo "  Ref:                 $REF"
           echo "  Version:             ${{ steps.version.outputs.version }}"
           echo "  Tar.gz sha256:       ${{ steps.archives.outputs.tar_sha }}"
