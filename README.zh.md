@@ -12,15 +12,15 @@
 
 <p align="center">
   An MCP server that teaches AI to play piano and guitar — and sing.<br/>
-  120 songs across 12 genres. Six sound engines. Interactive guitar tablature.<br/>
+  108 annotated songs across 12 genres. Six sound engines. Interactive guitar tablature.<br/>
   A browser cockpit with vocal synthesizer. A practice journal that remembers everything.
 </p>
 
 <p align="center">
   <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml"><img src="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions"><img src="https://img.shields.io/npm/v/@mcptoolshop/ai-jam-sessions" alt="npm"></a>
-  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/songs-120_across_12_genres-blue" alt="Songs"></a>
-  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/annotated-120%2F120-green" alt="Ready"></a>
+  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/songs-108_across_12_genres-blue" alt="Songs"></a>
+  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/annotated-108%2F108-green" alt="Ready"></a>
   <a href="datasets/jam-actions-v0-public/README.md"><img src="https://img.shields.io/badge/dataset-jam--actions--v0%20(115_records)-8b5cf6" alt="Training dataset"></a>
   <a href="https://doi.org/10.5281/zenodo.20279918"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.20279918.svg" alt="DOI"></a>
 </p>
@@ -134,6 +134,8 @@ cd apps/cockpit && npm install && npm run dev   # Vite dev server, opens in your
 ## 歌曲库
 
 120 首歌曲，涵盖 12 个流派，均基于真实的 MIDI 文件构建。每个流派都有一首深度注释的范例——包含历史背景、逐小节的和声分析、关键时刻、教学目标和演奏技巧（包括人声指导）。这些范例作为模板：AI 研究其中一个，然后对其他歌曲进行注释。
+
+**What ships, and what you fetch.** The annotations are ours and ship with every song. The MIDI files were downloaded from public MIDI sites when the library was built, and a per-file provenance audit ([`docs/findings/library-provenance-audit.md`](docs/findings/library-provenance-audit.md)) found that only 14 of them carry a licence that permits redistribution — Bernd Krueger's piano-midi.de arrangements (CC-BY-SA-3.0-DE) and the Mutopia Project's public-domain typesettings. Those 14 are in the npm package. The other 94 are not: their `.json` ships, with a `provenance` block naming the source, its terms and the file's SHA-256, and `ai-jam-sessions library fetch --accept-source-terms` downloads each one from the site that published it, under that site's terms, refusing any file whose hash no longer matches what the annotations were verified against. Twelve files that turned out to be a different piece than their name were quarantined, which is why the count is 108 and not the 120 earlier versions claimed. Versions before this one shipped all 120 MIDI files; that was a mistake, and it is corrected here rather than papered over.
 
 | 流派 | 范例 | 调性 | 它所教授的内容 |
 |-------|----------|-----|-----------------|
@@ -267,7 +269,7 @@ pnpm exec tsx scripts/check-release-gate.ts /tmp/b.json
 
 该语料库可以从这个仓库中重现。重新生成它会生成所有 115 个已发布的文件和一个字节完全相同的 `checksums.sha256`，并且一个测试会精确地验证这一点，而无需写入已发布的树。
 
-**需要注意的是，这里是实际测量，而不是假设。** 每条记录都包含`wav_sha256`，即其波形配方所产生的波形的哈希值，渲染器会为每个样本调用`Math.pow`和`Math.sin`一次。两者都不需要进行正确的四舍五入，并且 V8 的结果在 Node 22 和 Node 24 之间发生了变化：在这 27,869 个不同的`Math.pow(2, x)`参数中，有 253 个返回不同的双精度浮点数。其中绝大部分在 16 位量化下会消失，但**108 条记录中的 2 条**——即《致爱丽丝》的`extra`扰动，其主题位于半音比例本身不同的音高——在 Node 24 上哈希值不同。每条记录的其他所有字段在任何引擎上都能正确重现，并且仓库会分别测试这两个声明。如果您重新渲染并发现这两个值不匹配，那么这就是问题所在，而不是下载文件损坏。使波形具有比特可移植性意味着需要替换超越函数，这将改变每个哈希值，因此需要新的模式版本。
+**一个需要注意的点，是实际测量而不是假设。** 每个记录都包含 `wav_sha256`，即其配方生成的波形的哈希值，并且渲染器会为每个样本调用 `Math.pow` 和 `Math.sin`。两者都不需要正确地进行四舍五入，并且 V8 的结果在 Node 22 和 Node 24 之间发生了变化：在这 27,869 个不同的 `Math.pow(2, x)` 参数中，有 253 个返回不同的双精度浮点数。其中大部分在 16 位量化下都会消失，但 **108 个记录中的 2 个**——都是《致爱丽丝》的 `extra` 扰动，其主题位于半音比例本身不同的音高——在 Node 24 上的哈希值不同。每个记录的每个其他字段在任何引擎上都会重现，并且仓库会分别测试这两个声明。如果您重新渲染并看到这两个不匹配，那是因为这个原因，而不是下载文件损坏。使波形具有比特可移植性意味着替换超越函数，这将改变每个哈希值，因此需要新的模式版本。
 
 ### 构建你自己的
 

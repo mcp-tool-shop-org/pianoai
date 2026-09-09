@@ -12,15 +12,15 @@
 
 <p align="center">
   An MCP server that teaches AI to play piano and guitar — and sing.<br/>
-  120 songs across 12 genres. Six sound engines. Interactive guitar tablature.<br/>
+  108 annotated songs across 12 genres. Six sound engines. Interactive guitar tablature.<br/>
   A browser cockpit with vocal synthesizer. A practice journal that remembers everything.
 </p>
 
 <p align="center">
   <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml"><img src="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions"><img src="https://img.shields.io/npm/v/@mcptoolshop/ai-jam-sessions" alt="npm"></a>
-  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/songs-120_across_12_genres-blue" alt="Songs"></a>
-  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/annotated-120%2F120-green" alt="Ready"></a>
+  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/songs-108_across_12_genres-blue" alt="Songs"></a>
+  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/annotated-108%2F108-green" alt="Ready"></a>
   <a href="datasets/jam-actions-v0-public/README.md"><img src="https://img.shields.io/badge/dataset-jam--actions--v0%20(115_records)-8b5cf6" alt="Training dataset"></a>
   <a href="https://doi.org/10.5281/zenodo.20279918"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.20279918.svg" alt="DOI"></a>
 </p>
@@ -134,6 +134,8 @@ cd apps/cockpit && npm install && npm run dev   # Vite dev server, opens in your
 ## 楽曲ライブラリ
 
 実際のMIDIファイルから作成された12ジャンルにわたる120曲。各ジャンルには、歴史的背景、小節ごとの調和分析、重要なポイント、教育目標、およびパフォーマンスのヒント（ボーカルガイダンスを含む）を備えた、詳細な注釈が付けられた模範的な楽曲があります。これらの模範的な楽曲はテンプレートとして機能します。AIはまず1つを学習し、次に残りの楽曲に注釈を付けます。
+
+**どの楽曲が収録され、どのような情報が提供されるか。** 注釈は当社が作成し、すべての楽曲に付属しています。MIDIファイルは、ライブラリが構築された際に、公開されているMIDIサイトからダウンロードされました。ファイルごとの来歴監査（[`docs/findings/library-provenance-audit.md`](docs/findings/library-provenance-audit.md)）を行った結果、再配布が許可されているライセンスを持つファイルは14件のみであることが判明しました。これには、ベンド・クルーガー氏のpiano-midi.deのピアノアレンジ（CC-BY-SA-3.0-DE）と、ムトピア・プロジェクトのパブリックドメインの楽譜が含まれます。これらの14件はnpmパッケージに含まれています。残りの94件は含まれていません。それぞれのファイルについて、ソース、その利用規約、およびファイルのSHA-256ハッシュ値を記述したブロック（`.json`）が追加され、各サイトからそのサイトの利用規約に基づいてダウンロードされます（`provenance`）。ハッシュ値が注釈で検証されたものと一致しないファイルは一切ダウンロードされません（`ai-jam-sessions library fetch --accept-source-terms`）。ファイル名と実際の楽曲が異なる12件のファイルは隔離されており、そのため、収録数は120件ではなく108件となっています。このバージョン以前では、すべての120件のMIDIファイルが収録されていましたが、これは誤りであり、ここでは修正されています。
 
 | ジャンル | 模範的な楽曲 | キー | 教える内容 |
 |-------|----------|-----|-----------------|

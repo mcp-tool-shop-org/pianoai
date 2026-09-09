@@ -12,15 +12,15 @@
 
 <p align="center">
   An MCP server that teaches AI to play piano and guitar — and sing.<br/>
-  120 songs across 12 genres. Six sound engines. Interactive guitar tablature.<br/>
+  108 annotated songs across 12 genres. Six sound engines. Interactive guitar tablature.<br/>
   A browser cockpit with vocal synthesizer. A practice journal that remembers everything.
 </p>
 
 <p align="center">
   <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml"><img src="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions"><img src="https://img.shields.io/npm/v/@mcptoolshop/ai-jam-sessions" alt="npm"></a>
-  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/songs-120_across_12_genres-blue" alt="Songs"></a>
-  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/annotated-120%2F120-green" alt="Ready"></a>
+  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/songs-108_across_12_genres-blue" alt="Songs"></a>
+  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/annotated-108%2F108-green" alt="Ready"></a>
   <a href="datasets/jam-actions-v0-public/README.md"><img src="https://img.shields.io/badge/dataset-jam--actions--v0%20(115_records)-8b5cf6" alt="Training dataset"></a>
   <a href="https://doi.org/10.5281/zenodo.20279918"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.20279918.svg" alt="DOI"></a>
 </p>
@@ -152,6 +152,8 @@ cd apps/cockpit && npm install && npm run dev   # Vite dev server, opens in your
 ## La libreria delle canzoni
 
 120 canzoni di 12 generi diversi, create da file MIDI reali. Ogni genere ha un esempio approfondito con contesto storico, analisi armonica battuta per battuta, momenti chiave, obiettivi didattici e suggerimenti sulle performance (inclusa la guida vocale). Questi esempi fungono da modelli: l'IA ne studia uno, quindi annota gli altri.
+
+**Quali brani sono inclusi e quali vengono recuperati.** Le annotazioni sono state create da noi e vengono fornite con ogni brano. I file MIDI sono stati scaricati da siti MIDI pubblici durante la creazione della libreria e un controllo sull’origine di ciascun file ([`docs/findings/library-provenance-audit.md`](docs/findings/library-provenance-audit.md)) ha rivelato che solo 14 di essi contengono una licenza che ne consente la ridistribuzione: si tratta degli arrangiamenti per pianoforte di Bernd Krueger da piano-midi.de (CC-BY-SA-3.0-DE) e delle trascrizioni di pubblico dominio del Mutopia Project. Questi 14 file sono inclusi nel pacchetto npm. Gli altri 94 non lo sono: per ciascuno di essi viene fornito un `.json` che indica l’origine, con un `provenance` che specifica la fonte, i relativi termini e l’hash SHA-256 del file, e `ai-jam-sessions library fetch --accept-source-terms` scarica ciascun file dal sito che lo ha pubblicato, rispettando i termini di tale sito e rifiutando qualsiasi file il cui hash non corrisponda più a quello verificato nelle annotazioni. Dodici file, che si sono rivelati essere brani diversi da quelli indicati nel loro nome, sono stati messi in quarantena, motivo per cui il conteggio è di 108 e non dei 120 indicati nelle versioni precedenti. Nelle versioni precedenti a questa, tutti i 120 file MIDI erano inclusi; si è trattato di un errore, che viene corretto qui invece di essere semplicemente ignorato.
 
 | Genere | Esempio | Tonalità | Cosa insegna |
 |-------|----------|-----|-----------------|

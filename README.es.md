@@ -12,15 +12,15 @@
 
 <p align="center">
   An MCP server that teaches AI to play piano and guitar — and sing.<br/>
-  120 songs across 12 genres. Six sound engines. Interactive guitar tablature.<br/>
+  108 annotated songs across 12 genres. Six sound engines. Interactive guitar tablature.<br/>
   A browser cockpit with vocal synthesizer. A practice journal that remembers everything.
 </p>
 
 <p align="center">
   <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml"><img src="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions"><img src="https://img.shields.io/npm/v/@mcptoolshop/ai-jam-sessions" alt="npm"></a>
-  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/songs-120_across_12_genres-blue" alt="Songs"></a>
-  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/annotated-120%2F120-green" alt="Ready"></a>
+  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/songs-108_across_12_genres-blue" alt="Songs"></a>
+  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/annotated-108%2F108-green" alt="Ready"></a>
   <a href="datasets/jam-actions-v0-public/README.md"><img src="https://img.shields.io/badge/dataset-jam--actions--v0%20(115_records)-8b5cf6" alt="Training dataset"></a>
   <a href="https://doi.org/10.5281/zenodo.20279918"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.20279918.svg" alt="DOI"></a>
 </p>
@@ -134,6 +134,8 @@ cd apps/cockpit && npm install && npm run dev   # Vite dev server, opens in your
 ## La biblioteca de canciones
 
 120 canciones en 12 géneros, creadas a partir de archivos MIDI reales. Cada género tiene un ejemplo profundamente anotado, con contexto histórico, análisis armónico barra por barra, momentos clave, objetivos de enseñanza y consejos para la interpretación (incluida la guía vocal). Estos ejemplos sirven como plantillas: la IA estudia uno y luego anota el resto.
+
+**Qué archivos se incluyen y qué se obtiene.** Las anotaciones son nuestras y se incluyen con cada canción. Los archivos MIDI se descargaron de sitios MIDI públicos cuando se creó la biblioteca, y una auditoría de procedencia por archivo ([`docs/findings/library-provenance-audit.md`](docs/findings/library-provenance-audit.md)) reveló que solo 14 de ellos tienen una licencia que permite la redistribución: los arreglos de piano-midi.de de Bernd Krueger (CC-BY-SA-3.0-DE) y las ediciones de dominio público del Proyecto Mutopia. Estos 14 se incluyen en el paquete npm. Los otros 94 no: sus `.json` se incluyen, con un `provenance` que indica el origen, sus términos y el SHA-256 del archivo, y `ai-jam-sessions library fetch --accept-source-terms` descarga cada uno de ellos del sitio que lo publicó, bajo los términos de ese sitio, rechazando cualquier archivo cuyo hash ya no coincida con lo que se verificó en las anotaciones. Doce archivos que resultaron ser piezas diferentes a las que indicaba su nombre se pusieron en cuarentena, por lo que el recuento es de 108 y no de los 120 que se afirmaba en las versiones anteriores. Las versiones anteriores a esta incluían los 120 archivos MIDI; fue un error, y se corrige aquí en lugar de ocultarlo.
 
 | Género | Ejemplo | Clave | Lo que enseña |
 |-------|----------|-----|-----------------|
@@ -267,7 +269,7 @@ Dos de las nueve clases están ahí porque un modelo ingenuo las responde con co
 
 El corpus se puede reproducir a partir de este repositorio. Volver a generarlo produce todos los 115 archivos publicados y un `checksums.sha256` idéntico en bytes, y una prueba confirma exactamente eso sin escribir el árbol publicado.
 
-**Una advertencia: se mide en lugar de suponerse.** Cada registro contiene `wav_sha256`, el hash de la forma de onda que produce su receta, y el renderizador llama a `Math.pow` y `Math.sin` una vez por muestra. Ninguno de los dos necesita estar correctamente redondeado, y los resultados de V8 cambiaron entre Node 22 y Node 24: de los 27.869 argumentos `Math.pow(2, x)` distintos que evalúa este corpus, 253 devuelven un valor double diferente. Casi todo eso desaparece con la cuantificación de 16 bits, pero **2 de los 108 registros** —ambos la perturbación `extra` de Für Elise, cuyo motivo se encuentra en la única nota donde la relación de semitono en sí difiere— tienen un hash diferente en Node 24. Todos los demás campos de cada registro se reproducen en cualquier motor, y el repositorio prueba ambas afirmaciones por separado. Si vuelve a renderizar y observa esas dos discrepancias, es esto, y no una descarga corrupta. Hacer que la forma de onda sea portable a nivel de bits significa reemplazar las funciones trascendentes, lo que cambia cada hash y, por lo tanto, requiere una nueva versión del esquema.
+**Una advertencia, medida en lugar de asumida.** Cada registro contiene `wav_sha256`, el hash de la forma de onda que produce su receta, y el renderizador llama a `Math.pow` y `Math.sin` una vez por muestra. Ninguno de los dos debe estar correctamente redondeado, y los resultados de V8 cambiaron entre Node 22 y Node 24: de los 27.869 argumentos `Math.pow(2, x)` distintos que evalúa este conjunto de datos, 253 devuelven un valor double diferente. Casi todo eso desaparece con la cuantificación de 16 bits, pero **2 de los 108 registros** —ambos la `extra` perturbación de Für Elise, cuyo motivo se encuentra en la única nota donde la relación de semitono en sí difiere— tienen un hash diferente en Node 24. Todos los demás campos de cada registro se reproducen en cualquier motor, y el repositorio prueba ambas afirmaciones por separado. Si vuelve a renderizar y ve que esos dos no coinciden, es esto, no una descarga corrupta. Hacer que la forma de onda sea portable a nivel de bits implica reemplazar las funciones trascendentes, lo que cambia cada hash y, por lo tanto, requiere una nueva versión del esquema.
 
 ### Crea el tuyo propio
 
