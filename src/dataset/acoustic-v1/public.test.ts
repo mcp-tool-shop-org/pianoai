@@ -10,6 +10,9 @@
 
 import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+
+/** Text as git stores it: a Windows checkout with autocrlf hands the tests CRLF copies of LF files. */
+const readText = (path: string): string => readFileSync(path, "utf8").replace(/\r\n/g, "\n");
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, it, expect } from "vitest";
@@ -42,7 +45,7 @@ function walkFiles(dir: string): Map<string, string> {
       const rel = prefix ? `${prefix}/${name}` : name;
       const full = join(cur, name);
       if (statSync(full).isDirectory()) walk(full, rel);
-      else files.set(rel, readFileSync(full, "utf8"));
+      else files.set(rel, readText(full));
     }
   }
   walk(dir, "");
@@ -87,7 +90,7 @@ function assertPackage(kind: PublicKind): void {
     expect(published.has(name), `unlisted root file ${name}`).toBe(true);
   }
 
-  expect(onDisk.get("README.md")).toBe(readFileSync(s.cardPath, "utf8"));
+  expect(onDisk.get("README.md")).toBe(readText(s.cardPath));
   expect(built.get("README.md")).toBe(onDisk.get("README.md"));
 
   const portableBuilt = recordsOf(built).map(withoutWavHash);
@@ -98,7 +101,7 @@ function assertPackage(kind: PublicKind): void {
     for (const [rel, content] of onDisk) {
       expect(sha256(content), rel).toBe(published.get(rel));
     }
-    expect(checksumManifest(built)).toBe(readFileSync(join(s.publicDir, "checksums.sha256"), "utf8"));
+    expect(checksumManifest(built)).toBe(readText(join(s.publicDir, "checksums.sha256")));
     for (const [rel, content] of built) {
       expect(content, rel).toBe(onDisk.get(rel));
     }
@@ -128,7 +131,7 @@ describe.skipIf(!v1PublicPresent)("jam-actions-v1-public", () => {
 
   it("README is byte-equal to docs/hf-cards/jam-actions-v1.md", () => {
     const s = spec("v1");
-    expect(readFileSync(join(s.publicDir, "README.md"), "utf8")).toBe(readFileSync(s.cardPath, "utf8"));
+    expect(readText(join(s.publicDir, "README.md"))).toBe(readText(s.cardPath));
   });
 
   it("checksums cover every file and no file outside the list", () => {
@@ -147,7 +150,7 @@ describe.skipIf(!probePublicPresent)("jam-actions-v1-probe-public", () => {
 
   it("README is byte-equal to docs/hf-cards/jam-actions-v1-probe.md", () => {
     const s = spec("probe");
-    expect(readFileSync(join(s.publicDir, "README.md"), "utf8")).toBe(readFileSync(s.cardPath, "utf8"));
+    expect(readText(join(s.publicDir, "README.md"))).toBe(readText(s.cardPath));
   });
 });
 
@@ -177,7 +180,7 @@ describe("card halt", () => {
 describe("banner refusal", () => {
   it("refuses to build a public set whose card still carries a DRAFT banner", () => {
     const s = spec("v1");
-    const real = readFileSync(s.cardPath, "utf8");
+    const real = readText(s.cardPath);
     // A draft card is a fixture, not the live card: the live card must NOT carry the banner
     // once the numbers are filled, or the sets could never be built.
     // CRLF-tolerant: a Windows checkout with autocrlf hands this test a CRLF card.

@@ -44,13 +44,16 @@ export function checksumManifest(files: Map<string, string>): string {
     .join("\n") + "\n";
 }
 
+/** Text copied from the working tree is LF-pinned: a Windows checkout with autocrlf hands the generator CRLF files, and the checksums must describe what git stores. */
+const lf = (text: string): string => text.replace(/\r\n/g, "\n");
+
 export function readCardOrHalt(cardPath: string): string {
   if (!existsSync(cardPath)) {
     throw new Error(
       `halt: dataset card missing at ${cardPath}; generator does not write README prose`,
     );
   }
-  return readFileSync(cardPath, "utf8");
+  return lf(readFileSync(cardPath, "utf8"));
 }
 
 export function assertNoDraftBanner(card: string, cardPath: string): void {
@@ -75,7 +78,7 @@ export function readLicenseOrHalt(licensePath: string): string {
       `halt: LICENSE missing at ${licensePath}; generator does not compose LICENSE-DATASET.md`,
     );
   }
-  return readFileSync(licensePath, "utf8");
+  return lf(readFileSync(licensePath, "utf8"));
 }
 
 function copyTreeFiles(srcDir: string, skip: Set<string>): Map<string, string> {
@@ -86,7 +89,7 @@ function copyTreeFiles(srcDir: string, skip: Set<string>): Map<string, string> {
       if (skip.has(rel) || skip.has(name)) continue;
       const full = join(dir, name);
       if (statSync(full).isDirectory()) walk(full, rel);
-      else files.set(rel, readFileSync(full, "utf8"));
+      else files.set(rel, lf(readFileSync(full, "utf8")));
     }
   }
   walk(srcDir, "");
