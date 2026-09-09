@@ -217,9 +217,9 @@ describe("cli.ts — dispatch (spawned subprocess)", () => {
   );
 
   it(
-    "`practice fallin --measures 1-999999` exits 1 with an 'exceeds' message (proves dispatch reaches resolvePracticeLoopConfig, before any audio connect)",
+    "`practice bach-prelude-c-major-bwv846 --measures 1-999999` exits 1 with an 'exceeds' message (proves dispatch reaches resolvePracticeLoopConfig, before any audio connect)",
     () => {
-      const { status, stderr } = runCli(["practice", "fallin", "--measures", "1-999999"]);
+      const { status, stderr } = runCli(["practice", "bach-prelude-c-major-bwv846", "--measures", "1-999999"]);
       expect(status).toBe(1);
       expect(stderr).toMatch(/exceeds/i);
     },
@@ -229,7 +229,7 @@ describe("cli.ts — dispatch (spawned subprocess)", () => {
   it(
     "`play <song> --count-in -1` exits 1 with an 'Invalid --count-in' message (proves the new flags are parsed before any audio connect)",
     () => {
-      const { status, stderr } = runCli(["play", "fallin", "--count-in", "-1"]);
+      const { status, stderr } = runCli(["play", "bach-prelude-c-major-bwv846", "--count-in", "-1"]);
       expect(status).toBe(1);
       expect(stderr).toMatch(/count-in/i);
     },
@@ -280,9 +280,9 @@ describe("cli.ts — dispatch (spawned subprocess)", () => {
   );
 
   it(
-    "`sing fallin --mode not-a-mode` exits 1 with an 'Invalid mode' message (proves VALID_SING_MODES is wired, before any audio connect)",
+    "`sing bach-prelude-c-major-bwv846 --mode not-a-mode` exits 1 with an 'Invalid mode' message (proves VALID_SING_MODES is wired, before any audio connect)",
     () => {
-      const { status, stderr } = runCli(["sing", "fallin", "--mode", "not-a-mode"]);
+      const { status, stderr } = runCli(["sing", "bach-prelude-c-major-bwv846", "--mode", "not-a-mode"]);
       expect(status).toBe(1);
       expect(stderr).toMatch(/invalid mode/i);
     },
@@ -290,9 +290,9 @@ describe("cli.ts — dispatch (spawned subprocess)", () => {
   );
 
   it(
-    "`play fallin --engine not-an-engine` exits 1 with an 'Unknown engine' message (proves VALID_ENGINES is wired, before any audio connect)",
+    "`play bach-prelude-c-major-bwv846 --engine not-an-engine` exits 1 with an 'Unknown engine' message (proves VALID_ENGINES is wired, before any audio connect)",
     () => {
-      const { status, stderr } = runCli(["play", "fallin", "--engine", "not-an-engine"]);
+      const { status, stderr } = runCli(["play", "bach-prelude-c-major-bwv846", "--engine", "not-an-engine"]);
       expect(status).toBe(1);
       expect(stderr).toMatch(/unknown engine/i);
     },
@@ -300,9 +300,9 @@ describe("cli.ts — dispatch (spawned subprocess)", () => {
   );
 
   it(
-    "`play fallin --engine sample` without a sample pack exits 1 with an install hint (before audio connect)",
+    "`play bach-prelude-c-major-bwv846 --engine sample` without a sample pack exits 1 with an install hint (before audio connect)",
     () => {
-      const { status, stderr } = runCli(["play", "fallin", "--engine", "sample"]);
+      const { status, stderr } = runCli(["play", "bach-prelude-c-major-bwv846", "--engine", "sample"]);
       expect(status).toBe(1);
       expect(stderr).toMatch(/sampled piano is not installed/i);
     },
