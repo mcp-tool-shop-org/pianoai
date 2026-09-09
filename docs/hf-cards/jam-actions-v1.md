@@ -13,7 +13,7 @@ multilinguality:
 source_datasets:
   - original
 pretty_name: "AI Jam Sessions — Tool-Use Traces v1 (shown-work targets)"
-pretty_description: "371 multi-turn MCP tool-use traces over 27 public-domain piano pieces, nine task families, split by song. Every assistant turn shows the comparison that decides its answer. Built under a seven-rule experiment contract; the corpus was rebuilt eight times as each training run exposed what the previous target let a small model read instead of compute. CC-BY-SA-3.0-DE."
+pretty_description: "146 multi-turn MCP tool-use traces over 11 public-domain piano pieces whose arrangements carry a verified licence, nine task families, split by song. Every assistant turn shows the comparison that decides its answer. Built under a seven-rule experiment contract; rebuilt nine times as each training run — and finally a provenance audit — exposed what the previous version let through. CC-BY-SA-3.0-DE."
 size_categories:
   - n<1K
 task_categories:
@@ -35,12 +35,12 @@ configs:
       - split: train
         path: records.jsonl
 ---
-<!-- DRAFT against the 27-song corpus. Superseded by docs/findings/v1-provenance-audit.md (2026-09-09): the publishable set is 15 songs. Rewritten before any publish; do not upload this text. -->
+<!-- DRAFT until the r40 results block below is filled from experiments/coverage-v1-sft/RESULTS-r40.md. -->
 
 # jam-actions-v1
 
-**Schema:** `jam-actions-v1/1.0.0` · **Records:** 371 (254 train / 117 test, split by song) ·
-**Songs:** 27 · **Families:** 9 · **Licence:** CC-BY-SA-3.0-DE ·
+**Schema:** `jam-actions-v1/1.0.0` · **Records:** 146 (106 train / 40 test, split by song) ·
+**Songs:** 11 · **Families:** 9 · **Licence:** CC-BY-SA-3.0-DE ·
 **Source repo:** [mcp-tool-shop-org/ai-jam-sessions](https://github.com/mcp-tool-shop-org/ai-jam-sessions)
 
 The successor to [jam-actions-v0](https://huggingface.co/datasets/mcp-tool-shop/jam-actions-v0).
@@ -56,15 +56,15 @@ assistant turn. Nine families:
 
 | family | n | the question | the final turn |
 |---|---|---|---|
-| acoustic | 162 | grade a recorded take: `match`, `pitch_fail`, `timing_fail` | `cents 66.9: \|66.9\| − 50 = 16.9, against the gate; onset −9.8: \|9.8\| − 40 = −30.2, inside: pitch_fail` |
-| harmony | 43 | does a proposed reharmonisation clear the verifier | `intended Bsus2, detected Csus2: different; chromatic 0/17 = 0.000 − 0.2 = −0.200, inside: rejected` |
-| compare | 36 | do two pieces share a key | `Eb major, F major: different: different_key` |
-| chord | 22 | what chord is the left hand playing in measure N | the symbol |
-| measures | 27 | how many measures | the number |
-| transpose | 27 | the key after transposing by an interval | the key |
-| teaching_goals | 27 | the song's teaching goals | the list |
-| key_moments | 20 | the first key moment's measures | the range |
+| acoustic | 65 | grade a recorded take: `match`, `pitch_fail`, `timing_fail` | `cents 66.9: \|66.9\| − 50 = 16.9, against the gate; onset −9.8: \|9.8\| − 40 = −30.2, inside: pitch_fail` |
+| harmony | 19 | does a proposed reharmonisation clear the verifier | `intended Bsus2, detected Csus2: different; chromatic 0/17 = 0.000 − 0.2 = −0.200, inside: rejected` |
+| measures | 11 | how many measures | the number |
+| transpose | 11 | the key after transposing by an interval | the key |
+| teaching_goals | 11 | the song's teaching goals | the list |
+| chord | 10 | what chord is the left hand playing in measure N | the symbol |
+| key_moments | 8 | the first key moment's measures | the range |
 | ensemble | 7 | who entered first / which tone is wrong in a mixed take | the label |
+| compare | 4 | do two pieces share a key (train only — the three held-out songs have three keys) | `Eb major, F major: different: different_key` |
 
 The acoustic, harmony and compare turns **show their work**: the measured quantity, the gate it is
 held against, the subtraction, the word the subtraction implies, then the label. The label is never
@@ -90,14 +90,22 @@ hashes; the tool results are measurements at instrument resolution (0.1 cent, 0.
 
 Plus three rules this arc added: gold must vary within every family, in train and in test; no answer
 in any prompt-visible field; and a **tool-less baseline** — a local 24B model given the user turn
-alone — must sit at the floor before any GPU is spent. It does: 31/117 held out, at or below the
-three-way floor in every family.
+alone — must sit at the floor before any GPU is spent. It does: 10/40 held out, acoustic 5/17, at
+the three-way floor.
+
+And one rule the arc earned last, at some cost: **a song is in the corpus only if its arrangement's
+licence is verified from evidence** — the download URL, the source's terms, and the MIDI file's own
+copyright and title events — recorded in the song's provenance block. The set is derived from those
+blocks by a filter, not typed by hand, and a test locks it at these eleven.
 
 ## How it got this shape
 
-Eight rebuilds, each a repair the previous training run exposed. The numbers are held-out acoustic
-takes (the family where a small model had to compare a measurement to a gate); the base is
+Nine rebuilds, each a repair the previous run exposed. The numbers are held-out acoustic takes
+(the family where a small model had to compare a measurement to a gate); the base is
 Qwen2.5-3B-Instruct with a fair prompt, the adapter a rank-16 LoRA at the same recipe every time.
+Rows above the line were measured on a 27-song working corpus that a later provenance audit found
+unpublishable; the results were real measurements on real arrangements, and they are the reason the
+target looks the way it does, but that corpus is not this dataset.
 
 | corpus | what the target said | base | adapter | what the run showed |
 |---|---|---|---|---|
@@ -108,17 +116,12 @@ Qwen2.5-3B-Instruct with a fair prompt, the adapter a rank-16 LoRA at the same r
 | 349, onsets vary, both signs | comparison in words | 20/54 | 47/54 | flat 9/9, sharp 2/9: the sign was the whole gain |
 | 349, sign uninformative | comparison in words | 20/54 | 38/54 | pitch 2/18; a near-gate probe then showed the onset word followed the sign of the onset, never its size |
 | 349 | **digits of the subtraction** | 20/54 | **54/54** | probe 70/72 (seed 13), 72/72 (seed 42); 7B 54/54 and 72/72 |
-| **371, this release** | digits, and harmony/compare show theirs | 23/54 | **54/54** | **116/117 overall; probe 72/72** |
+| 371, harmony/compare show theirs | digits | 23/54 | **54/54** | 116/117 overall; probe 72/72; the base alone got harmony 13/14 and compare 6/6 once the tool returned the deciding quantities |
+| **146, eleven verified songs — this release** | digits | __R40_BASE__ | __R40_ADAPTER__ | __R40_NOTE__ |
 
 Three targets, one recipe, identical loss curves: a bare label trained a class prior, a worded
 comparison trained sign-reading, and the digits trained the comparison. The corpus never changed
 what the model was shown. It changed what the model was asked to write.
-
-The last row also carries a finding from the other side. Before this release `verify_harmony` echoed
-the proposal and no tool returned a key, so harmony sat at the majority class and compare at chance
-for every adapter. Once the tool results carried the intended and detected chords and the two keys,
-the **base model** scored harmony 13/14 and compare 6/6 with no adapter at all. A model can compare
-two things it is shown; it cannot compare a thing it is not shown, and no adapter makes it.
 
 Full results, receipts and raw completions for every run are in the source repo under
 `experiments/coverage-v1-sft/` (`RESULTS*.md`).
@@ -127,11 +130,11 @@ Full results, receipts and raw completions for every run are in the source repo 
 
 | file | what |
 |---|---|
-| `records.jsonl` | the 371 records, one per line |
+| `records.jsonl` | the 146 records, one per line |
 | `records/` | the same records, one file each |
-| `splits.json` | train/test ids; split by song |
+| `splits.json` | train/test ids; split by song (held out: solace, the-easy-winners, the-entertainer) |
 | `manifest.json`, `coverage.json` | counts, tools, songs, shapes, floors — build artefacts, not claims |
-| `checksums.sha256` | 377 entries, breadth-first, LF-pinned; verify with `sha256sum -c` |
+| `checksums.sha256` | 152 entries, breadth-first, LF-pinned; verify with `sha256sum -c` |
 | `PROVENANCE-NOTE.md` | which songs are excluded and why |
 | `LICENSE-DATASET.md`, `CITATION.cff` | licence chain and citation |
 
@@ -144,23 +147,30 @@ between Node 22 and 24 by last-place noise; the labels do not.
 
 ## Evaluation companion
 
-[jam-actions-v1-probe](https://huggingface.co/datasets/mcp-tool-shop/jam-actions-v1-probe) — 72
-acoustic takes on the nine held-out songs measured within 10 ms or 5 cents of a gate, both signs,
+[jam-actions-v1-probe](https://huggingface.co/datasets/mcp-tool-shop/jam-actions-v1-probe) — 24
+acoustic takes on the three held-out songs measured within 10 ms or 5 cents of a gate, both signs,
 never trained on. It is the test that told a sign-reader from a comparator when the main split
 could not.
 
 ## Source data and licence
 
-The 27 pieces are public-domain compositions — Bach, Mozart, Beethoven, Chopin, Schumann, Joplin,
-Brackett, and traditional English, Irish, Scottish, American and Japanese tunes — transcribed by the
-AI Jam Sessions team (`source_type: transcribed-by-author` on every record). Three songs present in
-the working library are excluded here: `clair-de-lune` (the v0 fine-tune holdout), and Satie's
-Gymnopédie No. 1 and Debussy's Arabesque No. 1, whose arrangement provenance could not be verified
-in the v0 audit. The exclusion is enforced by a test.
+Eleven public-domain compositions — Bach's Prelude in C (BWV 846), Beethoven's Für Elise, Mozart's
+Sonata K. 545 (first movement), and eight Scott Joplin rags — in arrangements from two sources:
+Bernd Krueger's piano-midi.de MIDI (three songs, CC-BY-SA-3.0-DE, the file's own copyright event
+naming him) and the Mutopia Project's LilyPond typesettings (eight songs, Public Domain, each
+piece's Mutopia page). Every record's `provenance` block carries the source URL, the terms it was
+read under, the licence, the arranger as the file names them, and the file's SHA-256.
+
+The source library holds 108 songs; 97 are not here because their MIDI came from sites whose terms
+do not permit redistribution or whose licence could not be established. Three further songs are
+excluded by rule: `clair-de-lune` (the v0 fine-tune holdout), and Satie's Gymnopédie No. 1 and
+Debussy's Arabesque No. 1 (provenance unverified in the v0 audit). The exclusions are enforced by
+tests, and the audit that produced them is `docs/findings/library-provenance-audit.md` in the
+source repo.
 
 The records, traces and annotations are released under **CC-BY-SA-3.0-DE**, the same licence as
-jam-actions-v0, so the two sets can be combined without a licence boundary between them. The
-compositions themselves are public domain. Code in the source repo is MIT.
+jam-actions-v0, so the two sets combine without a licence boundary; `LICENSE-DATASET.md` states the
+three layers. Code in the source repo is MIT.
 
 ## Citation
 
