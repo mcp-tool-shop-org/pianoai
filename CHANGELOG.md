@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — jam-actions-v1: the corpus that shows its work
+- `datasets/jam-actions-v1/` at 371 records (254 train / 117 test, split by song), nine task
+  families over 27 public-domain pieces, schema `jam-actions-v1/1.0.0`. Acoustic, harmony and
+  compare assistant turns state the measured quantity, the gate, the subtraction and the word before
+  the label; the label is always the engine's predicate on the measurement, verified by test.
+- `datasets/jam-actions-v1-probe/`: 72 evaluation-only acoustic takes within 10 ms or 5 cents of a
+  gate on the held-out songs. It is the set that separated a sign-reader from a comparator.
+- The experiment contract in `src/dataset/experiment/` (published-schema registry, split-by-song,
+  generic trivial baselines, tool-less baseline gate) and `experiments/coverage-v1-sft/` with every
+  run's receipts and raw completions.
+- Results: a Qwen2.5-3B rank-16 LoRA at one unchanged recipe scored 54/54 on held-out acoustic
+  takes (two seeds), 116/117 overall on the release corpus and 72/72 on the probe, against a base of
+  23/54 and 66/117; the 7B at the same recipe 54/54 and 72/72. The seven runs before it, on the same
+  recipe, learned a class prior from a bare label and sign-reading from a worded comparison
+  (`RESULTS*.md`).
+- `experiments/acoustic-sft/runpod.mjs`: pods named by experiment, teardown by id only, refusal to
+  deploy beside foreign pods, and adoption or teardown of a pod that a failed create still made.
+
+### Fixed
+- `scorePerformance` capped the "correct" window at the caller's tolerance; the 40 ms house gate is
+  now exactly the verdict window at every tempo, and the server comment says what the code does.
+- The v1 timing rule is two-sided (`|onset| > 40`), matching the product; it had been late-only.
+
+### Changed
+- HF card corrections for `jam-actions-acoustic-v0` (1.0.2) and the enriched `jam-actions-v0` card
+  adopted as 0.5.1 with a push-workflow guard against overwriting a card edited on Hugging Face.
+
 ## [2.5.0] - 2026-09-08
 
 ### Added — the live ensemble: watching the band while the music plays
