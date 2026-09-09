@@ -49,16 +49,16 @@ with 504.
 Two lines in a `Modelfile` beside the adapter:
 
 ```
-FROM qwen2.5:7b-instruct
+FROM qwen2.5:7b-instruct-q8_0
 ADAPTER ./adapter.gguf
 ```
 
 ```bash
-ollama create ai-jam-grader-7b -f Modelfile
+ollama create ai-jam-grader-7b-q8 -f Modelfile
 ```
 
-`qwen2.5:7b-instruct` in the Ollama library is the Instruct weights at **Q4_K_M**. Read the next
-section before relying on that.
+`qwen2.5:7b-instruct` without a suffix is the Instruct weights at **Q4_K_M**; the measurements
+below say why the q8_0 tag is the one to use, and why the model's own chat template is not.
 
 ## What it measures, and the cost of Q4
 
@@ -80,6 +80,9 @@ Measured on an RTX 5090, one model loaded at a time, `ollama stop` between:
 | 7B seed 42, Ollama Q4_K_M base + F16 LoRA | **4/17** | 21/40 | **6/24** | 8.8 GB | 142 |
 | 7B seed 42, Ollama **q8_0** base + F16 LoRA | 12/17 | 34/40 | 21/24 | 11.8 GB | 112 |
 | 7B seed 42, Ollama **fp16** base + F16 LoRA | 11/17 | 31/40 | 21/24 | 18.1 GB | 79 |
+| 7B seed 42, fp16, greedy pins, Ollama template | 11/17 | 31/40 | 21/24 | 16.8 GB | 78 |
+| **7B seed 42, fp16, greedy, HF template (`--raw`)** | **17/17** | **39/40** | **24/24** | 16.8 GB | 76 |
+| **7B seed 42, q8_0, greedy, HF template (`--raw`)** | **17/17** | **38/40** | **24/24** | 10.3 GB | 107 |
 | 3B four-draw seed 42, bf16 | 17/17 | 37/40 | 24/24 | — | — |
 | 3B four-draw seed 42, Ollama Q4_K_M base + F16 LoRA | 15/17 | 33/40 | 19/24 | 5.7 GB | 168–178 |
 
@@ -89,17 +92,38 @@ label, invents colons, and the scorer takes the wrong tail. The 3B over Q4 keeps
 behaviour. The families that need no arithmetic (measures, transpose, teaching goals) are unharmed
 in both.
 
+## The gap was the template, not the weights
+
+A byte-diff of what each path feeds the model (chunk 54, `docs/handoffs/live-environment-55-grok-to-claude.md`)
+found the first difference at byte 359 of a 48,000-character prompt, and three classes of it:
+
+1. Ollama's Qwen2.5 template prints each tool with Go's default struct formatting instead of JSON,
+   so the 54-tool catalogue the adapter was trained on arrives as `{add_section Add a structural … {object <nil> …}}`.
+2. The template drops an assistant turn's `tool_calls` whenever that turn also has `content`; the
+   grading trace's assistant turn has both, so the two `<tool_call>` blocks never reach the model.
+3. Two tool results in one user turn become two user turns.
+
+The prompt loses about 3,900 tokens of what the adapter learned to read. Pinning greedy decoding
+(`repeat_penalty 1.0`, `top_k 0`, `top_p 1.0`, `num_ctx 16384`) changes nothing; rendering the
+prompt with the Hugging Face chat template and sending it through `/api/generate` with `raw: true`
+recovers everything. `ollama-grade.mjs --raw` does exactly that (it calls
+`scripts/render_hf_prompt.py` with the base's tokenizer), and with it:
+
+- **q8_0 under the HF template is the published adapter**: 17/17, 38/40, 24/24, the bf16 family
+  table byte for byte, at 10 GB and 107 tokens a second.
+- fp16 under the HF template is 17/17, 39/40, 24/24.
+- Q4_K_M was never re-measured under the HF template; the base is still the cheaper of the two
+  effects, and q8_0 costs 2 GB more than Q4 for the numbers above.
+
 So, as of this measurement:
 
-- Do not present the 7B over `qwen2.5:7b-instruct` (Q4_K_M) as the published adapter. It is not.
-- Use `qwen2.5:7b-instruct-q8_0` if you run the 7B in Ollama: it recovers most of the collapse
-  (21/24 near the gate) and beats fp16 at half the memory.
-- The residual gap is not quantisation. fp16 is the precision the adapter was trained against and
-  still misses 3 of 24 near the gate and 6 of 17 held out, with the label failing to follow the
-  model's own digits on 3 of 23 parsed lines. What differs is the serving path: how Ollama's
-  template renders the tool catalogue and tool-result turns against the Hugging Face chat template
-  the adapter saw in training. That comparison is the next measurement; until it is made, the bf16
-  numbers belong to the PEFT runtime only.
+- Run the 7B over `qwen2.5:7b-instruct-q8_0`, and send it prompts rendered with the Hugging Face
+  template (`ollama-grade.mjs --raw`, or your own client doing the same through `/api/generate`
+  with `raw: true`). Plain `/api/chat` through the library template is not the published adapter.
+- The proper fix is a `TEMPLATE` in the Modelfile that renders tools as JSON, keeps `tool_calls`
+  beside content, and groups tool results the way the training template does, so that `/api/chat`
+  works unchanged. That is the next chunk; when it lands and measures 24/24, this page changes to
+  the Modelfile and the raw path becomes the fallback.
 - The bf16 numbers are reproducible with the PEFT runtime the experiment used
   (`experiments/coverage-v1-sft/scripts/predict_v1.py`) on a GPU with room for the base in bf16.
 
