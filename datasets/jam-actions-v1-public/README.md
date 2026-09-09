@@ -174,9 +174,10 @@ three layers. Code in the source repo is MIT.
 
 ## Citation
 
-See `CITATION.cff`. This release, jam-actions-v1 1.1.0, is a version under the jam-actions concept DOI
-`10.5281/zenodo.20279918`; its version DOI is minted on publication and written here in the same
-release step. 1.0.0 remains citable as [`10.5281/zenodo.22675239`](https://doi.org/10.5281/zenodo.22675239).
+See `CITATION.cff`. This release, jam-actions-v1 1.1.0, is Zenodo record
+[`10.5281/zenodo.22679457`](https://doi.org/10.5281/zenodo.22679457), a version under the jam-actions
+concept DOI `10.5281/zenodo.20279918`. 1.0.0 remains citable as
+[`10.5281/zenodo.22675239`](https://doi.org/10.5281/zenodo.22675239).
 Cite the version DOI when you mean this dataset exactly; the concept DOI resolves to whatever the
 line's latest version is.
 
