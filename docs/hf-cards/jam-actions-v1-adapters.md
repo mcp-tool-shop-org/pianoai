@@ -1,6 +1,5 @@
 ---
 base_model:
-  - Qwen/Qwen2.5-3B-Instruct
   - Qwen/Qwen2.5-7B-Instruct
 library_name: peft
 tags:
