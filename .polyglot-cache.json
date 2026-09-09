@@ -13307,6 +13307,97 @@
       "timestamp": 1788943002974,
       "source": "**v2.6.0 — the release that stops shipping what it had no licence to ship** (see [CHANGELOG](CHANGELOG.md)).\nA per-file provenance audit of the song library found that of the 108 MIDI arrangements, 14 carry a\nlicence that permits redistribution and 94 do not — and that twelve files were a different piece\nthan their name. Every song now carries an evidence-backed ⟦0⟧ block (source URL, the\nsite's terms, the arranger as the file's own copyright event names them, SHA-256, title verdict);\nthe twelve are quarantined; the npm package ships the 14 and marks the rest *unfetched*, and\n⟦1⟧ downloads each from the site that published\nit, under that site's terms, refusing any file whose hash no longer matches. Earlier versions shipped\nall 120 files and are deprecated on npm. The same audit reset the jam-actions-v1 dataset to the\neleven songs whose arrangements are verified (three Krueger CC-BY-SA-3.0-DE, eight Mutopia Public\nDomain); the corpus, its near-gate probe and the training arc that found the shown-work target — a\n3B rank-16 LoRA at one unchanged recipe going from a class prior to 54/54 held-out and 72/72 near\nthe gate once the assistant turn wrote the digits of the comparison — are in the repo under\n⟦2⟧ and ⟦3⟧, with publication to Hugging Face and Zenodo to\nfollow from the verified corpus. Also in this release: ⟦4⟧ caps the correct window\nat the caller's gate, so the 40 ms house rule is exactly the verdict window.",
       "targetLang": "pt"
+    },
+    "353973f33b1519da": {
+      "translation": "Docker",
+      "model": "translategemma:27b",
+      "timestamp": 1788974122538,
+      "source": "Docker",
+      "targetLang": "zh"
+    },
+    "0d73ebbea830cd7a": {
+      "translation": "每次发布都会发布⟦0⟧，这是一个精简的镜像，它在标准输入/输出上运行 MCP 服务器。需要注意的是，⟦1⟧是内存：日志、服务器状态、用户歌曲以及任何获取的 MIDI 文件都存储在那里，因此请挂载一个卷，否则它们会随着容器一起消失。",
+      "model": "translategemma:27b",
+      "timestamp": 1788974122538,
+      "source": "Every release also publishes ⟦0⟧, a slim image that runs\nthe MCP server on stdio. The one thing to know is that ⟦1⟧ is the memory: the journal, server\nstate, user songs and any fetched MIDI live there, so mount a volume or they die with the\ncontainer.",
+      "targetLang": "zh"
+    },
+    "a3f3beb9c6e7e808": {
+      "translation": "该镜像包含 14 个可重新分发的 MIDI 文件；在容器内运行一次⟦0⟧会将剩余的 94 个文件放入卷中。⟦1⟧对命名卷执行相同的操作，并且⟦2⟧添加了一个 Ollama 侧边容器。详情、镜像内的 CLI 以及故意不包含的内容：[docs/docker.md](docs/docker.md)。在 Ollama 中运行经过微调的评估器，并衡量 4 位基础模型的成本：[docs/ollama-adapters.md](docs/ollama-adapters.md)。",
+      "model": "translategemma:27b",
+      "timestamp": 1788974122538,
+      "source": "The image ships the 14 redistributable MIDI files; ⟦0⟧ run once\ninside the container puts the other 94 in the volume. ⟦1⟧ does the same with a\nnamed volume, and ⟦2⟧ adds an Ollama sidecar. Details, the CLI inside the image and\nwhat is deliberately not in it: [docs/docker.md](docs/docker.md). Running the fine-tuned graders\nin Ollama, with the measured cost of a 4-bit base: [docs/ollama-adapters.md](docs/ollama-adapters.md).",
+      "targetLang": "zh"
+    },
+    "4ebab71fbb6159a0": {
+      "translation": "**v2.6.0 — 停止发布其没有授权发布的内容**（参见[CHANGELOG](CHANGELOG.md））。\n对歌曲库中的每个文件进行来源审计，发现 108 个 MIDI 乐曲中，有 14 个具有允许重新分发的许可，而 94 个则没有——并且有十二个文件的内容与其文件名不符。现在，每首歌曲都包含一个基于证据的⟦0⟧块（来源 URL、网站条款、将文件命名为其自身版权事件的编曲者、SHA-256、标题判决）；这十二个文件已被隔离；npm 包包含这 14 个文件，并将剩余的文件标记为*未获取*，并且⟦1⟧会从发布该文件的网站下载每个文件，并遵守该网站的条款，拒绝任何哈希值不再匹配的文件。早期版本包含所有 120 个文件，并且在 npm 上已被弃用。相同的审计将 jam-actions-v1 数据集重置为 11 首经过验证的乐曲（三首 Krueger CC-BY-SA-3.0-DE，八首 Mutopia Public Domain）；该语料库、其近门探测以及发现所示作品目标的训练弧——一个 3B 秩 16 LoRA，使用一个不变的配方，从一个先验类别开始，在 54/54 个保留样本和 72/72 个近门样本中进行训练，一旦助手完成，它就会写出比较的数字——都位于仓库中的⟦2⟧和⟦3⟧中，并将发布到 Hugging Face 和 Zenodo，以供经过验证的语料库使用。此外，在此版本中：⟦4⟧将正确的窗口限制在调用者的门限处，因此 40 毫秒的规则恰好是判决窗口。",
+      "model": "translategemma:27b",
+      "timestamp": 1788974122538,
+      "source": "**v2.6.0 — the release that stops shipping what it had no licence to ship** (see [CHANGELOG](CHANGELOG.md)).\nA per-file provenance audit of the song library found that of the 108 MIDI arrangements, 14 carry a\nlicence that permits redistribution and 94 do not — and that twelve files were a different piece\nthan their name. Every song now carries an evidence-backed ⟦0⟧ block (source URL, the\nsite's terms, the arranger as the file's own copyright event names them, SHA-256, title verdict);\nthe twelve are quarantined; the npm package ships the 14 and marks the rest *unfetched*, and\n⟦1⟧ downloads each from the site that published\nit, under that site's terms, refusing any file whose hash no longer matches. Earlier versions shipped\nall 120 files and are deprecated on npm. The same audit reset the jam-actions-v1 dataset to the\neleven songs whose arrangements are verified (three Krueger CC-BY-SA-3.0-DE, eight Mutopia Public\nDomain); the corpus, its near-gate probe and the training arc that found the shown-work target — a\n3B rank-16 LoRA at one unchanged recipe going from a class prior to 54/54 held-out and 72/72 near\nthe gate once the assistant turn wrote the digits of the comparison — are in the repo under\n⟦2⟧ and ⟦3⟧, with publication to Hugging Face and Zenodo to\nfollow from the verified corpus. Also in this release: ⟦4⟧ caps the correct window\nat the caller's gate, so the 40 ms house rule is exactly the verdict window.",
+      "targetLang": "zh"
+    },
+    "62145eacfe7de824": {
+      "translation": "Docker",
+      "model": "translategemma:27b",
+      "timestamp": 1788974141039,
+      "source": "Docker",
+      "targetLang": "fr"
+    },
+    "c50341e344785ed8": {
+      "translation": "Chaque version publie également ⟦0⟧, une image allégée qui exécute le serveur MCP sur stdio. Il est important de savoir que ⟦1⟧ est la mémoire : le journal, l’état du serveur, les morceaux de musique des utilisateurs et tous les fichiers MIDI téléchargés y sont stockés. Il est donc nécessaire de monter un volume, sinon ils seront perdus lorsque le conteneur sera supprimé.",
+      "model": "translategemma:27b",
+      "timestamp": 1788974141039,
+      "source": "Every release also publishes ⟦0⟧, a slim image that runs\nthe MCP server on stdio. The one thing to know is that ⟦1⟧ is the memory: the journal, server\nstate, user songs and any fetched MIDI live there, so mount a volume or they die with the\ncontainer.",
+      "targetLang": "fr"
+    },
+    "e16d0c699c18d03e": {
+      "translation": "L’image contient les 14 fichiers MIDI redistribuables ; l’exécution de ⟦0⟧ une seule fois à l’intérieur du conteneur place les 94 autres fichiers dans le volume. ⟦1⟧ fait de même avec un volume nommé, et ⟦2⟧ ajoute un conteneur annexe Ollama. Pour plus de détails, consultez la documentation sur l’interface en ligne de commande à l’intérieur de l’image et sur ce qui n’y est pas inclus : [docs/docker.md](docs/docker.md). Pour exécuter les évaluateurs affinés dans Ollama, avec le coût mesuré d’une base à 4 bits : [docs/ollama-adapters.md](docs/ollama-adapters.md).",
+      "model": "translategemma:27b",
+      "timestamp": 1788974141039,
+      "source": "The image ships the 14 redistributable MIDI files; ⟦0⟧ run once\ninside the container puts the other 94 in the volume. ⟦1⟧ does the same with a\nnamed volume, and ⟦2⟧ adds an Ollama sidecar. Details, the CLI inside the image and\nwhat is deliberately not in it: [docs/docker.md](docs/docker.md). Running the fine-tuned graders\nin Ollama, with the measured cost of a 4-bit base: [docs/ollama-adapters.md](docs/ollama-adapters.md).",
+      "targetLang": "fr"
+    },
+    "3ca64a7cd48cabd0": {
+      "translation": "Docker",
+      "model": "translategemma:27b",
+      "timestamp": 1788974160720,
+      "source": "Docker",
+      "targetLang": "it"
+    },
+    "749c4b892528ac65": {
+      "translation": "Ogni versione pubblica anche ⟦0⟧, un’immagine leggera che esegue il server MCP tramite stdio. L’unica cosa da tenere a mente è che ⟦1⟧ è la memoria: il registro, lo stato del server, le canzoni degli utenti e tutti i file MIDI scaricati vengono memorizzati lì, quindi è necessario montare un volume, altrimenti, quando il container viene chiuso, i dati andranno persi.",
+      "model": "translategemma:27b",
+      "timestamp": 1788974160720,
+      "source": "Every release also publishes ⟦0⟧, a slim image that runs\nthe MCP server on stdio. The one thing to know is that ⟦1⟧ is the memory: the journal, server\nstate, user songs and any fetched MIDI live there, so mount a volume or they die with the\ncontainer.",
+      "targetLang": "it"
+    },
+    "1135ada24a21399d": {
+      "translation": "L’immagine include i 14 file MIDI ridistribuibili; l’esecuzione di ⟦0⟧ una sola volta all’interno del container posiziona gli altri 94 file nel volume. ⟦1⟧ fa la stessa cosa con un volume denominato e ⟦2⟧ aggiunge un componente aggiuntivo Ollama. Dettagli, l’interfaccia a riga di comando all’interno dell’immagine e cosa non è incluso intenzionalmente: [docs/docker.md](docs/docker.md). Esecuzione dei valutatori ottimizzati in Ollama, con il costo misurato di una base a 4 bit: [docs/ollama-adapters.md](docs/ollama-adapters.md).",
+      "model": "translategemma:27b",
+      "timestamp": 1788974160720,
+      "source": "The image ships the 14 redistributable MIDI files; ⟦0⟧ run once\ninside the container puts the other 94 in the volume. ⟦1⟧ does the same with a\nnamed volume, and ⟦2⟧ adds an Ollama sidecar. Details, the CLI inside the image and\nwhat is deliberately not in it: [docs/docker.md](docs/docker.md). Running the fine-tuned graders\nin Ollama, with the measured cost of a 4-bit base: [docs/ollama-adapters.md](docs/ollama-adapters.md).",
+      "targetLang": "it"
+    },
+    "7e4378b94a78c71b": {
+      "translation": "Docker",
+      "model": "translategemma:27b",
+      "timestamp": 1788974168997,
+      "source": "Docker",
+      "targetLang": "pt"
+    },
+    "19f10bc1bbae9e9e": {
+      "translation": "Cada versão também publica ⟦0⟧, uma imagem otimizada que executa o servidor MCP no stdio. O mais importante a saber é que ⟦1⟧ é a memória: o registro, o estado do servidor, as músicas do usuário e qualquer MIDI recuperado ficam armazenados ali, portanto, monte um volume ou eles serão perdidos com o contêiner.",
+      "model": "translategemma:27b",
+      "timestamp": 1788974168997,
+      "source": "Every release also publishes ⟦0⟧, a slim image that runs\nthe MCP server on stdio. The one thing to know is that ⟦1⟧ is the memory: the journal, server\nstate, user songs and any fetched MIDI live there, so mount a volume or they die with the\ncontainer.",
+      "targetLang": "pt"
+    },
+    "640fe25a190ff7e0": {
+      "translation": "A imagem inclui os 14 arquivos MIDI redistribuíveis; executar ⟦0⟧ uma vez dentro do contêiner coloca os outros 94 no volume. ⟦1⟧ faz o mesmo com um volume nomeado, e ⟦2⟧ adiciona um contêiner auxiliar Ollama. Detalhes, a CLI dentro da imagem e o que não está incluído intencionalmente: [docs/docker.md](docs/docker.md). Executando os avaliadores ajustados no Ollama, com o custo medido de uma base de 4 bits: [docs/ollama-adapters.md](docs/ollama-adapters.md).",
+      "model": "translategemma:27b",
+      "timestamp": 1788974168997,
+      "source": "The image ships the 14 redistributable MIDI files; ⟦0⟧ run once\ninside the container puts the other 94 in the volume. ⟦1⟧ does the same with a\nnamed volume, and ⟦2⟧ adds an Ollama sidecar. Details, the CLI inside the image and\nwhat is deliberately not in it: [docs/docker.md](docs/docker.md). Running the fine-tuned graders\nin Ollama, with the measured cost of a 4-bit base: [docs/ollama-adapters.md](docs/ollama-adapters.md).",
+      "targetLang": "pt"
     }
   }
 }
