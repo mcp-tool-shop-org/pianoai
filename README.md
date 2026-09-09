@@ -492,7 +492,24 @@ ai-jam-sessions --version
 
 ## Status
 
-**v2.5.0 — the release where the model can watch the band play** (see [CHANGELOG](CHANGELOG.md)).
+**v2.6.0 — the release that stops shipping what it had no licence to ship** (see [CHANGELOG](CHANGELOG.md)).
+A per-file provenance audit of the song library found that of the 108 MIDI arrangements, 14 carry a
+licence that permits redistribution and 94 do not — and that twelve files were a different piece
+than their name. Every song now carries an evidence-backed `provenance` block (source URL, the
+site's terms, the arranger as the file's own copyright event names them, SHA-256, title verdict);
+the twelve are quarantined; the npm package ships the 14 and marks the rest *unfetched*, and
+`ai-jam-sessions library fetch --accept-source-terms` downloads each from the site that published
+it, under that site's terms, refusing any file whose hash no longer matches. Earlier versions shipped
+all 120 files and are deprecated on npm. The same audit reset the jam-actions-v1 dataset to the
+eleven songs whose arrangements are verified (three Krueger CC-BY-SA-3.0-DE, eight Mutopia Public
+Domain); the corpus, its near-gate probe and the training arc that found the shown-work target — a
+3B rank-16 LoRA at one unchanged recipe going from a class prior to 54/54 held-out and 72/72 near
+the gate once the assistant turn wrote the digits of the comparison — are in the repo under
+`datasets/` and `experiments/coverage-v1-sft/`, with publication to Hugging Face and Zenodo to
+follow from the verified corpus. Also in this release: `scorePerformance` caps the correct window
+at the caller's gate, so the 40 ms house rule is exactly the verdict window.
+
+Previously in v2.5.0 — the release where the model can watch the band play.
 `ensemble_now` reports what every instrument is doing while the music is still going: held notes
 per instrument, how long each has been held, and the combined chord. It runs on two channels, and
 the cheap one is the accurate one — when this server performs it knows exactly what it sent, so a

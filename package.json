@@ -1,6 +1,6 @@
 {
   "name": "@mcptoolshop/ai-jam-sessions",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "description": "Teach your AI to play piano and guitar, sing, and now LISTEN. 53 MCP tools, 108 annotated songs (14 with redistributable MIDI shipped; the rest fetched from source), 6 engines, a browser cockpit, and an audio inspector that measures a recording: onsets, pitch in cents, transcription, and grading a performance by ear. Ships two public tool-use datasets over symbolic and acoustic music.",
   "type": "module",
   "main": "dist/index.js",

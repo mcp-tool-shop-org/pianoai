@@ -135,7 +135,7 @@ cd apps/cockpit && npm install && npm run dev   # Vite dev server, opens in your
 
 実際のMIDIファイルから作成された12ジャンルにわたる120曲。各ジャンルには、歴史的背景、小節ごとの調和分析、重要なポイント、教育目標、およびパフォーマンスのヒント（ボーカルガイダンスを含む）を備えた、詳細な注釈が付けられた模範的な楽曲があります。これらの模範的な楽曲はテンプレートとして機能します。AIはまず1つを学習し、次に残りの楽曲に注釈を付けます。
 
-**どの楽曲が収録され、どのような情報が提供されるか。** 注釈は当社が作成し、すべての楽曲に付属しています。MIDIファイルは、ライブラリが構築された際に、公開されているMIDIサイトからダウンロードされました。ファイルごとの来歴監査（[`docs/findings/library-provenance-audit.md`](docs/findings/library-provenance-audit.md)）を行った結果、再配布が許可されているライセンスを持つファイルは14件のみであることが判明しました。これには、ベンド・クルーガー氏のpiano-midi.deのピアノアレンジ（CC-BY-SA-3.0-DE）と、ムトピア・プロジェクトのパブリックドメインの楽譜が含まれます。これらの14件はnpmパッケージに含まれています。残りの94件は含まれていません。それぞれのファイルについて、ソース、その利用規約、およびファイルのSHA-256ハッシュ値を記述したブロック（`.json`）が追加され、各サイトからそのサイトの利用規約に基づいてダウンロードされます（`provenance`）。ハッシュ値が注釈で検証されたものと一致しないファイルは一切ダウンロードされません（`ai-jam-sessions library fetch --accept-source-terms`）。ファイル名と実際の楽曲が異なる12件のファイルは隔離されており、そのため、収録数は120件ではなく108件となっています。このバージョン以前では、すべての120件のMIDIファイルが収録されていましたが、これは誤りであり、ここでは修正されています。
+**What ships, and what you fetch.** The annotations are ours and ship with every song. The MIDI files were downloaded from public MIDI sites when the library was built, and a per-file provenance audit ([`docs/findings/library-provenance-audit.md`](docs/findings/library-provenance-audit.md)) found that only 14 of them carry a licence that permits redistribution — Bernd Krueger's piano-midi.de arrangements (CC-BY-SA-3.0-DE) and the Mutopia Project's public-domain typesettings. Those 14 are in the npm package. The other 94 are not: their `.json` ships, with a `provenance` block naming the source, its terms and the file's SHA-256, and `ai-jam-sessions library fetch --accept-source-terms` downloads each one from the site that published it, under that site's terms, refusing any file whose hash no longer matches what the annotations were verified against. Twelve files that turned out to be a different piece than their name were quarantined, which is why the count is 108 and not the 120 earlier versions claimed. Versions before this one shipped all 120 MIDI files; that was a mistake, and it is corrected here rather than papered over.
 
 | ジャンル | 模範的な楽曲 | キー | 教える内容 |
 |-------|----------|-----|-----------------|
@@ -437,6 +437,23 @@ ai-jam-sessions --version
 ```
 
 ## ステータス
+
+**v2.6.0 — the release that stops shipping what it had no licence to ship** (see [CHANGELOG](CHANGELOG.md)).
+A per-file provenance audit of the song library found that of the 108 MIDI arrangements, 14 carry a
+licence that permits redistribution and 94 do not — and that twelve files were a different piece
+than their name. Every song now carries an evidence-backed `provenance` block (source URL, the
+site's terms, the arranger as the file's own copyright event names them, SHA-256, title verdict);
+the twelve are quarantined; the npm package ships the 14 and marks the rest *unfetched*, and
+`ai-jam-sessions library fetch --accept-source-terms` downloads each from the site that published
+it, under that site's terms, refusing any file whose hash no longer matches. Earlier versions shipped
+all 120 files and are deprecated on npm. The same audit reset the jam-actions-v1 dataset to the
+eleven songs whose arrangements are verified (three Krueger CC-BY-SA-3.0-DE, eight Mutopia Public
+Domain); the corpus, its near-gate probe and the training arc that found the shown-work target — a
+3B rank-16 LoRA at one unchanged recipe going from a class prior to 54/54 held-out and 72/72 near
+the gate once the assistant turn wrote the digits of the comparison — are in the repo under
+`datasets/` and `experiments/coverage-v1-sft/`, with publication to Hugging Face and Zenodo to
+follow from the verified corpus. Also in this release: `scorePerformance` caps the correct window
+at the caller's gate, so the 40 ms house rule is exactly the verdict window.
 
 **v2.5.0 — モデルがバンドの演奏を「見る」ことができるようになったリリース**（[CHANGELOG](CHANGELOG.md)を参照）。
 `ensemble_now`は、演奏中に各楽器が演奏している内容（保持されている音符、各音符の保持時間、および組み合わせられたコード）を報告します。2つのチャンネルで動作し、安価な方が正確です。このサーバーは、送信した内容を正確に把握しているため、コードは3つのノートオンとして表現され、トランスクリプションの問題ではありません。また、別の音響タップが各楽器の音源を測定し、検証を行います。測定コストは約**9マイクロ秒/オーディオコールバック**です。遅延は明示的に示されます（約23msのピッチ、約70msの確実な発音）。制限は文書化されており、対応可能です。トラッカーは単音であり、レイヤー化された音は個別にタップされ、ミックスとしてタップされることはありません。また、タップされていない楽器は、無音の楽器ではありません。

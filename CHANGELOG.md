@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.0] - 2026-09-09
+
 ### Fixed — the song library's provenance
 - Every song's JSON now carries an evidence-backed `provenance` block: the URL it was downloaded
   from, the site's terms (URL and quote), the arranger as the MIDI's own text and copyright events
@@ -22,12 +24,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   source's terms, checked against the recorded SHA-256. Earlier versions shipped all 120 files.
 
 ### Added — jam-actions-v1: the corpus that shows its work
-- `datasets/jam-actions-v1/` at 371 records (254 train / 117 test, split by song), nine task
-  families over 27 public-domain pieces, schema `jam-actions-v1/1.0.0`. Acoustic, harmony and
-  compare assistant turns state the measured quantity, the gate, the subtraction and the word before
-  the label; the label is always the engine's predicate on the measurement, verified by test.
-- `datasets/jam-actions-v1-probe/`: 72 evaluation-only acoustic takes within 10 ms or 5 cents of a
-  gate on the held-out songs. It is the set that separated a sign-reader from a comparator.
+- `datasets/jam-actions-v1/` at 146 records (106 train / 40 test, split by song), nine task
+  families over the eleven public-domain pieces whose arrangements carry a verified licence
+  (`src/dataset/acoustic-v1/allowlist.ts` derives the set from the library's provenance blocks and a
+  test locks it), schema `jam-actions-v1/1.0.0`. Acoustic, harmony and compare assistant turns state
+  the measured quantity, the gate, the subtraction and the word before the label; the label is
+  always the engine's predicate on the measurement, verified by test. Earlier working versions of
+  the corpus (268, 349, 371 records over 27 songs) were never published; their results are recorded
+  in `experiments/coverage-v1-sft/RESULTS*.md` as the arc that found the target.
+- `datasets/jam-actions-v1-probe/`: 24 evaluation-only acoustic takes within 10 ms or 5 cents of a
+  gate on the held-out songs. Its 72-take predecessor is the set that separated a sign-reader from
+  a comparator.
 - The experiment contract in `src/dataset/experiment/` (published-schema registry, split-by-song,
   generic trivial baselines, tool-less baseline gate) and `experiments/coverage-v1-sft/` with every
   run's receipts and raw completions.
