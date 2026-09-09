@@ -4,7 +4,15 @@
   "genre": "rock",
   "difficulty": "beginner",
   "key": "Eb major",
-  "tags": ["rock", "elton-john", "ballad", "piano", "singer-songwriter", "vocal", "pop-rock"],
+  "tags": [
+    "rock",
+    "elton-john",
+    "ballad",
+    "piano",
+    "singer-songwriter",
+    "vocal",
+    "pop-rock"
+  ],
   "composer": "Elton John",
   "status": "ready",
   "musicalLanguage": {
@@ -31,5 +39,31 @@
       "The tempo is around 65 BPM for the quarter note — slow enough to breathe between phrases, fast enough to maintain forward momentum. Don't drag, but don't push. Elton's recording has a gentle propulsion, like a bicycle coasting downhill.",
       "For singing: this is a love letter, not a performance. The voice should sound like a young man who can't quite believe what he's feeling — slightly uncertain, slightly amazed, deeply sincere. No vibrato on the verses, a little on the chorus. Let the cracks show. Elton's original vocal is imperfect and that's precisely what makes it perfect."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/112548.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "e51d8fe2854fd2a63f8128440a8ca1bb6d98f2e468489ee25e249451bb65de77",
+    "midi_title_events": [
+      "A.PIANO 2",
+      "ACOU BASS",
+      "STEEL GTR",
+      "MELODY",
+      "NYLON GTR",
+      "SLOWSTRING",
+      "FLUTE",
+      "DRUMS",
+      "GS/RESET"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

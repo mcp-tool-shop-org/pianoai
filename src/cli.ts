@@ -29,6 +29,8 @@ import type { PlaybackProgress, PlaybackMode, SyncMode, VoiceDirective, AsideDir
 import type { SingAlongMode } from "./note-parser.js";
 import type { SingVoiceFilter } from "./teaching/sing-on-midi.js";
 import { createAudioEngine } from "./audio-engine.js";
+import { createSampleEngine } from "./sample-engine.js";
+import { preferredPianoEngineId, resolvePianoSamplesDir } from "./sample-paths.js";
 import { createVocalEngine } from "./vocal-engine.js";
 import { createTractEngine, TRACT_VOICE_IDS, type TractVoiceId } from "./vocal-tract-engine.js";
 import { createGuitarEngine } from "./guitar-engine.js";
@@ -40,6 +42,11 @@ import {
 } from "./guitar-voices.js";
 import { createVocalSynthEngine } from "./vocal-synth-adapter.js";
 import { createLayeredEngine } from "./layered-engine.js";
+import { accompanimentEngineForLyrics, prepareScoreLocked } from "./vocal/prepare.js";
+import { getVocalTune } from "./vocal/tunes.js";
+import { renderOfflineSvs } from "./vocal/svs-offline.js";
+import { generateFullSong } from "./vocal/song-generate.js";
+import type { SvsBackend } from "./vocal/svs-offline.js";
 import { createVmpkConnector } from "./vmpk.js";
 import {
   listVoices, getVoice, getMergedVoice, VOICE_IDS,
@@ -70,6 +77,7 @@ import { renderPianoRoll } from "./piano-roll.js";
 import { buildJournalEntry, appendJournalEntry } from "./journal.js";
 import type { SessionSnapshot } from "./journal.js";
 import { VERSION } from "./version.js";
+import { EXIT_USER, JamError } from "./errors.js";
 import {
   PracticeLoop,
   resolvePracticeLoopConfig,
@@ -103,10 +111,23 @@ async function openInBrowser(filePath: string): Promise<void> {
   }
 }
 
-/** Standard "song not found" error message with a hint to run `list`. */
-function songNotFoundError(songId: string, extra?: string): string {
-  const base = `Song not found: "${songId}". Run \`ai-jam-sessions list\` to see available songs.`;
-  return extra ? `${base} ${extra}` : base;
+/** Standard "song not found" error (P9-006 JamError grammar). */
+function songNotFoundError(songId: string, extra?: string): JamError {
+  const hint = extra
+    ? `Run \`ai-jam-sessions list\` to see available songs. ${extra}`
+    : "Run `ai-jam-sessions list` to see available songs.";
+  return new JamError({
+    code: "INPUT_INVALID_SONG",
+    message: `Song not found: "${songId}".`,
+    hint,
+  });
+}
+
+/** Pre-flight EXIT_USER with the JamError [CODE]: message + Hint: line. */
+function exitUser(err: JamError): never {
+  console.error(`Error [${err.code}]: ${err.message}`);
+  if (err.hint) console.error(`Hint: ${err.hint}`);
+  process.exit(EXIT_USER);
 }
 
 function printSongTable(songs: SongEntry[]): void {
@@ -274,8 +295,7 @@ function cmdInfo(args: string[]): void {
   }
   const song = getSong(songId);
   if (!song) {
-    console.error(songNotFoundError(songId));
-    process.exit(1);
+    exitUser(songNotFoundError(songId));
   }
   printSongInfo(song);
 }
@@ -298,9 +318,12 @@ async function cmdPlay(args: string[]): Promise<void> {
   const seekStr = getFlag(args, "--seek");
   const voiceFilterStr = getFlag(args, "--voice-filter") ?? "all";
   const keyboardStr = getFlag(args, "--keyboard") ?? "grand";
-  const engineStr = getFlag(args, "--engine") ?? "piano";
+  const engineStr = getFlag(args, "--engine") ?? preferredPianoEngineId();
   const tractVoiceStr = getFlag(args, "--tract-voice") ?? "soprano";
   const guitarVoiceStr = getFlag(args, "--guitar-voice") ?? "steel-dreadnought";
+  const lyricsFlag = getFlag(args, "--lyrics");
+  const lyricsFile = getFlag(args, "--lyrics-file");
+  const lyricsMeasuresStr = getFlag(args, "--measures");
 
   // Session-recording flags (library songs only — see parsePlaySessionFlags).
   let sessionFlags: PlaySessionFlags;
@@ -312,7 +335,7 @@ async function cmdPlay(args: string[]): Promise<void> {
   }
 
   // Validate engine
-  const VALID_ENGINES = ["piano", "vocal", "tract", "synth", "piano+synth", "vocal+synth", "guitar", "guitar+synth"];
+  const VALID_ENGINES = ["piano", "sample", "vocal", "tract", "synth", "piano+synth", "vocal+synth", "guitar", "guitar+synth"];
   if (!VALID_ENGINES.includes(engineStr)) {
     console.error(`Unknown engine: "${engineStr}". Available: ${VALID_ENGINES.join(", ")}`);
     process.exit(1);
@@ -367,17 +390,46 @@ async function cmdPlay(args: string[]): Promise<void> {
   if (!isMidiFile) {
     const song = getSong(target);
     if (!song) {
-      console.error(songNotFoundError(target, "Or provide a .mid file path."));
-      process.exit(1);
+      exitUser(songNotFoundError(target, "Or provide a .mid file path."));
     }
   }
 
   // Create connector
+  let lyricsStart: number | undefined;
+  let lyricsEnd: number | undefined;
+  if (lyricsMeasuresStr) {
+    const m = lyricsMeasuresStr.match(/^(\d+)-(\d+)$/);
+    if (!m) {
+      console.error(`Invalid --measures range: "${lyricsMeasuresStr}". Use format like "1-8".`);
+      process.exit(1);
+    }
+    lyricsStart = parseInt(m[1], 10);
+    lyricsEnd = parseInt(m[2], 10);
+    if (lyricsStart < 1 || lyricsEnd < lyricsStart) {
+      console.error(`Invalid --measures range: "${lyricsMeasuresStr}".`);
+      process.exit(1);
+    }
+  }
+
+  let wantsLyrics = Boolean(lyricsFlag || lyricsFile);
+  let engineForAccompaniment = engineStr;
+  if (wantsLyrics) {
+    engineForAccompaniment = accompanimentEngineForLyrics(engineStr);
+  }
+
   function buildEngine(engine: string): VmpkConnector {
     switch (engine) {
       case "tract":  return createTractEngine({ voice: tractVoiceStr as TractVoiceId });
       case "vocal":  return createVocalEngine();
       case "synth":  return createVocalSynthEngine();
+      case "sample": {
+        const samplesDir = resolvePianoSamplesDir();
+        if (!samplesDir) {
+          console.error("Sampled piano is not installed. Set AI_JAM_SAMPLES_DIR to an Accurate-Salamander directory, or use --engine piano.");
+          process.exit(1);
+        }
+        return createSampleEngine({ samplesDir });
+      }
       case "guitar": return createGuitarEngine({ voice: guitarVoiceStr as GuitarVoiceId });
       case "piano+synth":
         return createLayeredEngine([createAudioEngine(keyboardId), createVocalSynthEngine()]);
@@ -391,18 +443,21 @@ async function cmdPlay(args: string[]): Promise<void> {
 
   const connector: VmpkConnector = useMidi
     ? createVmpkConnector(portName ? { portName } : undefined)
-    : buildEngine(engineStr);
+    : buildEngine(engineForAccompaniment);
 
   const ENGINE_LABELS: Record<string, string> = {
     tract: `tract engine (${tractVoiceStr})`,
     vocal: "vocal engine",
     synth: "vocal-synth engine",
+    sample: "sampled piano (Accurate-Salamander)",
     guitar: `guitar engine (${guitarVoiceStr})`,
     "piano+synth": `${keyboardStr} piano + vocal-synth`,
     "vocal+synth": "vocal + vocal-synth",
     "guitar+synth": `${guitarVoiceStr} guitar + vocal-synth`,
   };
-  const engineLabel = useMidi ? "MIDI" : ENGINE_LABELS[engineStr] ?? `${keyboardStr} piano`;
+  const engineLabel = useMidi
+    ? "MIDI"
+    : ENGINE_LABELS[engineForAccompaniment] ?? `${keyboardStr} piano`;
   console.log(`\nStarting ${engineLabel}...`);
 
   try {
@@ -495,8 +550,15 @@ async function cmdPlay(args: string[]): Promise<void> {
       // ── Library song playback ──
       const song = getSong(target);
       if (!song) {
-        console.error(songNotFoundError(target, "Or provide a .mid file path."));
-        process.exit(1);
+        exitUser(songNotFoundError(target, "Or provide a .mid file path."));
+      }
+      const vocalTune = getVocalTune(song.id);
+      if (vocalTune) {
+        wantsLyrics = true;
+        if (lyricsStart === undefined && lyricsEnd === undefined) {
+          lyricsStart = 1;
+          lyricsEnd = Math.max(...vocalTune.notes.map((n) => n.measure));
+        }
       }
 
       const tempoStr = getFlag(args, "--tempo");
@@ -540,11 +602,90 @@ async function cmdPlay(args: string[]): Promise<void> {
       const teachingHook = composeTeachingHooks(...libHooks);
 
       const syncMode: SyncMode = (withSinging && !withTeaching) ? "before" : "concurrent";
+      let loopRange: [number, number] | undefined;
+      let playMode = mode;
+      if (wantsLyrics && lyricsStart !== undefined && lyricsEnd !== undefined) {
+        if (lyricsEnd > song.measures.length) {
+          console.error(`--measures ${lyricsStart}-${lyricsEnd} exceeds "${song.title}" (${song.measures.length} measures).`);
+          process.exit(1);
+        }
+        loopRange = [lyricsStart, lyricsEnd];
+        playMode = "loop";
+      }
+
+      let scoreSinger: Awaited<ReturnType<typeof prepareScoreLocked>> = null;
+      if (wantsLyrics) {
+        try {
+          scoreSinger = await prepareScoreLocked(song, {
+            lyrics: lyricsFlag ?? undefined,
+            lyricsFile: lyricsFile ?? undefined,
+            startMeasure: lyricsStart,
+            endMeasure: lyricsEnd,
+            tempo,
+            speed,
+          });
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          console.error(`Couldn't build sung lyrics: ${msg}`);
+          process.exit(1);
+        }
+        if (scoreSinger) {
+          try {
+            await scoreSinger.singer.connect();
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : String(err);
+            console.error(`  Sung lead skipped: ${msg}`);
+            scoreSinger = null;
+          }
+        }
+        if (scoreSinger) {
+          for (const w of scoreSinger.score.warnings.slice(0, 8)) {
+            console.log(`  ⚠ ${w}`);
+          }
+          if (scoreSinger.score.warnings.length > 8) {
+            console.log(`  … and ${scoreSinger.score.warnings.length - 8} more lyric warnings`);
+          }
+          const names = scoreSinger.score.notes
+            .slice(0, 12)
+            .map((n) => midiName(n.midi))
+            .join(" ");
+          console.log(
+            `  Sung lead: ${scoreSinger.score.notes.length} notes [${names}${scoreSinger.score.notes.length > 12 ? " …" : ""}] ${scoreSinger.singer.durationSec.toFixed(1)}s`,
+          );
+        }
+      }
+
+      const lyricsOut = getFlag(args, "--out");
+      if (lyricsOut) {
+        if (!scoreSinger) {
+          console.error("--out with no --lyrics: nothing to render. Pass --lyrics or --lyrics-file.");
+          process.exit(1);
+        }
+        const backendStr = getFlag(args, "--svs-backend") ?? "dsp";
+        if (backendStr !== "dsp" && backendStr !== "diffsinger") {
+          console.error(`Unknown --svs-backend: "${backendStr}". Use dsp or diffsinger.`);
+          process.exit(1);
+        }
+        try {
+          const rendered = await renderOfflineSvs(scoreSinger.score, {
+            backend: backendStr as SvsBackend,
+            outPath: lyricsOut,
+          });
+          console.log(`  Wrote sung lead: ${rendered.outPath} (${rendered.durationSec.toFixed(1)}s, ${rendered.backend})`);
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          console.error(`Couldn't render sung lead: ${msg}`);
+          process.exit(1);
+        }
+      }
+
       const session = createSession(song, connector, {
-        mode,
+        mode: playMode,
         syncMode,
         tempo,
         speed,
+        loopRange,
+        loopOnce: playMode === "loop",
         teachingHook,
         onProgress: printProgress,
         progressInterval: 0,
@@ -571,12 +712,15 @@ async function cmdPlay(args: string[]): Promise<void> {
       const effectiveTempo = tempo ?? song.tempo;
       const effectiveSpeed = speed ?? 1.0;
       const beatsPerMeasure = song.timeSignature === "3/4" ? 3 : song.timeSignature === "6/8" ? 6 : 4;
-      const estSeconds = Math.round((song.measures.length * beatsPerMeasure * 60) / (effectiveTempo * effectiveSpeed));
+      const measureCount = loopRange
+        ? loopRange[1] - loopRange[0] + 1
+        : song.measures.length;
+      const estSeconds = Math.round((measureCount * beatsPerMeasure * 60) / (effectiveTempo * effectiveSpeed));
       const estMin = Math.floor(estSeconds / 60);
       const estSec = estSeconds % 60;
       const estStr = estMin > 0 ? `~${estMin}m ${estSec}s` : `~${estSec}s`;
 
-      console.log(`Playing: ${song.title}${tempoLabel} [${mode} mode] (${estStr})\n`);
+      console.log(`Playing: ${song.title}${tempoLabel} [${playMode} mode] (${estStr})\n`);
 
       // SIGINT handler for graceful stop
       const sigintHandler = () => {
@@ -586,7 +730,17 @@ async function cmdPlay(args: string[]): Promise<void> {
       process.on("SIGINT", sigintHandler);
 
       const playStart = Date.now();
-      await session.play();
+      if (scoreSinger) {
+        scoreSinger.singer.start();
+        console.log("  Sung lead: Kokoro lock + voice-changer (fx-dub CAST/LOCK/PERFORM).");
+      }
+      try {
+        await session.play();
+      } finally {
+        if (scoreSinger) {
+          await scoreSinger.singer.stop();
+        }
+      }
       process.removeListener("SIGINT", sigintHandler);
 
       const durationSec = Math.round((Date.now() - playStart) / 1000);
@@ -644,8 +798,7 @@ async function cmdSing(args: string[]): Promise<void> {
   }
   const song = getSong(songId);
   if (!song) {
-    console.error(songNotFoundError(songId));
-    process.exit(1);
+    exitUser(songNotFoundError(songId));
   }
 
   // Parse flags
@@ -825,34 +978,49 @@ export interface PracticeCliArgs {
  * Pure — no song lookup, no I/O, no process.exit — so it's directly
  * importable/testable (see cli.test.ts) without pulling in cmdPractice's
  * audio-engine/PracticeLoop machinery. Throws a plain Error with a
- * user-facing message on bad input; cmdPractice converts that into this
- * file's usual "print + exit(1)" pattern (see the header comment on the
- * pre-flight-validation convention, above cmdList).
+ * user-facing message on bad input; cmdPractice prints the JamError grammar
+ * (P9-006) and exits 1. See the pre-flight-validation convention above cmdList.
  */
 export function parsePracticeArgs(args: string[]): PracticeCliArgs {
   const songId = args[0];
   if (!songId) {
-    throw new Error(
-      "Usage: ai-jam-sessions practice <song-id> --measures <start-end> [--start-speed N] [--target N] [--step N] [--max-passes N]"
-    );
+    throw new JamError({
+      code: "INPUT_INVALID_ARGS",
+      message: "Usage: ai-jam-sessions practice <song-id> --measures <start-end> [--start-speed N] [--target N] [--step N] [--max-passes N]",
+      hint: "Pass a library song id from `ai-jam-sessions list` and a measure range like --measures 5-8.",
+    });
   }
 
   const measuresStr = getFlag(args, "--measures");
   if (!measuresStr) {
-    throw new Error("Missing required --measures <start-end> (e.g. --measures 5-8).");
+    throw new JamError({
+      code: "INPUT_INVALID_ARGS",
+      message: "Missing required --measures <start-end>.",
+      hint: "Pass a range like --measures 5-8.",
+    });
   }
   const parts = measuresStr.split("-");
   const startMeasure = parseInt(parts[0], 10);
   const endMeasure = parts[1] !== undefined ? parseInt(parts[1], 10) : startMeasure;
   if (isNaN(startMeasure) || isNaN(endMeasure)) {
-    throw new Error(`Invalid --measures range: "${measuresStr}". Use format like "5-8".`);
+    throw new JamError({
+      code: "INPUT_INVALID_ARGS",
+      message: `Invalid --measures range: "${measuresStr}".`,
+      hint: 'Use format like "5-8".',
+    });
   }
 
   const parseOptNum = (flag: string): number | undefined => {
     const v = getFlag(args, flag);
     if (v === null) return undefined;
     const n = parseFloat(v);
-    if (isNaN(n)) throw new Error(`Invalid ${flag}: "${v}" (expected a number).`);
+    if (isNaN(n)) {
+      throw new JamError({
+        code: "INPUT_INVALID_ARGS",
+        message: `Invalid ${flag}: "${v}".`,
+        hint: "Expected a number.",
+      });
+    }
     return n;
   };
   const speedStartPct = parseOptNum("--start-speed");
@@ -864,7 +1032,11 @@ export function parsePracticeArgs(args: string[]): PracticeCliArgs {
   if (maxPassesStr !== null) {
     maxPasses = parseInt(maxPassesStr, 10);
     if (isNaN(maxPasses)) {
-      throw new Error(`Invalid --max-passes: "${maxPassesStr}" (expected an integer).`);
+      throw new JamError({
+        code: "INPUT_INVALID_ARGS",
+        message: `Invalid --max-passes: "${maxPassesStr}".`,
+        hint: "Expected an integer.",
+      });
     }
   }
 
@@ -876,14 +1048,14 @@ async function cmdPractice(args: string[]): Promise<void> {
   try {
     parsed = parsePracticeArgs(args);
   } catch (err) {
+    if (err instanceof JamError) exitUser(err);
     console.error(err instanceof Error ? err.message : String(err));
     process.exit(1);
   }
 
   const song = getSong(parsed.songId);
   if (!song) {
-    console.error(songNotFoundError(parsed.songId));
-    process.exit(1);
+    exitUser(songNotFoundError(parsed.songId));
   }
 
   // Pre-flight validation (before touching audio) — mirrors cmdPlay's own
@@ -1035,8 +1207,7 @@ async function cmdView(args: string[]): Promise<void> {
   }
   const song = getSong(songId);
   if (!song) {
-    console.error(songNotFoundError(songId));
-    process.exit(1);
+    exitUser(songNotFoundError(songId));
   }
 
   // Parse --measures flag (e.g. "1-8", "9-16")
@@ -1107,8 +1278,7 @@ async function cmdViewGuitar(args: string[]): Promise<void> {
   }
   const song = getSong(songId);
   if (!song) {
-    console.error(songNotFoundError(songId));
-    process.exit(1);
+    exitUser(songNotFoundError(songId));
   }
 
   // Parse --measures flag
@@ -1302,6 +1472,23 @@ function cmdTuneGuitar(args: string[]): void {
   console.log(`\n${totalOverrides} total override(s) saved. Use --reset to restore factory.\n`);
 }
 
+function cmdGenerateSong(args: string[]): void {
+  const lyrics = getFlag(args, "--lyrics") ?? args.find((a) => !a.startsWith("--")) ?? "";
+  if (!lyrics.trim()) {
+    console.error("Usage: ai-jam-sessions generate-song --lyrics \"...\" [--generator ace-step|diffrhythm|yue]");
+    process.exit(1);
+  }
+  const gen = getFlag(args, "--generator") ?? "ace-step";
+  if (gen !== "ace-step" && gen !== "diffrhythm" && gen !== "yue") {
+    console.error(`Unknown --generator: "${gen}". Use ace-step, diffrhythm, or yue.`);
+    process.exit(1);
+  }
+  const result = generateFullSong({ lyrics, generator: gen });
+  console.error(`Error [INPUT_INVALID_ARGS]: ${result.reason}`);
+  console.error(`Hint: ${result.hint}`);
+  process.exit(1);
+}
+
 function cmdTune(args: string[]): void {
   const voiceId = args[0];
   if (!voiceId) {
@@ -1416,7 +1603,10 @@ Commands:
   guitars                    List available guitar voice presets
   tune-guitar <voice> [opts] Tune a guitar voice (persists across sessions)
   stats                      Registry statistics
+  library                    Show library progress (⬇ = annotated, MIDI not fetched)
+  library fetch              Fetch withheld MIDI from each song's recorded source (--accept-source-terms)
   ports                      List MIDI output ports
+  generate-song              Full-song generator side door (ACE-Step / DiffRhythm / YuE — not MIDI-locked)
   version                    Show version
   help                       Show this help
 
@@ -1425,7 +1615,12 @@ Play options:
   --tempo <bpm>              Override tempo (10-400 BPM, library songs only)
   --mode <mode>              Playback mode: full, measure, hands, loop (library songs only)
   --keyboard <voice>         Piano voice: grand, upright, electric, honkytonk, musicbox, bright
-  --engine <engine>          Sound engine: piano, vocal, tract, guitar, synth, piano+synth, guitar+synth
+  --engine <engine>          Sound engine: piano, sample, vocal, tract, guitar, synth, piano+synth, guitar+synth
+  --lyrics <text>            Sung lead (English): align lyrics to the RH melody (vowel on the beat)
+  --lyrics-file <path>       Read sung lyrics from a UTF-8 text file
+  --measures <start-end>     With --lyrics, clip melody + accompaniment to this range (e.g. 1-8)
+  --out <file.wav>           With --lyrics, also write the sung lead as a WAV (score-locked DSP)
+  --svs-backend <dsp|diffsinger>  Offline render backend (default dsp). diffsinger refuses until DIFFSINGER_ROOT is pinned.
   --guitar-voice <voice>     Guitar voice: classical-nylon, steel-dreadnought, electric-clean, electric-jazz
   --midi                     Output via MIDI instead of built-in engine
   --port <name>              MIDI port name (with --midi)
@@ -1466,6 +1661,7 @@ Sing options:
 
 Examples:
   ai-jam-sessions play song.mid                          # play a MIDI file
+  ai-jam-sessions play amazing-grace --lyrics "Amazing grace how sweet the sound" --measures 1-8
   ai-jam-sessions play amazing-grace --keyboard upright   # folk on an upright
   ai-jam-sessions play the-entertainer --keyboard honkytonk # ragtime on honky-tonk
   ai-jam-sessions play autumn-leaves --keyboard electric  # jazz on electric piano
@@ -1484,6 +1680,43 @@ Examples:
 
 // ─── Library Command ─────────────────────────────────────────────────────────
 
+async function cmdLibraryFetch(args: string[], libraryDir: string): Promise<void> {
+  const { fetchCandidates, fetchOne, termsNotice } = await import("./songs/fetch.js");
+  const flag = (name: string): string | undefined => {
+    const i = args.indexOf(name);
+    return i !== -1 ? args[i + 1] : undefined;
+  };
+  const accept = args.includes("--accept-source-terms");
+  const { candidates, noSource } = fetchCandidates(libraryDir, { genre: flag("--genre"), id: flag("--id") });
+  const NL = "\n";
+
+  if (candidates.length === 0) {
+    console.log(NL + "  Nothing to fetch — every ready song has its MIDI on disk.");
+    if (noSource.length) console.log(`  ${noSource.length} song(s) have no recorded source and cannot be fetched: ${noSource.join(", ")}`);
+    console.log();
+    return;
+  }
+
+  console.log(NL + `  ${candidates.length} song(s) have annotations but no MIDI on disk.`);
+  console.log("  The MIDI is not redistributed by this package: its licence could not be verified.");
+  console.log("  Each file is fetched from the source that published it, under that source's terms:" + NL);
+  console.log(termsNotice(candidates));
+  if (!accept) {
+    console.log(NL + "  Re-run with --accept-source-terms to download. Nothing was written." + NL);
+    return;
+  }
+
+  let ok = 0;
+  for (const c of candidates) {
+    const out = await fetchOne(c);
+    const mark = out.status === "fetched" ? "✓" : "✗";
+    console.log(`  ${mark} ${c.id.padEnd(35)} ${out.status}  ${out.detail}`);
+    if (out.status === "fetched") ok++;
+  }
+  const rest = noSource.length ? ` ${noSource.length} song(s) have no recorded source.` : "";
+  console.log(NL + `  Fetched ${ok} of ${candidates.length}.` + rest + NL);
+}
+
 function cmdLibrary(args: string[], libraryDir: string): void {
   const progress = getLibraryProgress(libraryDir);
 
@@ -1500,10 +1733,21 @@ function cmdLibrary(args: string[], libraryDir: string): void {
     console.log(`\n  ${genre} — ${gp.total} songs`);
     console.log(`  ${"─".repeat(45)}`);
     for (const song of gp.songs) {
-      const icon = song.status === "ready" ? "✓" : song.status === "annotated" ? "◐" : "○";
-      console.log(`    ${icon} ${song.id.padEnd(35)} ${song.status}`);
+      const icon = song.status === "ready" ? (song.fetched ? "✓" : "⬇") : song.status === "annotated" ? "◐" : "○";
+      const note = song.status === "ready" && !song.fetched ? " (MIDI not fetched)" : "";
+      console.log(`    ${icon} ${song.id.padEnd(35)} ${song.status}${note}`);
     }
-    console.log(`\n    Ready: ${gp.ready}  Annotated: ${gp.annotated}  Raw: ${gp.raw}\n`);
+    console.log(`\n    Ready: ${gp.ready}  Annotated: ${gp.annotated}  Raw: ${gp.raw}  Not fetched: ${gp.unfetched}\n`);
+    return;
+  }
+
+  // Sub-command: fetch [--genre <g>] [--id <id>] [--accept-source-terms]
+  // The tarball ships a song's MIDI only where its provenance records a
+  // redistributable licence; the rest is fetched by the user from the recorded
+  // source under that source's terms (printed first), checked against the
+  // SHA-256 the audit recorded.
+  if (args[0] === "fetch") {
+    void cmdLibraryFetch(args.slice(1), libraryDir);
     return;
   }
 
@@ -1519,6 +1763,7 @@ function cmdLibrary(args: string[], libraryDir: string): void {
   console.log(`  Ready:     ${String(progress.ready).padStart(3)} ${bar} ${pct}%`);
   console.log(`  Annotated: ${String(progress.annotated).padStart(3)}`);
   console.log(`  Raw:       ${String(progress.raw).padStart(3)}`);
+  if (progress.unfetched > 0) console.log(`  Not fetched: ${progress.unfetched} ready song(s) have no MIDI on disk — run 'ai-jam-sessions library fetch'`);
   console.log();
 
   // Per-genre breakdown
@@ -1535,6 +1780,11 @@ function cmdLibrary(args: string[], libraryDir: string): void {
 
 // ─── CLI Router ─────────────────────────────────────────────────────────────
 
+function midiName(midi: number): string {
+  const names = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+  return `${names[((midi % 12) + 12) % 12]}${Math.floor(midi / 12) - 1}`;
+}
+
 function getFlag(args: string[], flag: string): string | null {
   const idx = args.indexOf(flag);
   if (idx === -1 || idx + 1 >= args.length) return null;
@@ -1547,7 +1797,8 @@ async function main(): Promise<void> {
   const { fileURLToPath } = await import("node:url");
   const __dirname = dirname(fileURLToPath(import.meta.url));
   const libraryDir = join(__dirname, "..", "songs", "library");
-  const userDir = join(process.env.HOME ?? process.env.USERPROFILE ?? ".", ".ai-jam-sessions", "songs");
+  const { userSongsDir } = await import("./state-home.js");
+  const userDir = userSongsDir();
   initializeFromLibrary(libraryDir, userDir);
 
   const args = process.argv.slice(2);
@@ -1609,6 +1860,9 @@ async function main(): Promise<void> {
       break;
     case "ports":
       cmdPorts();
+      break;
+    case "generate-song":
+      cmdGenerateSong(args.slice(1));
       break;
     case "version":
     case "--version":

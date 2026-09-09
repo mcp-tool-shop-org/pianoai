@@ -32,5 +32,32 @@
       "Keep the written silences real: enter from the empty measures 1-2 as if the sound was already ringing somewhere, and let measure 61's silence finish the piece — hands still, pedal down until the decay ends.",
       "Imitate a reference recording by ear for the ornamental turns — a through-varied file like this one is a transcription of a performance tradition, and the records carry the feel the grid cannot."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/88756.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "011cdc22908943619ea12ba78300aa9d1892169fd6d07b7f7124c2366f4f7bb8",
+    "midi_title_events": [
+      "A.PIANO 2",
+      "FRETLESS",
+      "NYLON GTR",
+      "SLOWSTRING",
+      "BRASS 1",
+      "BRIGHTNESS",
+      "ALTO SAX",
+      "SAW WAVE",
+      "DRUMS",
+      "GS/RESET"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

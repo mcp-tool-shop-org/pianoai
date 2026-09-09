@@ -7,7 +7,7 @@ authors:
   - family-names: "Krueger"
     given-names: "Bernd"
     affiliation: "piano-midi.de (upstream MIDI arrangements; CC-BY-SA-3.0-DE)"
-version: "0.5.0"
+version: "0.5.1"
 date-released: "2026-07-11"
 license: "CC-BY-SA-3.0-DE"
 doi: "10.5281/zenodo.20279918"

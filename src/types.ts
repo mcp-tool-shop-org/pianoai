@@ -4,9 +4,9 @@
 // These bridge ai-music-sheets (the library) with the runtime (MIDI + voice).
 // ─────────────────────────────────────────────────────────────────────────────
 
-import type { SongEntry, Measure, Genre, Difficulty } from "./songs/types.js";
+import type { SongEntry, Measure } from "./songs/types.js";
 import type { MidiNoteEvent } from "./midi/types.js";
-import type { MetronomeEngine } from "./playback/metronome.js";
+import type { MetronomeEngine } from "./playback/metronome-types.js";
 
 // ─── MIDI Types ─────────────────────────────────────────────────────────────
 
@@ -79,12 +79,13 @@ export type SyncMode =
  * (B-B1-004). Derive from this constant everywhere instead of re-typing
  * the literals.
  */
-export const ENGINE_IDS = ["piano", "vocal", "tract", "guitar"] as const;
+export const ENGINE_IDS = ["piano", "sample", "vocal", "tract", "guitar"] as const;
 export type EngineId = (typeof ENGINE_IDS)[number];
 
 /** Human-readable label for each engine id (e.g. for error messages). */
 export const ENGINE_LABELS: Record<EngineId, string> = {
   piano: "piano",
+  sample: "sampled piano",
   vocal: "vocal",
   tract: "vocal tract",
   guitar: "guitar",
@@ -118,6 +119,9 @@ export interface Session {
 
   /** Measure range for loop mode [start, end] (1-based, inclusive). */
   loopRange: [number, number] | null;
+
+  /** When true with mode "loop", play the range once then finish. */
+  loopOnce?: boolean;
 
   /** Session start time. */
   startedAt: Date;
@@ -214,6 +218,9 @@ export interface SessionOptions {
   /** Loop range [start, end] for loop mode. */
   loopRange?: [number, number];
 
+  /** Play the loop range once instead of forever (lyrics --measures). */
+  loopOnce?: boolean;
+
   /** Enable voice feedback (default: true). */
   voice?: boolean;
 
@@ -301,6 +308,25 @@ export interface VmpkConnector {
 
   /** Play a single MidiNote (note-on, wait, note-off). */
   playNote(note: MidiNote): Promise<void>;
+
+  /**
+   * Optional dedicated tap bus. Observers connect here, never to the engine
+   * master, so a tap cannot silence the instrument. Absent on connectors
+   * that have no audio graph. A layered engine does NOT implement this —
+   * tapping the mix would collapse N instruments into one signal.
+   */
+  createTapOutput?(): unknown;
+
+  /**
+   * Optional child roster. Present on a layered engine; absent on a
+   * plain connector. Names plus, when that child offers one, a tap
+   * factory — never the child connector itself.
+   */
+  children?(): ReadonlyArray<{
+    id: string;
+    label: string;
+    createTapOutput?: () => unknown;
+  }>;
 }
 
 // ─── Recording Types ────────────────────────────────────────────────────────

@@ -31,5 +31,37 @@
       "Feel the oom-pah left hand as perfectly even eighth-to-quarter spacing under the syncopated right hand — any unevenness in the bass undercuts the rhythmic complexity above it.",
       "Try isolating the right hand alone through measures 11-35, the piece's busiest stretch, at half speed first — the density of onsets there means finger substitutions matter more than anywhere else in the piece."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://www.mutopiaproject.org/ftp/JoplinS/EliteSyncopations/EliteSyncopations.mid",
+    "source_site": "www.mutopiaproject.org",
+    "arrangement_creator": "Benjamin Bloomfield (Mutopia typesetter, LilyPond)",
+    "arrangement_license": "Public-Domain",
+    "terms_url": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1540",
+    "terms_quote": "Copyright: Public Domain (piece page); Public Domain: The contributor of this music has dedicated their contribution into the public domain. You can do what you like with this music - print it out, sell it, change it, distribute it, record it, and perform it, etc.",
+    "verified_at": "2026-09-09",
+    "verifier": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1540; midi meta events (sha256 28e41b9b3d0a…)",
+    "midi_sha256": "28e41b9b3d0afd3de70c0de56dba9c34e4ff05b21a14939f0fdf0b181d856fc9",
+    "midi_title_events": [
+      "control track",
+      "GNU LilyPond 2.10.33",
+      "upper",
+      "lower"
+    ],
+    "midi_credit_events": [
+      "creator:"
+    ],
+    "credited_parties": [
+      {
+        "name": "GNU LilyPond",
+        "evidence": "midi-meta"
+      },
+      {
+        "name": "Benjamin Bloomfield",
+        "evidence": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1540"
+      }
+    ],
+    "title_verdict": "no-title-in-file"
   }
 }

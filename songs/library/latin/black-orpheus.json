@@ -32,5 +32,27 @@
       "Since nothing repeats literally, avoid autopilot: think in transposed shapes and feel each +7-semitone return of the recurring cell as the same idea in a new register, voiced a shade brighter as it climbs.",
       "Keep the frame genuinely sparse — measures 1-2 and 133 hold almost nothing; imagine the tune emerging from silence and returning to it, and let your dynamics trace that arch."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/71782.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "98667b247f321074ebc7baf187f71a1c68b832409613e42cfb1b50f15a4631b6",
+    "midi_title_events": [
+      "Carnival"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "matches",
+    "title_aliases": [
+      "Carnival"
+    ],
+    "title_note": "the file's track name is 'Carnival'; the song is 'Manhã de Carnaval', the theme of the film Black Orpheus"
   }
 }

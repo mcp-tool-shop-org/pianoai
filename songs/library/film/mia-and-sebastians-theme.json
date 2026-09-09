@@ -32,5 +32,24 @@
       "Listen for the augmented harmony as a deliberate unsettled quality — don't resolve it in your ear or your touch the way you would a plain major triad, since the harness's own data shows this piece favors that ambiguity.",
       "Try using the measure 62 return of the opening material as a physical and emotional reset — briefly relax your touch the way you did at measure 1, before building back into the second full statement."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/66253.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "fb5865b49689adedad9bed0b40be303e4f54710cefddfc25b328ff29a9a15a65",
+    "midi_title_events": [
+      "Instrument 1",
+      "Piano"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

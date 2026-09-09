@@ -1,0 +1,211 @@
+{
+  "id": "acoustic:fur-elise:late_fail:2",
+  "schema_version": "jam-actions-v1/1.0.0",
+  "family": "acoustic",
+  "provenance": {
+    "source_url": "http://piano-midi.de/midis/beethoven/elise.mid",
+    "source_collected_at": "2026-09-09",
+    "source_type": "downloaded-arrangement",
+    "composition_title": "Fur Elise (Bagatelle No. 25 in A minor)",
+    "composer": "Ludwig van Beethoven",
+    "composition_year": 1,
+    "composition_pd_status_us": "public_domain",
+    "composition_pd_status_eu": "public_domain",
+    "arrangement_creator": "Bernd Krueger (piano-midi.de, 2004, edition 2012-08-30)",
+    "arrangement_license": "CC-BY-SA-3.0-DE",
+    "arrangement_license_version": "3.0-DE",
+    "arrangement_evidence_url": "http://piano-midi.de/copy.htm",
+    "record_verdict": "public",
+    "verdict_reason": "Allowlisted 2026-09-09; CC-BY-SA-3.0-DE",
+    "verifier": "http://piano-midi.de/copy.htm; midi meta events (sha256 a1481bdafe94…)",
+    "verified_at": "2026-09-09",
+    "training_use_permitted": true
+  },
+  "scope": {
+    "song_id": "fur-elise",
+    "phrase_window": "full:126",
+    "instrument": "piano",
+    "key": "A minor",
+    "tempo_bpm": 69,
+    "time_signature": "3/8",
+    "window_role": "standalone"
+  },
+  "observation": {
+    "thresholds": {
+      "timing_ms": 40,
+      "pitch_fail_cents": 50,
+      "pitch_warn_cents": 25,
+      "yin_locked_p95_cents": 0.179,
+      "pitch_clearance_cents": 5,
+      "pitch_clearance_multiple": 27.93,
+      "onset_p95_ms": 28.025,
+      "onset_clearance_ms": 38,
+      "onset_clearance_multiple": 1.36
+    },
+    "gold": {
+      "family": "acoustic",
+      "answer": "timing_fail",
+      "engine": "YIN+SuperFlux"
+    },
+    "acoustic": {
+      "kind": "late_fail",
+      "notes": [
+        {
+          "midi": 76,
+          "name": "E5",
+          "time": 0,
+          "duration": 0.45
+        },
+        {
+          "midi": 75,
+          "name": "D#5",
+          "time": 1.2,
+          "duration": 0.45
+        },
+        {
+          "midi": 76,
+          "name": "E5",
+          "time": 2.4,
+          "duration": 0.45
+        },
+        {
+          "midi": 75,
+          "name": "D#5",
+          "time": 3.5999999999999996,
+          "duration": 0.45
+        },
+        {
+          "midi": 76,
+          "name": "E5",
+          "time": 4.8,
+          "duration": 0.45
+        },
+        {
+          "midi": 71,
+          "name": "B4",
+          "time": 6,
+          "duration": 0.45
+        },
+        {
+          "midi": 74,
+          "name": "D5",
+          "time": 7.2,
+          "duration": 0.45
+        },
+        {
+          "midi": 72,
+          "name": "C5",
+          "time": 8.4,
+          "duration": 0.45
+        }
+      ],
+      "cents_shift": 18.87302325581395,
+      "delay_sec": 0.11995348837209303,
+      "target_index": 0,
+      "measured_f0_hz": 666.5526016443719,
+      "measured_cents": 19.058249280637497,
+      "measured_onset_ms": 106.34920634920636,
+      "draw": 2
+    }
+  },
+  "annotation_target": {
+    "measure_range": [
+      1,
+      126
+    ],
+    "structure": "Rondo form A-B-A-C-A. A section (bars 1–22): the iconic theme in A minor, piano dynamic, built on the E-D#-E semitone oscillation resolving to Am. B section (bars 23–38): a contrasting lyrical episode moving to the relative major (C major) then to F major, with flowing sixteenth-note passages. A return (bars 39–60). C section (bars 61–82): the dramatic heart — rapid thirty-second-note arpeggios in the left hand under a pounding repeated-note figure, harmonically visiting F major and C major before darkening back. Final A return (bars 83–end): the theme once more, now heard through the emotional lens of everything that came before.",
+    "key_moments": [
+      "Bars 1–8, the A theme entrance: the E-D#-E-D#-E neighbor-note motif is one of music's most recognizable gestures — it teaches how two alternating notes can create unbearable tension that only resolves on the downward step to A",
+      "Bars 23–30, the B section in C/F major: the shift from minor to major changes the entire emotional color — the melody becomes singing and lyrical, teaching key-relationship awareness",
+      "Bars 61–68, the C section storm: the left-hand thirty-second-note arpeggios demand a completely different technique — this is where 'easy piece' becomes genuinely challenging, and where dynamic contrast (suddenly forte after pages of piano) teaches dramatic pacing",
+      "The final A return after the C section storm: hearing the gentle theme after the turbulence teaches how context transforms meaning — the same notes now sound fragile, almost vulnerable",
+      "The D#/E oscillation throughout: this half-step tension appears in the theme, in transitional passages, and in cadential moments — recognizing a motif's transformation across a piece is a core analytical skill"
+    ],
+    "teaching_goals": [
+      "Rondo form (A-B-A-C-A): understanding how a recurring theme provides structural unity while contrasting episodes provide variety — the foundational form of Classical-era keyboard music",
+      "Touch differentiation: the A theme demands legato cantabile touch (singing tone), the B section needs flowing evenness, the C section requires weighted forte — three different physical approaches in one piece",
+      "Dynamics as architecture: the piece moves from pp to ff and back, and these changes are structural, not decorative — they delineate form",
+      "Left-hand independence: the C section's rapid arpeggios must remain even and controlled while the right hand plays a completely different rhythm above",
+      "Pedaling discipline: the A theme needs minimal pedal (to keep the semitone oscillation clean), while the B section benefits from more sustain — learning when NOT to pedal is as important as when to pedal"
+    ],
+    "style_tips": [
+      "The A theme should be played as if singing very quietly to yourself — imaginably breathe between phrases. The touch is light, the fingers close to the keys, almost whispering.",
+      "Do not rush the E-D#-E motif. Many players speed through it to get to the 'tune' — but the tension IS the tune. Let each oscillation register.",
+      "In the B section, bring out the top note of each sixteenth-note group as a melodic line — there is a hidden soprano melody that most players bury inside the figuration.",
+      "The C section is the only place in the piece where you should use arm weight and play from the shoulder. Everywhere else, play from the fingers and wrist.",
+      "Think of this piece as a miniature opera: the A theme is the aria, B is a lyrical interlude, C is the dramatic confrontation, and the final A is the denouement. Shape it as a story, not an exercise."
+    ],
+    "teaching_notes": [
+      {
+        "measure": 1,
+        "note": "none"
+      }
+    ]
+  },
+  "target_trace": {
+    "task_family": "acoustic",
+    "objective": "Answer using tools. Do not guess from the question text.",
+    "session": [
+      {
+        "turn": 1,
+        "role": "user",
+        "content": "Grade this take of \"Fur Elise (Bagatelle No. 25 in A minor)\". Answer with exactly one of: match, pitch_fail, timing_fail."
+      },
+      {
+        "turn": 2,
+        "role": "assistant",
+        "content": "Transcribing, then scoring with raw measurements.",
+        "tool_calls": [
+          {
+            "tool": "transcribe_audio",
+            "arguments": {
+              "path": "/acoustic-v1/take-0a63ba.wav"
+            }
+          },
+          {
+            "tool": "score_audio_take",
+            "arguments": {
+              "path": "/acoustic-v1/take-0a63ba.wav",
+              "song_id": "fur-elise"
+            }
+          }
+        ]
+      },
+      {
+        "turn": 3,
+        "role": "tool",
+        "tool": "transcribe_audio",
+        "content": {
+          "note_count": 8
+        }
+      },
+      {
+        "turn": 4,
+        "role": "tool",
+        "tool": "score_audio_take",
+        "content": {
+          "f0_hz": 666.6,
+          "cents_from_target": 19.1,
+          "onset_ms": 106.3
+        }
+      },
+      {
+        "turn": 5,
+        "role": "assistant",
+        "content": "cents 19.1: |19.1| − 50 = −30.9, inside; onset 106.3: |106.3| − 40 = 66.3, against the gate: timing_fail"
+      }
+    ]
+  },
+  "eval_metadata": {
+    "split": "train",
+    "split_strategy": "hold out by song_id",
+    "leakage_check": "passed",
+    "eval_eligibility": [
+      "tool_use",
+      "acoustic"
+    ],
+    "phrase_continuation_eligible": false,
+    "phrase_continuation_eligible_reason": "standalone tool-use items"
+  },
+  "split": "train"
+}

@@ -33,5 +33,30 @@
       "Play the A minor tonality with a haunted, unresolved quality — the famous descending bassline never quite lets the harmony settle.",
       "Since the same arpeggio figure recurs at least a dozen times, use those repeats as an opportunity for subtle variation in touch or voicing rather than playing every pass identically."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/102514.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "da391ca4c393b1eba84ff0bda302bb1bf5bcee03387c78970d82fb4821b5596c",
+    "midi_title_events": [
+      "A.PIANO 1",
+      "FINGERDBAS",
+      "STEEL GTR",
+      "CLEAN GTR",
+      "MUTED GTR",
+      "ORGAN 3",
+      "DRUMS",
+      "GS/RESET"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

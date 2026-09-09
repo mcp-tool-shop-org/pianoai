@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="README.ja.md">日本語</a> | <a href="README.zh.md">中文</a> | <a href="README.es.md">Español</a> | <a href="README.fr.md">Français</a> | <a href="README.hi.md">हिन्दी</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (BR)</a>
+  <a href="README.md">English</a> | <a href="README.ja.md">日本語</a> | <a href="README.zh.md">中文</a> | <a href="README.es.md">Español</a> | <a href="README.fr.md">Français</a> | <a href="README.hi.md">हिन्दी</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (BR)</a>
 </p>
 
 <p align="center">
@@ -12,15 +12,15 @@
 
 <p align="center">
   An MCP server that teaches AI to play piano and guitar — and sing.<br/>
-  120 songs across 12 genres. Six sound engines. Interactive guitar tablature.<br/>
+  108 annotated songs across 12 genres. Six sound engines. Interactive guitar tablature.<br/>
   A browser cockpit with vocal synthesizer. A practice journal that remembers everything.
 </p>
 
 <p align="center">
   <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml"><img src="https://github.com/mcp-tool-shop-org/ai-jam-sessions/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions"><img src="https://img.shields.io/npm/v/@mcptoolshop/ai-jam-sessions" alt="npm"></a>
-  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/songs-120_across_12_genres-blue" alt="Songs"></a>
-  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/annotated-120%2F120-green" alt="Ready"></a>
+  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/songs-108_across_12_genres-blue" alt="Songs"></a>
+  <a href="https://github.com/mcp-tool-shop-org/ai-jam-sessions"><img src="https://img.shields.io/badge/annotated-108%2F108-green" alt="Ready"></a>
   <a href="datasets/jam-actions-v0-public/README.md"><img src="https://img.shields.io/badge/dataset-jam--actions--v0%20(115_records)-8b5cf6" alt="Training dataset"></a>
   <a href="https://doi.org/10.5281/zenodo.20279918"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.20279918.svg" alt="DOI"></a>
 </p>
@@ -34,14 +34,90 @@ A piano and guitar that AI learns to play. Not a synthesizer, not a MIDI library
 An LLM can read and write text, but it can't experience music the way we do. No ears, no fingers, no muscle memory. AI Jam Sessions closes that gap by giving the model senses it can actually use:
 
 - **Reading** — real MIDI sheet music with deep musical annotations. Not hand-written approximations — parsed, analyzed, and explained.
-- **Hearing** — six audio engines (oscillator piano, sample piano, vocal samples, physical vocal tract, additive vocal synth, physically-modeled guitar) that play through your speakers, so the humans in the room become the AI's ears.
+- **Hearing** — six audio engines (oscillator piano, sample piano, vocal samples, physical vocal tract, additive vocal synth, physically-modeled guitar) that play through your speakers, so the humans in the room become the AI's ears. And now the model has ears of its own, twice over: it can measure a recording after the fact (see [Listening](#listening)) and it can watch the band **while the music is still going** (see [The Live Ensemble](#the-live-ensemble)).
 - **Seeing** — a piano roll that renders what was played as SVG the model can read back and verify. An interactive guitar tablature editor. A browser cockpit with a visual keyboard, dual-mode note editor, and tuning lab.
 - **Remembering** — a practice journal that persists across sessions, so learning compounds over time.
-- **Singing** — vocal tract synthesis with 20 voice presets, from operatic soprano to electronic choir. Sing-along mode with solfege, contour, and syllable narration.
+- **Singing** — vocal tract synthesis with 20 voice presets, from operatic soprano to electronic choir. Sing-along mode with solfege, contour, and syllable narration. And a real sung lead on the piano's clock: a score-conditioned singer driven by the song's MIDI, gated on timing (40 ms) and pitch (50 cents) before you hear it — see [Sing](#sing).
 
-Every one of the 120 songs is now fully annotated — historical context, bar-by-bar structural analysis, key moments, teaching goals, and performance tips, in all 12 genres. An earlier version of this README said the raw songs were "waiting for the AI to absorb the patterns, play the music, and write its own annotations." That is exactly what happened: the annotations were written by AI against a deterministic per-song analysis (chords, repetition structure, section boundaries, content-verified keys), gated by a quality rubric, and adversarially fact-checked claim by claim — measure numbers, chord windows, and structural counts all verified against the actual MIDI before anything shipped.
+Every one of the 108 songs is now fully annotated — historical context, bar-by-bar structural analysis, key moments, teaching goals, and performance tips, in all 12 genres. An earlier version of this README said the raw songs were "waiting for the AI to absorb the patterns, play the music, and write its own annotations." That is exactly what happened: the annotations were written by AI against a deterministic per-song analysis (chords, repetition structure, section boundaries, content-verified keys), gated by a quality rubric, and adversarially fact-checked claim by claim — measure numbers, chord windows, and structural counts all verified against the actual MIDI before anything shipped.
 
 Out of this same work, we also publish **[jam-actions-v0](#training-dataset)** — a public dataset of 115 multi-turn MCP tool-use traces over real classical piano. It teaches LLMs to do *grounded tool-use over symbolic music*, not just text generation, and ships with a 7-axis release gate that distinguishes "passing on evidence" from "passing because the task is trivial." See [Training Dataset](#training-dataset) below for the full story.
+
+## Listening
+
+For a long time this server could make sound but never examine it. The model played, a human
+listened, and the model took their word for it. That gap is now closed.
+
+Point it at a WAV and it measures what is there. Not by looking at a picture and guessing —
+by running the signal through the same kind of tools it already uses on the score:
+
+- **`analyze_audio`** — onsets, the pitch contour, and level. Pitch comes back as note names with
+  cent deviations, never as raw frequencies.
+- **`transcribe_audio`** — the recording as notes: pitch, start, duration, and how far each note
+  sits from concert pitch.
+- **`score_audio_take`** — grade a performance against a song in the library **by ear**. It
+  transcribes the recording, matches it to the score, and reports which notes landed, which
+  drifted, and which were missed. Then `view_scored_piano_roll` draws the result over the score,
+  exactly as it does for a captured MIDI take. This is how you grade a real instrument, a sung
+  take, or anything where there is no MIDI to capture.
+- **`view_spectrogram`** — see the sound. A constant-Q spectrogram with a piano keyboard down the
+  left edge, so pitch is readable at a glance, and the song's intended notes drawn over it on
+  request.
+
+**What it will not tell you.** The picture is for finding *where* something is wrong; every number
+comes from signal processing, never from a model reading an image. The transcriber follows one
+line at a time, so a chord or a full mix will produce something confident and wrong, and it says
+so. Onset detection runs around F1 0.88 at the state of the art, so a "missed" note may be one the
+transcriber could not hear rather than one you did not play — the tools carry that caveat in their
+own output rather than burying it here.
+
+The whole surface is dependency-free: the transform, the pitch tracker, the onset detector, the
+WAV decoder and the PNG encoder are all in this repo, and they produce identical numbers in Node
+and in the browser.
+
+## The Live Ensemble
+
+Listening grades a recording once it has finished. This is the other half: asking what every
+instrument is doing **right now**, mid-performance.
+
+```
+ensemble_now()
+```
+
+It answers with each instrument's held notes, how long each has been held, and the combined chord
+across the whole ensemble. During a duet the two voices are reported separately, so you can see the
+piano holding a triad while the synth carries the melody over it.
+
+### Two channels, and the cheap one is the accurate one
+
+This is the part worth understanding, because it decides which number to trust.
+
+**Intent — what each engine was told to play.** When the model is the one performing, this is not
+an estimate. A piano chord is not something to transcribe; it is three note-ons that were sent. The
+notes are exact, free, and immediate.
+
+**Acoustic — what actually came out.** Each engine can fan its output into a private analysis bus,
+so every instrument is measured at the source with no separation and no ambiguity. This channel is
+**verification, not discovery**: it is how you learn that a voice drifted off the clock, a take
+clipped, or an engine went silent while still being sent notes.
+
+When the two disagree, that is a fact about the render, not a correction to the notes.
+
+### What it costs
+
+Watching an instrument costs about **9 microseconds per audio callback** against a 42.67 ms block,
+which is roughly 0.02% of the audio budget, measured with zero dropped samples. An instrument with
+no observer attached costs nothing at all.
+
+### What it will not tell you
+
+The acoustic channel lags, and says by how much: about 23 ms for pitch, and 70 ms for a confirmed
+onset, because an onset cannot be confirmed until the audio after it has arrived. Onsets near that
+edge are withheld rather than reported and later retracted.
+
+The acoustic tracker follows one line at a time, so it will not name the notes of a chord — and it
+does not pretend to. A chord it cannot resolve is its known limitation rather than a finding, and
+the ensemble stays quiet about it instead of crying wolf on every chord the piano plays.
 
 ## The Piano Roll
 
@@ -63,6 +139,8 @@ A browser-based composition studio that lives in this repo at [`apps/cockpit`](a
 cd apps/cockpit && npm install && npm run dev   # Vite dev server, opens in your browser
 ```
 
+- **A sampled Concert Grand by default** — the cockpit ships a pruned Salamander Grand pack (90 OGGs, 8 MB) that loads on your first interaction and plays through the same output chain as the synth voices; before it loads (or offline) the tuned oscillator piano covers seamlessly. Samples by [Alexander Holm](https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html), CC-BY 3.0.
+- **Panel mode — the listening room** — blind pairwise A/B auditions of the composition engine's voicings over real library melodies: loudness-matched clips offline-rendered through the real voice path, seeded shuffled trials with hidden floor catch-trials, Bradley-Terry rankings with bootstrap confidence intervals, and honest outcomes (PROVISIONAL until every pair reaches its vote budget; UNINTERPRETABLE when the discrimination floor fails). A second sub-mode runs the same ranking with local LLM judges, plus History across both run kinds and a Compare view (Kendall τ + engine-rank match) that asks whether the cheap proxy tracks the human truth.
 - **Beat-accurate transport** — notes live in musical time, so the BPM control actually retimes playback; a click-to-seek time-ruler with drag-to-set **loop regions**; auto-scroll that follows the playhead
 - **Record-arm capture** — play the QWERTY keys, on-screen keyboard, or a Web MIDI device and it lands in the score: 1-bar count-in, looper-style overdub across loop cycles (or replace mode), raw performance timing preserved under a quantized view, each pass one undoable unit
 - **Full undo/redo** — every edit including Clear and Import is reversible (Ctrl+Z), with drag gestures coalescing the way real editors do
@@ -86,7 +164,9 @@ cd apps/cockpit && npm install && npm run dev   # Vite dev server, opens in your
 
 ## The Song Library
 
-120 songs across 12 genres, built from real MIDI files. Each genre has one deeply annotated exemplar — with historical context, bar-by-bar harmonic analysis, key moments, teaching goals, and performance tips (including vocal guidance). These exemplars serve as templates: the AI studies one, then annotates the rest.
+108 annotated songs across 12 genres, built from real MIDI files. Each genre has one deeply annotated exemplar — with historical context, bar-by-bar harmonic analysis, key moments, teaching goals, and performance tips (including vocal guidance). These exemplars serve as templates: the AI studies one, then annotates the rest.
+
+**What ships, and what you fetch.** The annotations are ours and ship with every song. The MIDI files were downloaded from public MIDI sites when the library was built, and a per-file provenance audit ([`docs/findings/library-provenance-audit.md`](docs/findings/library-provenance-audit.md)) found that only 14 of them carry a licence that permits redistribution — Bernd Krueger's piano-midi.de arrangements (CC-BY-SA-3.0-DE) and the Mutopia Project's public-domain typesettings. Those 14 are in the npm package. The other 94 are not: their `.json` ships, with a `provenance` block naming the source, its terms and the file's SHA-256, and `ai-jam-sessions library fetch --accept-source-terms` downloads each one from the site that published it, under that site's terms, refusing any file whose hash no longer matches what the annotations were verified against. Twelve files that turned out to be a different piece than their name were quarantined, which is why the count is 108 and not the 120 earlier versions claimed. Versions before this one shipped all 120 MIDI files; that was a mistake, and it is corrected here rather than papered over.
 
 | Genre | Exemplar | Key | What it teaches |
 |-------|----------|-----|-----------------|
@@ -111,8 +191,8 @@ Six engines, plus a layered combinator that runs any two simultaneously:
 
 | Engine | Type | What it sounds like |
 |--------|------|---------------------|
-| **Oscillator Piano** | Additive synthesis | Multi-harmonic piano with hammer noise, inharmonicity, 48-voice polyphony, stereo imaging. Zero dependencies. |
-| **Sample Piano** | WAV playback | Salamander Grand Piano — 480 samples, 16 velocity layers, 88 keys. The real thing. *Programmatic API only: samples are not shipped (you supply the [Salamander](https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html) download); not yet wired into the CLI/MCP engine lists.* |
+| **Oscillator Piano** | Additive synthesis | Multi-harmonic piano with hammer noise, inharmonicity, velocity-shaped brightness, 48-voice polyphony, stereo imaging. Zero dependencies. |
+| **Sample Piano** | Sample playback | Salamander Grand Piano — the real thing. **The default engine whenever a pack is installed** (`samples/AccurateSalamander` or `AI_JAM_SAMPLES_DIR`); the npm tarball stays sample-free, so you supply the [Salamander](https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html) download. The browser cockpit ships its own pruned 8 MB pack (90 OGGs, CC-BY 3.0 Alexander Holm) — no setup at all on the web. |
 | **Vocal (Sample)** | Pitch-shifted samples | Sustained vowel tones with portamento and legato mode. |
 | **Vocal Tract** | Physical model | Pink Trombone — LF glottal waveform through a 44-cell digital waveguide. Four presets: soprano, alto, tenor, bass. |
 | **Vocal Synth** | Additive synthesis | 15 Kokoro voice presets with formant shaping, breathiness, vibrato. Deterministic (seeded RNG). |
@@ -204,6 +284,53 @@ pnpm exec tsx scripts/check-release-gate.ts /tmp/b.json
 
 > The MIDI arrangements are by Bernd Krueger (piano-midi.de), licensed CC-BY-SA-3.0-DE. The annotations, traces, and eval artifacts are by the AI Jam Sessions team, released under the same license so the share-alike chain is preserved end-to-end. **License boundary:** the repository's MIT license covers the code; everything under `datasets/` is CC-BY-SA-3.0-DE. The working corpus at `datasets/jam-actions-v0/` additionally contains two works (Satie Gymnopédie No. 1, Debussy Arabesque No. 1) that are *excluded* from the published subset because their arrangement provenance could not be verified — see [`datasets/jam-actions-v0/PROVENANCE-NOTE.md`](datasets/jam-actions-v0/PROVENANCE-NOTE.md).
 
+### The acoustic corpus
+
+**jam-actions-acoustic-v0** — the counterpart to the traces above, over **audio** rather than
+symbolic music. 108 records, each pairing a deliberately perturbed synthetic rendering of a
+public-domain phrase with the verdict the analysis tools actually return, so every label is checked
+against the instrument rather than only against itself.
+
+| | |
+|---|---|
+| Records | 108 — 3 phrases × 9 perturbation kinds × 4 target notes |
+| Held out | by **phrase** (Für Elise), not by record, so a perturbed twin of the same melody cannot leak |
+| Classes | match, pitch fail/warn, timing fail/pass, missed, extra, in-tune vibrato, nothing-to-grade silence |
+| Audio | none distributed — each record carries a deterministic recipe and the SHA-256 of the waveform it produces |
+| Schema | `jam-actions-acoustic-v0/1.0.0` |
+
+Two of the nine classes are there because a naive model answers them confidently and wrongly: a
+vibrato note whose correct verdict is *in tune*, and silence whose correct verdict is *nothing to
+grade*. Every threshold the verdict depends on is copied into the record, because both of them
+moved once during the build.
+
+The corpus is reproducible from this repository. Regenerating it produces all 115 published files
+and a byte-identical `checksums.sha256`, and a test asserts exactly that without writing the
+published tree.
+
+**One caveat, measured rather than assumed.** Each record carries `wav_sha256`, the hash of the
+waveform its recipe produces, and the renderer calls `Math.pow` and `Math.sin` once per sample.
+Neither is required to be correctly rounded, and V8's results changed between Node 22 and Node 24:
+of the 27,869 distinct `Math.pow(2, x)` arguments this corpus evaluates, 253 return a different
+double. Almost all of that vanishes under 16-bit quantisation, but **2 of the 108 records** — both
+the `extra` perturbation of Für Elise, whose motif sits on the one pitch where the semitone ratio
+itself differs — hash differently on Node 24. Every other field of every record reproduces on any
+engine, and the repository tests both claims separately. If you re-render and see those two
+mismatch, that is this, not a corrupt download. Making the waveform bit-portable means replacing
+the transcendentals, which changes every hash and therefore needs a new schema version.
+
+### Build your own
+
+The scaffolding that corpus runs on is available for your own experiments.
+[`experiments/_template/`](experiments/_template/) is a working example you can copy: declare a
+task, and you get SFT formatting, per-class scoring, trivial baselines over your declared verdict
+set, and a check that no holdout unit straddles the split.
+
+The [contract](experiments/_template/README.md) is the part worth reading. Ground truth is
+constructible rather than hand-written, labels are verified against what the tools measure, you
+split by the unit that leaks, and you report the baselines and the base model beside any result.
+Each of those rules cost something to learn.
+
 ## Install
 
 ```bash
@@ -225,9 +352,33 @@ Requires **Node.js 22+** (v2.0.0 raised the floor with `node-web-audio-api` 2.0)
 }
 ```
 
+### Docker
+
+Every release also publishes `ghcr.io/mcp-tool-shop-org/ai-jam-sessions`, a slim image that runs
+the MCP server on stdio. The one thing to know is that `/data` is the memory: the journal, server
+state, user songs and any fetched MIDI live there, so mount a volume or they die with the
+container.
+
+```json
+{
+  "mcpServers": {
+    "ai_jam_sessions": {
+      "command": "docker",
+      "args": ["run", "--rm", "-i", "-v", "ai-jam-data:/data", "ghcr.io/mcp-tool-shop-org/ai-jam-sessions"]
+    }
+  }
+}
+```
+
+The image ships the 14 redistributable MIDI files; `library fetch --accept-source-terms` run once
+inside the container puts the other 94 in the volume. `docker compose up` does the same with a
+named volume, and `--profile ollama` adds an Ollama sidecar. Details, the CLI inside the image and
+what is deliberately not in it: [docs/docker.md](docs/docker.md). Running the fine-tuned graders
+in Ollama, with the measured cost of a 4-bit base: [docs/ollama-adapters.md](docs/ollama-adapters.md).
+
 ## MCP Tools
 
-49 tools and 4 prompt templates across seven categories:
+54 tools and 4 prompt templates across eight categories:
 
 ### Learn
 
@@ -276,7 +427,9 @@ Requires **Node.js 22+** (v2.0.0 raised the floor with `node-web-audio-api` 2.0)
 | `ai_jam_sessions` | Generate a jam brief — chord progression, melody outline, and style hints for reinterpretation |
 | `verify_harmony` | The maker loop's verification gate: a proposed reharmonization is checked by the platform's own deterministic tools — chord fidelity (the chord engine must detect each intended chord), melody consonance (tone/tension/chromatic), bass voice-leading, key membership |
 | `auto_reharmonize` | The maker loop in one call — a local model proposes a reharmonization, `verify_harmony`'s deterministic gate checks every voicing, best-of-n until a verified interpretation comes back |
-| `compose_panel` | Run the voice-leading composition panel on any songs: four systems realize accompaniments, blind cross-family LLM judges rank them, Bradley-Terry aggregates — with a discrimination-floor gate that voids uninterpretable runs (directional signal only, never a quality score) |
+| `compose_panel` | Run the voice-leading composition panel on any songs: four systems realize accompaniments, blind cross-family LLM judges rank them, Bradley-Terry aggregates — with a discrimination-floor gate that voids uninterpretable runs (directional signal only, never a quality score). Runs for minutes and streams progress notifications while it works. |
+
+**A sung line on the clock — the vocal route.** Any library song can carry a real sung vocal that lands on the piano: a **score clock** (`scripts/build-score-clock.mjs`) derives every syllable's pitch, onset and duration from the song's MIDI on the player's own timeline; a local, Apache-2.0, score-conditioned singer ([SoulX-Singer](https://github.com/Soul-AILab/SoulX-Singer)) sings from that clock on your GPU; and two gates measure the artifact before anything is called a mix — **timing**: every vowel onset within 40 ms of the score; **pitch**: every note within 50 cents, global offset within 20. Words are picked from a bag of takes and joined only at word boundaries with crossfades. Levers: `--track` (which MIDI track is the tune; `--list-tracks` to look), `--lyrics "A-ma-zing grace …"` (one token per note, syllables joined by `-`), `--measures`, the prompt clip (the voice), how many takes, and the gate thresholds — each with its citation in `scripts/vocal_clock.py`. Route, levers and receipts: [handbook → Vocals](https://mcp-tool-shop-org.github.io/ai-jam-sessions/handbook/vocals/), [`docs/vocal-clock.md`](docs/vocal-clock.md); the research behind the choices: [`docs/vocal-singing-study-2026-09.md`](docs/vocal-singing-study-2026-09.md).
 
 ### Guitar
 
@@ -307,6 +460,27 @@ Requires **Node.js 22+** (v2.0.0 raised the floor with `node-web-audio-api` 2.0)
 | `transpose_song` | Transpose a song up or down by semitones — new key, new notes |
 | `list_sections` | View structural sections of a song (Intro, Verse, Chorus, etc.) |
 | `add_section` | Add a section marker to a song for structural navigation |
+
+### Score
+
+| Tool | What it does |
+|------|--------------|
+| `score_performance` | Score a MIDI play-along against a library song — pitch, timing, completeness, with graded feedback |
+| `score_annotation` | Score annotation quality across 5 dimensions |
+
+### Listen
+
+Measuring recorded audio. Monophonic: they follow one line at a time, so a chord or a full mix
+produces confident nonsense. Every number comes from signal processing, never from a model reading
+a picture.
+
+| Tool | What it does |
+|------|--------------|
+| `analyze_audio` | Measure a WAV — onset times, the pitch contour as note names with cents, and level |
+| `transcribe_audio` | Turn a monophonic recording into notes, with each note's deviation from concert pitch. Notes the tracker could not follow are omitted rather than guessed |
+| `score_audio_take` | Grade a performance against a library song **by ear**, then hand the result to `view_scored_piano_roll` |
+| `view_spectrogram` | See the sound — a constant-Q spectrogram on a piano-keyboard axis, optionally overlaid with the intended notes. Blind by default |
+| `ensemble_now` | What every instrument is playing **right now**, mid-performance. Notes come from what was sent, so they are exact rather than estimated |
 
 ### MCP Prompts
 
@@ -342,9 +516,57 @@ ai-jam-sessions --version
 
 ## Status
 
-v2.1.0 — the release where the analyst became a **maker** (see [CHANGELOG](CHANGELOG.md)). The maker loop ships as product: a model proposes a reharmonization of any library song, and the platform's own deterministic tools gate it — the chord engine must confirm every intended voicing (`verify_harmony`), every melody note is labeled against the new harmony, and only a verified interpretation goes on to `add_song` → `play_song` → `view_piano_roll`. Generation verified by construction — no rubric, no self-grading; the same `inferChord` that writes jam briefs is the judge. The `maker_loop` prompt template walks the whole loop.
+**v2.6.0 — the release that stops shipping what it had no licence to ship** (see [CHANGELOG](CHANGELOG.md)).
+A per-file provenance audit of the song library found that of the 108 MIDI arrangements, 14 carry a
+licence that permits redistribution and 94 do not — and that twelve files were a different piece
+than their name. Every song now carries an evidence-backed `provenance` block (source URL, the
+site's terms, the arranger as the file's own copyright event names them, SHA-256, title verdict);
+the twelve are quarantined; the npm package ships the 14 and marks the rest *unfetched*, and
+`ai-jam-sessions library fetch --accept-source-terms` downloads each from the site that published
+it, under that site's terms, refusing any file whose hash no longer matches. Earlier versions shipped
+all 120 files and are deprecated on npm. The same audit reset the jam-actions-v1 dataset to the
+eleven songs whose arrangements are verified (three Krueger CC-BY-SA-3.0-DE, eight Mutopia Public
+Domain); the corpus, its near-gate probe and the training arc that found the shown-work target — a
+3B rank-16 LoRA at one unchanged recipe going from a class prior to 54/54 held-out and 72/72 near
+the gate once the assistant turn wrote the digits of the comparison — are in the repo under
+`datasets/` and `experiments/coverage-v1-sft/`, with publication to Hugging Face and Zenodo to
+follow from the verified corpus. Also in this release: `scorePerformance` caps the correct window
+at the caller's gate, so the 40 ms house rule is exactly the verdict window.
 
-Since the 2.1.0 cut, `main` has also grown the composition engine (`src/compose/`): a deterministic voice-leading gate with named style presets, membership-by-construction voicing specs, a part-at-a-time refiner, and the `compose_panel` tool that runs a blind cross-family ranking panel (directional only — uninterpretable and inconclusive are first-class outcomes). The live surface is **49 tools and 4 prompt templates**, with **2930 tests passing (1 skipped)**. **Publication state:** npm's latest is **2.0.0** — everything from 2.1.0 forward lives on `main` only; run from a clone until the next release.
+Previously in v2.5.0 — the release where the model can watch the band play.
+`ensemble_now` reports what every instrument is doing while the music is still going: held notes
+per instrument, how long each has been held, and the combined chord. It runs on two channels, and
+the cheap one is the accurate one — when this server performs it knows exactly what it sent, so a
+chord is three note-ons rather than a transcription problem, while a separate acoustic tap measures
+each engine **at the source** for verification. Measured cost is about **9 microseconds per audio
+callback**; latency is stated rather than implied (~23 ms pitch, ~70 ms confirmed onset); and the
+limits are documented because they are actionable — the tracker is monophonic, layered children are
+tapped individually and never as a mix, and an instrument with no tap is not a silent instrument.
+The same release turns the dataset machinery into a contract anyone can declare against, with a
+worked template, so users can build their own corpora and train their own adapters against the same
+discipline. Along the way the acoustic corpus's reproducibility gate was found to cover 109 of its
+115 published paths, and three of the six it missed were never emitted by the generator at all —
+regenerating deleted them. A full regeneration now reproduces every file and the checksum manifest
+byte for byte. The live surface is **54 tools and 4 prompt templates**, with **3,389 tests passing
+across 165 files (1 skipped)**.
+
+Previously in v2.4.0 — the release where the model got ears. Four tools closed the gap between
+rendering audio and examining it: `analyze_audio` for onsets, pitch contour and level;
+`transcribe_audio` for a monophonic recording as notes; `score_audio_take` to grade a performance
+by ear and hand the result to the existing scored piano roll unchanged; and `view_spectrogram` to
+see the sound on a constant-Q, piano-keyboard axis. All of it is dependency-free signal processing
+written in this repo — its own FFT, windows, mel and constant-Q transforms, onset detection and
+pitch tracking — because a model cannot reliably eyeball a picture and deterministic queries beat
+inference for questions with exact answers. That release also published
+**jam-actions-acoustic-v0**, 108 constructible-gold records of tool use over audio.
+
+Previously in v2.3.0 — the release where the instrument learned to sing on the clock (see [CHANGELOG](CHANGELOG.md)). Any library song can now carry a real sung line that lands on the piano: a **score clock** derives every syllable's pitch, onset and duration from the song's MIDI on the player's own timeline; a local, Apache-2.0, score-conditioned singer ([SoulX-Singer](https://github.com/Soul-AILab/SoulX-Singer)) sings from it; and two gates measure the artifact before anything is called a mix — timing (every vowel within 40 ms of the score) and pitch (every note within 50 cents). The shipped Amazing Grace run measures 6 ms worst timing and −2.7 cents global pitch, with receipts committed; the landing page carries it as an honest state, with the one remaining defect named (the opening splice, handed off). The route, its levers, and the research behind each choice (five study lanes, cited) are in the [handbook](https://mcp-tool-shop-org.github.io/ai-jam-sessions/handbook/vocals/) and [`docs/`](docs/). The live surface is unchanged at **49 tools and 4 prompt templates**, with **3,080 tests passing (1 skipped)** plus the vocal instrument's own pytest suite. **Publication state:** published — [`@mcptoolshop/ai-jam-sessions@2.3.0`](https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions) on npm, provenance-attested.
+
+Previously in v2.2.0 — the release where the instrument got real ears and a listening room. The cockpit's default piano is now a **sampled Concert Grand** — a pruned Salamander pack that loads on your first gesture and falls back to the tuned oscillator synth until it's ready — and the server picks the sample engine automatically whenever a full pack is installed. On top of it sits the **Composition Panel**: a blind, loudness-matched A/B listening room where a human ranks the composition engine's voicings against theory-valid and theory-invalid anchors (Bradley-Terry with bootstrap CIs, a MUSHRA-style discrimination floor, PROVISIONAL and UNINTERPRETABLE as first-class outcomes), beside a local-models panel that runs the same ranking with cross-family LLM judges and a Compare view (Kendall τ) that asks whether the cheap proxy tracks the human truth.
+
+The same release carries the composition engine that feeds the panel (`src/compose/`: a deterministic voice-leading gate with named style presets, membership-by-construction voicing specs, a part-at-a-time refiner), a full health pass (45 findings fixed — security currency, humanized strings, a look-preserving visual amend), Satie and Debussy library entries re-sourced from receipted Mutopia public-domain bytes, and a stranger-test hardening pass: descriptive validation errors, structured `{code, message, hint}` error envelopes, a curated tarball, progress notifications on long tools, and CLI error grammar. That release shipped as [`@mcptoolshop/ai-jam-sessions@2.2.0`](https://www.npmjs.com/package/@mcptoolshop/ai-jam-sessions) with 49 tools, 4 prompt templates, and 3,033 tests.
+
+Previously in v2.1.0 — the release where the analyst became a **maker**. The maker loop ships as product: a model proposes a reharmonization of any library song, and the platform's own deterministic tools gate it — the chord engine must confirm every intended voicing (`verify_harmony`), every melody note is labeled against the new harmony, and only a verified interpretation goes on to `add_song` → `play_song` → `view_piano_roll`. Generation verified by construction — no rubric, no self-grading; the same `inferChord` that writes jam briefs is the judge. The `maker_loop` prompt template walks the whole loop.
 
 Previously in v2.0.0 — the release where the dataset proved its discipline. **Breaking: the Node.js floor is now 22** (`node-web-audio-api` 2.0); the tool surface itself is unchanged — six sound engines, 47 MCP tools, 3 prompt templates, and a **fully annotated library: 120/120 songs across 12 genres** (12 key fields corrected to content-detected keys this release). The teaching loop is closed end-to-end: metronome with count-in → live recording → per-note scoring → the marked-up scored piano roll → practice loops that ramp tempo only after clean passes. The browser cockpit is a real composition tool — beat-accurate transport with loop regions, record-arm capture, full undo/redo, multi-select and clipboard, touch support — [live on the web](https://mcp-tool-shop-org.github.io/ai-jam-sessions/cockpit/).
 

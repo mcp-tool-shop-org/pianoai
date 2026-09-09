@@ -32,5 +32,30 @@
       "Honor the 11-measure bass silence: don't sneak the left hand in early — feel the texture visibly widen when it finally lands at measure 12, and let that arrival carry weight.",
       "Shape the final region (measures 52-56) as a settling: the lens gives it the file's gentlest boundary and measure 56 thins to 20 onsets — let the roll soften gradually into stillness rather than stopping abruptly."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/42920.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "640a580727c1f0bf717b44154307591955c64ee55fe4ee0964035b9c88084bcb",
+    "midi_title_events": [
+      "PIZZICATO",
+      "PICCOLO",
+      "MELODY",
+      "STEEL GTR",
+      "NYLON GTR",
+      "PAN FLUTE",
+      "DRUMS",
+      "GS/RESET"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

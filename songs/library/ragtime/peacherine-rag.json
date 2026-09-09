@@ -31,5 +31,36 @@
       "Keep the moderate 80 BPM pulse steady through the sparse measure 72 — a brief thin texture is a place to lighten touch, not to slow down.",
       "Try building volume gradually from measure 55 to measure 63, the piece's busiest stretch — let the rhythmic density itself carry the sense of arrival rather than adding an artificial accent."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://www.mutopiaproject.org/ftp/JoplinS/peacherine/peacherine.mid",
+    "source_site": "www.mutopiaproject.org",
+    "arrangement_creator": "Antonio Palamà (Mutopia typesetter, LilyPond)",
+    "arrangement_license": "Public-Domain",
+    "terms_url": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=335",
+    "terms_quote": "Copyright: Public Domain (piece page); Public Domain: The contributor of this music has dedicated their contribution into the public domain. You can do what you like with this music - print it out, sell it, change it, distribute it, record it, and perform it, etc.",
+    "verified_at": "2026-09-09",
+    "verifier": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=335; midi meta events (sha256 5185a564754c…)",
+    "midi_sha256": "5185a564754c047954039ecfad37f91140675c201cee8e4d4930624bd974aee9",
+    "midi_title_events": [
+      "control track",
+      "GNU LilyPond 2.10.33",
+      "down"
+    ],
+    "midi_credit_events": [
+      "creator:"
+    ],
+    "credited_parties": [
+      {
+        "name": "GNU LilyPond",
+        "evidence": "midi-meta"
+      },
+      {
+        "name": "Antonio Palamà",
+        "evidence": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=335"
+      }
+    ],
+    "title_verdict": "no-title-in-file"
   }
 }

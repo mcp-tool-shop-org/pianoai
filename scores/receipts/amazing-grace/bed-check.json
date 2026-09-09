@@ -1,0 +1,142 @@
+{
+  "pass": true,
+  "tol_ms": 3.0,
+  "rows": [
+    {
+      "id": "v00",
+      "t_score": 2.1333333333333333,
+      "t_noteon": null,
+      "late_ms": null,
+      "acoustic_ms": null,
+      "pass": true,
+      "note": "hymn-pickup-during-piano-rest"
+    },
+    {
+      "id": "v01",
+      "t_score": 3.2,
+      "t_noteon": 3.2,
+      "late_ms": 0.0,
+      "acoustic_ms": 8.21,
+      "pass": true,
+      "note": "piano-onset:m2:right:beat0"
+    },
+    {
+      "id": "v02",
+      "t_score": 6.4,
+      "t_noteon": 6.4,
+      "late_ms": 0.0,
+      "acoustic_ms": null,
+      "pass": true,
+      "note": "piano-onset:m2:right:beat1"
+    },
+    {
+      "id": "v03",
+      "t_score": 7.0,
+      "t_noteon": 7,
+      "late_ms": 0.0,
+      "acoustic_ms": null,
+      "pass": true,
+      "note": "piano-onset:m3:right:beat0"
+    },
+    {
+      "id": "v04",
+      "t_score": 8.6,
+      "t_noteon": 8.6,
+      "late_ms": 0.0,
+      "acoustic_ms": null,
+      "pass": true,
+      "note": "piano-onset:m3:right:beat1"
+    },
+    {
+      "id": "v05",
+      "t_score": 10.2,
+      "t_noteon": 10.2,
+      "late_ms": 0.0,
+      "acoustic_ms": 8.19,
+      "pass": true,
+      "note": "piano-onset:m4:right:beat0"
+    },
+    {
+      "id": "v06",
+      "t_score": 13.4,
+      "t_noteon": 13.4,
+      "late_ms": 0.0,
+      "acoustic_ms": null,
+      "pass": true,
+      "note": "piano-onset:m4:right:beat1"
+    },
+    {
+      "id": "v07",
+      "t_score": 14.2,
+      "t_noteon": 14.2,
+      "late_ms": 0.0,
+      "acoustic_ms": null,
+      "pass": true,
+      "note": "piano-onset:m5:left:beat0"
+    },
+    {
+      "id": "v08",
+      "t_score": 17.4,
+      "t_noteon": 17.4,
+      "late_ms": 0.0,
+      "acoustic_ms": null,
+      "pass": true,
+      "note": "piano-onset:m5:left:beat1"
+    },
+    {
+      "id": "v09",
+      "t_score": 18.2,
+      "t_noteon": 18.2,
+      "late_ms": 0.0,
+      "acoustic_ms": null,
+      "pass": true,
+      "note": "piano-onset:m6:right:beat0"
+    },
+    {
+      "id": "v10",
+      "t_score": 19.8,
+      "t_noteon": 19.8,
+      "late_ms": 0.0,
+      "acoustic_ms": null,
+      "pass": true,
+      "note": "piano-onset:m6:right:beat1"
+    },
+    {
+      "id": "v11",
+      "t_score": 21.4,
+      "t_noteon": 21.4,
+      "late_ms": 0.0,
+      "acoustic_ms": 8.35,
+      "pass": true,
+      "note": "piano-onset:m7:right:beat0"
+    },
+    {
+      "id": "v12",
+      "t_score": 23.0,
+      "t_noteon": 23,
+      "late_ms": 0.0,
+      "acoustic_ms": null,
+      "pass": true,
+      "note": "piano-onset:m7:right:beat1"
+    },
+    {
+      "id": "v13",
+      "t_score": 24.6,
+      "t_noteon": 24.6,
+      "late_ms": 0.0,
+      "acoustic_ms": 8.21,
+      "pass": true,
+      "note": "piano-onset:m8:right:beat0"
+    }
+  ],
+  "acoustic_latency_ms": {
+    "n": 4,
+    "min": 8.19,
+    "max": 8.35
+  },
+  "engine": "oscillator-grand",
+  "bed": "tmp/vocal-clock/piano-bed.wav",
+  "render_receipt": "tmp/vocal-clock/piano-bed.receipt.json",
+  "bed_frames": 1680000,
+  "length_pass": true
+}

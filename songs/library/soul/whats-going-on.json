@@ -33,5 +33,34 @@
       "Treat the byte-identical closing echo (measures 38-42 returning at 44-48) as a fade in intensity — same notes, less insistence; listen for the second pass sounding like memory.",
       "Imitate a reference recording by ear for the phrasing across the seamless form — with no structural seams stronger than 0.695, the records' breathing, not the barlines, should shape your phrases."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://freemidi.org/getter-5012",
+    "source_site": "freemidi.org",
+    "arrangement_creator": "unknown — the file names no creator and freemidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://freemidi.org/about",
+    "terms_quote": "free midi is about freedom and free midi songs. (User-uploaded; no licence is stated anywhere on the site.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://freemidi.org/about",
+    "midi_sha256": "3a23038b78d50a16523d4fa328ded3edca1880bc8f7bf6573c83bb79b4176e8e",
+    "midi_title_events": [
+      "untitled",
+      "ELEC PIANO/VIBE",
+      "STRINGS",
+      "BASS",
+      "Drums",
+      "Kick Drum 1",
+      "Snare Drum 1",
+      "Hand Clap",
+      "Closed Hi-Hat",
+      "Mute High Conga",
+      "Low Conga",
+      "Cabasa"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

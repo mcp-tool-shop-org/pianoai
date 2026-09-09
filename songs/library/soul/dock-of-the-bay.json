@@ -31,5 +31,24 @@
       "Treat the measure-43 spike as a wave, not a wall: 58 onsets flow as one gesture — listen for the crest passing and the texture relaxing again by measure 52.",
       "Imitate a reference recording by ear for the vocal phrasing and the closing region's easy fade — the tradition transmits this feel through records, and the grid here is only its skeleton."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/83369.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "fb8725ab6cf110a7db3a4c89343e9d12f36b8de86cc705e8b98e620832320b0e",
+    "midi_title_events": [
+      "7861DOCK"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "matches",
+    "title_note": "the only text is the code '7861DOCK'"
   }
 }

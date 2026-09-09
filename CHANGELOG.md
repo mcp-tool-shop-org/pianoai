@@ -5,6 +5,237 @@ All notable changes to AI Jam Sessions will be documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## [2.6.0] - 2026-09-09
+
+### Fixed — the song library's provenance
+- Every song's JSON now carries an evidence-backed `provenance` block: the URL it was downloaded
+  from, the site's terms (URL and quote), the arranger as the MIDI's own text and copyright events
+  name them, the file's SHA-256 and a title verdict. `scripts/provenance-audit.ts` regenerates it.
+- Twelve library files were a different piece than their name (among them `scarborough-fair.mid`
+  = Greensleeves and `the-water-is-wide.mid` = Foster's "The Glendy Burk"); they are quarantined
+  under `songs/quarantine/` and the library is 108 songs, not 120.
+- **The npm package no longer redistributes MIDI whose licence is unverified.** Of the 108, 14 carry
+  a redistributable licence (piano-midi.de CC-BY-SA-3.0-DE; Mutopia Public Domain) and ship;
+  `songs/library/.npmignore` is generated from the provenance blocks and a test keeps it current.
+  The rest are marked *unfetched* in `ai-jam-sessions library` and downloaded by
+  `ai-jam-sessions library fetch --accept-source-terms` from their recorded source, under that
+  source's terms, checked against the recorded SHA-256. Earlier versions shipped all 120 files.
+
+### Added — jam-actions-v1: the corpus that shows its work
+- `datasets/jam-actions-v1/` at 146 records (106 train / 40 test, split by song), nine task
+  families over the eleven public-domain pieces whose arrangements carry a verified licence
+  (`src/dataset/acoustic-v1/allowlist.ts` derives the set from the library's provenance blocks and a
+  test locks it), schema `jam-actions-v1/1.0.0`. Acoustic, harmony and compare assistant turns state
+  the measured quantity, the gate, the subtraction and the word before the label; the label is
+  always the engine's predicate on the measurement, verified by test. Earlier working versions of
+  the corpus (268, 349, 371 records over 27 songs) were never published; their results are recorded
+  in `experiments/coverage-v1-sft/RESULTS*.md` as the arc that found the target.
+- `datasets/jam-actions-v1-probe/`: 24 evaluation-only acoustic takes within 10 ms or 5 cents of a
+  gate on the held-out songs. Its 72-take predecessor is the set that separated a sign-reader from
+  a comparator.
+- The experiment contract in `src/dataset/experiment/` (published-schema registry, split-by-song,
+  generic trivial baselines, tool-less baseline gate) and `experiments/coverage-v1-sft/` with every
+  run's receipts and raw completions.
+- Results: a Qwen2.5-3B rank-16 LoRA at one unchanged recipe scored 54/54 on held-out acoustic
+  takes (two seeds), 116/117 overall on the release corpus and 72/72 on the probe, against a base of
+  23/54 and 66/117; the 7B at the same recipe 54/54 and 72/72. The seven runs before it, on the same
+  recipe, learned a class prior from a bare label and sign-reading from a worded comparison
+  (`RESULTS*.md`).
+- `experiments/acoustic-sft/runpod.mjs`: pods named by experiment, teardown by id only, refusal to
+  deploy beside foreign pods, and adoption or teardown of a pod that a failed create still made.
+
+### Fixed
+- `scorePerformance` capped the "correct" window at the caller's tolerance; the 40 ms house gate is
+  now exactly the verdict window at every tempo, and the server comment says what the code does.
+- The v1 timing rule is two-sided (`|onset| > 40`), matching the product; it had been late-only.
+
+### Changed
+- HF card corrections for `jam-actions-acoustic-v0` (1.0.2) and the enriched `jam-actions-v0` card
+  adopted as 0.5.1 with a push-workflow guard against overwriting a card edited on Hugging Face.
+
+## [2.5.0] - 2026-09-08
+
+### Added — the live ensemble: watching the band while the music plays
+
+v2.4.0 gave the model ears for finished recordings. This release lets it watch a performance while
+it is still going, and adds one more tool to do it.
+
+- `ensemble_now` — every instrument's held notes, how long each has been held, and the combined
+  chord across the ensemble. In a duet the voices are reported separately, so a piano holding a
+  triad and a synth carrying a line above it are two entries rather than one blur.
+
+**Two channels, and the cheap one is the accurate one.** When this server performs, it knows
+exactly what it sent to each engine, because it sent it. A chord is not a transcription problem;
+it is three note-ons. That channel has no model in it, no inference, no confidence score, and no
+latency worth naming. The obvious design would have pointed a polyphonic transcriber at the audio
+to answer a question we already had the answer to — slower, less accurate, and several hundred
+megabytes heavier.
+
+Beside it runs an acoustic channel for **verification, not discovery**: each engine fans its output
+into a private analysis bus, so every instrument is measured at the source with no source
+separation and no ambiguity about which sound belongs to which. It is how you learn that a take
+clipped, a sung line drifted off the clock, or an engine went silent while still being sent notes.
+When the two channels disagree, that is a fact about the render and never a correction to the note
+list.
+
+Measured cost is about **9 microseconds per audio callback** against a 42.67 ms block, with zero
+dropped samples. An instrument with no observer costs nothing, and an observer cannot break a
+performance: the tap fans out of the engine's output and never sits between it and your speakers.
+
+Latency is stated rather than implied — roughly 23 ms for pitch, 70 ms for a confirmed onset.
+Onsets closer to the present than that are withheld rather than reported and later retracted.
+
+Limits, documented because they are actionable: the acoustic tracker follows one line at a time and
+will not name the notes of a chord; a layered engine's children are tapped individually and never
+as a mix; and an instrument with no tap is not a silent instrument.
+
+### Added — build your own datasets
+
+The machinery behind this repo's datasets is now a declarable contract rather than one hand-built
+experiment. Declare a task — a closed verdict set, the thresholds the answer depends on, the cases,
+and the unit you hold out by — and you get SFT formatting, per-class scoring, trivial baselines over
+your declared set, and a check that no holdout unit straddles the split.
+
+`experiments/_template/` is a worked example that runs, and its README carries the contract each
+rule cost something to learn: ground truth is constructed rather than written down, labels are
+verified against what the tools measure, you split by the unit that leaks, and any result is
+reported beside its baselines and the base model.
+
+### Known limitation — the waveform hash is not portable across JS engines
+
+Each acoustic record carries `wav_sha256`, the hash of the audio its recipe produces, and the
+dataset card says re-rendering from the recipe reproduces the same bytes. On a different JavaScript
+engine, for two of the 108 records, it does not.
+
+The renderer calls `Math.pow` and `Math.sin` once per sample. Neither is required by ECMA-262 to be
+correctly rounded, and V8's results changed between the versions in Node 22 and Node 24: of the
+27,869 distinct `Math.pow(2, x)` arguments this corpus evaluates, **253 (0.91%) return a different
+double**. Almost all of that disappears under 16-bit quantisation, but the `extra` perturbation of
+Für Elise lands on MIDI 63, where the semitone ratio itself differs by one unit in the last place,
+and its two records hash differently.
+
+Found by running the new reproducibility gate on the full CI matrix, which is the first time it had
+executed anywhere but Node 22. Every other field of every record reproduces on any engine, and the
+tests now assert those two claims separately rather than one claim that is only sometimes true.
+
+Making the waveform bit-portable means replacing the transcendentals with a fixed implementation.
+That changes every waveform hash and therefore every record, so it needs a new schema version and a
+republish. Not done here; the corpus is unchanged and the limitation is documented instead.
+
+### Fixed
+
+- **The acoustic corpus is now reproducible end to end.** Its reproducibility gate covered 109 of
+  115 published paths, and three of the six it missed were never emitted by the generator at all —
+  regenerating the corpus deleted `VERSION`, `CITATION.cff` and `LICENSE-DATASET.md` and produced a
+  112-entry manifest where 115 are published. A full regeneration now reproduces every file and the
+  checksum manifest byte for byte.
+- The checksum manifest is written in the published breadth-first path order. A flat sort put
+  `splits.json` after all 108 record files and silently produced a different manifest for identical
+  content.
+- The acoustic evaluation counted perturbation kinds while grading against gold verdicts, and
+  reported a majority-class baseline naming a label no model could emit. The numbers were correct;
+  the label was not. Baselines now compute over the declared class set.
+- The published-schema registry knew 2 of the 12 schema versions published under `datasets/`, so it
+  reported having checked collisions it had never heard of. All twelve are registered and a test
+  derives the set from disk.
+- A false disagreement fired on every chord, because the monophonic pitch tracker correctly refuses
+  to name a period in a triad. Narrowed to a single held note.
+- `play_song` reported the wrong instrument in the roster when driving a non-piano engine.
+
+## [2.4.0] - 2026-09-07
+
+### Added — the audio inspector: the model can measure sound, not just make it
+
+Until now this server could render audio but never examine it. The model played, a human listened,
+and the model took their word for it. Four new tools close that gap, and they are built on the
+principle the repo already proved with its MIDI inspector: a model cannot reliably eyeball a
+picture, so give it deterministic queries instead.
+
+- `analyze_audio` — onsets, pitch contour and level from a WAV. Pitch in note names with cents,
+  never raw frequencies.
+- `transcribe_audio` — a monophonic recording as notes, with each note's deviation from concert
+  pitch.
+- `score_audio_take` — grade a performance against a library song **by ear**, then hand the result
+  to the existing `view_scored_piano_roll` unchanged. Audio enters the scoring stack rather than
+  sitting beside it.
+- `view_spectrogram` — a constant-Q spectrogram with a piano-keyboard axis, optionally overlaid
+  with the song's intended notes. Blind by default: it shows the sound alone and asks what you see
+  before the overlay is available.
+
+New `src/audio/` layer, dependency-free and identical in Node and the browser: FFT, windows, STFT,
+mel filterbank, decibel scaling, constant-Q with sparse Brown-Puckette kernels, SuperFlux onset
+detection, YIN pitch tracking with the cents gate, monophonic transcription, WAV decoding, PNG
+rendering, and synthetic fixtures.
+
+Also adds `jam-actions-acoustic-v0`, a 108-record corpus of grounded tool use over audio analysis,
+whose labels are verified against what the tools actually measure rather than only against
+themselves. Held out by phrase rather than by record. Not published.
+
+Grounded in `docs/spectrogram-surface-study-2026-09.md`. The load-bearing finding: mel cannot
+show a 50-cent error below 1 kHz, because Slaney mel is linear there at about 67 Hz per step while
+50 cents at middle C is 7.7 Hz. So the constant-Q transform carries pitch and mel carries
+legibility, and no gate ever routes through a picture.
+
+
+## [2.3.0] - 2026-09-05
+
+### Added — the score-clock vocal route (SoulX-Singer, local) — the vocal route
+
+The Director-ratified way to put a sung line on a library song (2026-09-05). Route A below remains the live-play lead; this is how a mixed vocal is produced and proven.
+
+- **One clock.** `scripts/build-score-clock.mjs` derives `scores/<song>.score-clock.v1.json` from the song's MIDI melody track (`--track`, `--list-tracks`) and lyrics (`--lyrics`, one token per note, syllables joined by `-`), on the **session's own timeline** — measures start when the longer hand finishes, so the bars the player actually plays (3.2–4.0 s here) rather than the MIDI's 2.4 s or `bar.dur/3`. Sample-rounded at 48 kHz; `--check` is a drift guard. `src/vocal/score-clock.ts` (+ tests).
+- **A deterministic bed.** `scripts/render-piano-bed.mjs` bounces the piano offline through an injected `OfflineAudioContext` (both engines accept `audioContext`) to exactly the clock's length; live playback sleeps beat by beat and is not on the clock.
+- **The singer.** [SoulX-Singer](https://github.com/Soul-AILab/SoulX-Singer) (Apache-2.0, score-conditioned, zero-shot timbre), run locally: `scripts/export_soulx_target.py` (clock → SoulX metadata; `--syllable-words` makes every syllable its own re-articulated word) and `scripts/soulx_take.py` (one take ≈ 5 s of GPU). Local patch for Windows in `scripts/patches/`.
+- **The instrument.** `scripts/vocal_clock.py`: `verify` dates every vowel onset on the artifact (400–3000 Hz band, −6 dB rise) and gates |onset − t_sec| ≤ 40 ms, word order, one voice, timeline fit, sample-exact length; `pitch` gates score MIDI vs pYIN F0 at the vowel nucleus (fail > 50 c, warn > 25 c, global offset > 20 c; SwiftF0 cross-check); `repin --candidate` picks, per word, the take whose syllables are internally on the clock and cuts only between words; `place --local` splices with 50 ms crossfades (cloud `place_exact` path kept); `mix --local` gain-stages from a meter with a headroom rule; `transcribe` (ElevenLabs scribe on Comfy Cloud) for order and one-voice. **Any FAIL and it is not a mix.** Receipts under `scores/receipts/`.
+- **Grounding.** `docs/vocal-singing-study-2026-09.md` — five Opus lanes: music models still cannot take MIDI (June ruling holds); ElevenLabs STS has no pitch contract (route withdrawn); SoulX-Singer refutes "only DiffSinger honors MIDI"; the pitch-gate thresholds carry their citations. Handbook: *Vocals — sing a song on the clock*.
+- **Measured on the way (see `docs/vocal-clock.md`):** the kickoff's piano table was 0.8 s early from m4 (an RH-only walk); Scribe word starts are ±100–700 ms on sung audio; SwiftF0 reads a ±40 c vibrato +20 c sharp; a voiced consonant is already at the next pitch 150 ms before its vowel; a sung word is legato inside ("A"→"ma" glides Bb3→Eb4 over 180 ms), so cuts happen only between words; feeding timing errors back into the next target does not converge (stochastic, not a bias); Seed Audio cannot sing a melody or hold a note, whatever the prompt.
+
+### Added — score-locked sung lead (Route A)
+
+- **`--lyrics` / `--lyrics-file` on `play`** (and `play_song.lyrics`) align English lyrics to the right-hand melody: vowel nucleus on the MIDI beat, onset consonants in the preceding gap, leftover duration on the nucleus, diphthong split on long notes, leftover notes as melisma. The additive vocal-synth engine renders that score; `synth`/`vocal`/`tract` engines are not used as the lead when lyrics are set (they become piano accompaniment).
+- First slice: `ai-jam-sessions play amazing-grace --lyrics "Amazing grace how sweet the sound" --measures 1-8`.
+- Sung melody is octave-placed into G3–E4 so F0 stays under front-vowel F1. Default voice is `kokoro-af-heart`; extra phrase vibrato is off. `--measures` with lyrics plays the range **once**, not a loop.
+- Live lead is mixed on the **same AudioContext as the piano**. The renderer is **Pink Trombone** (LF glottis + waveguide), not vocal-synth-engine's additive Kokoro tables — those are a vowel instrument and were the metallic shriek.
+- **Breath is context:** a tank that fills only after a brief pause (~0.45 s catch-breath, professional ~14 s phrase) and thins the tone as it empties (Klatt aspiration, Prame vibrato-rate rise, small F0 residual). Opening rests are inhales.
+- **Amazing Grace sings New Britain** (Eb: Bb–Eb–G…), not the piano arrangement's chord tops. `play amazing-grace` uses the first-verse lyric line without `--lyrics`.
+- **Lead path is fx-dub CAST/LOCK/PERFORM:** a locked Kokoro take is pitch-shifted onto the MIDI (`src/vocal/voice-changer.ts`). Set `JAM_KOKORO_LOCK_WAV`. Tract/additive are not the singer. Kokoro is local Apache TTS (not Comfy Cloud).
+- **`--out file.wav`** (with `--lyrics`) writes the score-locked lead offline (`--svs-backend dsp`, default). `--svs-backend diffsinger` refuses until `DIFFSINGER_ROOT` is a commercial-safe OpenVPI pin (Route B).
+- **`generate-song`** is the ACE-Step / DiffRhythm / YuE side door — it **refuses to run as a play engine** because those models cannot honor library MIDI (Route C).
+- Route D (DSP dry + SVC timbre) is a handoff only — not in this package (AGPL / F0-from-audio; see the vocology-knowledge Route D note in the private readouts repo).
+
+## [2.2.0] - 2026-08-20
+
+**The release where the instrument got real ears and a listening room.** Every prior release played through synthesized approximations; this one ships a sampled Concert Grand as the default piano and a blind listening room — the Composition Panel — where the composition engine's output is ranked by ear under real listening-test discipline. Around them: a full health pass, receipted public-domain re-sourcing of two library works, and a stranger-test hardening pass over the packed artifact.
+
+### Added — the sampled Concert Grand
+
+- **`sample` is a first-class server engine and the default when a pack is installed** (`samples/AccurateSalamander` or `AI_JAM_SAMPLES_DIR`); the npm tarball stays sample-free by design. The oscillator piano remains the zero-dependency fallback, now with velocity-shaped brightness (a 1.4–7.2 kHz velocity lowpass) and a gentler master compressor on both synthesis doors.
+- **The cockpit ships its own pruned pack** — 90 OGGs (30 roots at minor-third spacing × 3 velocity layers, ~8 MB) regenerable via a deterministic pruner script with a full provenance manifest (source archive sha256, encoder settings, per-file map). Loads on the first user gesture, plays through the synth's own output chain, falls back seamlessly, and reports its state via `window.__cockpit.samplerState()`. Only the Concert Grand preset routes to samples — the other nine voices keep their synth characters. Samples: Salamander Grand Piano by Alexander Holm, CC-BY 3.0, credited in-app and here.
+
+### Added — the Composition Panel (cockpit)
+
+- **By ear** — blind pairwise A/B auditions of the composition engine's voicings over real library melodies: reference/A/B clips offline-rendered through the *real* voice path and loudness-matched (attenuate-only, ≤0.5 dB RMS, offsets recorded per trial); seeded, shuffled trial lists with hidden floor catch-trials; Bradley-Terry rankings with bootstrap CIs; a MUSHRA-style >15% post-screen; PROVISIONAL until every pair meets its vote budget and UNINTERPRETABLE when the floor gate fails — first-class outcomes, not errors. Matched-playhead A/B switching with keyboard control; runs persist beside (never inside) the score and export as JSON.
+- **Local models** — the same ranking run by locally installed cross-family LLM judges (one seat per model family; the generator's whole lineage, embedding models, and cloud-routed tags never judge), with per-seat failure marked honestly and never substituted. **History** lists both run kinds; **Compare** reports Kendall τ-b and engine-rank match between a human run and an LLM run, naming a PROVISIONAL or UNINTERPRETABLE human side for what it is.
+- The panel's engine system honors the maker contract: the local model's voicing spec is repaired by the part-at-a-time refiner before it competes.
+
+### Added — the composition engine (`src/compose/`)
+
+- A deterministic voice-leading gate with a style-invariant hard floor plus named style presets (`common-practice`, `lead-sheet`, `film-ambient`), membership-by-construction voicing specs, a part-at-a-time refiner, best-of-n scoring, and the **`compose_panel`** MCP tool — a blind cross-family ranking panel with the discrimination-floor gate (directional signal only, never a quality score).
+
+### Changed
+
+- **Long tool calls stream progress**: `compose_panel` emits MCP progress notifications from the first second (realization and per-judgment start events plus completions), so default 60-second clients survive multi-minute runs instead of timing out.
+- **Errors teach**: invalid tool inputs return the protocol's `-32602` with messages that name the field, the expected shape, and an example (`notes must be an array of MIDI numbers, e.g. [60, 64, 67]`); `verify_harmony`'s failure paths join the structured `{code, message, hint}` envelope its siblings use; provoked CLI failures print `Error [CODE]` + `Hint:` with non-zero exits.
+- **The tarball ships user docs, not the project's process history** — packed size 6.8 → 4.9 MB, held by a pack regression test.
+- **Satie Gymnopédie No. 1 and Debussy Arabesque No. 1 re-sourced from Mutopia public-domain bytes** with receipts (license page, archive sha256, typesetter credit) after the original arrangement provenance could not be verified; the frozen musical baselines were proven unchanged (120/120 songs, 12,982/12,982 implied-chord labels identical).
+- A full health pass closed 45 findings across four audit stages — dependency/security currency, proactive hardening, humanized user-facing strings, and a look-preserving visual amend of the cockpit (design tokens, 24 px hit targets, focus-ring clearance, truncation, a Panel responsive breakpoint, and the CC-BY credit made visible on desktop).
+
+### Tests
+
+- 2,506 → **3,033 passing (1 skipped)** across the server, cockpit, compose engine, panel machinery, pack integrity, and eval harnesses.
+
 ## [2.1.0] - 2026-07-22
 
 **The release where the analyst became a maker.** The finetune line proved the model can *analyze* music through grounded tools; this release ships the loop that lets it *make* music under the same discipline. A model proposes a reharmonization; the platform's own deterministic tools gate it — the chord engine must confirm every intended voicing, every melody note is labeled against the new harmony — and only a verified interpretation goes on to be saved, played, and seen. Generation verified by construction: no rubric, no self-grading, no forced-choice proxy.

@@ -1,0 +1,68 @@
+{
+  "$schema_note": "Zenodo deposition metadata payload for the jam-actions-v1-probe 1.0.0 new-version deposit under concept DOI 10.5281/zenodo.20279918. Conforms to the Zenodo legacy REST API deposition schema at https://developers.zenodo.org/#representation. DOI is intentionally absent — Zenodo mints the new version DOI on publish. No auth tokens, no account IDs, no credentials.",
+  "metadata": {
+    "title": "jam-actions-v1-probe — evaluation-only near-gate acoustic takes",
+    "upload_type": "dataset",
+    "description": "<p>24 acoustic takes on jam-actions-v1's three held-out songs, each measured within 10 ms or 5 cents of a grading gate, both signs of both quantities. Never split, never trained on. Distinguishes a model that compares a measurement to a gate from one that reads a sign.</p>",
+    "creators": [
+      {
+        "name": "mcp-tool-shop-org",
+        "affiliation": "mcp-tool-shop-org GitHub organization"
+      }
+    ],
+    "keywords": [
+      "music",
+      "midi",
+      "dataset",
+      "mcp",
+      "model-context-protocol",
+      "llm",
+      "training-data",
+      "tool-use",
+      "piano",
+      "symbolic-music",
+      "annotation",
+      "instruction-tuning"
+    ],
+    "license": "CC-BY-SA-3.0",
+    "access_right": "open",
+    "language": "eng",
+    "version": "1.0.0",
+    "related_identifiers": [
+      {
+        "identifier": "https://github.com/mcp-tool-shop-org/ai-jam-sessions",
+        "relation": "isSupplementTo",
+        "scheme": "url",
+        "resource_type": "software"
+      },
+      {
+        "identifier": "https://doi.org/10.5281/zenodo.20279918",
+        "relation": "isSupplementTo",
+        "scheme": "doi",
+        "resource_type": "dataset"
+      }
+    ],
+    "subjects": [
+      {
+        "term": "Symbolic music",
+        "identifier": "https://en.wikipedia.org/wiki/Music_information_retrieval",
+        "scheme": "url"
+      },
+      {
+        "term": "Model Context Protocol",
+        "identifier": "https://modelcontextprotocol.io/",
+        "scheme": "url"
+      },
+      {
+        "term": "Instruction tuning",
+        "identifier": "https://arxiv.org/abs/2109.01652",
+        "scheme": "url"
+      }
+    ],
+    "references": [
+      "mcp-tool-shop-org (2026). jam-actions-v1. Source repository mcp-tool-shop-org/ai-jam-sessions.",
+      "Model Context Protocol specification. modelcontextprotocol.io."
+    ],
+    "notes": "Evaluation-only. Never merge into a training set. Never split. Cite the concept DOI and name the version."
+  }
+}

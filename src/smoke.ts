@@ -90,17 +90,25 @@ console.log("song library integration:");
 test("registry loads every ready song in the library", () => {
   // Annotation-harvest waves promote songs to "ready" without touching src/**,
   // so the expected count is read from the library scan rather than hardcoded.
-  // The floor pins the wave-D1 baseline (42) so mass loss still fails.
-  const expected = getLibraryProgress(libraryDir).ready;
+  // Since the 2026-09-09 history purge a checkout carries MIDI for the 14
+  // redistributable songs only; the rest are `unfetched` until
+  // `library fetch --accept-source-terms` runs. The registry loads exactly the
+  // ready songs whose MIDI is on disk, and the floor pins those 14.
+  const progress = getLibraryProgress(libraryDir);
+  const expected = progress.ready - progress.unfetched;
   const actual = getAllSongs().length;
   assert(actual === expected, `expected ${expected} ready songs, got ${actual}`);
-  assert(actual >= 42, `library shrank below the 42-song baseline, got ${actual}`);
+  assert(actual >= 14, `library shrank below the 14 redistributable songs, got ${actual}`);
 });
 
-test("all 12 genres covered", () => {
+test("genres covered: 12 with the library fetched, classical + ragtime always", () => {
   const stats = getStats();
   const covered = Object.values(stats.byGenre).filter((n) => n > 0).length;
-  assert(covered === 12, `expected 12 genres, got ${covered}`);
+  const fetched = getLibraryProgress(libraryDir).unfetched === 0;
+  if (fetched) assert(covered === 12, `expected 12 genres, got ${covered}`);
+  assert(covered >= 2, `expected at least 2 genres, got ${covered}`);
+  assert((stats.byGenre.classical ?? 0) > 0, "classical must load from the shipped MIDI");
+  assert((stats.byGenre.ragtime ?? 0) > 0, "ragtime must load from the shipped MIDI");
 });
 
 test("getSong finds gymnopedie", () => {
@@ -110,9 +118,9 @@ test("getSong finds gymnopedie", () => {
 });
 
 test("searchSongs by genre works", () => {
-  const results = searchSongs({ genre: "jazz" });
-  assert(results.length >= 1, `expected 1+ jazz songs, got ${results.length}`);
-  assert(results.some(s => s.id === "autumn-leaves"), "autumn-leaves should be in jazz results");
+  const results = searchSongs({ genre: "ragtime" });
+  assert(results.length >= 1, `expected 1+ ragtime songs, got ${results.length}`);
+  assert(results.some(s => s.id === "maple-leaf-rag"), "maple-leaf-rag should be in ragtime results");
 });
 
 // ─── Test 2: Note parser ────────────────────────────────────────────────────
@@ -146,23 +154,23 @@ test("safe parse returns null + warning for bad token", () => {
 console.log("\nSession engine:");
 test("creates session in loaded state", () => {
   const mock = createMockVmpkConnector();
-  const sc = createSession(getSong("imagine")!, mock);
+  const sc = createSession(getSong("maple-leaf-rag")!, mock);
   assert(sc.state === "loaded", "should be loaded");
 });
 
 test("plays full song through mock", async () => {
   const mock = createMockVmpkConnector();
-  const song = getSong("fallin")!;
+  const song = getSong("bach-prelude-c-major-bwv846")!;
   const sc = createSession(song, mock);
   await mock.connect();
   await sc.play();
   assert(sc.state === "finished", `expected finished, got ${sc.state}`);
-  assert(sc.session.measuresPlayed === 25, "25 measures");
+  assert(sc.session.measuresPlayed === 62, "62 measures");
 });
 
 test("measure mode plays one and pauses", async () => {
   const mock = createMockVmpkConnector();
-  const song = getSong("autumn-leaves")!;
+  const song = getSong("the-entertainer")!;
   const sc = createSession(song, mock, { mode: "measure" });
   await mock.connect();
   await sc.play();
@@ -174,14 +182,14 @@ test("measure mode plays one and pauses", async () => {
 console.log("\nSpeed + progress:");
 test("speed multiplier affects effective tempo", () => {
   const mock = createMockVmpkConnector();
-  const song = getSong("fallin")!;
+  const song = getSong("bach-prelude-c-major-bwv846")!;
   const sc = createSession(song, mock, { speed: 0.5 });
   assert(sc.effectiveTempo() === song.tempo * 0.5, "should be half tempo");
 });
 
 test("progress fires during playback", async () => {
   const mock = createMockVmpkConnector();
-  const song = getSong("fallin")!;
+  const song = getSong("bach-prelude-c-major-bwv846")!;
   const events: PlaybackProgress[] = [];
   const sc = createSession(song, mock, {
     onProgress: (p) => events.push({ ...p }),
@@ -189,8 +197,8 @@ test("progress fires during playback", async () => {
   });
   await mock.connect();
   await sc.play();
-  assert(events.length === 25, `expected 25 progress events, got ${events.length}`);
-  assert(events[24].percent === "100%", "last event should be 100%");
+  assert(events.length === 62, `expected 62 progress events, got ${events.length}`);
+  assert(events[61].percent === "100%", "last event should be 100%");
 });
 
 // ─── Test 5: Teaching hooks ─────────────────────────────────────────────────
@@ -204,18 +212,18 @@ test("detectKeyMoments finds bar 1 in moonlight", () => {
 test("recording hook captures events during playback", async () => {
   const mock = createMockVmpkConnector();
   const hook = createRecordingTeachingHook();
-  const song = getSong("imagine")!;
+  const song = getSong("maple-leaf-rag")!;
   const sc = createSession(song, mock, { teachingHook: hook });
   await mock.connect();
   await sc.play();
   const starts = hook.events.filter((e) => e.type === "measure-start");
-  assert(starts.length === 57, `expected 57 measure-start events, got ${starts.length}`);
+  assert(starts.length === 144, `expected 144 measure-start events, got ${starts.length}`);
 });
 
 test("song-complete fires after full playback", async () => {
   const mock = createMockVmpkConnector();
   const hook = createRecordingTeachingHook();
-  const song = getSong("fallin")!;
+  const song = getSong("bach-prelude-c-major-bwv846")!;
   const sc = createSession(song, mock, { teachingHook: hook });
   await mock.connect();
   await sc.play();
@@ -258,7 +266,7 @@ test("composed hooks dispatch to both voice and aside", async () => {
     createVoiceTeachingHook(async (d) => { voiceD.push(d); }),
     createAsideTeachingHook(async (d) => { asideD.push(d); })
   );
-  const song = getSong("imagine")!;
+  const song = getSong("maple-leaf-rag")!;
   const sc = createSession(song, mock, { teachingHook: composed });
   await mock.connect();
   await sc.play();
@@ -286,7 +294,7 @@ test("measureToSingableText produces singable output", () => {
 
 test("sing-along hook produces blocking directives", async () => {
   const directives: VoiceDirective[] = [];
-  const song = getSong("imagine")!;
+  const song = getSong("maple-leaf-rag")!;
   const hook = createSingAlongHook(async (d) => { directives.push(d); }, song);
   const mock = createMockVmpkConnector();
   const sc = createSession(song, mock, { teachingHook: hook });
@@ -299,7 +307,7 @@ test("sing-along hook produces blocking directives", async () => {
 test("composed sing-along + voice hooks both fire", async () => {
   const singD: VoiceDirective[] = [];
   const voiceD: VoiceDirective[] = [];
-  const song = getSong("imagine")!;
+  const song = getSong("maple-leaf-rag")!;
   const composed = composeTeachingHooks(
     createSingAlongHook(async (d) => { singD.push(d); }, song),
     createVoiceTeachingHook(async (d) => { voiceD.push(d); })
@@ -316,23 +324,23 @@ test("composed sing-along + voice hooks both fire", async () => {
 console.log("\nSyncMode:");
 test("concurrent sync completes without error", async () => {
   const mock = createMockVmpkConnector();
-  const song = getSong("imagine")!;
+  const song = getSong("maple-leaf-rag")!;
   const hook = createRecordingTeachingHook();
   const sc = createSession(song, mock, { syncMode: "concurrent", teachingHook: hook });
   await mock.connect();
   await sc.play();
-  assert(sc.session.measuresPlayed === 57, "should play 57 measures");
-  assert(hook.events.filter(e => e.type === "measure-start").length === 57, "57 measure-start events");
+  assert(sc.session.measuresPlayed === 144, "should play 144 measures");
+  assert(hook.events.filter(e => e.type === "measure-start").length === 144, "144 measure-start events");
 });
 
 test("before sync completes without error", async () => {
   const mock = createMockVmpkConnector();
-  const song = getSong("imagine")!;
+  const song = getSong("maple-leaf-rag")!;
   const hook = createRecordingTeachingHook();
   const sc = createSession(song, mock, { syncMode: "before", teachingHook: hook });
   await mock.connect();
   await sc.play();
-  assert(sc.session.measuresPlayed === 57, "should play 57 measures");
+  assert(sc.session.measuresPlayed === 144, "should play 144 measures");
 });
 
 // ─── Test 9: Live Feedback Hook ──────────────────────────────────────────────
@@ -356,7 +364,7 @@ test("live feedback hook fires during full playback", async () => {
 });
 
 test("composed sing-along + live feedback fires", async () => {
-  const song = getSong("imagine")!;
+  const song = getSong("maple-leaf-rag")!;
   const singD: VoiceDirective[] = [];
   const feedbackVoiceD: VoiceDirective[] = [];
   const feedbackAsideD: AsideDirective[] = [];

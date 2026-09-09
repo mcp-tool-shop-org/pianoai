@@ -32,5 +32,32 @@
       "Keep the opening vamp (the 18-note left-hand cycle at measures 2-14) hypnotic and unaccented — listen for a level, drumlike evenness that makes the vocal-style right hand sound free by contrast.",
       "Voice the final cadence windows (measures 90-93) so the bass root of each chord speaks first — listen for the I-V-vi-IV floor moving in clean steps under the sustained upper tones."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/4997.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "b3e3dd0668947843cef063139231c7d484ef84c621f95d6f33dfb0ce3bcf1cae",
+    "midi_title_events": [
+      "Alicia Keys No One",
+      "Piano",
+      "Synth Brass",
+      "Effect",
+      "Voice",
+      "Bass",
+      "String",
+      "Acustic Guitar",
+      "Choirs",
+      "Drums"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "matches"
   }
 }

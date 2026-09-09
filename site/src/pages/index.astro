@@ -18,7 +18,7 @@ import { config } from '../site-config';
   repoUrl={config.repoUrl}
   npmUrl={config.npmUrl}
   footerText={config.footerText}
-  nav={config.sections.map(s => ({ href: `#${s.id}`, label: s.title }))}
+  nav={[...config.sections.map(s => ({ href: `#${s.id}`, label: s.title })), { href: '#vocals-today', label: 'Vocals' }]}
 >
   <Hero {...config.hero} />
 
@@ -31,6 +31,32 @@ import { config } from '../site-config';
     />
     <p style="color:var(--color-muted,#8888aa);font-size:0.9rem;margin-top:0.75rem;">
       <em>How the AI sees music.</em> Für Elise, m.1–8 — the piano roll renders any song as SVG the model can read back and verify.
+    </p>
+  </section>
+
+  <section id="vocals-today" style="max-width:960px;margin:0 auto;padding:2.5rem 1.5rem 0;">
+    <h2 style="text-align:center;margin-bottom:0.25rem;">Vocals, as they stand today</h2>
+    <p style="text-align:center;color:var(--color-muted,#8888aa);margin-top:0;">
+      <em>Amazing Grace, mm.1–10 — a real sung line on the piano's clock. Recorded 2026-09-05. Honest state, not a demo reel.</em>
+    </p>
+    <div style="display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));margin:1.25rem 0;">
+      <div style="border:1px solid #2a2a3e;border-radius:12px;padding:1rem;">
+        <div style="font-weight:600;margin-bottom:0.5rem;">The mix — voice over the piano bed</div>
+        <audio controls preload="none" style="width:100%;" src={`${import.meta.env.BASE_URL}/audio/amazing-grace-vocal-route-2026-09-05.mp3`.replace(/\/\//g, '/')}></audio>
+      </div>
+      <div style="border:1px solid #2a2a3e;border-radius:12px;padding:1rem;">
+        <div style="font-weight:600;margin-bottom:0.5rem;">The vocal alone — what the gates measured</div>
+        <audio controls preload="none" style="width:100%;" src={`${import.meta.env.BASE_URL}/audio/amazing-grace-vocal-only-2026-09-05.mp3`.replace(/\/\//g, '/')}></audio>
+      </div>
+    </div>
+    <p style="color:var(--color-muted,#8888aa);font-size:0.95rem;line-height:1.5;">
+      <strong>What is true about this take:</strong> every syllable's pitch, onset and duration come from the song's MIDI on the player's own timeline (the score clock);
+      a local, Apache-2.0 score-conditioned singer (SoulX-Singer) sang six takes; the best syllable of each was picked and joined with crossfades;
+      then two gates measured the result before it was called a mix — <strong>timing</strong>: every vowel onset within 40 ms of the score (worst 6 ms);
+      <strong>pitch</strong>: every note within 50 cents (global offset −2.7 cents). The voice is the model's example prompt, not a cast one.
+      <strong>What is still wrong:</strong> the opening still breaks — the pickup "A" and "ma" come from different takes and the splice is audible.
+      That is the next handoff, not a feature. Receipts, route and levers:
+      <a href={`${import.meta.env.BASE_URL}/handbook/vocals/`.replace(/\/\//g, '/')}>handbook → Vocals</a>.
     </p>
   </section>
 

@@ -32,5 +32,38 @@
       "Listen for the E-B-A-G# minor diatonic color as the piece's harmonic home, rather than listening for the Ab major label this transcription originally carried, which the labeled windows don't actually support.",
       "Try landing the final 2-measure silence with real intention — the left hand has played continuously since measure 1, so let the ending actually register as a stop, not a trail-off."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/43862.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file's 'Sequenced by:' field says 'Enya', which is not credible as a sequencer credit",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about; midi meta events (sha256 bc72f4d7cccf…)",
+    "midi_sha256": "bc72f4d7cccfc1c916701c1d0b20eb2a16613b376add968e82edaf90dc9f3c98",
+    "midi_title_events": [
+      "Piano RH",
+      "Piano LH",
+      "Strings",
+      "Choir 1",
+      "Voice Synth",
+      "\"Watermark\"",
+      "Original Composition by",
+      "ENYA",
+      "Enya"
+    ],
+    "midi_credit_events": [
+      "Sequenced by:"
+    ],
+    "credited_parties": [
+      {
+        "name": "Enya",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "matches"
   }
 }

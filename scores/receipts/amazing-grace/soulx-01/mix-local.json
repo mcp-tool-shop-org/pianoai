@@ -1,0 +1,14 @@
+{
+  "mode": "local",
+  "path": "tmp/vocal-clock/soulx/take-01/mix-local.wav",
+  "frames": 1680000,
+  "sample_rate": 48000,
+  "vo_gain_db": -9,
+  "bed_gain_db": -9.0,
+  "bed_rms_db": -17.36,
+  "vocal_clip_rms_db": -13.72,
+  "mix_peak": 0.36342168526753216,
+  "mix_rms_db": -21.83,
+  "sha256": "b1e87137dfbdad782a347dadc2d20c31bc14b4874bf28c0e3276ec06382c7b75",
+  "length_match": true
+}

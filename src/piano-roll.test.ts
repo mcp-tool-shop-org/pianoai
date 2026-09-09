@@ -263,7 +263,7 @@ describe("renderPianoRoll — library songs (integration)", () => {
     initializeFromLibrary(join(__dirname, "..", "songs", "library"));
   });
 
-  for (const songId of ["fallin", "fur-elise"]) {
+  for (const songId of ["maple-leaf-rag", "fur-elise"]) {
     it(`plots every chord tone of library song "${songId}"`, () => {
       const song = getSong(songId);
       expect(song, `song ${songId} should load from the library`).toBeTruthy();

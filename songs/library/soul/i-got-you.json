@@ -32,5 +32,27 @@
       "Voice the implied G major seventh arrivals (measures 14, 26, 50, 62, 86) as brief openings in the D7 wall — listen for the color change, then snap back to the riff's insistence.",
       "Imitate a reference recording by ear for the accent pattern — the tradition's ghost-note weighting between the accents lives on the records, not in this grid."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/20170.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "639417a92827668ae50b267f8765952c7fd36b1d96b529ec83203b44616706f2",
+    "midi_title_events": [
+      "Piano",
+      "Bass",
+      "Drums",
+      "Brass",
+      "Sax"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

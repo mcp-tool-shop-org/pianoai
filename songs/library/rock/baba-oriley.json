@@ -32,5 +32,38 @@
       "Feel the return of the opening figure at measure 62 as a genuine structural landmark, not just more of the same texture — it is the exact same music you played at measure 1.",
       "Try sustaining full dynamic commitment across the piece's many busy measures (24, 40, 48, 86, 90) rather than saving energy — this arrangement doesn't build toward one big climax, so consistency matters more than contrast."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/101954.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "cf7aa31babd8b393ac95de73ae3b86df476401f5272495fee89c03675af92771",
+    "midi_title_events": [
+      "Written by Pete Townshend",
+      "Baba O'Riley",
+      "by The Who",
+      "Keyboard",
+      "Lead Vocal I",
+      "Electric Guitar I",
+      "Electric Guitar II",
+      "Electric Guitar III",
+      "Violin",
+      "Bass Guitar I",
+      "Bass Guitar II",
+      "Drums",
+      "Synthesizer I",
+      "Synthesizer II",
+      "Synthesizer III",
+      "Lead Vocal II"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "matches"
   }
 }

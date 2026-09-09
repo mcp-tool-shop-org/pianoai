@@ -32,5 +32,23 @@
       "Treat measure 74's solo right hand as a spoken final phrase: with the left hand resting, let the last 12 onsets relax in tempo slightly and listen for the final sonority's decay before you release the keys.",
       "Avoid forcing a functional analysis while learning — with no confidence-gated labels anywhere in the 74 measures, use your ear to track where the harmony brightens toward major and darkens toward minor, and weight your voicing accordingly."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/17170.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "ac6fd633cf21db650791347d95be1cc874b4f9ea98133aca70cfffdd386cafec",
+    "midi_title_events": [
+      "MIDI"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

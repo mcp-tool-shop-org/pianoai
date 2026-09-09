@@ -1,0 +1,13 @@
+{
+  "job": "2893b76f-4054-4d20-bb52-d01e49a96e6e",
+  "key": "741bb87aaa3ea13cfe852b7fe666686c30e6cec108a966a9da3e21b2e640112e.flac",
+  "path": "tmp/vocal-clock/takes/741bb87aaa3ea13cfe852b7fe666686c30e6cec108a966a9da3e21b2e640112e.flac",
+  "frames": 1764864,
+  "sample_rate": 48000,
+  "seconds": 36.768,
+  "sha256": "eddf58e27807ea9e0ac847e35d012fdcf5a8d03e3c8a6bcdea4ed161b36eb167",
+  "reference_key": "323f060370a3472fccaf8d5730abbb7697ece8148a8db29fdc0ed0b1781ea58b.wav",
+  "prompt": "One female singer, same person as @Audio1 the entire take. A slow a cappella hymn, no choir, no music, no extra words. Sing very slowly and legato, holding every syllable as a long sustained note, each vowel held for several seconds, with clear breaths between phrases: \"Amazing grace, how sweet the sound, that saved a wretch like me.\"",
+  "speech_rate": -50,
+  "seed": 7
+}

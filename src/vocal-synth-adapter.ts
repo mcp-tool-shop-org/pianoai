@@ -20,6 +20,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { VmpkConnector, MidiStatus, MidiNote } from "./types.js";
+import { createTapBus } from "./audio/tap-bus.js";
 import { resolve, join } from "node:path";
 import { readdirSync, existsSync } from "node:fs";
 
@@ -158,6 +159,8 @@ export function createVocalSynthEngine(options?: VocalSynthOptions): VmpkConnect
   let ctx: any = null;
   let scriptNode: any = null;
   let gainNode: any = null;
+  /** Dedicated fan-out for observers. Never sits between gainNode and destination. */
+  let tapBus: any = null;
   let currentStatus: MidiStatus = "disconnected";
   let connectTime = 0;
   let noteCounter = 0;
@@ -271,6 +274,7 @@ export function createVocalSynthEngine(options?: VocalSynthOptions): VmpkConnect
         try { gainNode.disconnect(); } catch { /* ok */ }
         gainNode = null;
       }
+      tapBus = null;
       if (ctx) {
         try { await ctx.close(); } catch { /* ok */ }
         ctx = null;
@@ -289,6 +293,20 @@ export function createVocalSynthEngine(options?: VocalSynthOptions): VmpkConnect
 
     listPorts(): string[] {
       return [`VocalSynth:${presetId}`];
+    },
+
+    /**
+     * Fan-out bus for observers. Lazily `gainNode.connect(tapBus)`.
+     * gainNode is this engine's master in all but name. The existing
+     * gainNode → destination edge is not touched, so a tap cannot
+     * silence the instrument.
+     */
+    createTapOutput(): unknown {
+      if (!ctx || currentStatus !== "connected" || !gainNode) {
+        throw new Error("Vocal synth engine not connected");
+      }
+      if (!tapBus) tapBus = createTapBus(ctx, gainNode);
+      return tapBus;
     },
 
     noteOn(note: number, velocity: number, _channel?: number): void {

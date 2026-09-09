@@ -13,6 +13,7 @@ import {
   getLibraryProgress,
   ingestSong,
   initializeFromLibrary,
+  resolveLibraryMidiPath,
   type LibraryEntry,
   type InitReport,
 } from "./library.js";
@@ -305,6 +306,27 @@ describe("initializeFromLibrary", () => {
     const report = initializeFromLibrary(tmp);
     expect(getAllSongs()).toHaveLength(0);
     expect(report.notReady).toBe(1);
+  });
+
+  it("loads a ready song whose .mid lives under stateHome when the package copy is absent", () => {
+    const home = mkdtempSync(join(tmpdir(), "ajs-lib-home-"));
+    const prev = process.env.AI_JAM_HOME;
+    process.env.AI_JAM_HOME = home;
+    try {
+      const config = makeConfig({ id: "fetched-song", status: "ready" });
+      writeConfig(tmp, "classical", config);
+      writeMidi(join(home, "songs", "library"), "classical", "fetched-song");
+      expect(resolveLibraryMidiPath(tmp, "classical", "fetched-song")).toBe(
+        join(home, "songs", "library", "classical", "fetched-song.mid"),
+      );
+      const report = initializeFromLibrary(tmp);
+      expect(report.loaded).toBe(1);
+      expect(getAllSongs().map((s) => s.id)).toEqual(["fetched-song"]);
+    } finally {
+      if (prev === undefined) delete process.env.AI_JAM_HOME;
+      else process.env.AI_JAM_HOME = prev;
+      rmSync(home, { recursive: true, force: true });
+    }
   });
 
   it("loads user songs from user directory", () => {

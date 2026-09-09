@@ -1,0 +1,40 @@
+{
+  "base_model": "Qwen/Qwen3-4B-Instruct-2507",
+  "hf_home": "E:/AI-Models/hf-cache",
+  "local_files_only": false,
+  "refuse_download": false,
+  "method": "lora",
+  "precision": "bf16",
+  "lora": {
+    "r": 16,
+    "alpha": 32,
+    "dropout": 0.1,
+    "target_modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ]
+  },
+  "lr": 0.00015,
+  "schedule": "cosine",
+  "warmup_steps": 10,
+  "effective_batch": 8,
+  "per_device_train_batch_size": 1,
+  "gradient_accumulation_steps": 8,
+  "weight_decay": 0.0,
+  "max_grad_norm": 1.0,
+  "max_seq_len": 16384,
+  "epochs": 3,
+  "packing": false,
+  "gradient_checkpointing": true,
+  "seed": 13,
+  "train_examples": 232,
+  "test_examples": 117,
+  "tool_catalog": "full",
+  "notes": "jam-actions-v1, 9 families after chunks 16-26 (349 records, 232/117; 162 acoustic with two draws per class per song, onsets on both sides of zero, signed pitch_fail, two-sided 40 ms gate). Inherits the acoustic-sft shape that trained cleanly on an L40S: 1x8 batch, bf16 LoRA r=16, cosine, seed 13. Two deliberate differences. epochs 3 not 5, because v0 saturated at epoch 3 and epochs 4-5 bought nothing -- measured, see experiments/acoustic-sft/RESULTS.md. And max_seq_len stays 16384 pending the dry-run: v1 traces are shorter than v0's but carry the same 54-tool catalog, which alone is ~13k tokens, so the catalog dominates either way. Confirm with --dry-run on the pod before training; the trainer refuses to truncate. Apache-2.0 base (r52).",
+  "known_limitation": "Corpus repaired in chunk 16: sections, server, catalog and the empty measure-level teaching families were cut; teaching_goals and key_moments are drawn from the song-level musicalLanguage block; compare has both classes by design. Every scored family now has >= 2 distinct gold values in train and in test. The RESULTS.md in this directory describes the run on the PRE-repair 305-record corpus and says so."
+}

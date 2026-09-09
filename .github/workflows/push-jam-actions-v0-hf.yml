@@ -1,8 +1,10 @@
-name: Push jam-actions-v0 to HuggingFace
+name: Push jam-actions dataset to HuggingFace
 
-# Single-purpose workflow: push the dataset to HuggingFace ONLY.
-# Use this for recovery when the main publish workflow's Zenodo half
-# succeeded but the HF push failed (or to update an existing HF dataset
+# Single-purpose workflow: push a dataset package under datasets/ to HuggingFace
+# ONLY. Defaults remain the v0 public set so existing dispatch notes keep
+# working. v1 is the same workflow with different inputs (dataset_dir +
+# hf_repo_id). Use this for recovery when the main publish workflow's Zenodo
+# half succeeded but the HF push failed (or to update an existing HF dataset
 # without minting a new Zenodo deposit).
 #
 # Manual trigger only. Idempotent — if the HF repo already exists, this
@@ -25,9 +27,17 @@ on:
         description: "Git ref to push from"
         required: false
         default: "main"
+      dataset_dir:
+        description: "Which dataset package under datasets/ to push"
+        required: false
+        default: "datasets/jam-actions-v0-public"
+      allow_card_overwrite:
+        description: "Discard a card edited on HuggingFace (default: halt instead)"
+        required: false
+        default: "false"
 
 concurrency:
-  group: push-jam-actions-v0-hf
+  group: push-dataset-hf-${{ github.event.inputs.hf_repo_id }}
   cancel-in-progress: false
 
 permissions:
@@ -74,16 +84,95 @@ jobs:
       - name: Verify dataset package is intact
         run: |
           set -euo pipefail
-          test -f datasets/jam-actions-v0-public/README.md
-          test -f datasets/jam-actions-v0-public/VERSION
-          test -f datasets/jam-actions-v0-public/records.jsonl
-          test -f datasets/jam-actions-v0-public/checksums.sha256
-          VER=$(cat datasets/jam-actions-v0-public/VERSION)
-          echo "Dataset version: $VER"
-          echo "Record count file presence:"
-          test -d datasets/jam-actions-v0-public/records && echo "  records/ ✓"
-          test -d datasets/jam-actions-v0-public/pianoroll && echo "  pianoroll/ ✓"
-          test -d datasets/jam-actions-v0-public/evals && echo "  evals/ ✓"
+          DIR="${{ github.event.inputs.dataset_dir }}"
+          case "$DIR" in
+            datasets/*) : ;;
+            *) echo "ERROR: dataset_dir must be under datasets/ (got: $DIR)"; exit 1 ;;
+          esac
+          test -d "$DIR" || { echo "ERROR: no such dataset package: $DIR"; exit 1; }
+
+          # Every package this workflow will push must carry these four. They are
+          # what makes a drop reproducible and attributable by someone who only
+          # ever sees the HuggingFace copy.
+          test -f "$DIR/README.md"
+          test -f "$DIR/VERSION"
+          test -f "$DIR/records.jsonl"
+          test -f "$DIR/checksums.sha256"
+
+          VER=$(cat "$DIR/VERSION")
+          echo "Pushing $DIR at version $VER"
+          test -d "$DIR/records" && echo "  records/ ✓"
+
+          # Checksums are the whole point of shipping them: verify before upload,
+          # not after, so a corrupted or half-regenerated package never leaves.
+          ( cd "$DIR" && sha256sum -c checksums.sha256 --quiet )             && echo "  checksums verify ✓"
+
+      - name: Refuse to overwrite a card edited on HuggingFace
+        # upload_folder replaces README.md with whatever is in the repo. A card
+        # improved in the HuggingFace editor is therefore deleted by the next
+        # dispatch, silently and with no diff anywhere.
+        #
+        # That is not hypothetical. On 2026-09-08 the live jam-actions-v0 card
+        # was found to be a 69-line superset of the repo's -- a fine-tuning
+        # evaluation banner and a "What's in a record" walkthrough that existed
+        # nowhere else -- one dispatch away from being erased. Captured at
+        # docs/hf-cards/.
+        #
+        # So: fetch the remote card first and halt when it differs. This is an
+        # andon stop, not a policy. It never blocks the normal case, where the
+        # repo is the only thing that edits the card.
+        env:
+          HF_REPO_ID: ${{ github.event.inputs.hf_repo_id }}
+          DATASET_DIR: ${{ github.event.inputs.dataset_dir }}
+          ALLOW_CARD_OVERWRITE: ${{ github.event.inputs.allow_card_overwrite }}
+        run: |
+          set -euo pipefail
+          LOCAL="$DATASET_DIR/README.md"
+          REMOTE_URL="https://huggingface.co/datasets/$HF_REPO_ID/raw/main/README.md"
+
+          CODE=$(curl -sS -o /tmp/remote-card.md -w '%{http_code}' "$REMOTE_URL" || echo 000)
+
+          # A dataset repo that does not exist yet answers 401, not 404 -- the
+          # Hub cannot say "no such repo" without revealing whether a private one
+          # exists. The push step creates the repo in exactly that case, so both
+          # codes mean the same thing here: there is no card to protect. Treating
+          # 401 as an error would have blocked every first push.
+          case "$CODE" in
+            404|401)
+              echo "No readable card on HuggingFace (HTTP $CODE) — first push. Nothing to overwrite."
+              exit 0
+              ;;
+            200) : ;;
+            *)
+              echo "ERROR: could not read the remote card (HTTP $CODE)."
+              echo "Refusing to push blind. Re-run when HuggingFace is reachable."
+              exit 1
+              ;;
+          esac
+
+          if cmp -s /tmp/remote-card.md "$LOCAL"; then
+            echo "Remote card matches the repo. Safe to push."
+            exit 0
+          fi
+
+          echo "================================================================"
+          echo "  HALT: the card on HuggingFace differs from this repo's."
+          echo "================================================================"
+          echo "  remote: $(wc -l < /tmp/remote-card.md) lines, $(wc -c < /tmp/remote-card.md) bytes"
+          echo "  local:  $(wc -l < "$LOCAL") lines, $(wc -c < "$LOCAL") bytes"
+          echo ""
+          echo "  Lines the remote has that the repo does not:"
+          diff "$LOCAL" /tmp/remote-card.md | grep '^>' | head -40 || true
+          echo ""
+          if [ "${ALLOW_CARD_OVERWRITE:-false}" = "true" ]; then
+            echo "  allow_card_overwrite=true — proceeding, the remote card is discarded."
+            exit 0
+          fi
+          echo "  Pushing now would DELETE the remote version of those lines."
+          echo ""
+          echo "  Either bring the remote card into the repo first, or re-run with"
+          echo "  allow_card_overwrite=true if the repo's card is genuinely newer."
+          exit 1
 
       - name: Install huggingface_hub
         run: pip install --quiet huggingface_hub
@@ -94,6 +183,7 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
           HF_REPO_ID: ${{ github.event.inputs.hf_repo_id }}
           HF_COMMIT_MSG: ${{ github.event.inputs.commit_message }}
+          DATASET_DIR: ${{ github.event.inputs.dataset_dir }}
         run: |
           set -euo pipefail
           if [ -z "${HF_TOKEN:-}" ]; then
@@ -118,7 +208,7 @@ jobs:
               print(f"Created HF dataset repo: {repo_id}")
 
           commit = api.upload_folder(
-              folder_path="datasets/jam-actions-v0-public",
+              folder_path=os.environ["DATASET_DIR"],
               repo_id=repo_id,
               repo_type="dataset",
               commit_message=commit_msg,

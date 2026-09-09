@@ -32,5 +32,30 @@
       "Listen for the recurring left-hand cell settling into your hand as muscle memory across its 15 appearances — by the second half it should feel automatic, freeing your attention for the melody's small variations.",
       "Try letting the final measure's silence land as a genuine close, not a trail-off — both hands are marked as complete rests at measure 80, echoing the hushed left-hand-alone opening."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/75294.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "f70d595de5b987c1c6482c1e09d8232e2951656ad3e43ce24e2d21bf4f0c8731",
+    "midi_title_events": [
+      "FLUTE",
+      "STRINGS",
+      "HARP",
+      "FRETLESS",
+      "STEEL GTR",
+      "MUTED GTR",
+      "DRUMS",
+      "GS/RESET"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "no-title-in-file"
   }
 }

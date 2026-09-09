@@ -2,6 +2,34 @@
 
 This file is the human-readable history of the package's version arc. Each entry names the version, the date, the slice that produced it, and a one-paragraph summary of what changed. For machine-readable metadata, see `manifest.json` (current state) and `CITATION.cff` (citation entry).
 
+## Current version: 0.5.1 (2026-09-08) — documentation only
+
+**No record, split, or eval artifact changed.** `records.jsonl` and every file under `records/`,
+`pianoroll/` and `evals/` are byte-identical to 0.5.0. The record cut is still
+`jam-actions-v0-0.5.0-cut-2026-07-11`, and `manifest.json` still names that commit and tag.
+
+**What changed and why.** The dataset card on Hugging Face had been improved in the Hub's editor and
+the change never came back to this repository. On 2026-09-08 the live card was measured as a 69-line
+superset of the packaged one — 69 lines added, none removed — carrying a fine-tuning evaluation
+banner linking the `jam-actions-eval` and `jam-actions-explorer` Spaces, and a "What's in a record"
+walkthrough with an annotated Clair de Lune record. Neither existed anywhere else.
+
+That divergence had two costs. The push workflow uploads a package folder verbatim, so the next
+dispatch would have deleted both. And because the card there was not the card the manifest was
+computed over, `README.md` was the one entry that failed `checksums.sha256` on the Hugging Face copy
+— a consumer following the package's own verify instructions saw a failure with no way to tell it
+was cosmetic.
+
+0.5.1 adopts the enriched card into the package and regenerates the checksum manifest over it, so
+the repository, the Hugging Face copy and the shipped checksums agree again. The push workflow now
+halts when the remote card differs from the repository's, so this cannot recur silently.
+
+**Citation is unaffected.** 0.5.0 remains the deposited, citable version
+([`10.5281/zenodo.21313954`](https://doi.org/10.5281/zenodo.21313954)). 0.5.1 changes no record and
+is not separately deposited, so the Zenodo deposit and this package differ only in the card.
+
+---
+
 ## Current version: 0.5.0 (2026-07-11)
 
 ### PUBLISHED 2026-07-11

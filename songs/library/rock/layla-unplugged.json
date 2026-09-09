@@ -32,5 +32,30 @@
       "Feel the quiet opening (measures 1-2) as genuinely still, not just quiet — a true silence-adjacent dynamic, matching the unplugged, intimate character of this arrangement.",
       "Try building the final measure (86) to real fullness rather than trailing off — the written density there is higher than the opening, and the performance should honor that rather than assuming a fade."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/44002.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "Music Sales Ltd (copyright event, 1993)",
+    "arrangement_license": "all-rights-reserved",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about; midi meta events (sha256 2912684214a4…)",
+    "midi_sha256": "2912684214a40133b2a2532a41564c3f9c2a9d7db2f849c0389a9955d8128f77",
+    "midi_title_events": [
+      "Layla"
+    ],
+    "midi_credit_events": [
+      "(C)1993 Music Sales Ltd"
+    ],
+    "credited_parties": [
+      {
+        "name": "Music Sales Ltd",
+        "evidence": "midi-meta"
+      }
+    ],
+    "title_verdict": "matches"
   }
 }

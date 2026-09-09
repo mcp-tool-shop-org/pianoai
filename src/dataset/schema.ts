@@ -17,6 +17,7 @@ export const SOURCE_TYPES = [
   "transcribed-by-author",
   "licensed",
   "scraped",
+  "downloaded-arrangement",
 ] as const;
 
 export const PD_STATUSES = ["public_domain", "copyrighted", "unknown"] as const;

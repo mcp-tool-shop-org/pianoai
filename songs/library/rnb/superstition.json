@@ -4,7 +4,15 @@
   "genre": "rnb",
   "difficulty": "intermediate",
   "key": "Eb minor",
-  "tags": ["rnb", "stevie-wonder", "funk", "clavinet", "16th-note-groove", "riff-based", "vocal"],
+  "tags": [
+    "rnb",
+    "stevie-wonder",
+    "funk",
+    "clavinet",
+    "16th-note-groove",
+    "riff-based",
+    "vocal"
+  ],
   "composer": "Stevie Wonder",
   "status": "ready",
   "musicalLanguage": {
@@ -31,5 +39,24 @@
       "The dynamic range is narrow but the dynamic CONTRAST is extreme: accented notes are sharp and loud (mf), ghost notes are nearly silent (ppp). This extreme accent pattern within a narrow overall range is the funk dynamic signature.",
       "For singing Superstition: Stevie's vocal is nasal, bright, and placed high in the mask (resonating in the forehead and nose). The rhythm is clipped — consonants are hard, vowels are short, and every syllable has a precise rhythmic placement. Think of the voice as another percussion instrument. Don't float over the groove — lock INTO it."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/97097.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "1869e7c6b60f30bdcd7a10eb012747e4cb426658772718bb4247f9bf541a178c",
+    "midi_title_events": [
+      "SUPERSTI"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "matches",
+    "title_note": "the track name 'SUPERSTI' is the title truncated to eight characters"
   }
 }

@@ -4,7 +4,16 @@
   "genre": "soul",
   "difficulty": "beginner",
   "key": "C major",
-  "tags": ["soul", "bill-withers", "piano", "gospel", "community", "diatonic", "vocal", "call-response"],
+  "tags": [
+    "soul",
+    "bill-withers",
+    "piano",
+    "gospel",
+    "community",
+    "diatonic",
+    "vocal",
+    "call-response"
+  ],
   "composer": "Bill Withers",
   "status": "ready",
   "musicalLanguage": {
@@ -31,5 +40,23 @@
       "On the bridge call-and-response: leave real space between the call and the response. Don't rush to fill the gap. The silence IS the invitation for others to join. Gospel music breathes — it makes room for the congregation.",
       "For singing: this is a baritone song, meant to be sung in a warm, open chest voice. No falsetto, no head voice, no vocal acrobatics. Sing it like you're speaking to a friend who's hurting. Make the vowels round and full, make the consonants gentle, and let the words carry the emotion. Bill Withers never showed off — he showed up."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/14680.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "e4bde9823c4942ac0f9fc0d5b27dc4c2c9508270cb973226a401c00fd9eede90",
+    "midi_title_events": [
+      "Lean On Me"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "matches"
   }
 }

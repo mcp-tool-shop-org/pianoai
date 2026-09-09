@@ -1,0 +1,43 @@
+{
+  "model": "mistral-small:24b",
+  "held_out": 56,
+  "correct": 3,
+  "accuracy": 0.0536,
+  "per_family": {
+    "chord": {
+      "correct": 2,
+      "n": 7,
+      "accuracy": 0.2857
+    },
+    "compare": {
+      "correct": 0,
+      "n": 4,
+      "accuracy": 0
+    },
+    "measures": {
+      "correct": 0,
+      "n": 9,
+      "accuracy": 0
+    },
+    "sections": {
+      "correct": 0,
+      "n": 9,
+      "accuracy": 0
+    },
+    "teaching_cues": {
+      "correct": 1,
+      "n": 9,
+      "accuracy": 0.1111
+    },
+    "teaching_note": {
+      "correct": 0,
+      "n": 9,
+      "accuracy": 0
+    },
+    "transpose": {
+      "correct": 0,
+      "n": 9,
+      "accuracy": 0
+    }
+  }
+}

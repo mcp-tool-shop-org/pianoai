@@ -11,11 +11,23 @@
   --border: #3d3d5e; --text: #dcdce6; --text-muted: #9c9cbe;
   --accent: #4a9eff; --accent-dim: #4a9eff2b; --accent-hover: #4a9eff88;
   --danger: #ff6b8a; --danger-dim: #ff6b8a22; --danger-border: #ff6b8a55;
+  --warn: #ffa657; --warn-dim: #ffa65718; --warn-border: #ffa65755;
+  --good: #7ee787; --good-dim: #7ee78718; --good-border: #7ee78755; --good-status: #7ee78722;
   --note-c: #79c0ff; --note-d: #7ee787; --note-e: #ffa657;
   --note-f: #ff7b72; --note-g: #d2a8ff; --note-a: #f778ba;
   --note-b: #f0e68c;
+  --pc-0: #79c0ff; --pc-1: #4c8ed9; --pc-2: #7ee787; --pc-3: #3fb950;
+  --pc-4: #ffa657; --pc-5: #ff7b72; --pc-6: #d2a8ff; --pc-7: #9b72cf;
+  --pc-8: #f778ba; --pc-9: #da3633; --pc-10: #f0e68c; --pc-11: #d29922;
+  --vowel-a: #ff7b72; --vowel-e: #7ee787; --vowel-i: #79c0ff;
+  --vowel-o: #ffa657; --vowel-u: #d2a8ff;
   --key-white: #e9e6de; --key-white-hi: #fbfaf6; --key-white-lo: #d6d2c6;
   --key-black: #1a1a2e; --key-black-hi: #2d2d48; --key-black-lo: #0f0f1c;
+  --key-white-border: #aaa; --key-black-border: #000;
+  --key-label: #666; --key-shortcut: #4d4d4d; --key-shortcut-on-black: #8c8c8c;
+  --note-edge: rgba(255,255,255,0.15); --note-edge-vocal: rgba(255,255,255,0.25); --vel-bar-fill: rgba(0,0,0,0.45);
+  --vowel-label: rgba(0,0,0,0.65);
+  --tooltip-bg: #000; --tooltip-fg: #fff;
   --font: 'Segoe UI', system-ui, sans-serif;
   --mono: 'Cascadia Code', 'Fira Code', monospace;
 }
@@ -56,6 +68,7 @@ header .sep { width: 1px; height: 24px; background: var(--border); }
 header select, header input[type=number] {
   background: var(--surface2); color: var(--text); border: 1px solid var(--border);
   border-radius: 4px; padding: 4px 8px; font-size: 12px; font-family: var(--font);
+  min-height: 24px;
 }
 header select { cursor: pointer; }
 header input[type=number] { width: 72px; }
@@ -65,6 +78,11 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
   border-radius: 10px; background: var(--surface2); color: var(--text-muted);
 }
 .spacer { flex: 1; }
+.chrome-credit {
+  font-size: 10px; color: var(--text-muted); white-space: nowrap;
+  max-width: 240px; overflow: hidden; text-overflow: ellipsis;
+}
+.chrome-credit a { color: var(--text-muted); }
 
 /* ─── Piano Roll ─── */
 #piano-roll-container {
@@ -94,7 +112,7 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
 .pr-beat-line.bar { opacity: 0.8; }
 .pr-note {
   position: absolute; border-radius: 3px; cursor: pointer; min-width: 8px;
-  border: 1px solid rgba(255,255,255,0.15); transition: opacity 0.1s;
+  border: 1px solid var(--note-edge); transition: opacity 0.1s;
   z-index: 2;
   /* Wave C2b — a note is a gesture surface (tap selects, drag moves); no
      native touch behavior (scroll/callout/selection) should intercept it. */
@@ -134,7 +152,7 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
    click/drag the way .pr-vowel-label's own overlay doesn't either. */
 .pr-note .vel-bar {
   position: absolute; bottom: 0; left: 0; height: 3px; border-radius: 0 0 2px 2px;
-  background: rgba(0,0,0,0.45); pointer-events: none;
+  background: var(--vel-bar-fill); pointer-events: none;
 }
 .pr-key-label {
   /* opacity:0.6 previously dropped contrast vs var(--bg) to ~2.97:1 (WCAG AA
@@ -256,7 +274,7 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
   position: absolute; bottom: 0; height: 100%;
   background: linear-gradient(180deg, var(--key-white-hi) 0%, var(--key-white) 55%, var(--key-white-lo) 100%);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -2px 2px -1px rgba(0,0,0,0.22);
-  border: 1px solid #aaa; border-radius: 0 0 4px 4px; cursor: pointer; z-index: 1;
+  border: 1px solid var(--key-white-border); border-radius: 0 0 4px 4px; cursor: pointer; z-index: 1;
   transition: background 0.08s, transform 0.05s;
   /* Wave C2b — a played key is a gesture surface; no native touch
      scroll/callout/selection should intercept press-and-hold or slides. */
@@ -267,14 +285,14 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
   position: absolute; bottom: 40px; height: 60%;
   background: linear-gradient(180deg, var(--key-black-hi) 0%, var(--key-black) 60%, var(--key-black-lo) 100%);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -2px 2px -1px rgba(0,0,0,0.45);
-  border: 1px solid #000; border-radius: 0 0 3px 3px; cursor: pointer; z-index: 2;
+  border: 1px solid var(--key-black-border); border-radius: 0 0 3px 3px; cursor: pointer; z-index: 2;
   transition: background 0.08s, transform 0.05s;
   touch-action: none; -webkit-touch-callout: none;
 }
 .kb-black:active, .kb-black.active { background: var(--accent); transform: translateY(1px); }
 .kb-label {
   position: absolute; bottom: 4px; text-align: center; font-size: 9px;
-  color: #666; pointer-events: none; z-index: 3; width: 100%;
+  color: var(--key-label); pointer-events: none; z-index: 3; width: 100%;
 }
 .kb-shortcut {
   /* #999 @ opacity 0.7 on the light key-white bg was ~1.7:1 (WCAG AA fail);
@@ -283,9 +301,10 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
      --key-white/--key-black base lightness is unchanged, so these ratios
      (~6.8:1 white, ~5.1:1 black) hold exactly as before. */
   position: absolute; bottom: 20px; text-align: center; font-size: 8px;
-  color: #4d4d4d; pointer-events: none; z-index: 3; width: 100%;
+  color: var(--key-shortcut); pointer-events: none; z-index: 3; width: 100%;
   font-family: var(--mono);
 }
+.kb-black .kb-shortcut { color: var(--key-shortcut-on-black); }
 
 /* ─── Controls Panel ─── */
 #controls {
@@ -299,6 +318,7 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
   background: var(--surface2); color: var(--text); border: 1px solid var(--border);
   border-radius: 4px; padding: 4px 8px; font-size: 11px; cursor: pointer;
   font-family: var(--font); transition: all 0.1s;
+  min-height: 24px;
 }
 .ctrl-btn:hover { border-color: var(--accent); }
 .ctrl-btn:disabled { opacity: 0.35; cursor: not-allowed; }
@@ -390,10 +410,11 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
 
 /* ─── Tooltips ─── */
 [data-tip] { position: relative; }
-[data-tip]:hover::after {
+[data-tip]:hover::after,
+[data-tip]:focus-visible::after {
   content: attr(data-tip); position: absolute; bottom: 100%; left: 50%;
-  transform: translateX(-50%); padding: 4px 8px; background: #000;
-  color: #fff; font-size: 10px; border-radius: 3px; white-space: nowrap; z-index: 100;
+  transform: translateX(-50%); padding: 4px 8px; background: var(--tooltip-bg);
+  color: var(--tooltip-fg); font-size: 10px; border-radius: 3px; white-space: nowrap; z-index: 100;
 }
 
 /* ─── Tuning Audit Panel ─── */
@@ -414,13 +435,14 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
 .tt-table tr:hover { background: var(--surface2); }
 .tt-table .hz { color: var(--accent); }
 .tt-table .cents { min-width: 48px; }
-.tt-cents-pos { color: #f0e68c; }
-.tt-cents-neg { color: #79c0ff; }
+.tt-cents-pos { color: var(--note-b); }
+.tt-cents-neg { color: var(--note-c); }
 .tt-cents-zero { color: var(--text-muted); }
 .tt-table .note-col { font-weight: 600; min-width: 24px; }
 .tt-ref-btn {
   display: inline-flex; align-items: center; justify-content: center;
   background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 10px; padding: 1px 4px;
+  min-height: 24px; min-width: 24px;
 }
 .tt-ref-btn:hover { color: var(--accent); }
 
@@ -444,9 +466,9 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
 .ir-row { display: flex; justify-content: space-between; padding: 2px 0; }
 .ir-label { color: var(--text-muted); }
 .ir-value { font-weight: 600; }
-.ir-pure { color: #7ee787; }
-.ir-impure { color: #ffa657; }
-.ir-wolf { color: #ff7b72; }
+.ir-pure { color: var(--good); }
+.ir-impure { color: var(--warn); }
+.ir-wolf { color: var(--note-f); }
 
 /* Custom Tuning Editor */
 .custom-grid { display: grid; grid-template-columns: 32px 1fr 40px; gap: 2px 6px; align-items: center; }
@@ -467,16 +489,115 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
   background: var(--surface2); border: 1px solid var(--border); border-radius: 3px;
   color: var(--text); font-size: 10px; padding: 4px 8px; cursor: pointer;
   font-family: var(--mono);
+  min-height: 24px;
 }
 .root-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
 
 /* ─── Mode Toggle ─── */
 .mode-toggle { display: flex; gap: 0; }
-.mode-btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+body.panel-mode #piano-roll-container,
+body.panel-mode #transport,
+body.panel-mode #keyboard-area,
+body.panel-mode #tuning-audit { display: none !important; }
+body.panel-mode .instr-only,
+body.panel-mode .vocal-only { display: none !important; }
+body.panel-mode #inspector { display: none; }
+body.panel-mode #app {
+  grid-template-columns: 1fr;
+  grid-template-rows: 44px 1fr;
+}
+#panel-view { display: none; }
+body.panel-mode #panel-view {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  grid-column: 1 / -1;
+  grid-row: 2;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+.panel-rail {
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  padding: 12px 16px;
+  overflow: auto;
+  min-width: 0;
+}
+.panel-main { padding: 16px 20px 32px; overflow: auto; min-width: 0; }
+.panel-banner {
+  padding: 8px 10px; border-radius: 4px; border: 1px solid var(--border);
+  font-size: 12px; line-height: 1.45; margin: 8px 0;
+}
+.panel-banner.empty { background: var(--surface2); color: var(--text-muted); border-style: dashed; }
+.panel-banner.loading { background: var(--warn-dim); color: var(--warn); border-color: var(--warn-border); }
+.panel-banner.failed { background: var(--danger-dim); color: var(--danger); border-color: var(--danger-border); }
+.panel-rail h2, .panel-main h2 {
+  font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;
+  color: var(--text-muted); margin: 0 0 10px;
+}
+.panel-song { display: flex; flex-direction: column; gap: 2px; font-size: 13px; margin: 0 0 8px; min-width: 0; }
+.panel-song span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.panel-song em { font-style: normal; color: var(--text-muted); font-size: 11px; }
+.panel-chip {
+  display: inline-block; font-family: var(--mono); font-size: 11px;
+  border: 1px solid var(--border); border-radius: 10px; padding: 2px 8px; margin: 0 4px 4px 0;
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom;
+}
+.panel-note { font-size: 12px; color: var(--text-muted); line-height: 1.45; margin: 8px 0; }
+.panel-ab { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+.panel-ab button, .panel-transport button, .panel-votes button, .panel-rail button {
+  background: var(--surface2); color: var(--text); border: 1px solid var(--border);
+  border-radius: 4px; padding: 4px 8px; font-size: 11px; font-family: var(--font); cursor: pointer;
+  min-height: 24px;
+}
+.panel-ab button { min-height: 88px; font-size: 22px; font-weight: 700; }
+.panel-ab button.active, .panel-transport button.active { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); }
+.panel-transport, .panel-votes { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0 14px; }
+.panel-verdict { border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin: 12px 0; }
+.panel-verdict.danger { border-color: var(--danger-border); background: var(--danger-dim); }
+.panel-verdict.amber { border-color: var(--warn-border); background: var(--warn-dim); }
+.panel-verdict.ok { border-color: var(--good-border); background: var(--good-dim); }
+.panel-verdict h3 { margin: 0 0 6px; font-size: 15px; }
+.panel-score { display: flex; gap: 12px; align-items: baseline; padding: 6px 0; border-bottom: 1px solid var(--border); }
+.panel-score .mono, .panel-pairs .mono { font-family: var(--mono); font-size: 12px; }
+.panel-honesty {
+  margin-top: 16px; padding: 10px 12px; border: 1px dashed var(--border); border-radius: 6px;
+  font-size: 12px; color: var(--text-muted); line-height: 1.45;
+}
+.panel-sub { display: flex; gap: 0; margin: 0 0 12px; }
+.panel-sub button {
+  flex: 1; background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border);
+  padding: 4px 8px; font: inherit; font-size: 11px; cursor: pointer; min-height: 24px;
+}
+.panel-sub button:first-child { border-radius: 4px 0 0 4px; }
+.panel-sub button:last-child { border-radius: 0 4px 4px 0; border-left: none; }
+.panel-sub button.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.panel-pill {
+  display: inline-block; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+  border-radius: 10px; padding: 2px 8px; border: 1px solid var(--border); font-weight: 600;
+}
+.panel-pill.ok { color: var(--good); border-color: var(--good-border); background: var(--good-dim); }
+.panel-pill.danger { color: var(--danger); border-color: var(--danger-border); background: var(--danger-dim); }
+.panel-pill.amber { color: var(--warn); border-color: var(--warn-border); background: var(--warn-dim); }
+.panel-kind { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; border: 1px solid var(--border); border-radius: 8px; padding: 1px 6px; margin-right: 6px; }
+.panel-history-item { display: block; width: 100%; text-align: left; margin: 0 0 6px; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.panel-chart { margin: 10px 0 14px; min-width: 0; }
+.panel-chart-row { display: grid; grid-template-columns: minmax(0, 72px) minmax(0, 1fr) 56px; gap: 8px; align-items: center; margin: 6px 0; min-width: 0; }
+.panel-chart-row > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.panel-chart-track { position: relative; height: 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 3px; min-width: 0; }
+.panel-chart-zero { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--text-muted); }
+.panel-chart-bar { position: absolute; top: 2px; height: 8px; border-radius: 2px; min-width: 8px; }
+.panel-chart-bar.pos { background: var(--accent); }
+.panel-chart-bar.neg { background: var(--danger); }
+.panel-chart-wh { position: absolute; top: 6px; height: 2px; background: var(--text); opacity: 0.7; }
+.panel-drill { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+#panel-status { font-size: 13px; color: var(--text); margin: 0 0 10px; }
+#panel-seed-value { min-height: 24px; }
+.mode-btn {  display: inline-flex; align-items: center; justify-content: center; gap: 5px;
   background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border);
   padding: 4px 8px; font-size: 11px; cursor: pointer; font-family: var(--font);
   transition: all 0.15s;
+  min-height: 24px;
 }
 .mode-btn:first-child { border-radius: 4px 0 0 4px; }
 .mode-btn:last-child { border-radius: 0 4px 4px 0; border-left: none; }
@@ -487,7 +608,7 @@ header label { font-size: 11px; color: var(--text-muted); display: flex; align-i
 .vowel-btn {
   background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border);
   border-radius: 3px; padding: 4px 8px; font-size: 11px; cursor: pointer;
-  font-family: var(--mono); font-weight: 600; min-width: 26px; text-align: center;
+  font-family: var(--mono); font-weight: 600; min-width: 26px; min-height: 24px; text-align: center;
   transition: all 0.12s;
 }
 .vowel-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
@@ -501,11 +622,11 @@ body.vocal-mode .instr-only { display: none; }
 /* ─── Vocal Piano Roll Notes ─── */
 .pr-vowel-label {
   position: absolute; top: 0; left: 2px; font-size: 8px; font-weight: 700;
-  font-family: var(--mono); pointer-events: none; color: rgba(0,0,0,0.65);
+  font-family: var(--mono); pointer-events: none; color: var(--vowel-label);
   line-height: 13px; display: none;
 }
 body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
-.pr-note-vocal { border: 1px solid rgba(255,255,255,0.25); }
+.pr-note-vocal { border: 1px solid var(--note-edge-vocal); }
 
 /* ─── Inspector Vocal Section ─── */
 #insp-vocal { gap: 4px; align-items: center; font-size: 11px; display: none; }
@@ -513,6 +634,7 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
   background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border);
   border-radius: 3px; padding: 1px 4px; font-size: 10px; cursor: pointer;
   font-family: var(--mono); font-weight: 600; transition: all 0.1s;
+  min-height: 24px; min-width: 24px;
 }
 .insp-vowel-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
 .insp-vowel-btn:hover { border-color: var(--accent-hover); }
@@ -530,7 +652,7 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
   border-radius: 4px; word-break: break-word;
 }
 .score-status.error { display: block; background: var(--danger-dim); color: var(--danger); border: 1px solid var(--danger-border); }
-.score-status.ok { display: block; background: #7ee78722; color: #7ee787; border: 1px solid #7ee78755; }
+.score-status.ok { display: block; background: var(--good-status); color: var(--good); border: 1px solid var(--good-border); }
 
 /* ─── Shortcuts Overlay (F-A1-009) ─── */
 #shortcuts-overlay {
@@ -587,6 +709,17 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
    a 100vh grid with html/body overflow:hidden — below ~1000px that grid no
    longer fits, so it reflows to a single stacked column and the page itself
    becomes scrollable instead of clipping. */
+/* VIS-008: at short desktop heights the floating transport overlaps the
+   roll by ~37px (measured 1100×620). Clearance ≥ that overlap so the
+   container's inset focus ring is not covered. At 998px tall overlap is
+   zero — this query does not fire. Width ≤1000px already takes transport
+   out of overlay (position:static). Do not restyle the transport. */
+@media (min-width: 1001px) and (max-height: 800px) {
+  /* Clearance = roll-bottom minus transport-top (47px at 620px tall), not the
+     overlap height (37px) — plus daylight so the inset ring never touches. */
+  #piano-roll-container { margin-bottom: 52px; }
+}
+
 @media (max-width: 1000px) {
   html, body { overflow-y: auto; overflow-x: hidden; }
   #app {
@@ -610,6 +743,30 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
   #keyboard { height: 120px; }
   #controls { border-left: none; border-top: 1px solid var(--border); }
 }
+
+/* VIS-016: Panel rail stacks above the audition column. Does not change
+   the roll UI's 1000px / 700px behavior. */
+@media (max-width: 720px) {
+  html:has(body.panel-mode),
+  body.panel-mode {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: auto;
+  }
+  body.panel-mode #app {
+    height: auto;
+    min-height: 100vh;
+    grid-template-rows: auto 1fr;
+  }
+  body.panel-mode #panel-view {
+    grid-template-columns: 1fr;
+    overflow: visible;
+  }
+  body.panel-mode .panel-rail {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+}
 </style>
 </head>
 <body>
@@ -625,6 +782,7 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
     <div class="mode-toggle">
       <button class="mode-btn active" id="mode-instrument" data-tip="Instrument synthesis" aria-pressed="true">Instr</button>
       <button class="mode-btn" id="mode-vocal" data-tip="Vocal synthesis" aria-pressed="false"><svg class="icon" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="6" y="1.6" width="4" height="7.2" rx="2"/><path d="M4 7.6a4 4 0 0 0 8 0"/><path d="M8 11.6v2.8"/><path d="M5.6 14.4h4.8"/></svg> Vocal</button>
+      <button class="mode-btn" id="mode-panel" data-tip="Human-audio composition panel" aria-pressed="false">Panel</button>
     </div>
 
     <div class="sep"></div>
@@ -686,6 +844,7 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
     </div>
 
     <div class="spacer"></div>
+    <span class="chrome-credit" id="chrome-credit" title="Concert Grand samples: Salamander Grand Piano by Alexander Holm, CC-BY 3.0">Concert Grand: <a href="https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html">Salamander</a> · <a href="http://creativecommons.org/licenses/by/3.0/">CC-BY 3.0</a> Holm</span>
     <span class="status-badge" id="badge-voices">0 voices</span>
     <span class="status-badge" id="badge-tuning">12-TET</span>
   </header>
@@ -696,6 +855,84 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
     <div id="piano-roll"></div>
     <div class="pr-playhead" id="playhead"></div>
     <div id="pr-hint" style="position:absolute;top:50px;left:8px;font-family:var(--mono);font-size:11px;color:var(--text-muted);pointer-events:none;z-index:5;">Click to add a note · press ? for shortcuts</div>
+  </div>
+
+  <div id="panel-view">
+    <aside class="panel-rail" aria-label="Panel run config">
+      <div class="panel-sub" role="tablist" aria-label="Panel sub-mode">
+        <button type="button" id="panel-sub-human" class="active" aria-selected="true">By ear</button>
+        <button type="button" id="panel-sub-llm" aria-selected="false">Local models</button>
+      </div>
+      <h2>Songs</h2>
+      <div id="panel-songs"></div>
+      <h2>Systems</h2>
+      <div id="panel-systems"></div>
+      <h2>Seed</h2>
+      <div style="display:flex;gap:6px;align-items:center">
+        <input id="panel-seed-value" type="number" style="width:120px;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:4px 8px;font-family:var(--mono);font-size:12px">
+        <button type="button" id="panel-seed">New seed</button>
+      </div>
+      <div id="panel-human-config">
+        <p class="panel-note">Blind A/B through the same piano the roll plays.</p>
+        <p class="panel-note" id="panel-n-label"></p>
+        <div style="display:flex;gap:6px;margin-top:12px">
+          <button type="button" id="panel-start">Start run</button>
+          <button type="button" id="panel-export">Export JSON</button>
+        </div>
+        <div class="panel-honesty">
+          Human-audio is the quality claim, honest about N: 1 listener is your blind preference; ≥3 independent listeners is the robust claim.
+          UNINTERPRETABLE and INCONCLUSIVE are first-class outcomes — not errors.
+        </div>
+      </div>
+      <div id="panel-llm-config" hidden>
+        <h2>Judges</h2>
+        <div id="panel-llm-judges"></div>
+        <p class="panel-note" id="panel-llm-empty" hidden></p>
+        <div style="display:flex;gap:6px;margin-top:12px">
+          <button type="button" id="panel-llm-start">Start local-model run</button>
+          <button type="button" id="panel-llm-export">Export JSON</button>
+        </div>
+        <div class="panel-honesty">
+          Local models judging note-names are directional only. The human-audio panel is the quality claim.
+        </div>
+      </div>
+      <h2>History</h2>
+      <div id="panel-history"></div>
+      <h2>Compare</h2>
+      <p class="panel-note">One local-model run against one human-audio run, same songs/systems when you can.</p>
+      <label class="panel-note">Human-audio
+        <select id="panel-cmp-human" style="width:100%;margin-top:4px;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:4px"></select>
+      </label>
+      <label class="panel-note">Local-model
+        <select id="panel-cmp-llm" style="width:100%;margin-top:4px;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:4px"></select>
+      </label>
+      <button type="button" id="panel-cmp-go" style="margin-top:8px">Compare rankings</button>
+      <div id="panel-cmp-out"></div>
+    </aside>
+    <section class="panel-main" aria-label="Blind audition">
+      <p id="panel-status">Choose songs, then start a run. Nothing plays until you press a clip.</p>
+      <div id="panel-llm-view" hidden></div>
+      <div id="panel-trial" hidden>
+        <h2 id="panel-progress">Trial</h2>
+        <p id="panel-song-name" class="panel-note"></p>
+        <button type="button" id="panel-ref">Reference — the tune</button>
+        <div class="panel-ab">
+          <button type="button" id="panel-a">A</button>
+          <button type="button" id="panel-b">B</button>
+        </div>
+        <div class="panel-transport">
+          <button type="button" id="panel-play">Play</button>
+          <button type="button" id="panel-stop">Stop</button>
+          <button type="button" id="panel-restart">Restart clip</button>
+        </div>
+        <p class="panel-note">Which backing fits the tune? 1 / 2 switch A↔B at the same playhead · Space play/pause · Esc stop · R reference · Enter votes the clip you’re hearing.</p>
+        <div class="panel-votes">
+          <button type="button" id="panel-vote-a">A fits better</button>
+          <button type="button" id="panel-vote-b">B fits better</button>
+        </div>
+      </div>
+      <div id="panel-outcome"></div>
+    </section>
   </div>
 
   <!-- ─── Transport (floating) ─── -->
@@ -873,6 +1110,11 @@ body.vocal-mode .pr-note-vocal .pr-vowel-label { display: block; }
     <li><kbd>?</kbd> Toggle this help</li>
   </ul>
 </div>
+
+<footer style="padding: 10px 16px 16px; font-size: 11px; color: var(--text-muted);">
+  Concert Grand samples: <a href="https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html" style="color: var(--text-muted);">Salamander Grand Piano</a> by Alexander Holm,
+  <a href="http://creativecommons.org/licenses/by/3.0/" style="color: var(--text-muted);">CC-BY&nbsp;3.0</a> — pruned for the web; full provenance in <code>samples/salamander/manifest.json</code>.
+</footer>
 
 <script type="module" src="./src/main.ts"></script>
 </body>

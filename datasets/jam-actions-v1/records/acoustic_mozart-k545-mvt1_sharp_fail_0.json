@@ -1,0 +1,208 @@
+{
+  "id": "acoustic:mozart-k545-mvt1:sharp_fail:0",
+  "schema_version": "jam-actions-v1/1.0.0",
+  "family": "acoustic",
+  "provenance": {
+    "source_url": "http://piano-midi.de/midis/mozart/moz_545_1.mid",
+    "source_collected_at": "2026-09-09",
+    "source_type": "downloaded-arrangement",
+    "composition_title": "Piano Sonata No. 16 in C Major, K. 545, I. Allegro",
+    "composer": "Wolfgang Amadeus Mozart",
+    "composition_year": 1,
+    "composition_pd_status_us": "public_domain",
+    "composition_pd_status_eu": "public_domain",
+    "arrangement_creator": "Bernd Krueger (piano-midi.de, 2006, edition 2013-09-23)",
+    "arrangement_license": "CC-BY-SA-3.0-DE",
+    "arrangement_license_version": "3.0-DE",
+    "arrangement_evidence_url": "http://piano-midi.de/copy.htm",
+    "record_verdict": "public",
+    "verdict_reason": "Allowlisted 2026-09-09; CC-BY-SA-3.0-DE",
+    "verifier": "http://piano-midi.de/copy.htm; midi meta events (sha256 010bd27e2590…)",
+    "verified_at": "2026-09-09",
+    "training_use_permitted": true
+  },
+  "scope": {
+    "song_id": "mozart-k545-mvt1",
+    "phrase_window": "full:146",
+    "instrument": "piano",
+    "key": "C major",
+    "tempo_bpm": 137,
+    "time_signature": "4/4",
+    "window_role": "standalone"
+  },
+  "observation": {
+    "thresholds": {
+      "timing_ms": 40,
+      "pitch_fail_cents": 50,
+      "pitch_warn_cents": 25,
+      "yin_locked_p95_cents": 0.179,
+      "pitch_clearance_cents": 5,
+      "pitch_clearance_multiple": 27.93,
+      "onset_p95_ms": 28.025,
+      "onset_clearance_ms": 38,
+      "onset_clearance_multiple": 1.36
+    },
+    "gold": {
+      "family": "acoustic",
+      "answer": "pitch_fail",
+      "engine": "YIN+SuperFlux"
+    },
+    "acoustic": {
+      "kind": "sharp_fail",
+      "notes": [
+        {
+          "midi": 60,
+          "name": "C4",
+          "time": 0,
+          "duration": 0.45
+        },
+        {
+          "midi": 72,
+          "name": "C5",
+          "time": 1.2,
+          "duration": 0.45
+        },
+        {
+          "midi": 67,
+          "name": "G4",
+          "time": 2.4,
+          "duration": 0.45
+        },
+        {
+          "midi": 64,
+          "name": "E4",
+          "time": 3.5999999999999996,
+          "duration": 0.45
+        },
+        {
+          "midi": 67,
+          "name": "G4",
+          "time": 4.8,
+          "duration": 0.45
+        },
+        {
+          "midi": 60,
+          "name": "C4",
+          "time": 6,
+          "duration": 0.45
+        },
+        {
+          "midi": 76,
+          "name": "E5",
+          "time": 7.2,
+          "duration": 0.45
+        },
+        {
+          "midi": 67,
+          "name": "G4",
+          "time": 8.4,
+          "duration": 0.45
+        }
+      ],
+      "cents_shift": 61.51162790697674,
+      "delay_sec": 0.029302325581395353,
+      "target_index": 0,
+      "measured_f0_hz": 271.0918766658709,
+      "measured_cents": 61.53403123792238,
+      "measured_onset_ms": 13.469387755102035,
+      "draw": 0
+    }
+  },
+  "annotation_target": {
+    "measure_range": [
+      1,
+      146
+    ],
+    "structure": "Sixteen structural regions from the section-lens pass, evenly spaced (mostly 6-14 measures each) in keeping with a piece built from clear, balanced phrases. The exposition spans measures 1-28 and repeats verbatim at measures 29-56 — a 292-interval right-hand span and a 71-interval left-hand span both confirmed as exact, untransposed matches. The development and recapitulation together span measures 57-101 and repeat verbatim at measures 102-146 (a 158-interval left-hand span and a massive 547-interval right-hand span, both exact matches) — together the two repeated halves account for the great majority of the piece's total length. Inside the recapitulation block, the famous scalar right-hand passagework (measures 63-68, restating at 108-113) alternates with the Alberti-bass left hand, and the busiest measures in the piece — 98 and 143, each 40 combined onsets, mirroring each other exactly across the two halves — mark the technical peak both times it occurs.",
+    "key_moments": [
+      "The exposition (measures 1-28) is byte-identical to its repeat at measures 29-56 in both hands, and the development-recapitulation block (measures 57-101) is likewise byte-identical to measures 102-146 — this teaches sonata form's most basic structural lesson directly from the data: both large halves really were meant to be played twice.",
+      "G major (the dominant) is cited more often than C major (the tonic) across the whole piece — 16 windows to 12 — which demonstrates how a Classical-era exposition spends much of its time establishing and confirming the dominant key before a Classical era recapitulation restores the tonic.",
+      "Measures 98 and 143 are the two busiest in the piece, each carrying exactly 40 combined onsets, and each sits at the same position within its own repeated half — proof that Mozart placed the technical peak at a matching structural point both times, not by accident.",
+      "The scalar right-hand passagework at measures 63-68 (which restates identically at measures 108-113) demonstrates even scale technique across an octave and more — a foundational skill this famously pedagogical sonata was written to teach."
+    ],
+    "teaching_goals": [
+      "Learn the exposition (measures 1-28) once and recognize that its repeat at measures 29-56 is genuinely note-for-note — this halves the real learning work despite the score's length.",
+      "Practice the scalar passagework at measures 63-68 (and its identical return at measures 108-113) hands separately first, since even scale technique under the Alberti bass is the core skill this movement teaches.",
+      "Listen for the shift in emphasis from G major (the dominant, 16 windows) toward C major (the tonic, 12 windows) across the piece, and develop the ear to recognize when a Classical-era piece is confirming its home key versus its dominant.",
+      "Build stamina for the densest measures (98 and 143, 40 onsets each) by practicing them slowly first — recognizing that both are the technical peak of their respective repeated half helps target practice time efficiently."
+    ],
+    "style_tips": [
+      "Keep the Alberti bass light and perfectly even under the right hand — listen for the left hand disappearing into the texture while the melody stays in front.",
+      "Use clean, minimal pedal — Classical-era articulation depends on clarity; listen for each note in the scalar passagework at measures 63-68 (and its twin at 108-113) speaking distinctly.",
+      "Play the dominant-leaning material (the G major windows) with a touch more forward energy than the tonic-grounded passages — listen for the harmonic pull toward G resolving satisfyingly when C major returns.",
+      "Shape phrases with an elegant, vocal quality even in fast passagework — listen for the densest measures (98 and 143) staying musical and shaped rather than turning into pure technical display."
+    ],
+    "teaching_notes": [
+      {
+        "measure": 1,
+        "note": "none"
+      }
+    ]
+  },
+  "target_trace": {
+    "task_family": "acoustic",
+    "objective": "Answer using tools. Do not guess from the question text.",
+    "session": [
+      {
+        "turn": 1,
+        "role": "user",
+        "content": "Grade this take of \"Piano Sonata No. 16 in C Major, K. 545, I. Allegro\". Answer with exactly one of: match, pitch_fail, timing_fail."
+      },
+      {
+        "turn": 2,
+        "role": "assistant",
+        "content": "Transcribing, then scoring with raw measurements.",
+        "tool_calls": [
+          {
+            "tool": "transcribe_audio",
+            "arguments": {
+              "path": "/acoustic-v1/take-3e4809.wav"
+            }
+          },
+          {
+            "tool": "score_audio_take",
+            "arguments": {
+              "path": "/acoustic-v1/take-3e4809.wav",
+              "song_id": "mozart-k545-mvt1"
+            }
+          }
+        ]
+      },
+      {
+        "turn": 3,
+        "role": "tool",
+        "tool": "transcribe_audio",
+        "content": {
+          "note_count": 8
+        }
+      },
+      {
+        "turn": 4,
+        "role": "tool",
+        "tool": "score_audio_take",
+        "content": {
+          "f0_hz": 271.1,
+          "cents_from_target": 61.5,
+          "onset_ms": 13.5
+        }
+      },
+      {
+        "turn": 5,
+        "role": "assistant",
+        "content": "cents 61.5: |61.5| − 50 = 11.5, against the gate; onset 13.5: |13.5| − 40 = −26.5, inside: pitch_fail"
+      }
+    ]
+  },
+  "eval_metadata": {
+    "split": "train",
+    "split_strategy": "hold out by song_id",
+    "leakage_check": "passed",
+    "eval_eligibility": [
+      "tool_use",
+      "acoustic"
+    ],
+    "phrase_continuation_eligible": false,
+    "phrase_continuation_eligible_reason": "standalone tool-use items"
+  },
+  "split": "train"
+}

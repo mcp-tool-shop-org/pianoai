@@ -34,5 +34,38 @@
       "Balance the melody so it floats on top of the arpeggiated texture rather than getting buried in it — listen for the top line staying audible through the busiest triplet passages at measures 93, 99, and 101.",
       "Treat the recapitulation at measures 71-88 as a return, not a repeat — listen for it carrying the memory of the middle-section restatements at 41-62, even though the notes of the opening page come back nearly identical."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://www.mutopiaproject.org/ftp/DebussyC/L66/debussy_Arabesque_1/debussy_Arabesque_1.mid",
+    "source_site": "www.mutopiaproject.org",
+    "arrangement_creator": "Keith OHara (Mutopia typesetter, LilyPond)",
+    "arrangement_license": "Public-Domain",
+    "terms_url": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1777",
+    "terms_quote": "Copyright: Public Domain (piece page); Public Domain: The contributor of this music has dedicated their contribution into the public domain. You can do what you like with this music - print it out, sell it, change it, distribute it, record it, and perform it, etc.",
+    "verified_at": "2026-09-09",
+    "verifier": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1777; midi meta events (sha256 6732dc10799e…)",
+    "midi_sha256": "6732dc10799ec0af47d19d9095562d0671864a750129e0279901def169a34757",
+    "midi_title_events": [
+      "control track",
+      "GNU LilyPond 2.12.3",
+      "upper",
+      "lower"
+    ],
+    "midi_credit_events": [
+      "creator:"
+    ],
+    "credited_parties": [
+      {
+        "name": "GNU LilyPond",
+        "evidence": "midi-meta"
+      },
+      {
+        "name": "Keith OHara",
+        "evidence": "https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1777"
+      }
+    ],
+    "title_verdict": "no-title-in-file",
+    "notes": "download-library.ts still lists the original bitmidi URL; the bytes were replaced from Mutopia in commit 03a005a (2026-07)."
   }
 }

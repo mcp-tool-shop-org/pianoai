@@ -32,5 +32,23 @@
       "Sing the melody line mentally as you play — with the harmony unlabeled and the key contested, the tune is the truth here; listen for the right hand's phrases breathing like a vocalist between gestures.",
       "Avoid over-pedaling the dense bars — 5,843 notes across 73 measures rewards clarity; change the pedal with the bass cells and listen for the low E1 at measure 55 staying distinct instead of blooming into wash."
     ]
+  },
+  "provenance": {
+    "schema": 1,
+    "source_url": "https://bitmidi.com/uploads/52654.mid",
+    "source_site": "bitmidi.com",
+    "arrangement_creator": "unknown — the file names no creator and bitmidi attributes none",
+    "arrangement_license": "unknown",
+    "terms_url": "https://bitmidi.com/about",
+    "terms_quote": "Serving 113,229 MIDI files curated by volunteers around the world. [...] I searched and found a .zip file with 100K+ MIDI files that someone posted to Reddit. (No licence is stated anywhere on the site; the only other page is /privacy.)",
+    "verified_at": "2026-09-09",
+    "verifier": "https://bitmidi.com/about",
+    "midi_sha256": "71a5d96d3852e9f7b5fc7f70a5643cb16cc1f6a02cbc6b2ff57c400a94b55ac0",
+    "midi_title_events": [
+      "perfidia"
+    ],
+    "midi_credit_events": [],
+    "credited_parties": [],
+    "title_verdict": "matches"
   }
 }

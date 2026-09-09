@@ -1,0 +1,82 @@
+{
+  "schema_version": "jam-actions-v1/1.0.0",
+  "n": 213,
+  "tools": [
+    "compare_songs",
+    "detect_chord",
+    "ensemble_now",
+    "list_measures",
+    "list_songs",
+    "score_audio_take",
+    "song_info",
+    "transcribe_audio",
+    "transpose_song",
+    "verify_harmony"
+  ],
+  "tool_count": 10,
+  "songs": [
+    "bach-prelude-c-major-bwv846",
+    "bethena",
+    "elite-syncopations",
+    "fur-elise",
+    "maple-leaf-rag",
+    "mozart-k545-mvt1",
+    "peacherine-rag",
+    "pineapple-rag",
+    "solace",
+    "the-easy-winners",
+    "the-entertainer"
+  ],
+  "song_count": 11,
+  "genres": [
+    "classical",
+    "ragtime"
+  ],
+  "genre_count": 2,
+  "keys": [
+    "A minor",
+    "Ab major",
+    "Bb major",
+    "C major",
+    "D major",
+    "Eb major",
+    "G major"
+  ],
+  "key_count": 7,
+  "shapes": {
+    "transcribe_audio>score_audio_take": 132,
+    "verify_harmony": 19,
+    "song_info": 19,
+    "song_info>list_measures": 11,
+    "song_info>transpose_song": 11,
+    "list_songs>song_info>list_measures>detect_chord": 10,
+    "ensemble_now": 7,
+    "song_info>song_info>compare_songs": 4
+  },
+  "shape_count": 8,
+  "majority_shape": "transcribe_audio>score_audio_take",
+  "majority_shape_share": 0.6197183098591549,
+  "families": {
+    "acoustic": 132,
+    "chord": 10,
+    "compare": 4,
+    "ensemble": 7,
+    "harmony": 19,
+    "key_moments": 8,
+    "measures": 11,
+    "teaching_goals": 11,
+    "transpose": 11
+  },
+  "floors": {
+    "tools": 9,
+    "songs": 10,
+    "shapes": 7
+  },
+  "floors_met": false,
+  "f5_drops": {
+    "attempted": 132,
+    "droppedUntrackable": 0,
+    "droppedClearance": 0,
+    "droppedShortPhrase": 0
+  }
+}

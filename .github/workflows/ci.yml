@@ -1,3 +1,15 @@
+# --- Measured CI cost (dogfood-swarm SKILL item 8) --------------------------
+# 33 billable min per push across 7 jobs (10.2 min actual wall time),
+# measured 2026-09-09 from run 34380057331. Most expensive jobs:
+#    11 min  ci (22)  (10.2 min wall)
+#     9 min  ci (24)  (8.4 min wall)
+#     9 min  Modern pnpm cold-start (pnpm 10, Node 22)  (8.6 min wall)
+#     1 min  Docker image (library + journal volume)  (33 s wall)
+# GitHub bills per JOB, rounded UP to the minute, x2 Windows / x10 macOS, so
+# billable minutes exceed wall time — many short jobs cost more than one long
+# one. This number is measured, never estimated; re-measure after any change:
+#   gh api repos/mcp-tool-shop-org/ai-jam-sessions/actions/runs/<id>/jobs
+# ---------------------------------------------------------------------------
 name: CI
 
 permissions:
@@ -27,6 +39,8 @@ on:
       - "vitest.config.ts"
       - "samples/**"
       - "Dockerfile"
+      - ".dockerignore"
+      - "docker-compose.yml"
       - "plugin/**"
       - ".github/workflows/**"
     branches: [main]
@@ -44,12 +58,14 @@ on:
       - "vitest.config.ts"
       - "samples/**"
       - "Dockerfile"
+      - ".dockerignore"
+      - "docker-compose.yml"
       - "plugin/**"
       - ".github/workflows/**"
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -87,6 +103,18 @@ jobs:
 
       - name: Test with coverage
         if: matrix.node-version == 22
+        # This job has ALREADY run the full suite uninstrumented in the step
+        # above, engine verification included. Under V8 block coverage the
+        # dataset's DSP verification -- 81 acoustic records each rendering a
+        # take and running YIN and onset detection -- measured 10x slower
+        # (build 22 s -> ~200 s; the two verification tests 11 s -> 166 s and
+        # 110 s, on the studio rig; worse here). No timeout survives that, and
+        # a 15-minute coverage leg is against the CI-minute rules. So this step
+        # skips the engine block, which still runs on this job's plain Test step
+        # and on the Node 24 job -- twice per push. The flag is named and the
+        # test file says the same thing. See src/dataset/acoustic-v1/v1.test.ts.
+        env:
+          SKIP_DSP_VERIFICATION: "1"
         run: pnpm test:coverage
 
       - name: Upload coverage to Codecov
@@ -133,6 +161,54 @@ jobs:
 
       - name: Test
         run: pnpm test
+
+  # Paths-gated with the workflow: Dockerfile, .dockerignore, docker-compose.yml,
+  # src/**, and this file. Builds the image (no push). Asserts the shipped
+  # library is 14 loaded / 94 unfetched, then proves a journal entry written
+  # with AI_JAM_HOME on a named volume is readable from a second container.
+  # No network fetch. Measured 2026-09-09 from run 34380057331:
+  #     1 min  Docker image (library + journal volume)  (33 s wall)
+  docker-image:
+    name: Docker image (library + journal volume)
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Build image (no push)
+        run: docker build -t ai-jam-sessions:ci .
+
+      - name: Library is 14 loaded / 94 unfetched
+        run: |
+          set -euo pipefail
+          STATS=$(docker run --rm --entrypoint node ai-jam-sessions:ci dist/cli.js stats)
+          echo "$STATS"
+          echo "$STATS" | grep -q 'Total songs: 14'
+          LIB=$(docker run --rm --entrypoint node ai-jam-sessions:ci dist/cli.js library)
+          echo "$LIB"
+          echo "$LIB" | grep -q 'Not fetched: 94'
+
+      - name: Journal survives a second container on the same volume
+        run: |
+          set -euo pipefail
+          docker volume create ajs-ci-journal
+          docker run --rm \
+            -e AI_JAM_HOME=/data \
+            -v ajs-ci-journal:/data \
+            --entrypoint node \
+            ai-jam-sessions:ci \
+            --input-type=module \
+            -e "import { appendJournalEntry } from './dist/journal.js'; const p = appendJournalEntry('ci journal proof\n'); console.log(p);"
+          docker run --rm \
+            -e AI_JAM_HOME=/data \
+            -v ajs-ci-journal:/data \
+            --entrypoint node \
+            ai-jam-sessions:ci \
+            --input-type=module \
+            -e "import { readdirSync, readFileSync } from 'node:fs'; import { join } from 'node:path'; import { journalDir } from './dist/state-home.js'; const dir = journalDir(); const files = readdirSync(dir); const text = files.map((f) => readFileSync(join(dir, f), 'utf8')).join('\n'); if (!text.includes('ci journal proof')) { console.error('journal missing'); process.exit(1); } console.log('journal survived across containers:', files.join(', '));"
+          docker volume rm ajs-ci-journal
 
   dep-audit:
     timeout-minutes: 15
