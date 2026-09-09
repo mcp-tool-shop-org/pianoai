@@ -92,5 +92,7 @@ corpus and report on this set, say which seed and report every seed.
 ## Licence and citation
 
 As jam-actions-v1: CC-BY-SA-3.0-DE for the records (see `LICENSE-DATASET.md`); the compositions are
-public domain and the three arrangements are the Mutopia Project's public-domain typesettings. Cite
-the concept DOI `10.5281/zenodo.20279918` and name the version.
+public domain and the three arrangements are the Mutopia Project's public-domain typesettings. This
+set is Zenodo record [`10.5281/zenodo.22675251`](https://doi.org/10.5281/zenodo.22675251); cite that
+version DOI, not the jam-actions concept DOI — the probe is an evaluation companion, not a version
+of the training corpus.

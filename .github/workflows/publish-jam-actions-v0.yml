@@ -18,7 +18,11 @@ name: Publish jam-actions-v0
 # Inputs:
 #   mode                    choice: draft-only (default) | publish-zenodo-only | publish
 #   confirm_irreversible    type exactly "yes-mint-doi" to mint a DOI and/or push HF; default "no"
-#   zenodo_newversion_of    published Zenodo record id for a new version; default 20279919; empty = fresh deposit
+#   zenodo_newversion_of    published Zenodo record id for a new version; default 20279919.
+#                           NOTE: an explicitly empty dispatch value is replaced by the default by GitHub,
+#                           so "fresh deposit" is not reachable from a dispatch today (2026-09-09: the
+#                           probe was versioned under the jam-actions concept this way). A fresh-deposit
+#                           path needs a sentinel value such as "none", not an empty string.
 #   ref                     git ref to publish from; default main
 #   dataset_dir             package under datasets/<name>; default datasets/jam-actions-v0-public
 #
