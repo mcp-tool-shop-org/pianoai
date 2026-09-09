@@ -22,6 +22,7 @@ import {
   f5DropStats,
   round1,
   acousticAssistantContent,
+  type F5Kept,
 } from "./f5-acoustic.js";
 import type { SongEntry } from "../../songs/types.js";
 import type { Provenance, Turn } from "../schema.js";
@@ -138,11 +139,11 @@ function baseRecord(
   split: "train" | "test",
   gold: V1Record["observation"]["gold"],
   session: Turn[],
-  extra?: { thresholds?: Record<string, number>; observation?: Record<string, unknown>; phrase_window?: string },
+  extra?: { thresholds?: Record<string, number>; observation?: Record<string, unknown>; phrase_window?: string; schema_version?: string },
 ): V1Record {
   const rec: V1Record = {
     id,
-    schema_version: V1_SCHEMA_VERSION,
+    schema_version: (extra?.schema_version ?? V1_SCHEMA_VERSION) as typeof V1_SCHEMA_VERSION,
     family,
     provenance: provenanceFor(song),
     scope: {
@@ -427,6 +428,60 @@ export function buildHarmonyRecords(song: SongEntry, split: "train" | "test"): V
   return out;
 }
 
+export function buildAcousticTake(
+  song: SongEntry,
+  kept: F5Kept,
+  id: string,
+  split: "train" | "test",
+  opts: V1BuildOpts & { schema_version?: string; band?: string; draw?: number } = {},
+): V1Record {
+  const path = opaqueTakePath(song.id, kept);
+  const session: Turn[] = [
+    {
+      turn: 1, role: "user",
+      content: ask("acoustic", `Grade this take of "${song.title}".`),
+    },
+    {
+      turn: 2, role: "assistant",
+      content: "Transcribing, then scoring with raw measurements.",
+      tool_calls: [
+        { tool: "transcribe_audio", arguments: { path } },
+        { tool: "score_audio_take", arguments: { path, song_id: song.id } },
+      ],
+    },
+    { turn: 3, role: "tool", tool: "transcribe_audio", content: { note_count: kept.notes.length } },
+    { turn: 4, role: "tool", tool: "score_audio_take", content: {
+      f0_hz: round1(kept.measured_f0_hz),
+      cents_from_target: round1(kept.measured_cents),
+      onset_ms: round1(kept.measured_onset_ms),
+    } },
+    { turn: 5, role: "assistant", content: acousticAssistantContent(kept.measured_cents, kept.measured_onset_ms, kept.gold, opts.acousticBareLabel === true) },
+  ];
+  return baseRecord(song, "acoustic", id, split, {
+    family: "acoustic", answer: kept.gold, engine: "YIN+SuperFlux",
+  }, session, {
+    schema_version: opts.schema_version,
+    thresholds: F5_THRESHOLDS,
+    observation: {
+      acoustic: {
+        kind: kept.kind,
+        notes: kept.notes,
+        cents_shift: kept.cents_shift,
+        delay_sec: kept.delay_sec,
+        target_index: kept.target_index,
+        measured_f0_hz: kept.measured_f0_hz,
+        measured_cents: kept.measured_cents,
+        measured_onset_ms: kept.measured_onset_ms,
+        // Only the keys a corpus actually carries: the main corpus has `draw`,
+        // the probe has `band`. An undefined key still changes the rebuilt
+        // record's shape and fails rebuild-equals-committed.
+        ...(opts.draw !== undefined ? { draw: opts.draw } : {}),
+        ...(opts.band !== undefined ? { band: opts.band } : {}),
+      },
+    },
+  });
+}
+
 export function buildAcousticRecord(
   song: SongEntry,
   split: "train" | "test",
@@ -434,53 +489,20 @@ export function buildAcousticRecord(
 ): V1Record[] {
   const out: V1Record[] = [];
   const usedPaths = new Set<string>();
-  const bare = opts.acousticBareLabel === true;
   for (const kind of F5_KINDS) {
     for (let draw = 0; draw < F5_DRAWS; draw++) {
       const kept = tryBuildF5(song, kind, draw);
       if (!kept) continue;
-      const path = opaqueTakePath(song.id, kept);
-      if (usedPaths.has(path)) throw new Error(`opaque take path collision ${path}`);
-      usedPaths.add(path);
-      const session: Turn[] = [
-        {
-          turn: 1, role: "user",
-          content: ask("acoustic", `Grade this take of "${song.title}".`),
-        },
-        {
-          turn: 2, role: "assistant",
-          content: "Transcribing, then scoring with raw measurements.",
-          tool_calls: [
-            { tool: "transcribe_audio", arguments: { path } },
-            { tool: "score_audio_take", arguments: { path, song_id: song.id } },
-          ],
-        },
-        { turn: 3, role: "tool", tool: "transcribe_audio", content: { note_count: kept.notes.length } },
-        { turn: 4, role: "tool", tool: "score_audio_take", content: {
-          f0_hz: round1(kept.measured_f0_hz),
-          cents_from_target: round1(kept.measured_cents),
-          onset_ms: round1(kept.measured_onset_ms),
-        } },
-        { turn: 5, role: "assistant", content: acousticAssistantContent(kept.measured_cents, kept.measured_onset_ms, kept.gold, bare) },
-      ];
-      out.push(baseRecord(song, "acoustic", `acoustic:${song.id}:${kind}:${draw}`, split, {
-        family: "acoustic", answer: kept.gold, engine: "YIN+SuperFlux",
-      }, session, {
-        thresholds: F5_THRESHOLDS,
-        observation: {
-          acoustic: {
-            kind: kept.kind,
-            notes: kept.notes,
-            cents_shift: kept.cents_shift,
-            delay_sec: kept.delay_sec,
-            target_index: kept.target_index,
-            measured_f0_hz: kept.measured_f0_hz,
-            measured_cents: kept.measured_cents,
-            measured_onset_ms: kept.measured_onset_ms,
-            draw,
-          },
-        },
-      }));
+      const rec = buildAcousticTake(song, kept, `acoustic:${song.id}:${kind}:${draw}`, split, { ...opts, draw });
+      const path = rec.target_trace.session
+        .flatMap((t) => (t.role === "assistant" && t.tool_calls ? t.tool_calls : []))
+        .map((tc) => tc.arguments.path)
+        .find((p) => typeof p === "string") as string | undefined;
+      if (path) {
+        if (usedPaths.has(path)) throw new Error(`opaque take path collision ${path}`);
+        usedPaths.add(path);
+      }
+      out.push(rec);
     }
   }
   return out;

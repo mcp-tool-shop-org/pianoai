@@ -319,6 +319,13 @@ export function measureF5(notes: F5PhraseNote[], cents_shift: number, delay_sec:
   };
 }
 
+/** Gold from the two-sided predicates alone — used by the probe, not by kind. */
+export function goldFromPredicates(m: F5Measurements): "match" | "pitch_fail" | "timing_fail" {
+  if (onsetFailsGate(m.onset_ms)) return "timing_fail";
+  if (centsFailsGate(m.cents_from_target)) return "pitch_fail";
+  return "match";
+}
+
 function goldFromKind(kind: F5Kind, m: F5Measurements): "match" | "pitch_fail" | "timing_fail" | null {
   const mag = Math.abs(m.cents_from_target);
   const late = onsetFailsGate(m.onset_ms);
@@ -335,6 +342,28 @@ function goldFromKind(kind: F5Kind, m: F5Measurements): "match" | "pitch_fail" |
   if (!late) return null;
   if (centsFailsGate(m.cents_from_target)) return null;
   return "timing_fail";
+}
+
+/** Render an explicit recipe. Gold from predicates, not from a kind draw. */
+export function keepFromApplied(
+  song: SongEntry,
+  cents_shift: number,
+  delay_sec: number,
+): F5Kept | null {
+  const notes = phraseFromSong(song);
+  if (notes.length < 4) return null;
+  const { samples, target_index, measurements } = measureF5(notes, cents_shift, delay_sec);
+  if (!measurements) return null;
+  const gold = goldFromPredicates(measurements);
+  const kind: F5Kind = gold === "timing_fail" ? "late_fail" : gold === "pitch_fail" ? "sharp_fail" : "clean";
+  return {
+    kind, notes, cents_shift, delay_sec, target_index,
+    wav_sha256: sha256Samples(samples), sample_rate: SR, pre_roll_sec: PRE_ROLL,
+    gold,
+    measured_f0_hz: measurements.f0_hz,
+    measured_cents: measurements.cents_from_target,
+    measured_onset_ms: measurements.onset_ms,
+  };
 }
 
 export function tryBuildF5(song: SongEntry, kind: F5Kind, draw = 0): F5Kept | null {

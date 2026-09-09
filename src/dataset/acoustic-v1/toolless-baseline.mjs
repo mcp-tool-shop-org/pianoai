@@ -18,12 +18,14 @@
 // For contrast, v0's fairly-prompted base model scored 97.2%.
 
 import { readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const MODEL = process.argv[2] ?? "mistral-small:24b";
-const CORPUS = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..",
-  "datasets", "jam-actions-v1", "records.jsonl");
+const CORPUS = process.env.V1_RECORDS
+  ? resolve(process.env.V1_RECORDS)
+  : join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..",
+    "datasets", "jam-actions-v1", "records.jsonl");
 
 async function ask(prompt) {
   const res = await fetch("http://localhost:11434/api/generate", {

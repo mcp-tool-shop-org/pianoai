@@ -1,0 +1,208 @@
+{
+  "id": "acoustic-probe:the-easy-winners:cents_in:p",
+  "schema_version": "jam-actions-v1-probe/1.0.0",
+  "family": "acoustic",
+  "provenance": {
+    "source_url": "library:the-easy-winners",
+    "source_collected_at": "library-scan",
+    "source_type": "transcribed-by-author",
+    "composition_title": "The Easy Winners",
+    "composer": "Scott Joplin",
+    "composition_year": 1,
+    "composition_pd_status_us": "public_domain",
+    "composition_pd_status_eu": "public_domain",
+    "arrangement_creator": null,
+    "arrangement_license": null,
+    "arrangement_license_version": null,
+    "arrangement_evidence_url": null,
+    "record_verdict": "public",
+    "verdict_reason": "Publishable shelf: classical, ragtime, or folk. clair-de-lune excluded.",
+    "verifier": "v1-builder",
+    "verified_at": "library-scan",
+    "training_use_permitted": true
+  },
+  "scope": {
+    "song_id": "the-easy-winners",
+    "phrase_window": "full:152",
+    "instrument": "piano",
+    "key": "Ab major",
+    "tempo_bpm": 60,
+    "time_signature": "2/4",
+    "window_role": "standalone"
+  },
+  "observation": {
+    "thresholds": {
+      "timing_ms": 40,
+      "pitch_fail_cents": 50,
+      "pitch_warn_cents": 25,
+      "yin_locked_p95_cents": 0.179,
+      "pitch_clearance_cents": 5,
+      "pitch_clearance_multiple": 27.93,
+      "onset_p95_ms": 28.025,
+      "onset_clearance_ms": 38,
+      "onset_clearance_multiple": 1.36
+    },
+    "gold": {
+      "family": "acoustic",
+      "answer": "match",
+      "engine": "YIN+SuperFlux"
+    },
+    "acoustic": {
+      "kind": "clean",
+      "notes": [
+        {
+          "midi": 63,
+          "name": "D#4",
+          "time": 0,
+          "duration": 0.45
+        },
+        {
+          "midi": 60,
+          "name": "C4",
+          "time": 1.2,
+          "duration": 0.45
+        },
+        {
+          "midi": 72,
+          "name": "C5",
+          "time": 2.4,
+          "duration": 0.45
+        },
+        {
+          "midi": 70,
+          "name": "A#4",
+          "time": 3.5999999999999996,
+          "duration": 0.45
+        },
+        {
+          "midi": 68,
+          "name": "G#4",
+          "time": 4.8,
+          "duration": 0.45
+        },
+        {
+          "midi": 67,
+          "name": "G4",
+          "time": 6,
+          "duration": 0.45
+        },
+        {
+          "midi": 65,
+          "name": "F4",
+          "time": 7.2,
+          "duration": 0.45
+        },
+        {
+          "midi": 63,
+          "name": "D#4",
+          "time": 8.4,
+          "duration": 0.45
+        }
+      ],
+      "cents_shift": 42,
+      "delay_sec": 0.02,
+      "target_index": 0,
+      "measured_f0_hz": 318.77265019729884,
+      "measured_cents": 42.029198021569584,
+      "measured_onset_ms": 1.859410430839037,
+      "band": "cents_in"
+    }
+  },
+  "annotation_target": {
+    "measure_range": [
+      1,
+      152
+    ],
+    "structure": "An A strain (measures 5-36, an 8-measure cell recurring at measures 5, 9, 21, 25, 69, 73) establishes the Ab-Db-Bbm7 progression. A contrasting B section (measures 37-84) leads into a trio-like closing block (measures 84-152) dominated by the tight four-measure vamp, resolving through a G#7-Bbm7-Db7 turnaround cycle (measures 121-152) to a final Db cadence.",
+    "key_moments": [
+      "Measures 89 through 113, all near-identical: a four-measure vamp cycles seven times in a row — the pattern pass grades the underlying figure strong, with a 114-interval right-hand match spanning measures 88-119.",
+      "Measures 3, 7, 15, 17, and 23 are the busiest in the piece (12 onsets each), all inside the opening A strain — this rag front-loads its rhythmic density into the first strain rather than building toward it.",
+      "Measures 50 and 66 are the sparsest bars (4 onsets), matching a two-measure rest gap in the left hand at measures 50-51 — a genuine quiet pocket, not just a low-density passage.",
+      "The G#7-Bbm7-Db7 turnaround cycle governing measures 121-152 (secondary dominant into ii7 into the real V7) is the harmonic engine driving the piece toward its Db-centered close — recognizing this three-chord cycle by ear unlocks the entire closing section."
+    ],
+    "teaching_goals": [
+      "Learn the Ab-Db-Bbm7 progression (I-IV-ii7) that anchors the A strain — confirmed strongly by the harness's own key-fit score (0.86), a safe harmonic foundation to build technique on.",
+      "Practice a tight, fast-cycling ostinato (measures 89-113) for endurance and evenness — once the four-measure vamp is secure, the challenge shifts from learning notes to maintaining consistency across seven repetitions.",
+      "Recognize a secondary-dominant turnaround cycle (G#7-Bbm7-Db7, measures 121-152) as a repeating unit rather than a string of unrelated chords — naming the pattern makes it far easier to memorize.",
+      "Practice sustaining rhythmic density at the very start of a piece (measures 3-23) rather than warming up into it — this rag asks for full commitment from the first phrase."
+    ],
+    "style_tips": [
+      "Listen for the ostinato vamp (measures 89-113) staying rhythmically identical across all seven cycles — any drift in the left hand's oom-pah timing will be very audible over that many repetitions.",
+      "Play the sparse pocket at measures 50-51 with a genuinely lighter touch, matching the written rest gap in the left hand — resist the urge to fill the silence.",
+      "Feel the G#7-Bbm7-Db7 turnaround (measures 121-152) as one continuous harmonic gesture pulling toward Db, not three separate chords to land on individually.",
+      "Try starting at full rhythmic commitment from measure 3 rather than easing in — the busiest measures arrive early here, and a tentative start will undersell them."
+    ],
+    "teaching_notes": [
+      {
+        "measure": 1,
+        "note": "none"
+      }
+    ]
+  },
+  "target_trace": {
+    "task_family": "acoustic",
+    "objective": "Answer using tools. Do not guess from the question text.",
+    "session": [
+      {
+        "turn": 1,
+        "role": "user",
+        "content": "Grade this take of \"The Easy Winners\". Answer with exactly one of: match, pitch_fail, timing_fail."
+      },
+      {
+        "turn": 2,
+        "role": "assistant",
+        "content": "Transcribing, then scoring with raw measurements.",
+        "tool_calls": [
+          {
+            "tool": "transcribe_audio",
+            "arguments": {
+              "path": "/acoustic-v1/take-bc4aa6.wav"
+            }
+          },
+          {
+            "tool": "score_audio_take",
+            "arguments": {
+              "path": "/acoustic-v1/take-bc4aa6.wav",
+              "song_id": "the-easy-winners"
+            }
+          }
+        ]
+      },
+      {
+        "turn": 3,
+        "role": "tool",
+        "tool": "transcribe_audio",
+        "content": {
+          "note_count": 8
+        }
+      },
+      {
+        "turn": 4,
+        "role": "tool",
+        "tool": "score_audio_take",
+        "content": {
+          "f0_hz": 318.8,
+          "cents_from_target": 42,
+          "onset_ms": 1.9
+        }
+      },
+      {
+        "turn": 5,
+        "role": "assistant",
+        "content": "cents 42.0 inside a 50-cent gate, onset 1.9 ms inside 40: match"
+      }
+    ]
+  },
+  "eval_metadata": {
+    "split": "test",
+    "split_strategy": "hold out by song_id",
+    "leakage_check": "passed",
+    "eval_eligibility": [
+      "tool_use",
+      "acoustic"
+    ],
+    "phrase_continuation_eligible": false,
+    "phrase_continuation_eligible_reason": "standalone tool-use items"
+  },
+  "split": "test"
+}

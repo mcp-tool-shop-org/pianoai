@@ -5,6 +5,7 @@ import {
   podSessionName,
   receipt,
   terminateOne,
+  handleCreateError,
 } from "./runpod.mjs";
 
 describe("resolveDownTarget", () => {
@@ -58,6 +59,62 @@ describe("podSessionName", () => {
   it("is experiment-YYYYMMDD-HHMM", () => {
     const n = podSessionName(new Date("2026-09-08T12:55:00"), "acoustic-sft");
     expect(n).toBe("acoustic-sft-20260908-1255");
+  });
+});
+
+describe("handleCreateError 500-then-present", () => {
+  const sessionName = "acoustic-sft-20260908-1255";
+  const err = new Error(`POST /pods -> 500 {"error":"no instances currently available"}`);
+
+  it("adopts a session-named pod into the state file and does not DELETE", async () => {
+    const deleted: string[] = [];
+    const states: unknown[] = [];
+    const logs: string[] = [];
+    const api = async (path: string, opts?: { method?: string }) => {
+      if (opts?.method === "DELETE") deleted.push(path);
+      if (path === "/pods" && !opts?.method) {
+        return [{ id: "ghost", name: sessionName, costPerHr: 1.69 }];
+      }
+      return {};
+    };
+    const recovered = await handleCreateError(err, {
+      experiment: "acoustic-sft",
+      sessionName,
+      api,
+      adopt: true,
+      writeState: (s) => { states.push(s); },
+      log: (s: string) => logs.push(s),
+      now: () => new Date("2026-09-08T12:55:00.000Z"),
+    });
+    expect(recovered?.id).toBe("ghost");
+    expect(deleted).toEqual([]);
+    expect(states[0]).toMatchObject({ id: "ghost", adopted: true });
+    expect(logs.some((l) => /adopted ghost/.test(l))).toBe(true);
+  });
+
+  it("tears down a session-named pod by id and never leaves it", async () => {
+    const deleted: string[] = [];
+    const states: unknown[] = [];
+    const logs: string[] = [];
+    const api = async (path: string, opts?: { method?: string }) => {
+      if (opts?.method === "DELETE") deleted.push(path);
+      if (path === "/pods" && !opts?.method) {
+        return [{ id: "ghost", name: sessionName, costPerHr: 1.69 }];
+      }
+      return {};
+    };
+    const recovered = await handleCreateError(err, {
+      experiment: "acoustic-sft",
+      sessionName,
+      api,
+      adopt: false,
+      writeState: (s) => { states.push(s); },
+      log: (s: string) => logs.push(s),
+    });
+    expect(recovered).toBeNull();
+    expect(deleted).toEqual(["/pods/ghost"]);
+    expect(states).toEqual([]);
+    expect(logs.some((l) => /tore down orphan ghost/.test(l))).toBe(true);
   });
 });
 

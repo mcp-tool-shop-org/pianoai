@@ -227,6 +227,54 @@ async function cmdVerify() {
   console.log("\nPreflight OK. `node runpod.mjs up` will spend money.");
 }
 
+/**
+ * Create threw (often 500 "no instances available") but RunPod may still have
+ * created the pod. List; if a session-named pod is present, adopt it into the
+ * state file and continue, or tear it down by id — never leave it billing.
+ */
+export async function handleCreateError(err, {
+  experiment,
+  sessionName,
+  api,
+  adopt = false,
+  writeState,
+  log = (s) => { console.error(s); },
+  now = () => new Date(),
+}) {
+  log(`Deploy failed: ${err.message}`);
+  let listed;
+  try {
+    listed = await api("/pods");
+  } catch (listErr) {
+    log(`list after create error also failed: ${listErr.message}`);
+    if (/no instances currently available/i.test(err.message)) {
+      log("That is the availability signal — every GPU in the chain is out of stock.");
+      log("Retry later, or widen GPU_CHAIN.");
+    }
+    return null;
+  }
+  const arr = Array.isArray(listed) ? listed : [];
+  const prefix = `${experiment}-`;
+  const orphan = arr.find((p) => p.name === sessionName)
+    ?? arr.find((p) => String(p.name || "").startsWith(prefix));
+  if (!orphan) {
+    if (/no instances currently available/i.test(err.message)) {
+      log("That is the availability signal — every GPU in the chain is out of stock.");
+      log("Retry later, or widen GPU_CHAIN.");
+    }
+    return null;
+  }
+  log(`create threw but pod ${orphan.id} (${orphan.name}) is listed`);
+  if (adopt) {
+    writeState({ id: orphan.id, created: now().toISOString(), adopted: true, name: orphan.name });
+    log(`adopted ${orphan.id} into the state file — continuing`);
+    return orphan;
+  }
+  await api(`/pods/${orphan.id}`, { method: "DELETE" });
+  log(`tore down orphan ${orphan.id} (${orphan.name}) after create error — never left billing`);
+  return null;
+}
+
 async function cmdUp() {
   need(KEY, "RUNPOD_API_KEY is not set.");
   const img = await verifyImageTag();
@@ -268,12 +316,15 @@ async function cmdUp() {
       }),
     });
   } catch (err) {
-    console.error(`\nDeploy failed: ${err.message}`);
-    if (/no instances currently available/i.test(err.message)) {
-      console.error("That is the availability signal — every GPU in the chain is out of stock.");
-      console.error("Retry later, or widen GPU_CHAIN.");
-    }
-    process.exit(1);
+    const recovered = await handleCreateError(err, {
+      experiment,
+      sessionName: name,
+      api,
+      adopt: process.env.RUNPOD_ADOPT_ORPHAN === "1",
+      writeState: (s) => writeFileSync(STATE_PATH, JSON.stringify(s, null, 2)),
+    });
+    if (!recovered) process.exit(1);
+    pod = recovered;
   }
 
   const id = pod.id;
